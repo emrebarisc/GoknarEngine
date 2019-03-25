@@ -27,13 +27,19 @@
     <ClInclude Include="src\GameEngine\Application.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameEngine\mainThread.h">
+    <ClInclude Include="src\GameEngine\Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEngine\MainThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GameEngine\Application.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEngine\Log.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

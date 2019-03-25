@@ -9,7 +9,9 @@ extern GameEngine::Application* GameEngine::CreateApplication();
 
 int main(int argc, char **argv)
 {
-	std::cout << "Game Engine Instantiated." << std::endl;
+	GameEngine::Log::Init();
+	ENGINE_CORE_WARN("Initialized Game Engine Log.");
+	ENGINE_INFO("Initialized Application Log.");
 
 	GameEngine::Application *application = GameEngine::CreateApplication();
 	application->Run();

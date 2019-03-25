@@ -2,6 +2,7 @@
 
 /*	APPLICATION		*/
 #include "GameEngine/Application.h"
+#include "GameEngine/Log.h"
 /*	*************	*/
 
 /*	MAIN THREAD		*/
