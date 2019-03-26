@@ -1,0 +1,6 @@
+﻿  Game.cpp
+c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\log.h(26): warning C4251: 'GameEngine::Log::coreLogger_': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'GameEngine::Log'
+  c:\users\baris\desktop\projeler\gameengine\gameengine\outsourced\spdlog\include\spdlog\logger.h(158): note: see declaration of 'std::shared_ptr<spdlog::logger>'
+c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\log.h(27): warning C4251: 'GameEngine::Log::clientLogger_': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'GameEngine::Log'
+  c:\users\baris\desktop\projeler\gameengine\gameengine\outsourced\spdlog\include\spdlog\logger.h(158): note: see declaration of 'std::shared_ptr<spdlog::logger>'
+  GameProject.vcxproj -> C:\Users\Baris\Desktop\Projeler\GameEngine\GameProject\..\bin\Debug_windows_x86_64\GameProject\GameProject.exe

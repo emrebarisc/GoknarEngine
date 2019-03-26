@@ -8,15 +8,21 @@ workspace "GameEngine"
 		"Shipping"
 	}
 
-outputdir = "_%{cfg.buildcfg}_%{cfg.system}_%{cfg.architecture}"
+outputdir = "%{cfg.buildcfg}_%{cfg.system}_%{cfg.architecture}"
+
+-- Include directories relative to root folder (solution directory)
+includeDir = {}
+includeDir["GLFW"] = "GameEngine/outsourced/GLFW/include"
+
+include "GameEngine/outsourced/GLFW"
 
 project "GameEngine"
 	location "GameEngine"
 	kind "SharedLib"
 	language "C++"
 
-	targetdir("bin" .. outputdir .. "/%{prj.name}")
-	objdir("obj" .. outputdir .. "/%{prj.name}")
+	targetdir("bin/" .. outputdir .. "/%{prj.name}")
+	objdir("obj/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{
@@ -26,7 +32,14 @@ project "GameEngine"
 
 	includedirs
 	{
-		"%{prj.name}/outsourced/spdlog/include"
+		"%{prj.name}/outsourced/spdlog/include",
+		"%{includeDir.GLFW}"
+	}
+
+	links
+	{
+		"GLFW",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"
@@ -43,7 +56,7 @@ project "GameEngine"
 
 		postbuildcommands
 		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin" .. outputdir .. "/GameProject")
+			("{COPY} %{cfg.buildtarget.relpath} ../" .. outputdir .. "/GameProject")
 		}
 
 	filter "configurations:Debug"
@@ -64,8 +77,8 @@ project "GameProject"
 	language "C++"
 	staticruntime "off"
 
-	targetdir("bin" .. outputdir .. "/%{prj.name}")
-	objdir("obj" .. outputdir .. "/%{prj.name}")
+	targetdir("bin/" .. outputdir .. "/%{prj.name}")
+	objdir("obj/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{
