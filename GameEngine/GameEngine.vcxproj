@@ -139,7 +139,7 @@
     <ClInclude Include="src\GameEngine\Application.h" />
     <ClInclude Include="src\GameEngine\Core.h" />
     <ClInclude Include="src\GameEngine\Log.h" />
-    <ClInclude Include="src\GameEngine\MainThread.h" />
+    <ClInclude Include="src\GameEngine\mainThread.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GameEngine\Application.cpp" />

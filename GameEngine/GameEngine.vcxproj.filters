@@ -16,7 +16,7 @@
     <ClInclude Include="src\GameEngine\Log.h">
       <Filter>GameEngine</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameEngine\MainThread.h">
+    <ClInclude Include="src\GameEngine\mainThread.h">
       <Filter>GameEngine</Filter>
     </ClInclude>
   </ItemGroup>
