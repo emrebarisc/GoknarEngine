@@ -7,3 +7,4 @@ obj_*/
 *.sln
 *.user
 *.vcxproj
+*.filters
