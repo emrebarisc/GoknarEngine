@@ -4,4 +4,6 @@ bin_*/
 obj_*/
 
 # Files
+*.sln
 *.user
+*.vcxproj
