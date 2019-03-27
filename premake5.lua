@@ -10,7 +10,6 @@ workspace "GameEngine"
 
 outputdir = "%{cfg.buildcfg}_%{cfg.system}_%{cfg.architecture}"
 
--- Include directories relative to root folder (solution directory)
 includeDir = {}
 includeDir["GLFW"] = "GameEngine/outsourced/GLFW/include"
 
@@ -51,7 +50,9 @@ project "GameEngine"
 		defines
 		{
 			"GAMEENGINE_PLATFORM_WINDOWS",
-			"GAMEENGINE_BUILD_DLL"
+			"GAMEENGINE_BUILD_DLL",
+
+			"ENGINE_ENABLE_ASSERTS"
 		}
 
 		postbuildcommands

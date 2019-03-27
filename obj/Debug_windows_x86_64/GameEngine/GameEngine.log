@@ -1,1 +1,74 @@
-﻿  GameEngine.vcxproj -> C:\Users\Baris\Desktop\Projeler\GameEngine\GameEngine\..\bin\Debug_windows_x86_64\GameEngine\GameEngine.dll
+﻿  Engine.cpp
+c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\engine.h(68): warning C4251: 'Engine::registeredObjects_': class 'std::vector<ObjectBase *,std::allocator<_Ty>>' needs to have dll-interface to be used by clients of class 'Engine'
+          with
+          [
+              _Ty=ObjectBase *
+          ]
+  c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\engine.h(68): note: see declaration of 'std::vector<ObjectBase *,std::allocator<_Ty>>'
+          with
+          [
+              _Ty=ObjectBase *
+          ]
+c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\engine.h(69): warning C4251: 'Engine::tickableObjects_': class 'std::vector<ObjectBase *,std::allocator<_Ty>>' needs to have dll-interface to be used by clients of class 'Engine'
+          with
+          [
+              _Ty=ObjectBase *
+          ]
+  c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\engine.h(68): note: see declaration of 'std::vector<ObjectBase *,std::allocator<_Ty>>'
+          with
+          [
+              _Ty=ObjectBase *
+          ]
+c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\inputmanager.h(35): warning C4251: 'InputManager::pressedKeys_': class 'std::map<int,bool,std::less<int>,std::allocator<std::pair<const _Kty,_Ty>>>' needs to have dll-interface to be used by clients of class 'InputManager'
+          with
+          [
+              _Kty=int,
+              _Ty=bool
+          ]
+  c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\inputmanager.h(35): note: see declaration of 'std::map<int,bool,std::less<int>,std::allocator<std::pair<const _Kty,_Ty>>>'
+          with
+          [
+              _Kty=int,
+              _Ty=bool
+          ]
+c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\inputmanager.h(36): warning C4251: 'InputManager::releasedKeys_': class 'std::map<int,bool,std::less<int>,std::allocator<std::pair<const _Kty,_Ty>>>' needs to have dll-interface to be used by clients of class 'InputManager'
+          with
+          [
+              _Kty=int,
+              _Ty=bool
+          ]
+  c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\inputmanager.h(35): note: see declaration of 'std::map<int,bool,std::less<int>,std::allocator<std::pair<const _Kty,_Ty>>>'
+          with
+          [
+              _Kty=int,
+              _Ty=bool
+          ]
+c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\inputmanager.h(37): warning C4251: 'InputManager::repeatedKeys_': class 'std::map<int,bool,std::less<int>,std::allocator<std::pair<const _Kty,_Ty>>>' needs to have dll-interface to be used by clients of class 'InputManager'
+          with
+          [
+              _Kty=int,
+              _Ty=bool
+          ]
+  c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\inputmanager.h(35): note: see declaration of 'std::map<int,bool,std::less<int>,std::allocator<std::pair<const _Kty,_Ty>>>'
+          with
+          [
+              _Kty=int,
+              _Ty=bool
+          ]
+c:\program files (x86)\windows kits\10\include\10.0.17763.0\shared\minwindef.h(130): warning C4005: 'APIENTRY': macro redefinition
+  c:\users\baris\desktop\projeler\gameengine\gameengine\outsourced\glfw\include\glfw\glfw3.h(104): note: see previous definition of 'APIENTRY'
+c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\log.h(26): warning C4251: 'GameEngine::Log::coreLogger_': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'GameEngine::Log'
+  c:\users\baris\desktop\projeler\gameengine\gameengine\outsourced\spdlog\include\spdlog\logger.h(158): note: see declaration of 'std::shared_ptr<spdlog::logger>'
+c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\log.h(27): warning C4251: 'GameEngine::Log::clientLogger_': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'GameEngine::Log'
+  c:\users\baris\desktop\projeler\gameengine\gameengine\outsourced\spdlog\include\spdlog\logger.h(158): note: see declaration of 'std::shared_ptr<spdlog::logger>'
+c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\objectmanager.h(36): warning C4251: 'ObjectManager::objects_': class 'std::vector<ObjectBase *,std::allocator<_Ty>>' needs to have dll-interface to be used by clients of class 'ObjectManager'
+          with
+          [
+              _Ty=ObjectBase *
+          ]
+  c:\users\baris\desktop\projeler\gameengine\gameengine\src\gameengine\engine.h(68): note: see declaration of 'std::vector<ObjectBase *,std::allocator<_Ty>>'
+          with
+          [
+              _Ty=ObjectBase *
+          ]
+  GameEngine.vcxproj -> C:\Users\Baris\Desktop\Projeler\GameEngine\GameEngine\..\bin\Debug_windows_x86_64\GameEngine\GameEngine.dll

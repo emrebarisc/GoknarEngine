@@ -2,8 +2,11 @@
 
 #include "Core.h"
 
+
 namespace GameEngine
 {
+	extern class Application* CreateApplication();
+
 	class GAMEENGINE_API Application
 	{
 	public:
@@ -12,6 +15,4 @@ namespace GameEngine
 
 		void Run();
 	};
-
-	Application* CreateApplication();
 }

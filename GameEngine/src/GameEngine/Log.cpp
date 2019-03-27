@@ -15,5 +15,7 @@ namespace GameEngine {
 
 		clientLogger_ = spdlog::stdout_color_mt("APPLICATION");
 		clientLogger_->set_level(spdlog::level::trace);
+
+		ENGINE_CORE_WARN("Initialized Game Engine Log.");
 	}
 }

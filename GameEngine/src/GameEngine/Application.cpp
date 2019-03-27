@@ -1,4 +1,6 @@
 #include "Application.h"
+#include "Log.h"
+#include "Engine.h"
 
 namespace GameEngine
 {
@@ -14,6 +16,6 @@ namespace GameEngine
 
 	void Application::Run()
 	{
-		while (true);
+		ENGINE_CORE_INFO("Game is running.");
 	}
 }
