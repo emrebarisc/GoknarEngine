@@ -28,7 +28,7 @@ public:
 	void AddObjectToRenderer(RenderingObject *object);
 
 private:
-	//std::vector<RenderingObject *> objectsToBeRendered_;
+	std::vector<RenderingObject *> objectsToBeRendered_;
 
 	GraphicsManager *graphicsManager_;
 

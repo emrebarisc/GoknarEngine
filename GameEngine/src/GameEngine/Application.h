@@ -2,7 +2,6 @@
 
 #include "Core.h"
 
-
 namespace GameEngine
 {
 	extern class Application* CreateApplication();

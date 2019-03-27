@@ -4,9 +4,9 @@
  *	2018
  */
 
-#include "Matrix.h"
+#include "pch.h"
 
-#include <stdexcept>
+#include "Matrix.h"
 
 const Matrix Matrix::ZeroMatrix = Matrix(0.f);
 const Matrix Matrix::IdentityMatrix = Matrix( 1, 0, 0, 0,

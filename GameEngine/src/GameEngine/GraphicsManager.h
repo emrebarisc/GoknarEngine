@@ -9,8 +9,6 @@
 
 #include "Core.h"
 
-#include <vector>
-
 #include "GLFW/glfw3.h"
 
 typedef GLuint gm_uint;

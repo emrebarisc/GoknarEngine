@@ -3,13 +3,11 @@
 *	Emre Baris Coskun
 *	2018
 */
+#include "pch.h"
 
 #include "GraphicsManager.h"
 
 #include "GLFW/glfw3.h"
-
-#include <iostream>
-#include <cassert>
 
 GraphicsManager::GraphicsManager() = default;
 
