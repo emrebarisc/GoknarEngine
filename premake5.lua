@@ -12,11 +12,14 @@ outputdir = "%{cfg.buildcfg}_%{cfg.system}_%{cfg.architecture}"
 
 outsourceDirs = {}
 outsourceDirs["GLFW"] = "Goknar/outsourced/GLFW/GLFW"
+outsourceDirs["GLAD"] = "Goknar/outsourced/GLAD/GLAD"
 
 includeDir = {}
 includeDir["GLFW"] = "%{outsourceDirs.GLFW}/include"
+includeDir["GLAD"] = "%{outsourceDirs.GLAD}/include"
 
 include "Goknar/outsourced/GLFW"
+include "Goknar/outsourced/GLAD"
 
 project "Goknar"
 	location "Goknar"
@@ -39,12 +42,14 @@ project "Goknar"
 	{
 		"%{prj.name}/outsourced/spdlog/include",
 		"%{includeDir.GLFW}",
+		"%{includeDir.GLAD}",
 		"Goknar/src"
 	}
 
 	links
 	{
 		"GLFW",
+		"GLAD",
 		"opengl32.lib"
 	}
 
