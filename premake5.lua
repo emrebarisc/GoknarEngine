@@ -11,7 +11,7 @@ workspace "Goknar Engine"
 outputdir = "%{cfg.buildcfg}_%{cfg.system}_%{cfg.architecture}"
 
 outsourceDirs = {}
-outsourceDirs["GLFW"] = "Goknar/outsourced/GLFW"
+outsourceDirs["GLFW"] = "Goknar/outsourced/GLFW/GLFW"
 
 includeDir = {}
 includeDir["GLFW"] = "%{outsourceDirs.GLFW}/include"

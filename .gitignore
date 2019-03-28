@@ -1,7 +1,7 @@
 # Folders
 .vs/
-bin_*/
-obj_*/
+bin/
+obj/
 
 # Files
 *.sln
