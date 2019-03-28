@@ -9,7 +9,7 @@
 
 #include "Core.h"
 
-#include "GLFW/glfw3.h"
+#include "GLAD/glad.h"
 
 typedef GLuint gm_uint;
 

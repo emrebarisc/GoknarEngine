@@ -6,14 +6,13 @@
 #include "pch.h"
 
 #include "WindowManager.h"
-
 #include "Core.h"
 #include "Log.h"
 
-//#include "GL/glew.h"
-#include "GLFW/glfw3.h"
-
 #include <iostream>
+
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 
 WindowManager::WindowManager()
 {
@@ -33,7 +32,7 @@ WindowManager::~WindowManager()
 
 void WindowManager::Init()
 {
-	int glfwResult = glfwInit();
+	const int glfwResult = glfwInit();
 	GOKNAR_CORE_ASSERT(glfwResult, "GLFW failed to initialize");
 
 	mainWindow_ = glfwCreateWindow(windowWidth_, windowHeight_, windowTitle_, mainMonitor_, 0);
@@ -41,10 +40,9 @@ void WindowManager::Init()
 	glfwSetInputMode(mainWindow_, GLFW_STICKY_KEYS, GL_TRUE);
 	SetVSync(true);
 	glfwMakeContextCurrent(mainWindow_);
-	/*glewExperimental = true;
 
-	int glfwResult = glewInit();
-	GOKNAR_CORE_ASSERT(glfwResult, "Failed to initialize GLEW.");*/
+	const int gladResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+	GOKNAR_CORE_ASSERT(gladResult, "Failed to initialize GLAD!.");
 
 	if (!mainWindow_)
 	{
