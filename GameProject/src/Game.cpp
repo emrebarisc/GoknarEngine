@@ -1,6 +1,6 @@
 #include <Goknar.h>
 
-class Game : public Goknar::Application
+class Game : public Application
 {
 public:
 	Game()
@@ -14,7 +14,7 @@ public:
 	}
 };
 
-Goknar::Application *Goknar::CreateApplication()
+Application *CreateApplication()
 {
 	return new Game();
 }

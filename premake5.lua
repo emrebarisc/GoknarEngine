@@ -18,7 +18,7 @@ outsourceDirs["ImGui"] = "Goknar/outsourced/ImGui/imgui"
 includeDir = {}
 includeDir["GLFW"] = "%{outsourceDirs.GLFW}/include"
 includeDir["GLAD"] = "%{outsourceDirs.GLAD}/include"
-includeDir["ImGui"] = "%{outsourceDirs.ImGui}/include"
+includeDir["ImGui"] = "%{outsourceDirs.ImGui}"
 
 include "Goknar/outsourced/GLFW"
 include "Goknar/outsourced/GLAD"

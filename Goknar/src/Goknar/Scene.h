@@ -10,7 +10,8 @@
 #include <vector>
 
 //#include "Camera.h"
-//#include "Color.h"
+#include "Core.h"
+#include "Color.h"
 //#include "Material.h"
 //#include "Math.h"
 //#include "Light.h"
@@ -24,7 +25,7 @@ class Texture;
 /*
     Scene class containing all the scene data
 */
-class Scene
+class GOKNAR_API Scene
 {
 public:
 	static Scene *mainScene;
@@ -50,7 +51,7 @@ public:
 
  //   Vector3 ambientLight;
 
- //   Colori bgColor;
+    Colori bgColor;
 
 	//Camera *mainCamera = nullptr;
 };

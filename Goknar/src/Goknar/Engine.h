@@ -11,6 +11,7 @@
 
 #include "Application.h"
 
+class Editor;
 class GraphicsManager;
 class InputManager;
 class ObjectBase;
@@ -52,7 +53,12 @@ public:
 		return renderer_;
 	}
 
-	void SetApplication(Goknar::Application* application);
+	Editor* GetEditor() const
+	{
+		return editor_;
+	}
+
+	void SetApplication(Application* application);
 
 	void RegisterObject(ObjectBase *object);
 	void AddToTickableObjects(ObjectBase *object);
@@ -62,8 +68,9 @@ private:
 	ObjectManager *objectManager_;
 	Renderer *renderer_;
 	WindowManager *windowManager_;
+	Editor *editor_;
 
-	Goknar::Application *application_;
+	Application *application_;
 
 	std::vector<ObjectBase *> registeredObjects_;
 	std::vector<ObjectBase *> tickableObjects_;

@@ -3,21 +3,20 @@
 #include "Application.h"
 #include "Log.h"
 #include "glad/glad.h"
+#include "GLFW/glfw3.h"
+#include "Engine.h"
+#include "WindowManager.h"
 
-namespace Goknar
+Application::Application()
 {
-	Application::Application()
-	{
 
-	}
+}
 
-	Application::~Application()
-	{
+Application::~Application()
+{
 
-	}
+}
 
-	void Application::Run()
-	{
-		GOKNAR_CORE_INFO("Game is running.");
-	}
+void Application::Run()
+{	
 }

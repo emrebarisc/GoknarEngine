@@ -15,12 +15,14 @@ Scene *Scene::mainScene = nullptr;
 
 Scene::Scene()
 {
-	//if(mainScene == nullptr)
-	//{
-	//	mainScene = this;
-	//}
+	if(mainScene == nullptr)
+	{
+		mainScene = this;
+	}
 
- //   ambientLight = Vector3::ZeroVector;
+	bgColor = Colori(0, 0, 0);
+
+    //ambientLight = Vector3::ZeroVector;
 }
 
 Scene::~Scene()

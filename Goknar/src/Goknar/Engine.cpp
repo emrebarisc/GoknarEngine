@@ -10,6 +10,7 @@
 #include "GLFW/glfw3.h"
 
 #include "Application.h"
+#include "Editor/ImGuiEditor/ImGuiEditor.h"
 #include "GraphicsManager.h"
 #include "InputManager.h"
 #include "Log.h"
@@ -25,7 +26,7 @@ Engine::Engine()
 {
 	engine = this;
 
-	Goknar::Log::Init();
+	Log::Init();
 
 	windowManager_ = new WindowManager();
 	windowManager_->SetWindowWidth(1024);
@@ -37,9 +38,10 @@ Engine::Engine()
 	graphicsManager_ = new GraphicsManager();
 	objectManager_ = new ObjectManager();
 	renderer_ = new Renderer();
-
+	editor_ = new ImGuiEditor();
+	
 	// TODO
-	//application_ = Goknar::CreateApplication();
+	//application_ = CreateApplication();
 }
 
 Engine::~Engine()
@@ -62,6 +64,8 @@ void Engine::Init() const
 	objectManager_->Init();
 	renderer_->Init();
 	Scene::mainScene->Init();
+
+	editor_->Init();
 }
 
 void Engine::Run()
@@ -74,6 +78,9 @@ void Engine::Run()
 		}
 
 		application_->Run();
+
+		// TODO Temp Tick Call
+		Tick(0.016f);
 
 		// TODO Renderer
 		renderer_->Render();
@@ -95,6 +102,10 @@ void Engine::Tick(float deltaTime)
 	{
 		object->Tick(deltaTime);
 	}
+
+	renderer_->Render();
+	editor_->Tick(deltaTime);
+	windowManager_->Update();
 }
 
 void Engine::RegisterObject(ObjectBase* object)
@@ -107,7 +118,7 @@ void Engine::AddToTickableObjects(ObjectBase* object)
 	tickableObjects_.push_back(object);
 }
 
-void Engine::SetApplication(Goknar::Application* application)
+void Engine::SetApplication(Application* application)
 {
 	application_ = application;
 }

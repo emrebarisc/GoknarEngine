@@ -147,6 +147,10 @@ Vector2i::Vector2i(): x(0), y(0)
 {
 }
 
+Vector2i::Vector2i(int vx, int vy) : x(vx), y(vy)
+{
+}
+
 Vector2i::Vector2i(const Vector2& vec2f)
 {
 	x = (int)vec2f.x;

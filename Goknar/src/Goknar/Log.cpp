@@ -4,21 +4,18 @@
 
 #include "spdlog/sinks/stdout_color_sinks.h"
 
-namespace Goknar 
+std::shared_ptr<spdlog::logger> Log::coreLogger_;
+std::shared_ptr<spdlog::logger> Log::clientLogger_;
+
+void Log::Init()
 {
-	std::shared_ptr<spdlog::logger> Log::coreLogger_;
-	std::shared_ptr<spdlog::logger> Log::clientLogger_;
+	spdlog::set_pattern("%^[%T] %n: %v%$");
 
-	void Log::Init()
-	{
-		spdlog::set_pattern("%^[%T] %n: %v%$");
+	coreLogger_ = spdlog::stdout_color_mt("ENGINE");
+	coreLogger_->set_level(spdlog::level::trace);
 
-		coreLogger_ = spdlog::stdout_color_mt("ENGINE");
-		coreLogger_->set_level(spdlog::level::trace);
+	clientLogger_ = spdlog::stdout_color_mt("APPLICATION");
+	clientLogger_->set_level(spdlog::level::trace);
 
-		clientLogger_ = spdlog::stdout_color_mt("APPLICATION");
-		clientLogger_->set_level(spdlog::level::trace);
-
-		GOKNAR_CORE_WARN("Initialized Game Engine Log.");
-	}
+	GOKNAR_CORE_WARN("Initialized Game Engine Log.");
 }

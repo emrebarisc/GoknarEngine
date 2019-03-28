@@ -2,16 +2,13 @@
 
 #include "Core.h"
 
-namespace Goknar
+extern class Application* CreateApplication();
+
+class GOKNAR_API Application
 {
-	extern class Application* CreateApplication();
+public:
+	Application();
+	virtual ~Application();
 
-	class GOKNAR_API Application
-	{
-	public:
-		Application();
-		virtual ~Application();
-
-		void Run();
-	};
-}
+	void Run();
+};

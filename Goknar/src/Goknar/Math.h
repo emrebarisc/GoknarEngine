@@ -107,10 +107,11 @@ struct Vector2
 struct Vector2i
 {
 	Vector2i();
+	Vector2i(int vx, int vy);
 
 	Vector2i(const Vector2& vec2f);
 
-  int x, y;
+	int x, y;
 };
 
 struct Vector3

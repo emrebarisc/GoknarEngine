@@ -13,6 +13,7 @@
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "Engine.h"
 
 WindowManager::WindowManager()
 {
@@ -30,12 +31,19 @@ WindowManager::~WindowManager()
 	glfwTerminate();
 }
 
+void WindowManager::WindowSizeCallback(GLFWwindow* window, int w, int h)
+{
+	engine->GetWindowManager()->SetWindowSize(w, h);
+}
+
 void WindowManager::Init()
 {
 	const int glfwResult = glfwInit();
 	GOKNAR_CORE_ASSERT(glfwResult, "GLFW failed to initialize");
 
 	mainWindow_ = glfwCreateWindow(windowWidth_, windowHeight_, windowTitle_, mainMonitor_, 0);
+
+	glfwSetWindowSizeCallback(mainWindow_, WindowSizeCallback);
 
 	glfwSetInputMode(mainWindow_, GLFW_STICKY_KEYS, GL_TRUE);
 	SetVSync(true);
@@ -105,4 +113,10 @@ void WindowManager::ToggleFullscreen()
 
 	isInFullscreen_ = !isInFullscreen_;
 */
+}
+
+void WindowManager::Update()
+{
+	glfwPollEvents();
+	glfwSwapBuffers(mainWindow_);
 }

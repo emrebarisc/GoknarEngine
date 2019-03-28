@@ -8,6 +8,7 @@
 #define __WINDOWMANAGER_H__
 
 #include "Core.h"
+#include "Math.h"
 
 struct GLFWwindow;
 struct GLFWmonitor;
@@ -18,6 +19,8 @@ public:
 	WindowManager();
 	~WindowManager();
 
+	static inline void WindowSizeCallback(GLFWwindow *window, int w, int h);
+
 	void Init();
 	
 	inline GLFWwindow* GetWindow() const
@@ -25,7 +28,7 @@ public:
 		return mainWindow_;
 	}
 
-	bool GetWindowShouldBeClosed();
+	void Update();
 
 	void SetWindowWidth(int w);
 	void SetWindowHeight(int h);
@@ -36,6 +39,19 @@ public:
 	void SetVSync(bool isEnable);
 
 	void ToggleFullscreen();
+
+	bool GetWindowShouldBeClosed();
+
+	void SetWindowSize(int w, int h)
+	{
+		windowWidth_ = w;
+		windowHeight_ = h;
+	}
+
+	Vector2i GetWindowSize() const
+	{
+		return Vector2i(windowWidth_, windowHeight_);
+	}
 
 private:
 	GLFWwindow *mainWindow_;
