@@ -1,6 +1,6 @@
-#include <GameEngine.h>
+#include <Goknar.h>
 
-class Game : public GameEngine::Application
+class Game : public Goknar::Application
 {
 public:
 	Game()
@@ -14,7 +14,7 @@ public:
 	}
 };
 
-GameEngine::Application *GameEngine::CreateApplication()
+Goknar::Application *Goknar::CreateApplication()
 {
 	return new Game();
 }

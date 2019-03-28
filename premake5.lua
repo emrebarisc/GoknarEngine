@@ -1,4 +1,4 @@
-workspace "GameEngine"
+workspace "Goknar Engine"
 	architecture "x64"
 
 	configurations
@@ -11,15 +11,15 @@ workspace "GameEngine"
 outputdir = "%{cfg.buildcfg}_%{cfg.system}_%{cfg.architecture}"
 
 outsourceDirs = {}
-outsourceDirs["GLFW"] = "GameEngine/outsourced/GLFW"
+outsourceDirs["GLFW"] = "Goknar/outsourced/GLFW"
 
 includeDir = {}
-includeDir["GLFW"] = "GameEngine/outsourced/GLFW/include"
+includeDir["GLFW"] = "%{outsourceDirs.GLFW}/include"
 
---include "GameEngine/outsourced/GLFW"
+include "Goknar/outsourced/GLFW"
 
-project "GameEngine"
-	location "GameEngine"
+project "Goknar"
+	location "Goknar"
 	kind "SharedLib"
 	language "C++"
 
@@ -27,7 +27,7 @@ project "GameEngine"
 	objdir("obj/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "pch.h"
-	pchsource "GameEngine/src/GameEngine/pch.cpp"
+	pchsource "Goknar/src/Goknar/pch.cpp"
 
 	files
 	{
@@ -39,7 +39,7 @@ project "GameEngine"
 	{
 		"%{prj.name}/outsourced/spdlog/include",
 		"%{includeDir.GLFW}",
-		"GameEngine/src"
+		"Goknar/src"
 	}
 
 	links
@@ -56,10 +56,9 @@ project "GameEngine"
 
 		defines
 		{
-			"GAMEENGINE_PLATFORM_WINDOWS",
-			"GAMEENGINE_BUILD_DLL",
-
-			"ENGINE_ENABLE_ASSERTS"
+			"GOKNAR_PLATFORM_WINDOWS",
+			"GOKNAR_BUILD_DLL",
+			"GOKNAR_ENABLE_ASSERTS"
 		}
 
 		postbuildcommands
@@ -68,15 +67,15 @@ project "GameEngine"
 		}
 
 	filter "configurations:Debug"
-		defines "GAMEENGINE_DEBUG"
+		defines "GOKNAR_DEBUG"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines "GAMEENGINE_RELEASE"
+		defines "GOKNAR_RELEASE"
 		symbols "On"
 
 	filter "configurations:Shipping"
-		defines "GAMEENGINE_SHIPPING"
+		defines "GOKNAR_SHIPPING"
 		symbols "On"
 
 project "GameProject"
@@ -96,13 +95,13 @@ project "GameProject"
 
 	includedirs
 	{
-		"GameEngine/outsourced/spdlog/include",
-		"GameEngine/src"
+		"Goknar/outsourced/spdlog/include",
+		"Goknar/src"
 	}
 
 	links
 	{
-		"GameEngine"
+		"Goknar"
 	}
 
 	filter "system:windows"
@@ -111,66 +110,20 @@ project "GameProject"
 
 		defines
 		{
-			"GAMEENGINE_PLATFORM_WINDOWS"
+			"GOKNAR_PLATFORM_WINDOWS"
 		}
 
 	filter "configurations:Debug"
-		defines "GAMEENGINE_DEBUG"
+		defines "GOKNAR_DEBUG"
 		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines "GAMEENGINE_RELEASE"
+		defines "GOKNAR_RELEASE"
 		runtime "Release"
 		symbols "On"
 
 	filter "configurations:Shipping"
-		defines "GAMEENGINE_SHIPPING"
+		defines "GOKNAR_SHIPPING"
 		runtime "Debug"
 		symbols "On"
-
-project "GLFW"
-    kind "StaticLib"
-    language "C"
-
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("obj/" .. outputdir .. "/%{prj.name}")
-
-	files
-	{
-        "%{outsourceDirs.GLFW}/include/GLFW/glfw3.h",
-        "%{outsourceDirs.GLFW}/include/GLFW/glfw3native.h",
-        "%{outsourceDirs.GLFW}/src/glfw_config.h",
-        "%{outsourceDirs.GLFW}/src/context.c",
-        "%{outsourceDirs.GLFW}/src/init.c",
-        "%{outsourceDirs.GLFW}/src/input.c",
-        "%{outsourceDirs.GLFW}/src/monitor.c",
-        "%{outsourceDirs.GLFW}/src/vulkan.c",
-        "%{outsourceDirs.GLFW}/src/window.c"
-    }
-    
-	filter "system:windows"
-        buildoptions { "-std=c11", "-lgdi32" }
-        systemversion "latest"
-        staticruntime "On"
-        
-        files
-        {
-            "%{outsourceDirs.GLFW}/src/win32_init.c",
-            "%{outsourceDirs.GLFW}/src/win32_joystick.c",
-            "%{outsourceDirs.GLFW}/src/win32_monitor.c",
-            "%{outsourceDirs.GLFW}/src/win32_time.c",
-            "%{outsourceDirs.GLFW}/src/win32_thread.c",
-            "%{outsourceDirs.GLFW}/src/win32_window.c",
-            "%{outsourceDirs.GLFW}/src/wgl_context.c",
-            "%{outsourceDirs.GLFW}/src/egl_context.c",
-            "%{outsourceDirs.GLFW}/src/osmesa_context.c"
-        }
-
-		defines 
-		{ 
-            "_GLFW_WIN32",
-            "_CRT_SECURE_NO_WARNINGS"
-		}
-    filter { "system:windows", "configurations:Release" }
-        buildoptions "/MT"
