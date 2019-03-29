@@ -43,7 +43,7 @@ void ImGuiEditor::Init()
 	io.DisplaySize = ImVec2(windowSize.x, windowSize.y);
 	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
-	io.KeyRepeatDelay = 0.5f;
+	io.KeyRepeatRate = 0.1f;
 
 	// TODO: Implement and set Goknar Keymaps
 	io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
@@ -102,6 +102,11 @@ void ImGuiEditor::OnKeyboardEvent(int key, int scanCode, int action, int mod)
 	case GLFW_PRESS:
 	{
 		io.KeysDown[key] = true;
+
+		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
 		break;
 	}
 	case GLFW_RELEASE:
@@ -112,11 +117,6 @@ void ImGuiEditor::OnKeyboardEvent(int key, int scanCode, int action, int mod)
 	default:
 		break;
 	}
-
-	io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-	io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-	io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
-	io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
 
 }
 
