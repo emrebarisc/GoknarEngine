@@ -13,10 +13,13 @@ public:
 	void Init() override;
 	void Tick(float deltaTime) override;
 
-	void OnCursorMove(int xPosition, int yPosition);
+	void OnKeyboardEvent(int key, int scanCode, int action, int mod);
 
+	void OnCursorMove(int xPosition, int yPosition);
+	void OnScroll(double xOffset, double yOffset);
 	void OnLeftClickPressed();
 	void OnLeftClickRelease();
 
+	void OnCharPressed(unsigned int codePoint);
 private:
 };

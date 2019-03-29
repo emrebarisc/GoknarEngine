@@ -26,13 +26,16 @@ void InputManager::Init()
 
 void InputManager::KeyboardCallback(GLFWwindow *window, int key, int scanCode, int action, int mod)
 {
-	GOKNAR_CORE_INFO("Key Pressed key: {} scanCode: {} action: {} mod: {}", key, scanCode, action, mod);
-	
+	for(const KeyboardListener &keyboardListener : engine->GetInputManager()->keyboardListeners_)
+	{
+		keyboardListener(key, scanCode, action, mod);
+	}
+
 	switch (action)
 	{
 		case GLFW_PRESS:
 		{
-			for (auto &pressedKeyDelegate : engine->GetInputManager()->pressedKeyDelegates_[key])
+			for (const KeyboardDelegate &pressedKeyDelegate : engine->GetInputManager()->pressedKeyDelegates_[key])
 			{
 				pressedKeyDelegate();
 			}
@@ -41,7 +44,7 @@ void InputManager::KeyboardCallback(GLFWwindow *window, int key, int scanCode, i
 		}
 		case GLFW_RELEASE:
 		{
-			for (auto &releasedKeyDelegate : engine->GetInputManager()->releasedKeyDelegates_[key])
+			for (const KeyboardDelegate &releasedKeyDelegate : engine->GetInputManager()->releasedKeyDelegates_[key])
 			{
 				releasedKeyDelegate();
 			}
@@ -50,7 +53,7 @@ void InputManager::KeyboardCallback(GLFWwindow *window, int key, int scanCode, i
 		}
 		case GLFW_REPEAT:
 		{
-			for (auto &repeatedKeyDelegate : engine->GetInputManager()->repeatedKeyDelegates_[key])
+			for (const KeyboardDelegate &repeatedKeyDelegate : engine->GetInputManager()->repeatedKeyDelegates_[key])
 			{
 				repeatedKeyDelegate();
 			}
@@ -64,9 +67,7 @@ void InputManager::KeyboardCallback(GLFWwindow *window, int key, int scanCode, i
 
 void InputManager::CursorPositionCallback(GLFWwindow* window, double xPosition, double yPosition)
 {
-	GOKNAR_CORE_INFO("Cursor X Position: {} Y Position: {}", xPosition, yPosition);
-
-	for (auto &cursorDelegate : engine->GetInputManager()->cursorDelegates_)
+	for (const CursorDelegate &cursorDelegate : engine->GetInputManager()->cursorDelegates_)
 	{
 		cursorDelegate(xPosition, yPosition);
 	}
@@ -74,13 +75,11 @@ void InputManager::CursorPositionCallback(GLFWwindow* window, double xPosition, 
 
 void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
-	GOKNAR_CORE_INFO("Mouse button click Button Id: {} Action Id: {} Mods: {}", button, action, mods);
-
 	switch (action)
 	{
 	case GLFW_PRESS:
 	{
-		for (auto &pressedMouseDelegate : engine->GetInputManager()->pressedMouseDelegates_[button])
+		for (const MouseDelegate &pressedMouseDelegate : engine->GetInputManager()->pressedMouseDelegates_[button])
 		{
 			pressedMouseDelegate();
 		}
@@ -89,7 +88,7 @@ void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int actio
 	}
 	case GLFW_RELEASE:
 	{
-		for (auto &releasedMouseDelegate : engine->GetInputManager()->releasedMouseDelegates_[button])
+		for (const MouseDelegate &releasedMouseDelegate : engine->GetInputManager()->releasedMouseDelegates_[button])
 		{
 			releasedMouseDelegate();
 		}
@@ -98,7 +97,7 @@ void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int actio
 	}
 	case GLFW_REPEAT:
 	{
-		for (auto &repeatedMouseDelegate : engine->GetInputManager()->repeatedMouseDelegates_[button])
+		for (const MouseDelegate &repeatedMouseDelegate : engine->GetInputManager()->repeatedMouseDelegates_[button])
 		{
 			repeatedMouseDelegate();
 		}
@@ -112,10 +111,16 @@ void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int actio
 
 void InputManager::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 {
-	GOKNAR_CORE_INFO("Mouse Scroll xOffset: {} yOffset: {}", xOffset, yOffset);
+	for (const ScrollDelegate &scrollDelegate : engine->GetInputManager()->scrollDelegates_)
+	{
+		scrollDelegate(xOffset, yOffset);
+	}
 }
 
 void InputManager::CharCallback(GLFWwindow * window, unsigned int codePoint)
 {
-	GOKNAR_CORE_INFO("Character Pressed codePoint: {}", codePoint);
+	for (const CharDelegate &charDelegate : engine->GetInputManager()->charDelegates_)
+	{
+		charDelegate(codePoint);
+	}
 }

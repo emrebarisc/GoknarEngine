@@ -31,12 +31,21 @@ enum class GOKNAR_API INPUT_ACTION : uint8_t
 typedef std::function<void()> KeyboardDelegate;
 typedef std::vector < KeyboardDelegate > KeyboardDelegateVector;
 
+typedef std::function<void(int, int, int, int)> KeyboardListener;
+typedef std::vector < KeyboardListener > KeyboardListenerVector;
+
 typedef std::function<void()> MouseDelegate;
 typedef std::vector < MouseDelegate > MouseDelegateVector;
 
-
 typedef std::function<void(int, int)> CursorDelegate;
 typedef std::vector < CursorDelegate > CursorDelegateVector;
+
+typedef std::function<void(double, double)> ScrollDelegate;
+typedef std::vector < ScrollDelegate > ScrollDelegateVector;
+
+typedef std::function<void(unsigned int)> CharDelegate;
+typedef std::vector < CharDelegate > CharDelegateVector;
+
 
 class GOKNAR_API InputManager
 {
@@ -69,6 +78,11 @@ public:
 		}
 	}
 
+	void AddKeyboardListener(const KeyboardListener &keyboardListener)
+	{
+		keyboardListeners_.push_back(keyboardListener);
+	}
+
 	void AddMouseInputDelegate(int keyCode, INPUT_ACTION inputAction, const KeyboardDelegate &binderFunction)
 	{
 		switch (inputAction)
@@ -91,11 +105,23 @@ public:
 		cursorDelegates_.push_back(cursorDelegate);
 	}
 
+	void AddScrollDelegate(const ScrollDelegate &cursorDelegate)
+	{
+		scrollDelegates_.push_back(cursorDelegate);
+	}
+
+	void AddCharDelegate(const CharDelegate &charDelegate)
+	{
+		charDelegates_.push_back(charDelegate);
+	}
+
 private:
 	// Keyboard Delegates
 	std::unordered_map< int, KeyboardDelegateVector > pressedKeyDelegates_;
 	std::unordered_map< int, KeyboardDelegateVector > releasedKeyDelegates_;
 	std::unordered_map< int, KeyboardDelegateVector > repeatedKeyDelegates_;
+
+	KeyboardListenerVector keyboardListeners_;
 
 	// Mouse Delegates
 	std::unordered_map< int, MouseDelegateVector > pressedMouseDelegates_;
@@ -104,6 +130,12 @@ private:
 
 	// Cursor Delegates
 	CursorDelegateVector cursorDelegates_;
+
+	// Scroll Delegates
+	ScrollDelegateVector scrollDelegates_;
+
+	// Scroll Delegates
+	CharDelegateVector charDelegates_;
 };
 
 #endif

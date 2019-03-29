@@ -23,10 +23,15 @@ ImGuiEditor::~ImGuiEditor()
 
 void ImGuiEditor::Init()
 {
+	engine->GetInputManager()->AddKeyboardListener(std::bind(&ImGuiEditor::OnKeyboardEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
+
 	engine->GetInputManager()->AddCursorDelegate(std::bind(&ImGuiEditor::OnCursorMove, this, std::placeholders::_1, std::placeholders::_2));
+	engine->GetInputManager()->AddScrollDelegate(std::bind(&ImGuiEditor::OnScroll, this, std::placeholders::_1, std::placeholders::_2));
 
 	engine->GetInputManager()->AddMouseInputDelegate(GLFW_MOUSE_BUTTON_1, INPUT_ACTION::G_PRESS, std::bind(&ImGuiEditor::OnLeftClickPressed, this));
 	engine->GetInputManager()->AddMouseInputDelegate(GLFW_MOUSE_BUTTON_1, INPUT_ACTION::G_RELEASE, std::bind(&ImGuiEditor::OnLeftClickRelease, this));
+
+	engine->GetInputManager()->AddCharDelegate(std::bind(&ImGuiEditor::OnCharPressed, this, std::placeholders::_1));
 
 	windowManager_ = engine->GetWindowManager();
 	const Vector2i windowSize = windowManager_->GetWindowSize();
@@ -38,6 +43,7 @@ void ImGuiEditor::Init()
 	io.DisplaySize = ImVec2(windowSize.x, windowSize.y);
 	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
+	io.KeyRepeatDelay = 0.5f;
 
 	// TODO: Implement and set Goknar Keymaps
 	io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
@@ -87,11 +93,45 @@ void ImGuiEditor::Tick(float deltaTime)
 	//engine->GetWindowManager()->Update();
 }
 
+void ImGuiEditor::OnKeyboardEvent(int key, int scanCode, int action, int mod)
+{
+	ImGuiIO &io = ImGui::GetIO();
+
+	switch (action)
+	{
+	case GLFW_PRESS:
+	{
+		io.KeysDown[key] = true;
+		break;
+	}
+	case GLFW_RELEASE:
+	{
+		io.KeysDown[key] = false;
+		break;
+	}
+	default:
+		break;
+	}
+
+	io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+	io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+	io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+	io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+
+}
+
 void ImGuiEditor::OnCursorMove(int xPosition, int yPosition)
 {
 	ImGuiIO &io = ImGui::GetIO();
 	io.MousePos.x = xPosition;
 	io.MousePos.y = yPosition;
+}
+
+void ImGuiEditor::OnScroll(double xOffset, double yOffset)
+{
+	ImGuiIO &io = ImGui::GetIO();
+	io.MouseWheelH += xOffset;
+	io.MouseWheel += yOffset;
 }
 
 void ImGuiEditor::OnLeftClickPressed()
@@ -104,4 +144,10 @@ void ImGuiEditor::OnLeftClickRelease()
 {
 	ImGuiIO &io = ImGui::GetIO();
 	io.MouseDown[GLFW_MOUSE_BUTTON_1] = false;
+}
+
+void ImGuiEditor::OnCharPressed(unsigned int codePoint)
+{
+	ImGuiIO &io = ImGui::GetIO();
+	io.AddInputCharacter(codePoint);
 }
