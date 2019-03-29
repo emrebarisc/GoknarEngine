@@ -46,6 +46,7 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+	delete editor_;
 	delete renderer_;
 	delete objectManager_;
 	delete graphicsManager_;
@@ -72,10 +73,10 @@ void Engine::Run()
 {
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
-		if (inputManager_->GetKeyIsReleased(GLFW_KEY_ESCAPE))
+		/*if (inputManager_->GetKeyIsReleased(GLFW_KEY_ESCAPE))
 		{
 			return;
-		}
+		}*/
 
 		application_->Run();
 

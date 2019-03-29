@@ -24,10 +24,6 @@ public:
     : r((int)vector.x), g((int)vector.y), b((int)vector.z)
     {}
 
-    Colori(const volatile Vector3 &vector) 
-    : r(vector.x), g(vector.y), b(vector.z)
-    {}
-
     Colori(const Vector3i &vector) 
     : r(vector.x), g(vector.y), b(vector.z)
     {}
@@ -54,19 +50,19 @@ public:
 
     inline void operator/=(float val)
     {
-        r /= val;
-        g /= val;
-        b /= val;
+        r = (int)(r / val);
+		g = (int)(g / val);
+		b = (int)(b / val);
     }
 
     inline friend Colori operator*(float val, const Colori &color)
     {
-        return Colori(color.r * val, color.g * val, color.b * val);
+        return Colori((int)(color.r * val), (int)(color.g * val), (int)(color.b * val));
     }
 
     inline Colori operator*(float val) const
     {
-        return Colori(r * val, g * val, b * val);
+        return Colori((int)(r * val), (int)(g * val), (int)(b * val));
     }
 
     inline Colori operator*(int val) const
@@ -76,7 +72,7 @@ public:
 
     inline Colori operator/(float val) const
     {
-        return Colori(r / val, g / val, b / val);
+        return Colori((int)(r / val), (int)(g / val), (int)(b / val));
     }
 
     inline Colori operator/(int val) const

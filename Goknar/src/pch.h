@@ -1,16 +1,20 @@
 #pragma once
 
+// Streams
 #include <iostream>
+#include <sstream>
+
+// Math and memory
 #include <memory>
-#include <utility>
+#include <limits>
 #include <cmath>
 #include <algorithm>
 #include <functional>
-#include <limits>
+#include <utility>
 #include <stdexcept>
 
+// Containers
 #include <string>
-#include <sstream>
 #include <vector>
 #include <map>
 

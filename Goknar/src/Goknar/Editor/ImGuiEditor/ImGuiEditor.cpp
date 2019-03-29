@@ -9,6 +9,7 @@
 
 #include "Goknar/Engine.h"
 #include "Goknar/WindowManager.h"
+#include "Goknar/InputManager.h"
 
 ImGuiEditor::ImGuiEditor()
 {
@@ -22,6 +23,8 @@ ImGuiEditor::~ImGuiEditor()
 
 void ImGuiEditor::Init()
 {
+	engine->GetInputManager()->AddCursorDelegate(&OnCursorMove);
+
 	windowManager_ = engine->GetWindowManager();
 	const Vector2i windowSize = windowManager_->GetWindowSize();
 	
@@ -79,4 +82,11 @@ void ImGuiEditor::Tick(float deltaTime)
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 	//engine->GetWindowManager()->Update();
+}
+
+void ImGuiEditor::OnCursorMove(int xPosition, int yPosition)
+{
+	ImGuiIO &io = ImGui::GetIO();
+	io.MousePos.x = xPosition;
+	io.MousePos.y = yPosition;
 }

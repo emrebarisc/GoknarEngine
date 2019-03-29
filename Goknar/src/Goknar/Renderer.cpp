@@ -30,7 +30,7 @@ void Renderer::Init()
 
 void Renderer::Render()
 {
-	glClearColor(Scene::mainScene->bgColor.r, Scene::mainScene->bgColor.g, Scene::mainScene->bgColor.b, 1.f);
+	glClearColor(GLfloat(Scene::mainScene->bgColor.r), GLfloat(Scene::mainScene->bgColor.g), GLfloat(Scene::mainScene->bgColor.b), 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// TODO Render scene

@@ -62,6 +62,7 @@ public:
 
 	void RegisterObject(ObjectBase *object);
 	void AddToTickableObjects(ObjectBase *object);
+
 private:
 	GraphicsManager *graphicsManager_;
 	InputManager *inputManager_;
