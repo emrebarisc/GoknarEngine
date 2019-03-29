@@ -23,7 +23,10 @@ ImGuiEditor::~ImGuiEditor()
 
 void ImGuiEditor::Init()
 {
-	engine->GetInputManager()->AddCursorDelegate(&OnCursorMove);
+	engine->GetInputManager()->AddCursorDelegate(std::bind(&ImGuiEditor::OnCursorMove, this, std::placeholders::_1, std::placeholders::_2));
+
+	engine->GetInputManager()->AddMouseInputDelegate(GLFW_MOUSE_BUTTON_1, INPUT_ACTION::G_PRESS, std::bind(&ImGuiEditor::OnLeftClickPressed, this));
+	engine->GetInputManager()->AddMouseInputDelegate(GLFW_MOUSE_BUTTON_1, INPUT_ACTION::G_RELEASE, std::bind(&ImGuiEditor::OnLeftClickRelease, this));
 
 	windowManager_ = engine->GetWindowManager();
 	const Vector2i windowSize = windowManager_->GetWindowSize();
@@ -89,4 +92,16 @@ void ImGuiEditor::OnCursorMove(int xPosition, int yPosition)
 	ImGuiIO &io = ImGui::GetIO();
 	io.MousePos.x = xPosition;
 	io.MousePos.y = yPosition;
+}
+
+void ImGuiEditor::OnLeftClickPressed()
+{
+	ImGuiIO &io = ImGui::GetIO();
+	io.MouseDown[GLFW_MOUSE_BUTTON_1] = true;
+}
+
+void ImGuiEditor::OnLeftClickRelease()
+{
+	ImGuiIO &io = ImGui::GetIO();
+	io.MouseDown[GLFW_MOUSE_BUTTON_1] = false;
 }

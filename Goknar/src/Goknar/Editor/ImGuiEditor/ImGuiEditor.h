@@ -13,7 +13,10 @@ public:
 	void Init() override;
 	void Tick(float deltaTime) override;
 
-	static void OnCursorMove(int xPosition, int yPosition);
+	void OnCursorMove(int xPosition, int yPosition);
+
+	void OnLeftClickPressed();
+	void OnLeftClickRelease();
 
 private:
 };

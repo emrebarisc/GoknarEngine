@@ -75,6 +75,39 @@ void InputManager::CursorPositionCallback(GLFWwindow* window, double xPosition, 
 void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
 	GOKNAR_CORE_INFO("Mouse button click Button Id: {} Action Id: {} Mods: {}", button, action, mods);
+
+	switch (action)
+	{
+	case GLFW_PRESS:
+	{
+		for (auto &pressedMouseDelegate : engine->GetInputManager()->pressedMouseDelegates_[button])
+		{
+			pressedMouseDelegate();
+		}
+
+		break;
+	}
+	case GLFW_RELEASE:
+	{
+		for (auto &releasedMouseDelegate : engine->GetInputManager()->releasedMouseDelegates_[button])
+		{
+			releasedMouseDelegate();
+		}
+
+		break;
+	}
+	case GLFW_REPEAT:
+	{
+		for (auto &repeatedMouseDelegate : engine->GetInputManager()->repeatedMouseDelegates_[button])
+		{
+			repeatedMouseDelegate();
+		}
+
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 void InputManager::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)

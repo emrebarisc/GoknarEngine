@@ -31,6 +31,10 @@ enum class GOKNAR_API INPUT_ACTION : uint8_t
 typedef std::function<void()> KeyboardDelegate;
 typedef std::vector < KeyboardDelegate > KeyboardDelegateVector;
 
+typedef std::function<void()> MouseDelegate;
+typedef std::vector < MouseDelegate > MouseDelegateVector;
+
+
 typedef std::function<void(int, int)> CursorDelegate;
 typedef std::vector < CursorDelegate > CursorDelegateVector;
 
@@ -48,7 +52,7 @@ public:
 	static inline void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset);
 	static inline void CharCallback(GLFWwindow *window, unsigned int codePoint);
 
-	void AddKeyboardInputDelegate(void* owner, int keyCode, INPUT_ACTION inputAction, const KeyboardDelegate &binderFunction)
+	void AddKeyboardInputDelegate(int keyCode, INPUT_ACTION inputAction, const KeyboardDelegate &binderFunction)
 	{
 		switch (inputAction)
 		{
@@ -65,6 +69,23 @@ public:
 		}
 	}
 
+	void AddMouseInputDelegate(int keyCode, INPUT_ACTION inputAction, const KeyboardDelegate &binderFunction)
+	{
+		switch (inputAction)
+		{
+		case INPUT_ACTION::G_PRESS:
+			pressedMouseDelegates_[keyCode].push_back(binderFunction);
+			break;
+		case INPUT_ACTION::G_RELEASE:
+			releasedMouseDelegates_[keyCode].push_back(binderFunction);
+			break;
+		case INPUT_ACTION::G_REPEAT:
+			repeatedMouseDelegates_[keyCode].push_back(binderFunction);
+			break;
+		default:;
+		}
+	}
+
 	void AddCursorDelegate(const CursorDelegate &cursorDelegate)
 	{
 		cursorDelegates_.push_back(cursorDelegate);
@@ -75,6 +96,11 @@ private:
 	std::unordered_map< int, KeyboardDelegateVector > pressedKeyDelegates_;
 	std::unordered_map< int, KeyboardDelegateVector > releasedKeyDelegates_;
 	std::unordered_map< int, KeyboardDelegateVector > repeatedKeyDelegates_;
+
+	// Mouse Delegates
+	std::unordered_map< int, MouseDelegateVector > pressedMouseDelegates_;
+	std::unordered_map< int, MouseDelegateVector > releasedMouseDelegates_;
+	std::unordered_map< int, MouseDelegateVector > repeatedMouseDelegates_;
 
 	// Cursor Delegates
 	CursorDelegateVector cursorDelegates_;
