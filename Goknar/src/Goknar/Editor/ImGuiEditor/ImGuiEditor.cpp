@@ -5,15 +5,18 @@
 #include "imgui.h"
 #include "GLFW/glfw3.h"
 #include "glad/glad.h"
-#include "ImGuiImplOpenGL3.h"
+#include "ImGuiOpenGL.h"
 
 #include "Goknar/Engine.h"
 #include "Goknar/WindowManager.h"
 #include "Goknar/InputManager.h"
+#include "Goknar/Log.h"
 
 ImGuiEditor::ImGuiEditor()
 {
-
+	showAbout_ = false;
+	showBasicAssetsBrowser_ = true;
+	showLog_ = false;
 }
 
 ImGuiEditor::~ImGuiEditor()
@@ -40,7 +43,7 @@ void ImGuiEditor::Init()
 	ImGui::StyleColorsDark();
 	
 	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2(windowSize.x, windowSize.y);
+	io.DisplaySize = ImVec2((float)windowSize.x, (float)windowSize.y);
 	io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 	io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 	io.KeyRepeatRate = 0.1f;
@@ -68,29 +71,48 @@ void ImGuiEditor::Init()
 	io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
 	io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
 
-	ImGui_ImplOpenGL3_Init("#version 410 core");
+	ImGui_Init("#version 410 core");
+
+	GOKNAR_CORE_INFO("ImGui Editor Is Initiated.");
 }
 
 void ImGuiEditor::Tick(float deltaTime)
 {
-	//glClearColor(0, 0, 0, 1);
-	//glClear(GL_COLOR_BUFFER_BIT);
-
-	const Vector2i windowSize = windowManager_->GetWindowSize();
+	windowSize_ = windowManager_->GetWindowSize();
 
 	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2(windowSize.x, windowSize.y);
+	io.DisplaySize = ImVec2((float)windowSize_.x, (float)windowSize_.y);
 
-	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_NewFrame();
 	ImGui::NewFrame();
 	 
-	static bool showDemo = true;
-	ImGui::ShowDemoWindow(&showDemo);
+	//static bool showDemo = true;
+	//ImGui::ShowDemoWindow(&showDemo);
+
+	ShowMainMenu();
+
+	if(showAbout_)
+	{
+		ShowAbout();
+	}
+
+	if(showBasicAssetsBrowser_)
+	{
+		ShowBasicAssetsBrowser();
+	}
+
+	if(showLog_)
+	{
+		ShowLog();
+	}
 
 	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	ImGui_RenderDrawData(ImGui::GetDrawData());
+}
 
-	//engine->GetWindowManager()->Update();
+void ImGuiEditor::Log(const char* logMessage)
+{
+	imguiLog_.AddLog(logMessage);
 }
 
 void ImGuiEditor::OnKeyboardEvent(int key, int scanCode, int action, int mod)
@@ -117,21 +139,20 @@ void ImGuiEditor::OnKeyboardEvent(int key, int scanCode, int action, int mod)
 	default:
 		break;
 	}
-
 }
 
-void ImGuiEditor::OnCursorMove(int xPosition, int yPosition)
+void ImGuiEditor::OnCursorMove(double xPosition, double yPosition)
 {
 	ImGuiIO &io = ImGui::GetIO();
-	io.MousePos.x = xPosition;
-	io.MousePos.y = yPosition;
+	io.MousePos.x = (float)xPosition;
+	io.MousePos.y = (float)yPosition;
 }
 
 void ImGuiEditor::OnScroll(double xOffset, double yOffset)
 {
 	ImGuiIO &io = ImGui::GetIO();
-	io.MouseWheelH += xOffset;
-	io.MouseWheel += yOffset;
+	io.MouseWheelH += (float)xOffset;
+	io.MouseWheel += (float)yOffset;
 }
 
 void ImGuiEditor::OnLeftClickPressed()
@@ -150,4 +171,79 @@ void ImGuiEditor::OnCharPressed(unsigned int codePoint)
 {
 	ImGuiIO &io = ImGui::GetIO();
 	io.AddInputCharacter(codePoint);
+}
+
+void ImGuiEditor::ShowMainMenu()
+{
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Save"))
+			{
+
+			}
+			if (ImGui::MenuItem("Save as"))
+			{
+
+			}
+			if (ImGui::MenuItem("Exit"))
+			{
+				engine->Exit();
+			}
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Edit"))
+		{
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("View"))
+		{
+			if (ImGui::MenuItem(showLog_ ? MAIN_MENU_ACTIVEABLE_ITEMS::VIEW_LOG_ACTIVE : MAIN_MENU_ACTIVEABLE_ITEMS::VIEW_LOG_PASSIVE))
+			{
+				showLog_ = !showLog_;
+			}
+			if (ImGui::MenuItem(showBasicAssetsBrowser_ ? MAIN_MENU_ACTIVEABLE_ITEMS::VIEW_BASIC_ASSETS_ACTIVE : MAIN_MENU_ACTIVEABLE_ITEMS::VIEW_BASIC_ASSETS_PASSIVE))
+			{
+				showBasicAssetsBrowser_ = !showBasicAssetsBrowser_;
+			}
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Help"))
+		{
+			if (ImGui::MenuItem("About"))
+			{
+				showAbout_ = !showAbout_;
+			}
+			ImGui::EndMenu();
+		}
+
+		ImGui::EndMainMenuBar();
+	}
+}
+
+void ImGuiEditor::ShowAbout()
+{
+	ImGui::Begin("About", &showAbout_, ImGuiWindowFlags_NoCollapse);
+	ImGui::Text("Emre Baris Coskun \nemrebariscoskun@gmail.com");
+	ImGui::End();
+}
+
+void ImGuiEditor::ShowBasicAssetsBrowser()
+{
+	ImGui::Begin("Basic Assets", &showBasicAssetsBrowser_, ImGuiWindowFlags_NoCollapse);
+
+	if(ImGui::Button("Add a Simple Cube"))
+	{
+		imguiLog_.AddLog("A simple cube is added to the scene.\n");
+	}
+	ImGui::End();
+}
+
+void ImGuiEditor::ShowLog()
+{
+	imguiLog_.Draw("Goknar Log", &showLog_);
 }

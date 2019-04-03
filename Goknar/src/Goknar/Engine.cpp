@@ -73,11 +73,6 @@ void Engine::Run()
 {
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
-		/*if (inputManager_->GetKeyIsReleased(GLFW_KEY_ESCAPE))
-		{
-			return;
-		}*/
-
 		application_->Run();
 
 		// TODO Temp Tick Call
@@ -117,6 +112,11 @@ void Engine::RegisterObject(ObjectBase* object)
 void Engine::AddToTickableObjects(ObjectBase* object)
 {
 	tickableObjects_.push_back(object);
+}
+
+void Engine::Exit()
+{
+	windowManager_->CloseWindow();
 }
 
 void Engine::SetApplication(Application* application)

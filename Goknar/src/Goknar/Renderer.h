@@ -32,8 +32,8 @@ private:
 
 	GraphicsManager *graphicsManager_;
 
-	gm_uint vertexBufferId_;
-	gm_uint indexBufferId_;
+	gmUInt vertexBufferId_;
+	gmUInt indexBufferId_;
 };
 
 #endif

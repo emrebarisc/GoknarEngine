@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __LOG_H__
+#define __LOG_H__
 
 #include "Core.h"
 
@@ -39,3 +40,5 @@ private:
 #define GOKNAR_WARN(...)			::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define GOKNAR_ERROR(...)			::Log::GetClientLogger()->error(__VA_ARGS__)
 #define GOKNAR_FATAL(...)			::Log::GetClientLogger()->fatal(__VA_ARGS__)
+
+#endif

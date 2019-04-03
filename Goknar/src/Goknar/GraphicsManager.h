@@ -11,7 +11,7 @@
 
 #include "GLAD/glad.h"
 
-typedef GLuint gm_uint;
+typedef GLuint gmUInt;
 
 /*
  *	In GraphicsManager class 
@@ -58,13 +58,13 @@ public:
 	// General functions
 	
 	// Buffer related functions
-	void GenerateBuffers(int size, gm_uint *bufferId);
-	void BindBuffers(BufferTypes bufferType, gm_uint bufferId);
-	void GenerateVertexArrays(int size, gm_uint *arrayId);
+	void GenerateBuffers(int size, gmUInt *bufferId);
+	void BindBuffers(BufferTypes bufferType, gmUInt bufferId);
+	void GenerateVertexArrays(int size, gmUInt *arrayId);
 	void BindVertexArray(int arrayId);
 	void BufferData(BufferTypes bufferType, int size, const void *bufferPointer, BufferUsages usage);
-	void DeleteBuffers(int size, gm_uint *bufferId);
-	void DeleteVertexArrays(int size, gm_uint *arrayId);
+	void DeleteBuffers(int size, gmUInt *bufferId);
+	void DeleteVertexArrays(int size, gmUInt *arrayId);
 
 	// Render related functions
 private:

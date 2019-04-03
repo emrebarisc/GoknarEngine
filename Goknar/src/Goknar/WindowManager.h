@@ -15,6 +15,8 @@ struct GLFWmonitor;
 
 class GOKNAR_API WindowManager
 {
+	friend class Engine;
+
 public:
 	WindowManager();
 	~WindowManager();
@@ -54,6 +56,8 @@ public:
 	}
 
 private:
+	void CloseWindow();
+
 	GLFWwindow *mainWindow_;
 	GLFWmonitor *mainMonitor_;
 	const char *windowTitle_;

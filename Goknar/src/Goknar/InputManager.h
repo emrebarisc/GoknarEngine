@@ -1,8 +1,3 @@
-/*
-*	Game Engine Project
-*	Emre Baris Coskun
-*	2018
-*/
 #ifndef __INPUTMANAGER_H__
 #define __INPUTMANAGER_H__
 
@@ -37,7 +32,7 @@ typedef std::vector < KeyboardListener > KeyboardListenerVector;
 typedef std::function<void()> MouseDelegate;
 typedef std::vector < MouseDelegate > MouseDelegateVector;
 
-typedef std::function<void(int, int)> CursorDelegate;
+typedef std::function<void(double, double)> CursorDelegate;
 typedef std::vector < CursorDelegate > CursorDelegateVector;
 
 typedef std::function<void(double, double)> ScrollDelegate;

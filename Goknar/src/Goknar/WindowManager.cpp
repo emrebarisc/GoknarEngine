@@ -14,6 +14,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Engine.h"
+#include "InputManager.h"
 
 WindowManager::WindowManager()
 {
@@ -58,11 +59,18 @@ void WindowManager::Init()
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
+
+	engine->GetInputManager()->AddKeyboardInputDelegate(GLFW_KEY_ESCAPE, INPUT_ACTION::G_PRESS, std::bind(&WindowManager::CloseWindow, this));
 }
 
 bool WindowManager::GetWindowShouldBeClosed()
 {
 	return glfwWindowShouldClose(mainWindow_);
+}
+
+void WindowManager::CloseWindow()
+{
+	glfwSetWindowShouldClose(mainWindow_, true);
 }
 
 void WindowManager::SetWindowWidth(int w)
