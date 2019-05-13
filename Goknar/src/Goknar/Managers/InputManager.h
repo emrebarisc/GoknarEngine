@@ -3,7 +3,7 @@
 
 #include "pch.h"
 
-#include "Core.h"
+#include "Goknar/Core.h"
 
 struct GLFWwindow;
 
@@ -129,7 +129,7 @@ private:
 	// Scroll Delegates
 	ScrollDelegateVector scrollDelegates_;
 
-	// Scroll Delegates
+	// Char Delegates
 	CharDelegateVector charDelegates_;
 };
 

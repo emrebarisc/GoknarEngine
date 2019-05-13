@@ -1,14 +1,8 @@
-/*
-*	Game Engine Project
-*	Emre Baris Coskun
-*	2018
-*/
-
 #ifndef __WINDOWMANAGER_H__
 #define __WINDOWMANAGER_H__
 
-#include "Core.h"
-#include "Math.h"
+#include "Goknar/Core.h"
+#include "Goknar/Math.h"
 
 struct GLFWwindow;
 struct GLFWmonitor;

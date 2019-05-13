@@ -1,9 +1,3 @@
-/*
- *	Game Engine Project
- *	Emre Baris Coskun
- *	2018
- */
-
 #ifndef __SCENE_H__
 #define __SCENE_H__
 

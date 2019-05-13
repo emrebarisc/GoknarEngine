@@ -1,21 +1,15 @@
-/*
-*	Game Engine Project
-*	Emre Baris Coskun
-*	2018
-*/
-
 #ifndef __OBJECTMANAGER_H__
 #define __OBJECTMANAGER_H__
 
 #include <vector>
 
-#include "Core.h"
+#include "Goknar/Core.h"
 
 class ObjectBase;
 
 class GOKNAR_API ObjectManager
 {
-    public:
+public:
 	ObjectManager();
 	~ObjectManager();
 
@@ -31,7 +25,7 @@ class GOKNAR_API ObjectManager
         return &objects_;
     }
 
-    private:
+private:
 
     std::vector<ObjectBase *> objects_;
 };

@@ -4,12 +4,11 @@
 
 #include "imgui.h"
 #include "GLFW/glfw3.h"
-#include "glad/glad.h"
 #include "ImGuiOpenGL.h"
 
 #include "Goknar/Engine.h"
-#include "Goknar/WindowManager.h"
-#include "Goknar/InputManager.h"
+#include "Goknar/Managers/WindowManager.h"
+#include "Goknar/Managers/InputManager.h"
 #include "Goknar/Log.h"
 
 ImGuiEditor::ImGuiEditor()

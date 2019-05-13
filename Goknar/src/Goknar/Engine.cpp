@@ -1,8 +1,3 @@
-/*
-*	Game Engine Project
-*	Emre Baris Coskun
-*	2018
-*/
 #include "pch.h"
 
 #include "Engine.h"
@@ -11,14 +6,13 @@
 
 #include "Application.h"
 #include "Editor/ImGuiEditor/ImGuiEditor.h"
-#include "GraphicsManager.h"
-#include "InputManager.h"
 #include "Log.h"
+#include "Managers/InputManager.h"
+#include "Managers/ObjectManager.h"
+#include "Managers/Renderer.h"
+#include "Managers/WindowManager.h"
 #include "ObjectBase.h"
-#include "ObjectManager.h"
-#include "Renderer.h"
 #include "Scene.h"
-#include "WindowManager.h"
 
 Engine *engine;
 
@@ -35,7 +29,6 @@ Engine::Engine()
 	windowManager_->SetWindowTitle("Goknar Engine");
 
 	inputManager_ = new InputManager();
-	graphicsManager_ = new GraphicsManager();
 	objectManager_ = new ObjectManager();
 	renderer_ = new Renderer();
 	editor_ = new ImGuiEditor();
@@ -49,7 +42,6 @@ Engine::~Engine()
 	delete editor_;
 	delete renderer_;
 	delete objectManager_;
-	delete graphicsManager_;
 	delete inputManager_;
 	delete windowManager_;
 	delete application_;
@@ -59,7 +51,6 @@ Engine::~Engine()
 
 void Engine::Init() const
 {
-	graphicsManager_->Init();
 	windowManager_->Init();
 	inputManager_->Init();
 	objectManager_->Init();

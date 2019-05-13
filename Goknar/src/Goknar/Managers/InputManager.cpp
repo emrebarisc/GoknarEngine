@@ -2,10 +2,11 @@
 
 #include "InputManager.h"
 #include "WindowManager.h"
-#include "Engine.h"
+
+#include "Goknar/Engine.h"
+#include "Goknar/Log.h"
 
 #include "GLFW/glfw3.h"
-#include "Log.h"
 
 InputManager::InputManager()
 {

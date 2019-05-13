@@ -12,7 +12,3 @@
 /*	MAIN THREAD		*/
 #include "Goknar/mainThread.h"
 /*	*************	*/
-
-/*	STANDARD LIBS	*/
-#include <iostream>
-/*	*************	*/

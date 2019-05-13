@@ -33,7 +33,7 @@ project "Goknar"
 	objdir("obj/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "pch.h"
-	pchsource "Goknar/src/Goknar/pch.cpp"
+	pchsource "Goknar/src/pch.cpp"
 
 	files
 	{

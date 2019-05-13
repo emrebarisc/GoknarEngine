@@ -1,9 +1,3 @@
-/*
-*	Game Engine Project
-*	Emre Baris Coskun
-*	2018
-*/
-
 #ifndef __ENGINE_H__
 #define __ENGINE_H__
 
@@ -12,7 +6,6 @@
 #include "Application.h"
 
 class Editor;
-class GraphicsManager;
 class InputManager;
 class ObjectBase;
 class ObjectManager;
@@ -43,11 +36,6 @@ public:
 		return inputManager_;
 	}
 
-	GraphicsManager* GetGraphicsManager() const
-	{
-		return graphicsManager_;
-	}
-
 	Renderer* GetRenderer() const
 	{
 		return renderer_;
@@ -66,7 +54,6 @@ public:
 	void Exit();
 
 private:
-	GraphicsManager *graphicsManager_;
 	InputManager *inputManager_;
 	ObjectManager *objectManager_;
 	Renderer *renderer_;

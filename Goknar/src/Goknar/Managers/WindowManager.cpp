@@ -1,20 +1,15 @@
-/*
-*	Game Engine Project
-*	Emre Baris Coskun
-*	2018
-*/
 #include "pch.h"
 
 #include "WindowManager.h"
-#include "Core.h"
-#include "Log.h"
+
+#include "Goknar/Log.h"
+#include "Goknar/Engine.h"
+#include "InputManager.h"
 
 #include <iostream>
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-#include "Engine.h"
-#include "InputManager.h"
 
 WindowManager::WindowManager()
 {

@@ -1,9 +1,3 @@
-/*
- *	Game Engine Project
- *	Emre Baris Coskun
- *	2018
- */
-
 #ifndef __COLOR_H__
 #define __COLOR_H__
 

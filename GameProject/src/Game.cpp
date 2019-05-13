@@ -3,16 +3,15 @@
 class Game : public Application
 {
 public:
-	Game()
-	{
-		
-	}
+	Game();
 
-	~Game()
-	{
-		
-	}
+	~Game() = default;
 };
+
+Game::Game() : Application()
+{
+
+}
 
 Application *CreateApplication()
 {

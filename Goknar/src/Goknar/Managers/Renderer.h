@@ -1,14 +1,9 @@
-/*
-*	Game Engine Project
-*	Emre Baris Coskun
-*	2018
-*/
-
 #ifndef __RENDERER_H__
 #define __RENDERER_H__
 
-#include "Core.h"
-#include "GraphicsManager.h"
+#include "Goknar/Core.h"
+
+#include "glad/glad.h"
 
 #include <vector>
 
@@ -30,10 +25,9 @@ public:
 private:
 	std::vector<RenderingObject *> objectsToBeRendered_;
 
-	GraphicsManager *graphicsManager_;
-
-	gmUInt vertexBufferId_;
-	gmUInt indexBufferId_;
+	GLuint vertexArrayId_;
+	GLuint vertexBufferId_;
+	GLuint indexBufferId_;
 };
 
 #endif

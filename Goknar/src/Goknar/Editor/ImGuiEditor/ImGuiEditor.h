@@ -8,10 +8,10 @@ struct GLFWwindow;
 
 namespace MAIN_MENU_ACTIVEABLE_ITEMS
 {
-	inline const char* VIEW_BASIC_ASSETS_PASSIVE = "- Basic Assets";
 	inline const char* VIEW_BASIC_ASSETS_ACTIVE = "+ Basic Assets";
-	inline const char* VIEW_LOG_PASSIVE = "- Log";
+	inline const char* VIEW_BASIC_ASSETS_PASSIVE = "- Basic Assets";
 	inline const char* VIEW_LOG_ACTIVE = "+ Log";
+	inline const char* VIEW_LOG_PASSIVE = "- Log";
 };
 
 struct ImGuiLog
@@ -29,14 +29,14 @@ struct ImGuiLog
 		Clear();
 	}
 
-	void    Clear()
+	void  Clear()
 	{
 		Buf.clear();
 		LineOffsets.clear();
 		LineOffsets.push_back(0);
 	}
 
-	void    AddLog(const char* fmt, ...) IM_FMTARGS(2)
+	void AddLog(const char* fmt, ...) IM_FMTARGS(2)
 	{
 		int old_size = Buf.size();
 		va_list args;
@@ -50,7 +50,7 @@ struct ImGuiLog
 			ScrollToBottom = true;
 	}
 
-	void    Draw(const char* title, bool* p_open = NULL)
+	void Draw(const char* title, bool* p_open = NULL)
 	{
 		if (!ImGui::Begin(title, p_open))
 		{
