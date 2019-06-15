@@ -10,11 +10,8 @@
 //#include "Math.h"
 //#include "Light.h"
 //#include "Texture.h"
-//#include "MeshBase.h"
 
-class BRDF;
-class MeshBase;
-class Texture;
+class Mesh;
 
 /*
     Scene class containing all the scene data
@@ -32,22 +29,40 @@ public:
     // Scene data parser
     void ReadSceneData(char *filePath);
 
+	void AddMesh(const Mesh* mesh)
+	{
+		meshes_.push_back(mesh);
+	}
+
+	void SetAmbientLight(const Vector3& ambientLight)
+	{
+		ambientLight_ = ambientLight;
+	}
+
+	void SetBackgroundColor(const Colori& color)
+	{
+		backgroundColor_ = color;
+	}
+
+	const Colori& GetBackgroundColor() const
+	{
+		return backgroundColor_;
+	}
+
+private:
+
  //   std::vector<Camera> cameras;
  //   std::vector<Light *> lights;
  //   std::vector<Material> materials;
- //   std::vector<BRDF *> BRDFs;
- //   std::vector<VertexData> vertices;
  //   std::vector<Texture *> textures;
  //   std::vector<Vector3> translations;
  //   std::vector<Vector3> scalings;
  //   std::vector<Vector4> rotations;
- //   std::vector<MeshBase *> meshes;
+    std::vector<const Mesh *> meshes_;
 
- //   Vector3 ambientLight;
+	Vector3 ambientLight_;
 
-    Colori bgColor;
-
-	//Camera *mainCamera = nullptr;
+    Colori backgroundColor_;
 };
 
 #endif

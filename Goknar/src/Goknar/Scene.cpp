@@ -1,8 +1,7 @@
 #include "pch.h"
 
 #include "Scene.h"
-//#include "MeshBase.h"
-//#include "SceneParser.h"
+#include "Helpers/SceneParser.h"
 #include "Math.h"
 
 Scene *Scene::mainScene = nullptr;
@@ -14,17 +13,17 @@ Scene::Scene()
 		mainScene = this;
 	}
 
-	bgColor = Colori(0, 0, 0);
+	backgroundColor_ = Colori(0, 0, 0);
 
     //ambientLight = Vector3::ZeroVector;
 }
 
 Scene::~Scene()
 {
-    //for(auto object : meshes)
-    //{
-    //    delete object;
-    //}
+    for(auto object : meshes_)
+    {
+        delete object;
+    }
 
     //for(auto texture : textures)
     //{
@@ -42,5 +41,5 @@ void Scene::Init()
 
 void Scene::ReadSceneData(char *filePath)
 {
-    //SceneParser::Parse(this, filePath);
+    SceneParser::Parse(this, filePath);
 }

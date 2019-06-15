@@ -1,5 +1,7 @@
 #include <Goknar.h>
 
+
+
 class Game : public Application
 {
 public:
@@ -10,7 +12,7 @@ public:
 
 Game::Game() : Application()
 {
-
+	mainScene_->ReadSceneData("../GameProject/Content/Scenes/BunnyScene.xml");
 }
 
 Application *CreateApplication()

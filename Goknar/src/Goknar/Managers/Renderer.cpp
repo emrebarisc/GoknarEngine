@@ -47,7 +47,8 @@ void Renderer::Init()
 
 void Renderer::Render()
 {
-	glClearColor(GLfloat(Scene::mainScene->bgColor.r), GLfloat(Scene::mainScene->bgColor.g), GLfloat(Scene::mainScene->bgColor.b), 1.f);
+	const Colori& sceneBackgroundColor = Scene::mainScene->GetBackgroundColor();
+	glClearColor(GLfloat(sceneBackgroundColor.r), GLfloat(sceneBackgroundColor.g), GLfloat(sceneBackgroundColor.b), 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// TODO Render scene
