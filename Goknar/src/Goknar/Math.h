@@ -7,6 +7,8 @@
 #ifndef __MATH_H__
 #define __MATH_H__
 
+#include "Goknar/Core.h"
+
 #define mathMax(f, s) (f > s ? f : s)
 #define mathMin(f, s) (f > s ? s : f)
 #define mathClamp(value, min, max) (value > max ? max : value < min ? min : value)
@@ -31,9 +33,9 @@ struct Vector3;
 struct Vector3i;
 struct Vector4;
 
-struct Matrix;
+class Matrix;
 
-struct Vector2
+struct GOKNAR_API Vector2
 {
 	Vector2();
 
@@ -104,7 +106,7 @@ struct Vector2
   float x, y;
 };
 
-struct Vector2i
+struct GOKNAR_API Vector2i
 {
 	Vector2i();
 	Vector2i(int vx, int vy);
@@ -114,7 +116,7 @@ struct Vector2i
 	int x, y;
 };
 
-struct Vector3
+struct GOKNAR_API Vector3
 {
 	Vector3();
 
@@ -122,16 +124,18 @@ struct Vector3
 
 	Vector3(float vx, float vy, float vz);
 
-  /*   Vector3(const Vector3& rhs) : x(rhs.x), y(rhs.y), z(rhs.z)
-  {
+	/*   Vector3(const Vector3& rhs) : x(rhs.x), y(rhs.y), z(rhs.z)
+	{
 
-  } */
+	} */
 
-  Vector3(const Vector4& rhs);
+	Vector3(const Vector4& rhs);
 
 	inline float Length() const;
 
 	static inline Vector3 Cross(const Vector3& v1, const Vector3& v2);
+
+	inline Vector3 Cross(const Vector3& rhs) const;
 
 	static inline float Dot(const Vector3& v1, const Vector3& v2);
 
@@ -149,18 +153,18 @@ struct Vector3
 
 	inline Vector3 operator+(const Vector3& rhs) const;
 
-  /*   inline Vector3& operator=(const Vector3& rhs)
-  {
-    if (this == &rhs) 
-    {
-      return *this;
-    }
+	/*   inline Vector3& operator=(const Vector3& rhs)
+	{
+	if (this == &rhs) 
+	{
+		return *this;
+	}
     
-    x = rhs.x;
-    y = rhs.y;
-    z = rhs.z;
-    return *this;
-  } */
+	x = rhs.x;
+	y = rhs.y;
+	z = rhs.z;
+	return *this;
+	} */
 
 	inline void operator+=(const Vector3& rhs);
 
@@ -188,12 +192,20 @@ struct Vector3
 
 	Vector3 GetOrthonormalBasis() const;
 
-  static const Vector3 ZeroVector;
+	/*
+	*	Transformations
+	*/
 
-  float x, y, z;
+	Vector3 Translate(const Vector3& translation);
+	Vector3 Rotate(const Vector3& rotation);
+	Vector3 Scale(const Vector3& scale);
+
+	static const Vector3 ZeroVector;
+
+	float x, y, z;
 };
 
-struct Vector3i
+struct GOKNAR_API Vector3i
 {
 	Vector3i();
 
@@ -202,7 +214,7 @@ struct Vector3i
   int x, y, z;
 };
 
-struct Vector4
+struct GOKNAR_API Vector4
 {
 	Vector4();
 
@@ -224,10 +236,10 @@ struct Vector4
   float x, y, z, w;
 };
 
-class Math
+class GOKNAR_API Math
 {
 public:
-  //static float Determinant(const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d);
+	static void LookAt(Matrix &viewingMatrix, const Vector3& position, const Vector3& target, const Vector3& upVector);
 
 	static inline float Determinant(const Vector3& a, const Vector3& b, const Vector3& c);
 

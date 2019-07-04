@@ -181,6 +181,13 @@ Vector3 Vector3::Cross(const Vector3& v1, const Vector3& v2)
 	               v1.x * v2.y - v1.y * v2.x);
 }
 
+Vector3 Vector3::Cross(const Vector3& rhs) const
+{
+	return Vector3(y * rhs.z - z * rhs.y,
+				   z * rhs.x - x * rhs.z,
+				   x * rhs.y - y * rhs.x);
+}
+
 float Vector3::Dot(const Vector3& v1, const Vector3& v2)
 {
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
@@ -193,15 +200,15 @@ void Vector3::Normalize()
 
 void Vector3::Normalize(Vector3& vec)
 {
-	float vecLen = vec.Length();
-	/*if(vecLen == 0) 
+	try
 	{
-	  //throw std::runtime_error("Error: Vector length is 0. Division by zero.");
-	  std::cerr << "Division by zero." << std::endl;
-	  return;
-	}*/
-
-	vec = vec / vecLen;
+		float vecLen = vec.Length();
+		vec = vec / vecLen;
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << "Exception thrown: " << e.what() << std::endl;
+	}
 }
 
 Vector3 Vector3::GetNormalized() const
@@ -319,6 +326,67 @@ Vector3 Vector3::GetOrthonormalBasis() const
 	return secondCrossed.GetNormalized();
 }
 
+Vector3 Vector3::Translate(const Vector3& translation)
+{
+	Matrix translateMatrix = Matrix::IdentityMatrix;
+
+	translateMatrix.m[3] = translation.x;
+	translateMatrix.m[7] = translation.y;
+	translateMatrix.m[11] = translation.z;
+
+	return Vector3(translateMatrix * Vector4(translation));
+}
+
+Vector3 Vector3::Rotate(const Vector3& rotation)
+{
+	Vector3 result = *this;
+
+	if (rotation.x != 0)
+	{
+		Matrix rotateMatrix = Matrix::IdentityMatrix;
+		float cosTheta = cos(rotation.x);
+		float sinTheta = sin(rotation.x);
+		rotateMatrix.m[5] = cosTheta;
+		rotateMatrix.m[6] = -sinTheta;
+		rotateMatrix.m[9] = sinTheta;
+		rotateMatrix.m[10] = cosTheta;
+		result = Vector3(rotateMatrix * Vector4(result));
+	}
+	if (rotation.y != 0)
+	{
+		Matrix rotateMatrix = Matrix::IdentityMatrix;
+		float cosTheta = cos(rotation.y);
+		float sinTheta = sin(rotation.y);
+		rotateMatrix.m[0] = cosTheta;
+		rotateMatrix.m[2] = sinTheta;
+		rotateMatrix.m[8] = -sinTheta;
+		rotateMatrix.m[10] = cosTheta;
+		result = Vector3(rotateMatrix * Vector4(result));
+	}
+	if (rotation.z != 0)
+	{
+		Matrix rotateMatrix = Matrix::IdentityMatrix;
+		float cosTheta = cos(rotation.z);
+		float sinTheta = sin(rotation.z);
+		rotateMatrix.m[0] = cosTheta;
+		rotateMatrix.m[1] = -sinTheta;
+		rotateMatrix.m[4] = sinTheta;
+		rotateMatrix.m[5] = cosTheta;
+		result = Vector3(rotateMatrix * Vector4(result));
+	}
+
+	return result;
+}
+
+Vector3 Vector3::Scale(const Vector3& scale)
+{
+	Matrix scaleMatrix = Matrix::IdentityMatrix;
+	scaleMatrix.m[0] = scale.x;
+	scaleMatrix.m[5] = scale.y;
+	scaleMatrix.m[10] = scale.z;
+	return Vector3(scaleMatrix * Vector4(*this));
+}
+
 Vector3i::Vector3i(): x(0), y(0), z(0)
 {
 }
@@ -367,6 +435,33 @@ return Vector4(x * rhs.m[0] + y * rhs.m[4] + z * rhs.m[8] + w * rhs.m[12],
                 x * rhs.m[1] + y * rhs.m[5] + z * rhs.m[9] + w * rhs.m[13],
                 x * rhs.m[2] + y * rhs.m[6] + z * rhs.m[10] + w * rhs.m[14],
                 x * rhs.m[3] + y * rhs.m[7] + z * rhs.m[11] + w * rhs.m[15]);
+}
+
+void Math::LookAt(Matrix& viewingMatrix, const Vector3& position, const Vector3& target, const Vector3& upVector)
+{   
+	Vector3 forward = position - target;
+	forward.Normalize();
+
+	Vector3 left = upVector.Cross(forward);
+	left.Normalize();
+
+	Vector3 up = forward.Cross(left);
+
+	viewingMatrix = Matrix::IdentityMatrix;
+
+	viewingMatrix[0] = left.x;
+	viewingMatrix[4] = left.y;
+	viewingMatrix[8] = left.z;
+	viewingMatrix[1] = up.x;
+	viewingMatrix[5] = up.y;
+	viewingMatrix[9] = up.z;
+	viewingMatrix[2] = forward.x;
+	viewingMatrix[6] = forward.y;
+	viewingMatrix[10] = forward.z;
+
+	viewingMatrix[12] = -left.x * position.x - left.y * position.y - left.z * position.z;
+	viewingMatrix[13] = -up.x * position.x - up.y * position.y - up.z * position.z;
+	viewingMatrix[14] = -forward.x * position.x - forward.y * position.y - forward.z * position.z;
 }
 
 float Math::Determinant(const Vector3& a, const Vector3& b, const Vector3& c)

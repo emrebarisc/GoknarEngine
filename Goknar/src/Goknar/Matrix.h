@@ -7,12 +7,14 @@
 #ifndef __MATRIX_H__
 #define __MATRIX_H__
 
+#include "Goknar/Core.h"
+
 #include "Math.h"
 
 /*
     Matrix2x2 IS NOT TESTED!!!
 */
-class Matrix2x2
+class GOKNAR_API Matrix2x2
 {
 public:
     Matrix2x2()
@@ -126,7 +128,7 @@ public:
     float m[4];
 };
 
-class Matrix
+class GOKNAR_API Matrix
 {
 public:
     Matrix()
@@ -245,7 +247,7 @@ public:
         return out;
     }
 
-    float operator[](int index)
+    float& operator[](int index)
     {
         if(index >= 0 && index <= 15)
         {

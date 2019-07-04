@@ -1,4 +1,4 @@
-workspace "Goknar Engine"
+workspace "GoknarEngine"
 	architecture "x64"
 
 	configurations
