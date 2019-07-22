@@ -28,6 +28,10 @@ private:
 	GLuint vertexArrayId_;
 	GLuint vertexBufferId_;
 	GLuint indexBufferId_;
+
+
+	// TODO REMOVE SHADER OPERATIONS
+	class Shader* shader_;
 };
 
 #endif

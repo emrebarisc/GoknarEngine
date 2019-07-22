@@ -51,7 +51,7 @@ void Camera::LookUp(float value)
 
 void Camera::LookAt()
 {
-	Vector3 lookAtPos = position_ + forwardVector_ * nearDistance;
+	Vector3 lookAtPos = position_ + forwardVector_ * nearDistance_;
 
 	Math::LookAt(viewingMatrix_, 
 				 position_,

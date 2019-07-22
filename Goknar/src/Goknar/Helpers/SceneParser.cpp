@@ -57,11 +57,11 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 		child = element->FirstChildElement("ImageResolution");
 		stream << child->GetText() << std::endl;
-		stream >> camera.imageWidth >> camera.imageHeight;
+		stream >> camera.imageWidth_ >> camera.imageHeight_;
 
 		child = element->FirstChildElement("NearDistance");
 		stream << child->GetText() << std::endl;
-		stream >> camera.nearDistance;
+		stream >> camera.nearDistance_;
 
 		const char* cameraType = element->Attribute("type");
 
@@ -91,11 +91,11 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream << child->GetText() << std::endl;
 			stream >> fovY;
 
-			float resolutionProportion = camera.imageWidth / camera.imageHeight;
+			float resolutionProportion = camera.imageWidth_ / camera.imageHeight_;
 
 			float halfOfFovY = fovY * 0.5f;
 			float top, bottom, left, right;
-			top = camera.nearDistance * tan(DEGREE_TO_RADIAN(halfOfFovY));
+			top = camera.nearDistance_ * tan(DEGREE_TO_RADIAN(halfOfFovY));
 			bottom = -top;
 			left = bottom * resolutionProportion;
 			right = top * resolutionProportion;

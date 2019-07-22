@@ -10,6 +10,10 @@
 #include "Matrix.h"
 
 const Vector3 Vector3::ZeroVector = Vector3(0.f);
+const Vector3 Vector3::ForwardVector = Vector3(1.f, 0.f, 0.f);
+const Vector3 Vector3::RightVector = Vector3(0.f, 1.f, 0.f);
+const Vector3 Vector3::UpVector = Vector3(0.f, 0.f, 1.f);
+
 const Vector2 Vector2::ZeroVector = Vector2(0.f);
 
 /*const float MAX_FLOAT = std::numeric_limits<float>::max();

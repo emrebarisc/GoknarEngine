@@ -201,6 +201,9 @@ struct GOKNAR_API Vector3
 	Vector3 Scale(const Vector3& scale);
 
 	static const Vector3 ZeroVector;
+	static const Vector3 ForwardVector;
+	static const Vector3 RightVector;
+	static const Vector3 UpVector;
 
 	float x, y, z;
 };
