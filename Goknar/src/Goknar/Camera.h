@@ -4,6 +4,12 @@
 #include "Goknar/Core.h"
 #include "Goknar/Matrix.h"
 
+enum class GOKNAR_API CameraType : unsigned char
+{
+	Orthographic,
+	Projectile
+};
+
 class GOKNAR_API Camera
 {
 public:
@@ -17,8 +23,11 @@ public:
 		nearDistance_(0.1f),
 		farDistance_(100.f),
 		imageWidth_(1024),
-		imageHeight_(768)
+		imageHeight_(768),
+		type_(CameraType::Projectile)
 	{
+		SetProjectionMatrix();
+		LookAt();
 	}
 
 	Camera(const Vector3& position, const Vector3& forward, const Vector3& up);
@@ -37,18 +46,27 @@ public:
 			farDistance_ = rhs->farDistance_;
 			imageWidth_ = rhs->imageWidth_;
 			imageHeight_ = rhs->imageHeight_;
+			type_ = rhs->type_;
+			projectionMatrix_ = rhs->projectionMatrix_;
+			viewingMatrix_ = rhs->viewingMatrix_;
 		}
 	}
 
 	void InitCamera();
 
 	void MoveForward(float value);
-	void LookRight(float value);
-	void LookUp(float value);
+	void Yaw(float value);
+	void Pitch(float value);
+	void Roll(float value);
 
 	const Matrix& GetViewingMatrix() const
 	{
 		return viewingMatrix_;
+	}
+
+	const Matrix& GetProjectionMatrix() const
+	{
+		return projectionMatrix_;
 	}
 
 	void SetPosition(const Vector3& position)
@@ -91,7 +109,27 @@ public:
 		return rightVector_;
 	}
 
-	void SetNearPlane(const Vector3& nearPlane)
+	void SetImageWidth(int width)
+	{
+		imageWidth_ = width;
+	}
+
+	int GetImageWidth()
+	{
+		return imageWidth_;
+	}
+
+	void SetImageHeight(int height)
+	{
+		imageWidth_ = height;
+	}
+
+	int GetImageHeight()
+	{
+		return imageWidth_;
+	}
+
+	void SetNearPlane(const Vector4& nearPlane)
 	{
 		nearPlane_ = nearPlane;
 	}
@@ -101,13 +139,65 @@ public:
 		return nearPlane_;
 	}
 
+	void SetNearDistance(float nearDistance)
+	{
+		nearDistance_ = nearDistance;
+	}
+
+	float GetNearDistance()
+	{
+		return nearDistance_;
+	}
+
+	void InitMatrices()
+	{
+		LookAt();
+		SetProjectionMatrix();
+	}
+
+	void SetProjectionMatrix()
+	{
+		float l = nearPlane_.x;
+		float r = nearPlane_.y;
+		float b = nearPlane_.z;
+		float t = nearPlane_.w;
+
+		// Set the projection matrix as it is orthographic
+		projectionMatrix_ = Matrix( 2 / (r - l), 0.f, 0.f, -(r + l) / (r - l),
+									0.f, 2 / (t - b), 0.f, -(t + b) / (t - b),
+									0.f, 0.f, -2 / (farDistance_ - nearDistance_), -(farDistance_ + nearDistance_) / (farDistance_ - nearDistance_),
+									0.f, 0.f, 0.f, 1.f);
+
+		if (type_ == CameraType::Projectile)
+		{
+			Matrix p2o(nearDistance_, 0, 0, 0,
+						0, nearDistance_, 0, 0,
+						0, 0, farDistance_ + nearDistance_, farDistance_ * nearDistance_,
+						0, 0, -1, 0);
+
+			projectionMatrix_ = projectionMatrix_ * p2o;
+		}
+	}
+
+	float* GetViewingMatrixPointer()
+	{
+		return &viewingMatrix_[0];
+	}
+
+	float* GetProjectionMatrixPointer()
+	{
+		return &projectionMatrix_[0];
+	}
+
 protected:
 
 private:
 	void LookAt();
 
 	Matrix viewingMatrix_;
+	Matrix projectionMatrix_;
 
+	// Left Right Bottom Top
 	Vector4 nearPlane_;
 
 	Vector3 position_;
@@ -118,6 +208,8 @@ private:
 	float nearDistance_;
 	float farDistance_;
 	int imageWidth_, imageHeight_;
+
+	CameraType type_;
 };
 
 #endif

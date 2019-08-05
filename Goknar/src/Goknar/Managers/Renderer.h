@@ -7,7 +7,7 @@
 
 #include <vector>
 
-class GOKNAR_API RenderingObject;
+class GOKNAR_API Mesh;
 
 class GOKNAR_API Renderer
 {
@@ -20,10 +20,10 @@ public:
 
 	void Render();
 
-	void AddObjectToRenderer(RenderingObject *object);
+	void AddObjectToRenderer(Mesh* object);
 
 private:
-	std::vector<RenderingObject *> objectsToBeRendered_;
+	std::vector<Mesh*> objectsToBeRendered_;
 
 	GLuint vertexArrayId_;
 	GLuint vertexBufferId_;

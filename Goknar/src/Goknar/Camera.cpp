@@ -4,13 +4,15 @@
 
 #include <gl\GLU.h>
 
-Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) :
+Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) : 
 	position_(position),
 	forwardVector_(gaze),
 	upVector_(up),
-	rightVector_(forwardVector_.Cross(upVector_))
+	rightVector_(forwardVector_.Cross(upVector_)),
+	type_(CameraType::Projectile)
 {
-
+	SetProjectionMatrix();
+	LookAt();
 }
 
 void Camera::InitCamera()
@@ -28,12 +30,12 @@ void Camera::InitCamera()
 
 void Camera::MoveForward(float value)
 {
-	position_ += forwardVector_ * value * 5.f;
+	position_ += forwardVector_ * value;
 
 	LookAt();
 }
 
-void Camera::LookRight(float value)
+void Camera::Yaw(float value)
 {
 	forwardVector_ = forwardVector_.Rotate(upVector_ * value);
 	rightVector_ = forwardVector_.Cross(upVector_);
@@ -41,9 +43,17 @@ void Camera::LookRight(float value)
 	LookAt();
 }
 
-void Camera::LookUp(float value)
+void Camera::Pitch(float value)
 {
 	forwardVector_ = forwardVector_.Rotate(rightVector_ * value);
+	upVector_ = rightVector_.Cross(forwardVector_);
+
+	LookAt();
+}
+
+void Camera::Roll(float value)
+{
+	rightVector_ = rightVector_.Rotate(forwardVector_ * value);
 	upVector_ = rightVector_.Cross(forwardVector_);
 
 	LookAt();

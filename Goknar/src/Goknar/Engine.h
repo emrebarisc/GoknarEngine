@@ -5,6 +5,7 @@
 
 #include "Application.h"
 
+class CameraManager;
 class Editor;
 class InputManager;
 class ObjectBase;
@@ -46,6 +47,11 @@ public:
 		return editor_;
 	}
 
+	CameraManager* GetCameraManager() const
+	{
+		return cameraManager_;
+	}
+
 	void SetApplication(Application* application);
 
 	void RegisterObject(ObjectBase *object);
@@ -54,11 +60,12 @@ public:
 	void Exit();
 
 private:
-	InputManager *inputManager_;
-	ObjectManager *objectManager_;
-	Renderer *renderer_;
-	WindowManager *windowManager_;
-	Editor *editor_;
+	InputManager* inputManager_;
+	ObjectManager* objectManager_;
+	Renderer* renderer_;
+	WindowManager* windowManager_;
+	Editor* editor_;
+	CameraManager* cameraManager_;
 
 	Application *application_;
 

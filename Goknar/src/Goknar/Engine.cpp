@@ -7,6 +7,7 @@
 #include "Application.h"
 #include "Editor/ImGuiEditor/ImGuiEditor.h"
 #include "Log.h"
+#include "Managers/CameraManager.h"
 #include "Managers/InputManager.h"
 #include "Managers/ObjectManager.h"
 #include "Managers/Renderer.h"
@@ -32,6 +33,7 @@ Engine::Engine()
 	objectManager_ = new ObjectManager();
 	renderer_ = new Renderer();
 	editor_ = new ImGuiEditor();
+	cameraManager_ = new CameraManager();
 	
 	// TODO
 	//application_ = CreateApplication();
@@ -39,6 +41,7 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+	delete cameraManager_;
 	delete editor_;
 	delete renderer_;
 	delete objectManager_;

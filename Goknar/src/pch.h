@@ -1,6 +1,7 @@
 #pragma once
 
 // Streams
+#include <fstream>
 #include <iostream>
 #include <sstream>
 

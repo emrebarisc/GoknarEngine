@@ -8,10 +8,10 @@ class Camera;
 class GOKNAR_API CameraManager
 {
 public:
-	CameraManager();/* : activeCamera_(nullptr)
+	CameraManager()
 	{
-		
-	}*/
+
+	}
 
 	~CameraManager()
 	{
@@ -24,9 +24,17 @@ public:
 	void AddCamera(Camera* camera)
 	{
 		cameras_.push_back(camera);
+
+		// TEMPORARY
+		activeCamera_ = camera;
 	}
 
-	const Camera* GetActiveCamera() const
+	void SetActiveCamera(Camera* camera)
+	{
+		activeCamera_ = camera;
+	}
+
+	Camera* GetActiveCamera() const
 	{
 		return activeCamera_;
 	}
@@ -36,7 +44,7 @@ protected:
 private:
 	Camera* activeCamera_;
 
-	std::vector< Camera* > cameras_;
+	std::vector<Camera*> cameras_;
 };
 
 #endif

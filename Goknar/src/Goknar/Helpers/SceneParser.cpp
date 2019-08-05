@@ -5,8 +5,12 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "Goknar/Camera.h"
+#include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Mesh.h"
+
+#include "Goknar/Managers/CameraManager.h"
 
 #include "tinyxml2.h"
 
@@ -46,22 +50,29 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	stream.clear();
 
 	//Get Cameras
-/*	element = root->FirstChildElement("Cameras");
+	element = root->FirstChildElement("Cameras");
 	element = element->FirstChildElement("Camera");
-	Camera camera;
+	Camera* camera = new Camera();
 	while (element)
 	{
 		auto child = element->FirstChildElement("Position");
 		stream << child->GetText() << std::endl;
-		stream >> camera.position.x >> camera.position.y >> camera.position.z;
+		float x, y, z;
+		stream >> x >> y >> z;
+		camera->SetPosition(Vector3(x, y, z));
 
 		child = element->FirstChildElement("ImageResolution");
 		stream << child->GetText() << std::endl;
-		stream >> camera.imageWidth_ >> camera.imageHeight_;
+		int width, height;
+		stream >> width >> height;
+		camera->SetImageWidth(width);
+		camera->SetImageHeight(height);
 
 		child = element->FirstChildElement("NearDistance");
 		stream << child->GetText() << std::endl;
-		stream >> camera.nearDistance_;
+		float nearDistance;
+		stream >> nearDistance;
+		camera->SetNearDistance(nearDistance);
 
 		const char* cameraType = element->Attribute("type");
 
@@ -74,7 +85,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				stream << child->GetText() << std::endl;
 				stream >> gazePoint.x >> gazePoint.y >> gazePoint.z;
 
-				camera.gaze = (gazePoint - camera.position).GetNormalized();
+				camera->SetForwardVector((gazePoint - camera->GetPosition()).GetNormalized());
 			}
 			else
 			{
@@ -82,7 +93,9 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				if (child)
 				{
 					stream << child->GetText() << std::endl;
-					stream >> camera.gaze.x >> camera.gaze.y >> camera.gaze.z;
+					float x, y, z;
+					stream >> x >> y >> z;
+					camera->SetForwardVector(Vector3(x, y, z));
 				}
 			}
 
@@ -91,60 +104,49 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream << child->GetText() << std::endl;
 			stream >> fovY;
 
-			float resolutionProportion = camera.imageWidth_ / camera.imageHeight_;
+			float resolutionProportion = camera->GetImageWidth() / camera->GetImageHeight();
 
 			float halfOfFovY = fovY * 0.5f;
 			float top, bottom, left, right;
-			top = camera.nearDistance_ * tan(DEGREE_TO_RADIAN(halfOfFovY));
+			top = camera->GetNearDistance() * tan(DEGREE_TO_RADIAN(halfOfFovY));
 			bottom = -top;
 			left = bottom * resolutionProportion;
 			right = top * resolutionProportion;
 
-			camera.nearPlane = Vector4(left, right, bottom, top);
+			camera->SetNearPlane(Vector4(left, right, bottom, top));
 		}
 		else
 		{
 			child = element->FirstChildElement("Gaze");
 			stream << child->GetText() << std::endl;
-			stream >> camera.gaze.x >> camera.gaze.y >> camera.gaze.z;
+			Vector3 forward;
+			stream >> forward.x >> forward.y >> forward.z;
+			camera->SetForwardVector(forward);
 
 			child = element->FirstChildElement("NearPlane");
 			stream << child->GetText() << std::endl;
-			stream >> camera.nearPlane.x >> camera.nearPlane.y >> camera.nearPlane.z >> camera.nearPlane.w;
+			Vector4 nearPlane;
+			stream >> nearPlane.x >> nearPlane.y >> nearPlane.z >> nearPlane.w;
+			camera->SetNearPlane(nearPlane);
 		}
 
 		child = element->FirstChildElement("Up");
 		stream << child->GetText() << std::endl;
-		stream >> camera.up.x >> camera.up.y >> camera.up.z;
+		Vector3 up;
+		stream >> up.x >> up.y >> up.z;
+		camera->SetUpVector(up);
 
 		// Set up the right vector and make forward and up vector perpenticular in case they are not
-		camera.right = Vector3::Cross(camera.gaze.GetNormalized(), camera.up.GetNormalized());
-		camera.up = Vector3::Cross(camera.right.GetNormalized(), camera.gaze.GetNormalized());
-		camera.gaze = Vector3::Cross(camera.up.GetNormalized(), camera.right.GetNormalized());
+		camera->SetRightVector(Vector3::Cross(camera->GetForwardVector().GetNormalized(), camera->GetUpVector().GetNormalized()));
+		camera->SetUpVector(Vector3::Cross(camera->GetRightVector().GetNormalized(), camera->GetForwardVector().GetNormalized()));
+		camera->SetForwardVector(Vector3::Cross(camera->GetUpVector().GetNormalized(), camera->GetRightVector().GetNormalized()));
+		
+		camera->InitMatrices();
 
-		camera.right.Normalize();
-		camera.up.Normalize();
-		camera.right.Normalize();
-
-		child = element->FirstChildElement("NumSamples");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-		}
-		else
-		{
-			stream << "1" << std::endl;;
-		}
-		stream >> camera.numberOfSamples;
-
-		child = element->FirstChildElement("ImageName");
-		stream << child->GetText() << std::endl;
-		stream >> camera.imageName;
-
-		scene->cameras.push_back(camera);
+		engine->GetCameraManager()->AddCamera(camera);
 		element = element->NextSiblingElement("Camera");
 		stream.clear();
-	}*/
+	}
 
 	//Get Ambient Light
 	element = root->FirstChildElement("Lights");

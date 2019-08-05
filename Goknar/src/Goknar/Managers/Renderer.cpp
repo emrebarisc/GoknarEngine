@@ -5,9 +5,13 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Log.h"
+#include "Goknar/Mesh.h"
 #include <gl\GLU.h>
 
 #include "Goknar/Shader.h"
+#include "IOManager.h"
+
+#include <Windows.h>
 
 Renderer::Renderer(): vertexBufferId_(0), indexBufferId_(0)
 {
@@ -24,57 +28,74 @@ void Renderer::Init()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glDepthFunc(GL_LEQUAL);
-
-	glGenVertexArrays(1, &vertexArrayId_);
-	glBindVertexArray(vertexArrayId_);
-
-	glGenBuffers(1, &vertexBufferId_);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId_);
-
-	float vertices[9] =
+	
+	for (Mesh* mesh : objectsToBeRendered_)
 	{
-		-0.5f, -0.5f, 0.f,
-		0.5f, -0.5f, 0.f,
-		0.f, 0.5f, 0.f,
-	};
+		mesh->Init();
+	}
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	//glGenVertexArrays(1, &vertexArrayId_);
+	//glBindVertexArray(vertexArrayId_);
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+	//glGenBuffers(1, &vertexBufferId_);
+	//glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId_);
 
-	glGenBuffers(1, &indexBufferId_);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId_);
+	//float vertices[9] =
+	//{
+	//	-0.5f, -0.5f, 0.f,
+	//	0.5f, -0.5f, 0.f,
+	//	0.f, 0.5f, 0.f,
+	//};
 
-	unsigned int indices[3] = { 0, 1, 2 };
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// TODO: REMOVE SHADER OPERATION HERE
-	const char* vertexShader =
-		R"(
-			#version 330 core
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 
-			layout(location = 0) in vec3 position;
-			
-			void main()
-			{
-				gl_Position = vec4(position, 1.0);
-			}
-		)";
+	//glGenBuffers(1, &indexBufferId_);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId_);
 
-	const char* fragmentShader =
-		R"(
-			#version 330
+	//unsigned int indices[3] = { 0, 1, 2 };
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-			out vec4 color;
+	//// TODO: REMOVE SHADER OPERATION HERE
+	//const char* vertexBuffer =
+	//	R"(
+	//		#version 330 core
 
-			void main() 
-			{
-			  color = vec4(0.8, 0.2, 0.2, 1.0);
-			}
-		)";
+	//		layout(location = 0) in vec3 position;
+	//		
+	//		void main()
+	//		{
+	//			gl_Position = vec4(position, 1.0);
+	//		}
+	//	)";
 
-	shader_ = new Shader(vertexShader, fragmentShader);
+	//const char* fragmentBuffer =
+	//	R"(
+	//		#version 330
+
+	//		out vec4 color;
+
+	//		void main() 
+	//		{
+	//		  color = vec4(0.2, 0.8, 0.2, 1.0);
+	//		}
+	//	)";
+
+	///*char* vertexBuffer = nullptr;
+	//if (IOManager::GetFileRawText("C:/Users/emreb/Desktop/DefaultShadersDefaultVertexShader.glsl", vertexBuffer))
+	//{
+
+	//}
+
+	//char* fragmentBuffer = nullptr;
+	//if (IOManager::GetFileRawText("C:/Users/emreb/Desktop/DefaultShadersDefaultFragmentShader.glsl", fragmentBuffer))
+	//{ 
+
+	//}*/
+	//
+	//shader_ = new Shader(vertexBuffer, fragmentBuffer);
 }
 
 void Renderer::Render()
@@ -86,13 +107,18 @@ void Renderer::Render()
 	// TODO Render scene
 	glBindVertexArray(vertexArrayId_);
 
-	glUseProgram(shader_->GetProgramId());
+	for (Mesh* mesh : objectsToBeRendered_)
+	{
+		mesh->Render();
+	}
 
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+	/*glUseProgram(shader_->GetProgramId());
+
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);*/
 }
 
-void Renderer::AddObjectToRenderer(RenderingObject *object)
+void Renderer::AddObjectToRenderer(Mesh*object)
 {
-	//objectsToBeRendered_.push_back(object);
+	objectsToBeRendered_.push_back(object);
 }
  
