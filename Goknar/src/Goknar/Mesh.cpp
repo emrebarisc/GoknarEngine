@@ -23,19 +23,19 @@ Mesh::~Mesh()
 
 void Mesh::Init()
 {
-	glGenVertexArrays(1, &vertexArrayId_);
 	glGenBuffers(1, &vertexBufferId_);
 	glGenBuffers(1, &indexBufferId_);
 
-	glBindVertexArray(vertexArrayId_);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId_);
-	glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(vertices_[0]), &vertices_[0], GL_STATIC_DRAW);
-
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId_);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, faces_.size() * sizeof(faces_[0]), &faces_[0], GL_STATIC_DRAW);
+
+
+	glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(vertices_[0]), &vertices_[0].x, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices_[0]), nullptr);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices_[0]), (void *)0);
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, faces_.size() * sizeof(faces_[0]), &faces_[0], GL_STATIC_DRAW);
 
 	// TODO: REMOVE SHADER OPERATION HERE
 	const char* vertexBuffer =
@@ -93,7 +93,5 @@ void Mesh::Render() const
 
 	glUniformMatrix4fv(uniMvp, 1, GL_FALSE, &MVP[0]);
 
-	//glBindVertexArray(vertexArrayId_);
-	glDrawElements(GL_TRIANGLES, faces_.size(), GL_UNSIGNED_INT, 0);
-	//glBindVertexArray(0);
+	glDrawElements(GL_TRIANGLES, faces_.size() * 3, GL_UNSIGNED_INT, (void*)0);
 }
