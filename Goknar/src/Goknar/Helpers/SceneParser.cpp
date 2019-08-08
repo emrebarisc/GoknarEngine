@@ -281,15 +281,11 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			face.vertexIndices[0] = v0;
 			stream >> face.vertexIndices[1] >> face.vertexIndices[2];
 
-			face.vertexIndices[0] -= 1;
-			face.vertexIndices[1] -= 1;
-			face.vertexIndices[2] -= 1;
-
-			const std::vector<Vector3>& vertices = mesh->GetVertices();
-			Vector3 a = vertices[face.vertexIndices[0]];
-			Vector3 b = vertices[face.vertexIndices[1]];
-			Vector3 c = vertices[face.vertexIndices[2]];
-			/*face->normal = Vector3::Cross(c - b, a - b);
+			/*const std::vector<Vector3>* vertices = mesh->GetVertices();
+			Vector3 a = vertices->at(face.vertexIndices[0]);
+			Vector3 b = vertices->at(face.vertexIndices[1]);
+			Vector3 c = vertices->at(face.vertexIndices[2]);
+			face->normal = Vector3::Cross(c - b, a - b);
 			Vector3::Normalize(face->normal);*/
 
 			mesh->AddFace(face);

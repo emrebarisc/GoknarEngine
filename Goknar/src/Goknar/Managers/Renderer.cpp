@@ -103,6 +103,8 @@ void Renderer::Render()
 	const Colori& sceneBackgroundColor = Scene::mainScene->GetBackgroundColor();
 	glClearColor(GLfloat(sceneBackgroundColor.r), GLfloat(sceneBackgroundColor.g), GLfloat(sceneBackgroundColor.b), 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glFlush();
 	
 	// TODO Render scene
 	glBindVertexArray(vertexArrayId_);
@@ -121,4 +123,3 @@ void Renderer::AddObjectToRenderer(Mesh*object)
 {
 	objectsToBeRendered_.push_back(object);
 }
- 

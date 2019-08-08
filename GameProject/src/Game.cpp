@@ -12,8 +12,9 @@ public:
 
 Game::Game() : Application()
 {
-	mainScene_->ReadSceneData("../GameProject/Content/Scenes/BunnyScene.xml");
-	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/SimpleBox.xml");
+	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/SphereScene.xml");
+	mainScene_->ReadSceneData("../GameProject/Content/Scenes/MonkeyScene.xml");
+	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/ThreeSpheres.xml");
 }
 
 Application *CreateApplication()

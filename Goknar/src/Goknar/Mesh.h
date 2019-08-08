@@ -31,17 +31,18 @@ public:
 
 	void AddVertex(const Vector3& vertex)
 	{
-		vertices_.push_back(vertex);
+		vertices_->push_back(vertex);
 	}
 
-	const std::vector<Vector3>& GetVertices() const
+	const std::vector<Vector3>* GetVertices() const
 	{
 		return vertices_;
 	}
 
 	void AddFace(const Face& face)
 	{
-		faces_.push_back(face);
+		faces_->push_back(face);
+		faceSize_++;
 	}
 
 	GLuint GetVertexArrayId() const
@@ -64,8 +65,8 @@ public:
 private:
 	Matrix modelMatrix_;
 
-	std::vector<Vector3> vertices_;
-	std::vector<Face> faces_;
+	std::vector<Vector3>* vertices_;
+	std::vector<Face>* faces_;
 
 	class Shader* shader_;
 
@@ -74,6 +75,8 @@ private:
 	GLuint indexBufferId_;
 
 	int materialId_;
+
+	unsigned int faceSize_;
 };
 
 #endif

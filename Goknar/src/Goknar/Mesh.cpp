@@ -9,8 +9,11 @@
 
 #include "Goknar/Managers/CameraManager.h"
 
-Mesh::Mesh() : modelMatrix_(Matrix::IdentityMatrix), materialId_(0), indexBufferId_(0), shader_(0), vertexBufferId_(0), vertexArrayId_(0)
+Mesh::Mesh() : modelMatrix_(Matrix::IdentityMatrix), materialId_(0), indexBufferId_(0), shader_(0), vertexBufferId_(0), vertexArrayId_(0), faceSize_(0)
 {
+	vertices_ = new std::vector<Vector3>();
+	faces_ = new std::vector<Face>();
+
 	engine->GetRenderer()->AddObjectToRenderer(this);
 }
 
@@ -23,19 +26,27 @@ Mesh::~Mesh()
 
 void Mesh::Init()
 {
+	/*
+		Vertex buffer
+	*/
 	glGenBuffers(1, &vertexBufferId_);
-	glGenBuffers(1, &indexBufferId_);
-
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId_);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId_);
-
-
-	glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(vertices_[0]), &vertices_[0].x, GL_STATIC_DRAW);
-
+	glBufferData(GL_ARRAY_BUFFER, vertices_->size() * sizeof(vertices_->at(0)), &vertices_->at(0).x, GL_STATIC_DRAW);
+	
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices_[0]), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices_->at(0)), (void *)0);
+	
+	vertices_->clear();
+	delete vertices_;
 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, faces_.size() * sizeof(faces_[0]), &faces_[0], GL_STATIC_DRAW);
+	/*
+		Index buffer
+	*/
+	glGenBuffers(1, &indexBufferId_);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId_);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, faces_->size() * sizeof(faces_->at(0)), &faces_->at(0), GL_STATIC_DRAW);
+	faces_->clear();
+	delete faces_;
 
 	// TODO: REMOVE SHADER OPERATION HERE
 	const char* vertexBuffer =
@@ -93,5 +104,5 @@ void Mesh::Render() const
 
 	glUniformMatrix4fv(uniMvp, 1, GL_FALSE, &MVP[0]);
 
-	glDrawElements(GL_TRIANGLES, faces_.size() * 3, GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_TRIANGLES, faceSize_ * 3, GL_UNSIGNED_INT, (void*)0);
 }
