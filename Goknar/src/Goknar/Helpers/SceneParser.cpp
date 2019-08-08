@@ -19,10 +19,20 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	tinyxml2::XMLDocument xmlFile;
 	std::stringstream stream;
 
-	auto res = xmlFile.LoadFile(filePath);
-	if (res)
+	tinyxml2::XMLError res;
+
+	try
 	{
-		throw std::runtime_error("Error: XML file could not be loaded.");
+		res = xmlFile.LoadFile(filePath);
+		if (res)
+		{
+			throw std::runtime_error("Error: Scene XML file could not be loaded.");
+		}
+	}
+	catch (std::exception& exception)
+	{
+		std::cerr << exception.what() << std::endl;
+		exit(EXIT_FAILURE);
 	}
 
 	auto root = xmlFile.FirstChild();

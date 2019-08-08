@@ -142,6 +142,10 @@ def ParseScene():
             
         for vertex in blenderMesh.vertices:
             mesh.vertices.append(Vector3(vertex.co[0], vertex.co[1], vertex.co[2]))
+            normal = vertex.normal.to_4d()
+            normal.w = 0
+            normal = (bpy.data.objects[blenderMesh.name].matrix_world * normal)
+            mesh.normals.append(Vector3(normal.x, normal.y, normal.z))
             
         sceneData.meshes.append(mesh)
         meshId += 1

@@ -180,12 +180,14 @@ class Mesh:
     id = 0
     vertices = []
     faces = []
+    normals = []
     textureCoordinates = []
     material = 0
     
     def __init__(self):
         self.vertices = []
         self.faces = []
+        self.normals = []
         self.textureCoordinates = []
     
     def Export(self):
@@ -198,6 +200,11 @@ class Mesh:
         for vertex in self.vertices:
             fileBuffer += '\t\t\t\t' + str(vertex.x) + ' ' + str(vertex.y) + ' ' + str(vertex.z) + '\n'
         fileBuffer += '\t\t\t</Vertices>\n'
+        
+        fileBuffer += '\t\t\t<Normals>\n'
+        for normal in self.normals:
+            fileBuffer += '\t\t\t\t' + str(normal.x) + ' ' + str(normal.y) + ' ' + str(normal.z) + '\n'
+        fileBuffer += '\t\t\t</Normals>\n'
         
         fileBuffer += '\t\t\t<Faces>\n'
         for face in self.faces:

@@ -15,6 +15,13 @@ public:
 	unsigned int vertexIndices[3];
 };
 
+class GOKNAR_API VertexData
+{
+public:
+	Vector3 position;
+	Vector3 normal;
+};
+
 class GOKNAR_API Mesh
 {
 public:

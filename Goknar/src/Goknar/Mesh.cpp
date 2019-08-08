@@ -58,6 +58,7 @@ void Mesh::Init()
 			uniform mat4 MVP;
 
 			layout(location = 0) in vec3 position;
+			layout(location = 1) in vec3 normal;
 			
 			void main()
 			{
@@ -73,7 +74,7 @@ void Mesh::Init()
 
 			void main() 
 			{
-			  color = vec4(0.2, 0.8, 0.2, 1.0);
+			  color = vec4(1.f, 0.f, 0.f, 1.f);
 			}
 		)";
 
@@ -99,10 +100,9 @@ void Mesh::Render() const
 	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 	Matrix MVP = activeCamera->GetViewingMatrix() * activeCamera->GetProjectionMatrix();
 	MVP = MVP * modelMatrix_;
-	glUseProgram(shader_->GetProgramId());
-	GLint uniMvp = glGetUniformLocation(shader_->GetProgramId(), "MVP");
 
-	glUniformMatrix4fv(uniMvp, 1, GL_FALSE, &MVP[0]);
-
+	GLint mVPUniform = glGetUniformLocation(shader_->GetProgramId(), "MVP");
+	glUniformMatrix4fv(mVPUniform, 1, GL_FALSE, &MVP[0]);
+	
 	glDrawElements(GL_TRIANGLES, faceSize_ * 3, GL_UNSIGNED_INT, (void*)0);
 }
