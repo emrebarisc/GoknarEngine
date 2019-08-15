@@ -69,7 +69,6 @@ project "Goknar"
 			"GOKNAR_PLATFORM_WINDOWS",
 			"GOKNAR_BUILD_DLL",
 			"GOKNAR_ENABLE_ASSERTS",
-			-- For GLFW not to include GLFW again
 			"GLFW_INCLUDE_NONE"
 		}
 

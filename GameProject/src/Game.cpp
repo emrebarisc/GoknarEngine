@@ -15,7 +15,8 @@ Game::Game() : Application()
 	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/SphereScene.xml");
 	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/MonkeyScene.xml");
 	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/ThreeSpheres.xml");
-	mainScene_->ReadSceneData("../GameProject/Content/Scenes/SphereWithNormals.xml");
+	mainScene_->ReadSceneData("../GameProject/Content/Scenes/ThreeDifferentShapes.xml");
+	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/SphereWithNormals.xml");
 }
 
 Application *CreateApplication()

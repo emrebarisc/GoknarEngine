@@ -280,6 +280,20 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		}
 		stream.clear();
 
+		child = element->FirstChildElement("Normals");
+
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			int normalIndex = 0;
+			Vector3 normal;
+			while (!(stream >> normal.x).eof())
+			{
+				stream >> normal.y >> normal.z;
+				mesh->SetVertexNormal(normalIndex++, normal);
+			}
+		}
+		stream.clear();
 
 		child = element->FirstChildElement("Faces");
 		stream << child->GetText() << std::endl;
@@ -291,7 +305,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			face.vertexIndices[0] = v0;
 			stream >> face.vertexIndices[1] >> face.vertexIndices[2];
 
-			/*const std::vector<Vector3>* vertices = mesh->GetVertices();
+			/*const std::vector<Vector3>* vertices = mesh->GetVerticesPointer();
 			Vector3 a = vertices->at(face.vertexIndices[0]);
 			Vector3 b = vertices->at(face.vertexIndices[1]);
 			Vector3 c = vertices->at(face.vertexIndices[2]);

@@ -5,15 +5,19 @@
 #include "GLFW/glfw3.h"
 
 #include "Application.h"
-#include "Editor/ImGuiEditor/ImGuiEditor.h"
 #include "Log.h"
+#include "ObjectBase.h"
+#include "Scene.h"
+
+#include "Editor/ImGuiEditor/ImGuiEditor.h"
+
 #include "Managers/CameraManager.h"
 #include "Managers/InputManager.h"
 #include "Managers/ObjectManager.h"
-#include "Managers/Renderer.h"
 #include "Managers/WindowManager.h"
-#include "ObjectBase.h"
-#include "Scene.h"
+
+#include "Managers/Renderer/Renderer.h"
+
 
 Engine *engine;
 
@@ -111,6 +115,11 @@ void Engine::AddToTickableObjects(ObjectBase* object)
 void Engine::Exit()
 {
 	windowManager_->CloseWindow();
+}
+
+void Engine::AddObjectToRenderer(Mesh* mesh)
+{
+	renderer_->AddObjectToRenderer(mesh);
 }
 
 void Engine::SetApplication(Application* application)

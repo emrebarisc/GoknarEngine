@@ -9,6 +9,8 @@
 
 #include <vector>
 
+class Shader;
+
 class GOKNAR_API Face
 {
 public:
@@ -18,9 +20,18 @@ public:
 class GOKNAR_API VertexData
 {
 public:
+	VertexData() : position(Vector3::ZeroVector), normal(Vector3::ZeroVector), uv(Vector2::ZeroVector) { }
+	VertexData(const Vector3& p) : position(p), normal(Vector3::ZeroVector), uv(Vector2::ZeroVector) { }
+	VertexData(const Vector3& pos, const Vector3& n) : position(pos), normal(n), uv(Vector2::ZeroVector) { }
+	VertexData(const Vector3& pos, const Vector3& n, const Vector2& uvCoord) : position(pos), normal(n), uv(uvCoord) { }
+
 	Vector3 position;
 	Vector3 normal;
+	Vector2 uv;
 };
+
+typedef std::vector<VertexData> VertexArray;
+typedef std::vector<Face> FaceArray;
 
 class GOKNAR_API Mesh
 {
@@ -38,10 +49,15 @@ public:
 
 	void AddVertex(const Vector3& vertex)
 	{
-		vertices_->push_back(vertex);
+		vertices_->push_back(VertexData(vertex));
 	}
 
-	const std::vector<Vector3>* GetVertices() const
+	void SetVertexNormal(int index, const Vector3& n)
+	{
+		vertices_->at(index).normal = n;
+	}
+
+	const VertexArray* GetVerticesPointer() const
 	{
 		return vertices_;
 	}
@@ -49,22 +65,26 @@ public:
 	void AddFace(const Face& face)
 	{
 		faces_->push_back(face);
-		faceSize_++;
 	}
 
-	GLuint GetVertexArrayId() const
+	const FaceArray* GetFacesPointer() const
 	{
-		return vertexArrayId_;
+		return faces_;
 	}
 
-	GLuint GetVertexBufferId() const
+	const Shader* GetShader() const
 	{
-		return vertexBufferId_;
+		return shader_;
 	}
 
-	GLuint GetIndexBufferId() const
+	int GetVertexCount() const
 	{
-		return indexBufferId_;
+		return vertexCount_;
+	}
+
+	int GetFaceCount() const
+	{
+		return faceCount_;
 	}
 
 	void Render() const;
@@ -72,18 +92,15 @@ public:
 private:
 	Matrix modelMatrix_;
 
-	std::vector<Vector3>* vertices_;
-	std::vector<Face>* faces_;
+	VertexArray* vertices_;
+	FaceArray* faces_;
 
-	class Shader* shader_;
+	Shader* shader_;
 
-	GLuint vertexArrayId_;
-	GLuint vertexBufferId_;
-	GLuint indexBufferId_;
+	unsigned int vertexCount_;
+	unsigned int faceCount_;
 
 	int materialId_;
-
-	unsigned int faceSize_;
 };
 
 #endif

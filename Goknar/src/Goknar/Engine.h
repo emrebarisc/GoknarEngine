@@ -8,6 +8,7 @@
 class CameraManager;
 class Editor;
 class InputManager;
+class Mesh;
 class ObjectBase;
 class ObjectManager;
 class Renderer;
@@ -41,6 +42,8 @@ public:
 	{
 		return renderer_;
 	}
+
+	void AddObjectToRenderer(Mesh* mesh);
 
 	Editor* GetEditor() const
 	{

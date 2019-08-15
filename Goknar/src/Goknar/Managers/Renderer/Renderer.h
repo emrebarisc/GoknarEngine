@@ -25,13 +25,11 @@ public:
 private:
 	std::vector<Mesh*> objectsToBeRendered_;
 
-	GLuint vertexArrayId_;
+	unsigned int totalVertexSize_;
+	unsigned int totalFaceSize_;
+
 	GLuint vertexBufferId_;
 	GLuint indexBufferId_;
-
-
-	// TODO REMOVE SHADER OPERATIONS
-	class Shader* shader_;
 };
 
 #endif
