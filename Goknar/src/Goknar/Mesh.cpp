@@ -35,16 +35,16 @@ void Mesh::Init()
 			#version 330 core
 
 			layout(location = 0) in vec3 position;
-			//layout(location = 1) in vec3 normal;
+			layout(location = 1) in vec3 normal;
 
 			uniform mat4 MVP;
 
-			out vec4 vertexNormal;
+			out vec3 vertexNormal;
 
 			void main()
 			{
 				gl_Position = MVP * vec4(position, 1.0);
-				//vertexNormal = MVP * vec4(normal);
+				vertexNormal = normal;
 			}
 		)";
 
@@ -54,7 +54,7 @@ void Mesh::Init()
 
 			out vec4 color;
 
-			in vec4 vertexNormal;
+			in vec3 vertexNormal;
 
 			void main() 
 			{
