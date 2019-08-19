@@ -247,13 +247,21 @@ public:
         return out;
     }
 
-    float& operator[](int index)
-    {
-        if(index >= 0 && index <= 15)
-        {
-            return m[index];
-        }
-    }
+	float& operator[](int index)
+	{
+		if (index >= 0 && index <= 15)
+		{
+			return m[index];
+		}
+	}
+
+	const float& operator[](int index) const
+	{
+		if (index >= 0 && index <= 15)
+		{
+			return m[index];
+		}
+	}
 
     bool operator==(const Matrix &rhs)
     {
