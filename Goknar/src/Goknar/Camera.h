@@ -149,6 +149,16 @@ public:
 		return nearDistance_;
 	}
 
+	void SetFarDistance(float farDistance)
+	{
+		farDistance_ = farDistance;
+	}
+
+	float GetFarDistance()
+	{
+		return farDistance_;
+	}
+
 	void InitMatrices()
 	{
 		LookAt();

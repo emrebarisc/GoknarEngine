@@ -79,10 +79,22 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		camera->SetImageHeight(height);
 
 		child = element->FirstChildElement("NearDistance");
-		stream << child->GetText() << std::endl;
-		float nearDistance;
-		stream >> nearDistance;
-		camera->SetNearDistance(nearDistance);
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			float nearDistance;
+			stream >> nearDistance;
+			camera->SetNearDistance(nearDistance);
+		}
+
+		child = element->FirstChildElement("FarDistance");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			float farDistance;
+			stream >> farDistance;
+			camera->SetFarDistance(farDistance);
+		}
 
 		const char* cameraType = element->Attribute("type");
 

@@ -86,7 +86,7 @@ vec3 diffuse = diffuseReflectance * cosThetaPrime * pointLightIntensity / (wiLen
 
 
 // Specular
-vec3 specularReflectance = vec3(10.f, 10.f, 10.f);
+vec3 specularReflectance = vec3(1000.f, 1000.f, 1000.f);
 float phongExponent = 50.f;
 
 vec3 wo = viewPosition - fragmentPosition;
@@ -110,27 +110,27 @@ void Mesh::Render() const
 	Matrix MVP = activeCamera->GetViewingMatrix() * activeCamera->GetProjectionMatrix();
 	MVP = MVP * modelMatrix_;
 
-	GLint mVPUniform = glGetUniformLocation(shader_->GetProgramId(), "MVP");
+	int programId = shader_->GetProgramId();
+
+	GLint mVPUniform = glGetUniformLocation(programId, "MVP");
 	glUniformMatrix4fv(mVPUniform, 1, GL_FALSE, &MVP[0]);
 
-	GLint modelMatrixUniform = glGetUniformLocation(shader_->GetProgramId(), "modelMatrix");
+	GLint modelMatrixUniform = glGetUniformLocation(programId, "modelMatrix");
 	glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, &modelMatrix_[0]);
 
 	static float theta = 0.f;
 	static float radius = 10.f;
 	theta += 0.0025f;
-
 	Vector3 pointLightPosition = Vector3(radius * cos(theta), radius * sin(theta), 10.f);
 
-	printf("%f, %f, %f\n", pointLightPosition.x, pointLightPosition.y, pointLightPosition.z);
-	GLint pointLightPositionUniform = glGetUniformLocation(shader_->GetProgramId(), "pointLightPosition");
+	GLint pointLightPositionUniform = glGetUniformLocation(programId, "pointLightPosition");
 	glUniform3fv(pointLightPositionUniform, 1, &pointLightPosition.x);
 
-	Vector3 pointLightIntensity(1000.f, 1000.f, 1000.f);
-	GLint pointLightIntensityUniform = glGetUniformLocation(shader_->GetProgramId(), "pointLightIntensity");
+	Vector3 pointLightIntensity(100.f, 100.f, 100.f);
+	GLint pointLightIntensityUniform = glGetUniformLocation(programId, "pointLightIntensity");
 	glUniform3fv(pointLightIntensityUniform, 1, &pointLightIntensity.x);
 
 	const Vector3& cameraPosition = engine->GetCameraManager()->GetActiveCamera()->GetPosition();
-	GLint viewPositionUniform = glGetUniformLocation(shader_->GetProgramId(), "viewPosition");
+	GLint viewPositionUniform = glGetUniformLocation(programId, "viewPosition");
 	glUniform3fv(viewPositionUniform, 1, &cameraPosition.x);
 }
