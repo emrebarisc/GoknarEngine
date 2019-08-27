@@ -74,7 +74,7 @@ uniform vec3 viewPosition;
 vec3 ambient = vec3(0.15f, 0.15f, 0.15f);
 
 // Diffuse
-vec3 diffuseReflectance = vec3(1.f, 0.882f, 0.197f);
+vec3 diffuseReflectance = vec3(1.f, 1.f, 1.f);
 
 vec3 wi = pointLightPosition - fragmentPosition;
 float wiLength = length(wi);
@@ -98,7 +98,7 @@ vec3 halfVector = (wi + wo) / (wiLength + woLength);
 float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0, dot(vertexNormal, halfVector)), phongExponent);
 vec3 specular = specularReflectance * cosAlphaPrimeToThePowerOfPhongExponent;
 
-			  color = vec4((ambient + diffuse + specular) * vec3(1.f, 0.f, 1.f), 1.f);
+			  color = vec4((ambient + diffuse + specular), 1.f);
 			}
 		)";
 	shader_ = new Shader(vertexBuffer, fragmentBuffer);
@@ -110,27 +110,20 @@ void Mesh::Render() const
 	Matrix MVP = activeCamera->GetViewingMatrix() * activeCamera->GetProjectionMatrix();
 	MVP = MVP * modelMatrix_;
 
-	int programId = shader_->GetProgramId();
-
-	GLint mVPUniform = glGetUniformLocation(programId, "MVP");
-	glUniformMatrix4fv(mVPUniform, 1, GL_FALSE, &MVP[0]);
-
-	GLint modelMatrixUniform = glGetUniformLocation(programId, "modelMatrix");
-	glUniformMatrix4fv(modelMatrixUniform, 1, GL_FALSE, &modelMatrix_[0]);
+	shader_->SetMatrix("MVP", &MVP[0]);
+	shader_->SetMatrix("modelMatrix", &modelMatrix_[0]);
 
 	static float theta = 0.f;
 	static float radius = 10.f;
-	theta += 0.0025f;
+	theta += 0.00025f;
 	Vector3 pointLightPosition = Vector3(radius * cos(theta), radius * sin(theta), 10.f);
-
-	GLint pointLightPositionUniform = glGetUniformLocation(programId, "pointLightPosition");
-	glUniform3fv(pointLightPositionUniform, 1, &pointLightPosition.x);
+	shader_->SetVector3("pointLightPosition", &pointLightPosition.x);
 
 	Vector3 pointLightIntensity(100.f, 100.f, 100.f);
-	GLint pointLightIntensityUniform = glGetUniformLocation(programId, "pointLightIntensity");
-	glUniform3fv(pointLightIntensityUniform, 1, &pointLightIntensity.x);
+	shader_->SetVector3("pointLightIntensity", &pointLightIntensity.x);
 
 	const Vector3& cameraPosition = engine->GetCameraManager()->GetActiveCamera()->GetPosition();
-	GLint viewPositionUniform = glGetUniformLocation(programId, "viewPosition");
-	glUniform3fv(viewPositionUniform, 1, &cameraPosition.x);
+	shader_->SetVector3("viewPosition", &cameraPosition.x);
+
+	shader_->SetVector3("ASDASDASD", &cameraPosition.x);
 }

@@ -10,6 +10,8 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Mesh.h"
 
+#include "Goknar/Lights/PointLight.h"
+
 #include "Goknar/Managers/CameraManager.h"
 
 #include "tinyxml2.h"
@@ -180,22 +182,24 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	scene->SetAmbientLight(ambientLight);
 
 	//Get Lights
-/*	element = element->FirstChildElement("PointLight");
-	PointLight pointLight;
+	element = element->FirstChildElement("PointLight");
+	PointLight* pointLight;
 	while (element)
 	{
+		pointLight = new PointLight();
+
 		child = element->FirstChildElement("Position");
 		stream << child->GetText() << std::endl;
 		child = element->FirstChildElement("Intensity");
 		stream << child->GetText() << std::endl;
 
-		stream >> pointLight.position.x >> pointLight.position.y >> pointLight.position.z;
-		stream >> pointLight.intensity.x >> pointLight.intensity.y >> pointLight.intensity.z;
+		stream >> pointLight->position.x >> pointLight->position.y >> pointLight->position.z;
+		stream >> pointLight->intensity.x >> pointLight->intensity.y >> pointLight->intensity.z;
 
-		scene->pointLights.push_back(pointLight);
+		scene->AddPointLight(pointLight);
 		element = element->NextSiblingElement("PointLight");
 	}
-*/
+	stream.clear();
 
 	//Get Materials
 /*	element = root->FirstChildElement("Materials");

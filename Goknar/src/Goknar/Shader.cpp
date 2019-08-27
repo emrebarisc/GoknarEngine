@@ -93,3 +93,33 @@ void Shader::Unbind() const
 {
 	glUseProgram(0);
 }
+
+void Shader::SetBool(const char* name, bool value)
+{
+	glUniform1i(glGetUniformLocation(programId_, name), (int)value);
+}
+
+void Shader::SetInt(const char* name, int value) const
+{
+	glUniform1i(glGetUniformLocation(programId_, name), value);
+}
+
+void Shader::SetFloat(const char* name, float value) const
+{
+	glUniform1f(glGetUniformLocation(programId_, name), value);
+}
+
+void Shader::SetMatrix3x3(const char* name, const float* bufferPointer) const
+{
+	glUniformMatrix3fv(glGetUniformLocation(programId_, name), 1, GL_FALSE, bufferPointer);
+}
+
+void Shader::SetMatrix(const char* name, const float* bufferPointer) const
+{
+	glUniformMatrix4fv(glGetUniformLocation(programId_, name), 1, GL_FALSE, bufferPointer);
+}
+
+void Shader::SetVector3(const char* name, const float* bufferPointer) const
+{
+	glUniform3fv(glGetUniformLocation(programId_, name), 1, bufferPointer);
+}

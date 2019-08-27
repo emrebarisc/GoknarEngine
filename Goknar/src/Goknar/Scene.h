@@ -34,6 +34,11 @@ public:
 		meshes_.push_back(mesh);
 	}
 
+	void AddPointLight(const PointLight* pointLight)
+	{
+		pointLights_.push_back(pointLight);
+	}
+
 	void SetAmbientLight(const Vector3& ambientLight)
 	{
 		ambientLight_ = ambientLight;
@@ -50,14 +55,7 @@ public:
 	}
 
 private:
-
- //   std::vector<Camera> cameras;
- //   std::vector<Light *> lights;
- //   std::vector<Material> materials;
- //   std::vector<Texture *> textures;
- //   std::vector<Vector3> translations;
- //   std::vector<Vector3> scalings;
- //   std::vector<Vector4> rotations;
+	std::vector<PointLight*> pointLights_;
     std::vector<const Mesh *> meshes_;
 
 	Vector3 ambientLight_;
