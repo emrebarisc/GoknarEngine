@@ -33,8 +33,6 @@ public:
         
     }
 
-    Vector3 GetIntensityAtPosition(const Vector3& lightPosition, const Vector3& positionAt) const override;
-
     Vector3 direction;
 
     // Angles in radian. They are half of parsed values.

@@ -12,6 +12,7 @@
 //#include "Texture.h"
 
 class Mesh;
+class PointLight;
 
 /*
     Scene class containing all the scene data
@@ -55,7 +56,7 @@ public:
 	}
 
 private:
-	std::vector<PointLight*> pointLights_;
+	std::vector<const PointLight*> pointLights_;
     std::vector<const Mesh *> meshes_;
 
 	Vector3 ambientLight_;
