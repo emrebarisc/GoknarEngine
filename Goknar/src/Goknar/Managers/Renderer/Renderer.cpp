@@ -100,7 +100,7 @@ void Renderer::Init()
 void Renderer::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	const Colori& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
+	const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
 	glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
 	
 	int vertexStartingIndex = 0;

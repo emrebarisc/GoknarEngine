@@ -15,21 +15,29 @@
 
 	<Lights>
 		<AmbientLight>25 25 25</AmbientLight>
-	    <PointLight>
+	    <!--<PointLight>
 	      <Position>-7.5 7.5 7.5</Position>
 	      <Color>1.0 1.0 1.0</Color>
-	      <Intensity>50</Intensity>
+	      <Intensity>200</Intensity>
 	    </PointLight>
 	    <PointLight>
 	      <Position>7.5 -7.5 10</Position>
 	      <Color>1.0 1.0 1.0</Color>
-	      <Intensity>50</Intensity>
+	      <Intensity>200</Intensity>
 	    </PointLight>
         <DirectionalLight>
-            <Direction>1.0 1.0 1.0</Direction>
+            <Direction>1.0 0.8 -1.0</Direction>
 			<Color>1.0 1.0 1.0</Color>
-			<Intensity>1</Intensity>
-        </DirectionalLight>
+			<Intensity>2</Intensity>
+        </DirectionalLight>-->
+        <SpotLight id="1">
+            <Position>15 15 15</Position>
+            <Direction>-1 -1 -1</Direction>
+            <Color>1.0 1.0 1.0</Color>
+            <Intensity>500</Intensity>
+            <CoverageAngle>10</CoverageAngle>
+            <FalloffAngle>8</FalloffAngle>
+        </SpotLight>
 	</Lights>
 
 	<Materials>        
@@ -53,7 +61,7 @@
         </Material>
         <Material id="3">
             <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
-            <DiffuseReflectance>0.1 0.1 0.1</DiffuseReflectance>
+            <DiffuseReflectance>0.5 0.5 0.5</DiffuseReflectance>
             <SpecularReflectance>1.0 1.0 1.0</SpecularReflectance>
             <PhongExponent>5000</PhongExponent>
         </Material>

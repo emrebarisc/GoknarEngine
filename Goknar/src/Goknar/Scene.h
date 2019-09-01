@@ -16,6 +16,7 @@ class Mesh;
 
 class DirectionalLight;
 class PointLight;
+class SpotLight;
 
 /*
     Scene class containing all the scene data
@@ -56,6 +57,16 @@ public:
 		return directionalLights_;
 	}
 
+	void AddSpotLight(const SpotLight* pointLight)
+	{
+		spotLights_.push_back(pointLight);
+	}
+
+	const std::vector<const SpotLight*>& GetSpotLights() const
+	{
+		return spotLights_;
+	}
+
 	void AddMaterial(const Material* material)
 	{
 		materials_.push_back(material);
@@ -81,12 +92,12 @@ public:
 		return ambientLight_;
 	}
 
-	void SetBackgroundColor(const Colori& color)
+	void SetBackgroundColor(const Colorf& color)
 	{
 		backgroundColor_ = color;
 	}
 
-	const Colori& GetBackgroundColor() const
+	const Colorf& GetBackgroundColor() const
 	{
 		return backgroundColor_;
 	}
@@ -96,10 +107,11 @@ private:
     std::vector<const Mesh*> meshes_;
 	std::vector<const PointLight*> pointLights_;
 	std::vector<const DirectionalLight*> directionalLights_;
+	std::vector<const SpotLight*> spotLights_;
 
 	Vector3 ambientLight_;
 
-    Colori backgroundColor_;
+    Colorf backgroundColor_;
 };
 
 #endif

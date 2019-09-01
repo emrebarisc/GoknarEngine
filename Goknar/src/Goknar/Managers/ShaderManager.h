@@ -5,6 +5,7 @@
 
 class DirectionalLight;
 class PointLight;
+class SpotLight;
 
 inline namespace SHADER_VARIABLE_NAMES
 {
@@ -75,6 +76,11 @@ private:
 	std::string GetDirectionalLightStructText();
 	std::string GetDirectionalLightColorFunctionText();
 	std::string GetStaticDirectionalLightText(const DirectionalLight* directionalLight, const std::string& lightVariableName) const;
+
+	// Spot Light
+	std::string GetSpotLightStructText();
+	std::string GetSpotLightColorFunctionText();
+	std::string GetStaticSpotLightText(const SpotLight* directionalLight, const std::string& lightVariableName) const;
 
 	// Fragment shader variables
 	std::string sceneShaderOutsideMain_;

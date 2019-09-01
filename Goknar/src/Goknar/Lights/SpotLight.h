@@ -18,8 +18,6 @@ public:
     {
         coverageAngle_ = DEGREE_TO_RADIAN(coverageAngle_);
         falloffAngle_ = DEGREE_TO_RADIAN(falloffAngle_);
-        cosFalloff_ = cos(falloffAngle_);
-        cosCoverage_ = cos(coverageAngle_);
     }
 
     ~SpotLight() override
@@ -42,9 +40,9 @@ public:
 		return coverageAngle_;
 	}
 
-	void SetCoverageAngle(float coverageAngle)
+	void SetCoverageAngle(float coverageAngleInDegrees)
 	{
-		coverageAngle_ = coverageAngle;
+		coverageAngle_ = DEGREE_TO_RADIAN(coverageAngleInDegrees);
 	}
 
 	float GetFalloffAngle() const
@@ -52,9 +50,9 @@ public:
 		return falloffAngle_;
 	}
 
-	void SetFalloffAngle(float coverageAngle)
+	void SetFalloffAngle(float falloffAngleInDegrees)
 	{
-		coverageAngle_ = coverageAngle;
+		falloffAngle_ = DEGREE_TO_RADIAN(falloffAngleInDegrees);
 	}
 
 private:
@@ -63,12 +61,6 @@ private:
     // Angles in radian. They are half of parsed values.
     float coverageAngle_;
     float falloffAngle_;
-
-    // 100% light area
-    float cosFalloff_;
-
-    // Transition area
-    float cosCoverage_;
 private:
 };
 
