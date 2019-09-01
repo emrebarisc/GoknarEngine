@@ -13,6 +13,8 @@
 
 class Material;
 class Mesh;
+
+class DirectionalLight;
 class PointLight;
 
 /*
@@ -39,6 +41,21 @@ public:
 		pointLights_.push_back(pointLight);
 	}
 
+	const std::vector<const PointLight*>& GetPointLights() const
+	{
+		return pointLights_;
+	}
+
+	void AddDirectionalLight(const DirectionalLight* pointLight)
+	{
+		directionalLights_.push_back(pointLight);
+	}
+
+	const std::vector<const DirectionalLight*>& GetDirectionalLights() const
+	{
+		return directionalLights_;
+	}
+
 	void AddMaterial(const Material* material)
 	{
 		materials_.push_back(material);
@@ -52,11 +69,6 @@ public:
 	const Material* GetMaterial(int index) const
 	{
 		return materials_[index];
-	}
-
-	const std::vector<const PointLight *>& GetPointLights() const
-	{
-		return pointLights_;
 	}
 
 	void SetAmbientLight(const Vector3& ambientLight)
@@ -83,6 +95,7 @@ private:
 	std::vector<const Material*> materials_;
     std::vector<const Mesh*> meshes_;
 	std::vector<const PointLight*> pointLights_;
+	std::vector<const DirectionalLight*> directionalLights_;
 
 	Vector3 ambientLight_;
 

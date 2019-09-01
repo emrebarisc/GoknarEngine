@@ -9,7 +9,7 @@ enum LightMobility : uint8_t
 	Movable
 };
 
-class Light
+class GOKNAR_API Light
 {
 public:
     Light() : position_(Vector3::ZeroVector), color_(Vector3::ZeroVector), intensity_(0.f), mobility_(LightMobility::Static)

@@ -4,6 +4,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 
+#include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 
 inline namespace SHADER_VARIABLE_NAMES
@@ -52,12 +53,15 @@ uniform vec3 viewPosition;
 	const Vector3& sceneAmbientLight = scene->GetAmbientLight();
 	sceneShaderOutsideMain_ += "vec3 sceneAmbient = vec3(" + std::to_string(sceneAmbientLight.x / 255.f) + ", " + std::to_string(sceneAmbientLight.y / 255.f) + ", " + std::to_string(sceneAmbientLight.z / 255.f) + ");\n";
 	sceneShaderOutsideMain_ += GetPointLightStructText() + "\n";
+	sceneShaderOutsideMain_ += GetDirectionalLightStructText() + "\n";
 
 	sceneShaderInsideMain_ += "\tvec3 lightColor = vec3(0.f, 0.f, 0.f);\n";
 
 	const std::vector<const PointLight*>& pointLights = scene->GetPointLights();
 	if (pointLights.size() > 0)
 	{
+		sceneShaderOutsideMain_ += GetPointLightColorFunctionText() + "\n";
+
 		int lightId = 1;
 		for (const PointLight* pointLight : pointLights)
 		{
@@ -71,7 +75,24 @@ uniform vec3 viewPosition;
 		}
 	}
 
-	sceneShaderOutsideMain_ += GetLightColorFunctionText() + "\n";
+	const std::vector<const DirectionalLight*>& directionalLights = scene->GetDirectionalLights();
+	if (directionalLights.size() > 0)
+	{
+		sceneShaderOutsideMain_ += GetDirectionalLightColorFunctionText() + "\n";
+
+		int lightId = 1;
+		for (const DirectionalLight* directionalLight : directionalLights)
+		{
+			if (directionalLight->GetLightMobility() == LightMobility::Static)
+			{
+				std::string lightVariableName = "directionalLight" + std::to_string(lightId++);
+
+				sceneShaderOutsideMain_ += GetStaticDirectionalLightText(directionalLight, lightVariableName);
+				sceneShaderInsideMain_ += "\tlightColor += CalculateDirectionalLightColor(" + lightVariableName + ");\n";
+			}
+		}
+	}
+
 	sceneShaderInsideMain_ += "\tcolor = lightColor;\n";
 
 	CombineShader();
@@ -139,13 +160,13 @@ R"(struct PointLight
 )";
 }
 
-std::string ShaderManager::GetLightColorFunctionText()
+std::string ShaderManager::GetPointLightColorFunctionText()
 {
 	return R"(
-vec3 CalculatePointLightColor(PointLight light)
+vec3 CalculatePointLightColor(PointLight pointLight)
 {
 	// To light vector
-	vec3 wi = light.position - fragmentPosition;
+	vec3 wi = pointLight.position - fragmentPosition;
 	float wiLength = length(wi);
 	wi /= wiLength;
 
@@ -164,7 +185,7 @@ vec3 CalculatePointLightColor(PointLight light)
 
 	// Diffuse
 	float cosThetaPrime = max(0.f, dot(wi, vertexNormal));
-	color += diffuseReflectance * cosThetaPrime * light.intensity * inverseDistanceSquare;
+	color += diffuseReflectance * cosThetaPrime * pointLight.intensity * inverseDistanceSquare;
 
 	// Specular
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), phongExponent);
@@ -183,6 +204,42 @@ std::string ShaderManager::GetStaticPointLightText(const PointLight* pointLight,
 
 	return  "PointLight " + lightVariableName + " = PointLight(vec3(" + std::to_string(lightPosition.x) + ", " + std::to_string(lightPosition.y) + ", " + std::to_string(lightPosition.z) + ")"
 														  + ", vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + "));\n";
+}
+
+std::string ShaderManager::GetStaticDirectionalLightText(const DirectionalLight* directionalLight, const std::string& lightVariableName) const
+{
+	const Vector3& lightDirection = directionalLight->GetPosition();
+	const Vector3& lightColor = directionalLight->GetColor();
+	float lightIntensity = directionalLight->GetIntensity();
+
+	return  "DirectionalLight " + lightVariableName + " = DirectionalLight(vec3(" + std::to_string(lightDirection.x) + ", " + std::to_string(lightDirection.y) + ", " + std::to_string(lightDirection.z) + ")"
+																	  + ", vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + "));\n";
+
+}
+
+std::string ShaderManager::GetDirectionalLightStructText()
+{
+	return
+		R"(struct DirectionalLight
+{
+    vec3 direction;
+    vec3 intensity;
+};
+)";
+}
+
+std::string ShaderManager::GetDirectionalLightColorFunctionText()
+{
+	return R"(
+vec3 CalculateDirectionalLightColor(DirectionalLight directionalLight)
+{
+	float normalDotLightDirection = dot(vertexNormal, directionalLight.direction);
+
+	vec3 color = directionalLight.intensity * diffuseReflectance * max(0, normalDotLightDirection);
+
+	return clamp(color, 0.f, 1.f);
+}
+)";
 }
 
 void ShaderManager::CombineShader()

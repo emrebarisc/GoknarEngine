@@ -3,7 +3,7 @@
 
 #include "Light.h"
 
-class DirectionalLight : public Light
+class GOKNAR_API DirectionalLight : public Light
 {
 public:
     DirectionalLight() : Light()

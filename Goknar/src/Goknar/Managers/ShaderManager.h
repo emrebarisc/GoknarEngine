@@ -3,6 +3,7 @@
 
 #include "Goknar/Core.h"
 
+class DirectionalLight;
 class PointLight;
 
 inline namespace SHADER_VARIABLE_NAMES
@@ -64,9 +65,16 @@ private:
 	// Fragment shader builder getter functions
 	std::string GetShaderVersionText();
 	std::string GetMaterialVariables();
+
+	// Point Light
 	std::string GetPointLightStructText();
-	std::string GetLightColorFunctionText();
+	std::string GetPointLightColorFunctionText();
 	std::string GetStaticPointLightText(const PointLight* pointLight, const std::string& lightVariableName) const;
+
+	// Directional Light
+	std::string GetDirectionalLightStructText();
+	std::string GetDirectionalLightColorFunctionText();
+	std::string GetStaticDirectionalLightText(const DirectionalLight* directionalLight, const std::string& lightVariableName) const;
 
 	// Fragment shader variables
 	std::string sceneShaderOutsideMain_;

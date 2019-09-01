@@ -3,7 +3,7 @@
 
 #include "Light.h"
 
-class PointLight : public Light
+class GOKNAR_API PointLight : public Light
 {
 public:
     PointLight()

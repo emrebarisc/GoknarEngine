@@ -18,13 +18,18 @@
 	    <PointLight>
 	      <Position>-7.5 7.5 7.5</Position>
 	      <Color>1.0 1.0 1.0</Color>
-	      <Intensity>100</Intensity>
+	      <Intensity>50</Intensity>
 	    </PointLight>
 	    <PointLight>
 	      <Position>7.5 -7.5 10</Position>
 	      <Color>1.0 1.0 1.0</Color>
-	      <Intensity>100</Intensity>
+	      <Intensity>50</Intensity>
 	    </PointLight>
+        <DirectionalLight>
+            <Direction>1.0 1.0 1.0</Direction>
+			<Color>1.0 1.0 1.0</Color>
+			<Intensity>1</Intensity>
+        </DirectionalLight>
 	</Lights>
 
 	<Materials>        

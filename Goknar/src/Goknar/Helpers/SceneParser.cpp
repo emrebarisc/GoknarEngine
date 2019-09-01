@@ -11,6 +11,7 @@
 #include "Goknar/Material.h"
 #include "Goknar/Mesh.h"
 
+#include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 
 #include "Goknar/Managers/CameraManager.h"
@@ -183,6 +184,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	scene->SetAmbientLight(ambientLight);
 
 	//Get Lights
+	element = root->FirstChildElement("Lights");
 	element = element->FirstChildElement("PointLight");
 	PointLight* pointLight;
 	while (element)
@@ -212,6 +214,41 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 		scene->AddPointLight(pointLight);
 		element = element->NextSiblingElement("PointLight");
+	}
+	stream.clear();
+
+
+	//Get Directional Lights
+	element = root->FirstChildElement("Lights");
+	element = element->FirstChildElement("DirectionalLight");
+	DirectionalLight* directionalLight;
+	while (element)
+	{
+		directionalLight = new DirectionalLight();
+
+		child = element->FirstChildElement("Direction");
+		stream << child->GetText() << std::endl;
+
+		child = element->FirstChildElement("Color");
+		stream << child->GetText() << std::endl;
+
+		child = element->FirstChildElement("Intensity");
+		stream << child->GetText() << std::endl;
+
+		Vector3 position;
+		stream >> position.x >> position.y >> position.z;
+		directionalLight->SetPosition(position);
+
+		Vector3 color;
+		stream >> color.x >> color.y >> color.z;
+		directionalLight->SetColor(color);
+
+		float intensity;
+		stream >> intensity;
+		directionalLight->SetIntensity(intensity);
+
+		scene->AddDirectionalLight(directionalLight);
+		element = element->NextSiblingElement("DirectionalLight");
 	}
 	stream.clear();
 

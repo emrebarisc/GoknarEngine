@@ -1,9 +1,3 @@
-/*
- *	Advanced ray-tracer algorithm
- *	Emre Baris Coskun
- *	2018
- */
-
 #ifndef __SPOTLIGHT_H__
 #define __SPOTLIGHT_H__
 
@@ -11,7 +5,7 @@
 
 #include "Math.h"
 
-class SpotLight : public Light
+class GOKNAR_API SpotLight : public Light
 {
 public:
     SpotLight() : Light()
