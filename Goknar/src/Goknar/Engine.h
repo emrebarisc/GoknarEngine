@@ -12,6 +12,7 @@ class Mesh;
 class ObjectBase;
 class ObjectManager;
 class Renderer;
+class ShaderManager;
 class WindowManager;
 
 // Global Engine variable
@@ -55,6 +56,16 @@ public:
 		return cameraManager_;
 	}
 
+	Application* GetApplication() const
+	{
+		return application_;
+	}
+
+	ShaderManager* GetShaderManager() const
+	{
+		return shaderManager_;
+	}
+
 	void SetApplication(Application* application);
 
 	void RegisterObject(ObjectBase *object);
@@ -69,9 +80,10 @@ private:
 	WindowManager* windowManager_;
 	Editor* editor_;
 	CameraManager* cameraManager_;
+	ShaderManager* shaderManager_;
 
 	Application *application_;
-
+	
 	std::vector<ObjectBase *> registeredObjects_;
 	std::vector<ObjectBase *> tickableObjects_;
 };

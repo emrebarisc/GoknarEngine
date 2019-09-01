@@ -64,13 +64,6 @@ void Renderer::SetBufferData()
 		faceStartIndex += faceSizeInBytes;
 	}
 
-	// TODO: Remove
-	//VertexData vertexBufferSubData[126];
-	//glGetBufferSubData(GL_ARRAY_BUFFER, 0, totalVertexSize_ * sizeof(VertexData), &vertexBufferSubData);
-
-	//Face indexBufferSubData[240];
-	//glGetBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, totalFaceSize_ * sizeof(Face), &indexBufferSubData);
-
 	// Vertex position
 	int offset = 0;
 	glEnableVertexAttribArray(0);
@@ -107,20 +100,17 @@ void Renderer::Init()
 void Renderer::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	const Colori& sceneBackgroundColor = Scene::mainScene->GetBackgroundColor();
+	const Colori& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
 	glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
 	
 	int vertexStartingIndex = 0;
 	int baseVertex = 0;
 	for (const Mesh* mesh : objectsToBeRendered_)
 	{
-		glUseProgram(mesh->GetShader()->GetProgramId());
-
+		mesh->GetShader()->Use();
 		mesh->Render();
 
-		// TODO: Change 3 to a variable in order to generalize it for triangles and polygons etc
 		int facePointCount = mesh->GetFaceCount() * 3;
-		//glDrawElements(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)vertexStartingIndex);
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)vertexStartingIndex, baseVertex);
 		vertexStartingIndex += facePointCount * sizeof(Face::vertexIndices[0]);
 		baseVertex += mesh->GetVertexCount();

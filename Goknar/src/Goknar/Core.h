@@ -22,14 +22,14 @@
 	{ \
 		if(!x) \
 		{ \
-			GOKNAR_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); \
+			GOKNAR_ERROR("Assertion Failed: {0}", __VA_ARGS__); /*__debugbreak();*/ \
 		} \
 	}
 	#define GOKNAR_CORE_ASSERT(x, ...) \
 	{ \
 		if (!x)\
 		{ \
-			GOKNAR_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); \
+			GOKNAR_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); /*__debugbreak();*/ \
 		} \
 	}
 #else

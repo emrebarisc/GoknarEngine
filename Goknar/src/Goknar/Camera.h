@@ -49,6 +49,9 @@ public:
 			type_ = rhs->type_;
 			projectionMatrix_ = rhs->projectionMatrix_;
 			viewingMatrix_ = rhs->viewingMatrix_;
+			imageWidth_ = rhs->imageWidth_;
+			imageHeight_ = rhs->imageHeight_;
+			type_ = rhs->type_;
 		}
 	}
 

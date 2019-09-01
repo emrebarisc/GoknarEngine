@@ -16,14 +16,19 @@ public:
         
     }
 
-    Vector3 GetDirection(const Vector3 &lightPosition, const Vector3 &referencePosition) const override
+    Vector3 GetDirection() const
     {
-        return direction;
+        return direction_;
     }
 
-    Vector3 direction;
-    Vector3 radiance;
+	void SetDirection(const Vector3& direction)
+	{
+		direction_ = direction;
+	}
+	
 private:
+    Vector3 direction_;
+    Vector3 radiance_;
 };
 
 #endif

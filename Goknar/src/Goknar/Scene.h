@@ -11,6 +11,7 @@
 //#include "Light.h"
 //#include "Texture.h"
 
+class Material;
 class Mesh;
 class PointLight;
 
@@ -20,8 +21,6 @@ class PointLight;
 class GOKNAR_API Scene
 {
 public:
-	static Scene *mainScene;
-
     Scene();
     ~Scene();
 
@@ -40,9 +39,34 @@ public:
 		pointLights_.push_back(pointLight);
 	}
 
+	void AddMaterial(const Material* material)
+	{
+		materials_.push_back(material);
+	}
+
+	const std::vector<const Material*>& GetMaterials() const
+	{
+		return materials_;
+	}
+
+	const Material* GetMaterial(int index) const
+	{
+		return materials_[index];
+	}
+
+	const std::vector<const PointLight *>& GetPointLights() const
+	{
+		return pointLights_;
+	}
+
 	void SetAmbientLight(const Vector3& ambientLight)
 	{
 		ambientLight_ = ambientLight;
+	}
+
+	const Vector3& GetAmbientLight() const
+	{
+		return ambientLight_;
 	}
 
 	void SetBackgroundColor(const Colori& color)
@@ -56,8 +80,9 @@ public:
 	}
 
 private:
+	std::vector<const Material*> materials_;
+    std::vector<const Mesh*> meshes_;
 	std::vector<const PointLight*> pointLights_;
-    std::vector<const Mesh *> meshes_;
 
 	Vector3 ambientLight_;
 

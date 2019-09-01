@@ -8,6 +8,7 @@
 #include "Goknar/Camera.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
+#include "Goknar/Material.h"
 #include "Goknar/Mesh.h"
 
 #include "Goknar/Lights/PointLight.h"
@@ -190,11 +191,24 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 		child = element->FirstChildElement("Position");
 		stream << child->GetText() << std::endl;
+
+		child = element->FirstChildElement("Color");
+		stream << child->GetText() << std::endl;
+
 		child = element->FirstChildElement("Intensity");
 		stream << child->GetText() << std::endl;
 
-		stream >> pointLight->position.x >> pointLight->position.y >> pointLight->position.z;
-		stream >> pointLight->intensity.x >> pointLight->intensity.y >> pointLight->intensity.z;
+		Vector3 position;
+		stream >> position.x >> position.y >> position.z;
+		pointLight->SetPosition(position);
+
+		Vector3 color;
+		stream >> color.x >> color.y >> color.z;
+		pointLight->SetColor(color);
+
+		float intensity;
+		stream >> intensity;
+		pointLight->SetIntensity(intensity);
 
 		scene->AddPointLight(pointLight);
 		element = element->NextSiblingElement("PointLight");
@@ -202,56 +216,38 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	stream.clear();
 
 	//Get Materials
-/*	element = root->FirstChildElement("Materials");
+	element = root->FirstChildElement("Materials");
 	element = element->FirstChildElement("Material");
-	Material material;
+	Material* material;
 	while (element)
 	{
+		material = new Material();
 		child = element->FirstChildElement("AmbientReflectance");
-		stream << child->GetText() << std::endl;
-		stream >> material.ambient.x >> material.ambient.y >> material.ambient.z;
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			Vector3 ambientReflectance;
+			stream >> ambientReflectance.x >> ambientReflectance.y >> ambientReflectance.z;
+			material->SetAmbientReflectance(ambientReflectance);
+		}
 
 		child = element->FirstChildElement("DiffuseReflectance");
-		stream << child->GetText() << std::endl;
-		stream >> material.diffuse.x >> material.diffuse.y >> material.diffuse.z;
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			Vector3 diffuseReflectance;
+			stream >> diffuseReflectance.x >> diffuseReflectance.y >> diffuseReflectance.z;
+			material->SetDiffuseReflectance(diffuseReflectance);
+		}
 
 		child = element->FirstChildElement("SpecularReflectance");
-		stream << child->GetText() << std::endl;
-		stream >> material.specular.x >> material.specular.y >> material.specular.z;
-
-		child = element->FirstChildElement("MirrorReflectance");
 		if (child)
 		{
 			stream << child->GetText() << std::endl;
+			Vector3 specularReflectance;
+			stream >> specularReflectance.x >> specularReflectance.y >> specularReflectance.z;
+			material->SetSpecularReflectance(specularReflectance);
 		}
-		else
-		{
-			stream << "0 0 0" << std::endl;
-		}
-		stream >> material.mirror.x >> material.mirror.y >> material.mirror.z;
-
-		child = element->FirstChildElement("Transparency");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-		}
-		else
-		{
-			stream << "0 0 0" << std::endl;
-		}
-
-		stream >> material.transparency.x >> material.transparency.y >> material.transparency.z;
-
-		child = element->FirstChildElement("RefractionIndex");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-		}
-		else
-		{
-			stream << "0.0" << std::endl;
-		}
-		stream >> material.refractionIndex;
 
 		child = element->FirstChildElement("PhongExponent");
 		if (child)
@@ -262,12 +258,13 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		{
 			stream << "1" << std::endl;
 		}
-		stream >> material.phongExponent;
+		float phongExponent;
+		stream >> phongExponent;
+		material->SetPhongExponent(phongExponent);
 
-		scene->materials.push_back(material);
+		scene->AddMaterial(material);
 		element = element->NextSiblingElement("Material");
 	}
-*/
 
 	stream.clear();
 

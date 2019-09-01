@@ -16,7 +16,7 @@ Application::~Application()
 
 void Application::Init()
 {
-
+	mainScene_->Init();
 }
 
 void Application::Run()

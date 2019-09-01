@@ -1,18 +1,14 @@
 #include "pch.h"
 
 #include "Scene.h"
-#include "Helpers/SceneParser.h"
-#include "Math.h"
 
-Scene *Scene::mainScene = nullptr;
+#include "Helpers/SceneParser.h"
+
+#include "Engine.h"
+#include "Math.h"
 
 Scene::Scene()
 {
-	if(mainScene == nullptr)
-	{
-		mainScene = this;
-	}
-
 	backgroundColor_ = Colori(0, 0, 0);
 
     //ambientLight = Vector3::ZeroVector;

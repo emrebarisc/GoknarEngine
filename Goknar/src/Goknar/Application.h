@@ -16,6 +16,16 @@ public:
 
 	void Run();
 
+	void SetMainScene(Scene* scene)
+	{
+		mainScene_ = scene;
+	}
+
+	const Scene* GetMainScene() const
+	{
+		return mainScene_;
+	}
+
 protected:
 	Scene* mainScene_;
 };

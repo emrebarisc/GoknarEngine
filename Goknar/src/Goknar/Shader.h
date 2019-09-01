@@ -17,6 +17,8 @@ public:
 		return programId_;
 	}
 
+	void Use() const;
+
 	void SetBool(const char* name, bool value);
 	void SetInt(const char* name, int value) const;
 	void SetFloat(const char* name, float value) const;
