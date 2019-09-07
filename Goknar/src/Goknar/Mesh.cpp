@@ -9,7 +9,7 @@
 #include "Goknar/Shader.h"
 
 #include "Managers/CameraManager.h"
-#include "Managers/ShaderManager.h"
+#include "Managers/ShaderBuilder.h"
 
 Mesh::Mesh() :
 	modelMatrix_(Matrix::IdentityMatrix), 
@@ -35,8 +35,8 @@ void Mesh::Init()
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
 
-	const char* vertexBuffer = engine->GetShaderManager()->GetSceneVertexShader().c_str();
-	const char* fragmentBuffer = engine->GetShaderManager()->GetSceneFragmentShader().c_str();
+	const char* vertexBuffer = engine->GetShaderBuilder()->GetSceneVertexShader().c_str();
+	const char* fragmentBuffer = engine->GetShaderBuilder()->GetSceneFragmentShader().c_str();
 	shader_ = new Shader(vertexBuffer, fragmentBuffer);
 }
 

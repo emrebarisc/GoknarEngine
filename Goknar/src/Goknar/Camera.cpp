@@ -9,7 +9,7 @@ Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) 
 	forwardVector_(gaze),
 	upVector_(up),
 	rightVector_(forwardVector_.Cross(upVector_)),
-	type_(CameraType::Projectile)
+	type_(CameraType::Perspective)
 {
 	SetProjectionMatrix();
 	LookAt();

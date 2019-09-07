@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ShaderManager.h"
+#include "ShaderBuilder.h"
 
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
@@ -21,22 +21,22 @@ inline namespace SHADER_VARIABLE_NAMES
 
 const std::string DEFAULT_SHADER_VERSION = "330 core";
 
-ShaderManager::ShaderManager()
+ShaderBuilder::ShaderBuilder()
 {
 	shaderVersion_ = DEFAULT_SHADER_VERSION;
 }
 
-ShaderManager::~ShaderManager()
+ShaderBuilder::~ShaderBuilder()
 {
 }
 
-void ShaderManager::Init()
+void ShaderBuilder::Init()
 {
 	BuildSceneVertexShader();
 	BuildSceneFragmentShader();
 }
 
-void ShaderManager::BuildSceneFragmentShader()
+void ShaderBuilder::BuildSceneFragmentShader()
 {
 	const Scene* scene = engine->GetApplication()->GetMainScene();
 
@@ -120,7 +120,7 @@ uniform vec3 viewPosition;
 	//std::cout << sceneFragmentShader_ << std::endl;
 }
 
-void ShaderManager::BuildSceneVertexShader()
+void ShaderBuilder::BuildSceneVertexShader()
 {
 	sceneVertexShader_ = GetShaderVersionText();
 	sceneVertexShader_ += R"(
@@ -145,12 +145,12 @@ void main()
 )";
 }
 
-std::string ShaderManager::GetShaderVersionText()
+std::string ShaderBuilder::GetShaderVersionText()
 {
 	return "#version " + shaderVersion_;
 }
 
-std::string ShaderManager::GetMaterialVariables()
+std::string ShaderBuilder::GetMaterialVariables()
 {
 	std::string materialVariableText = std::string("// Base Material Variables\n");
 	materialVariableText += "uniform vec3 ";
@@ -171,7 +171,7 @@ std::string ShaderManager::GetMaterialVariables()
 	return materialVariableText;
 }
 
-std::string ShaderManager::GetPointLightStructText()
+std::string ShaderBuilder::GetPointLightStructText()
 {
 	return 
 R"(struct PointLight
@@ -182,7 +182,7 @@ R"(struct PointLight
 )";
 }
 
-std::string ShaderManager::GetPointLightColorFunctionText()
+std::string ShaderBuilder::GetPointLightColorFunctionText()
 {
 	return R"(
 vec3 CalculatePointLightColor(PointLight pointLight)
@@ -220,7 +220,7 @@ vec3 CalculatePointLightColor(PointLight pointLight)
 )";
 }
 
-std::string ShaderManager::GetStaticPointLightText(const PointLight* pointLight, const std::string& lightVariableName) const
+std::string ShaderBuilder::GetStaticPointLightText(const PointLight* pointLight, const std::string& lightVariableName) const
 {
 	const Vector3& lightPosition = pointLight->GetPosition();
 	const Vector3& lightColor = pointLight->GetColor();
@@ -230,7 +230,7 @@ std::string ShaderManager::GetStaticPointLightText(const PointLight* pointLight,
 														  + ", vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + "));\n";
 }
 
-std::string ShaderManager::GetDirectionalLightStructText()
+std::string ShaderBuilder::GetDirectionalLightStructText()
 {
 	return
 		R"(struct DirectionalLight
@@ -241,7 +241,7 @@ std::string ShaderManager::GetDirectionalLightStructText()
 )";
 }
 
-std::string ShaderManager::GetDirectionalLightColorFunctionText()
+std::string ShaderBuilder::GetDirectionalLightColorFunctionText()
 {
 	return R"(
 vec3 CalculateDirectionalLightColor(DirectionalLight directionalLight)
@@ -277,7 +277,7 @@ vec3 CalculateDirectionalLightColor(DirectionalLight directionalLight)
 )";
 }
 
-std::string ShaderManager::GetStaticDirectionalLightText(const DirectionalLight* directionalLight, const std::string& lightVariableName) const
+std::string ShaderBuilder::GetStaticDirectionalLightText(const DirectionalLight* directionalLight, const std::string& lightVariableName) const
 {
 	const Vector3& lightDirection = directionalLight->GetDirection();
 	const Vector3& lightColor = directionalLight->GetColor();
@@ -288,7 +288,7 @@ std::string ShaderManager::GetStaticDirectionalLightText(const DirectionalLight*
 
 }
 
-std::string ShaderManager::GetSpotLightStructText()
+std::string ShaderBuilder::GetSpotLightStructText()
 {
 	return
 		R"(struct SpotLight
@@ -302,7 +302,7 @@ std::string ShaderManager::GetSpotLightStructText()
 )";
 }
 
-std::string ShaderManager::GetSpotLightColorFunctionText()
+std::string ShaderBuilder::GetSpotLightColorFunctionText()
 {
 	return R"(
 vec3 CalculateSpotLightColor(SpotLight spotLight)
@@ -351,7 +351,7 @@ vec3 CalculateSpotLightColor(SpotLight spotLight)
 )";
 }
 
-std::string ShaderManager::GetStaticSpotLightText(const SpotLight* spotLight, const std::string& lightVariableName) const
+std::string ShaderBuilder::GetStaticSpotLightText(const SpotLight* spotLight, const std::string& lightVariableName) const
 {
 	const Vector3& lightPosition = spotLight->GetPosition();
 	const Vector3& lightDirection = spotLight->GetDirection();
@@ -366,7 +366,7 @@ std::string ShaderManager::GetStaticSpotLightText(const SpotLight* spotLight, co
 		+ ", " + std::to_string(coverageAngle) + ", " + std::to_string(falloffAngle) + ");\n";
 }
 
-void ShaderManager::CombineShader()
+void ShaderBuilder::CombineShader()
 {
 	sceneFragmentShader_ = sceneShaderOutsideMain_;
 	sceneFragmentShader_ += R"(
