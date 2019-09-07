@@ -48,15 +48,15 @@ void Mesh::Render() const
 	Matrix MVP = activeCamera->GetViewingMatrix() * activeCamera->GetProjectionMatrix();
 	MVP = MVP * modelMatrix_;
 
-	shader_->SetMatrix("MVP", &MVP[0]);
-	shader_->SetMatrix("modelMatrix", &modelMatrix_[0]);
+	shader_->SetMatrix("MVP", MVP);
+	shader_->SetMatrix("modelMatrix", modelMatrix_);
 
 	const Vector3& cameraPosition = engine->GetCameraManager()->GetActiveCamera()->GetPosition();
-	shader_->SetVector3("viewPosition", &cameraPosition.x);
+	shader_->SetVector3("viewPosition", cameraPosition);
 
 	// Material
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, &scene->GetMaterial(materialId_)->GetAmbientReflectance().x);
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, &scene->GetMaterial(materialId_)->GetDiffuseReflectance().x);
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, &scene->GetMaterial(materialId_)->GetSpecularReflectance().x);
+	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, scene->GetMaterial(materialId_)->GetAmbientReflectance());
+	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, scene->GetMaterial(materialId_)->GetDiffuseReflectance());
+	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, scene->GetMaterial(materialId_)->GetSpecularReflectance());
 	shader_->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, scene->GetMaterial(materialId_)->GetPhongExponent());
 }

@@ -1,7 +1,7 @@
 #include "pch.h"
 
+#include "Matrix.h"
 #include "Shader.h"
-
 #include "Log.h"
 
 #include <glad/glad.h>
@@ -114,17 +114,12 @@ void Shader::SetFloat(const char* name, float value) const
 	glUniform1f(glGetUniformLocation(programId_, name), value);
 }
 
-void Shader::SetMatrix3x3(const char* name, const float* bufferPointer) const
+void Shader::SetMatrix(const char* name, const Matrix& matrix) const
 {
-	glUniformMatrix3fv(glGetUniformLocation(programId_, name), 1, GL_FALSE, bufferPointer);
+	glUniformMatrix4fv(glGetUniformLocation(programId_, name), 1, GL_FALSE, &matrix[0]);
 }
 
-void Shader::SetMatrix(const char* name, const float* bufferPointer) const
+void Shader::SetVector3(const char* name, const Vector3& vector) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(programId_, name), 1, GL_FALSE, bufferPointer);
-}
-
-void Shader::SetVector3(const char* name, const float* bufferPointer) const
-{
-	glUniform3fv(glGetUniformLocation(programId_, name), 1, bufferPointer);
+	glUniform3fv(glGetUniformLocation(programId_, name), 1, &vector.x);
 }
