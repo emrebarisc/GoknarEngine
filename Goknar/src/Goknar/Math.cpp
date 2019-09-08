@@ -247,7 +247,7 @@ void Vector3::operator+=(const Vector3& rhs)
 	z = z + rhs.z;
 }
 
-Vector3 Vector3::operator*(float val) const
+Vector3 Vector3::operator*(float val) const 
 {
 	return Vector3(x * val, y * val, z * val);
 }

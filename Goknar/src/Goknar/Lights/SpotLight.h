@@ -8,9 +8,12 @@
 class GOKNAR_API SpotLight : public Light
 {
 public:
-    SpotLight() : Light()
+    SpotLight() : Light(), coverageAngle_(0.f), falloffAngle_(0.f)
     {
+		id_ = currentId_;
+		currentId_++;
 
+		name_ = "SpotLight" + id_;
     }
 
     // Pass angles in degrees
@@ -24,6 +27,8 @@ public:
     {
         
     }
+
+	void SetShaderUniforms(const Shader* shader);
 
 	const Vector3& GetDirection() const
 	{
@@ -62,6 +67,8 @@ private:
     float coverageAngle_;
     float falloffAngle_;
 private:
+
+	static int currentId_;
 };
 
 #endif

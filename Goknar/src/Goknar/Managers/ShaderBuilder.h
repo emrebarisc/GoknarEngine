@@ -16,6 +16,22 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* SPECULAR;
 		extern const char* PHONG_EXPONENT;
 	}
+	
+	inline namespace LIGHT
+	{
+		extern const char* DIRECTIONAL_LIGHT;
+		extern const char* POINT_LIGHT;
+		extern const char* SPOT_LIGHT;
+	}
+
+	inline namespace LIGHT_KEYWORDS
+	{
+		extern const char* POSITION;
+		extern const char* INTENSITY;
+		extern const char* DIRECTION;
+		extern const char* COVERAGE_ANGLE;
+		extern const char* FALLOFF_ANGLE;
+	}
 }
 
 extern const std::string DEFAULT_SHADER_VERSION;
@@ -68,23 +84,24 @@ private:
 	std::string GetMaterialVariables();
 
 	// Point Light
-	std::string GetPointLightStructText();
+	std::string GetPointLightUniformTexts(const std::string& lightVariableName);
 	std::string GetPointLightColorFunctionText();
 	std::string GetStaticPointLightText(const PointLight* pointLight, const std::string& lightVariableName) const;
 
 	// Directional Light
-	std::string GetDirectionalLightStructText();
+	std::string GetDirectionalLightUniformTexts(const std::string& lightVariableName);
 	std::string GetDirectionalLightColorFunctionText();
 	std::string GetStaticDirectionalLightText(const DirectionalLight* directionalLight, const std::string& lightVariableName) const;
 
 	// Spot Light
-	std::string GetSpotLightStructText();
+	std::string GetSpotLightUniformTexts(const std::string& lightVariableName);
 	std::string GetSpotLightColorFunctionText();
 	std::string GetStaticSpotLightText(const SpotLight* directionalLight, const std::string& lightVariableName) const;
 
 	// Fragment shader variables
-	std::string sceneShaderOutsideMain_;
-	std::string sceneShaderInsideMain_;
+	std::string uniforms_;
+	std::string sceneFragmentShaderOutsideMain_;
+	std::string sceneFragmentShaderInsideMain_;
 	std::string sceneFragmentShader_;
 };
 

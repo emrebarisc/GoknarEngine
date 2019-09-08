@@ -3,6 +3,8 @@
 
 #include "Goknar/Math.h"
 
+class Shader;
+
 enum LightMobility : uint8_t
 {
 	Static = 0,
@@ -12,10 +14,14 @@ enum LightMobility : uint8_t
 class GOKNAR_API Light
 {
 public:
-    Light() : position_(Vector3::ZeroVector), color_(Vector3::ZeroVector), intensity_(0.f), mobility_(LightMobility::Static)
-    {
-        
-    }
+	Light() :
+		id_(0),
+		position_(Vector3::ZeroVector), 
+		color_(Vector3::ZeroVector), 
+		intensity_(0.f), 
+		name_(""),
+		mobility_(LightMobility::Static)
+	{}
 
     virtual ~Light()
     {
@@ -62,13 +68,41 @@ public:
 		mobility_ = mobility;
 	}
 
+	const char* GetName() const
+	{
+		return name_;
+	}
+
+	void SetName(const char* name)
+	{
+		name_ = name;
+	}
+	
+	int GetID() const
+	{
+		return id_;
+	}
+
+	void SetID(int id)
+	{
+		id_ = id;
+	}
+
 protected:
-	LightMobility mobility_;
+	virtual void SetShaderUniforms(const Shader* shader);
+
+	Vector3 position_;
+	Vector3 color_;
+
+	const char* name_;
+
+	int id_;
+
+	float intensity_;
 
 private:
-    Vector3 position_;
-	Vector3 color_;
-    float intensity_;
+
+	LightMobility mobility_;
 };
 
 #endif

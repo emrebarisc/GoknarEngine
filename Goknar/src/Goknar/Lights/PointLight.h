@@ -6,15 +6,23 @@
 class GOKNAR_API PointLight : public Light
 {
 public:
-    PointLight()
+    PointLight() : Light()
     {
-        
+		id_ = currentId_;
+		currentId_++;
+
+		name_ = "PointLight" + id_;
     }
 
     ~PointLight() override
     {
         
     }
+
+protected:
+
+private:
+	static int currentId_;
 };
 
 #endif

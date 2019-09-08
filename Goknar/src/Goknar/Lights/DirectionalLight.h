@@ -6,15 +6,20 @@
 class GOKNAR_API DirectionalLight : public Light
 {
 public:
-    DirectionalLight() : Light()
-    {
+	DirectionalLight() : Light() 
+	{
+		id_ = currentId_;
+		currentId_++;
 
-    }
+		name_ = "DirectionalLight" + id_;
+	}
 
     ~DirectionalLight() override
     {
         
     }
+
+	void SetShaderUniforms(const Shader* shader);
 
     Vector3 GetDirection() const
     {
@@ -29,6 +34,8 @@ public:
 private:
     Vector3 direction_;
     Vector3 radiance_;
+
+	static int currentId_;
 };
 
 #endif
