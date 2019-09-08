@@ -9,7 +9,7 @@
 #include "Goknar/Shader.h"
 
 #include "Managers/CameraManager.h"
-#include "Managers/ShaderBuilder.h"
+#include "Managers/ShaderManager.h"
 
 Mesh::Mesh() :
 	modelMatrix_(Matrix::IdentityMatrix), 
@@ -35,8 +35,8 @@ void Mesh::Init()
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
 
-	const char* vertexBuffer = engine->GetShaderBuilder()->GetSceneVertexShader().c_str();
-	const char* fragmentBuffer = engine->GetShaderBuilder()->GetSceneFragmentShader().c_str();
+	const char* vertexBuffer = engine->GetShaderManager()->GetSceneVertexShader().c_str();
+	const char* fragmentBuffer = engine->GetShaderManager()->GetSceneFragmentShader().c_str();
 	shader_ = new Shader(vertexBuffer, fragmentBuffer);
 }
 
@@ -48,15 +48,15 @@ void Mesh::Render() const
 	Matrix MVP = activeCamera->GetViewingMatrix() * activeCamera->GetProjectionMatrix();
 	MVP = MVP * modelMatrix_;
 
-	shader_->SetMatrix("MVP", MVP);
-	shader_->SetMatrix("modelMatrix", modelMatrix_);
+	shader_->SetMatrix("MVP", &MVP[0]);
+	shader_->SetMatrix("modelMatrix", &modelMatrix_[0]);
 
 	const Vector3& cameraPosition = engine->GetCameraManager()->GetActiveCamera()->GetPosition();
-	shader_->SetVector3("viewPosition", cameraPosition);
+	shader_->SetVector3("viewPosition", &cameraPosition.x);
 
 	// Material
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, scene->GetMaterial(materialId_)->GetAmbientReflectance());
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, scene->GetMaterial(materialId_)->GetDiffuseReflectance());
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, scene->GetMaterial(materialId_)->GetSpecularReflectance());
+	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, &scene->GetMaterial(materialId_)->GetAmbientReflectance().x);
+	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, &scene->GetMaterial(materialId_)->GetDiffuseReflectance().x);
+	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, &scene->GetMaterial(materialId_)->GetSpecularReflectance().x);
 	shader_->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, scene->GetMaterial(materialId_)->GetPhongExponent());
 }

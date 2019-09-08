@@ -14,7 +14,7 @@
 #include "Managers/CameraManager.h"
 #include "Managers/InputManager.h"
 #include "Managers/ObjectManager.h"
-#include "Managers/ShaderBuilder.h"
+#include "Managers/ShaderManager.h"
 #include "Managers/WindowManager.h"
 
 #include "Managers/Renderer/Renderer.h"
@@ -39,7 +39,7 @@ Engine::Engine()
 	renderer_ = new Renderer();
 	editor_ = new ImGuiEditor();
 	cameraManager_ = new CameraManager();
-	shaderBuilder_ = new ShaderBuilder();
+	shaderManager_ = new ShaderManager();
 
 	// TODO
 	//application_ = CreateApplication();
@@ -47,7 +47,7 @@ Engine::Engine()
 
 Engine::~Engine()
 {
-	delete shaderBuilder_;
+	delete shaderManager_;
 	delete cameraManager_;
 	delete editor_;
 	delete renderer_;
@@ -65,7 +65,7 @@ void Engine::Init() const
 	inputManager_->Init();
 	objectManager_->Init();
 	application_->Init();
-	shaderBuilder_->Init();
+	shaderManager_->Init();
 	renderer_->Init();
 
 	editor_->Init();

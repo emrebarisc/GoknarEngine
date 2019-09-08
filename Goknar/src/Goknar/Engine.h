@@ -12,7 +12,7 @@ class Mesh;
 class ObjectBase;
 class ObjectManager;
 class Renderer;
-class ShaderBuilder;
+class ShaderManager;
 class WindowManager;
 
 // Global Engine variable
@@ -61,9 +61,9 @@ public:
 		return application_;
 	}
 
-	ShaderBuilder* GetShaderBuilder() const
+	ShaderManager* GetShaderManager() const
 	{
-		return shaderBuilder_;
+		return shaderManager_;
 	}
 
 	void SetApplication(Application* application);
@@ -80,7 +80,7 @@ private:
 	WindowManager* windowManager_;
 	Editor* editor_;
 	CameraManager* cameraManager_;
-	ShaderBuilder* shaderBuilder_;
+	ShaderManager* shaderManager_;
 
 	Application *application_;
 	

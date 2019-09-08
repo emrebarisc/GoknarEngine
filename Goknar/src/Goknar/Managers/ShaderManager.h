@@ -1,5 +1,5 @@
-#ifndef __SHADERBUILDER_H__
-#define __SHADERBUILDER_H__
+#ifndef __SHADERMANAGER_H__
+#define __SHADERMANAGER_H__
 
 #include "Goknar/Core.h"
 
@@ -20,11 +20,11 @@ inline namespace SHADER_VARIABLE_NAMES
 
 extern const std::string DEFAULT_SHADER_VERSION;
 
-class GOKNAR_API ShaderBuilder
+class GOKNAR_API ShaderManager
 {
 public:
-	ShaderBuilder();
-	~ShaderBuilder();
+	ShaderManager();
+	~ShaderManager();
 
 	void Init();
 
