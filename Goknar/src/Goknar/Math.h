@@ -20,8 +20,8 @@
 #define ONE_OVER_PI 0.31830988618
 #define NATURAL_LOGARITHM 2.71828182845
 
-#define RADIAN_TO_DEGREE(radian) (radian * 180 / PI)
-#define DEGREE_TO_RADIAN(degree) (degree * PI / 180)
+#define RADIAN_TO_DEGREE(radian) (radian * 180.f / PI)
+#define DEGREE_TO_RADIAN(degree) (degree * PI / 180.f)
 
 extern const float MAX_FLOAT;
 extern const int MAX_INT;

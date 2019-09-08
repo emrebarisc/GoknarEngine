@@ -7,7 +7,7 @@
 enum class GOKNAR_API CameraType : unsigned char
 {
 	Orthographic,
-	Projectile
+	Perspective
 };
 
 class GOKNAR_API Camera
@@ -24,7 +24,7 @@ public:
 		farDistance_(100.f),
 		imageWidth_(1024),
 		imageHeight_(768),
-		type_(CameraType::Projectile)
+		type_(CameraType::Perspective)
 	{
 		SetProjectionMatrix();
 		LookAt();
@@ -181,14 +181,15 @@ public:
 									0.f, 0.f, -2 / (farDistance_ - nearDistance_), -(farDistance_ + nearDistance_) / (farDistance_ - nearDistance_),
 									0.f, 0.f, 0.f, 1.f);
 
-		if (type_ == CameraType::Projectile)
+		if (type_ == CameraType::Perspective)
 		{
-			Matrix p2o(nearDistance_, 0, 0, 0,
+			// Orthographic to perspective conversion matrix
+			Matrix o2p(nearDistance_, 0, 0, 0,
 						0, nearDistance_, 0, 0,
 						0, 0, farDistance_ + nearDistance_, farDistance_ * nearDistance_,
 						0, 0, -1, 0);
 
-			projectionMatrix_ = projectionMatrix_ * p2o;
+			projectionMatrix_ = projectionMatrix_ * o2p;
 		}
 	}
 
