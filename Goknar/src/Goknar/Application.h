@@ -14,7 +14,7 @@ public:
 
 	void Init();
 
-	void Run();
+	virtual void Run();
 
 	void SetMainScene(Scene* scene)
 	{

@@ -29,7 +29,7 @@
             <Direction>1.0 0.8 -1.0</Direction>
 			      <Color>1.0 1.0 1.0</Color>
 			      <Intensity>0.5</Intensity>
-        </DirectionalLight>-->
+        </DirectionalLight>
     <SpotLight id="1">
       <Position>15 15 15</Position>
       <Direction>-1 -1 -1</Direction>
@@ -37,7 +37,7 @@
       <Intensity>200</Intensity>
       <CoverageAngle>10</CoverageAngle>
       <FalloffAngle>8</FalloffAngle>
-    </SpotLight>
+    </SpotLight>-->
   </Lights>
 
 	<Materials>        

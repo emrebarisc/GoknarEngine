@@ -3,16 +3,13 @@
 #include "Light.h"
 
 #include "Goknar/Shader.h"
+#include "Goknar/Managers/ShaderBuilder.h"
 
-void Light::SetShaderUniforms(const Shader* shader)
+void Light::SetShaderUniforms(const Shader* shader) const
 {
-	char* positionName = "";
-	strcpy(positionName, name_);
-	strcpy(positionName, "_position");
-	shader->SetVector3(positionName, position_);
+	std::string positionName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION;
+	shader->SetVector3(positionName.c_str(), position_);
 
-	char* intensityName = "";
-	strcpy(intensityName, name_);
-	strcpy(intensityName, "_intensity");
-	shader->SetVector3(intensityName, color_ * intensity_);
+	std::string intensityName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY;
+	shader->SetVector3(intensityName.c_str(), color_ * intensity_);
 }

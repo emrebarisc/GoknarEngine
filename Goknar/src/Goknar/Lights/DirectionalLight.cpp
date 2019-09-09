@@ -7,15 +7,11 @@
 
 int DirectionalLight::currentId_ = 0;
 
-void DirectionalLight::SetShaderUniforms(const Shader* shader)
+void DirectionalLight::SetShaderUniforms(const Shader* shader) const
 {
-	char* directionName = "";
-	strcpy(directionName, name_);
-	strcpy(directionName, SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION);
-	shader->SetVector3(directionName, direction_);
+	std::string directionName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION;
+	shader->SetVector3(directionName.c_str(), direction_);
 
-	char* radianceName = "";
-	strcpy(radianceName, name_);
-	strcpy(radianceName, SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY);
-	shader->SetVector3(radianceName, color_ * intensity_);
+	std::string radianceName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY;
+	shader->SetVector3(radianceName.c_str(), color_ * intensity_);
 }

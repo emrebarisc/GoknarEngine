@@ -23,6 +23,8 @@ public:
 		mobility_(LightMobility::Static)
 	{}
 
+	virtual void SetShaderUniforms(const Shader* shader) const;
+
     virtual ~Light()
     {
         
@@ -68,12 +70,12 @@ public:
 		mobility_ = mobility;
 	}
 
-	const char* GetName() const
+	const std::string& GetName() const
 	{
 		return name_;
 	}
 
-	void SetName(const char* name)
+	void SetName(const std::string& name)
 	{
 		name_ = name;
 	}
@@ -89,12 +91,11 @@ public:
 	}
 
 protected:
-	virtual void SetShaderUniforms(const Shader* shader);
 
 	Vector3 position_;
 	Vector3 color_;
 
-	const char* name_;
+	std::string name_;
 
 	int id_;
 

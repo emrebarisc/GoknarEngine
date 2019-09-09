@@ -3,6 +3,8 @@
 
 #include "Light.h"
 
+#include "Goknar/Managers/ShaderBuilder.h"
+
 #include "Math.h"
 
 class GOKNAR_API SpotLight : public Light
@@ -10,10 +12,8 @@ class GOKNAR_API SpotLight : public Light
 public:
     SpotLight() : Light(), coverageAngle_(0.f), falloffAngle_(0.f)
     {
-		id_ = currentId_;
-		currentId_++;
-
-		name_ = "SpotLight" + id_;
+		id_ = currentId_++;
+		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT) + std::to_string(id_);
     }
 
     // Pass angles in degrees
@@ -28,7 +28,7 @@ public:
         
     }
 
-	void SetShaderUniforms(const Shader* shader);
+	void SetShaderUniforms(const Shader* shader) const;
 
 	const Vector3& GetDirection() const
 	{
@@ -37,7 +37,7 @@ public:
 
 	void SetDirection(const Vector3& direction)
 	{
-		direction_ = direction;
+		direction_ = direction.GetNormalized();
 	}
 
 	float GetCoverageAngle() const

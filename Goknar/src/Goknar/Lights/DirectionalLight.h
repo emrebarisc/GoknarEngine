@@ -3,15 +3,15 @@
 
 #include "Light.h"
 
+#include "Goknar/Managers/ShaderBuilder.h"
+
 class GOKNAR_API DirectionalLight : public Light
 {
 public:
 	DirectionalLight() : Light() 
 	{
-		id_ = currentId_;
-		currentId_++;
-
-		name_ = "DirectionalLight" + id_;
+		id_ = currentId_++;
+		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT) + std::to_string(id_);
 	}
 
     ~DirectionalLight() override
@@ -19,7 +19,7 @@ public:
         
     }
 
-	void SetShaderUniforms(const Shader* shader);
+	void SetShaderUniforms(const Shader* shader) const;
 
     Vector3 GetDirection() const
     {

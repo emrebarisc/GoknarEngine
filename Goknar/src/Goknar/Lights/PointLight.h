@@ -3,15 +3,15 @@
 
 #include "Light.h"
 
+#include "Goknar/Managers/ShaderBuilder.h"
+
 class GOKNAR_API PointLight : public Light
 {
 public:
     PointLight() : Light()
     {
-		id_ = currentId_;
-		currentId_++;
-
-		name_ = "PointLight" + id_;
+		id_ = currentId_++;
+		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT) + std::to_string(id_);
     }
 
     ~PointLight() override

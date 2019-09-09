@@ -7,22 +7,16 @@
 
 int SpotLight::currentId_ = 0;
 
-void SpotLight::SetShaderUniforms(const Shader* shader)
+void SpotLight::SetShaderUniforms(const Shader* shader) const
 {
 	Light::SetShaderUniforms(shader);
 
-	char* directionName = "";
-	strcpy(directionName, name_);
-	strcpy(directionName, SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION);
-	shader->SetVector3(directionName, direction_);
+	std::string directionName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION;
+	shader->SetVector3(directionName.c_str(), direction_);
 
-	char* coverageAngleName = "";
-	strcpy(coverageAngleName, name_);
-	strcpy(coverageAngleName, SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::COVERAGE_ANGLE);
-	shader->SetFloat(coverageAngleName, coverageAngle_);
+	std::string coverageAngleName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::COVERAGE_ANGLE;
+	shader->SetFloat(coverageAngleName.c_str(), coverageAngle_);
 
-	char* falloffAngleName = "";
-	strcpy(falloffAngleName, name_);
-	strcpy(falloffAngleName, SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::FALLOFF_ANGLE);
-	shader->SetFloat(falloffAngleName, falloffAngle_);
+	std::string falloffAngleName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::FALLOFF_ANGLE;
+	shader->SetFloat(falloffAngleName.c_str(), falloffAngle_);
 }

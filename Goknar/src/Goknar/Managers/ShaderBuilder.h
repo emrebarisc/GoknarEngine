@@ -87,16 +87,19 @@ private:
 	std::string GetPointLightUniformTexts(const std::string& lightVariableName);
 	std::string GetPointLightColorFunctionText();
 	std::string GetStaticPointLightText(const PointLight* pointLight, const std::string& lightVariableName) const;
+	std::string GetPointLightColorSummationText(const std::string& lightVariableName);
 
 	// Directional Light
 	std::string GetDirectionalLightUniformTexts(const std::string& lightVariableName);
 	std::string GetDirectionalLightColorFunctionText();
 	std::string GetStaticDirectionalLightText(const DirectionalLight* directionalLight, const std::string& lightVariableName) const;
+	std::string GetDirectionalLightColorSummationText(const std::string& lightVariableName);
 
 	// Spot Light
 	std::string GetSpotLightUniformTexts(const std::string& lightVariableName);
 	std::string GetSpotLightColorFunctionText();
 	std::string GetStaticSpotLightText(const SpotLight* directionalLight, const std::string& lightVariableName) const;
+	std::string GetSpotLightColorSummationText(const std::string& lightVariableName);
 
 	// Fragment shader variables
 	std::string uniforms_;
