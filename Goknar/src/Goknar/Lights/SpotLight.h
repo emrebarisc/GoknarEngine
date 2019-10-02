@@ -12,7 +12,7 @@ class GOKNAR_API SpotLight : public Light
 public:
     SpotLight() : Light(), coverageAngle_(0.f), falloffAngle_(0.f)
     {
-		id_ = currentId_++;
+		id_ = lastSpotLightId_++;
 		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT) + std::to_string(id_);
     }
 
@@ -68,7 +68,7 @@ private:
     float falloffAngle_;
 private:
 
-	static int currentId_;
+	static int lastSpotLightId_;
 };
 
 #endif

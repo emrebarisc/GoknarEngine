@@ -308,6 +308,20 @@ void Vector3::Clamp(int min, int max)
 	z = mathClamp(z, min, max);
 }
 
+void Vector3::ConvertDegreeToRadian()
+{
+	x = DEGREE_TO_RADIAN(x);
+	y = DEGREE_TO_RADIAN(y);
+	z = DEGREE_TO_RADIAN(z);
+}
+
+void Vector3::ConvertRadianToDegree()
+{
+	x = RADIAN_TO_DEGREE(x);
+	y = RADIAN_TO_DEGREE(y);
+	z = RADIAN_TO_DEGREE(z);
+}
+
 Vector3 Vector3::GetOrthonormalBasis() const
 {
 	Vector3 maximizedValue = Vector3::ZeroVector;

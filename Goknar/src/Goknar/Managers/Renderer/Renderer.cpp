@@ -105,7 +105,7 @@ void Renderer::Render()
 	
 	int vertexStartingIndex = 0;
 	int baseVertex = 0;
-	for (const Mesh* mesh : objectsToBeRendered_)
+	for (/*const*/ Mesh* mesh : objectsToBeRendered_)
 	{
 		mesh->GetShader()->Use();
 		mesh->Render();

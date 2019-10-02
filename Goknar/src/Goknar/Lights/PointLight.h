@@ -10,7 +10,7 @@ class GOKNAR_API PointLight : public Light
 public:
     PointLight() : Light()
     {
-		id_ = currentId_++;
+		id_ = lastPointLightId_++;
 		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT) + std::to_string(id_);
     }
 
@@ -22,7 +22,7 @@ public:
 protected:
 
 private:
-	static int currentId_;
+	static int lastPointLightId_;
 };
 
 #endif

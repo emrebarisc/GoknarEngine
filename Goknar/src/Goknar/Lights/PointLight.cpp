@@ -2,4 +2,4 @@
 
 #include "PointLight.h"
 
-int PointLight::currentId_ = 0;
+int PointLight::lastPointLightId_ = 0;

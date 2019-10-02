@@ -377,6 +377,76 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		stream >> materialId;
 		mesh->SetMaterialId(materialId);
 
+		child = element->FirstChildElement("PivotPoint");
+		stream << child->GetText() << std::endl;
+		Vector3 pivotPoint;
+		while (!(stream >> pivotPoint.x).eof())
+		{
+			stream >> pivotPoint.y >> pivotPoint.z;
+			mesh->SetPivotPoint(pivotPoint);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("RelativeLocation");
+		stream << child->GetText() << std::endl;
+		Vector3 relativeLocation;
+		while (!(stream >> relativeLocation.x).eof())
+		{
+			stream >> relativeLocation.y >> relativeLocation.z;
+			mesh->SetRelativeLocation(relativeLocation);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("RelativeRotation");
+		stream << child->GetText() << std::endl;
+		Vector3 relativeRotation;
+		while (!(stream >> relativeRotation.x).eof())
+		{
+			stream >> relativeRotation.y >> relativeRotation.z;
+			mesh->SetRelativeRotation(relativeRotation);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("RelativeScaling");
+		stream << child->GetText() << std::endl;
+		Vector3 relativeScaling;
+		while (!(stream >> relativeScaling.x).eof())
+		{
+			stream >> relativeScaling.y >> relativeScaling.z;
+			mesh->SetRelativeScaling(relativeScaling);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("WorldLocation");
+		stream << child->GetText() << std::endl;
+		Vector3 worldLocation;
+		while (!(stream >> worldLocation.x).eof())
+		{
+			stream >> worldLocation.y >> worldLocation.z;
+			mesh->SetWorldLocation(worldLocation);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("WorldRotation");
+		stream << child->GetText() << std::endl;
+		Vector3 worldRotation;
+		while (!(stream >> worldRotation.x).eof())
+		{
+			stream >> worldRotation.y >> worldRotation.z;
+			mesh->SetWorldRotation(worldRotation);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("WorldScaling");
+		stream << child->GetText() << std::endl;
+		Vector3 worldScaling;
+		while (!(stream >> worldScaling.x).eof())
+		{
+			stream >> worldScaling.y >> worldScaling.z;
+			mesh->SetWorldScaling(worldScaling);
+		}
+		stream.clear();
+
 		child = element->FirstChildElement("Vertices");
 		stream << child->GetText() << std::endl;
 		Vector3 vertex;

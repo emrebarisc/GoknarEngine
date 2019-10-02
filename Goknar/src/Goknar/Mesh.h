@@ -1,6 +1,8 @@
 #ifndef __MESH_H__
 #define __MESH_H__
 
+#include "Component.h"
+
 #include "Goknar/Core.h"
 #include "Goknar/Math.h"
 #include "Goknar/Matrix.h"
@@ -33,7 +35,7 @@ public:
 typedef std::vector<VertexData> VertexArray;
 typedef std::vector<Face> FaceArray;
 
-class GOKNAR_API Mesh
+class GOKNAR_API Mesh : public Component
 {
 public:
 	Mesh();
@@ -87,10 +89,11 @@ public:
 		return faceCount_;
 	}
 
-	void Render() const;
+	void Render() /*const*/;
 
 private:
 	Matrix modelMatrix_;
+	Matrix worldTransformationMatrix_;
 
 	VertexArray* vertices_;
 	FaceArray* faces_;

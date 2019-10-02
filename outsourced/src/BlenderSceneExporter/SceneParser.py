@@ -139,7 +139,6 @@ class PointLight(Light):
         fileBuffer += '\t\t</PointLight>\n'
         
         return fileBuffer
-        
 
 class DirectionalLight(Light):
     direction = [0, 0, 0]
@@ -187,17 +186,32 @@ class Mesh:
     normals = []
     textureCoordinates = []
     material = 0
+    relativeLocation = None
+    relativeRotation = None
+    relativeScaling = None
     
     def __init__(self):
         self.vertices = []
         self.faces = []
         self.normals = []
         self.textureCoordinates = []
+        self.relativeLocation = None
+        self.relativeRotation = None
+        self.relativeScaling = None
     
     def Export(self):
         fileBuffer = '\t\t<Mesh id = "' + str(self.id) + '">\n'
         
         fileBuffer += '\t\t\t<Material>' + str(self.material) + '</Material>\n'
+
+        if(self.relativeLocation != None):
+            fileBuffer += '\t\t\t<RelativeLocation>' + str(self.relativeLocation.x) + ' ' + str(self.relativeLocation.y) + ' ' + str(self.relativeLocation.z) + '</RelativeLocation>'
+
+        if(self.relativeRotation != None):
+            fileBuffer += '\t\t\t<RelativeRotation>' + str(self.relativeRotation.x) + ' ' + str(self.relativeRotation.y) + ' ' + str(self.relativeRotation.z) + '</RelativeRotation>'
+
+        if(self.relativeScaling != None):
+            fileBuffer += '\t\t\t<RelativeScaling>' + str(self.relativeScaling.x) + ' ' + str(self.relativeScaling.y) + ' ' + str(self.relativeScaling.z) + '</RelativeScaling>'
         
         # Vertex Data
         fileBuffer += '\t\t\t<Vertices>\n'
@@ -220,7 +234,6 @@ class Mesh:
         return fileBuffer
     
 class Scene:
-    
     def __init__(self):
         self.cameras = []
         self.lights = []
@@ -251,9 +264,13 @@ class Scene:
         # Lights
         fileBuffer += '\t<Lights>\n'
         fileBuffer += '\t\t<AmbientLight>' + str(self.ambientLight.x) + ' ' + str(self.ambientLight.y) + ' ' + str(self.ambientLight.z) + '</AmbientLight>\n'
+        
+        '''
+        print(self.lights)
         for light in self.lights:
             fileBuffer += light.Export()
         fileBuffer += '\t</Lights>\n\n'
+        '''
 
         # Materials
         fileBuffer += '\t<Materials>\n'
@@ -272,7 +289,6 @@ class Scene:
         with open(filePath, 'w') as file:
             file.write(fileBuffer)
 
-     
 def ParseScene():
     fileName = os.path.splitext(bpy.data.filepath)[0] + ".xml"
 
@@ -285,7 +301,6 @@ def ParseScene():
     cameraId = 1
     for obj in scene.objects:
         if(obj.type == 'CAMERA'):
-            
             gazeVector = obj.matrix_world.to_quaternion() @ Vector((0.0, 0.0, -1.0))
             upVector = obj.matrix_world.to_quaternion() @ Vector((0.0, 1.0, 0.0))
             
@@ -319,39 +334,40 @@ def ParseScene():
 
     # Lights
 
-    pointLightId = 1
-    for obj in scene.objects:
-        if(obj.type == 'LAMP'):
-            
-            objDataType = getattr(obj.data, 'type', '')
-            
-            light = None
-            
-            # Point Light
-            if(objDataType == 'POINT'):
-                light = PointLight()
-                
-                light.id = pointLightId
-                light.position = Vector3(obj.location[0], obj.location[1], obj.location[2])
-                
-                # Intensity
-                intensityColor = obj.data.node_tree.nodes["Emission"].inputs[0].default_value
-                intensityValue = obj.data.node_tree.nodes["Emission"].inputs[1].default_value
-                intensity = [intensityColor[0] * intensityValue, intensityColor[1] * intensityValue, intensityColor[2] * intensityValue]
-                
-                light.intensity = Vector3(intensity[0], intensity[1], intensity[2])
-            
-                pointLightId += 1
-                
-                sceneData.lights.append(light)
-                
-            elif(objDataType == 'SUN'):
-                print('Directional Light: ' + obj.name)
-
-            elif(objDataType == 'SPOT'):
-                print('Spot Light: ' + obj.name)
-
-    print("Light parsing is done.\n")
+#    pointLightId = 1
+#    for obj in scene.objects:
+#        print(obj.type)
+#        if(obj.type == 'LIGHT'):
+#            
+#            objDataType = getattr(obj.data, 'type', '')
+#            
+#            light = None
+#            
+#            # Point Light
+#            if(objDataType == 'POINT'):
+#                light = PointLight()
+#               
+#                light.id = pointLightId
+#                light.position = Vector3(obj.location[0], obj.location[1], obj.location[2])
+#                
+#                # Intensity
+#                intensityColor = obj.data.node_tree.nodes["Emission"].inputs[0].default_value
+#                intensityValue = obj.data.node_tree.nodes["Emission"].inputs[1].default_value
+#                intensity = [intensityColor[0] * intensityValue, intensityColor[1] * intensityValue, intensityColor[2] * intensityValue]
+#                
+#                light.intensity = Vector3(intensity[0], intensity[1], intensity[2])
+#            
+#                pointLightId += 1
+#                
+#                sceneData.lights.append(light)
+#                
+#            elif(objDataType == 'SUN'):
+#                print('Directional Light: ' + obj.name)
+#
+#            elif(objDataType == 'SPOT'):
+#                print('Spot Light: ' + obj.name)
+#
+#    print("Light parsing is done.\n")
 
     '''
     # Materials
@@ -375,7 +391,6 @@ def ParseScene():
     
     print("Material parsing is done.\n")
     '''
-    
     
     # Meshes
     meshId = 1
@@ -412,6 +427,10 @@ def ParseScene():
             normal.w = 0
             normal = (bpy.data.objects[blenderMesh.name].matrix_world @ normal)
             mesh.normals.append(Vector3(normal.x, normal.y, normal.z))
+
+#        mesh.relativeLocation = blenderMesh.location
+#        mesh.relativeRotation = blenderMesh.rotation_eular
+#        mesh.relativeScaling = blenderMesh.scale
             
         sceneData.meshes.append(mesh)
         meshId += 1

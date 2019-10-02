@@ -12,7 +12,7 @@
 #include "Managers/ShaderBuilder.h"
 
 Mesh::Mesh() :
-	modelMatrix_(Matrix::IdentityMatrix), 
+	worldTransformationMatrix_(Matrix::IdentityMatrix),
 	materialId_(0), 
 	shader_(0), 
 	vertexCount_(0), 
@@ -40,16 +40,30 @@ void Mesh::Init()
 	shader_ = new Shader(vertexBuffer, fragmentBuffer);
 }
 
-void Mesh::Render() const
+void Mesh::Render() /*const*/
 {
 	const Scene* scene = engine->GetApplication()->GetMainScene();
 
 	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
-	Matrix MVP = activeCamera->GetViewingMatrix() * activeCamera->GetProjectionMatrix();
-	MVP = MVP * modelMatrix_;
+	
+	Matrix MVP = relativeTransformationMatrix_;
+	MVP = MVP * worldTransformationMatrix_;
+	MVP = MVP * activeCamera->GetViewingMatrix();
+	MVP = MVP * activeCamera->GetProjectionMatrix();
+
+	if (GetComponentId() == 0)
+	{
+		static float time = 0.f;
+		//SetRelativeLocation(GetRelativeLocation() + Vector3(0.f, 0.f, 0.005f * sin(time)));
+
+		Vector3 rotation(0, 0, 0.01f);
+		rotation.ConvertDegreeToRadian();
+		SetRelativeRotation(GetRelativeRotation() + rotation);
+		time += 0.000625;
+	}
 
 	shader_->SetMatrix("MVP", MVP);
-	shader_->SetMatrix("modelMatrix", modelMatrix_);
+	shader_->SetMatrix("modelMatrix", worldTransformationMatrix_);
 
 	const Vector3& cameraPosition = engine->GetCameraManager()->GetActiveCamera()->GetPosition();
 	shader_->SetVector3("viewPosition", cameraPosition);

@@ -5,7 +5,7 @@
 #include "Goknar/Shader.h"
 #include "Goknar/Managers/ShaderBuilder.h"
 
-int DirectionalLight::currentId_ = 0;
+int DirectionalLight::lastDirectionalLightId_ = 0;
 
 void DirectionalLight::SetShaderUniforms(const Shader* shader) const
 {

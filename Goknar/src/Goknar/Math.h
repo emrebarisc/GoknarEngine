@@ -14,11 +14,11 @@
 #define mathClamp(value, min, max) (value > max ? max : value < min ? min : value)
 #define mathAbs(value) (value < 0 ? value * -1 : value)
 
-#define PI 3.14159265359
-#define TWO_PI 6.28318530718
-#define HALF_PI 1.57079632679
-#define ONE_OVER_PI 0.31830988618
-#define NATURAL_LOGARITHM 2.71828182845
+#define PI 3.14159265359f
+#define TWO_PI 6.28318530718f
+#define HALF_PI 1.57079632679f
+#define ONE_OVER_PI 0.31830988618f
+#define NATURAL_LOGARITHM 2.71828182845f
 
 #define RADIAN_TO_DEGREE(radian) (radian * 180.f / PI)
 #define DEGREE_TO_RADIAN(degree) (degree * PI / 180.f)
@@ -189,6 +189,9 @@ struct GOKNAR_API Vector3
 	inline friend std::ostream& operator<<(std::ostream& out, const Vector3& val);
 
 	inline void Clamp(int min, int max);
+
+	void ConvertDegreeToRadian();
+	void ConvertRadianToDegree();
 
 	Vector3 GetOrthonormalBasis() const;
 

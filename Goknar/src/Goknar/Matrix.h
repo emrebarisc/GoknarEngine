@@ -208,6 +208,18 @@ public:
         }
     }
 
+	Matrix operator-()
+	{
+		Matrix result(*this);
+
+		for (int i = 0; i < 16; i++)
+		{
+			result.m[i] *= -1;
+		}
+
+		return result;
+	}
+
     Vector4 operator*(const Vector4& rhs) const
     {
         Vector4 out(0);

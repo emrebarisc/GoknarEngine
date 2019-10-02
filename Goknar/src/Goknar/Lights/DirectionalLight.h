@@ -10,7 +10,7 @@ class GOKNAR_API DirectionalLight : public Light
 public:
 	DirectionalLight() : Light() 
 	{
-		id_ = currentId_++;
+		id_ = lastDirectionalLightId_++;
 		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT) + std::to_string(id_);
 	}
 
@@ -35,7 +35,7 @@ private:
     Vector3 direction_;
     Vector3 radiance_;
 
-	static int currentId_;
+	static int lastDirectionalLightId_;
 };
 
 #endif

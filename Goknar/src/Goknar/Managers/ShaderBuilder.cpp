@@ -139,7 +139,7 @@ uniform vec3 viewPosition;
 
 	CombineShader();
 
-	std::cout << sceneFragmentShader_ << std::endl;
+	//std::cout << sceneFragmentShader_ << std::endl;
 }
 
 void ShaderBuilder::BuildSceneVertexShader()

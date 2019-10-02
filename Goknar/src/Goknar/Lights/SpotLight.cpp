@@ -5,7 +5,7 @@
 #include "Goknar/Shader.h"
 #include "Goknar/Managers/ShaderBuilder.h"
 
-int SpotLight::currentId_ = 0;
+int SpotLight::lastSpotLightId_ = 0;
 
 void SpotLight::SetShaderUniforms(const Shader* shader) const
 {
