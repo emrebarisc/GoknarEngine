@@ -93,7 +93,6 @@ public:
 
 private:
 	Matrix modelMatrix_;
-	Matrix worldTransformationMatrix_;
 
 	VertexArray* vertices_;
 	FaceArray* faces_;

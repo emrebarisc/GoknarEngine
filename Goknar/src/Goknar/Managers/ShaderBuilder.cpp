@@ -152,7 +152,10 @@ layout(location = 1) in vec3 normal;
 
 uniform mat4 MVP;
 
-uniform mat4 modelMatrix;
+uniform mat4 relativeTransformationMatrix;
+uniform mat4 worldTransformationMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
 out vec3 fragmentPosition;
 
@@ -160,9 +163,9 @@ out vec3 vertexNormal;
 
 void main()
 {
-	gl_Position = MVP * vec4(position, 1.f);
-	vertexNormal = mat3(transpose(inverse(modelMatrix))) * normal;
-	fragmentPosition = vec3(modelMatrix * vec4(position, 1.f));
+	gl_Position = projectionMatrix * viewMatrix * worldTransformationMatrix * relativeTransformationMatrix * vec4(position, 1.f);
+	vertexNormal = mat3(transpose(inverse(worldTransformationMatrix))) * normal;
+	fragmentPosition = vec3(worldTransformationMatrix * relativeTransformationMatrix * vec4(position, 1.f));
 }
 )";
 }

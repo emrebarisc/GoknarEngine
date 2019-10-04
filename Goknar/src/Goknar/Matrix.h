@@ -119,8 +119,8 @@ public:
 
     inline friend std::ostream& operator<<(std::ostream& out, const Matrix2x2& matrix)
     {
-        return out << "|" << matrix.m[0] << ", " << matrix.m[1] << "|" << std::endl
-                   << "|" << matrix.m[2] << ", " << matrix.m[3] << "|" << std::endl;
+        return out << matrix.m[0] << ", " << matrix.m[1] << std::endl
+                   << matrix.m[2] << ", " << matrix.m[3] << std::endl;
     }
 
     Matrix2x2 GetInverse() const;
@@ -287,10 +287,10 @@ public:
 
     inline friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
     {
-        return out << "|" << matrix.m[0] << ", " << matrix.m[1] << ", " << matrix.m[2] << ", " << matrix.m[3] << "|" << std::endl
-                   << "|" << matrix.m[4] << ", " << matrix.m[5] << ", " << matrix.m[6] << ", " << matrix.m[7] << "|" << std::endl
-                   << "|" << matrix.m[8] << ", " << matrix.m[9] << ", " << matrix.m[10] << ", " << matrix.m[11] << "|" << std::endl
-                   << "|" << matrix.m[12] << ", " << matrix.m[13] << ", " << matrix.m[14] << ", " << matrix.m[15] << "|" << std::endl;
+        return out << matrix.m[0] << ", " << matrix.m[1] << ", " << matrix.m[2] << ", " << matrix.m[3] << std::endl
+                   << matrix.m[4] << ", " << matrix.m[5] << ", " << matrix.m[6] << ", " << matrix.m[7] << std::endl
+                   << matrix.m[8] << ", " << matrix.m[9] << ", " << matrix.m[10] << ", " << matrix.m[11] << std::endl
+                   << matrix.m[12] << ", " << matrix.m[13] << ", " << matrix.m[14] << ", " << matrix.m[15] << std::endl;
     }
 
     Matrix GetInverse() const;

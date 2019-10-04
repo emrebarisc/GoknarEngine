@@ -42,9 +42,9 @@ void Component::SetWorldScaling(const Vector3& scaling)
 
 void Component::UpdateRelativeTransformationMatrix()
 {
-	relativeTransformationMatrix_ = Matrix(relativeScaling_.x, 0.f, 0.f, relativeLocation_.x,
-											0.f, relativeScaling_.y, 0.f, relativeLocation_.y,
-											0.f, 0.f, relativeScaling_.z, relativeLocation_.z,
+	relativeTransformationMatrix_ = Matrix(relativeScaling_.x, 0.f, 0.f, relativeLocation_.x + pivotPoint_.x,
+											0.f, relativeScaling_.y, 0.f, relativeLocation_.y + pivotPoint_.y,
+											0.f, 0.f, relativeScaling_.z, relativeLocation_.z + pivotPoint_.z,
 											0.f, 0.f, 0.f, 1.f);
 
 	if (relativeRotation_.x != 0)
@@ -78,9 +78,9 @@ void Component::UpdateRelativeTransformationMatrix()
 
 void Component::UpdateWorldTransformationMatrix()
 {	
-	worldTransformationMatrix_ = Matrix(relativeScaling_.x, 0.f, 0.f, relativeLocation_.x,
-										0.f, relativeScaling_.y, 0.f, relativeLocation_.y,
-										0.f, 0.f, relativeScaling_.z, relativeLocation_.z,
+	worldTransformationMatrix_ = Matrix(worldScaling_.x, 0.f, 0.f, worldLocation_.x,
+										0.f, worldScaling_.y, 0.f, worldLocation_.y,
+										0.f, 0.f, worldScaling_.z, worldLocation_.z,
 										0.f, 0.f, 0.f, 1.f);
 
 	if (worldRotation_.x != 0)

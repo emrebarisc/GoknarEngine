@@ -233,13 +233,13 @@ void ImGuiEditor::ShowAbout()
 
 void ImGuiEditor::ShowBasicAssetsBrowser()
 {
-	ImGui::Begin("Basic Assets", &showBasicAssetsBrowser_, ImGuiWindowFlags_NoCollapse);
+	//ImGui::Begin("Basic Assets", &showBasicAssetsBrowser_, ImGuiWindowFlags_NoCollapse);
 
-	if(ImGui::Button("Add a Simple Cube"))
-	{
-		imguiLog_.AddLog("A simple cube is added to the scene.\n");
-	}
-	ImGui::End();
+	//if(ImGui::Button("Add a Simple Cube"))
+	//{
+	//	imguiLog_.AddLog("A simple cube is added to the scene.\n");
+	//}
+	//ImGui::End();
 }
 
 void ImGuiEditor::ShowLog()

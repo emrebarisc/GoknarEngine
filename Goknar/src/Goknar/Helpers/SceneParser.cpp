@@ -378,71 +378,71 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		mesh->SetMaterialId(materialId);
 
 		child = element->FirstChildElement("PivotPoint");
-		stream << child->GetText() << std::endl;
-		Vector3 pivotPoint;
-		while (!(stream >> pivotPoint.x).eof())
+		if (child)
 		{
-			stream >> pivotPoint.y >> pivotPoint.z;
+			stream << child->GetText() << std::endl;
+			Vector3 pivotPoint;
+			stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
 			mesh->SetPivotPoint(pivotPoint);
 		}
 		stream.clear();
 
 		child = element->FirstChildElement("RelativeLocation");
-		stream << child->GetText() << std::endl;
-		Vector3 relativeLocation;
-		while (!(stream >> relativeLocation.x).eof())
+		if (child)
 		{
-			stream >> relativeLocation.y >> relativeLocation.z;
+			stream << child->GetText() << std::endl;
+			Vector3 relativeLocation;
+			stream >> relativeLocation.x >> relativeLocation.y >> relativeLocation.z;
 			mesh->SetRelativeLocation(relativeLocation);
 		}
 		stream.clear();
 
 		child = element->FirstChildElement("RelativeRotation");
-		stream << child->GetText() << std::endl;
-		Vector3 relativeRotation;
-		while (!(stream >> relativeRotation.x).eof())
+		if (child)
 		{
-			stream >> relativeRotation.y >> relativeRotation.z;
+			stream << child->GetText() << std::endl;
+			Vector3 relativeRotation;
+			stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
 			mesh->SetRelativeRotation(relativeRotation);
 		}
 		stream.clear();
 
 		child = element->FirstChildElement("RelativeScaling");
-		stream << child->GetText() << std::endl;
-		Vector3 relativeScaling;
-		while (!(stream >> relativeScaling.x).eof())
+		if (child)
 		{
-			stream >> relativeScaling.y >> relativeScaling.z;
+			stream << child->GetText() << std::endl;
+			Vector3 relativeScaling;
+			stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
 			mesh->SetRelativeScaling(relativeScaling);
 		}
 		stream.clear();
 
 		child = element->FirstChildElement("WorldLocation");
-		stream << child->GetText() << std::endl;
-		Vector3 worldLocation;
-		while (!(stream >> worldLocation.x).eof())
+		if (child)
 		{
-			stream >> worldLocation.y >> worldLocation.z;
+			stream << child->GetText() << std::endl;
+			Vector3 worldLocation;
+			stream >> worldLocation.x >> worldLocation.y >> worldLocation.z;
 			mesh->SetWorldLocation(worldLocation);
 		}
 		stream.clear();
 
 		child = element->FirstChildElement("WorldRotation");
-		stream << child->GetText() << std::endl;
-		Vector3 worldRotation;
-		while (!(stream >> worldRotation.x).eof())
+		if (child)
 		{
-			stream >> worldRotation.y >> worldRotation.z;
+			stream << child->GetText() << std::endl;
+			Vector3 worldRotation;
+			stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
 			mesh->SetWorldRotation(worldRotation);
 		}
 		stream.clear();
 
 		child = element->FirstChildElement("WorldScaling");
-		stream << child->GetText() << std::endl;
-		Vector3 worldScaling;
-		while (!(stream >> worldScaling.x).eof())
+		if (child)
 		{
-			stream >> worldScaling.y >> worldScaling.z;
+			stream << child->GetText() << std::endl;
+			Vector3 worldScaling;
+			stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
 			mesh->SetWorldScaling(worldScaling);
 		}
 		stream.clear();

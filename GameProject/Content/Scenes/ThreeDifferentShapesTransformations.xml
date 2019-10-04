@@ -58,7 +58,7 @@
 			<RelativeLocation>0 0 0</RelativeLocation>
 			<RelativeRotation>0 0 0</RelativeRotation>
 			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldLocation>0 0 0</WorldLocation>
+			<WorldLocation>-2.5 -2.5 1.0</WorldLocation>
 			<WorldRotation>0 0 0</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
@@ -102,7 +102,7 @@
 			<RelativeLocation>0 0 0</RelativeLocation>
 			<RelativeRotation>0 0 0</RelativeRotation>
 			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldLocation>0 0 0</WorldLocation>
+      <WorldLocation>2.5 2.5 1</WorldLocation>
 			<WorldRotation>0 0 0</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
