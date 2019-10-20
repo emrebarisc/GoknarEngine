@@ -17,7 +17,7 @@ WindowManager::WindowManager()
 	windowHeight_ = 768;
 	windowTitle_ = "Goknar Engine";
 	mainMonitor_ = nullptr;
-	MSAAValue_ = 0;
+	MSAAValue_ = 4;
 	isInFullscreen_ = false;
 }
 
@@ -54,6 +54,8 @@ void WindowManager::Init()
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
+
+	SetMSAA(MSAAValue_);
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(GLFW_KEY_ESCAPE, INPUT_ACTION::G_PRESS, std::bind(&WindowManager::CloseWindow, this));
 }

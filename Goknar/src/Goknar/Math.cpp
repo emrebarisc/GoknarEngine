@@ -296,11 +296,6 @@ bool Vector3::operator!=(const Vector3& val) const
 	return x != val.x && y != val.y && z != val.z;
 }
 
-std::ostream& operator<<(std::ostream& out, const Vector3& val)
-{
-	return out << "[" << val.x << ", " << val.y << ", " << val.z << "]";
-}
-
 void Vector3::Clamp(int min, int max)
 {
 	x = mathClamp(x, min, max);

@@ -1,6 +1,7 @@
 #include <Goknar.h>
 
 #include "Goknar/Lights/PointLight.h"
+#include "Goknar/Scene.h"
 
 class Game : public Application
 {

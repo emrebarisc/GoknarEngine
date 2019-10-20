@@ -403,6 +403,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream << child->GetText() << std::endl;
 			Vector3 relativeRotation;
 			stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
+			relativeRotation.ConvertDegreeToRadian();
 			mesh->SetRelativeRotation(relativeRotation);
 		}
 		stream.clear();
@@ -433,6 +434,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream << child->GetText() << std::endl;
 			Vector3 worldRotation;
 			stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
+			worldRotation.ConvertDegreeToRadian();
 			mesh->SetWorldRotation(worldRotation);
 		}
 		stream.clear();

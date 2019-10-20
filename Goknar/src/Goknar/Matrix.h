@@ -197,6 +197,59 @@ public:
 
     }
 
+	inline static Matrix GetRotationMatrix(const Vector3& rotation)
+	{
+		Matrix result = Matrix::IdentityMatrix;
+
+		if (rotation.x != 0.f)
+		{
+			Matrix xRotationMatrix = Matrix::IdentityMatrix;
+			float cosTheta = cos(rotation.x);
+			float sinTheta = sin(rotation.x);
+			xRotationMatrix.m[5] = cosTheta;
+			xRotationMatrix.m[6] = -sinTheta;
+			xRotationMatrix.m[9] = sinTheta;
+			xRotationMatrix.m[10] = cosTheta;
+			result *= xRotationMatrix;
+		}
+		if (rotation.y != 0.f)
+		{
+			Matrix yRotationMatrix = Matrix::IdentityMatrix;
+			float cosTheta = cos(rotation.y);
+			float sinTheta = sin(rotation.y);
+			yRotationMatrix.m[0] = cosTheta;
+			yRotationMatrix.m[2] = sinTheta;
+			yRotationMatrix.m[8] = -sinTheta;
+			yRotationMatrix.m[10] = cosTheta;
+			result *= yRotationMatrix;
+		}
+		if (rotation.z != 0.f)
+		{
+			Matrix zRotationMatrix = Matrix::IdentityMatrix;
+			float cosTheta = cos(rotation.z);
+			float sinTheta = sin(rotation.z);
+			zRotationMatrix.m[0] = cosTheta;
+			zRotationMatrix.m[1] = -sinTheta;
+			zRotationMatrix.m[4] = sinTheta;
+			zRotationMatrix.m[5] = cosTheta;
+			result *= zRotationMatrix;
+		}
+
+		return result;
+	}
+
+	//inline static Matrix GetRotationMatrixAboutAnAxis(Vector3 axis, float angle)
+	//{
+	//	float cosAngle = cos(angle);
+	//	float sinAngle = sin(angle);
+	//	float oneMinusCosAngle = 1 - cosAngle;
+
+	//	return Matrix(cosAngle + axis.x * axis.x * oneMinusCosAngle,				axis.x * axis.y * oneMinusCosAngle - axis.z * sinAngle,		axis.x * axis.z * oneMinusCosAngle + axis.y * sinAngle,		0.f,
+	//				  axis.y * axis.x * oneMinusCosAngle + axis.z * sinAngle,		cosAngle + axis.y * axis.y * oneMinusCosAngle,				axis.y * axis.z * oneMinusCosAngle - axis.x * sinAngle,		0.f,
+	//				  axis.z * axis.x * oneMinusCosAngle - axis.y * sinAngle,		axis.z * axis.y * oneMinusCosAngle + axis.x * sinAngle,		cosAngle + axis.z * axis.z * oneMinusCosAngle,				0.f,
+	//				  0.f,															0.f,														0.f,														1.f);
+	//}
+
     void operator=(const Matrix& rhs)
     {
         if(this != &rhs)
@@ -258,6 +311,33 @@ public:
 
         return out;
     }
+
+	inline void operator*=(const Matrix& rhs)
+	{
+		Matrix out(0.f);
+
+		out.m[0] = m[0] * rhs.m[0] + m[1] * rhs.m[4] + m[2] * rhs.m[8] + m[3] * rhs.m[12];
+		out.m[1] = m[0] * rhs.m[1] + m[1] * rhs.m[5] + m[2] * rhs.m[9] + m[3] * rhs.m[13];
+		out.m[2] = m[0] * rhs.m[2] + m[1] * rhs.m[6] + m[2] * rhs.m[10] + m[3] * rhs.m[14];
+		out.m[3] = m[0] * rhs.m[3] + m[1] * rhs.m[7] + m[2] * rhs.m[11] + m[3] * rhs.m[15];
+
+		out.m[4] = m[4] * rhs.m[0] + m[5] * rhs.m[4] + m[6] * rhs.m[8] + m[7] * rhs.m[12];
+		out.m[5] = m[4] * rhs.m[1] + m[5] * rhs.m[5] + m[6] * rhs.m[9] + m[7] * rhs.m[13];
+		out.m[6] = m[4] * rhs.m[2] + m[5] * rhs.m[6] + m[6] * rhs.m[10] + m[7] * rhs.m[14];
+		out.m[7] = m[4] * rhs.m[3] + m[5] * rhs.m[7] + m[6] * rhs.m[11] + m[7] * rhs.m[15];
+
+		out.m[8] = m[8] * rhs.m[0] + m[9] * rhs.m[4] + m[10] * rhs.m[8] + m[11] * rhs.m[12];
+		out.m[9] = m[8] * rhs.m[1] + m[9] * rhs.m[5] + m[10] * rhs.m[9] + m[11] * rhs.m[13];
+		out.m[10] = m[8] * rhs.m[2] + m[9] * rhs.m[6] + m[10] * rhs.m[10] + m[11] * rhs.m[14];
+		out.m[11] = m[8] * rhs.m[3] + m[9] * rhs.m[7] + m[10] * rhs.m[11] + m[11] * rhs.m[15];
+
+		out.m[12] = m[12] * rhs.m[0] + m[13] * rhs.m[4] + m[14] * rhs.m[8] + m[15] * rhs.m[12];
+		out.m[13] = m[12] * rhs.m[1] + m[13] * rhs.m[5] + m[14] * rhs.m[9] + m[15] * rhs.m[13];
+		out.m[14] = m[12] * rhs.m[2] + m[13] * rhs.m[6] + m[14] * rhs.m[10] + m[15] * rhs.m[14];
+		out.m[15] = m[12] * rhs.m[3] + m[13] * rhs.m[7] + m[14] * rhs.m[11] + m[15] * rhs.m[15];
+
+		*this = out;
+	}
 
 	float& operator[](int index)
 	{

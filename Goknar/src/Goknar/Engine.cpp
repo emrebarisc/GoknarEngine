@@ -1,23 +1,24 @@
 #include "pch.h"
 
+// Goknar Libraries
 #include "Engine.h"
-
-#include "GLFW/glfw3.h"
-
 #include "Application.h"
 #include "Log.h"
 #include "ObjectBase.h"
 #include "Scene.h"
-
 #include "Editor/ImGuiEditor/ImGuiEditor.h"
-
 #include "Managers/CameraManager.h"
 #include "Managers/InputManager.h"
 #include "Managers/ObjectManager.h"
+#include "Managers/Renderer/Renderer.h"
 #include "Managers/ShaderBuilder.h"
 #include "Managers/WindowManager.h"
 
-#include "Managers/Renderer/Renderer.h"
+// OpenGL Libraries
+#include "GLFW/glfw3.h"
+
+// C++ Standard Libraries
+#include <chrono>
 
 
 Engine *engine;
@@ -67,22 +68,25 @@ void Engine::Init() const
 	application_->Init();
 	shaderBuilder_->Init();
 	renderer_->Init();
-
 	editor_->Init();
 }
 
 void Engine::Run()
 {
+	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
+	std::chrono::steady_clock::time_point currentTimePoint;
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
+		currentTimePoint = std::chrono::steady_clock::now();
+		std::chrono::duration<float> elapsedTimeDuration = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint);
+
 		application_->Run();
+		Tick(elapsedTimeDuration.count());
 
-		// TODO Temp Tick Call
-		Tick(0.016f);
-
-		// TODO Renderer
 		renderer_->Render();
 		glfwPollEvents();
+
+		lastFrameTimePoint = currentTimePoint;
 	}
 }
 

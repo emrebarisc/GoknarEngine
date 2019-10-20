@@ -9,10 +9,10 @@
 #include "Matrix.h"
 
 const Matrix Matrix::ZeroMatrix = Matrix(0.f);
-const Matrix Matrix::IdentityMatrix = Matrix( 1, 0, 0, 0,
-                                              0, 1, 0, 0,
-                                              0, 0, 1, 0,
-                                              0, 0, 0, 1 );
+const Matrix Matrix::IdentityMatrix = Matrix( 1.f, 0.f, 0.f, 0.f,
+                                              0.f, 1.f, 0.f, 0.f,
+                                              0.f, 0.f, 1.f, 0.f,
+                                              0.f, 0.f, 0.f, 1.f );
 
 
 Matrix2x2 Matrix2x2::GetInverse() const

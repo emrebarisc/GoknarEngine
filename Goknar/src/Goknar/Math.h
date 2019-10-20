@@ -186,7 +186,11 @@ struct GOKNAR_API Vector3
 
 	inline bool operator!=(const Vector3& val) const;
 
-	inline friend std::ostream& operator<<(std::ostream& out, const Vector3& val);
+	inline friend std::ostream& operator<<(std::ostream& out, const Vector3& val)
+	{
+		out << "[" << val.x << ", " << val.y << ", " << val.z << "]";
+		return out;
+	}
 
 	inline void Clamp(int min, int max);
 

@@ -8,7 +8,7 @@ class Camera;
 class GOKNAR_API CameraManager
 {
 public:
-	CameraManager()
+	CameraManager() : activeCamera_(nullptr)
 	{
 
 	}
@@ -25,8 +25,10 @@ public:
 	{
 		cameras_.push_back(camera);
 
-		// TEMPORARY
-		activeCamera_ = camera;
+		if(cameras_.size() == 1)
+		{
+			activeCamera_ = camera;
+		}
 	}
 
 	void SetActiveCamera(Camera* camera)

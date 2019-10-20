@@ -33,17 +33,17 @@
             <DiffuseReflectance>0.95 0.42 0.31</DiffuseReflectance>
             <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
         </Material>
-        <Material id="1">
+    <Material id="1">
             <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
             <DiffuseReflectance>0.23 0.54 0.79</DiffuseReflectance>
             <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
         </Material>
-        <Material id="2">
+    <Material id="2">
             <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
             <DiffuseReflectance>0.1 0.83 0.59</DiffuseReflectance>
             <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
         </Material>
-        <Material id="3">
+    <Material id="3">
             <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
             <DiffuseReflectance>0.5 0.5 0.5</DiffuseReflectance>
             <SpecularReflectance>1.0 1.0 1.0</SpecularReflectance>
@@ -55,10 +55,10 @@
 		<Mesh id = "1">
 			<Material>0</Material>
 			<PivotPoint>0 0 0</PivotPoint>
-			<RelativeLocation>0 0 0</RelativeLocation>
-			<RelativeRotation>0 0 0</RelativeRotation>
+			<RelativeLocation>-2.5 -2.5 1.0</RelativeLocation>
+      <RelativeRotation>0 0 45</RelativeRotation>
 			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldLocation>-2.5 -2.5 1.0</WorldLocation>
+      <WorldLocation>0 0 0</WorldLocation>
 			<WorldRotation>0 0 0</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
@@ -102,7 +102,7 @@
 			<RelativeLocation>0 0 0</RelativeLocation>
 			<RelativeRotation>0 0 0</RelativeRotation>
 			<RelativeScaling>1 1 1</RelativeScaling>
-      <WorldLocation>2.5 2.5 1</WorldLocation>
+      <WorldLocation>0 0 0</WorldLocation>
 			<WorldRotation>0 0 0</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
@@ -548,8 +548,8 @@
 			<Material>3</Material>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativeLocation>0 0 0</RelativeLocation>
-			<RelativeRotation>0 0 0</RelativeRotation>
-			<RelativeScaling>1 1 1</RelativeScaling>
+			<RelativeRotation>0 0 45</RelativeRotation>
+			<RelativeScaling>10 10 10</RelativeScaling>
 			<WorldLocation>0 0 0</WorldLocation>
 			<WorldRotation>0 0 0</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>

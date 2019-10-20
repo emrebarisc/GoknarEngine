@@ -85,7 +85,7 @@ void Renderer::Init()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glDepthFunc(GL_LEQUAL);
-	
+
 	for (Mesh* mesh : objectsToBeRendered_)
 	{
 		totalVertexSize_ += mesh->GetVerticesPointer()->size();

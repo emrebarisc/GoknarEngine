@@ -35,7 +35,7 @@ inline namespace SHADER_VARIABLE_NAMES
 	}
 }
 
-const std::string DEFAULT_SHADER_VERSION = "330 core";
+const std::string DEFAULT_SHADER_VERSION = "440 core";
 
 ShaderBuilder::ShaderBuilder()
 {
@@ -139,6 +139,7 @@ uniform vec3 viewPosition;
 
 	CombineShader();
 
+	//std::cout << sceneVertexShader_ << std::endl;
 	//std::cout << sceneFragmentShader_ << std::endl;
 }
 
@@ -149,6 +150,7 @@ void ShaderBuilder::BuildSceneVertexShader()
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
+layout(location = 2) in vec2 uv;
 
 uniform mat4 MVP;
 
@@ -158,14 +160,19 @@ uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
 out vec3 fragmentPosition;
-
 out vec3 vertexNormal;
 
 void main()
 {
-	gl_Position = projectionMatrix * viewMatrix * worldTransformationMatrix * relativeTransformationMatrix * vec4(position, 1.f);
-	vertexNormal = mat3(transpose(inverse(worldTransformationMatrix))) * normal;
-	fragmentPosition = vec3(worldTransformationMatrix * relativeTransformationMatrix * vec4(position, 1.f));
+mat4 test = mat4(vec4(1.f, 0.f, 0.f, 2.5f),
+				 vec4(0.f, 1.f, 0.f, 2.5f),
+				 vec4(0.f, 0.f, 1.f, 1.0f),
+				 vec4(0.f, 0.f, 0.f, 1.0f));
+	vec4 fragmentPosition4Channel = worldTransformationMatrix * relativeTransformationMatrix * vec4(position, 1.f);
+	gl_Position = projectionMatrix * viewMatrix * fragmentPosition4Channel;
+	//gl_Position = projectionMatrix * viewMatrix * test * vec4(position, 1.f);
+	vertexNormal = vec3(transpose(inverse(worldTransformationMatrix * relativeTransformationMatrix)) * vec4(normal, 0.f));
+	fragmentPosition = vec3(fragmentPosition4Channel);
 }
 )";
 }

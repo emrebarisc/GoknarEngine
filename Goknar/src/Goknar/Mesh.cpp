@@ -34,6 +34,15 @@ void Mesh::Init()
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
 
+	//if (GetComponentId() == 0)
+	//{
+	//	for (int i = 0; i < vertexCount_; i++)
+	//	{
+	//		vertices_->at(i).position = relativeTransformationMatrix_ * Vector4(vertices_->at(i).position, 1);
+	//	}
+	//	relativeTransformationMatrix_ = Matrix::IdentityMatrix;
+	//}
+
 	const char* vertexBuffer = engine->GetShaderBuilder()->GetSceneVertexShader().c_str();
 	const char* fragmentBuffer = engine->GetShaderBuilder()->GetSceneFragmentShader().c_str();
 	shader_ = new Shader(vertexBuffer, fragmentBuffer);
@@ -41,6 +50,8 @@ void Mesh::Init()
 
 void Mesh::Render() /*const*/
 {
+	static bool isThatOneTimeIt = true;
+
 	const Scene* scene = engine->GetApplication()->GetMainScene();
 
 	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
@@ -50,24 +61,25 @@ void Mesh::Render() /*const*/
 	Matrix MVP = modelMatrix;
 	MVP = MVP * activeCamera->GetViewingMatrix();
 	MVP = MVP * activeCamera->GetProjectionMatrix();
-	
-	//if (GetComponentId() == 0)
-	//{
-	//	static float time = 0.f;
-	//	//SetRelativeLocation(GetRelativeLocation() + Vector3(0.f, 0.f, 0.005f * sin(time)));
 
-	//	Vector3 rotation(0, 0, 0.01f);
-	//	rotation.ConvertDegreeToRadian();
-	//	SetRelativeRotation(GetRelativeRotation() + rotation);
-	//	time += 0.000625; 
-	//}
+	static float time = 0.f;
+	if (GetComponentId() == 0)
+	{
+		//static Vector3 initialLocation = GetRelativeLocation();
+		//SetRelativeLocation(initialLocation + Vector3(0.f, 2.f * sin(time), 0.f));
+		//engine->GetCameraManager()->GetActiveCamera()->MoveUpward(0.01f * sin(time));
+		//engine->GetCameraManager()->GetActiveCamera()->Yaw(/*Vector3::ForwardVector, */0.0001f * sin(time * 0.001f));
+	}
+	else if (GetComponentId() == 3)
+	{
+		//Vector3 rotation(0, 0.001f, 0);
+		//rotation.ConvertDegreeToRadian();
+		//SetRelativeRotation(GetRelativeRotation() + rotation);
+		//SetWorldLocation(GetWorldLocation() + rotation);
+	}
+	time += 0.000625;
 
-	/*relativeTransformationMatrix;
-uniform mat4 worldTransformationMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix*/
-
-	std::cout << worldTransformationMatrix_ << std::endl;
+	//std::cout << worldTransformationMatrix_ << std::endl;
 
 	shader_->SetMatrix("MVP", MVP);
 	shader_->SetMatrix("relativeTransformationMatrix", relativeTransformationMatrix_);

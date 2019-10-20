@@ -9,7 +9,8 @@ public:
 	Component() :
 		relativeTransformationMatrix_(Matrix::IdentityMatrix),
 		relativeLocation_(Vector3::ZeroVector),
-		relativeRotation_(Vector3::ZeroVector), 
+		relativeRotation_(Vector3::ZeroVector),
+		relativeScaling_(Vector3(1.f)),
 		worldTransformationMatrix_(Matrix::IdentityMatrix),
 		worldLocation_(Vector3::ZeroVector),
 		worldRotation_(Vector3::ZeroVector),
@@ -89,8 +90,10 @@ protected:
 	Matrix worldTransformationMatrix_;
 
 private:
-	void UpdateRelativeTransformationMatrix();
-	void UpdateWorldTransformationMatrix();
+	inline void UpdateRelativeTransformationMatrix();
+	inline void UpdateWorldTransformationMatrix();
+
+	Vector3 pivotPoint_;
 
 	Vector3 relativeLocation_;
 	Vector3 relativeRotation_;
@@ -99,8 +102,6 @@ private:
 	Vector3 worldLocation_;
 	Vector3 worldRotation_;
 	Vector3 worldScaling_;
-
-	Vector3 pivotPoint_;
 
 	int componentId_;
 
