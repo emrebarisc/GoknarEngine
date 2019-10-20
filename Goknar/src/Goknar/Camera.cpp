@@ -35,6 +35,20 @@ void Camera::MoveForward(float value)
 	LookAt();
 }
 
+void Camera::MoveUpward(float value)
+{
+	position_ += upVector_ * value;
+
+	LookAt();
+}
+
+void Camera::MoveRight(float value)
+{
+	position_ += rightVector_ * value;
+
+	LookAt();
+}
+
 void Camera::Yaw(float value)
 {
 	forwardVector_ = forwardVector_.Rotate(upVector_ * value);
@@ -55,6 +69,17 @@ void Camera::Roll(float value)
 {
 	rightVector_ = rightVector_.Rotate(forwardVector_ * value);
 	upVector_ = rightVector_.Cross(forwardVector_);
+
+	LookAt();
+}
+
+void Camera::RotateAbout(const Vector3& axis, float angle)
+{
+	Matrix rotationMatrix = Matrix::GetRotationMatrixAboutAnAxis(axis, angle);
+
+	rightVector_ = rotationMatrix * Vector4(rightVector_, 0.f);
+	upVector_ = rotationMatrix * Vector4(upVector_, 0.f);
+	forwardVector_ = upVector_.Cross(rightVector_);
 
 	LookAt();
 }

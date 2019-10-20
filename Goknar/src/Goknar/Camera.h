@@ -36,7 +36,6 @@ public:
 	{
 		if (rhs != this)
 		{
-			viewingMatrix_ = rhs->viewingMatrix_;
 			position_ = rhs->position_;
 			forwardVector_ = rhs->forwardVector_;
 			upVector_ = rhs->upVector_;
@@ -49,18 +48,18 @@ public:
 			type_ = rhs->type_;
 			projectionMatrix_ = rhs->projectionMatrix_;
 			viewingMatrix_ = rhs->viewingMatrix_;
-			imageWidth_ = rhs->imageWidth_;
-			imageHeight_ = rhs->imageHeight_;
-			type_ = rhs->type_;
 		}
 	}
 
 	void InitCamera();
 
 	void MoveForward(float value);
+	void MoveUpward(float value);
+	void MoveRight(float value);
 	void Yaw(float value);
 	void Pitch(float value);
 	void Roll(float value);
+	void RotateAbout(const Vector3& axis, float angle);
 
 	const Matrix& GetViewingMatrix() const
 	{

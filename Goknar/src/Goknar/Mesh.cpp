@@ -62,25 +62,6 @@ void Mesh::Render() /*const*/
 	MVP = MVP * activeCamera->GetViewingMatrix();
 	MVP = MVP * activeCamera->GetProjectionMatrix();
 
-	static float time = 0.f;
-	if (GetComponentId() == 0)
-	{
-		//static Vector3 initialLocation = GetRelativeLocation();
-		//SetRelativeLocation(initialLocation + Vector3(0.f, 2.f * sin(time), 0.f));
-		//engine->GetCameraManager()->GetActiveCamera()->MoveUpward(0.01f * sin(time));
-		//engine->GetCameraManager()->GetActiveCamera()->Yaw(/*Vector3::ForwardVector, */0.0001f * sin(time * 0.001f));
-	}
-	else if (GetComponentId() == 3)
-	{
-		//Vector3 rotation(0, 0.001f, 0);
-		//rotation.ConvertDegreeToRadian();
-		//SetRelativeRotation(GetRelativeRotation() + rotation);
-		//SetWorldLocation(GetWorldLocation() + rotation);
-	}
-	time += 0.000625;
-
-	//std::cout << worldTransformationMatrix_ << std::endl;
-
 	shader_->SetMatrix("MVP", MVP);
 	shader_->SetMatrix("relativeTransformationMatrix", relativeTransformationMatrix_);
 	shader_->SetMatrix("worldTransformationMatrix", worldTransformationMatrix_);

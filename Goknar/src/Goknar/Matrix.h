@@ -238,17 +238,17 @@ public:
 		return result;
 	}
 
-	//inline static Matrix GetRotationMatrixAboutAnAxis(Vector3 axis, float angle)
-	//{
-	//	float cosAngle = cos(angle);
-	//	float sinAngle = sin(angle);
-	//	float oneMinusCosAngle = 1 - cosAngle;
+	inline static Matrix GetRotationMatrixAboutAnAxis(Vector3 axis, float angle)
+	{
+		float cosAngle = cos(angle);
+		float sinAngle = sin(angle);
+		float oneMinusCosAngle = 1 - cosAngle;
 
-	//	return Matrix(cosAngle + axis.x * axis.x * oneMinusCosAngle,				axis.x * axis.y * oneMinusCosAngle - axis.z * sinAngle,		axis.x * axis.z * oneMinusCosAngle + axis.y * sinAngle,		0.f,
-	//				  axis.y * axis.x * oneMinusCosAngle + axis.z * sinAngle,		cosAngle + axis.y * axis.y * oneMinusCosAngle,				axis.y * axis.z * oneMinusCosAngle - axis.x * sinAngle,		0.f,
-	//				  axis.z * axis.x * oneMinusCosAngle - axis.y * sinAngle,		axis.z * axis.y * oneMinusCosAngle + axis.x * sinAngle,		cosAngle + axis.z * axis.z * oneMinusCosAngle,				0.f,
-	//				  0.f,															0.f,														0.f,														1.f);
-	//}
+		return Matrix(cosAngle + axis.x * axis.x * oneMinusCosAngle,				axis.x * axis.y * oneMinusCosAngle - axis.z * sinAngle,		axis.x * axis.z * oneMinusCosAngle + axis.y * sinAngle,		0.f,
+					  axis.y * axis.x * oneMinusCosAngle + axis.z * sinAngle,		cosAngle + axis.y * axis.y * oneMinusCosAngle,				axis.y * axis.z * oneMinusCosAngle - axis.x * sinAngle,		0.f,
+					  axis.z * axis.x * oneMinusCosAngle - axis.y * sinAngle,		axis.z * axis.y * oneMinusCosAngle + axis.x * sinAngle,		cosAngle + axis.z * axis.z * oneMinusCosAngle,				0.f,
+					  0.f,															0.f,														0.f,														1.f);
+	}
 
     void operator=(const Matrix& rhs)
     {
