@@ -8,21 +8,21 @@ class GOKNAR_API Component
 public:
 	Component() :
 		relativeTransformationMatrix_(Matrix::IdentityMatrix),
-		relativeLocation_(Vector3::ZeroVector),
+		relativePosition_(Vector3::ZeroVector),
 		relativeRotation_(Vector3::ZeroVector),
 		relativeScaling_(Vector3(1.f)),
 		worldTransformationMatrix_(Matrix::IdentityMatrix),
-		worldLocation_(Vector3::ZeroVector),
+		worldPosition_(Vector3::ZeroVector),
 		worldRotation_(Vector3::ZeroVector),
 		worldScaling_(Vector3(1.f)),
 		componentId_(lastComponentId_++)
 	{
 	}
 
-	void SetRelativeLocation(const Vector3& location);
-	const Vector3& GetRelativeLocation() const
+	void SetRelativePosition(const Vector3& position);
+	const Vector3& GetRelativePosition() const
 	{
-		return relativeLocation_;
+		return relativePosition_;
 	}
 
 	void SetRelativeRotation(const Vector3& rotation);
@@ -42,10 +42,10 @@ public:
 		return relativeTransformationMatrix_;
 	}
 
-	void SetWorldLocation(const Vector3& location);
-	const Vector3& GetWorldLocation() const
+	void SetWorldPosition(const Vector3& position);
+	const Vector3& GetWorldPosition() const
 	{
-		return worldLocation_;
+		return worldPosition_;
 	}
 
 	void SetWorldRotation(const Vector3& rotation);
@@ -95,11 +95,11 @@ private:
 
 	Vector3 pivotPoint_;
 
-	Vector3 relativeLocation_;
+	Vector3 relativePosition_;
 	Vector3 relativeRotation_;
 	Vector3 relativeScaling_;
 
-	Vector3 worldLocation_;
+	Vector3 worldPosition_;
 	Vector3 worldRotation_;
 	Vector3 worldScaling_;
 

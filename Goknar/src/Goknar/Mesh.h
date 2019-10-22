@@ -89,7 +89,7 @@ public:
 		return faceCount_;
 	}
 
-	void Render() /*const*/;
+	void Render() const;
 
 private:
 	Matrix modelMatrix_;

@@ -4,9 +4,9 @@
 
 int Component::lastComponentId_ = 0;
 
-void Component::SetRelativeLocation(const Vector3& location)
+void Component::SetRelativePosition(const Vector3& position)
 {
-	relativeLocation_ = location;
+	relativePosition_ = position;
 	UpdateRelativeTransformationMatrix();
 }
 
@@ -22,9 +22,9 @@ void Component::SetRelativeScaling(const Vector3& scaling)
 	UpdateRelativeTransformationMatrix();
 }
 
-void Component::SetWorldLocation(const Vector3& location)
+void Component::SetWorldPosition(const Vector3& position)
 {
-	worldLocation_ = location;
+	worldPosition_ = position;
 	UpdateWorldTransformationMatrix();
 }
 
@@ -42,21 +42,23 @@ void Component::SetWorldScaling(const Vector3& scaling)
 
 void Component::UpdateRelativeTransformationMatrix()
 {
+	// Since OpenGL uses column-major matriced and Goknar does not
+	// all matrix multiplications are done in reverse order
 	relativeTransformationMatrix_ = Matrix(1.f, 0.f, 0.f, pivotPoint_.x,
 										   0.f, 1.f, 0.f, pivotPoint_.y,
 										   0.f, 0.f, 1.f, pivotPoint_.z,
 										   0.f, 0.f, 0.f, 1.f);
 
-	relativeTransformationMatrix_ *= Matrix(relativeScaling_.x, 0.f, 0.f, 0.f,
-											0.f, relativeScaling_.y, 0.f, 0.f,
-											0.f, 0.f, relativeScaling_.z, 0.f,
+	relativeTransformationMatrix_ *= Matrix(1.f, 0.f, 0.f, relativePosition_.x,
+											0.f, 1.f, 0.f, relativePosition_.y,
+											0.f, 0.f, 1.f, relativePosition_.z,
 											0.f, 0.f, 0.f, 1.f);
 
 	relativeTransformationMatrix_ *= Matrix::GetRotationMatrix(relativeRotation_);
 
-	relativeTransformationMatrix_ *= Matrix(1.f, 0.f, 0.f, relativeLocation_.x,
-											0.f, 1.f, 0.f, relativeLocation_.y,
-											0.f, 0.f, 1.f, relativeLocation_.z,
+	relativeTransformationMatrix_ *= Matrix(relativeScaling_.x, 0.f, 0.f, 0.f,
+											0.f, relativeScaling_.y, 0.f, 0.f,
+											0.f, 0.f, relativeScaling_.z, 0.f,
 											0.f, 0.f, 0.f, 1.f);
 
 	relativeTransformationMatrix_ *= Matrix(1.f, 0.f, 0.f, -pivotPoint_.x,
@@ -67,16 +69,17 @@ void Component::UpdateRelativeTransformationMatrix()
 
 void Component::UpdateWorldTransformationMatrix()
 {
+	// Since OpenGL uses column-major matriced and Goknar does not
+	// all matrix multiplications are done in reverse order
+	worldTransformationMatrix_ = Matrix(1.f, 0.f, 0.f, worldPosition_.x,
+										0.f, 1.f, 0.f, worldPosition_.y,
+										0.f, 0.f, 1.f, worldPosition_.z,
+										0.f, 0.f, 0.f, 1.f);
 
-	worldTransformationMatrix_ = Matrix(worldScaling_.x, 0.f, 0.f, 0.f,
+	worldTransformationMatrix_ *= Matrix(worldScaling_.x, 0.f, 0.f, 0.f,
 										 0.f, worldScaling_.y, 0.f, 0.f,
 										 0.f, 0.f, worldScaling_.z, 0.f,
 										 0.f, 0.f, 0.f, 1.f);
 
 	worldTransformationMatrix_ *= Matrix::GetRotationMatrix(worldRotation_);
-
-	worldTransformationMatrix_ *= Matrix(1.f, 0.f, 0.f, worldLocation_.x,
-										 0.f, 1.f, 0.f, worldLocation_.y,
-										 0.f, 0.f, 1.f, worldLocation_.z,
-										 0.f, 0.f, 0.f, 1.f);
 }

@@ -8,8 +8,6 @@ struct GLFWwindow;
 
 namespace MAIN_MENU_ACTIVEABLE_ITEMS
 {
-	inline const char* VIEW_BASIC_ASSETS_ACTIVE = "+ Basic Assets";
-	inline const char* VIEW_BASIC_ASSETS_PASSIVE = "- Basic Assets";
 	inline const char* VIEW_LOG_ACTIVE = "+ Log";
 	inline const char* VIEW_LOG_PASSIVE = "- Log";
 };
@@ -143,7 +141,6 @@ private:
 	void OnCharPressed(unsigned int codePoint);
 
 	void ShowAbout();
-	void ShowBasicAssetsBrowser();
 	void ShowLog();
 	void ShowMainMenu();
 
@@ -152,6 +149,5 @@ private:
 	Vector2i windowSize_;
 
 	bool showAbout_;
-	bool showBasicAssetsBrowser_;
 	bool showLog_;
 };

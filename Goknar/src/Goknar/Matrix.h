@@ -12,25 +12,19 @@
 #include "Math.h"
 
 /*
-    Matrix2x2 IS NOT TESTED!!!
+    dataArray IS NOT TESTED!!!
 */
 class GOKNAR_API Matrix2x2
 {
 public:
     Matrix2x2()
     {
-        for (int i = 0; i < 4; i++)
-        {
-            m[i] = 0.f;
-        }
+		m[0] = m[1] = m[2] = m[3] = 0.f;
     }
 
     Matrix2x2(float value)
     {
-        for (int i = 0; i < 4; i++)
-        {
-            m[i] = value;
-        }
+		m[0] = m[1] = m[2] = m[3] = value;
     }
 
     Matrix2x2(float val1, float val2,
@@ -42,22 +36,20 @@ public:
         m[3] = val4;
     }
 
-    Matrix2x2(const float Matrix2x2[4])
+    Matrix2x2(const float dataArray[4])
     {
         for (int i = 0; i < 4; i++)
         {
-            m[i] = Matrix2x2[i];
+            m[i] = dataArray[i];
         }
     }
 
     Matrix2x2(const Matrix2x2& other)
     {
-        if(this != &other)
+		if (this == &other) return;
+        for (int i = 0; i < 4; i++)
         {
-            for (int i = 0; i < 4; i++)
-            {
-                m[i] = other.m[i];
-            }
+            m[i] = other.m[i];
         }
     }
 

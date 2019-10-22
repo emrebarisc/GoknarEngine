@@ -18,12 +18,12 @@
     	<PointLight>
 	      <Position>-7.5 7.5 7.5</Position>
 	      <Color>1.0 1.0 1.0</Color>
-	      <Intensity>50</Intensity>
+	      <Intensity>100</Intensity>
 	    </PointLight>
 	    <PointLight>
 	      <Position>7.5 -7.5 10</Position>
 	      <Color>1.0 1.0 1.0</Color>
-	      <Intensity>50</Intensity>
+	      <Intensity>100</Intensity>
 	    </PointLight>
 	</Lights>
 	
@@ -55,10 +55,10 @@
 		<Mesh id = "1">
 			<Material>0</Material>
 			<PivotPoint>0 0 0</PivotPoint>
-			<RelativeLocation>-2.5 -2.5 1.0</RelativeLocation>
-      <RelativeRotation>0 0 45</RelativeRotation>
+			<RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
 			<RelativeScaling>1 1 1</RelativeScaling>
-      <WorldLocation>0 0 0</WorldLocation>
+      <WorldPosition>-2.5 -2.5 1.0</WorldPosition>
 			<WorldRotation>0 0 0</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
@@ -99,10 +99,10 @@
 		<Mesh id = "2">
 			<Material>1</Material>
 			<PivotPoint>0 0 0</PivotPoint>
-			<RelativeLocation>0 0 0</RelativeLocation>
+			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
 			<RelativeScaling>1 1 1</RelativeScaling>
-      <WorldLocation>0 0 0</WorldLocation>
+      <WorldPosition>2.5 2.5 1.0</WorldPosition>
 			<WorldRotation>0 0 0</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
@@ -367,10 +367,10 @@
 		<Mesh id = "3">
 			<Material>2</Material>
 			<PivotPoint>0 0 0</PivotPoint>
-			<RelativeLocation>0 0 0</RelativeLocation>
+			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
 			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldLocation>0 0 0</WorldLocation>
+			<WorldPosition>0 0 0</WorldPosition>
 			<WorldRotation>0 0 0</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
@@ -547,10 +547,10 @@
 		<Mesh id = "4">
 			<Material>3</Material>
 			<PivotPoint>0 0 0</PivotPoint>
-			<RelativeLocation>0 0 0</RelativeLocation>
+			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 45</RelativeRotation>
 			<RelativeScaling>10 10 10</RelativeScaling>
-			<WorldLocation>0 0 0</WorldLocation>
+			<WorldPosition>0 0 0</WorldPosition>
 			<WorldRotation>0 0 0</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>

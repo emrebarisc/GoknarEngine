@@ -33,22 +33,12 @@ void Mesh::Init()
 {
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
-
-	//if (GetComponentId() == 0)
-	//{
-	//	for (int i = 0; i < vertexCount_; i++)
-	//	{
-	//		vertices_->at(i).position = relativeTransformationMatrix_ * Vector4(vertices_->at(i).position, 1);
-	//	}
-	//	relativeTransformationMatrix_ = Matrix::IdentityMatrix;
-	//}
-
 	const char* vertexBuffer = engine->GetShaderBuilder()->GetSceneVertexShader().c_str();
 	const char* fragmentBuffer = engine->GetShaderBuilder()->GetSceneFragmentShader().c_str();
 	shader_ = new Shader(vertexBuffer, fragmentBuffer);
 }
 
-void Mesh::Render() /*const*/
+void Mesh::Render() const
 {
 	static bool isThatOneTimeIt = true;
 
@@ -56,18 +46,12 @@ void Mesh::Render() /*const*/
 
 	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 	
-	Matrix modelMatrix = worldTransformationMatrix_ * relativeTransformationMatrix_;
+	Matrix transformationMatrix = worldTransformationMatrix_ * relativeTransformationMatrix_;
 
-	Matrix MVP = modelMatrix;
-	MVP = MVP * activeCamera->GetViewingMatrix();
-	MVP = MVP * activeCamera->GetProjectionMatrix();
-
-	shader_->SetMatrix("MVP", MVP);
-	shader_->SetMatrix("relativeTransformationMatrix", relativeTransformationMatrix_);
-	shader_->SetMatrix("worldTransformationMatrix", worldTransformationMatrix_);
+	shader_->SetMatrix("transformationMatrix", transformationMatrix);
 	shader_->SetMatrix("viewMatrix", activeCamera->GetViewingMatrix());
 	shader_->SetMatrix("projectionMatrix", activeCamera->GetProjectionMatrix());
-
+	
 	const Vector3& cameraPosition = engine->GetCameraManager()->GetActiveCamera()->GetPosition();
 	shader_->SetVector3("viewPosition", cameraPosition);
 

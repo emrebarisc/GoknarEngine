@@ -152,10 +152,9 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 uv;
 
-uniform mat4 MVP;
-
-uniform mat4 relativeTransformationMatrix;
-uniform mat4 worldTransformationMatrix;
+// Transformation matrix is calculated by multiplying  
+// world and relative transformation matrices
+uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
@@ -164,14 +163,9 @@ out vec3 vertexNormal;
 
 void main()
 {
-mat4 test = mat4(vec4(1.f, 0.f, 0.f, 2.5f),
-				 vec4(0.f, 1.f, 0.f, 2.5f),
-				 vec4(0.f, 0.f, 1.f, 1.0f),
-				 vec4(0.f, 0.f, 0.f, 1.0f));
-	vec4 fragmentPosition4Channel = worldTransformationMatrix * relativeTransformationMatrix * vec4(position, 1.f);
+	vec4 fragmentPosition4Channel = vec4(position, 1.f) * transformationMatrix;
 	gl_Position = projectionMatrix * viewMatrix * fragmentPosition4Channel;
-	//gl_Position = projectionMatrix * viewMatrix * test * vec4(position, 1.f);
-	vertexNormal = vec3(transpose(inverse(worldTransformationMatrix * relativeTransformationMatrix)) * vec4(normal, 0.f));
+	vertexNormal = vec3(vec4(normal, 0.f) * transpose(inverse(transformationMatrix)));
 	fragmentPosition = vec3(fragmentPosition4Channel);
 }
 )";
@@ -184,7 +178,7 @@ std::string ShaderBuilder::GetShaderVersionText()
 
 std::string ShaderBuilder::GetMaterialVariables()
 {
-	std::string materialVariableText = std::string("// Base Material Variables\n");
+	std::string materialVariableText = "// Base Material Variables\n";
 	materialVariableText += "uniform vec3 ";
 	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT;
 	materialVariableText += ";\n";

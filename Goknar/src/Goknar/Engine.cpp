@@ -78,10 +78,10 @@ void Engine::Run()
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
 		currentTimePoint = std::chrono::steady_clock::now();
-		std::chrono::duration<float> elapsedTimeDuration = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint);
+		deltaTime_ = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 
 		application_->Run();
-		Tick(elapsedTimeDuration.count());
+		Tick(deltaTime_);
 
 		renderer_->Render();
 		glfwPollEvents();

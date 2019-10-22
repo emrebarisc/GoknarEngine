@@ -11,11 +11,10 @@
 #include "Goknar/Managers/InputManager.h"
 #include "Goknar/Log.h"
 
-ImGuiEditor::ImGuiEditor()
+ImGuiEditor::ImGuiEditor() :
+	showAbout_(false),
+	showLog_(false)
 {
-	showAbout_ = false;
-	showBasicAssetsBrowser_ = true;
-	showLog_ = false;
 }
 
 ImGuiEditor::~ImGuiEditor()
@@ -94,12 +93,7 @@ void ImGuiEditor::Tick(float deltaTime)
 	{
 		ShowAbout();
 	}
-
-	if(showBasicAssetsBrowser_)
-	{
-		ShowBasicAssetsBrowser();
-	}
-
+	
 	if(showLog_)
 	{
 		ShowLog();
@@ -204,10 +198,6 @@ void ImGuiEditor::ShowMainMenu()
 			{
 				showLog_ = !showLog_;
 			}
-			if (ImGui::MenuItem(showBasicAssetsBrowser_ ? MAIN_MENU_ACTIVEABLE_ITEMS::VIEW_BASIC_ASSETS_ACTIVE : MAIN_MENU_ACTIVEABLE_ITEMS::VIEW_BASIC_ASSETS_PASSIVE))
-			{
-				showBasicAssetsBrowser_ = !showBasicAssetsBrowser_;
-			}
 			ImGui::EndMenu();
 		}
 
@@ -229,17 +219,6 @@ void ImGuiEditor::ShowAbout()
 	ImGui::Begin("About", &showAbout_, ImGuiWindowFlags_NoCollapse);
 	ImGui::Text("Emre Baris Coskun \nemrebariscoskun@gmail.com");
 	ImGui::End();
-}
-
-void ImGuiEditor::ShowBasicAssetsBrowser()
-{
-	//ImGui::Begin("Basic Assets", &showBasicAssetsBrowser_, ImGuiWindowFlags_NoCollapse);
-
-	//if(ImGui::Button("Add a Simple Cube"))
-	//{
-	//	imguiLog_.AddLog("A simple cube is added to the scene.\n");
-	//}
-	//ImGui::End();
 }
 
 void ImGuiEditor::ShowLog()

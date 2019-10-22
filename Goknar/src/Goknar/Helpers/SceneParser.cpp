@@ -387,13 +387,13 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		}
 		stream.clear();
 
-		child = element->FirstChildElement("RelativeLocation");
+		child = element->FirstChildElement("RelativePosition");
 		if (child)
 		{
 			stream << child->GetText() << std::endl;
-			Vector3 relativeLocation;
-			stream >> relativeLocation.x >> relativeLocation.y >> relativeLocation.z;
-			mesh->SetRelativeLocation(relativeLocation);
+			Vector3 relativePosition;
+			stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
+			mesh->SetRelativePosition(relativePosition);
 		}
 		stream.clear();
 
@@ -418,13 +418,13 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		}
 		stream.clear();
 
-		child = element->FirstChildElement("WorldLocation");
+		child = element->FirstChildElement("WorldPosition");
 		if (child)
 		{
 			stream << child->GetText() << std::endl;
-			Vector3 worldLocation;
-			stream >> worldLocation.x >> worldLocation.y >> worldLocation.z;
-			mesh->SetWorldLocation(worldLocation);
+			Vector3 worldPosition;
+			stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
+			mesh->SetWorldPosition(worldPosition);
 		}
 		stream.clear();
 

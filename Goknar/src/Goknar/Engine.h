@@ -73,6 +73,11 @@ public:
 
 	void Exit();
 
+	float GetDeltaTime() const
+	{
+		return deltaTime_;
+	}
+
 private:
 	InputManager* inputManager_;
 	ObjectManager* objectManager_;
@@ -86,6 +91,8 @@ private:
 	
 	std::vector<ObjectBase *> registeredObjects_;
 	std::vector<ObjectBase *> tickableObjects_;
+
+	float deltaTime_;
 };
 
 #endif
