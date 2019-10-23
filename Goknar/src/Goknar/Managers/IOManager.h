@@ -10,6 +10,8 @@ public:
 	~IOManager();
 
 	static bool GetFileRawText(const char* filePath, char* rawText);
+
+	static bool ReadImage(const char* filePath, int& width, int& height, int& channels, unsigned char* rawDataBuffer);
 protected:
 
 private:

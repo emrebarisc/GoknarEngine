@@ -20,10 +20,9 @@
 // C++ Standard Libraries
 #include <chrono>
 
-
 Engine *engine;
 
-Engine::Engine()
+Engine::Engine() : deltaTime_(0.f)
 {
 	engine = this;
 

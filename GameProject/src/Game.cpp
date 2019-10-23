@@ -17,12 +17,12 @@ private:
 
 Game::Game() : Application()
 {
-	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/SphereScene.xml");
-	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/MonkeyScene.xml");
-	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/ThreeSpheres.xml");
-	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/ThreeDifferentShapes.xml");
-	//mainScene_->ReadSceneData("../GameProject/Content/Scenes/SphereWithNormals.xml");
-	mainScene_->ReadSceneData("../GameProject/Content/Scenes/ThreeDifferentShapesTransformations.xml");
+	//mainScene_->ReadSceneData("./Content/Scenes/SphereScene.xml");
+	//mainScene_->ReadSceneData("./Content/Scenes/MonkeyScene.xml");
+	//mainScene_->ReadSceneData("./Content/Scenes/ThreeSpheres.xml");
+	//mainScene_->ReadSceneData("./Content/Scenes/ThreeDifferentShapes.xml");
+	//mainScene_->ReadSceneData("./Content/Scenes/SphereWithNormals.xml");
+	mainScene_->ReadSceneData("./Content/Scenes/ThreeDifferentShapesTransformations.xml");
 }
 
 void Game::Run()
