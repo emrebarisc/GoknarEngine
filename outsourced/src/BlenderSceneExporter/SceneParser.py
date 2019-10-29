@@ -118,7 +118,8 @@ class Camera:
 
 class Light:
     id = 0
-    intensity = [0, 0, 0]
+    color = Vector3(0, 0, 0)
+    intensity = 0
 
 class PointLight(Light):
     position = [0, 0, 0]
@@ -132,8 +133,13 @@ class PointLight(Light):
         fileBuffer += '</Position>\n'
         
         # Intensity
+        fileBuffer += '\t\t\t<Color>'
+        fileBuffer += str(self.color.x) + ' ' + str(self.color.y) + ' ' + str(self.color.z)
+        fileBuffer += '</Color>\n'
+        
+        # Intensity
         fileBuffer += '\t\t\t<Intensity>'
-        fileBuffer += str(self.intensity.x) + ' ' + str(self.intensity.y) + ' ' + str(self.intensity.z)
+        fileBuffer += str(self.intensity)
         fileBuffer += '</Intensity>\n'
         
         fileBuffer += '\t\t</PointLight>\n'
@@ -184,7 +190,7 @@ class Mesh:
     vertices = []
     faces = []
     normals = []
-    textureCoordinates = []
+    UVs = []
     material = 0
     relativeLocation = None
     relativeRotation = None
@@ -194,7 +200,7 @@ class Mesh:
         self.vertices = []
         self.faces = []
         self.normals = []
-        self.textureCoordinates = []
+        self.UVs = []
         self.relativeLocation = None
         self.relativeRotation = None
         self.relativeScaling = None
@@ -224,6 +230,11 @@ class Mesh:
             fileBuffer += '\t\t\t\t' + str(normal.x) + ' ' + str(normal.y) + ' ' + str(normal.z) + '\n'
         fileBuffer += '\t\t\t</Normals>\n'
         
+        fileBuffer += '\t\t\t<UVs>\n'
+        for textureCoordinate in self.UVs:
+            fileBuffer += '\t\t\t\t' + str(textureCoordinate.x) + ' ' + str(textureCoordinate.y) + '\n'
+        fileBuffer += '\t\t\t</UVs>\n'
+        
         fileBuffer += '\t\t\t<Faces>\n'
         for face in self.faces:
             fileBuffer += '\t\t\t\t' + str(face.x) + ' ' + str(face.y) + ' ' + str(face.z) + '\n'
@@ -242,7 +253,7 @@ class Scene:
         self.meshes = []
     
     cameras = []
-    lights = []
+    pointLights = []
     materials = []
     textures = []
     meshes = []
@@ -265,12 +276,10 @@ class Scene:
         fileBuffer += '\t<Lights>\n'
         fileBuffer += '\t\t<AmbientLight>' + str(self.ambientLight.x) + ' ' + str(self.ambientLight.y) + ' ' + str(self.ambientLight.z) + '</AmbientLight>\n'
         
-        '''
         print(self.lights)
         for light in self.lights:
             fileBuffer += light.Export()
         fileBuffer += '\t</Lights>\n\n'
-        '''
 
         # Materials
         fileBuffer += '\t<Materials>\n'
@@ -334,42 +343,40 @@ def ParseScene():
 
     # Lights
 
-#    pointLightId = 1
-#    for obj in scene.objects:
-#        print(obj.type)
-#        if(obj.type == 'LIGHT'):
-#            
-#            objDataType = getattr(obj.data, 'type', '')
-#            
-#            light = None
-#            
-#            # Point Light
-#            if(objDataType == 'POINT'):
-#                light = PointLight()
-#               
-#                light.id = pointLightId
-#                light.position = Vector3(obj.location[0], obj.location[1], obj.location[2])
-#                
-#                # Intensity
-#                intensityColor = obj.data.node_tree.nodes["Emission"].inputs[0].default_value
-#                intensityValue = obj.data.node_tree.nodes["Emission"].inputs[1].default_value
-#                intensity = [intensityColor[0] * intensityValue, intensityColor[1] * intensityValue, intensityColor[2] * intensityValue]
-#                
-#                light.intensity = Vector3(intensity[0], intensity[1], intensity[2])
-#            
-#                pointLightId += 1
-#                
-#                sceneData.lights.append(light)
-#                
-#            elif(objDataType == 'SUN'):
-#                print('Directional Light: ' + obj.name)
-#
-#            elif(objDataType == 'SPOT'):
-#                print('Spot Light: ' + obj.name)
-#
-#    print("Light parsing is done.\n")
+    pointLightId = 1
+    for obj in scene.objects:
+        print(obj.type)
+        if(obj.type == 'LIGHT'):
+            
+            objDataType = getattr(obj.data, 'type', '')
+            
+            light = None
+            
+            # Point Light
+            if(objDataType == 'POINT'):
+                light = PointLight()
+               
+                light.id = pointLightId
+                light.position = Vector3(obj.location[0], obj.location[1], obj.location[2])
+                
+                print(obj.data.energy)
+                
+                # Intensity
+                light.color = Vector3(obj.data.color.r, obj.data.color.g, obj.data.color.b)
+                light.intensity  = obj.data.energy
+            
+                pointLightId += 1
+                
+                sceneData.lights.append(light)
+                
+            elif(objDataType == 'SUN'):
+                print('Directional Light: ' + obj.name)
 
-    '''
+            elif(objDataType == 'SPOT'):
+                print('Spot Light: ' + obj.name)
+
+    print("Light parsing is done.\n")
+
     # Materials
     materialId = 1
 
@@ -378,6 +385,8 @@ def ParseScene():
         material.id = materialId
         
         material.ambient = Vector3(0.2, 0.2, 0.2)
+        
+        print(blenderMaterial.node_tree.nodes)
         
         diffuse = blenderMaterial.node_tree.nodes["Diffuse BSDF"].inputs[0].default_value
         material.diffuse = Vector3(diffuse[0], diffuse[1], diffuse[2])
@@ -390,7 +399,6 @@ def ParseScene():
         materialId += 1
     
     print("Material parsing is done.\n")
-    '''
     
     # Meshes
     meshId = 1
@@ -418,16 +426,21 @@ def ParseScene():
             mesh.material = materialId
             materialId += 1
             
-        for face in blenderMesh.polygons:
-            mesh.faces.append(Vector3(face.vertices[0], face.vertices[1], face.vertices[2]))
-            
+        uv_layer = blenderMesh.uv_layers.active.data
+                     
         for vertex in blenderMesh.vertices:
             mesh.vertices.append(Vector3(vertex.co[0], vertex.co[1], vertex.co[2]))
             normal = vertex.normal.to_4d()
             normal.w = 0
             normal = (bpy.data.objects[blenderMesh.name].matrix_world @ normal)
             mesh.normals.append(Vector3(normal.x, normal.y, normal.z))
-
+                        
+        for face in blenderMesh.polygons:
+            mesh.faces.append(Vector3(face.vertices[0], face.vertices[1], face.vertices[2]))
+            
+            for loop_index in range(face.loop_start, face.loop_start + face.loop_total):
+                mesh.UVs.append(Vector2(uv_layer[loop_index].uv.x, uv_layer[loop_index].uv.y))
+            
 #        mesh.relativeLocation = blenderMesh.location
 #        mesh.relativeRotation = blenderMesh.rotation_eular
 #        mesh.relativeScaling = blenderMesh.scale
@@ -443,3 +456,4 @@ def ParseScene():
 
 if __name__ == '__main__':
     ParseScene()
+    
