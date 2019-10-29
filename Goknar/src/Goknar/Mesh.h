@@ -12,6 +12,7 @@
 #include <vector>
 
 class Shader;
+class Material;
 
 class GOKNAR_API Face
 {
@@ -44,9 +45,9 @@ public:
 
 	void Init();
 
-	void SetMaterialId(int materialId)
+	void SetMaterial(const Material* material)
 	{
-		materialId_ = materialId;
+		material_ = material;
 	}
 
 	void AddVertex(const Vector3& vertex)
@@ -57,6 +58,11 @@ public:
 	void SetVertexNormal(int index, const Vector3& n)
 	{
 		vertices_->at(index).normal = n;
+	}
+
+	void SetVertexUV(int index, const Vector2& uv)
+	{
+		vertices_->at(index).uv = uv;
 	}
 
 	const VertexArray* GetVerticesPointer() const
@@ -97,12 +103,12 @@ private:
 	VertexArray* vertices_;
 	FaceArray* faces_;
 
+	const Material* material_;
 	Shader* shader_;
 
 	unsigned int vertexCount_;
 	unsigned int faceCount_;
 
-	int materialId_;
 };
 
 #endif

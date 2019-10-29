@@ -6,13 +6,13 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Material.h"
 #include "Goknar/Scene.h"
-#include "Goknar/Shader.h"
+#include "Goknar/Renderer/Shader.h"
 
 #include "Managers/CameraManager.h"
 #include "Managers/ShaderBuilder.h"
 
 Mesh::Mesh() :
-	materialId_(0), 
+	material_(0), 
 	shader_(0), 
 	vertexCount_(0), 
 	faceCount_(0)
@@ -40,8 +40,6 @@ void Mesh::Init()
 
 void Mesh::Render() const
 {
-	static bool isThatOneTimeIt = true;
-
 	const Scene* scene = engine->GetApplication()->GetMainScene();
 
 	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
@@ -56,10 +54,7 @@ void Mesh::Render() const
 	shader_->SetVector3("viewPosition", cameraPosition);
 
 	// Material
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, scene->GetMaterial(materialId_)->GetAmbientReflectance());
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, scene->GetMaterial(materialId_)->GetDiffuseReflectance());
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, scene->GetMaterial(materialId_)->GetSpecularReflectance());
-	shader_->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, scene->GetMaterial(materialId_)->GetPhongExponent());
+	material_->Render(shader_);
 
 	scene->SetShaderDynamicLightUniforms(shader_);
 }

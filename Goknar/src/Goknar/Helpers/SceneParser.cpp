@@ -375,7 +375,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 		int materialId;
 		stream >> materialId;
-		mesh->SetMaterialId(materialId);
+		mesh->SetMaterial(scene->GetMaterial(materialId));
 
 		child = element->FirstChildElement("PivotPoint");
 		if (child)
@@ -460,7 +460,6 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		stream.clear();
 
 		child = element->FirstChildElement("Normals");
-
 		if (child)
 		{
 			stream << child->GetText() << std::endl;
@@ -476,22 +475,33 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 		child = element->FirstChildElement("Faces");
 		stream << child->GetText() << std::endl;
-
 		unsigned int v0;
 		while (!(stream >> v0).eof())
 		{
 			Face face = Face();
 			face.vertexIndices[0] = v0;
 			stream >> face.vertexIndices[1] >> face.vertexIndices[2];
-
-			/*const std::vector<Vector3>* vertices = mesh->GetVerticesPointer();
-			Vector3 a = vertices->at(face.vertexIndices[0]);
-			Vector3 b = vertices->at(face.vertexIndices[1]);
-			Vector3 c = vertices->at(face.vertexIndices[2]);
-			face->normal = Vector3::Cross(c - b, a - b);
-			Vector3::Normalize(face->normal);*/
-
 			mesh->AddFace(face);
+		}
+		stream.clear();
+
+		const FaceArray* faceArray = mesh->GetFacesPointer();
+		child = element->FirstChildElement("UVs");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			int uvIndex = 0;
+			int faceCorner = 0;
+			while (faceCorner < 3)
+			{
+				Vector2 UV;
+				while (!(stream >> UV.x).eof())
+				{
+					stream >> UV.y;
+					mesh->SetVertexUV(faceArray->at(uvIndex).vertexIndices[faceCorner], UV);
+				}
+				faceCorner++;
+			}
 		}
 		stream.clear();
 

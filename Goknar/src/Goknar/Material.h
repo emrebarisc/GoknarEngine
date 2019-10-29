@@ -5,6 +5,9 @@
 
 #include "Math.h"
 
+class Shader;
+class Texture;
+
 class GOKNAR_API Material
 {
 public:
@@ -51,12 +54,17 @@ public:
 		phongExponent_ = phongExponent;
 	}
 
+	void Render(const Shader* shader) const;
+
 protected:
 
 private:
 	Vector3 ambientReflectance_;
 	Vector3 diffuseReflectance_;
 	Vector3 specularReflectance_;
+
+	const Texture** textures_;
+
 	float phongExponent_;
 };
 

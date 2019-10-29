@@ -1,7 +1,9 @@
 #ifndef __SHADER_H__
 #define __SHADER_H__
 
-#include "Math.h"
+#include "Types.h"
+
+#include "Goknar/Math.h"
 
 class Shader
 {
@@ -30,7 +32,7 @@ public:
 protected:
 
 private:
-	unsigned int programId_;
+	GEuint programId_;
 
 };
 

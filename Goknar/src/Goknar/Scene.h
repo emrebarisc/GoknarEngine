@@ -12,6 +12,7 @@
 
 class Material;
 class Mesh;
+class Texture;
 
 /*
     Scene class containing all the scene data
@@ -119,6 +120,21 @@ public:
 		return materials_[index];
 	}
 
+	void AddTexture(const Texture* texture)
+	{
+		textures_.push_back(texture);
+	}
+
+	const std::vector<const Texture*>& GetTextures() const
+	{
+		return textures_;
+	}
+
+	const Texture* GetTexture(int index) const
+	{
+		return textures_[index];
+	}
+
 	void SetAmbientLight(const Vector3& ambientLight)
 	{
 		ambientLight_ = ambientLight;
@@ -141,6 +157,7 @@ public:
 
 private:
 	std::vector<const Material*> materials_;
+	std::vector<const Texture*> textures_;
     std::vector<const Mesh*> meshes_;
 
 	std::vector<const PointLight*> staticPointLights_;

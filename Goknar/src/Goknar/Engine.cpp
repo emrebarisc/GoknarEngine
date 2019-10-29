@@ -10,7 +10,7 @@
 #include "Managers/CameraManager.h"
 #include "Managers/InputManager.h"
 #include "Managers/ObjectManager.h"
-#include "Managers/Renderer/Renderer.h"
+#include "Renderer/Renderer.h"
 #include "Managers/ShaderBuilder.h"
 #include "Managers/WindowManager.h"
 

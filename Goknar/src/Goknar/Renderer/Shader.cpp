@@ -1,21 +1,22 @@
 #include "pch.h"
 
-#include "Matrix.h"
 #include "Shader.h"
-#include "Log.h"
+
+#include "Goknar/Log.h"
+#include "Goknar/Matrix.h"
 
 #include <glad/glad.h>
 
-void ExitOnShaderIsNotCompiled(GLuint shaderId, const char* errorMessage)
+void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
 {
-	GLint isCompiled = 0;
+	GEint isCompiled = 0;
 	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &isCompiled);
 	if (isCompiled == GL_FALSE)
 	{
-		GLint maxLength = 0;
+		GEint maxLength = 0;
 		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &maxLength);
 
-		GLchar* logMessage = new GLchar[maxLength + 1];
+		GEchar* logMessage = new GEchar[maxLength + 1];
 		glGetShaderInfoLog(shaderId, maxLength, &maxLength, logMessage);
 		logMessage[maxLength] = '\0';
 		glDeleteShader(shaderId);
@@ -27,7 +28,7 @@ void ExitOnShaderIsNotCompiled(GLuint shaderId, const char* errorMessage)
 	}
 }
 
-void ExitOnProgramError(GLuint programId, const char* errorMessage)
+void ExitOnProgramError(GEuint programId, const char* errorMessage)
 {
 	GLint isLinked = 0;
 	glGetProgramiv(programId, GL_LINK_STATUS, &isLinked);
@@ -54,14 +55,14 @@ Shader::Shader()
 
 Shader::Shader(const char* vertexShaderSource, const char* fragmentShaderSource)
 {
-	const GLchar* vertexSource = (const GLchar*)vertexShaderSource;
-	GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
+	const GEchar* vertexSource = (const GEchar*)vertexShaderSource;
+	GEuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShaderId, 1, &vertexSource, 0);
 	glCompileShader(vertexShaderId);
 	ExitOnShaderIsNotCompiled(vertexShaderId, "Vertex shader compilation error!");
 
-	const GLchar* fragmentSource = (const GLchar*)fragmentShaderSource;
-	GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+	const GEchar* fragmentSource = (const GEchar*)fragmentShaderSource;
+	GEuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShaderId, 1, &fragmentSource, 0);
 	glCompileShader(fragmentShaderId);
 	ExitOnShaderIsNotCompiled(fragmentShaderId, "Fragment shader compilation error!");

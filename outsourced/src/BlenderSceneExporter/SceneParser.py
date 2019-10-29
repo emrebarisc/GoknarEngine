@@ -184,7 +184,7 @@ class Mesh:
     vertices = []
     faces = []
     normals = []
-    textureCoordinates = []
+    UVs = []
     material = 0
     relativeLocation = None
     relativeRotation = None
@@ -194,7 +194,7 @@ class Mesh:
         self.vertices = []
         self.faces = []
         self.normals = []
-        self.textureCoordinates = []
+        self.UVs = []
         self.relativeLocation = None
         self.relativeRotation = None
         self.relativeScaling = None
@@ -223,6 +223,11 @@ class Mesh:
         for normal in self.normals:
             fileBuffer += '\t\t\t\t' + str(normal.x) + ' ' + str(normal.y) + ' ' + str(normal.z) + '\n'
         fileBuffer += '\t\t\t</Normals>\n'
+        
+        fileBuffer += '\t\t\t<UVs>\n'
+        for textureCoordinate in self.UVs:
+            fileBuffer += '\t\t\t\t' + str(textureCoordinate.x) + ' ' + str(textureCoordinate.y) + '\n'
+        fileBuffer += '\t\t\t</UVs>\n'
         
         fileBuffer += '\t\t\t<Faces>\n'
         for face in self.faces:
@@ -418,15 +423,26 @@ def ParseScene():
             mesh.material = materialId
             materialId += 1
             
-        for face in blenderMesh.polygons:
-            mesh.faces.append(Vector3(face.vertices[0], face.vertices[1], face.vertices[2]))
+        uv_layer = blenderMesh.uv_layers.active.data
             
+        print(blenderMesh.vertices)
+         
         for vertex in blenderMesh.vertices:
             mesh.vertices.append(Vector3(vertex.co[0], vertex.co[1], vertex.co[2]))
             normal = vertex.normal.to_4d()
             normal.w = 0
             normal = (bpy.data.objects[blenderMesh.name].matrix_world @ normal)
             mesh.normals.append(Vector3(normal.x, normal.y, normal.z))
+            mesh.UVs.append(Vector2(0, 0))
+                        
+        for face in blenderMesh.polygons:
+            mesh.faces.append(Vector3(face.vertices[0], face.vertices[1], face.vertices[2]))
+            
+            for loop_index in range(face.loop_start, face.loop_start + face.loop_total):
+                print(loop_index)
+                #mesh.UVs[loop_index] = Vector2(uv_layer[loop_index].uv.x, uv_layer[loop_index].uv.y)
+            
+        print(blenderMesh.uv_layers.active.data)
 
 #        mesh.relativeLocation = blenderMesh.location
 #        mesh.relativeRotation = blenderMesh.rotation_eular
@@ -443,3 +459,4 @@ def ParseScene():
 
 if __name__ == '__main__':
     ParseScene()
+    

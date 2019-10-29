@@ -2,7 +2,7 @@
 
 #include "Light.h"
 
-#include "Goknar/Shader.h"
+#include "Goknar/Renderer/Shader.h"
 #include "Goknar/Managers/ShaderBuilder.h"
 
 void Light::SetShaderUniforms(const Shader* shader) const

@@ -2,6 +2,7 @@
 #define __RENDERER_H__
 
 #include "Goknar/Core.h"
+#include "Goknar/Renderer/Types.h"
 
 #include "glad/glad.h"
 
@@ -28,8 +29,8 @@ private:
 	unsigned int totalVertexSize_;
 	unsigned int totalFaceSize_;
 
-	GLuint vertexBufferId_;
-	GLuint indexBufferId_;
+	GEuint vertexBufferId_;
+	GEuint indexBufferId_;
 };
 
 #endif

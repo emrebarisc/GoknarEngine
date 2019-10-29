@@ -6,10 +6,9 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Log.h"
 #include "Goknar/Mesh.h"
-#include <gl\GLU.h>
 
-#include "Goknar/Shader.h"
 #include "Goknar/Managers/IOManager.h"
+#include "Goknar/Renderer/Shader.h"
 
 #include <Windows.h>
 
