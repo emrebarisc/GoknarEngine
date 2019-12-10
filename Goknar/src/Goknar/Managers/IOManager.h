@@ -9,9 +9,12 @@ public:
 	IOManager();
 	~IOManager();
 
-	static bool GetFileRawText(const char* filePath, char* rawText);
+	static bool ReadFile(const char* filePath, char** rawTextBuffer);
+	static bool WriteFile(const char* filePath, const char* rawTextBuffer);
 
-	static bool ReadImage(const char* filePath, int& width, int& height, int& channels, unsigned char* rawDataBuffer);
+	static bool ReadImage(const char* filePath, int& width, int& height, int& channels, unsigned char** rawDataBuffer);
+	static bool WritePng(const char* filePath, int& width, int& height, int& channels, const unsigned char* rawDataBuffer);
+	static bool WritePpm(const char* filePath, int width, int height, const unsigned char* rawDataBuffer);
 protected:
 
 private:
