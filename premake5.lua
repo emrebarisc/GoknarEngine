@@ -14,11 +14,13 @@ outsourceDirs = {}
 outsourceDirs["GLFW"] = "Goknar/outsourced/GLFW/GLFW"
 outsourceDirs["GLAD"] = "Goknar/outsourced/GLAD/GLAD"
 outsourceDirs["ImGui"] = "Goknar/outsourced/ImGui/imgui"
+outsourceDirs["outsourced"] = "Goknar/outsourced"
 
 includeDir = {}
 includeDir["GLFW"] = "%{outsourceDirs.GLFW}/include"
 includeDir["GLAD"] = "%{outsourceDirs.GLAD}/include"
 includeDir["ImGui"] = "%{outsourceDirs.ImGui}"
+includeDir["outsourced"] = "%{outsourceDirs.outsourced}"
 
 include "Goknar/outsourced/GLFW"
 include "Goknar/outsourced/GLAD"
@@ -47,6 +49,7 @@ project "Goknar"
 		"%{includeDir.GLFW}",
 		"%{includeDir.GLAD}",
 		"%{includeDir.ImGui}",
+		"%{includeDir.outsourced}",
 		"Goknar/src"
 	}
 

@@ -58,11 +58,19 @@ void WindowManager::Init()
 	SetMSAA(MSAAValue_);
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(GLFW_KEY_ESCAPE, INPUT_ACTION::G_PRESS, std::bind(&WindowManager::CloseWindow, this));
+	
+	// TODO: Improve
+	glfwSetFramebufferSizeCallback(mainWindow_, FrameBufferSizeCallback);
 }
 
 bool WindowManager::GetWindowShouldBeClosed()
 {
 	return glfwWindowShouldClose(mainWindow_);
+}
+
+void WindowManager::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
 }
 
 void WindowManager::CloseWindow()

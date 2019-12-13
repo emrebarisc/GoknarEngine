@@ -52,6 +52,8 @@ public:
 private:
 	void CloseWindow();
 
+	static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
+
 	GLFWwindow *mainWindow_;
 	GLFWmonitor *mainMonitor_;
 	const char *windowTitle_;

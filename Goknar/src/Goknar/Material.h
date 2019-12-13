@@ -54,6 +54,16 @@ public:
 		phongExponent_ = phongExponent;
 	}
 
+	void AddTexture(const Texture* texture)
+	{
+		textures_.push_back(texture);
+	}
+
+	const std::vector<const Texture*>& GetTextures() const
+	{
+		return textures_;
+	}
+
 	void Render(const Shader* shader) const;
 
 protected:
@@ -63,7 +73,7 @@ private:
 	Vector3 diffuseReflectance_;
 	Vector3 specularReflectance_;
 
-	const Texture** textures_;
+	std::vector<const Texture*> textures_;
 
 	float phongExponent_;
 };

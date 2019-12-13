@@ -3,7 +3,7 @@
 #include "SpotLight.h"
 
 #include "Goknar/Renderer/Shader.h"
-#include "Goknar/Managers/ShaderBuilder.h"
+#include "Goknar/Renderer/ShaderBuilder.h"
 
 int SpotLight::lastSpotLightId_ = 0;
 

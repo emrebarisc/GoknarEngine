@@ -3,7 +3,7 @@
 
 #include "Light.h"
 
-#include "Goknar/Managers/ShaderBuilder.h"
+#include "Goknar/Renderer/ShaderBuilder.h"
 
 class GOKNAR_API PointLight : public Light
 {

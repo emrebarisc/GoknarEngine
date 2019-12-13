@@ -65,13 +65,13 @@ void Renderer::SetBufferData()
 
 	// Vertex position
 	int offset = 0;
-	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
+	glEnableVertexAttribArray(0);
 
 	// Vertex normal
 	offset += sizeof(VertexData::position);
-	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
+	glEnableVertexAttribArray(1);
 
 	// Vertex UV
 	offset += sizeof(VertexData::normal);
@@ -84,6 +84,8 @@ void Renderer::Init()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glDepthFunc(GL_LEQUAL);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	for (Mesh* mesh : objectsToBeRendered_)
 	{

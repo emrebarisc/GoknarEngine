@@ -2,14 +2,13 @@
 
 #include "Material.h"
 
-#include "Goknar/Managers/ShaderBuilder.h"
 #include "Goknar/Renderer/Shader.h"
+#include "Goknar/Renderer/ShaderBuilder.h"
 
 Material::Material() : 
 	ambientReflectance_(Vector3::ZeroVector), 
 	diffuseReflectance_(Vector3::ZeroVector), 
 	specularReflectance_(Vector3::ZeroVector),
-	textures_(nullptr),
 	phongExponent_(0.f)
 {
 }

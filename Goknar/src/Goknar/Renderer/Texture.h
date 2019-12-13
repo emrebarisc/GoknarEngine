@@ -15,16 +15,25 @@ public:
 		channels_(0)
 	{}
 
-	~Texture() {}
+	~Texture() 
+	{
+		delete[] buffer_;
+	}
 
 	void SetTextureImagePath(const char* imagePath)
 	{
 		imagePath_ = imagePath;
 	}
 
+	GEuint GetTextureId() const
+	{
+		return textureId_;
+	}
+
 	bool LoadTextureImage();
 
 	void Init();
+	void Bind() const;
 
 protected:
 

@@ -3,7 +3,7 @@
 #include "DirectionalLight.h"
 
 #include "Goknar/Renderer/Shader.h"
-#include "Goknar/Managers/ShaderBuilder.h"
+#include "Goknar/Renderer/ShaderBuilder.h"
 
 int DirectionalLight::lastDirectionalLightId_ = 0;
 

@@ -105,17 +105,17 @@ public:
 		return dynamicSpotLights_;
 	}
 
-	void AddMaterial(const Material* material)
+	void AddMaterial(/*const*/ Material* material)
 	{
 		materials_.push_back(material);
 	}
 
-	const std::vector<const Material*>& GetMaterials() const
+	const std::vector</*const*/ Material*>& GetMaterials() const
 	{
 		return materials_;
 	}
 
-	const Material* GetMaterial(int index) const
+	/*const*/ Material* GetMaterial(int index) const
 	{
 		return materials_[index];
 	}
@@ -156,7 +156,7 @@ public:
 	}
 
 private:
-	std::vector<const Material*> materials_;
+	std::vector</*const*/ Material*> materials_;
 	std::vector<const Texture*> textures_;
     std::vector<const Mesh*> meshes_;
 

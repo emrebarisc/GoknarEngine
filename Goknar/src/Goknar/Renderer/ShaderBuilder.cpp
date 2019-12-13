@@ -7,6 +7,7 @@
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
+#include "Goknar/Managers/IOManager.h"
 
 inline namespace SHADER_VARIABLE_NAMES
 {
@@ -64,31 +65,31 @@ uniform vec3 viewPosition;
 
 )";
 
-	sceneFragmentShaderOutsideMain_ += GetMaterialVariables();
+	fragmentShaderOutsideMain_ += GetMaterialVariables();
 
 	const Vector3& sceneAmbientLight = scene->GetAmbientLight();
-	sceneFragmentShaderOutsideMain_ += "vec3 sceneAmbient = vec3(" + std::to_string(sceneAmbientLight.x / 255.f) + ", " + std::to_string(sceneAmbientLight.y / 255.f) + ", " + std::to_string(sceneAmbientLight.z / 255.f) + ");\n";
+	fragmentShaderOutsideMain_ += "vec3 sceneAmbient = vec3(" + std::to_string(sceneAmbientLight.x / 255.f) + ", " + std::to_string(sceneAmbientLight.y / 255.f) + ", " + std::to_string(sceneAmbientLight.z / 255.f) + ");\n";
 
-	sceneFragmentShaderInsideMain_ += "\tvec3 lightColor = sceneAmbient * ambientReflectance;\n";
+	fragmentShaderInsideMain_ += "\tvec3 lightColor = sceneAmbient * ambientReflectance;\n";
 
 	const std::vector<const PointLight*>& staticPointLights = scene->GetStaticPointLights();
 	const std::vector<const PointLight*>& dynamicPointLights = scene->GetDynamicPointLights();
 	if (staticPointLights.size() > 0 || dynamicPointLights.size() > 0)
 	{
-		sceneFragmentShaderOutsideMain_ += GetPointLightColorFunctionText() + "\n";
+		fragmentShaderOutsideMain_ += GetPointLightColorFunctionText() + "\n";
 
 		for (const PointLight* staticPointLight : staticPointLights)
 		{
 			std::string lightVariableName = staticPointLight->GetName();
-			sceneFragmentShaderOutsideMain_ += GetStaticPointLightText(staticPointLight, lightVariableName);
-			sceneFragmentShaderInsideMain_ += GetPointLightColorSummationText(lightVariableName);
+			fragmentShaderOutsideMain_ += GetStaticPointLightText(staticPointLight, lightVariableName);
+			fragmentShaderInsideMain_ += GetPointLightColorSummationText(lightVariableName);
 		}
 
 		for (const PointLight* dynamicPointLight : dynamicPointLights)
 		{
 			std::string lightVariableName = dynamicPointLight->GetName();
 			uniforms_ += GetPointLightUniformTexts(lightVariableName);
-			sceneFragmentShaderInsideMain_ += GetPointLightColorSummationText(lightVariableName);
+			fragmentShaderInsideMain_ += GetPointLightColorSummationText(lightVariableName);
 		}
 	}
 
@@ -96,20 +97,20 @@ uniform vec3 viewPosition;
 	const std::vector<const DirectionalLight*>& dynamicDirectionalLights = scene->GetDynamicDirectionalLights();
 	if (staticDirectionalLights.size() > 0 || dynamicDirectionalLights.size() > 0)
 	{
-		sceneFragmentShaderOutsideMain_ += GetDirectionalLightColorFunctionText() + "\n";
+		fragmentShaderOutsideMain_ += GetDirectionalLightColorFunctionText() + "\n";
 		
 		for (const DirectionalLight* staticDirectionalLight : staticDirectionalLights)
 		{
 			std::string lightVariableName = staticDirectionalLight->GetName();
-			sceneFragmentShaderOutsideMain_ += GetStaticDirectionalLightText(staticDirectionalLight, lightVariableName);
-			sceneFragmentShaderInsideMain_ += GetDirectionalLightColorSummationText(lightVariableName);
+			fragmentShaderOutsideMain_ += GetStaticDirectionalLightText(staticDirectionalLight, lightVariableName);
+			fragmentShaderInsideMain_ += GetDirectionalLightColorSummationText(lightVariableName);
 		}
 
 		for (const DirectionalLight* dynamicDirectionalLight : dynamicDirectionalLights)
 		{
 			std::string lightVariableName = dynamicDirectionalLight->GetName();
 			uniforms_ += GetDirectionalLightUniformTexts(lightVariableName);
-			sceneFragmentShaderInsideMain_ += GetDirectionalLightColorSummationText(lightVariableName);
+			fragmentShaderInsideMain_ += GetDirectionalLightColorSummationText(lightVariableName);
 				
 		}
 	}
@@ -118,35 +119,38 @@ uniform vec3 viewPosition;
 	const std::vector<const SpotLight*>& dynamicSpotLights = scene->GetDynamicSpotLights();
 	if (staticSpotLights.size() > 0 || dynamicSpotLights.size() > 0)
 	{
-		sceneFragmentShaderOutsideMain_ += GetSpotLightColorFunctionText() + "\n";
+		fragmentShaderOutsideMain_ += GetSpotLightColorFunctionText() + "\n";
 
 		for (const SpotLight* staticpotLight : staticSpotLights)
 		{
 			std::string lightVariableName = staticpotLight->GetName();
-			sceneFragmentShaderOutsideMain_ += GetStaticSpotLightText(staticpotLight, lightVariableName);
-			sceneFragmentShaderInsideMain_ += GetSpotLightColorSummationText(lightVariableName);
+			fragmentShaderOutsideMain_ += GetStaticSpotLightText(staticpotLight, lightVariableName);
+			fragmentShaderInsideMain_ += GetSpotLightColorSummationText(lightVariableName);
 		}
 
 		for (const SpotLight* dynamicSpotLight : dynamicSpotLights)
 		{
 			std::string lightVariableName = dynamicSpotLight->GetName();
 			uniforms_ += GetSpotLightUniformTexts(lightVariableName);
-			sceneFragmentShaderInsideMain_ += GetSpotLightColorSummationText(lightVariableName);
+			fragmentShaderInsideMain_ += GetSpotLightColorSummationText(lightVariableName);
 		}
 	}
 
-	sceneFragmentShaderInsideMain_ += "\tcolor = lightColor;\n";
+	fragmentShaderInsideMain_ += "\tcolor = lightColor;\n";
 
 	CombineShader();
 
-	//std::cout << sceneVertexShader_ << std::endl;
-	//std::cout << sceneFragmentShader_ << std::endl;
+	//std::cout << vertexShader_ << std::endl;
+	//std::cout << fragmentShader_ << std::endl;
+
+	//IOManager::WriteFile("./DefaultSceneVertexShader.glsl", vertexShader_.c_str());
+	//IOManager::WriteFile("./DefaultSceneFragmentShader.glsl", fragmentShader_.c_str());
 }
 
 void ShaderBuilder::BuildSceneVertexShader()
 {
-	sceneVertexShader_ = GetShaderVersionText();
-	sceneVertexShader_ += R"(
+	vertexShader_ = GetShaderVersionText();
+	vertexShader_ += R"(
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
@@ -397,14 +401,14 @@ std::string ShaderBuilder::GetSpotLightColorSummationText(const std::string& lig
 
 void ShaderBuilder::CombineShader()
 {
-	sceneFragmentShader_ = GetShaderVersionText() + "\n\n";
-	sceneFragmentShader_ += uniforms_;
+	fragmentShader_ = GetShaderVersionText() + "\n\n";
+	fragmentShader_ += uniforms_;
 
-	sceneFragmentShader_ += sceneFragmentShaderOutsideMain_;
-	sceneFragmentShader_ += R"(
+	fragmentShader_ += fragmentShaderOutsideMain_;
+	fragmentShader_ += R"(
 void main()
 {
 )";
-	sceneFragmentShader_ += sceneFragmentShaderInsideMain_ + "\n";
-	sceneFragmentShader_ += "}";
+	fragmentShader_ += fragmentShaderInsideMain_ + "\n";
+	fragmentShader_ += "}";
 }

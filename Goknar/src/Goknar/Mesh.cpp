@@ -9,7 +9,11 @@
 #include "Goknar/Renderer/Shader.h"
 
 #include "Managers/CameraManager.h"
-#include "Managers/ShaderBuilder.h"
+#include "Managers/IOManager.h"
+#include "Renderer/ShaderBuilder.h"
+
+// TEMP
+#include "Renderer/Texture.h"
 
 Mesh::Mesh() :
 	material_(0), 
@@ -33,9 +37,33 @@ void Mesh::Init()
 {
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
-	const char* vertexBuffer = engine->GetShaderBuilder()->GetSceneVertexShader().c_str();
-	const char* fragmentBuffer = engine->GetShaderBuilder()->GetSceneFragmentShader().c_str();
-	shader_ = new Shader(vertexBuffer, fragmentBuffer);
+
+	if (GetComponentId() == 0)
+	{
+		char* vertexBuffer = nullptr;
+		char* fragmentBuffer = nullptr;
+		IOManager::ReadFile("./Shaders/TextureVertexShader.glsl", &vertexBuffer);
+		IOManager::ReadFile("./Shaders/TextureFragmentShader.glsl", &fragmentBuffer);
+		shader_ = new Shader(vertexBuffer, fragmentBuffer);
+
+		Texture* texture = new Texture();
+		texture->SetTextureImagePath("Content/Textures/testTexture.jpg");
+		texture->Init();
+		material_->AddTexture(texture);
+
+		delete vertexBuffer;
+		delete fragmentBuffer;
+
+		glActiveTexture(GL_TEXTURE0);
+		material_->GetTextures().at(0)->Bind();
+		glUniform1i(glGetUniformLocation(shader_->GetProgramId(), "diffuseTexture"), material_->GetTextures().at(0)->GetTextureId());
+	}
+	else
+	{
+		const char* vertexBuffer = engine->GetShaderBuilder()->GetDefaultSceneVertexShader().c_str();
+		const char* fragmentBuffer = engine->GetShaderBuilder()->GetDefaultSceneFragmentShader().c_str();
+		shader_ = new Shader(vertexBuffer, fragmentBuffer);
+	}
 }
 
 void Mesh::Render() const

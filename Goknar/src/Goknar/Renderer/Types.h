@@ -24,3 +24,5 @@ typedef GLfloat GEfloat;
 typedef GLclampf GEclampf;
 typedef GLdouble GEdouble;
 typedef GLclampd GEclampd;
+
+typedef GLenum GEenum;

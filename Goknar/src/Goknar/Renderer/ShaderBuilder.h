@@ -44,14 +44,14 @@ public:
 
 	void Init();
 
-	const std::string& GetSceneVertexShader() const
+	const std::string& GetDefaultSceneVertexShader() const
 	{
-		return sceneVertexShader_;
+		return vertexShader_;
 	}
 
-	const std::string& GetSceneFragmentShader() const
+	const std::string& GetDefaultSceneFragmentShader() const
 	{
-		return sceneFragmentShader_;
+		return fragmentShader_;
 	}
 
 	std::string GetShaderVersion() const
@@ -64,6 +64,8 @@ public:
 		shaderVersion_ = shaderVersion;
 	}
 
+
+
 protected:
 
 private:
@@ -74,8 +76,10 @@ private:
 
 	std::string shaderVersion_;
 
-	// Vertex Shader
-	std::string sceneVertexShader_;
+	// Vertex shader variables
+	std::string vertexShaderOutsideMain_;
+	std::string vertexShaderInsideMain_;
+	std::string vertexShader_;
 
 	// Fragment Shader
 
@@ -103,9 +107,9 @@ private:
 
 	// Fragment shader variables
 	std::string uniforms_;
-	std::string sceneFragmentShaderOutsideMain_;
-	std::string sceneFragmentShaderInsideMain_;
-	std::string sceneFragmentShader_;
+	std::string fragmentShaderOutsideMain_;
+	std::string fragmentShaderInsideMain_;
+	std::string fragmentShader_;
 };
 
 #endif

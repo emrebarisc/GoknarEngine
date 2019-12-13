@@ -53,6 +53,38 @@
 
 	<Objects>
 		<Mesh id = "1">
+			<Material>3</Material>
+			<PivotPoint>0 0 0</PivotPoint>
+			<RelativePosition>0 0 0</RelativePosition>
+			<RelativeRotation>0 0 0</RelativeRotation>
+			<RelativeScaling>1 1 1</RelativeScaling>
+			<WorldPosition>0 0 0</WorldPosition>
+			<WorldRotation>0 0 45</WorldRotation>
+			<WorldScaling>1 1 1</WorldScaling>
+			<Vertices>
+        12.5 12.5 0.0
+        -12.5 12.5 0.0
+        -12.5 -12.5 0.0
+        12.5 -12.5 0.0
+			</Vertices>
+			<Normals>
+				0.0 0.0 1.0
+				0.0 0.0 1.0
+				0.0 0.0 1.0
+				0.0 0.0 1.0
+			</Normals>
+			<Faces>
+				0 1 2
+				2 3 0
+			</Faces>
+      <UVs>
+        1.0 0.0
+        0.0 0.0
+        0.0 1.0
+        1.0 1.0
+      </UVs>
+    </Mesh>
+		<Mesh id = "2">
 			<Material>0</Material>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
@@ -135,7 +167,7 @@
       </UVs>
       
 		</Mesh>
-		<Mesh id = "2">
+		<Mesh id = "3">
 			<Material>1</Material>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
@@ -777,7 +809,7 @@
         0.3316134214401245 0.9396411180496216
       </UVs>
 		</Mesh>
-		<Mesh id = "3">
+		<Mesh id = "4">
 			<Material>2</Material>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
@@ -1199,40 +1231,6 @@
         0.4086430072784424 1.0
       </UVs>
 		</Mesh>
-		<Mesh id = "4">
-			<Material>3</Material>
-			<PivotPoint>0 0 0</PivotPoint>
-			<RelativePosition>0 0 0</RelativePosition>
-			<RelativeRotation>0 0 45</RelativeRotation>
-			<RelativeScaling>10 10 10</RelativeScaling>
-			<WorldPosition>0 0 0</WorldPosition>
-			<WorldRotation>0 0 0</WorldRotation>
-			<WorldScaling>1 1 1</WorldScaling>
-			<Vertices>
-				-12.5 -12.5 0.0
-				12.5 -12.5 0.0
-				-12.5 12.5 0.0
-				12.5 12.5 0.0
-			</Vertices>
-			<Normals>
-				0.0 0.0 1.0
-				0.0 0.0 1.0
-				0.0 0.0 1.0
-				0.0 0.0 1.0
-			</Normals>
-			<Faces>
-				1 2 0
-				1 3 2
-			</Faces>
-      <UVs>
-        0.0 2.2888178818902816e-07
-        1.0 0.9999997615814209
-        2.2888178818902816e-07 1.0
-        0.0 2.2888178818902816e-07
-        0.9999997615814209 0.0
-        1.0 0.9999997615814209
-      </UVs>
-    </Mesh>
 	</Objects>
 
 </Scene>

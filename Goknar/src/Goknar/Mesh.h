@@ -45,7 +45,7 @@ public:
 
 	void Init();
 
-	void SetMaterial(const Material* material)
+	void SetMaterial(/*const*/ Material* material)
 	{
 		material_ = material;
 	}
@@ -53,6 +53,7 @@ public:
 	void AddVertex(const Vector3& vertex)
 	{
 		vertices_->push_back(VertexData(vertex));
+		vertexCount_++;
 	}
 
 	void SetVertexNormal(int index, const Vector3& n)
@@ -103,7 +104,7 @@ private:
 	VertexArray* vertices_;
 	FaceArray* faces_;
 
-	const Material* material_;
+	/*const*/ Material* material_;
 	Shader* shader_;
 
 	unsigned int vertexCount_;

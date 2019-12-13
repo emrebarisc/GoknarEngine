@@ -11,7 +11,7 @@
 #include "Managers/InputManager.h"
 #include "Managers/ObjectManager.h"
 #include "Renderer/Renderer.h"
-#include "Managers/ShaderBuilder.h"
+#include "Renderer/ShaderBuilder.h"
 #include "Managers/WindowManager.h"
 
 // OpenGL Libraries

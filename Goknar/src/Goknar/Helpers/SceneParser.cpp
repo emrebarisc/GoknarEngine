@@ -491,16 +491,14 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		{
 			stream << child->GetText() << std::endl;
 			int uvIndex = 0;
-			int faceCorner = 0;
-			while (faceCorner < 3)
+			Vector2 UV;
+			while (!(stream >> UV.x).eof())
 			{
-				Vector2 UV;
-				while (!(stream >> UV.x).eof())
+				stream >> UV.y;
+				if (uvIndex < mesh->GetVertexCount())
 				{
-					stream >> UV.y;
-					mesh->SetVertexUV(faceArray->at(uvIndex).vertexIndices[faceCorner], UV);
+					mesh->SetVertexUV(uvIndex++, UV);
 				}
-				faceCorner++;
 			}
 		}
 		stream.clear();

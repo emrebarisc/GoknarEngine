@@ -6,6 +6,7 @@
 
 #include "Engine.h"
 #include "Math.h"
+#include "Material.h"
 
 Scene::Scene()
 {
@@ -53,6 +54,10 @@ Scene::~Scene()
 
 void Scene::Init()
 {
+	for (const Material* material : materials_)
+	{
+
+	}
 }
 
 void Scene::SetShaderDynamicLightUniforms(const Shader* shader) const
