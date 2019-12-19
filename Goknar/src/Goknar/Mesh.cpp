@@ -63,6 +63,9 @@ void Mesh::Init()
 		const char* vertexBuffer = engine->GetShaderBuilder()->GetDefaultSceneVertexShader().c_str();
 		const char* fragmentBuffer = engine->GetShaderBuilder()->GetDefaultSceneFragmentShader().c_str();
 		shader_ = new Shader(vertexBuffer, fragmentBuffer);
+
+		std::cout << vertexBuffer << std::endl;
+		std::cout << fragmentBuffer << std::endl;
 	}
 }
 

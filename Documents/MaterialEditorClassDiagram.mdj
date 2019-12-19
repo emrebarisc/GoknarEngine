@@ -8695,7 +8695,7 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 163,
+									"left": 175,
 									"top": 577,
 									"height": 13,
 									"alpha": 1.5707963267948966,
@@ -8716,7 +8716,7 @@
 									},
 									"visible": null,
 									"font": "Arial;13;0",
-									"left": 163,
+									"left": 175,
 									"top": 592,
 									"height": 13,
 									"alpha": 1.5707963267948966,
@@ -8737,7 +8737,7 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 164,
+									"left": 176,
 									"top": 547,
 									"height": 13,
 									"alpha": -1.5707963267948966,
@@ -8755,7 +8755,7 @@
 							"tail": {
 								"$ref": "AAAAAAFvD8xM9FadhPQ="
 							},
-							"points": "216:600;216:568;112:568;112:508",
+							"points": "240:600;240:568;112:568;112:508",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAFvD8xoxVbI7AA="
@@ -9223,7 +9223,7 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 203,
+									"left": 227,
 									"top": 561,
 									"height": 13,
 									"alpha": 1.5707963267948966,
@@ -9244,7 +9244,7 @@
 									},
 									"visible": null,
 									"font": "Arial;13;0",
-									"left": 203,
+									"left": 227,
 									"top": 576,
 									"height": 13,
 									"alpha": 1.5707963267948966,
@@ -9265,7 +9265,7 @@
 									},
 									"visible": false,
 									"font": "Arial;13;0",
-									"left": 204,
+									"left": 228,
 									"top": 531,
 									"height": 13,
 									"alpha": -1.5707963267948966,
@@ -9283,7 +9283,7 @@
 							"tail": {
 								"$ref": "AAAAAAFvD80AvFcakNg="
 							},
-							"points": "280:600;280:552;128:552;128:508",
+							"points": "328:600;328:552;128:552;128:508",
 							"showVisibility": true,
 							"nameLabel": {
 								"$ref": "AAAAAAFvD813qFeEej0="
@@ -9754,7 +9754,8 @@
 							"_parent": {
 								"$ref": "AAAAAAFvAPhh/08Foq8="
 							},
-							"name": "Node* firstValue"
+							"name": "Node* firstValue",
+							"type": ""
 						},
 						{
 							"_type": "UMLAttribute",
@@ -9762,7 +9763,8 @@
 							"_parent": {
 								"$ref": "AAAAAAFvAPhh/08Foq8="
 							},
-							"name": "Node* result"
+							"name": "Node* result",
+							"type": ""
 						}
 					],
 					"operations": [

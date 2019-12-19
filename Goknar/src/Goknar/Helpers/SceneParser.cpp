@@ -157,6 +157,16 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			camera->SetNearPlane(nearPlane);
 		}
 
+		const char* projectionMode = element->Attribute("ProjectionMode");
+		if (projectionMode && std::string(projectionMode) == "Perspective")
+		{
+			camera->SetProjectionMode(CameraProjectionMode::Perspective);
+		}
+		else
+		{
+			camera->SetProjectionMode(CameraProjectionMode::Orthographic);
+		}
+
 		child = element->FirstChildElement("Up");
 		stream << child->GetText() << std::endl;
 		Vector3 up;
