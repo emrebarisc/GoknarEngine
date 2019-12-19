@@ -40,20 +40,17 @@ void Mesh::Init()
 
 	if (GetComponentId() == 0)
 	{
-		char* vertexBuffer = nullptr;
-		char* fragmentBuffer = nullptr;
-		IOManager::ReadFile("./Shaders/TextureVertexShader.glsl", &vertexBuffer);
-		IOManager::ReadFile("./Shaders/TextureFragmentShader.glsl", &fragmentBuffer);
-		shader_ = new Shader(vertexBuffer, fragmentBuffer);
+		std::string vertexBuffer;
+		std::string fragmentBuffer;
+		IOManager::ReadFile("./Shaders/TextureVertexShader.glsl", vertexBuffer);
+		IOManager::ReadFile("./Shaders/TextureFragmentShader.glsl", fragmentBuffer);
+		shader_ = new Shader(vertexBuffer.c_str(), fragmentBuffer.c_str());
 
 		Texture* texture = new Texture();
 		texture->SetTextureImagePath("Content/Textures/testTexture.jpg");
 		texture->Init();
 		material_->AddTexture(texture);
-
-		delete vertexBuffer;
-		delete fragmentBuffer;
-
+	
 		glActiveTexture(GL_TEXTURE0);
 		material_->GetTextures().at(0)->Bind();
 		glUniform1i(glGetUniformLocation(shader_->GetProgramId(), "diffuseTexture"), material_->GetTextures().at(0)->GetTextureId());

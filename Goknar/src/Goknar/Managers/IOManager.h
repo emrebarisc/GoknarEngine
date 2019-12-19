@@ -9,7 +9,7 @@ public:
 	IOManager();
 	~IOManager();
 
-	static bool ReadFile(const char* filePath, char** rawTextBuffer);
+	static bool ReadFile(const char* filePath, std::string& rawTextBuffer);
 	static bool WriteFile(const char* filePath, const char* rawTextBuffer);
 
 	static bool ReadImage(const char* filePath, int& width, int& height, int& channels, unsigned char** rawDataBuffer);

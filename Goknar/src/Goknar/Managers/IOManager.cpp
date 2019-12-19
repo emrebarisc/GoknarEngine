@@ -18,32 +18,27 @@ IOManager::~IOManager()
 {
 }
 
-bool IOManager::ReadFile(const char* filePath, char** buffer)
+bool IOManager::ReadFile(const char* filePath, std::string& buffer)
 {
-	FILE* file = fopen(filePath, "r");
+    std::fstream file;
 
-	if(!file)
-	{
-		return false;
-	}
+    file.open(filePath, std::ios::in);
 
-	fseek(file, 0, SEEK_END);
-	long fileLength = ftell(file);
-	fseek(file, 0, SEEK_SET);
+    if (file.is_open()) {
+        std::string currentLine;
 
-	fileLength++;
+        while (getline(file, currentLine)) {
+            buffer += currentLine;
+            if (!file.eof())
+                buffer += "\n";
+        }
 
-	*buffer = (char*)malloc(fileLength * sizeof(char));
+        file.close();
+    }
+    else
+        return false;
 
-	if (*buffer)
-	{
-		fread((void*)*buffer, 1, fileLength, file);
-	}
-
-	(*buffer)[fileLength - 1] = '\0';
-
-	fclose(file);
-	return true;
+    return true;
 }
 
 bool IOManager::WriteFile(const char* filePath, const char* rawTextBuffer)
