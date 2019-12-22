@@ -79,6 +79,16 @@ void Engine::Run()
 		currentTimePoint = std::chrono::steady_clock::now();
 		deltaTime_ = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 
+		{
+			static float oneSecondCounter = 0.f;
+			oneSecondCounter += deltaTime_;
+			if (1.f < oneSecondCounter)
+			{
+				windowManager_->SetWindowTitle((std::string("FPS: ") + std::to_string(int(1 / deltaTime_))).c_str());
+				oneSecondCounter -= 1.f;
+			}
+		}
+
 		application_->Run();
 		Tick(deltaTime_);
 
