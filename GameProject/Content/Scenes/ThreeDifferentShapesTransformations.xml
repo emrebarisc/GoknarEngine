@@ -29,26 +29,30 @@
 	
 	<Materials>
 		<Material id="0">
-            <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
-            <DiffuseReflectance>0.95 0.42 0.31</DiffuseReflectance>
-            <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
-        </Material>
+      <ShadingModel>Opaque</ShadingModel>
+      <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
+      <DiffuseReflectance>0.95 0.42 0.31</DiffuseReflectance>
+      <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
+    </Material>
     <Material id="1">
-            <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
-            <DiffuseReflectance>0.23 0.54 0.79</DiffuseReflectance>
-            <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
-        </Material>
+      <ShadingModel>Opaque</ShadingModel>
+      <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
+      <DiffuseReflectance>0.23 0.54 0.79</DiffuseReflectance>
+      <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
+    </Material>
     <Material id="2">
-            <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
-            <DiffuseReflectance>0.1 0.83 0.59</DiffuseReflectance>
-            <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
-        </Material>
+      <ShadingModel>Opaque</ShadingModel>
+      <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
+      <DiffuseReflectance>0.1 0.83 0.59</DiffuseReflectance>
+      <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
+      </Material>
     <Material id="3">
-            <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
-            <DiffuseReflectance>0.5 0.5 0.5</DiffuseReflectance>
-            <SpecularReflectance>1.0 1.0 1.0</SpecularReflectance>
-            <PhongExponent>5000</PhongExponent>
-        </Material>
+      <ShadingModel>Masked</ShadingModel>
+      <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
+      <DiffuseReflectance>0.5 0.5 0.5</DiffuseReflectance>
+      <SpecularReflectance>1.0 1.0 1.0</SpecularReflectance>
+      <PhongExponent>5000</PhongExponent>
+    </Material>
 	</Materials>
 
 	<Objects>

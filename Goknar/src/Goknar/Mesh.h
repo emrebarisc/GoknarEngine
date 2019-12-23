@@ -50,6 +50,11 @@ public:
 		material_ = material;
 	}
 
+	const Material* GetMaterial() const
+	{
+		return material_;
+	}
+
 	void AddVertex(const Vector3& vertex)
 	{
 		vertices_->push_back(VertexData(vertex));

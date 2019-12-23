@@ -24,7 +24,9 @@ public:
 	void AddObjectToRenderer(Mesh* object);
 
 private:
-	std::vector<Mesh*> objectsToBeRendered_;
+	std::vector<Mesh*> opaqueObjectsToBeRendered_;
+	std::vector<Mesh*> maskedObjectsToBeRendered_;
+	std::vector<Mesh*> translucentObjectsToBeRendered_;
 
 	unsigned int totalVertexSize_;
 	unsigned int totalFaceSize_;

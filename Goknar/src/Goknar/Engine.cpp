@@ -64,8 +64,8 @@ void Engine::Init() const
 	windowManager_->Init();
 	inputManager_->Init();
 	objectManager_->Init();
-	application_->Init();
 	shaderBuilder_->Init();
+	application_->Init();
 	renderer_->Init();
 	editor_->Init();
 }

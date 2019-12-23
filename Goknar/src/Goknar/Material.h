@@ -8,6 +8,13 @@
 class Shader;
 class Texture;
 
+enum class MaterialShadingModel
+{
+	Opaque = 0,
+	Masked,
+	Translucent
+};
+
 class GOKNAR_API Material
 {
 public:
@@ -64,6 +71,16 @@ public:
 		return textures_;
 	}
 
+	MaterialShadingModel GetShadingModel() const
+	{
+		return shadingModel_;
+	}
+
+	void SetShadingModel(MaterialShadingModel shadingModel)
+	{
+		shadingModel_ = shadingModel;
+	}
+
 	void Render(const Shader* shader) const;
 
 protected:
@@ -72,6 +89,8 @@ private:
 	Vector3 ambientReflectance_;
 	Vector3 diffuseReflectance_;
 	Vector3 specularReflectance_;
+
+	MaterialShadingModel shadingModel_;
 
 	std::vector<const Texture*> textures_;
 

@@ -26,6 +26,12 @@ void Texture::Init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, channels_ == 3 ? GL_RGB : GL_RGBA, width_, height_, 0, channels_ == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, buffer_);
+
+	if (channels_ == 4)
+	{
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, 0);

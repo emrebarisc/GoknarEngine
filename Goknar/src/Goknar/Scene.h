@@ -30,7 +30,7 @@ public:
     // Scene data parser
     void ReadSceneData(char *filePath);
 
-	void AddMesh(const Mesh* mesh)
+	void AddMesh(Mesh* mesh)
 	{
 		meshes_.push_back(mesh);
 	}
@@ -158,7 +158,7 @@ public:
 private:
 	std::vector</*const*/ Material*> materials_;
 	std::vector<const Texture*> textures_;
-    std::vector<const Mesh*> meshes_;
+    std::vector<Mesh*> meshes_;
 
 	std::vector<const PointLight*> staticPointLights_;
 	std::vector<const DirectionalLight*> staticDirectionalLights_;

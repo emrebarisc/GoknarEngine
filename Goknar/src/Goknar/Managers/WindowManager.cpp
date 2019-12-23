@@ -91,6 +91,7 @@ void WindowManager::SetWindowHeight(int h)
 void WindowManager::SetWindowTitle(const char *title)
 {
 	windowTitle_ = title;
+	glfwSetWindowTitle(mainWindow_, windowTitle_);
 }
 
 void WindowManager::SetMSAA(int MMAAValue)

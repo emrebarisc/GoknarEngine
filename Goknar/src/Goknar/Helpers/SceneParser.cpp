@@ -316,6 +316,18 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	while (element)
 	{
 		material = new Material();
+
+		child = element->FirstChildElement("ShadingModel");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			std::string shadingModel;
+			stream >> shadingModel;
+			material->SetShadingModel(shadingModel == "Masked" ? MaterialShadingModel::Masked :
+									  shadingModel == "Translucent" ? MaterialShadingModel::Translucent :
+									  MaterialShadingModel::Opaque);
+		}
+
 		child = element->FirstChildElement("AmbientReflectance");
 		if (child)
 		{

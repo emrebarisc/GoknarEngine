@@ -23,8 +23,6 @@ Mesh::Mesh() :
 {
 	vertices_ = new VertexArray();
 	faces_ = new FaceArray();
-
-	engine->AddObjectToRenderer(this);
 }
 
 Mesh::~Mesh()
@@ -47,7 +45,7 @@ void Mesh::Init()
 		shader_ = new Shader(vertexBuffer.c_str(), fragmentBuffer.c_str());
 
 		Texture* texture = new Texture();
-		texture->SetTextureImagePath("Content/Textures/testTexture.jpg");
+		texture->SetTextureImagePath("Content/Textures/treesBusheShrums.png");
 		texture->Init();
 		material_->AddTexture(texture);
 	
@@ -60,7 +58,10 @@ void Mesh::Init()
 		const char* vertexBuffer = engine->GetShaderBuilder()->GetDefaultSceneVertexShader().c_str();
 		const char* fragmentBuffer = engine->GetShaderBuilder()->GetDefaultSceneFragmentShader().c_str();
 		shader_ = new Shader(vertexBuffer, fragmentBuffer);
+
 	}
+
+	engine->AddObjectToRenderer(this);
 }
 
 void Mesh::Render() const

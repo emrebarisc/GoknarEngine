@@ -3,10 +3,7 @@
 #include "Scene.h"
 
 #include "Helpers/SceneParser.h"
-
-#include "Engine.h"
-#include "Math.h"
-#include "Material.h"
+#include "Mesh.h"
 
 Scene::Scene()
 {
@@ -54,9 +51,9 @@ Scene::~Scene()
 
 void Scene::Init()
 {
-	for (const Material* material : materials_)
+	for (Mesh* mesh : meshes_)
 	{
-
+		mesh->Init();
 	}
 }
 
