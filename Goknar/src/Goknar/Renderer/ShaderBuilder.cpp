@@ -217,6 +217,8 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity)
 	float wiLength = length(wi);
 	wi /= wiLength;
 
+	if(dot(vertexNormal, wi) < 0.f) return vec3(0.f, 0.f, 0.f);
+
 	// To viewpoint vector
 	vec3 wo = viewPosition - fragmentPosition;
 	float woLength = length(wo);
@@ -273,6 +275,8 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	vec3 wi = -direction;
 	float wiLength = length(wi);
 	wi /= wiLength;
+
+	if(dot(vertexNormal, wi) < 0.f) return vec3(0.f, 0.f, 0.f);
 
 	float normalDotLightDirection = dot(vertexNormal, wi);
 
@@ -337,6 +341,8 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 	vec3 wi = fragmentPosition - position;
 	float wiLength = length(wi);
 	wi /= wiLength;
+
+	if(dot(vertexNormal, wi) < 0.f) return vec3(0.f, 0.f, 0.f);
 
 	// To viewpoint vector
 	vec3 wo = viewPosition - fragmentPosition;
