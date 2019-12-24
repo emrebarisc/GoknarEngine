@@ -25,6 +25,7 @@ public:
 
 private:
 	std::vector<Mesh*> opaqueObjectsToBeRendered_;
+	//TODO: Is it really necessary to hold masked objects as a seperate array?
 	std::vector<Mesh*> maskedObjectsToBeRendered_;
 	std::vector<Mesh*> translucentObjectsToBeRendered_;
 
