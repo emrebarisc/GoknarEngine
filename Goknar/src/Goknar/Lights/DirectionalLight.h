@@ -4,6 +4,7 @@
 #include "Light.h"
 
 #include "Goknar/Renderer/ShaderBuilder.h"
+#include "Goknar/Renderer/ShaderTypes.h"
 
 class GOKNAR_API DirectionalLight : public Light
 {

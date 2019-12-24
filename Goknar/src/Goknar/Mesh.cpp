@@ -51,7 +51,7 @@ void Mesh::Init()
 	
 		glActiveTexture(GL_TEXTURE0);
 		material_->GetTextures().at(0)->Bind();
-		glUniform1i(glGetUniformLocation(shader_->GetProgramId(), "diffuseTexture"), material_->GetTextures().at(0)->GetTextureId());
+		glUniform1i(glGetUniformLocation(shader_->GetProgramId(), SHADER_VARIABLE_NAMES::TEXTURE::DIFFUSE), material_->GetTextures().at(0)->GetTextureId());
 	}
 	else
 	{

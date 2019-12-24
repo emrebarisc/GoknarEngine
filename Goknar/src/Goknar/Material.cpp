@@ -4,6 +4,7 @@
 
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
+#include "Goknar/Renderer/ShaderTypes.h"
 
 Material::Material() : 
 	ambientReflectance_(Vector3::ZeroVector), 

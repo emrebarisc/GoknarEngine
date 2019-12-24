@@ -9,35 +9,6 @@
 #include "Goknar/Lights/SpotLight.h"
 #include "Goknar/Managers/IOManager.h"
 
-inline namespace SHADER_VARIABLE_NAMES
-{
-	inline namespace MATERIAL
-	{
-		const char* AMBIENT = "ambientReflectance";
-		const char* DIFFUSE = "diffuseReflectance";
-		const char* SPECULAR = "specularReflectance";
-		const char* PHONG_EXPONENT = "phongExponent";
-	}
-
-	inline namespace LIGHT
-	{
-		const char* DIRECTIONAL_LIGHT = "DirectionalLight";
-		const char* POINT_LIGHT = "PointLight";
-		const char* SPOT_LIGHT = "SpotLight";
-	}
-
-	inline namespace LIGHT_KEYWORDS
-	{
-		const char* POSITION = "Position";
-		const char* INTENSITY = "Intensity";
-		const char* DIRECTION = "Direction";
-		const char* COVERAGE_ANGLE = "CoverageAngle";
-		const char* FALLOFF_ANGLE = "FalloffAngle";
-	}
-}
-
-const std::string DEFAULT_SHADER_VERSION = "440 core";
-
 ShaderBuilder::ShaderBuilder()
 {
 	shaderVersion_ = DEFAULT_SHADER_VERSION;
