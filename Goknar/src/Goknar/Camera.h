@@ -4,7 +4,7 @@
 #include "Goknar/Core.h"
 #include "Goknar/Matrix.h"
 
-enum class GOKNAR_API CameraType : unsigned char
+enum class GOKNAR_API CameraProjection : unsigned char
 {
 	Orthographic,
 	Perspective
@@ -24,7 +24,7 @@ public:
 		farDistance_(100.f),
 		imageWidth_(1024),
 		imageHeight_(768),
-		type_(CameraType::Perspective)
+		projection_(CameraProjection::Perspective)
 	{
 		SetProjectionMatrix();
 		LookAt();
@@ -45,7 +45,7 @@ public:
 			farDistance_ = rhs->farDistance_;
 			imageWidth_ = rhs->imageWidth_;
 			imageHeight_ = rhs->imageHeight_;
-			type_ = rhs->type_;
+			projection_ = rhs->projection_;
 			projectionMatrix_ = rhs->projectionMatrix_;
 			viewingMatrix_ = rhs->viewingMatrix_;
 		}
@@ -180,7 +180,7 @@ public:
 									0.f, 0.f, -2 / (farDistance_ - nearDistance_), -(farDistance_ + nearDistance_) / (farDistance_ - nearDistance_),
 									0.f, 0.f, 0.f, 1.f);
 
-		if (type_ == CameraType::Perspective)
+		if (projection_ == CameraProjection::Perspective)
 		{
 			// Orthographic to perspective conversion matrix
 			Matrix o2p(nearDistance_, 0, 0, 0,
@@ -200,6 +200,16 @@ public:
 	float* GetProjectionMatrixPointer()
 	{
 		return &projectionMatrix_[0];
+	}
+
+	void SetProjection(CameraProjection projection)
+	{
+		projection_ = projection;
+	}
+
+	CameraProjection GetProjection() const
+	{
+		return projection_;
 	}
 
 protected:
@@ -222,7 +232,7 @@ private:
 	float farDistance_;
 	int imageWidth_, imageHeight_;
 
-	CameraType type_;
+	CameraProjection projection_;
 };
 
 #endif

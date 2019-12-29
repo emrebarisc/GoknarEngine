@@ -102,6 +102,15 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			camera->SetFarDistance(farDistance);
 		}
 
+		child = element->FirstChildElement("Projection");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			std::string projection;
+			stream >> projection;
+			camera->SetProjection(projection == "Orthographic" ? CameraProjection::Orthographic  : CameraProjection::Perspective);
+		}
+
 		const char* cameraType = element->Attribute("type");
 
 		if (cameraType && std::string(cameraType) == "simple")
