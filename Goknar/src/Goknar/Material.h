@@ -4,8 +4,8 @@
 #include "Goknar/Core.h"
 
 #include "Math.h"
+#include "Renderer/Shader.h"
 
-class Shader;
 class Texture;
 
 enum class MaterialShadingModel
@@ -20,6 +20,8 @@ class GOKNAR_API Material
 public:
 	Material();
 	~Material();
+
+	void Init();
 
 	const Vector3& GetAmbientReflectance() const
 	{
@@ -61,16 +63,6 @@ public:
 		phongExponent_ = phongExponent;
 	}
 
-	void AddTexture(const Texture* texture)
-	{
-		textures_.push_back(texture);
-	}
-
-	const std::vector<const Texture*>& GetTextures() const
-	{
-		return textures_;
-	}
-
 	MaterialShadingModel GetShadingModel() const
 	{
 		return shadingModel_;
@@ -81,7 +73,17 @@ public:
 		shadingModel_ = shadingModel;
 	}
 
-	void Render(const Shader* shader) const;
+	inline Shader* GetShader() const
+	{
+		return shader_;
+	}
+
+	inline void SetShader(Shader* shader)
+	{
+		shader_ = shader;
+	}
+
+	void Render(const Matrix& modelMatrix) const;
 
 protected:
 
@@ -90,11 +92,11 @@ private:
 	Vector3 diffuseReflectance_;
 	Vector3 specularReflectance_;
 
-	MaterialShadingModel shadingModel_;
-
-	std::vector<const Texture*> textures_;
+	Shader* shader_;
 
 	float phongExponent_;
+
+	MaterialShadingModel shadingModel_;
 };
 
 #endif

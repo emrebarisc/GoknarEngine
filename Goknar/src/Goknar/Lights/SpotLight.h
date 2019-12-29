@@ -3,6 +3,7 @@
 
 #include "Light.h"
 
+#include "Goknar/Managers/ObjectIDManager.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 
@@ -13,7 +14,7 @@ class GOKNAR_API SpotLight : public Light
 public:
     SpotLight() : Light(), coverageAngle_(0.f), falloffAngle_(0.f)
     {
-		id_ = lastSpotLightId_++;
+		id_ = ObjectIDManager::GetInstance()->GetAndIncreaseSpotLightID();
 		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT) + std::to_string(id_);
     }
 

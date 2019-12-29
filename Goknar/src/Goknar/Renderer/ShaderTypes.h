@@ -33,6 +33,14 @@ inline namespace SHADER_VARIABLE_NAMES
 	{
 		extern const char* DIFFUSE;
 	}
+
+	inline namespace POSITIONING
+	{
+		extern const char* MODEL_MATRIX;
+		extern const char* VIEW_MATRIX;
+		extern const char* PROJECTION_MATRIX;
+		extern const char* VIEW_POSITION;
+	}
 }
 
 #endif

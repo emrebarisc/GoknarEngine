@@ -10,19 +10,26 @@ class SpotLight;
 class GOKNAR_API ShaderBuilder
 {
 public:
-	ShaderBuilder();
-	~ShaderBuilder();
+	static ShaderBuilder* GetInstance()
+	{
+		if (instance_ == nullptr)
+		{
+			instance_ = new ShaderBuilder();
+		}
+
+		return instance_;
+	}
 
 	void Init();
 
 	const std::string& GetDefaultSceneVertexShader() const
 	{
-		return vertexShader_;
+		return sceneVertexShader_;
 	}
 
 	const std::string& GetDefaultSceneFragmentShader() const
 	{
-		return fragmentShader_;
+		return sceneFragmentShader_;
 	}
 
 	std::string GetShaderVersion() const
@@ -35,11 +42,14 @@ public:
 		shaderVersion_ = shaderVersion;
 	}
 
-
-
 protected:
 
 private:
+	static ShaderBuilder* instance_;
+
+	ShaderBuilder();
+	~ShaderBuilder();
+
 	void BuildSceneVertexShader();
 	void BuildSceneFragmentShader();
 
@@ -50,7 +60,7 @@ private:
 	// Vertex shader variables
 	std::string vertexShaderOutsideMain_;
 	std::string vertexShaderInsideMain_;
-	std::string vertexShader_;
+	std::string sceneVertexShader_;
 
 	// Fragment Shader
 
@@ -80,7 +90,7 @@ private:
 	std::string uniforms_;
 	std::string fragmentShaderOutsideMain_;
 	std::string fragmentShaderInsideMain_;
-	std::string fragmentShader_;
+	std::string sceneFragmentShader_;
 };
 
 #endif

@@ -12,6 +12,7 @@
 
 class Material;
 class Mesh;
+class Shader;
 class Texture;
 
 /*
@@ -105,27 +106,42 @@ public:
 		return dynamicSpotLights_;
 	}
 
-	void AddMaterial(/*const*/ Material* material)
+	void AddMaterial(Material* material)
 	{
 		materials_.push_back(material);
 	}
 
-	const std::vector</*const*/ Material*>& GetMaterials() const
+	const std::vector<Material*>& GetMaterials() const
 	{
 		return materials_;
 	}
 
-	/*const*/ Material* GetMaterial(int index) const
+	Material* GetMaterial(int index) const
 	{
 		return materials_[index];
 	}
 
-	void AddTexture(const Texture* texture)
+	void AddShader(Shader* shader)
+	{
+		shaders_.push_back(shader);
+	}
+
+	const std::vector<Shader*>& GetShaders() const
+	{
+		return shaders_;
+	}
+
+	Shader* GetShader(int index) const
+	{
+		return shaders_[index];
+	}
+
+	void AddTexture(Texture* texture)
 	{
 		textures_.push_back(texture);
 	}
 
-	const std::vector<const Texture*>& GetTextures() const
+	const std::vector<Texture*>& GetTextures() const
 	{
 		return textures_;
 	}
@@ -156,8 +172,9 @@ public:
 	}
 
 private:
-	std::vector</*const*/ Material*> materials_;
-	std::vector<const Texture*> textures_;
+	std::vector<Material*> materials_;
+	std::vector<Shader*> shaders_;
+	std::vector<Texture*> textures_;
     std::vector<Mesh*> meshes_;
 
 	std::vector<const PointLight*> staticPointLights_;

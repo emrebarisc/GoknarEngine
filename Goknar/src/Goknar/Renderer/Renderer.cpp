@@ -114,8 +114,6 @@ void Renderer::Init()
 	glEnable(GL_CULL_FACE);
 	glDepthFunc(GL_LEQUAL);
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
 	for (Mesh* opaqueMesh : opaqueObjectsToBeRendered_)
 	{
 		totalVertexSize_ += opaqueMesh->GetVerticesPointer()->size();
@@ -145,7 +143,6 @@ void Renderer::Render()
 	int baseVertex = 0;
 	for (const Mesh* opaqueMesh : opaqueObjectsToBeRendered_)
 	{
-		opaqueMesh->GetShader()->Use();
 		opaqueMesh->Render();
 
 		int facePointCount = opaqueMesh->GetFaceCount() * 3;
@@ -156,7 +153,6 @@ void Renderer::Render()
 
 	for (const Mesh* maskedMesh : maskedObjectsToBeRendered_)
 	{
-		maskedMesh->GetShader()->Use();
 		maskedMesh->Render();
 
 		int facePointCount = maskedMesh->GetFaceCount() * 3;
@@ -168,7 +164,6 @@ void Renderer::Render()
 	glEnable(GL_BLEND);
 	for (const Mesh* translucentMesh : translucentObjectsToBeRendered_)
 	{
-		translucentMesh->GetShader()->Use();
 		translucentMesh->Render();
 
 		int facePointCount = translucentMesh->GetFaceCount() * 3;

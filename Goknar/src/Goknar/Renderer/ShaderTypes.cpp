@@ -33,5 +33,18 @@ inline namespace SHADER_VARIABLE_NAMES
 	inline namespace TEXTURE
 	{
 		const char* DIFFUSE = "diffuseTexture";
+		const char* NORMAL = "normalTexture";
+		const char* AMBIENT_OCCLUSION = "ambientOcclusionTexture";
+		const char* METALLIC = "metallicTexture";
+		const char* SPECULAR = "specularTexture";
+		const char* ROUGHNESS = "roughnessTexture";
+	}
+
+	inline namespace POSITIONING
+	{
+		const char* MODEL_MATRIX = "transformationMatrix";
+		const char* VIEW_MATRIX = "viewMatrix";
+		const char* PROJECTION_MATRIX = "projectionMatrix";
+		const char* VIEW_POSITION = "viewPosition";
 	}
 }

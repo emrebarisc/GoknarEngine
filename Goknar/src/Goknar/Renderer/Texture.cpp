@@ -1,12 +1,19 @@
 #include "pch.h"
 
-#include "Goknar/Log.h"
 #include "Texture.h"
-#include "Goknar/Managers/IOManager.h"
 
 #include "glad/glad.h"
-
 #include <gl/GLU.h>
+
+#include "Goknar/Managers/IOManager.h"
+#include "Goknar/Log.h"
+#include "Goknar/Renderer/Shader.h"
+
+
+
+// TEMP
+#include "Goknar/Engine.h"
+#include "Goknar/Scene.h"
 
 void Texture::Init()
 {
@@ -16,8 +23,10 @@ void Texture::Init()
 		return;
 	}
 
-	glGenTextures(1, &textureId_);
-	glBindTexture(GL_TEXTURE_2D, textureId_);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	glGenTextures(1, &rendererTextureId_);
+	glBindTexture(GL_TEXTURE_2D, rendererTextureId_);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -33,16 +42,17 @@ void Texture::Init()
 	}
 
 	glGenerateMipmap(GL_TEXTURE_2D);
-
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::Bind() const
+void Texture::Bind(Shader* shader) const
 {
-	glBindTexture(GL_TEXTURE_2D, textureId_);
+	shader->SetInt(name_.c_str(), rendererTextureId_);
+	glActiveTexture(GL_TEXTURE0 + rendererTextureId_ - 1);
+	glBindTexture(GL_TEXTURE_2D, rendererTextureId_);
 }
 
 bool Texture::LoadTextureImage()
 {
-	return IOManager::ReadImage(imagePath_, width_, height_, channels_, &buffer_);
+	return IOManager::ReadImage(imagePath_.c_str(), width_, height_, channels_, &buffer_);
 }

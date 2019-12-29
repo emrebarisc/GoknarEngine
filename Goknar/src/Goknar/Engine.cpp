@@ -11,7 +11,6 @@
 #include "Managers/InputManager.h"
 #include "Managers/ObjectManager.h"
 #include "Renderer/Renderer.h"
-#include "Renderer/ShaderBuilder.h"
 #include "Managers/WindowManager.h"
 
 // OpenGL Libraries
@@ -39,7 +38,6 @@ Engine::Engine() : deltaTime_(0.f)
 	renderer_ = new Renderer();
 	editor_ = new ImGuiEditor();
 	cameraManager_ = new CameraManager();
-	shaderBuilder_ = new ShaderBuilder();
 
 	// TODO
 	//application_ = CreateApplication();
@@ -47,7 +45,6 @@ Engine::Engine() : deltaTime_(0.f)
 
 Engine::~Engine()
 {
-	delete shaderBuilder_;
 	delete cameraManager_;
 	delete editor_;
 	delete renderer_;
@@ -64,7 +61,7 @@ void Engine::Init() const
 	windowManager_->Init();
 	inputManager_->Init();
 	objectManager_->Init();
-	shaderBuilder_->Init();
+	ShaderBuilder::GetInstance()->Init();
 	application_->Init();
 	renderer_->Init();
 	editor_->Init();
@@ -93,6 +90,8 @@ void Engine::Run()
 		Tick(deltaTime_);
 
 		renderer_->Render();
+		editor_->Tick(deltaTime_);
+		windowManager_->Update();
 		glfwPollEvents();
 
 		lastFrameTimePoint = currentTimePoint;
@@ -113,10 +112,6 @@ void Engine::Tick(float deltaTime)
 	{
 		object->Tick(deltaTime);
 	}
-
-	renderer_->Render();
-	editor_->Tick(deltaTime);
-	windowManager_->Update();
 }
 
 void Engine::RegisterObject(ObjectBase* object)

@@ -3,23 +3,70 @@
 
 #include "Types.h"
 
+#include "ShaderTypes.h"
+
 #include "Goknar/Math.h"
+
+class Texture;
+
+enum class ShaderType
+{
+	// Undependent from any scene constraint(Not linked to lights etc.)
+	SelfContained = 0,
+	// Dependent to scene constraint(Linked to lights etc.)
+	Dependent,
+	// Use only scene shader built by the ShaderBuilder
+	Scene
+};
 
 class Shader
 {
 public:
 	Shader();
-	Shader(const char* vertexShader, const char* fragmentShader);
 	~Shader();
 
-	void Bind() const;
+	void SetVertexShaderPath(const std::string& vertexShaderPath)
+	{
+		vertexShaderPath_ = vertexShaderPath;
+	}
 
-	void Unbind() const;
+	void SetFragmentShaderPath(const std::string& fragmentShaderPath)
+	{
+		fragmentShaderPath_ = fragmentShaderPath;
+	}
+
+	ShaderType GetShaderType() const
+	{
+		return shaderType_;
+	}
+
+	void SetShaderType(ShaderType shaderType)
+	{
+		shaderType_ = shaderType;
+	}
+
+	void AddTexture(const Texture* texture)
+	{
+		textures_.push_back(texture);
+	}
+
+	const std::vector<const Texture*>& GetTextures() const
+	{
+		return textures_;
+	}
+
+	void SetMVP(const Matrix& model/*, const Matrix& view, const Matrix& projection*/) const;
 
 	unsigned int GetProgramId() const
 	{
 		return programId_;
 	}
+
+	void Init();
+
+	void Bind() const;
+
+	void Unbind() const;
 
 	void Use() const;
 
@@ -32,8 +79,17 @@ public:
 protected:
 
 private:
+	std::vector<const Texture*> textures_;
+
+	std::string vertexShaderPath_;
+	std::string fragmentShaderPath_;
+
+	std::string vertexShaderScript_;
+	std::string fragmentShaderScript_;
+
 	GEuint programId_;
 
+	ShaderType shaderType_;
 };
 
 #endif

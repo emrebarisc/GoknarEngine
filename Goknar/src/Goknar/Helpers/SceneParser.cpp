@@ -6,16 +6,17 @@
 #include <stdexcept>
 
 #include "Goknar/Camera.h"
+#include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Material.h"
 #include "Goknar/Mesh.h"
+#include "Goknar/Renderer/Shader.h"
+#include "Goknar/Renderer/Texture.h"
 
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
-
-#include "Goknar/Managers/CameraManager.h"
 
 #include "tinyxml2.h"
 
@@ -309,6 +310,70 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	}
 	stream.clear();
 
+	//Get Textures
+	element = root->FirstChildElement("Textures");
+	element = element->FirstChildElement("Texture");
+	Texture* texture;
+	while (element)
+	{
+		texture = new Texture();
+
+		child = element->FirstChildElement("Path");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			std::string textureImagePath;
+			stream >> textureImagePath;
+			texture->SetTextureImagePath(textureImagePath.c_str());
+		}
+
+		scene->AddTexture(texture);
+		element = element->NextSiblingElement("Texture");
+	}
+	stream.clear();
+
+	//Get Shaders
+	element = root->FirstChildElement("Shaders");
+	element = element->FirstChildElement("Shader");
+	Shader* shader;
+	while (element)
+	{
+		shader = new Shader();
+		child = element->FirstChildElement("Type");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			std::string shaderType;
+			stream >> shaderType;
+			shader->SetShaderType(shaderType == "SelfContained" ? ShaderType::SelfContained :
+								  shaderType == "Dependent" ? ShaderType::Dependent :
+								  ShaderType::Scene);
+		}
+
+		child = element->FirstChildElement("VertexShaderPath");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			std::string vertexShaderPath;
+			stream >> vertexShaderPath;
+			shader->SetVertexShaderPath(vertexShaderPath);
+		}
+
+		child = element->FirstChildElement("FragmentShaderPath");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			std::string fragmentShaderPath;
+			stream >> fragmentShaderPath;
+			shader->SetFragmentShaderPath(fragmentShaderPath);
+		}
+
+		scene->AddShader(shader);
+		element = element->NextSiblingElement("Shader");
+	}
+
+	stream.clear();
+
 	//Get Materials
 	element = root->FirstChildElement("Materials");
 	element = element->FirstChildElement("Material");
@@ -317,7 +382,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	{
 		material = new Material();
 
-		child = element->FirstChildElement("ShadingModel");
+		child = element->FirstChildElement("Model");
 		if (child)
 		{
 			stream << child->GetText() << std::endl;
@@ -326,6 +391,21 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			material->SetShadingModel(shadingModel == "Masked" ? MaterialShadingModel::Masked :
 									  shadingModel == "Translucent" ? MaterialShadingModel::Translucent :
 									  MaterialShadingModel::Opaque);
+		}
+
+		child = element->FirstChildElement("Shader");
+		if (child)
+		{
+			int shaderID = std::stoi(child->Attribute("id"));
+			material->SetShader(scene->GetShader(shaderID));
+		}
+
+		child = element->FirstChildElement("Texture");
+		while (child)
+		{
+			int textureId = std::stoi(child->Attribute("id"));
+			material->GetShader()->AddTexture(scene->GetTexture(textureId));
+			child = element->NextSiblingElement("Texture");
 		}
 
 		child = element->FirstChildElement("AmbientReflectance");

@@ -2,8 +2,10 @@
 
 #include "Scene.h"
 
-#include "Helpers/SceneParser.h"
+#include "Material.h"
 #include "Mesh.h"
+#include "Helpers/SceneParser.h"
+#include "Renderer/Texture.h"
 
 Scene::Scene()
 {
@@ -54,6 +56,16 @@ void Scene::Init()
 	for (Mesh* mesh : meshes_)
 	{
 		mesh->Init();
+	}
+
+	for (Texture* texture : textures_)
+	{
+		texture->Init();
+	}
+
+	for (Material* material : materials_)
+	{
+		material->Init();
 	}
 }
 

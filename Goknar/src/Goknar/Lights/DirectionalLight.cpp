@@ -6,8 +6,6 @@
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 
-int DirectionalLight::lastDirectionalLightId_ = 0;
-
 void DirectionalLight::SetShaderUniforms(const Shader* shader) const
 {
 	std::string directionName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION;

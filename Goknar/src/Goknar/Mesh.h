@@ -86,11 +86,6 @@ public:
 		return faces_;
 	}
 
-	const Shader* GetShader() const
-	{
-		return shader_;
-	}
-
 	int GetVertexCount() const
 	{
 		return vertexCount_;
@@ -109,8 +104,7 @@ private:
 	VertexArray* vertices_;
 	FaceArray* faces_;
 
-	/*const*/ Material* material_;
-	Shader* shader_;
+	const Material* material_;
 
 	unsigned int vertexCount_;
 	unsigned int faceCount_;

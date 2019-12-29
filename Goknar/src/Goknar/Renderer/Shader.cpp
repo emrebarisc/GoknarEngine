@@ -2,8 +2,17 @@
 
 #include "Shader.h"
 
+#include "ShaderBuilder.h"
+
+#include "Goknar/Camera.h"
+#include "Goknar/Managers/CameraManager.h"
+#include "Goknar/Engine.h"
+#include "Goknar/Managers/IOManager.h"
 #include "Goknar/Log.h"
 #include "Goknar/Matrix.h"
+#include "Goknar/Renderer/Shader.h"
+#include "Texture.h"
+
 
 #include <glad/glad.h>
 
@@ -49,20 +58,49 @@ void ExitOnProgramError(GEuint programId, const char* errorMessage)
 	}
 }
 
-Shader::Shader()
+Shader::Shader() :
+	shaderType_(ShaderType::Scene),
+	programId_(0)
 {
-
 }
 
-Shader::Shader(const char* vertexShaderSource, const char* fragmentShaderSource)
+Shader::~Shader()
 {
-	const GEchar* vertexSource = (const GEchar*)vertexShaderSource;
+	glDeleteProgram(programId_);
+}
+
+void Shader::SetMVP(const Matrix& model/*, const Matrix& view, const Matrix& projection*/) const
+{
+	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+
+	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX, model);
+	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_MATRIX, activeCamera->GetViewingMatrix());
+	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::PROJECTION_MATRIX, activeCamera->GetProjectionMatrix());
+	SetVector3(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION, activeCamera->GetPosition());
+}
+
+void Shader::Init()
+{
+	if (shaderType_ == ShaderType::Dependent || shaderType_ == ShaderType::SelfContained)
+	{
+		GOKNAR_ASSERT((vertexShaderPath_ != "" && fragmentShaderPath_ != ""), "Shader vertex and/or fragment shader path(s) are not given.");
+
+		IOManager::ReadFile(vertexShaderPath_.c_str(), vertexShaderScript_);
+		IOManager::ReadFile(fragmentShaderPath_.c_str(), fragmentShaderScript_);
+	}
+	else
+	{
+		vertexShaderScript_ = ShaderBuilder::GetInstance()->GetDefaultSceneVertexShader();
+		fragmentShaderScript_ = ShaderBuilder::GetInstance()->GetDefaultSceneFragmentShader();
+	}
+
+	const GEchar* vertexSource = (const GEchar*)vertexShaderScript_.c_str();
 	GEuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShaderId, 1, &vertexSource, 0);
 	glCompileShader(vertexShaderId);
 	ExitOnShaderIsNotCompiled(vertexShaderId, "Vertex shader compilation error!");
 
-	const GEchar* fragmentSource = (const GEchar*)fragmentShaderSource;
+	const GEchar* fragmentSource = (const GEchar*)fragmentShaderScript_.c_str();
 	GEuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShaderId, 1, &fragmentSource, 0);
 	glCompileShader(fragmentShaderId);
@@ -77,13 +115,18 @@ Shader::Shader(const char* vertexShaderSource, const char* fragmentShaderSource)
 
 	ExitOnProgramError(programId_, "Shader program link error!");
 
+	Bind();
+
+	int textureSize = textures_.size();
+	for (int textureIndex = 0; textureIndex < textureSize; textureIndex++)
+	{
+		textures_[textureIndex]->Bind(this);
+	}
+
+	Unbind();
+
 	glDetachShader(programId_, vertexShaderId);
 	glDetachShader(programId_, fragmentShaderId);
-}
-
-Shader::~Shader()
-{
-	glDeleteProgram(programId_);
 }
 
 void Shader::Bind() const
@@ -98,7 +141,7 @@ void Shader::Unbind() const
 
 void Shader::Use() const
 {
-	glUseProgram(programId_);
+	Bind();
 }
 
 void Shader::SetBool(const char* name, bool value)
@@ -108,6 +151,7 @@ void Shader::SetBool(const char* name, bool value)
 
 void Shader::SetInt(const char* name, int value) const
 {
+	GEint comolokko = glGetUniformLocation(programId_, name);
 	glUniform1i(glGetUniformLocation(programId_, name), value);
 }
 

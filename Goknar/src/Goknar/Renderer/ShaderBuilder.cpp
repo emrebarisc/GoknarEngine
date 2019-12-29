@@ -9,6 +9,8 @@
 #include "Goknar/Lights/SpotLight.h"
 #include "Goknar/Managers/IOManager.h"
 
+ShaderBuilder* ShaderBuilder::instance_ = nullptr;
+
 ShaderBuilder::ShaderBuilder()
 {
 	shaderVersion_ = DEFAULT_SHADER_VERSION;
@@ -111,17 +113,17 @@ uniform vec3 viewPosition;
 
 	CombineShader();
 
-	//std::cout << vertexShader_ << std::endl;
-	//std::cout << fragmentShader_ << std::endl;
+	//std::cout << sceneVertexShader_ << std::endl;
+	//std::cout << sceneFragmentShader_ << std::endl;
 
-	//IOManager::WriteFile("./DefaultSceneVertexShader.glsl", vertexShader_.c_str());
-	//IOManager::WriteFile("./DefaultSceneFragmentShader.glsl", fragmentShader_.c_str());
+	//IOManager::WriteFile("./DefaultSceneVertexShader.glsl", sceneVertexShader_.c_str());
+	//IOManager::WriteFile("./DefaultSceneFragmentShader.glsl", sceneFragmentShader_.c_str());
 }
 
 void ShaderBuilder::BuildSceneVertexShader()
 {
-	vertexShader_ = GetShaderVersionText();
-	vertexShader_ += R"(
+	sceneVertexShader_ = GetShaderVersionText();
+	sceneVertexShader_ += R"(
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
@@ -378,14 +380,14 @@ std::string ShaderBuilder::GetSpotLightColorSummationText(const std::string& lig
 
 void ShaderBuilder::CombineShader()
 {
-	fragmentShader_ = GetShaderVersionText() + "\n\n";
-	fragmentShader_ += uniforms_;
+	sceneFragmentShader_ = GetShaderVersionText() + "\n\n";
+	sceneFragmentShader_ += uniforms_;
 
-	fragmentShader_ += fragmentShaderOutsideMain_;
-	fragmentShader_ += R"(
+	sceneFragmentShader_ += fragmentShaderOutsideMain_;
+	sceneFragmentShader_ += R"(
 void main()
 {
 )";
-	fragmentShader_ += fragmentShaderInsideMain_ + "\n";
-	fragmentShader_ += "}";
+	sceneFragmentShader_ += fragmentShaderInsideMain_ + "\n";
+	sceneFragmentShader_ += "}";
 }

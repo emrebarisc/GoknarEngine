@@ -3,6 +3,7 @@
 
 #include "Light.h"
 
+#include "Goknar/Managers/ObjectIDManager.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 
@@ -11,7 +12,7 @@ class GOKNAR_API DirectionalLight : public Light
 public:
 	DirectionalLight() : Light() 
 	{
-		id_ = lastDirectionalLightId_++;
+		id_ = ObjectIDManager::GetInstance()->GetAndIncreaseDirectionalLightID();
 		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT) + std::to_string(id_);
 	}
 
@@ -35,8 +36,6 @@ public:
 private:
     Vector3 direction_;
     Vector3 radiance_;
-
-	static int lastDirectionalLightId_;
 };
 
 #endif

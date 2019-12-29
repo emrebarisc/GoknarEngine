@@ -26,6 +26,46 @@
 	      <Intensity>100</Intensity>
 	    </PointLight>
 	</Lights>
+
+  <Textures>
+    <Texture>
+      <Path>./Content/Textures/testTexture.jpg</Path>
+    </Texture>
+    <Texture>
+      <Path>./Content/Textures/treesBusheShrums.png</Path>
+    </Texture>
+  </Textures>
+
+  <Shaders>
+    <Shader id="0">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        ./Shaders/TextureVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        ./Shaders/TextureFragmentShader.glsl
+      </FragmentShaderPath>
+      <Model>
+        Opaque
+      </Model>
+    </Shader>
+    <Shader id="2">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        ./Shaders/TextureVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        ./Shaders/TextureFragmentShader.glsl
+      </FragmentShaderPath>
+      <Model>
+        Masked
+      </Model>
+    </Shader>
+  </Shaders>
 	
 	<Materials>
 		<Material id="0">
@@ -45,13 +85,24 @@
       <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
       <DiffuseReflectance>0.1 0.83 0.59</DiffuseReflectance>
       <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
-      </Material>
+    </Material>
     <Material id="3">
+      <Shader id="0"/>
+      <Texture id="0"/>
+      <ShadingModel>Opaque</ShadingModel>
+      <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
+      <DiffuseReflectance>0.0 0.0 0.0</DiffuseReflectance>
+      <SpecularReflectance>1.0 1.0 1.0</SpecularReflectance>
+      <PhongExponent>250</PhongExponent>
+    </Material>
+    <Material id="4">
+      <Shader id="1"/>
+      <Texture id="1"/>
       <ShadingModel>Masked</ShadingModel>
       <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
-      <DiffuseReflectance>0.5 0.5 0.5</DiffuseReflectance>
-      <SpecularReflectance>1.0 1.0 1.0</SpecularReflectance>
-      <PhongExponent>5000</PhongExponent>
+      <DiffuseReflectance>0.0 0.0 0.0</DiffuseReflectance>
+      <SpecularReflectance>0.1 0.1 0.1</SpecularReflectance>
+      <PhongExponent>250</PhongExponent>
     </Material>
 	</Materials>
 
@@ -66,11 +117,11 @@
 			<WorldRotation>0 0 45</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
-        12.5 12.5 0.0
-        -12.5 12.5 0.0
-        -12.5 -12.5 0.0
-        12.5 -12.5 0.0
-			</Vertices>
+        0.0 0 5
+        -5 0 5
+        -5 0 -2.5
+        0 0.0 -2.5
+      </Vertices>
 			<Normals>
 				0.0 0.0 1.0
 				0.0 0.0 1.0
@@ -89,6 +140,38 @@
       </UVs>
     </Mesh>
 		<Mesh id = "2">
+			<Material>4</Material>
+			<PivotPoint>0 0 0</PivotPoint>
+			<RelativePosition>0 0 0</RelativePosition>
+			<RelativeRotation>0 0 0</RelativeRotation>
+			<RelativeScaling>1 1 1</RelativeScaling>
+			<WorldPosition>0 0 0</WorldPosition>
+			<WorldRotation>0 0 45</WorldRotation>
+			<WorldScaling>1 1 1</WorldScaling>
+			<Vertices>
+        5 0 5
+        0 0 5
+        0 0 -2.5
+        5 0.0 -2.5
+      </Vertices>
+			<Normals>
+				0.0 0.0 1.0
+				0.0 0.0 1.0
+				0.0 0.0 1.0
+				0.0 0.0 1.0
+			</Normals>
+			<Faces>
+				0 1 2
+				2 3 0
+			</Faces>
+      <UVs>
+        1.0 0.0
+        0.0 0.0
+        0.0 1.0
+        1.0 1.0
+      </UVs>
+    </Mesh>
+		<!--<Mesh id = "3">
 			<Material>0</Material>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
@@ -171,7 +254,7 @@
       </UVs>
       
 		</Mesh>
-		<Mesh id = "3">
+		<Mesh id = "4">
 			<Material>1</Material>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
@@ -813,7 +896,7 @@
         0.3316134214401245 0.9396411180496216
       </UVs>
 		</Mesh>
-		<Mesh id = "4">
+		<Mesh id = "5">
 			<Material>2</Material>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
@@ -1234,7 +1317,7 @@
         0.5349612832069397 0.9937410950660706
         0.4086430072784424 1.0
       </UVs>
-		</Mesh>
+		</Mesh>-->
 	</Objects>
 
 </Scene>
