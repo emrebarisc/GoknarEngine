@@ -55,7 +55,7 @@ vec3 PointLight1Intensity = vec3(100.000000, 100.000000, 100.000000);
 void main()
 {
 	diffuseReflectance = texture(texture0, textureUV);
-	if (diffuseReflectance.a < 0.5f) discard;
+	//if (diffuseReflectance.a < 0.5f) discard;
 
 	vec3 lightColor = sceneAmbient * ambientReflectance;
 	lightColor += CalculatePointLightColor(PointLight0Position, PointLight0Intensity);

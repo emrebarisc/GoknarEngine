@@ -70,12 +70,9 @@ void Engine::Init() const
 void Engine::Run()
 {
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
-	std::chrono::steady_clock::time_point currentTimePoint;
+	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
-		currentTimePoint = std::chrono::steady_clock::now();
-		deltaTime_ = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-
 		{
 			static float oneSecondCounter = 0.f;
 			oneSecondCounter += deltaTime_;
@@ -93,6 +90,9 @@ void Engine::Run()
 		editor_->Tick(deltaTime_);
 		windowManager_->Update();
 		glfwPollEvents();
+
+		currentTimePoint = std::chrono::steady_clock::now();
+		deltaTime_ = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 
 		lastFrameTimePoint = currentTimePoint;
 	}

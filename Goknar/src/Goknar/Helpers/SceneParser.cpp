@@ -196,128 +196,137 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 	//Get Lights
 	element = root->FirstChildElement("Lights");
-	element = element->FirstChildElement("PointLight");
-	PointLight* pointLight;
-	while (element)
+	if (element)
 	{
-		pointLight = new PointLight();
+		element = element->FirstChildElement("PointLight");
+		PointLight* pointLight;
+		while (element)
+		{
+			pointLight = new PointLight();
 
-		child = element->FirstChildElement("Position");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("Position");
+			stream << child->GetText() << std::endl;
 
-		child = element->FirstChildElement("Color");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("Color");
+			stream << child->GetText() << std::endl;
 
-		child = element->FirstChildElement("Intensity");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("Intensity");
+			stream << child->GetText() << std::endl;
 
-		Vector3 position;
-		stream >> position.x >> position.y >> position.z;
-		pointLight->SetPosition(position);
+			Vector3 position;
+			stream >> position.x >> position.y >> position.z;
+			pointLight->SetPosition(position);
 
-		Vector3 color;
-		stream >> color.x >> color.y >> color.z;
-		pointLight->SetColor(color);
+			Vector3 color;
+			stream >> color.x >> color.y >> color.z;
+			pointLight->SetColor(color);
 
-		float intensity;
-		stream >> intensity;
-		pointLight->SetIntensity(intensity);
+			float intensity;
+			stream >> intensity;
+			pointLight->SetIntensity(intensity);
 
-		scene->AddPointLight(pointLight);
-		element = element->NextSiblingElement("PointLight");
+			scene->AddPointLight(pointLight);
+			element = element->NextSiblingElement("PointLight");
+		}
+		stream.clear();
 	}
-	stream.clear();
-
+	
 	//Get Directional Lights
 	element = root->FirstChildElement("Lights");
-	element = element->FirstChildElement("DirectionalLight");
-	DirectionalLight* directionalLight;
-	while (element)
+	if (element)
 	{
-		directionalLight = new DirectionalLight();
+		element = element->FirstChildElement("DirectionalLight");
+		DirectionalLight* directionalLight;
+		while (element)
+		{
+			directionalLight = new DirectionalLight();
 
-		child = element->FirstChildElement("Direction");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("Direction");
+			stream << child->GetText() << std::endl;
 
-		child = element->FirstChildElement("Color");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("Color");
+			stream << child->GetText() << std::endl;
 
-		child = element->FirstChildElement("Intensity");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("Intensity");
+			stream << child->GetText() << std::endl;
 
-		Vector3 direction;
-		stream >> direction.x >> direction.y >> direction.z;
-		direction.Normalize();
-		directionalLight->SetDirection(direction);
+			Vector3 direction;
+			stream >> direction.x >> direction.y >> direction.z;
+			direction.Normalize();
+			directionalLight->SetDirection(direction);
 
-		Vector3 color;
-		stream >> color.x >> color.y >> color.z;
-		directionalLight->SetColor(color);
+			Vector3 color;
+			stream >> color.x >> color.y >> color.z;
+			directionalLight->SetColor(color);
 
-		float intensity;
-		stream >> intensity;
-		directionalLight->SetIntensity(intensity);
+			float intensity;
+			stream >> intensity;
+			directionalLight->SetIntensity(intensity);
 
-		scene->AddDirectionalLight(directionalLight);
-		element = element->NextSiblingElement("DirectionalLight");
+			scene->AddDirectionalLight(directionalLight);
+			element = element->NextSiblingElement("DirectionalLight");
+		}
+		stream.clear();
 	}
-	stream.clear();
 
 	//Get Spot Lights
 	element = root->FirstChildElement("Lights");
-	element = element->FirstChildElement("SpotLight");
-	SpotLight* spotLight;
-	while (element)
+	if (element)
 	{
-		spotLight = new SpotLight();
+		element = element->FirstChildElement("SpotLight");
+		SpotLight* spotLight;
+		while (element)
+		{
+			spotLight = new SpotLight();
 
-		child = element->FirstChildElement("Position");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("Position");
+			stream << child->GetText() << std::endl;
 
-		child = element->FirstChildElement("Direction");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("Direction");
+			stream << child->GetText() << std::endl;
 
-		child = element->FirstChildElement("Color");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("Color");
+			stream << child->GetText() << std::endl;
 
-		child = element->FirstChildElement("Intensity");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("Intensity");
+			stream << child->GetText() << std::endl;
 
-		child = element->FirstChildElement("CoverageAngle");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("CoverageAngle");
+			stream << child->GetText() << std::endl;
 
-		child = element->FirstChildElement("FalloffAngle");
-		stream << child->GetText() << std::endl;
+			child = element->FirstChildElement("FalloffAngle");
+			stream << child->GetText() << std::endl;
 
-		Vector3 position;
-		stream >> position.x >> position.y >> position.z;
-		spotLight->SetPosition(position);
+			Vector3 position;
+			stream >> position.x >> position.y >> position.z;
+			spotLight->SetPosition(position);
 
-		Vector3 direction;
-		stream >> direction.x >> direction.y >> direction.z;
-		direction.Normalize();
-		spotLight->SetDirection(direction);
+			Vector3 direction;
+			stream >> direction.x >> direction.y >> direction.z;
+			direction.Normalize();
+			spotLight->SetDirection(direction);
 
-		Vector3 color;
-		stream >> color.x >> color.y >> color.z;
-		spotLight->SetColor(color);
+			Vector3 color;
+			stream >> color.x >> color.y >> color.z;
+			spotLight->SetColor(color);
 
-		float intensity;
-		stream >> intensity;
-		spotLight->SetIntensity(intensity);
+			float intensity;
+			stream >> intensity;
+			spotLight->SetIntensity(intensity);
 
-		float coverageAngle;
-		stream >> coverageAngle;
-		spotLight->SetCoverageAngle(coverageAngle);
+			float coverageAngle;
+			stream >> coverageAngle;
+			spotLight->SetCoverageAngle(coverageAngle);
 
-		float falloffAngle;
-		stream >> falloffAngle;
-		spotLight->SetFalloffAngle(falloffAngle);
+			float falloffAngle;
+			stream >> falloffAngle;
+			spotLight->SetFalloffAngle(falloffAngle);
 
-		scene->AddSpotLight(spotLight);
-		element = element->NextSiblingElement("SpotLight");
+			scene->AddSpotLight(spotLight);
+			element = element->NextSiblingElement("SpotLight");
+		}
+		stream.clear();
 	}
-	stream.clear();
 
 	//Get Textures
 	element = root->FirstChildElement("Textures");
@@ -391,7 +400,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	{
 		material = new Material();
 
-		child = element->FirstChildElement("Model");
+		child = element->FirstChildElement("ShadingModel");
 		if (child)
 		{
 			stream << child->GetText() << std::endl;

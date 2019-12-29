@@ -14,7 +14,7 @@
 		</Camera>
 	</Cameras>
 
-	<Lights>
+  <Lights>
 		<AmbientLight>100 100 100</AmbientLight>
     	<PointLight>
 	      <Position>-7.5 7.5 7.5</Position>
@@ -90,7 +90,7 @@
     <Material id="3">
       <Shader id="0"/>
       <Texture id="0"/>
-      <ShadingModel>Opaque</ShadingModel>
+      <ShadingModel>Translucent</ShadingModel>
       <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
       <DiffuseReflectance>0.0 0.0 0.0</DiffuseReflectance>
       <SpecularReflectance>1.0 1.0 1.0</SpecularReflectance>
@@ -99,7 +99,7 @@
     <Material id="4">
       <Shader id="1"/>
       <Texture id="1"/>
-      <ShadingModel>Masked</ShadingModel>
+      <ShadingModel>Opaque</ShadingModel>
       <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
       <DiffuseReflectance>0.0 0.0 0.0</DiffuseReflectance>
       <SpecularReflectance>0.1 0.1 0.1</SpecularReflectance>
@@ -118,10 +118,10 @@
 			<WorldRotation>0 0 45</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
-        0.0 0 5
-        -5 0 5
-        -5 0 -2.5
-        0 0.0 -2.5
+        -0.5 0 5
+        -5.5 0 5
+        -5.5 0 -2.5
+        -0.5 0.0 -2.5
       </Vertices>
 			<Normals>
 				0.0 0.0 1.0
@@ -150,10 +150,10 @@
 			<WorldRotation>0 0 45</WorldRotation>
 			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
-        5 0 5
-        0 0 5
-        0 0 -2.5
-        5 0.0 -2.5
+        5.5 0 5
+        0.5 0 5
+        0.5 0 -2.5
+        5.5 0.0 -2.5
       </Vertices>
 			<Normals>
 				0.0 0.0 1.0
