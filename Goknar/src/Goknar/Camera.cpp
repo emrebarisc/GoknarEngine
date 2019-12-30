@@ -15,7 +15,7 @@ Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) 
 	LookAt();
 }
 
-void Camera::InitCamera()
+void Camera::Init()
 {
 	float forwardDotUp = Vector3::Dot(forwardVector_, upVector_);
 
@@ -25,6 +25,12 @@ void Camera::InitCamera()
 		upVector_ = rightVector_.Cross(forwardVector_);
 	}
 
+	LookAt();
+}
+
+void Camera::Update()
+{
+	SetProjectionMatrix();
 	LookAt();
 }
 

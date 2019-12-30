@@ -51,7 +51,8 @@ public:
 		}
 	}
 
-	void InitCamera();
+	void Init();
+	void Update();
 
 	void MoveForward(float value);
 	void MoveUpward(float value);
@@ -116,19 +117,19 @@ public:
 		imageWidth_ = width;
 	}
 
-	int GetImageWidth()
+	int GetImageWidth() const
 	{
 		return imageWidth_;
 	}
 
 	void SetImageHeight(int height)
 	{
-		imageWidth_ = height;
+		imageHeight_ = height;
 	}
 
-	int GetImageHeight()
+	int GetImageHeight() const
 	{
-		return imageWidth_;
+		return imageHeight_;
 	}
 
 	void SetNearPlane(const Vector4& nearPlane)
@@ -146,7 +147,7 @@ public:
 		nearDistance_ = nearDistance;
 	}
 
-	float GetNearDistance()
+	float GetNearDistance() const
 	{
 		return nearDistance_;
 	}
@@ -156,7 +157,7 @@ public:
 		farDistance_ = farDistance;
 	}
 
-	float GetFarDistance()
+	float GetFarDistance() const
 	{
 		return farDistance_;
 	}

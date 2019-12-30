@@ -28,10 +28,6 @@ Engine::Engine() : deltaTime_(0.f)
 	Log::Init();
 
 	windowManager_ = new WindowManager();
-	windowManager_->SetWindowWidth(1024);
-	windowManager_->SetWindowHeight(768);
-	windowManager_->SetContextVersion(4, 3);
-	windowManager_->SetWindowTitle("Goknar Engine");
 
 	inputManager_ = new InputManager();
 	objectManager_ = new ObjectManager();
@@ -89,7 +85,6 @@ void Engine::Run()
 		renderer_->Render();
 		editor_->Tick(deltaTime_);
 		windowManager_->Update();
-		glfwPollEvents();
 
 		currentTimePoint = std::chrono::steady_clock::now();
 		deltaTime_ = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();

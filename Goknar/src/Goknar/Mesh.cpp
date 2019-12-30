@@ -35,13 +35,6 @@ void Mesh::Init()
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
 
-	//if (GetComponentId() == 0)
-	//{	
-	//	glActiveTexture(GL_TEXTURE0);
-	//	material_->GetTextures().at(0)->Bind();
-	//	glUniform1i(glGetUniformLocation(shader_->GetProgramId(), SHADER_VARIABLE_NAMES::TEXTURE::DIFFUSE), material_->GetTextures().at(0)->GetTextureObjectId());
-	//}
-
 	engine->AddObjectToRenderer(this);
 }
 

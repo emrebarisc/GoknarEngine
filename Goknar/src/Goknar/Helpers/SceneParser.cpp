@@ -68,9 +68,10 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	//Get Cameras
 	element = root->FirstChildElement("Cameras");
 	element = element->FirstChildElement("Camera");
-	Camera* camera = new Camera();
+	Camera* camera;
 	while (element)
 	{
+		camera = new Camera();
 		auto child = element->FirstChildElement("Position");
 		stream << child->GetText() << std::endl;
 		float x, y, z;

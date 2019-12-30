@@ -2,9 +2,11 @@
 
 #include "WindowManager.h"
 
-#include "Goknar/Log.h"
+#include "Goknar/Camera.h"
+#include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
 #include "InputManager.h"
+#include "Goknar/Log.h"
 
 #include <iostream>
 
@@ -17,8 +19,9 @@ WindowManager::WindowManager()
 	windowHeight_ = 768;
 	windowTitle_ = "Goknar Engine";
 	mainMonitor_ = nullptr;
-	MSAAValue_ = 4;
+	MSAAValue_ = 0;
 	isInFullscreen_ = false;
+	SetContextVersion(4, 6);
 }
 
 WindowManager::~WindowManager()
@@ -36,6 +39,11 @@ void WindowManager::Init()
 {
 	const int glfwResult = glfwInit();
 	GOKNAR_CORE_ASSERT(glfwResult, "GLFW failed to initialize");
+
+	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+
+	windowWidth_ = activeCamera->GetImageWidth();
+	windowHeight_ = activeCamera->GetImageHeight();
 
 	mainWindow_ = glfwCreateWindow(windowWidth_, windowHeight_, windowTitle_, mainMonitor_, 0);
 
@@ -59,18 +67,25 @@ void WindowManager::Init()
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(GLFW_KEY_ESCAPE, INPUT_ACTION::G_PRESS, std::bind(&WindowManager::CloseWindow, this));
 	
-	// TODO: Improve
 	glfwSetFramebufferSizeCallback(mainWindow_, FrameBufferSizeCallback);
 }
 
 bool WindowManager::GetWindowShouldBeClosed()
 {
+
 	return glfwWindowShouldClose(mainWindow_);
 }
 
+	// TODO: Improve
 void WindowManager::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-	glViewport(0, 0, width, height);
+	engine->GetWindowManager()->SetWindowWidth(width);
+	engine->GetWindowManager()->SetWindowWidth(height);
+
+	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+	activeCamera->SetImageWidth(width);
+	activeCamera->SetImageHeight(height);
+	activeCamera->Update();
 }
 
 void WindowManager::CloseWindow()
@@ -118,7 +133,6 @@ void WindowManager::SetVSync(bool isEnable)
 
 void WindowManager::ToggleFullscreen()
 {
-/*
 	if (!isInFullscreen_)
 	{
 		mainMonitor_ = glfwGetPrimaryMonitor();
@@ -126,7 +140,6 @@ void WindowManager::ToggleFullscreen()
 	}
 
 	isInFullscreen_ = !isInFullscreen_;
-*/
 }
 
 void WindowManager::Update()
