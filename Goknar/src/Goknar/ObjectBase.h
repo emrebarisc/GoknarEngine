@@ -15,10 +15,7 @@
 class GOKNAR_API ObjectBase
 {
 public:
-    ObjectBase()
-    {
-
-    }
+    ObjectBase();
 
     virtual void BeginGame()
     {
@@ -30,9 +27,13 @@ public:
 
     }
 
+    void SetTickable(bool tickable);
+
 protected:
 
 private:
+
+    bool tickable_;
 };
 
 #endif

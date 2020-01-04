@@ -6,10 +6,9 @@
 #include "Core.h"
 #include "Color.h"
 
-#include "Lights/DirectionalLight.h"
-#include "Lights/PointLight.h"
-#include "Lights/SpotLight.h"
-
+class DirectionalLight;
+class PointLight;
+class SpotLight;
 class Material;
 class Mesh;
 class Shader;
@@ -36,19 +35,12 @@ public:
 		meshes_.push_back(mesh);
 	}
 
-	void AddPointLight(const PointLight* pointLight)
+	Mesh* GetMesh(int index)
 	{
-		switch (pointLight->GetLightMobility())
-		{
-		case LightMobility::Static:
-			staticPointLights_.push_back(pointLight);
-			break;
-		case LightMobility::Movable:
-			dynamicPointLights_.push_back(pointLight);
-			break;
-		}
-
+		return meshes_[index];
 	}
+
+	void AddPointLight(const PointLight* pointLight);
 
 	const std::vector<const PointLight*>& GetStaticPointLights() const
 	{
@@ -60,18 +52,7 @@ public:
 		return dynamicPointLights_;
 	}
 
-	void AddDirectionalLight(const DirectionalLight* directionalLight)
-	{
-		switch (directionalLight->GetLightMobility())
-		{
-		case LightMobility::Static:
-			staticDirectionalLights_.push_back(directionalLight);
-			break;
-		case LightMobility::Movable:
-			dynamicDirectionalLights_.push_back(directionalLight);
-			break;
-		}
-	}
+	void AddDirectionalLight(const DirectionalLight* directionalLight);
 
 	const std::vector<const DirectionalLight*>& GetStaticDirectionalLights() const
 	{
@@ -83,18 +64,7 @@ public:
 		return dynamicDirectionalLights_;
 	}
 
-	void AddSpotLight(const SpotLight* spotLight)
-	{
-		switch (spotLight->GetLightMobility())
-		{
-		case LightMobility::Static:
-			staticSpotLights_.push_back(spotLight);
-			break;
-		case LightMobility::Movable:
-			dynamicSpotLights_.push_back(spotLight);
-			break;
-		}
-	}
+	void AddSpotLight(const SpotLight* spotLight);
 
 	const std::vector<const SpotLight*>& GetStaticSpotLights() const
 	{

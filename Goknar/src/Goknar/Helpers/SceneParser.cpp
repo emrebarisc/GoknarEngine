@@ -474,7 +474,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	stream.clear();
 
 	//Get Meshes
-	element = root->FirstChildElement("Objects");
+	element = root->FirstChildElement("Meshes");
 	element = element->FirstChildElement("Mesh");
 
 	Mesh* mesh;

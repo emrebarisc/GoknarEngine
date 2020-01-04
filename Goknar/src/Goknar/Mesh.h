@@ -7,8 +7,6 @@
 #include "Goknar/Math.h"
 #include "Goknar/Matrix.h"
 
-#include "glad/glad.h"
-
 #include <vector>
 
 class Shader;

@@ -6,6 +6,7 @@
 #include "Log.h"
 #include "ObjectBase.h"
 #include "Scene.h"
+#include "Renderer/ShaderBuilder.h"
 #include "Editor/ImGuiEditor/ImGuiEditor.h"
 #include "Managers/CameraManager.h"
 #include "Managers/InputManager.h"
@@ -19,7 +20,7 @@
 // C++ Standard Libraries
 #include <chrono>
 
-Engine *engine;
+GOKNAR_API Engine *engine;
 
 Engine::Engine() : deltaTime_(0.f)
 {

@@ -21,7 +21,7 @@ public:
 		mainScene_ = scene;
 	}
 
-	const Scene* GetMainScene() const
+	Scene* GetMainScene() const
 	{
 		return mainScene_;
 	}

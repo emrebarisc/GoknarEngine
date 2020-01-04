@@ -76,7 +76,6 @@ bool WindowManager::GetWindowShouldBeClosed()
 	return glfwWindowShouldClose(mainWindow_);
 }
 
-	// TODO: Improve
 void WindowManager::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	engine->GetWindowManager()->SetWindowWidth(width);

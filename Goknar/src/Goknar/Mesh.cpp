@@ -34,8 +34,6 @@ void Mesh::Init()
 {
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
-
-	engine->AddObjectToRenderer(this);
 }
 
 void Mesh::Render() const

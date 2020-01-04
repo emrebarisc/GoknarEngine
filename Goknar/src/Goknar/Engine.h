@@ -15,7 +15,7 @@ class Renderer;
 class WindowManager;
 
 // Global Engine variable
-extern class Engine *engine;
+GOKNAR_API extern class Engine *engine;
 
 class GOKNAR_API Engine
 {

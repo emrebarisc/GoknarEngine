@@ -7,6 +7,10 @@
 #include "Helpers/SceneParser.h"
 #include "Renderer/Texture.h"
 
+#include "Lights/DirectionalLight.h"
+#include "Lights/PointLight.h"
+#include "Lights/SpotLight.h"
+
 Scene::Scene()
 {
 	backgroundColor_ = Colori(0, 0, 0);
@@ -90,4 +94,45 @@ void Scene::SetShaderDynamicLightUniforms(const Shader* shader) const
 void Scene::ReadSceneData(char *filePath)
 {
     SceneParser::Parse(this, filePath);
+}
+
+void Scene::AddPointLight(const PointLight* pointLight)
+{
+	switch (pointLight->GetLightMobility())
+	{
+	case LightMobility::Static:
+		staticPointLights_.push_back(pointLight);
+		break;
+	case LightMobility::Movable:
+		dynamicPointLights_.push_back(pointLight);
+		break;
+	}
+
+}
+
+void Scene::AddDirectionalLight(const DirectionalLight* directionalLight)
+{
+	switch (directionalLight->GetLightMobility())
+	{
+	case LightMobility::Static:
+		staticDirectionalLights_.push_back(directionalLight);
+		break;
+	case LightMobility::Movable:
+		dynamicDirectionalLights_.push_back(directionalLight);
+		break;
+	}
+}
+
+
+void Scene::AddSpotLight(const SpotLight* spotLight)
+{
+	switch (spotLight->GetLightMobility())
+	{
+	case LightMobility::Static:
+		staticSpotLights_.push_back(spotLight);
+		break;
+	case LightMobility::Movable:
+		dynamicSpotLights_.push_back(spotLight);
+		break;
+	}
 }
