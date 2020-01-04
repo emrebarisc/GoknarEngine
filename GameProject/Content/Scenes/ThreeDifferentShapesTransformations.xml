@@ -2,7 +2,7 @@
 	<BackgroundColor>50 50 50</BackgroundColor>
 	<Cameras>
 		<Camera id = "1">
-      <Projection>Orthographic</Projection>
+      <Projection>Perspective</Projection>
 			<Position>7.5 -7.5 7.5</Position>
 			<Gaze>-0.6123725175857544 0.6123723983764648 -0.4999999403953552</Gaze>
 			<Up>-0.3535534143447876 0.3535533547401428 0.866025447845459</Up>

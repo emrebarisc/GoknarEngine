@@ -15,6 +15,8 @@ public:
 	void Tick(float deltaTime) override;
 
 private:
+	void SpaceKeyDown();
+
 	MeshComponent* boxMeshComponent_;
 
 };
