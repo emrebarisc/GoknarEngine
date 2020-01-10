@@ -48,7 +48,7 @@ public:
 		material_ = material;
 	}
 
-	const Material* GetMaterial() const
+	Material* GetMaterial()
 	{
 		return material_;
 	}
@@ -102,7 +102,7 @@ private:
 	VertexArray* vertices_;
 	FaceArray* faces_;
 
-	const Material* material_;
+	Material* material_;
 
 	unsigned int vertexCount_;
 	unsigned int faceCount_;

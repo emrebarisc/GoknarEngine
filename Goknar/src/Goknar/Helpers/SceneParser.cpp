@@ -35,7 +35,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			throw std::runtime_error("Error: Scene XML file could not be loaded.");
 		}
 	}
-	catch (std::exception& exception)
+	catch (std::exception & exception)
 	{
 		std::cerr << exception.what() << std::endl;
 		exit(EXIT_FAILURE);
@@ -109,7 +109,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream << child->GetText() << std::endl;
 			std::string projection;
 			stream >> projection;
-			camera->SetProjection(projection == "Orthographic" ? CameraProjection::Orthographic  : CameraProjection::Perspective);
+			camera->SetProjection(projection == "Orthographic" ? CameraProjection::Orthographic : CameraProjection::Perspective);
 		}
 
 		const char* cameraType = element->Attribute("type");
@@ -178,7 +178,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		camera->SetRightVector(Vector3::Cross(camera->GetForwardVector().GetNormalized(), camera->GetUpVector().GetNormalized()));
 		camera->SetUpVector(Vector3::Cross(camera->GetRightVector().GetNormalized(), camera->GetForwardVector().GetNormalized()));
 		camera->SetForwardVector(Vector3::Cross(camera->GetUpVector().GetNormalized(), camera->GetRightVector().GetNormalized()));
-		
+
 		camera->InitMatrices();
 
 		engine->GetCameraManager()->AddCamera(camera);
@@ -231,7 +231,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		}
 		stream.clear();
 	}
-	
+
 	//Get Directional Lights
 	element = root->FirstChildElement("Lights");
 	if (element)
@@ -331,147 +331,154 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 	//Get Textures
 	element = root->FirstChildElement("Textures");
-	element = element->FirstChildElement("Texture");
-	Texture* texture;
-	while (element)
+	if (element)
 	{
-		texture = new Texture();
-
-		child = element->FirstChildElement("Path");
-		if (child)
+		element = element->FirstChildElement("Texture");
+		Texture* texture;
+		while (element)
 		{
-			stream << child->GetText() << std::endl;
-			std::string textureImagePath;
-			stream >> textureImagePath;
-			texture->SetTextureImagePath(textureImagePath.c_str());
-		}
+			texture = new Texture();
 
-		scene->AddTexture(texture);
-		element = element->NextSiblingElement("Texture");
+			child = element->FirstChildElement("Path");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string textureImagePath;
+				stream >> textureImagePath;
+				texture->SetTextureImagePath(textureImagePath.c_str());
+			}
+
+			scene->AddTexture(texture);
+			element = element->NextSiblingElement("Texture");
+		}
+		stream.clear();
 	}
-	stream.clear();
 
 	//Get Shaders
 	element = root->FirstChildElement("Shaders");
-	element = element->FirstChildElement("Shader");
-	Shader* shader;
-	while (element)
+	if (element)
 	{
-		shader = new Shader();
-		child = element->FirstChildElement("Type");
-		if (child)
+		element = element->FirstChildElement("Shader");
+		Shader* shader;
+		while (element)
 		{
-			stream << child->GetText() << std::endl;
-			std::string shaderType;
-			stream >> shaderType;
-			shader->SetShaderType(shaderType == "SelfContained" ? ShaderType::SelfContained :
-								  shaderType == "Dependent" ? ShaderType::Dependent :
-								  ShaderType::Scene);
-		}
+			shader = new Shader();
+			child = element->FirstChildElement("Type");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string shaderType;
+				stream >> shaderType;
+				shader->SetShaderType(shaderType == "SelfContained" ? ShaderType::SelfContained :
+					shaderType == "Dependent" ? ShaderType::Dependent :
+					ShaderType::Scene);
+			}
 
-		child = element->FirstChildElement("VertexShaderPath");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			std::string vertexShaderPath;
-			stream >> vertexShaderPath;
-			shader->SetVertexShaderPath(vertexShaderPath);
-		}
+			child = element->FirstChildElement("VertexShaderPath");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string vertexShaderPath;
+				stream >> vertexShaderPath;
+				shader->SetVertexShaderPath(vertexShaderPath);
+			}
 
-		child = element->FirstChildElement("FragmentShaderPath");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			std::string fragmentShaderPath;
-			stream >> fragmentShaderPath;
-			shader->SetFragmentShaderPath(fragmentShaderPath);
-		}
+			child = element->FirstChildElement("FragmentShaderPath");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string fragmentShaderPath;
+				stream >> fragmentShaderPath;
+				shader->SetFragmentShaderPath(fragmentShaderPath);
+			}
 
-		scene->AddShader(shader);
-		element = element->NextSiblingElement("Shader");
+			scene->AddShader(shader);
+			element = element->NextSiblingElement("Shader");
+		}
+		stream.clear();
 	}
-
-	stream.clear();
 
 	//Get Materials
 	element = root->FirstChildElement("Materials");
-	element = element->FirstChildElement("Material");
-	Material* material;
-	while (element)
+	if (element)
 	{
-		material = new Material();
-
-		child = element->FirstChildElement("ShadingModel");
-		if (child)
+		element = element->FirstChildElement("Material");
+		Material* material;
+		while (element)
 		{
-			stream << child->GetText() << std::endl;
-			std::string shadingModel;
-			stream >> shadingModel;
-			material->SetShadingModel(shadingModel == "Masked" ? MaterialShadingModel::Masked :
-									  shadingModel == "Translucent" ? MaterialShadingModel::Translucent :
-									  MaterialShadingModel::Opaque);
-		}
+			material = new Material();
 
-		child = element->FirstChildElement("Shader");
-		if (child)
-		{
-			int shaderID = std::stoi(child->Attribute("id"));
-			material->SetShader(scene->GetShader(shaderID));
-		}
+			child = element->FirstChildElement("ShadingModel");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string shadingModel;
+				stream >> shadingModel;
+				material->SetShadingModel(shadingModel == "Masked" ? MaterialShadingModel::Masked :
+					shadingModel == "Translucent" ? MaterialShadingModel::Translucent :
+					MaterialShadingModel::Opaque);
+			}
 
-		child = element->FirstChildElement("Texture");
-		while (child)
-		{
-			int textureId = std::stoi(child->Attribute("id"));
-			material->GetShader()->AddTexture(scene->GetTexture(textureId));
-			child = element->NextSiblingElement("Texture");
-		}
+			child = element->FirstChildElement("Shader");
+			if (child)
+			{
+				int shaderID = std::stoi(child->Attribute("id"));
+				material->SetShader(scene->GetShader(shaderID));
+			}
 
-		child = element->FirstChildElement("AmbientReflectance");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 ambientReflectance;
-			stream >> ambientReflectance.x >> ambientReflectance.y >> ambientReflectance.z;
-			material->SetAmbientReflectance(ambientReflectance);
-		}
+			child = element->FirstChildElement("Texture");
+			while (child)
+			{
+				int textureId = std::stoi(child->Attribute("id"));
+				material->GetShader()->AddTexture(scene->GetTexture(textureId));
+				child = element->NextSiblingElement("Texture");
+			}
 
-		child = element->FirstChildElement("DiffuseReflectance");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 diffuseReflectance;
-			stream >> diffuseReflectance.x >> diffuseReflectance.y >> diffuseReflectance.z;
-			material->SetDiffuseReflectance(diffuseReflectance);
-		}
+			child = element->FirstChildElement("AmbientReflectance");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 ambientReflectance;
+				stream >> ambientReflectance.x >> ambientReflectance.y >> ambientReflectance.z;
+				material->SetAmbientReflectance(ambientReflectance);
+			}
 
-		child = element->FirstChildElement("SpecularReflectance");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 specularReflectance;
-			stream >> specularReflectance.x >> specularReflectance.y >> specularReflectance.z;
-			material->SetSpecularReflectance(specularReflectance);
-		}
+			child = element->FirstChildElement("DiffuseReflectance");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 diffuseReflectance;
+				stream >> diffuseReflectance.x >> diffuseReflectance.y >> diffuseReflectance.z;
+				material->SetDiffuseReflectance(diffuseReflectance);
+			}
 
-		child = element->FirstChildElement("PhongExponent");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-		}
-		else
-		{
-			stream << "1" << std::endl;
-		}
-		float phongExponent;
-		stream >> phongExponent;
-		material->SetPhongExponent(phongExponent);
+			child = element->FirstChildElement("SpecularReflectance");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 specularReflectance;
+				stream >> specularReflectance.x >> specularReflectance.y >> specularReflectance.z;
+				material->SetSpecularReflectance(specularReflectance);
+			}
 
-		scene->AddMaterial(material);
-		element = element->NextSiblingElement("Material");
+			child = element->FirstChildElement("PhongExponent");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+			}
+			else
+			{
+				stream << "1" << std::endl;
+			}
+			float phongExponent;
+			stream >> phongExponent;
+			material->SetPhongExponent(phongExponent);
+
+			scene->AddMaterial(material);
+			element = element->NextSiblingElement("Material");
+		}
+		stream.clear();
 	}
-
-	stream.clear();
 
 	//Get Meshes
 	element = root->FirstChildElement("Meshes");

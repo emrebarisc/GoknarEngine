@@ -110,9 +110,11 @@ void Renderer::SetBufferData()
 
 void Renderer::Init()
 {
-	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glDepthFunc(GL_LEQUAL);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 
 	for (Mesh* opaqueMesh : opaqueObjectsToBeRendered_)
 	{

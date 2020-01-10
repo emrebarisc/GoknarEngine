@@ -17,7 +17,10 @@ public:
 private:
 	void SpaceKeyDown();
 
-	MeshComponent* boxMeshComponent_;
+	MeshComponent* planeMeshComponent_;
+	MeshComponent* propellerMeshComponent_;
+
+	float propellerRotationSpeed_;
 
 };
 

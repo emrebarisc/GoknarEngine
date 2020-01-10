@@ -4,21 +4,27 @@
 
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Material.h"
 #include "Goknar/Mesh.h"
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/Managers/InputManager.h"
 
 #include "Goknar/Log.h"
 
-#include "../../Goknar/outsourced/GLFW/GLFW/include/GLFW/glfw3.h"
 
 BoxGameObject::BoxGameObject() : ObjectBase()
 {
-	boxMeshComponent_ = new MeshComponent();
-	boxMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(0));
+	planeMeshComponent_ = new MeshComponent();
+	planeMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(0));
+
+	propellerMeshComponent_ = new MeshComponent();
+	propellerMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(1));
+
+	propellerRotationSpeed_ = 0.f;
+
 	SetTickable(true);
 
-	engine->GetInputManager()->AddKeyboardInputDelegate(GLFW_KEY_SPACE, INPUT_ACTION::G_PRESS, std::bind(&BoxGameObject::SpaceKeyDown, this));
+	engine->GetInputManager()->AddKeyboardInputDelegate(32, INPUT_ACTION::G_PRESS, std::bind(&BoxGameObject::SpaceKeyDown, this));
 }
 
 BoxGameObject::~BoxGameObject()
@@ -35,12 +41,14 @@ void BoxGameObject::Tick(float deltaTime)
 	static float elapsedTime = 0.f;
 	elapsedTime += deltaTime;
 
-	Mesh* boxMesh = boxMeshComponent_->GetMesh();
-	boxMesh->SetRelativePosition(boxMesh->GetRelativePosition() + Vector3(0.f, 0.f, 0.05f * cos(elapsedTime)));
-	boxMesh->SetRelativeRotation(boxMesh->GetRelativeRotation() + Vector3(0.f, 0.f, 0.05f * cos(elapsedTime)));
+	Mesh* planeMesh = planeMeshComponent_->GetMesh();
+	planeMesh->SetRelativeRotation(planeMesh->GetRelativeRotation() + Vector3(0.f, DEGREE_TO_RADIAN(0.174f * cos(elapsedTime)), 0.f));
+
+	Mesh* propellerMesh = propellerMeshComponent_->GetMesh();
+	propellerMesh->SetRelativeRotation(propellerMesh->GetRelativeRotation() + Vector3(0.f, DEGREE_TO_RADIAN(deltaTime * propellerRotationSpeed_), 0.f));
 }
 
 void BoxGameObject::SpaceKeyDown()
 {
-	boxMeshComponent_->GetMesh()->SetRelativePosition(Vector3::ZeroVector);
+	propellerRotationSpeed_ = 3600.f;
 }

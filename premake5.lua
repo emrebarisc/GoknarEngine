@@ -109,7 +109,11 @@ project "GameProject"
 
 	includedirs
 	{
-		"Goknar/outsourced/spdlog/include",
+		"%{prj.name}/outsourced/spdlog/include",
+		"%{includeDir.GLFW}",
+		"%{includeDir.GLAD}",
+		"%{includeDir.ImGui}",
+		"%{includeDir.outsourced}",
 		"Goknar/src"
 	}
 
