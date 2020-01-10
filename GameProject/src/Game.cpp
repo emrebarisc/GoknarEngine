@@ -2,7 +2,7 @@
 
 #include "Goknar/Scene.h"
 
-#include "BoxGameObject.h"
+#include "Airplane.h"
 
 class Game : public Application
 {
@@ -15,7 +15,7 @@ public:
 
 private:
 
-	BoxGameObject* boxGameObject;
+	Airplane* boxGameObject;
 };
 
 Game::Game() : Application()
@@ -32,7 +32,7 @@ Game::Game() : Application()
 	//mainScene_->ReadSceneData("./Content/Scenes/GameProjectScene.xml");
 	mainScene_->ReadSceneData("./Content/Scenes/AirPlane.xml");
 
-	boxGameObject = new BoxGameObject();
+	boxGameObject = new Airplane();
 }
 
 void Game::Run()

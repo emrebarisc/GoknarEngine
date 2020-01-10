@@ -19,7 +19,7 @@ WindowManager::WindowManager()
 	windowHeight_ = 768;
 	windowTitle_ = "Goknar Engine";
 	mainMonitor_ = nullptr;
-	MSAAValue_ = 0;
+	MSAAValue_ = 4;
 	isInFullscreen_ = false;
 	SetContextVersion(4, 6);
 }
@@ -108,10 +108,19 @@ void WindowManager::SetWindowTitle(const char *title)
 	glfwSetWindowTitle(mainWindow_, windowTitle_);
 }
 
-void WindowManager::SetMSAA(int MMAAValue)
+void WindowManager::SetMSAA(int MSAAValue)
 {
-	MSAAValue_ = MMAAValue;
-	glfwWindowHint(GLFW_SAMPLES, MMAAValue);
+	if (MSAAValue == 0)
+	{
+		glDisable(GL_MULTISAMPLE);
+	}
+	else
+	{
+		glEnable(GL_MULTISAMPLE);
+	}
+
+	MSAAValue_ = MSAAValue;
+	glfwWindowHint(GLFW_SAMPLES, MSAAValue);
 }
 
 void WindowManager::SetContextVersion(int major, int minor)

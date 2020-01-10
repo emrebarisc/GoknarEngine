@@ -5,11 +5,11 @@
 
 class MeshComponent;
 
-class BoxGameObject : public ObjectBase
+class Airplane : public ObjectBase
 {
 public:
-	BoxGameObject();
-	~BoxGameObject();
+	Airplane();
+	~Airplane();
 
 	void BeginGame() override;
 	void Tick(float deltaTime) override;
