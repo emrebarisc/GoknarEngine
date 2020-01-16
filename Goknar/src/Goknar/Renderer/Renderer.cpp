@@ -6,7 +6,7 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Log.h"
 #include "Goknar/Material.h"
-#include "Goknar/Mesh.h"
+#include "Goknar/Model/Mesh.h"
 
 #include "Goknar/Managers/IOManager.h"
 #include "Goknar/Renderer/Shader.h"
@@ -143,7 +143,7 @@ void Renderer::Render()
 	
 	int vertexStartingIndex = 0;
 	int baseVertex = 0;
-	for (const Mesh* opaqueMesh : opaqueObjectsToBeRendered_)
+ 	for (const Mesh* opaqueMesh : opaqueObjectsToBeRendered_)
 	{
 		opaqueMesh->Render();
 

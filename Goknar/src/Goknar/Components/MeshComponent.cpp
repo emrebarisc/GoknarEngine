@@ -3,11 +3,10 @@
 #include "MeshComponent.h"
 
 #include "Goknar/Engine.h"
-#include "Goknar/Mesh.h"
+#include "Goknar/Model/Mesh.h"
 
-MeshComponent::MeshComponent() : mesh_(nullptr)
+MeshComponent::MeshComponent(const ObjectBase* parent) : Component(parent), mesh_(nullptr)
 {
-
 }
 
 MeshComponent::~MeshComponent()

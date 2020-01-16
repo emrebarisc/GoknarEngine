@@ -1,14 +1,18 @@
 #ifndef __MESHCOMPONENT_H__
 #define __MESHCOMPONENT_H__
 
+#include "Component.h"
+
 #include "Goknar/Core.h"
 
 class Mesh;
+class ObjectBase;
 
-class GOKNAR_API MeshComponent
+class GOKNAR_API MeshComponent : public Component
 {
 public:
-	MeshComponent();
+	MeshComponent() = delete;
+	MeshComponent(const ObjectBase* parent);
 	~MeshComponent();
 
 	void SetMesh(Mesh* mesh);

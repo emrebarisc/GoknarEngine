@@ -1,13 +1,9 @@
-/*
- *	Game Engine Project
- *	Emre Baris Coskun
- *	2018
- */
-
 #ifndef __MATH_H__
 #define __MATH_H__
 
 #include "Goknar/Core.h"
+
+#include <iostream>
 
 #define mathMax(f, s) (f > s ? f : s)
 #define mathMin(f, s) (f > s ? s : f)

@@ -8,12 +8,9 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Renderer/Shader.h"
 
-#include "Managers/CameraManager.h"
-#include "Managers/IOManager.h"
-#include "Renderer/ShaderBuilder.h"
-
-// TEMP
-#include "Renderer/Texture.h"
+#include "Goknar/Managers/CameraManager.h"
+#include "Goknar/Managers/IOManager.h"
+#include "Goknar/Renderer/ShaderBuilder.h"
 
 Mesh::Mesh() :
 	material_(0), 

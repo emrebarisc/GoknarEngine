@@ -10,7 +10,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Material.h"
-#include "Goknar/Mesh.h"
+#include "Goknar/Model/Mesh.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Texture.h"
 

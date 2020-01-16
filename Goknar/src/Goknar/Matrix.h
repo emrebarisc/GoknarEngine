@@ -1,9 +1,3 @@
-/*
- *	Game Engine Project
- *	Emre Baris Coskun
- *	2018
- */
-
 #ifndef __MATRIX_H__
 #define __MATRIX_H__
 

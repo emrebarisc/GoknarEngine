@@ -1,12 +1,12 @@
-#ifndef __COMPONENT_H__
-#define __COMPONENT_H__
+#ifndef __MODEL_H__
+#define __MODEL_H__
 
 #include "Goknar/Matrix.h"
 
-class GOKNAR_API Component
+class GOKNAR_API Model
 {
 public:
-	Component() :
+	Model() :
 		relativeTransformationMatrix_(Matrix::IdentityMatrix),
 		relativePosition_(Vector3::ZeroVector),
 		relativeRotation_(Vector3::ZeroVector),

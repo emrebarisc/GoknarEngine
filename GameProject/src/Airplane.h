@@ -16,10 +16,14 @@ public:
 
 private:
 	void SpaceKeyDown();
+	void GoLeft();
+	void GoRight();
 
 	MeshComponent* planeMeshComponent_;
 	MeshComponent* propellerMeshComponent_;
 
+	float moveRightSpeed_;
+	float moveLefttSpeed_;
 	float propellerRotationSpeed_;
 
 };

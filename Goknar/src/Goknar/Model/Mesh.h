@@ -1,7 +1,7 @@
 #ifndef __MESH_H__
 #define __MESH_H__
 
-#include "Component.h"
+#include "Model.h"
 
 #include "Goknar/Core.h"
 #include "Goknar/Math.h"
@@ -34,7 +34,7 @@ public:
 typedef std::vector<VertexData> VertexArray;
 typedef std::vector<Face> FaceArray;
 
-class GOKNAR_API Mesh : public Component
+class GOKNAR_API Mesh : public Model
 {
 public:
 	Mesh();

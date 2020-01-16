@@ -3,7 +3,7 @@
 #include "Scene.h"
 
 #include "Material.h"
-#include "Mesh.h"
+#include "Model/Mesh.h"
 #include "Helpers/SceneParser.h"
 #include "Renderer/Texture.h"
 

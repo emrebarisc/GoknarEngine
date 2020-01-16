@@ -11,14 +11,16 @@ workspace "GoknarEngine"
 outputdir = "%{cfg.buildcfg}_%{cfg.system}_%{cfg.architecture}"
 
 outsourceDirs = {}
-outsourceDirs["GLFW"] = "Goknar/outsourced/GLFW/GLFW"
-outsourceDirs["GLAD"] = "Goknar/outsourced/GLAD/GLAD"
-outsourceDirs["ImGui"] = "Goknar/outsourced/ImGui/imgui"
-outsourceDirs["outsourced"] = "Goknar/outsourced"
+outsourceDirs["GLFW"] = "$(SolutionDir)/Goknar/outsourced/GLFW/GLFW"
+outsourceDirs["GLAD"] = "$(SolutionDir)/Goknar/outsourced/GLAD/GLAD"
+outsourceDirs["ImGui"] = "$(SolutionDir)/Goknar/outsourced/ImGui/imgui"
+outsourceDirs["spdlog"] = "$(SolutionDir)/Goknar/outsourced/spdlog"
+outsourceDirs["outsourced"] = "$(SolutionDir)/Goknar/outsourced"
 
 includeDir = {}
 includeDir["GLFW"] = "%{outsourceDirs.GLFW}/include"
 includeDir["GLAD"] = "%{outsourceDirs.GLAD}/include"
+includeDir["spdlog"] = "%{outsourceDirs.spdlog}/include"
 includeDir["ImGui"] = "%{outsourceDirs.ImGui}"
 includeDir["outsourced"] = "%{outsourceDirs.outsourced}"
 
@@ -45,7 +47,7 @@ project "Goknar"
 
 	includedirs
 	{
-		"%{prj.name}/outsourced/spdlog/include",
+		"%{includeDir.spdlog}",
 		"%{includeDir.GLFW}",
 		"%{includeDir.GLAD}",
 		"%{includeDir.ImGui}",
@@ -109,7 +111,7 @@ project "GameProject"
 
 	includedirs
 	{
-		"%{prj.name}/outsourced/spdlog/include",
+		"%{includeDir.spdlog}",
 		"%{includeDir.GLFW}",
 		"%{includeDir.GLAD}",
 		"%{includeDir.ImGui}",

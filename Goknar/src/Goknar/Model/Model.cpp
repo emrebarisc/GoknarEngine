@@ -1,46 +1,46 @@
 #include "pch.h"
 
-#include "Component.h"
+#include "Model.h"
 
-int Component::lastComponentId_ = 0;
+int Model::lastComponentId_ = 0;
 
-void Component::SetRelativePosition(const Vector3& position)
+void Model::SetRelativePosition(const Vector3& position)
 {
 	relativePosition_ = position;
 	UpdateRelativeTransformationMatrix();
 }
 
-void Component::SetRelativeRotation(const Vector3& rotation)
+void Model::SetRelativeRotation(const Vector3& rotation)
 {
 	relativeRotation_ = rotation;
 	UpdateRelativeTransformationMatrix();
 }
 
-void Component::SetRelativeScaling(const Vector3& scaling)
+void Model::SetRelativeScaling(const Vector3& scaling)
 {
 	relativeScaling_ = scaling;
 	UpdateRelativeTransformationMatrix();
 }
 
-void Component::SetWorldPosition(const Vector3& position)
+void Model::SetWorldPosition(const Vector3& position)
 {
 	worldPosition_ = position;
 	UpdateWorldTransformationMatrix();
 }
 
-void Component::SetWorldRotation(const Vector3& rotation)
+void Model::SetWorldRotation(const Vector3& rotation)
 {
 	worldRotation_ = rotation;
 	UpdateWorldTransformationMatrix();
 }
 
-void Component::SetWorldScaling(const Vector3& scaling)
+void Model::SetWorldScaling(const Vector3& scaling)
 {
 	worldScaling_ = scaling;
 	UpdateWorldTransformationMatrix();
 }
 
-void Component::UpdateRelativeTransformationMatrix()
+void Model::UpdateRelativeTransformationMatrix()
 {
 	// Since OpenGL uses column-major matriced and Goknar does not
 	// all matrix multiplications are done in reverse order
@@ -67,7 +67,7 @@ void Component::UpdateRelativeTransformationMatrix()
 										    0.f, 0.f, 0.f, 1.f);
 }
 
-void Component::UpdateWorldTransformationMatrix()
+void Model::UpdateWorldTransformationMatrix()
 {
 	// Since OpenGL uses column-major matriced and Goknar does not
 	// all matrix multiplications are done in reverse order
