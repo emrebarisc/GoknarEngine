@@ -65,7 +65,7 @@ void WindowManager::Init()
 
 	SetMSAA(MSAAValue_);
 
-	engine->GetInputManager()->AddKeyboardInputDelegate(GLFW_KEY_ESCAPE, INPUT_ACTION::G_PRESS, std::bind(&WindowManager::CloseWindow, this));
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, std::bind(&WindowManager::CloseWindow, this));
 	
 	glfwSetFramebufferSizeCallback(mainWindow_, FrameBufferSizeCallback);
 }

@@ -3,6 +3,8 @@
 
 #include "pch.h"
 
+#include "GLFW/glfw3.h"
+
 #include "Goknar/Core.h"
 
 struct GLFWwindow;
@@ -32,16 +34,16 @@ enum class GOKNAR_API KEY_MAP : int
 	MINUS = GLFW_KEY_MINUS,
 	PERIOD = GLFW_KEY_PERIOD,
 	SLASH = GLFW_KEY_SLASH,
-	0 = GLFW_KEY_0,
-	1 = GLFW_KEY_1,
-	2 = GLFW_KEY_2,
-	3 = GLFW_KEY_3,
-	4 = GLFW_KEY_4,
-	5 = GLFW_KEY_5,
-	6 = GLFW_KEY_6,
-	7 = GLFW_KEY_7,
-	8 = GLFW_KEY_8,
-	9 = GLFW_KEY_9,
+	NUM_0 = GLFW_KEY_0,
+	NUM_1 = GLFW_KEY_1,
+	NUM_2 = GLFW_KEY_2,
+	NUM_3 = GLFW_KEY_3,
+	NUM_4 = GLFW_KEY_4,
+	NUM_5 = GLFW_KEY_5,
+	NUM_6 = GLFW_KEY_6,
+	NUM_7 = GLFW_KEY_7,
+	NUM_8 = GLFW_KEY_8,
+	NUM_9 = GLFW_KEY_9,
 	SEMICOLON = GLFW_KEY_SEMICOLON,
 	EQUAL = GLFW_KEY_EQUAL,
 	A = GLFW_KEY_A,
@@ -81,7 +83,7 @@ enum class GOKNAR_API KEY_MAP : int
 	TAB = GLFW_KEY_TAB,
 	BACKSPACE = GLFW_KEY_BACKSPACE,
 	INSERT = GLFW_KEY_INSERT,
-	DELETE = GLFW_KEY_DELETE,
+	DLT = GLFW_KEY_DELETE,
 	RIGHT = GLFW_KEY_RIGHT,
 	LEFT = GLFW_KEY_LEFT,
 	DOWN = GLFW_KEY_DOWN,
@@ -182,18 +184,18 @@ public:
 	static inline void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset);
 	static inline void CharCallback(GLFWwindow *window, unsigned int codePoint);
 
-	void AddKeyboardInputDelegate(int keyCode, INPUT_ACTION inputAction, const KeyboardDelegate &binderFunction)
+	void AddKeyboardInputDelegate(KEY_MAP keyCode, INPUT_ACTION inputAction, const KeyboardDelegate &binderFunction)
 	{
 		switch (inputAction)
 		{
 			case INPUT_ACTION::G_PRESS: 
-				pressedKeyDelegates_[keyCode].push_back(binderFunction);
+				pressedKeyDelegates_[(int)keyCode].push_back(binderFunction);
 				break;
 			case INPUT_ACTION::G_RELEASE:
-				releasedKeyDelegates_[keyCode].push_back(binderFunction);
+				releasedKeyDelegates_[(int)keyCode].push_back(binderFunction);
 				break;
 			case INPUT_ACTION::G_REPEAT:
-				repeatedKeyDelegates_[keyCode].push_back(binderFunction);
+				repeatedKeyDelegates_[(int)keyCode].push_back(binderFunction);
 				break;
 			default: ;
 		}
