@@ -20,12 +20,8 @@ private:
 	void GoRight();
 
 	MeshComponent* planeMeshComponent_;
-	MeshComponent* planeMeshComponent2_;
-	MeshComponent* planeMeshComponent3_;
 
 	MeshComponent* propellerMeshComponent_;
-	MeshComponent* propellerMeshComponent2_;
-	MeshComponent* propellerMeshComponent3_;
 
 	float moveRightSpeed_;
 	float moveLefttSpeed_;

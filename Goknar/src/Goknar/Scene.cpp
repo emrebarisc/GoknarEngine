@@ -54,6 +54,11 @@ Scene::~Scene()
 	{
 		delete object;
 	}
+
+	for (auto object : staticObjects_)
+	{
+		delete object;
+	}
 }
 
 void Scene::Init()

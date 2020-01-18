@@ -21,6 +21,12 @@ public:
 		return parent_;
 	}
 
+	void SetPivotPoint(const Vector3& pivotPoint);
+	const Vector3& GetPivotPoint() const
+	{
+		return pivotPoint_;
+	}
+
 	void SetRelativePosition(const Vector3& position);
 	const Vector3& GetRelativePosition() const
 	{

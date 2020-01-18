@@ -75,6 +75,7 @@ public:
 	void SetPosition(const Vector3& position)
 	{
 		position_ = position;
+		LookAt();
 	}
 
 	Vector3 GetPosition() const

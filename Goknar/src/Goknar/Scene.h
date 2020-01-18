@@ -11,6 +11,7 @@ class PointLight;
 class SpotLight;
 class Material;
 class Mesh;
+class ObjectBase;
 class Shader;
 class Texture;
 
@@ -38,6 +39,16 @@ public:
 	Mesh* GetMesh(int index)
 	{
 		return meshes_[index];
+	}
+
+	void AddStaticObject(ObjectBase* object)
+	{
+		staticObjects_.push_back(object);
+	}
+
+	ObjectBase* GetStaticObject(int index)
+	{
+		return staticObjects_[index];
 	}
 
 	void AddPointLight(const PointLight* pointLight);
@@ -146,6 +157,7 @@ private:
 	std::vector<Shader*> shaders_;
 	std::vector<Texture*> textures_;
     std::vector<Mesh*> meshes_;
+	std::vector<ObjectBase*> staticObjects_;
 
 	std::vector<const PointLight*> staticPointLights_;
 	std::vector<const DirectionalLight*> staticDirectionalLights_;

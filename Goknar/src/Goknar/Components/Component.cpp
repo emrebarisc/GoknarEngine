@@ -13,6 +13,12 @@ Component::Component(ObjectBase* parent) :
 	parent->AddComponent(this);
 }
 
+void Component::SetPivotPoint(const Vector3& pivotPoint)
+{
+	pivotPoint_ = pivotPoint;
+	UpdateRelativeTransformationMatrix();
+}
+
 void Component::SetRelativePosition(const Vector3& position)
 {
 	relativePosition_ = position;

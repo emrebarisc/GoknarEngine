@@ -11,6 +11,8 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Material.h"
 #include "Goknar/Model/Mesh.h"
+#include "Goknar/Components/MeshComponent.h"
+#include "Goknar/ObjectBase.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Texture.h"
 
@@ -479,92 +481,8 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		}
 		stream.clear();
 	}
-
-	//Get Objects
-	element = root->FirstChildElement("Objects");
-	element = element->FirstChildElement("Object");
-
-	while (element)
-	{
-		ObjectBase* object;
-
-		child = element->FirstChildElement("PivotPoint");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 pivotPoint;
-			stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
-			//mesh->SetPivotPoint(pivotPoint);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("RelativePosition");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 relativePosition;
-			stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
-			//mesh->SetRelativePosition(relativePosition);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("RelativeRotation");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 relativeRotation;
-			stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-			relativeRotation.ConvertDegreeToRadian();
-			//mesh->SetRelativeRotation(relativeRotation);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("RelativeScaling");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 relativeScaling;
-			stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
-			//mesh->SetRelativeScaling(relativeScaling);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("WorldPosition");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 worldPosition;
-			stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
-			//mesh->SetWorldPosition(worldPosition);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("WorldRotation");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 worldRotation;
-			stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-			worldRotation.ConvertDegreeToRadian();
-			//mesh->SetWorldRotation(worldRotation);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("WorldScaling");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 worldScaling;
-			stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
-			//mesh->SetWorldScaling(worldScaling);
-		}
-		stream.clear();
-
-		element = element->NextSiblingElement("Mesh");
-	}
-	stream.clear();
 	
-	//Get Objects
+	//Get Meshes
 	element = root->FirstChildElement("Meshes");
 	element = element->FirstChildElement("Mesh");
 	Mesh* mesh;
@@ -634,6 +552,102 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 		scene->AddMesh(mesh);
 		element = element->NextSiblingElement("Mesh");
+	}
+	stream.clear();
+
+	//Get Objects
+	element = root->FirstChildElement("Objects");
+	element = element->FirstChildElement("Object");
+	ObjectBase* object;
+	while (element)
+	{
+		object = new ObjectBase();
+		MeshComponent* meshComponent = new MeshComponent(object);
+
+		child = element->FirstChildElement("PivotPoint");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			Vector3 pivotPoint;
+			stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
+			meshComponent->SetPivotPoint(pivotPoint);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("RelativePosition");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			Vector3 relativePosition;
+			stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
+			meshComponent->SetRelativePosition(relativePosition);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("RelativeRotation");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			Vector3 relativeRotation;
+			stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
+			relativeRotation.ConvertDegreeToRadian();
+			meshComponent->SetRelativeRotation(relativeRotation);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("RelativeScaling");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			Vector3 relativeScaling;
+			stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
+			meshComponent->SetRelativeScaling(relativeScaling);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("Mesh");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			int meshIndex;
+			stream >> meshIndex;
+			meshComponent->SetMesh(scene->GetMesh(meshIndex));
+		}
+
+		child = element->FirstChildElement("WorldPosition");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			Vector3 worldPosition;
+			stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
+			object->SetWorldPosition(worldPosition);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("WorldRotation");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			Vector3 worldRotation;
+			stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
+			worldRotation.ConvertDegreeToRadian();
+			object->SetWorldRotation(worldRotation);
+		}
+		stream.clear();
+
+		child = element->FirstChildElement("WorldScaling");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			Vector3 worldScaling;
+			stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
+			object->SetWorldScaling(worldScaling);
+		}
+		stream.clear();
+		stream.clear();
+
+		scene->AddStaticObject(object);
+		element = element->NextSiblingElement("Object");
 	}
 	stream.clear();
 }
