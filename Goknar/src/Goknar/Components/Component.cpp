@@ -41,6 +41,7 @@ void Component::UpdateRelativeTransformationMatrix()
 {
 	// Since OpenGL uses column-major matriced and Goknar does not
 	// all matrix multiplications are done in reverse order
+	
 	relativeTransformationMatrix_ = Matrix(1.f, 0.f, 0.f, pivotPoint_.x,
 										   0.f, 1.f, 0.f, pivotPoint_.y,
 										   0.f, 0.f, 1.f, pivotPoint_.z,

@@ -55,7 +55,7 @@ void Airplane::Tick(float deltaTime)
 	propellerMeshComponent_->SetRelativePosition(propellerMeshComponent_->GetRelativePosition() + Vector3(0.0125f * cos(elapsedTime), 0.f, 0.f));
 	propellerMeshComponent_->SetRelativeRotation(propellerMeshComponent_->GetRelativeRotation() + Vector3(0.f, airplaneRotation + DEGREE_TO_RADIAN(deltaTime * propellerRotationSpeed_), 0.f));
 
-	SetWorldPosition(GetWorldPosition() + Vector3(0.f, deltaTime, 0.f));
+	SetWorldPosition(GetWorldPosition() + Vector3(0.f, 5.f * deltaTime, 0.f));
 
 	Camera* mainCamera = engine->GetCameraManager()->GetActiveCamera();
 	Vector3 cameraPosition = mainCamera->GetPosition();

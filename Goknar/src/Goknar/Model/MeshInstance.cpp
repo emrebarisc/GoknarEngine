@@ -18,5 +18,5 @@ void MeshInstance::SetMesh(Mesh* mesh)
 
 void MeshInstance::Render() const
 {
-	mesh_->GetMaterial()->Render(relativeTransformationMatrix_ * worldTransformationMatrix_);
+	mesh_->GetMaterial()->Render(worldTransformationMatrix_ * relativeTransformationMatrix_);
 }
