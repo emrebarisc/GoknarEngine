@@ -2,6 +2,7 @@
 
 #include "Scene.h"
 
+#include "Engine.h"
 #include "Material.h"
 #include "Model/Mesh.h"
 #include "Helpers/SceneParser.h"
@@ -60,6 +61,7 @@ void Scene::Init()
 	for (Mesh* mesh : meshes_)
 	{
 		mesh->Init();
+		engine->AddObjectToRenderer(mesh);
 	}
 
 	for (Texture* texture : textures_)

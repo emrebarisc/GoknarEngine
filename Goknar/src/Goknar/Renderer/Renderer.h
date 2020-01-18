@@ -9,6 +9,7 @@
 #include <vector>
 
 class GOKNAR_API Mesh;
+class GOKNAR_API MeshInstance;
 
 class GOKNAR_API Renderer
 {
@@ -21,13 +22,16 @@ public:
 
 	void Render();
 
-	void AddObjectToRenderer(Mesh* object);
+	void AddMeshToRenderer(Mesh* object);
+	void AddMeshInstanceToRenderer(MeshInstance* object);
 
 private:
-	std::vector<Mesh*> opaqueObjectsToBeRendered_;
+	std::vector<Mesh*> meshes_;
+
+	std::vector<MeshInstance*> opaqueMeshInstances_;
 	//TODO: Is it really necessary to hold masked objects as a seperate array?
-	std::vector<Mesh*> maskedObjectsToBeRendered_;
-	std::vector<Mesh*> translucentObjectsToBeRendered_;
+	std::vector<MeshInstance*> maskedMeshInstances_;
+	std::vector<MeshInstance*> translucentMeshInstances_;
 
 	unsigned int totalVertexSize_;
 	unsigned int totalFaceSize_;

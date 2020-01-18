@@ -3,9 +3,9 @@
 #include "MeshComponent.h"
 
 #include "Goknar/Engine.h"
-#include "Goknar/Model/Mesh.h"
+#include "Goknar/Model/MeshInstance.h"
 
-MeshComponent::MeshComponent(const ObjectBase* parent) : Component(parent), mesh_(nullptr)
+MeshComponent::MeshComponent(ObjectBase* parent) : Component(parent), meshInstance_(new MeshInstance(this))
 {
 }
 
@@ -16,6 +16,17 @@ MeshComponent::~MeshComponent()
 
 void MeshComponent::SetMesh(Mesh* mesh)
 {
-	mesh_ = mesh;
-	engine->AddObjectToRenderer(mesh);
+	meshInstance_->SetMesh(mesh);
+}
+
+void MeshComponent::WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix)
+{
+	meshInstance_->SetWorldTransformationMatrix(worldTransformationMatrix);
+}
+
+void MeshComponent::UpdateRelativeTransformationMatrix()
+{
+	Component::UpdateRelativeTransformationMatrix();
+
+	meshInstance_->SetRelativeTransformationMatrix(relativeTransformationMatrix_);
 }

@@ -7,6 +7,7 @@
 #include "Goknar/Log.h"
 #include "Goknar/Material.h"
 #include "Goknar/Model/Mesh.h"
+#include "Goknar/Model/MeshInstance.h"
 
 #include "Goknar/Managers/IOManager.h"
 #include "Goknar/Renderer/Shader.h"
@@ -48,48 +49,29 @@ void Renderer::SetBufferData()
 	/*
 		Buffer Sub-Data
 	*/
-	int vertexStartIndex = 0;
-	int faceStartIndex = 0;
-	for (const Mesh* opaqueMesh : opaqueObjectsToBeRendered_)
+	unsigned int baseVertex = 0;
+	unsigned int vertexStartingIndex = 0;
+
+	int vertexOffset = 0;
+	int faceOffset = 0;
+	for (Mesh* mesh : meshes_)
 	{
-		const VertexArray* vertexArrayPtr = opaqueMesh->GetVerticesPointer();
+		mesh->SetBaseVertex(baseVertex);
+		mesh->SetVertexStartingIndex(vertexStartingIndex);
+
+		const VertexArray* vertexArrayPtr = mesh->GetVerticesPointer();
 		int vertexSizeInBytes = vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
-		glBufferSubData(GL_ARRAY_BUFFER, vertexStartIndex, vertexSizeInBytes, &vertexArrayPtr->at(0));
+		glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
 
-		const FaceArray* faceArrayPtr = opaqueMesh->GetFacesPointer();
+		const FaceArray* faceArrayPtr = mesh->GetFacesPointer();
 		int faceSizeInBytes = faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceStartIndex, faceSizeInBytes, &faceArrayPtr->at(0));
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
 
-		vertexStartIndex += vertexSizeInBytes;
-		faceStartIndex += faceSizeInBytes;
-	}
+		vertexOffset += vertexSizeInBytes;
+		faceOffset += faceSizeInBytes;
 
-	for (const Mesh* maskedMesh : maskedObjectsToBeRendered_)
-	{
-		const VertexArray* vertexArrayPtr = maskedMesh->GetVerticesPointer();
-		int vertexSizeInBytes = vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
-		glBufferSubData(GL_ARRAY_BUFFER, vertexStartIndex, vertexSizeInBytes, &vertexArrayPtr->at(0));
-
-		const FaceArray* faceArrayPtr = maskedMesh->GetFacesPointer();
-		int faceSizeInBytes = faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceStartIndex, faceSizeInBytes, &faceArrayPtr->at(0));
-
-		vertexStartIndex += vertexSizeInBytes;
-		faceStartIndex += faceSizeInBytes;
-	}
-
-	for (const Mesh* translucentMesh : translucentObjectsToBeRendered_)
-	{
-		const VertexArray* vertexArrayPtr = translucentMesh->GetVerticesPointer();
-		int vertexSizeInBytes = vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
-		glBufferSubData(GL_ARRAY_BUFFER, vertexStartIndex, vertexSizeInBytes, &vertexArrayPtr->at(0));
-
-		const FaceArray* faceArrayPtr = translucentMesh->GetFacesPointer();
-		int faceSizeInBytes = faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceStartIndex, faceSizeInBytes, &faceArrayPtr->at(0));
-
-		vertexStartIndex += vertexSizeInBytes;
-		faceStartIndex += faceSizeInBytes;
+		baseVertex += mesh->GetVertexCount();
+		vertexStartingIndex += mesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
 	}
 
 	// Vertex position
@@ -116,20 +98,10 @@ void Renderer::Init()
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
-	for (Mesh* opaqueMesh : opaqueObjectsToBeRendered_)
+	for (Mesh* mesh : meshes_)
 	{
-		totalVertexSize_ += opaqueMesh->GetVerticesPointer()->size();
-		totalFaceSize_ += opaqueMesh->GetFacesPointer()->size();
-	}
-	for (Mesh* maskedMesh : maskedObjectsToBeRendered_)
-	{
-		totalVertexSize_ += maskedMesh->GetVerticesPointer()->size();
-		totalFaceSize_ += maskedMesh->GetFacesPointer()->size();
-	}
-	for (Mesh* translucentMesh : translucentObjectsToBeRendered_)
-	{
-		totalVertexSize_ += translucentMesh->GetVerticesPointer()->size();
-		totalFaceSize_ += translucentMesh->GetFacesPointer()->size();
+		totalVertexSize_ += mesh->GetVerticesPointer()->size();
+		totalFaceSize_ += mesh->GetFacesPointer()->size();
 	}
 
 	SetBufferData();
@@ -141,54 +113,54 @@ void Renderer::Render()
 	const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
 	glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
 	
-	int vertexStartingIndex = 0;
-	int baseVertex = 0;
- 	for (const Mesh* opaqueMesh : opaqueObjectsToBeRendered_)
+ 	for (const MeshInstance* opaqueMeshInstance : opaqueMeshInstances_)
 	{
-		opaqueMesh->Render();
+		const Mesh* mesh = opaqueMeshInstance->GetMesh();
+		opaqueMeshInstance->Render();
 
-		int facePointCount = opaqueMesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)vertexStartingIndex, baseVertex);
-		vertexStartingIndex += facePointCount * sizeof(Face::vertexIndices[0]);
-		baseVertex += opaqueMesh->GetVertexCount();
+		int facePointCount = mesh->GetFaceCount() * 3;
+		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 	}
 
-	for (const Mesh* maskedMesh : maskedObjectsToBeRendered_)
+	for (const MeshInstance* maskedMeshInstance : maskedMeshInstances_)
 	{
-		maskedMesh->Render();
+		const Mesh* mesh = maskedMeshInstance->GetMesh();
+		maskedMeshInstance->Render();
 
-		int facePointCount = maskedMesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)vertexStartingIndex, baseVertex);
-		vertexStartingIndex += facePointCount * sizeof(Face::vertexIndices[0]);
-		baseVertex += maskedMesh->GetVertexCount();
+		int facePointCount = mesh->GetFaceCount() * 3;
+		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 	}
 
 	glEnable(GL_BLEND);
-	for (const Mesh* translucentMesh : translucentObjectsToBeRendered_)
+	for (const MeshInstance* translucentMeshInstance : translucentMeshInstances_)
 	{
-		translucentMesh->Render();
+		const Mesh* mesh = translucentMeshInstance->GetMesh();
+		translucentMeshInstance->Render();
 
-		int facePointCount = translucentMesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)vertexStartingIndex, baseVertex);
-		vertexStartingIndex += facePointCount * sizeof(Face::vertexIndices[0]);
-		baseVertex += translucentMesh->GetVertexCount();
+		int facePointCount = mesh->GetFaceCount() * 3;
+		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 	}
 	glDisable(GL_BLEND);
 }
 
-void Renderer::AddObjectToRenderer(Mesh* object)
+void Renderer::AddMeshToRenderer(Mesh* mesh)
 {
-	MaterialShadingModel materialShadingModel = object->GetMaterial()->GetShadingModel();
+	meshes_.push_back(mesh);
+}
+
+void Renderer::AddMeshInstanceToRenderer(MeshInstance* meshInstance)
+{
+	MaterialShadingModel materialShadingModel = meshInstance->GetMesh()->GetMaterial()->GetShadingModel();
 	switch (materialShadingModel)
 	{
 	case MaterialShadingModel::Opaque:
-		opaqueObjectsToBeRendered_.push_back(object);
+		opaqueMeshInstances_.push_back(meshInstance);
 		break;
 	case MaterialShadingModel::Masked:
-		maskedObjectsToBeRendered_.push_back(object);
+		maskedMeshInstances_.push_back(meshInstance);
 		break;
 	case MaterialShadingModel::Translucent:
-		translucentObjectsToBeRendered_.push_back(object);
+		translucentMeshInstances_.push_back(meshInstance);
 		break;
 	default:
 		break;

@@ -1,8 +1,6 @@
 #ifndef __MESH_H__
 #define __MESH_H__
 
-#include "Model.h"
-
 #include "Goknar/Core.h"
 #include "Goknar/Math.h"
 #include "Goknar/Matrix.h"
@@ -34,7 +32,7 @@ public:
 typedef std::vector<VertexData> VertexArray;
 typedef std::vector<Face> FaceArray;
 
-class GOKNAR_API Mesh : public Model
+class GOKNAR_API Mesh
 {
 public:
 	Mesh();
@@ -84,21 +82,37 @@ public:
 		return faces_;
 	}
 
-	int GetVertexCount() const
+	unsigned int GetVertexCount() const
 	{
 		return vertexCount_;
 	}
 
-	int GetFaceCount() const
+	unsigned int GetFaceCount() const
 	{
 		return faceCount_;
 	}
 
-	void Render() const;
+	void SetBaseVertex(unsigned int baseVertex)
+	{
+		baseVertex_ = baseVertex;
+	}
+
+	unsigned int GetBaseVertex() const
+	{
+		return baseVertex_;
+	}
+
+	void SetVertexStartingIndex(unsigned int vertexStartingIndex)
+	{
+		vertexStartingIndex_ = vertexStartingIndex;
+	}
+
+	unsigned int GetVertexStartingIndex() const
+	{
+		return vertexStartingIndex_;
+	}
 
 private:
-	Matrix modelMatrix_;
-
 	VertexArray* vertices_;
 	FaceArray* faces_;
 
@@ -107,6 +121,8 @@ private:
 	unsigned int vertexCount_;
 	unsigned int faceCount_;
 
+	unsigned int baseVertex_;
+	unsigned int vertexStartingIndex_;
 };
 
 #endif

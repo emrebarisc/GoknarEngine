@@ -480,20 +480,13 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		stream.clear();
 	}
 
-	//Get Meshes
-	element = root->FirstChildElement("Meshes");
-	element = element->FirstChildElement("Mesh");
+	//Get Objects
+	element = root->FirstChildElement("Objects");
+	element = element->FirstChildElement("Object");
 
-	Mesh* mesh;
 	while (element)
 	{
-		mesh = new Mesh();
-		child = element->FirstChildElement("Material");
-		stream << child->GetText() << std::endl;
-
-		int materialId;
-		stream >> materialId;
-		mesh->SetMaterial(scene->GetMaterial(materialId));
+		ObjectBase* object;
 
 		child = element->FirstChildElement("PivotPoint");
 		if (child)
@@ -501,7 +494,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream << child->GetText() << std::endl;
 			Vector3 pivotPoint;
 			stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
-			mesh->SetPivotPoint(pivotPoint);
+			//mesh->SetPivotPoint(pivotPoint);
 		}
 		stream.clear();
 
@@ -511,7 +504,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream << child->GetText() << std::endl;
 			Vector3 relativePosition;
 			stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
-			mesh->SetRelativePosition(relativePosition);
+			//mesh->SetRelativePosition(relativePosition);
 		}
 		stream.clear();
 
@@ -522,7 +515,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			Vector3 relativeRotation;
 			stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
 			relativeRotation.ConvertDegreeToRadian();
-			mesh->SetRelativeRotation(relativeRotation);
+			//mesh->SetRelativeRotation(relativeRotation);
 		}
 		stream.clear();
 
@@ -532,7 +525,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream << child->GetText() << std::endl;
 			Vector3 relativeScaling;
 			stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
-			mesh->SetRelativeScaling(relativeScaling);
+			//mesh->SetRelativeScaling(relativeScaling);
 		}
 		stream.clear();
 
@@ -542,7 +535,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream << child->GetText() << std::endl;
 			Vector3 worldPosition;
 			stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
-			mesh->SetWorldPosition(worldPosition);
+			//mesh->SetWorldPosition(worldPosition);
 		}
 		stream.clear();
 
@@ -553,7 +546,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			Vector3 worldRotation;
 			stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
 			worldRotation.ConvertDegreeToRadian();
-			mesh->SetWorldRotation(worldRotation);
+			//mesh->SetWorldRotation(worldRotation);
 		}
 		stream.clear();
 
@@ -563,9 +556,27 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream << child->GetText() << std::endl;
 			Vector3 worldScaling;
 			stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
-			mesh->SetWorldScaling(worldScaling);
+			//mesh->SetWorldScaling(worldScaling);
 		}
 		stream.clear();
+
+		element = element->NextSiblingElement("Mesh");
+	}
+	stream.clear();
+	
+	//Get Objects
+	element = root->FirstChildElement("Meshes");
+	element = element->FirstChildElement("Mesh");
+	Mesh* mesh;
+	while (element)
+	{
+		mesh = new Mesh();
+		child = element->FirstChildElement("Material");
+		stream << child->GetText() << std::endl;
+
+		int materialId;
+		stream >> materialId;
+		mesh->SetMaterial(scene->GetMaterial(materialId));
 
 		child = element->FirstChildElement("Vertices");
 		stream << child->GetText() << std::endl;

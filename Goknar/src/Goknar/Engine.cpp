@@ -127,7 +127,7 @@ void Engine::Exit()
 
 void Engine::AddObjectToRenderer(Mesh* mesh)
 {
-	renderer_->AddObjectToRenderer(mesh);
+	renderer_->AddMeshToRenderer(mesh);
 }
 
 void Engine::SetApplication(Application* application)

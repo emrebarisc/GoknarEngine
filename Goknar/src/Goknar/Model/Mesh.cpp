@@ -15,7 +15,9 @@
 Mesh::Mesh() :
 	material_(0), 
 	vertexCount_(0), 
-	faceCount_(0)
+	faceCount_(0),
+	baseVertex_(0),
+	vertexStartingIndex_(0)
 {
 	vertices_ = new VertexArray();
 	faces_ = new FaceArray();
@@ -31,9 +33,4 @@ void Mesh::Init()
 {
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
-}
-
-void Mesh::Render() const
-{
-	material_->Render(worldTransformationMatrix_ * relativeTransformationMatrix_);
 }
