@@ -12,20 +12,6 @@
 		</Camera>
 	</Cameras>
 
-  <Lights>
-		<AmbientLight>100 100 100</AmbientLight>
-    	<PointLight>
-	      <Position>-7.5 7.5 7.5</Position>
-	      <Color>1.0 1.0 1.0</Color>
-	      <Intensity>100</Intensity>
-	    </PointLight>
-	    <PointLight>
-	      <Position>7.5 -7.5 10</Position>
-	      <Color>1.0 1.0 1.0</Color>
-	      <Intensity>100</Intensity>
-	    </PointLight>
-	</Lights>
-
   <Textures>
     <Texture>
       <Name>texture0</Name>

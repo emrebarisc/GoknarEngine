@@ -190,12 +190,20 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 	//Get Ambient Light
 	element = root->FirstChildElement("Lights");
-	auto child = element->FirstChildElement("AmbientLight");
-	stream << child->GetText() << std::endl;
-	Vector3 ambientLight;
-	stream >> ambientLight.x >> ambientLight.y >> ambientLight.z;
+	tinyxml2::XMLElement* child;
 
-	scene->SetAmbientLight(ambientLight);
+	if (element)
+	{
+		child = element->FirstChildElement("AmbientLight");
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			Vector3 ambientLight;
+			stream >> ambientLight.x >> ambientLight.y >> ambientLight.z;
+
+			scene->SetAmbientLight(ambientLight);
+		}
+	}
 
 	//Get Lights
 	element = root->FirstChildElement("Lights");
