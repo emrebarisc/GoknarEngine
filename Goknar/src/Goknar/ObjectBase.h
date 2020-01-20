@@ -59,11 +59,26 @@ public:
 		totalComponentCount_++;
 	}
 
+	Vector3 GetForwardVector()
+	{
+		return Vector3(worldTransformationMatrix_[0], worldTransformationMatrix_[4], worldTransformationMatrix_[8]);
+	}
+
+	Vector3 GetUpVector()
+	{
+		return Vector3(worldTransformationMatrix_[2], worldTransformationMatrix_[6], worldTransformationMatrix_[10]);
+	}
+
+	Vector3 GetLeftVector()
+	{
+		return Vector3(worldTransformationMatrix_[1], worldTransformationMatrix_[5], worldTransformationMatrix_[9]);
+	}
 protected:
-    Matrix worldTransformationMatrix_;
 
 private:
     inline void UpdateWorldTransformationMatrix();
+
+	Matrix worldTransformationMatrix_;
 
 	std::vector<Component*> components_;
 

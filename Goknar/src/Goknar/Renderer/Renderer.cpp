@@ -28,6 +28,23 @@ Renderer::~Renderer()
 	glDeleteBuffers(1, &indexBufferId_);
 }
 
+void Renderer::Init()
+{
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+
+	for (Mesh* mesh : meshes_)
+	{
+		totalVertexSize_ += (unsigned int)mesh->GetVerticesPointer()->size();
+		totalFaceSize_ += (unsigned int)mesh->GetFacesPointer()->size();
+	}
+
+	SetBufferData();
+}
+
 void Renderer::SetBufferData()
 {
 	/*
@@ -60,11 +77,11 @@ void Renderer::SetBufferData()
 		mesh->SetVertexStartingIndex(vertexStartingIndex);
 
 		const VertexArray* vertexArrayPtr = mesh->GetVerticesPointer();
-		int vertexSizeInBytes = vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
+		int vertexSizeInBytes = (int)vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
 		glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
 
 		const FaceArray* faceArrayPtr = mesh->GetFacesPointer();
-		int faceSizeInBytes = faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
+		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
 
 		vertexOffset += vertexSizeInBytes;
@@ -75,36 +92,24 @@ void Renderer::SetBufferData()
 	}
 
 	// Vertex position
-	int offset = 0;
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
+	long long offset = 0;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
 	glEnableVertexAttribArray(0);
 
 	// Vertex normal
 	offset += sizeof(VertexData::position);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
 	glEnableVertexAttribArray(1);
 
-	// Vertex UV
+	// Vertex color
 	offset += sizeof(VertexData::normal);
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
-}
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
 
-void Renderer::Init()
-{
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-	glFrontFace(GL_CCW);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-
-	for (Mesh* mesh : meshes_)
-	{
-		totalVertexSize_ += mesh->GetVerticesPointer()->size();
-		totalFaceSize_ += mesh->GetFacesPointer()->size();
-	}
-
-	SetBufferData();
+	// Vertex UV
+	offset += sizeof(VertexData::color);
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
 }
 
 void Renderer::Render()

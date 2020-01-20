@@ -18,15 +18,15 @@ private:
 	void SpaceKeyDown();
 	void GoLeft();
 	void GoRight();
+	void PositivePitch();
+	void NegativePitch();
 
 	MeshComponent* planeMeshComponent_;
-
 	MeshComponent* propellerMeshComponent_;
 
 	float moveRightSpeed_;
 	float moveLefttSpeed_;
 	float propellerRotationSpeed_;
-
 };
 
 #endif

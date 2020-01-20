@@ -205,7 +205,7 @@ struct GOKNAR_API Vector3
 
 	static const Vector3 ZeroVector;
 	static const Vector3 ForwardVector;
-	static const Vector3 RightVector;
+	static const Vector3 LeftVector;
 	static const Vector3 UpVector;
 
 	float x, y, z;

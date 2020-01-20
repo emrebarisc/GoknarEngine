@@ -13,13 +13,7 @@ public:
 
 	}
 
-	~CameraManager()
-	{
-		for (Camera* camera : cameras_)
-		{
-			delete camera;
-		}
-	}
+	~CameraManager();
 
 	void AddCamera(Camera* camera)
 	{

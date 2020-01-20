@@ -13,7 +13,7 @@ uniform mat4 projectionMatrix;
 
 out vec3 fragmentPosition;
 out vec3 vertexNormal;
-out vec2 textureUV;
+out vec3 vertexColor;
 
 void main()
 {
@@ -21,6 +21,4 @@ void main()
 	gl_Position = projectionMatrix * viewMatrix * fragmentPosition4Channel;
 	vertexNormal = vec3(vec4(normal, 0.f) * transpose(inverse(transformationMatrix)));
 	fragmentPosition = vec3(fragmentPosition4Channel);
-
-	textureUV = vec2(uv.x, 1 - uv.y);
 }

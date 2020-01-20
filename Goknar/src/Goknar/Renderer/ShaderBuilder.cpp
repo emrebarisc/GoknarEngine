@@ -34,8 +34,8 @@ void ShaderBuilder::BuildSceneFragmentShader()
 out vec3 color;
 in vec3 fragmentPosition;
 in vec3 vertexNormal;
+in vec3 vertexColor;
 uniform vec3 viewPosition;
-
 )";
 
 	fragmentShaderOutsideMain_ += GetMaterialVariables();
@@ -116,8 +116,8 @@ uniform vec3 viewPosition;
 	//std::cout << sceneVertexShader_ << std::endl;
 	//std::cout << sceneFragmentShader_ << std::endl;
 
-	//IOManager::WriteFile("./DefaultSceneVertexShader.glsl", sceneVertexShader_.c_str());
-	//IOManager::WriteFile("./DefaultSceneFragmentShader.glsl", sceneFragmentShader_.c_str());
+	IOManager::WriteFile("./DefaultSceneVertexShader.glsl", sceneVertexShader_.c_str());
+	IOManager::WriteFile("./DefaultSceneFragmentShader.glsl", sceneFragmentShader_.c_str());
 }
 
 void ShaderBuilder::BuildSceneVertexShader()
@@ -127,7 +127,8 @@ void ShaderBuilder::BuildSceneVertexShader()
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
-layout(location = 2) in vec2 uv;
+layout(location = 2) in vec3 color;
+layout(location = 3) in vec2 uv;
 
 // Transformation matrix is calculated by multiplying  
 // world and relative transformation matrices
@@ -137,6 +138,7 @@ uniform mat4 projectionMatrix;
 
 out vec3 fragmentPosition;
 out vec3 vertexNormal;
+out vec3 vertexColor;
 
 void main()
 {

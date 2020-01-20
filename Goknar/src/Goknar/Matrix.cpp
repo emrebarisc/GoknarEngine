@@ -142,7 +142,7 @@ Matrix Matrix::GetInverse() const
         throw std::runtime_error("Error: Determinant is zero.");
     }
 
-    det = 1.0 / det;
+    det = 1.f / det;
 
     for (int i = 0; i < 16; ++i)
     {

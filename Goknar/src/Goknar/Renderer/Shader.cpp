@@ -25,7 +25,7 @@ void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
 		GEint maxLength = 0;
 		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &maxLength);
 
-		GEchar* logMessage = new GEchar[maxLength + 1];
+		GEchar* logMessage = new GEchar[maxLength + (GEint)1];
 		glGetShaderInfoLog(shaderId, maxLength, &maxLength, logMessage);
 		logMessage[maxLength] = '\0';
 		glDeleteShader(shaderId);
@@ -46,7 +46,7 @@ void ExitOnProgramError(GEuint programId, const char* errorMessage)
 		GLint maxLength = 0;
 		glGetShaderiv(programId, GL_INFO_LOG_LENGTH, &maxLength);
 
-		GLchar* logMessage = new GLchar[maxLength + 1];
+		GLchar* logMessage = new GLchar[maxLength + (GEint)1];
 		glGetProgramInfoLog(programId, maxLength, &maxLength, logMessage);
 		logMessage[maxLength] = '\0';
 		glDeleteProgram(programId);
@@ -117,7 +117,7 @@ void Shader::Init()
 
 	Bind();
 
-	int textureSize = textures_.size();
+	int textureSize = (int)textures_.size();
 	for (int textureIndex = 0; textureIndex < textureSize; textureIndex++)
 	{
 		textures_[textureIndex]->Bind(this);
@@ -162,7 +162,7 @@ void Shader::SetFloat(const char* name, float value) const
 
 void Shader::SetMatrix(const char* name, const Matrix& matrix) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(programId_, name), 1, GL_FALSE, &matrix[0]);
+	glUniformMatrix4fv(glGetUniformLocation(programId_, name), 1, GL_FALSE, &matrix.m[0]);
 }
 
 void Shader::SetVector3(const char* name, const Vector3& vector) const

@@ -32,6 +32,8 @@ public:
 
     Matrix2x2(const float dataArray[4])
     {
+        // For warning fix......?
+        m[0] = 0.f;
         for (int i = 0; i < 4; i++)
         {
             m[i] = dataArray[i];
@@ -40,6 +42,8 @@ public:
 
     Matrix2x2(const Matrix2x2& other)
     {
+        // For warning fix......?
+        m[0] = 0.f;
 		if (this == &other) return;
         for (int i = 0; i < 4; i++)
         {
@@ -91,6 +95,8 @@ public:
         {
             return m[index];
         }
+
+        return -1.f;
     }
 
     bool operator==(const Matrix2x2 &rhs)
@@ -119,6 +125,8 @@ class GOKNAR_API Matrix
 public:
     Matrix()
     {
+        // For warning fix......?
+        m[0] = 0.f;
         for (int i = 0; i < 16; i++)
         {
             m[i] = 0;
@@ -127,6 +135,8 @@ public:
 
     Matrix(float value)
     {
+        // For warning fix......?
+        m[0] = 0.f;
         for (int i = 0; i < 16; i++)
         {
             m[i] = value;
@@ -161,6 +171,8 @@ public:
 
     Matrix(const float matrix[16])
     {
+        // For warning fix......?
+        m[0] = 0.f;
         for (int i = 0; i < 16; i++)
         {
             m[i] = matrix[i];
@@ -169,6 +181,8 @@ public:
 
     Matrix(const Matrix& other)
     {
+        // For warning fix......?
+        m[0] = 0.f;
         if(this != &other)
         {
             for (int i = 0; i < 16; i++)
@@ -185,43 +199,53 @@ public:
 
 	inline static Matrix GetRotationMatrix(const Vector3& rotation)
 	{
-		Matrix result = Matrix::IdentityMatrix;
+		//if (rotation.x != 0.f)
+		//{
+		//	Matrix xRotationMatrix = Matrix::IdentityMatrix;
+		//	float cosTheta = cos(rotation.x);
+		//	float sinTheta = sin(rotation.x);
+		//	xRotationMatrix.m[5] = cosTheta;
+		//	xRotationMatrix.m[6] = -sinTheta;
+		//	xRotationMatrix.m[9] = sinTheta;
+		//	xRotationMatrix.m[10] = cosTheta;
+		//	result *= xRotationMatrix;
+		//}
+		//if (rotation.y != 0.f)
+		//{
+		//	Matrix yRotationMatrix = Matrix::IdentityMatrix;
+		//	float cosTheta = cos(rotation.y);
+		//	float sinTheta = sin(rotation.y);
+		//	yRotationMatrix.m[0] = cosTheta;
+		//	yRotationMatrix.m[2] = sinTheta;
+		//	yRotationMatrix.m[8] = -sinTheta;
+		//	yRotationMatrix.m[10] = cosTheta;
+		//	result *= yRotationMatrix;
+		//}
+		//if (rotation.z != 0.f)
+		//{
+		//	Matrix zRotationMatrix = Matrix::IdentityMatrix;
+		//	float cosTheta = cos(rotation.z);
+		//	float sinTheta = sin(rotation.z);
+		//	zRotationMatrix.m[0] = cosTheta;
+		//	zRotationMatrix.m[1] = -sinTheta;
+		//	zRotationMatrix.m[4] = sinTheta;
+		//	zRotationMatrix.m[5] = cosTheta;
+		//	result *= zRotationMatrix;
+		//}
 
-		if (rotation.x != 0.f)
-		{
-			Matrix xRotationMatrix = Matrix::IdentityMatrix;
-			float cosTheta = cos(rotation.x);
-			float sinTheta = sin(rotation.x);
-			xRotationMatrix.m[5] = cosTheta;
-			xRotationMatrix.m[6] = -sinTheta;
-			xRotationMatrix.m[9] = sinTheta;
-			xRotationMatrix.m[10] = cosTheta;
-			result *= xRotationMatrix;
-		}
-		if (rotation.y != 0.f)
-		{
-			Matrix yRotationMatrix = Matrix::IdentityMatrix;
-			float cosTheta = cos(rotation.y);
-			float sinTheta = sin(rotation.y);
-			yRotationMatrix.m[0] = cosTheta;
-			yRotationMatrix.m[2] = sinTheta;
-			yRotationMatrix.m[8] = -sinTheta;
-			yRotationMatrix.m[10] = cosTheta;
-			result *= yRotationMatrix;
-		}
-		if (rotation.z != 0.f)
-		{
-			Matrix zRotationMatrix = Matrix::IdentityMatrix;
-			float cosTheta = cos(rotation.z);
-			float sinTheta = sin(rotation.z);
-			zRotationMatrix.m[0] = cosTheta;
-			zRotationMatrix.m[1] = -sinTheta;
-			zRotationMatrix.m[4] = sinTheta;
-			zRotationMatrix.m[5] = cosTheta;
-			result *= zRotationMatrix;
-		}
+        float cosAlpha = cos(rotation.x);
+        float sinAlpha = sin(rotation.x);
 
-		return result;
+        float cosBeta = cos(rotation.y);
+        float sinBeta = sin(rotation.y);
+
+        float cosGamma = cos(rotation.z);
+        float sinGamma = sin(rotation.z);
+
+		return Matrix(cosBeta * cosGamma, cosBeta * sinGamma, -sinBeta, 0.f,
+                      sinAlpha * sinBeta* cosGamma - cosAlpha * sinGamma, sinAlpha * sinBeta * sinGamma + cosAlpha * cosGamma, sinAlpha * cosBeta, 0.f,
+                      cosAlpha * sinBeta * cosGamma + sinAlpha * sinGamma, cosAlpha * sinBeta * sinGamma - sinAlpha * cosGamma, cosAlpha * cosBeta, 0.f,
+                      0.f, 0.f, 0.f, 1.f);;
 	}
 
 	inline static Matrix GetRotationMatrixAboutAnAxis(Vector3 axis, float angle)
@@ -325,20 +349,24 @@ public:
 		*this = out;
 	}
 
-	float& operator[](int index)
+	float operator[](int index)
 	{
 		if (index >= 0 && index <= 15)
 		{
 			return m[index];
 		}
+
+        return 0.f;
 	}
 
-	const float& operator[](int index) const
+	const float operator[](int index) const
 	{
 		if (index >= 0 && index <= 15)
 		{
 			return m[index];
 		}
+
+        return 0.f;
 	}
 
     bool operator==(const Matrix &rhs)

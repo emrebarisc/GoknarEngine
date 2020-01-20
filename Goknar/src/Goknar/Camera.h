@@ -17,7 +17,7 @@ public:
 		viewingMatrix_(Matrix::IdentityMatrix),
 		position_(Vector3::ZeroVector),
 		forwardVector_(Vector3::ForwardVector),
-		rightVector_(Vector3::RightVector),
+		leftVector_(Vector3::LeftVector),
 		upVector_(Vector3::UpVector),
 		nearPlane_(0.1f),
 		nearDistance_(0.1f),
@@ -39,7 +39,7 @@ public:
 			position_ = rhs->position_;
 			forwardVector_ = rhs->forwardVector_;
 			upVector_ = rhs->upVector_;
-			rightVector_ = rhs->rightVector_;
+			leftVector_ = rhs->leftVector_;
 			nearPlane_ = rhs->nearPlane_;
 			nearDistance_ = rhs->nearDistance_;
 			farDistance_ = rhs->farDistance_;
@@ -48,6 +48,10 @@ public:
 			projection_ = rhs->projection_;
 			projectionMatrix_ = rhs->projectionMatrix_;
 			viewingMatrix_ = rhs->viewingMatrix_;
+		}
+		else
+		{
+			Camera();
 		}
 	}
 
@@ -105,12 +109,12 @@ public:
 
 	void SetRightVector(const Vector3& rightVector)
 	{
-		rightVector_ = rightVector;
+		leftVector_ = rightVector;
 	}
 
 	const Vector3& GetRightVector() const
 	{
-		return rightVector_;
+		return leftVector_;
 	}
 
 	void SetImageWidth(int width)
@@ -194,14 +198,14 @@ public:
 		}
 	}
 
-	float* GetViewingMatrixPointer()
+	float GetViewingMatrixPointer()
 	{
-		return &viewingMatrix_[0];
+		return viewingMatrix_[0];
 	}
 
-	float* GetProjectionMatrixPointer()
+	float GetProjectionMatrixPointer()
 	{
-		return &projectionMatrix_[0];
+		return projectionMatrix_[0];
 	}
 
 	void SetProjection(CameraProjection projection)
@@ -228,7 +232,7 @@ private:
 	Vector3 position_;
 	Vector3 forwardVector_;
 	Vector3 upVector_;
-	Vector3 rightVector_;
+	Vector3 leftVector_;
 
 	float nearDistance_;
 	float farDistance_;

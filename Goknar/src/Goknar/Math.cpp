@@ -5,14 +5,14 @@
 
 const Vector3 Vector3::ZeroVector = Vector3(0.f);
 const Vector3 Vector3::ForwardVector = Vector3(1.f, 0.f, 0.f);
-const Vector3 Vector3::RightVector = Vector3(0.f, 1.f, 0.f);
+const Vector3 Vector3::LeftVector = Vector3(0.f, 1.f, 0.f);
 const Vector3 Vector3::UpVector = Vector3(0.f, 0.f, 1.f);
 
 const Vector2 Vector2::ZeroVector = Vector2(0.f);
 
-/*const float MAX_FLOAT = std::numeric_limits<float>::max();
-const int MAX_INT = std::numeric_limits<int>::max();
-const unsigned int MAX_UINT = std::numeric_limits<unsigned int>::max();*/
+//constexpr float MAX_FLOAT = std::numeric_limits<float>::max();
+//constexpr int MAX_INT = std::numeric_limits<int>::max();
+//constexpr unsigned int MAX_UINT = std::numeric_limits<unsigned int>::max();
 
 float EPSILON = 0.001f;
 float INTERSECTION_TEST_EPSILON = 0.001f;
@@ -454,21 +454,10 @@ void Math::LookAt(Matrix& viewingMatrix, const Vector3& position, const Vector3&
 
 	Vector3 up = forward.Cross(left);
 
-	viewingMatrix = Matrix::IdentityMatrix;
-
-	viewingMatrix[0] = left.x;
-	viewingMatrix[4] = left.y;
-	viewingMatrix[8] = left.z;
-	viewingMatrix[1] = up.x;
-	viewingMatrix[5] = up.y;
-	viewingMatrix[9] = up.z;
-	viewingMatrix[2] = forward.x;
-	viewingMatrix[6] = forward.y;
-	viewingMatrix[10] = forward.z;
-
-	viewingMatrix[12] = -left.x * position.x - left.y * position.y - left.z * position.z;
-	viewingMatrix[13] = -up.x * position.x - up.y * position.y - up.z * position.z;
-	viewingMatrix[14] = -forward.x * position.x - forward.y * position.y - forward.z * position.z;
+	viewingMatrix = Matrix(left.x, up.x, forward.x, 0.f,
+		left.y, up.y, forward.y, 0.f,
+		left.z, up.z, forward.z, 0.f,
+		-left.x * position.x - left.y * position.y - left.z * position.z, -up.x * position.x - up.y * position.y - up.z * position.z, -forward.x * position.x - forward.y * position.y - forward.z * position.z, 1.f);
 }
 
 float Math::Determinant(const Vector3& a, const Vector3& b, const Vector3& c)

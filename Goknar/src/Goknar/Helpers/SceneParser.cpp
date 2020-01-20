@@ -144,7 +144,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream << child->GetText() << std::endl;
 			stream >> fovY;
 
-			float resolutionProportion = camera->GetImageWidth() / camera->GetImageHeight();
+			float resolutionProportion = (float)camera->GetImageWidth() / camera->GetImageHeight();
 
 			float halfOfFovY = fovY * 0.5f;
 			float top, bottom, left, right;
@@ -537,7 +537,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		if (child)
 		{
 			stream << child->GetText() << std::endl;
-			int uvIndex = 0;
+			unsigned int uvIndex = 0;
 			Vector2 UV;
 			while (!(stream >> UV.x).eof())
 			{
@@ -557,97 +557,100 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 	//Get Objects
 	element = root->FirstChildElement("Objects");
-	element = element->FirstChildElement("Object");
-	ObjectBase* object;
-	while (element)
+	if (element)
 	{
-		object = new ObjectBase();
-		MeshComponent* meshComponent = new MeshComponent(object);
-
-		child = element->FirstChildElement("PivotPoint");
-		if (child)
+		element = element->FirstChildElement("Object");
+		ObjectBase* object;
+		while (element)
 		{
-			stream << child->GetText() << std::endl;
-			Vector3 pivotPoint;
-			stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
-			meshComponent->SetPivotPoint(pivotPoint);
+			object = new ObjectBase();
+			MeshComponent* meshComponent = new MeshComponent(object);
+
+			child = element->FirstChildElement("PivotPoint");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 pivotPoint;
+				stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
+				meshComponent->SetPivotPoint(pivotPoint);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("RelativePosition");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 relativePosition;
+				stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
+				meshComponent->SetRelativePosition(relativePosition);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("RelativeRotation");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 relativeRotation;
+				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
+				relativeRotation.ConvertDegreeToRadian();
+				meshComponent->SetRelativeRotation(relativeRotation);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("RelativeScaling");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 relativeScaling;
+				stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
+				meshComponent->SetRelativeScaling(relativeScaling);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("Mesh");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				int meshIndex;
+				stream >> meshIndex;
+				meshComponent->SetMesh(scene->GetMesh(meshIndex));
+			}
+
+			child = element->FirstChildElement("WorldPosition");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 worldPosition;
+				stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
+				object->SetWorldPosition(worldPosition);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("WorldRotation");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 worldRotation;
+				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
+				worldRotation.ConvertDegreeToRadian();
+				object->SetWorldRotation(worldRotation);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("WorldScaling");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 worldScaling;
+				stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
+				object->SetWorldScaling(worldScaling);
+			}
+			stream.clear();
+			stream.clear();
+
+			scene->AddStaticObject(object);
+			element = element->NextSiblingElement("Object");
 		}
 		stream.clear();
-
-		child = element->FirstChildElement("RelativePosition");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 relativePosition;
-			stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
-			meshComponent->SetRelativePosition(relativePosition);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("RelativeRotation");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 relativeRotation;
-			stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-			relativeRotation.ConvertDegreeToRadian();
-			meshComponent->SetRelativeRotation(relativeRotation);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("RelativeScaling");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 relativeScaling;
-			stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
-			meshComponent->SetRelativeScaling(relativeScaling);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("Mesh");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			int meshIndex;
-			stream >> meshIndex;
-			meshComponent->SetMesh(scene->GetMesh(meshIndex));
-		}
-
-		child = element->FirstChildElement("WorldPosition");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 worldPosition;
-			stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
-			object->SetWorldPosition(worldPosition);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("WorldRotation");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 worldRotation;
-			stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-			worldRotation.ConvertDegreeToRadian();
-			object->SetWorldRotation(worldRotation);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("WorldScaling");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			Vector3 worldScaling;
-			stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
-			object->SetWorldScaling(worldScaling);
-		}
-		stream.clear();
-		stream.clear();
-
-		scene->AddStaticObject(object);
-		element = element->NextSiblingElement("Object");
 	}
-	stream.clear();
 }

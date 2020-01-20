@@ -144,7 +144,7 @@ void WindowManager::ToggleFullscreen()
 	if (!isInFullscreen_)
 	{
 		mainMonitor_ = glfwGetPrimaryMonitor();
-		glfwSetWindowMonitor(mainWindow_, mainMonitor_, 0, 0, windowWidth_, windowHeight_, 60);
+		glfwSetWindowMonitor(mainWindow_, mainMonitor_, 0, 0, windowWidth_, windowHeight_, GLFW_DONT_CARE);
 	}
 
 	isInFullscreen_ = !isInFullscreen_;

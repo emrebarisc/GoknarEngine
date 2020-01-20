@@ -10,6 +10,7 @@ class GOKNAR_API Colori
 {
 public:
     Colori()
+        : r(0), g(0), b(0)
     {
 
     }
@@ -90,6 +91,7 @@ class Colorf
 {
 public:
     Colorf()
+        : r(0.f), g(0.f), b(0.f)
     {
 
     }

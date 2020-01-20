@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "Material.h"
 #include "Model/Mesh.h"
+#include "ObjectBase.h"
 #include "Helpers/SceneParser.h"
 #include "Renderer/Texture.h"
 

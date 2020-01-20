@@ -49,6 +49,21 @@ public:
 	{
 		return relativeTransformationMatrix_;
 	}
+	
+	Vector3 GetForwardVector()
+	{
+		return Vector3(relativeTransformationMatrix_[0], relativeTransformationMatrix_[4], relativeTransformationMatrix_[8]);
+	}
+
+	Vector3 GetLeftVector()
+	{
+		return Vector3(relativeTransformationMatrix_[1], relativeTransformationMatrix_[5], relativeTransformationMatrix_[9]);
+	}
+
+	Vector3 GetUpVector()
+	{
+		return Vector3(relativeTransformationMatrix_[2], relativeTransformationMatrix_[6], relativeTransformationMatrix_[10]);
+	}
 
 	virtual void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) = 0;
 

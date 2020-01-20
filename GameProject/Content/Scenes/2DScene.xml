@@ -3,7 +3,7 @@
 	<Cameras>
 		<Camera id = "1">
       <Projection>Orthographic</Projection>
-			<Position>0 0 10</Position>
+			<Position>0 0 5</Position>
 			<Gaze>0 0 -1.0</Gaze>
 			<Up>0 1.0 0</Up>
 			<NearPlane>-0.5 0.5 -0.28125 0.28125</NearPlane>
@@ -87,22 +87,15 @@
 	    </Material>
 	</Materials>
 
-	<Objects>
-		<Mesh id = "1">
+  <Meshes>
+		<Mesh id = "0">
 			<Material>0</Material>
-			<PivotPoint>0 0 0</PivotPoint>
-			<RelativePosition>0 0 0</RelativePosition>
-			<RelativeRotation>0 0 0</RelativeRotation>
-			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldPosition>0 0 0</WorldPosition>
-			<WorldRotation>0 0 0</WorldRotation>
-			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
-	        	-0.5 2.5 0
-	        	-5.5 2.5 0
-	        	-5.5 -2.5 0
-	        	-0.5 -2.5 0.0
-	      	</Vertices>
+        0 0 0
+        0 1 0
+        1 0 0
+        1 1 0
+      </Vertices>
 			<Normals>
 				0.0 0.0 1.0
 				0.0 0.0 1.0
@@ -110,48 +103,62 @@
 				0.0 0.0 1.0
 			</Normals>
 			<Faces>
-				0 1 2
-				2 3 0
+				0 2 1
+				2 3 1
 			</Faces>
       <UVs>
-        1.0 0.0
         0.0 0.0
         0.0 1.0
+        1.0 0.0
         1.0 1.0
       </UVs>
     </Mesh>
-		<Mesh id = "2">
+		<Mesh id = "1">
 			<Material>1</Material>
-			<PivotPoint>0 0 0</PivotPoint>
-			<RelativePosition>0 0 0</RelativePosition>
-			<RelativeRotation>0 0 0</RelativeRotation>
-			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldPosition>0 0 0</WorldPosition>
-			<WorldRotation>0 0 0</WorldRotation>
-			<WorldScaling>1 1 1</WorldScaling>
 			<Vertices>
-				5.5 2.5 0
-				0.5 2.5 0
-				0.5 -2.5 0 
-				5.5 -2.5 0.0 
-	    </Vertices>
-				<Normals>
-					0.0 0.0 1.0
-					0.0 0.0 1.0
-					0.0 0.0 1.0
-					0.0 0.0 1.0
-				</Normals>
-				<Faces>
-					0 1 2
-					2 3 0
-				</Faces>
-	      <UVs>
-	        1.0 0.0
-	        0.0 0.0
-	        0.0 1.0
-	        1.0 1.0
-	      </UVs>
-	    </Mesh>
-	</Objects>
+        0 0 0
+        0 1 0
+        1 0 0
+        1 1 0
+      </Vertices>
+			<Normals>
+				0.0 0.0 1.0
+				0.0 0.0 1.0
+				0.0 0.0 1.0
+				0.0 0.0 1.0
+			</Normals>
+			<Faces>
+				0 2 1
+				2 3 1
+			</Faces>
+      <UVs>
+        0.0 0.0
+        0.0 1.0
+        1.0 0.0
+        1.0 1.0
+      </UVs>
+    </Mesh>
+	</Meshes>
+
+  <Objects>
+    <Object id = "0">
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0 0 0</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>0</Mesh>
+    </Object>
+    <Object id = "1">
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>1.25 0 0</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>1</Mesh>
+    </Object>
+  </Objects>
 
 </Scene>

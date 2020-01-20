@@ -8,7 +8,7 @@ Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) 
 	position_(position),
 	forwardVector_(gaze),
 	upVector_(up),
-	rightVector_(forwardVector_.Cross(upVector_)),
+	leftVector_(forwardVector_.Cross(upVector_)),
 	projection_(CameraProjection::Perspective)
 {
 	SetProjectionMatrix();
@@ -21,8 +21,8 @@ void Camera::Init()
 
 	if (-EPSILON <= forwardDotUp && forwardDotUp <= EPSILON)
 	{
-		rightVector_ = forwardVector_.Cross(upVector_);
-		upVector_ = rightVector_.Cross(forwardVector_);
+		leftVector_ = forwardVector_.Cross(upVector_);
+		upVector_ = leftVector_.Cross(forwardVector_);
 	}
 
 	LookAt();
@@ -50,7 +50,7 @@ void Camera::MoveUpward(float value)
 
 void Camera::MoveRight(float value)
 {
-	position_ += rightVector_ * value;
+	position_ += leftVector_ * value;
 
 	LookAt();
 }
@@ -58,23 +58,23 @@ void Camera::MoveRight(float value)
 void Camera::Yaw(float value)
 {
 	forwardVector_ = forwardVector_.Rotate(upVector_ * value);
-	rightVector_ = forwardVector_.Cross(upVector_);
+	leftVector_ = forwardVector_.Cross(upVector_);
 
 	LookAt();
 }
 
 void Camera::Pitch(float value)
 {
-	forwardVector_ = forwardVector_.Rotate(rightVector_ * value);
-	upVector_ = rightVector_.Cross(forwardVector_);
+	forwardVector_ = forwardVector_.Rotate(leftVector_ * value);
+	upVector_ = leftVector_.Cross(forwardVector_);
 
 	LookAt();
 }
 
 void Camera::Roll(float value)
 {
-	rightVector_ = rightVector_.Rotate(forwardVector_ * value);
-	upVector_ = rightVector_.Cross(forwardVector_);
+	leftVector_ = leftVector_.Rotate(forwardVector_ * value);
+	upVector_ = leftVector_.Cross(forwardVector_);
 
 	LookAt();
 }
@@ -83,9 +83,9 @@ void Camera::RotateAbout(const Vector3& axis, float angle)
 {
 	Matrix rotationMatrix = Matrix::GetRotationMatrixAboutAnAxis(axis, angle);
 
-	rightVector_ = rotationMatrix * Vector4(rightVector_, 0.f);
+	leftVector_ = rotationMatrix * Vector4(leftVector_, 0.f);
 	upVector_ = rotationMatrix * Vector4(upVector_, 0.f);
-	forwardVector_ = upVector_.Cross(rightVector_);
+	forwardVector_ = upVector_.Cross(leftVector_);
 
 	LookAt();
 }
