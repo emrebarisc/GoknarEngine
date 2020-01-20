@@ -28,9 +28,9 @@ Game::Game() : Application()
 	//mainScene_->ReadSceneData("./Content/Scenes/ThreeDifferentShapes.xml");
 	//mainScene_->ReadSceneData("./Content/Scenes/SphereWithNormals.xml");
 	//mainScene_->ReadSceneData("./Content/Scenes/ThreeDifferentShapesTransformations.xml");
-	//mainScene_->ReadSceneData("./Content/Scenes/2DScene.xml");
+	mainScene_->ReadSceneData("./Content/Scenes/2DScene.xml");
 	//mainScene_->ReadSceneData("./Content/Scenes/GameProjectScene.xml");
-	mainScene_->ReadSceneData("./Content/Scenes/AirPlane.xml");
+	//mainScene_->ReadSceneData("./Content/Scenes/AirPlane.xml");
 
 	boxGameObject = new Airplane();
 }

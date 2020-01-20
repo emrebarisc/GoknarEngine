@@ -52,10 +52,11 @@ vec3 DirectionalLight0Intensity = vec3(0.750000, 0.750000, 0.750000);
 
 void main()
 {
-	diffuseReflectance = texture(texture0, textureUV);
-	if (diffuseReflectance.a < 0.5f) discard;
+	color = texture(texture0, textureUV).rgba;
 
-	vec3 lightColor = sceneAmbient * ambientReflectance;
-	lightColor += CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity);
-	color = vec4(lightColor, diffuseReflectance.a);
+	//diffuseReflectance = texture(texture0, textureUV);
+	//if (diffuseReflectance.a < 0.5f) discard;
+	//vec3 lightColor = sceneAmbient * ambientReflectance;
+	//lightColor += CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity);
+	//color = vec4(lightColor, diffuseReflectance.a);
 }

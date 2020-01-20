@@ -9,12 +9,6 @@
 #include "Goknar/Log.h"
 #include "Goknar/Renderer/Shader.h"
 
-
-
-// TEMP
-#include "Goknar/Engine.h"
-#include "Goknar/Scene.h"
-
 void Texture::Init()
 {
 	if (!LoadTextureImage())
@@ -26,6 +20,7 @@ void Texture::Init()
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	glGenTextures(1, &rendererTextureId_);
+	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
 	glBindTexture(GL_TEXTURE_2D, rendererTextureId_);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -42,13 +37,14 @@ void Texture::Init()
 	}
 
 	glGenerateMipmap(GL_TEXTURE_2D);
+		
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Texture::Bind(Shader* shader) const
 {
 	shader->SetInt(name_.c_str(), rendererTextureId_);
-	glActiveTexture(GL_TEXTURE0 + rendererTextureId_ - 1);
+	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
 	glBindTexture(GL_TEXTURE_2D, rendererTextureId_);
 }
 

@@ -18,10 +18,10 @@ class GOKNAR_API ObjectBase
 public:
     ObjectBase();
 
-    virtual void BeginGame()
-    {
-        
-    }
+	virtual void BeginGame()
+	{
+
+	}
 
     virtual void Tick(float deltaTime)
     {

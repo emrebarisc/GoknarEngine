@@ -16,17 +16,17 @@
 
 Airplane::Airplane() : ObjectBase()
 {
-	planeMeshComponent_ = new MeshComponent(this);
-	planeMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(0));
+	//planeMeshComponent_ = new MeshComponent(this);
+	//planeMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(0));
 
-	propellerMeshComponent_ = new MeshComponent(this);
-	propellerMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(1));
+	//propellerMeshComponent_ = new MeshComponent(this);
+	//propellerMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(1));
 
-	propellerRotationSpeed_ = 3600.f;
-	moveRightSpeed_ = 30.f;
-	moveLefttSpeed_ = 30.f;
+	//propellerRotationSpeed_ = 3600.f;
+	//moveRightSpeed_ = 30.f;
+	//moveLefttSpeed_ = 30.f;
 
-	SetTickable(true);
+	SetTickable(false);
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, std::bind(&Airplane::SpaceKeyDown, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&Airplane::GoLeft, this));

@@ -349,6 +349,16 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				stream >> textureImagePath;
 				texture->SetTextureImagePath(textureImagePath.c_str());
 			}
+			stream.clear();
+
+			child = element->FirstChildElement("Name");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string textureName;
+				stream >> textureName;
+				texture->SetName(textureName.c_str());
+			}
 
 			scene->AddTexture(texture);
 			element = element->NextSiblingElement("Texture");
