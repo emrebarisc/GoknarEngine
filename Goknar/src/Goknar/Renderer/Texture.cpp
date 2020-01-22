@@ -5,7 +5,7 @@
 #include "glad/glad.h"
 #include <gl/GLU.h>
 
-#include "Goknar/Managers/IOManager.h"
+#include "Goknar/IO/IOManager.h"
 #include "Goknar/Log.h"
 #include "Goknar/Renderer/Shader.h"
 

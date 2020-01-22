@@ -16,8 +16,8 @@ public:
 
 private:
 	void SpaceKeyDown();
-	void GoLeft();
-	void GoRight();
+	void PositiveYaw();
+	void NegativeYaw();
 	void PositivePitch();
 	void NegativePitch();
 

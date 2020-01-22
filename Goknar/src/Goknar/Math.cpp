@@ -3,12 +3,14 @@
 #include "Math.h"
 #include "Matrix.h"
 
+const Vector2 Vector2::ZeroVector = Vector2(0.f);
+
 const Vector3 Vector3::ZeroVector = Vector3(0.f);
 const Vector3 Vector3::ForwardVector = Vector3(1.f, 0.f, 0.f);
 const Vector3 Vector3::LeftVector = Vector3(0.f, 1.f, 0.f);
 const Vector3 Vector3::UpVector = Vector3(0.f, 0.f, 1.f);
 
-const Vector2 Vector2::ZeroVector = Vector2(0.f);
+const Vector4 Vector4::ZeroVector = Vector4(0.f);
 
 //constexpr float MAX_FLOAT = std::numeric_limits<float>::max();
 //constexpr int MAX_INT = std::numeric_limits<int>::max();

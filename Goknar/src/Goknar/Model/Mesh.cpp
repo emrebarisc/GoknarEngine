@@ -9,7 +9,7 @@
 #include "Goknar/Renderer/Shader.h"
 
 #include "Goknar/Managers/CameraManager.h"
-#include "Goknar/Managers/IOManager.h"
+#include "Goknar/IO/IOManager.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
 
 Mesh::Mesh() :

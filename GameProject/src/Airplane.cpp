@@ -16,21 +16,21 @@
 
 Airplane::Airplane() : ObjectBase()
 {
-	//planeMeshComponent_ = new MeshComponent(this);
-	//planeMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(0));
+	planeMeshComponent_ = new MeshComponent(this);
+	planeMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(0));
 
-	//propellerMeshComponent_ = new MeshComponent(this);
-	//propellerMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(1));
+	propellerMeshComponent_ = new MeshComponent(this);
+	propellerMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(1));
 
-	//propellerRotationSpeed_ = 3600.f;
-	//moveRightSpeed_ = 30.f;
-	//moveLefttSpeed_ = 30.f;
+	propellerRotationSpeed_ = 3600.f;
+	moveRightSpeed_ = 30.f;
+	moveLefttSpeed_ = 30.f;
 
-	SetTickable(false);
+	SetTickable(true);
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, std::bind(&Airplane::SpaceKeyDown, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&Airplane::GoLeft, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_REPEAT, std::bind(&Airplane::GoRight, this));
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&Airplane::PositiveYaw, this));
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_REPEAT, std::bind(&Airplane::NegativeYaw, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_REPEAT, std::bind(&Airplane::PositivePitch, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_REPEAT, std::bind(&Airplane::NegativePitch, this));
 }
@@ -72,13 +72,12 @@ void Airplane::SpaceKeyDown()
 	propellerRotationSpeed_ = propellerRotationSpeed_ > 0 ? 0 : 3600.f;
 }
 
-void Airplane::GoLeft()
+void Airplane::PositiveYaw()
 {
-	std::cout << "Left" << std::endl;
 	SetWorldRotation(GetWorldRotation() - GetUpVector() * 0.05f);
 }
 
-void Airplane::GoRight()
+void Airplane::NegativeYaw()
 {
 	SetWorldRotation(GetWorldRotation() + GetUpVector() * 0.05f);
 }

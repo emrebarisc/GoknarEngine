@@ -7,7 +7,7 @@
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
-#include "Goknar/Managers/IOManager.h"
+#include "Goknar/IO/IOManager.h"
 
 ShaderBuilder* ShaderBuilder::instance_ = nullptr;
 
@@ -125,9 +125,9 @@ void ShaderBuilder::BuildSceneVertexShader()
 	sceneVertexShader_ = GetShaderVersionText();
 	sceneVertexShader_ += R"(
 
-layout(location = 0) in vec3 position;
-layout(location = 1) in vec3 normal;
-layout(location = 2) in vec3 color;
+layout(location = 0) in vec4 color;
+layout(location = 1) in vec3 position;
+layout(location = 2) in vec3 normal;
 layout(location = 3) in vec2 uv;
 
 // Transformation matrix is calculated by multiplying  

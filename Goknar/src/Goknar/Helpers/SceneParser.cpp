@@ -12,6 +12,7 @@
 #include "Goknar/Material.h"
 #include "Goknar/Model/Mesh.h"
 #include "Goknar/Components/MeshComponent.h"
+#include "Goknar/IO/ModelLoader.h"
 #include "Goknar/ObjectBase.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Texture.h"
@@ -503,15 +504,33 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	//Get Meshes
 	element = root->FirstChildElement("Meshes");
 	element = element->FirstChildElement("Mesh");
-	Mesh* mesh;
 	while (element)
 	{
-		mesh = new Mesh();
 		child = element->FirstChildElement("Material");
 		stream << child->GetText() << std::endl;
 
 		int materialId;
 		stream >> materialId;
+
+		child = element->FirstChildElement("PLYPath");
+		if (child)
+		{
+			std::string plyFilePath;
+			stream << child->GetText() << std::endl;
+			stream >> plyFilePath;
+
+			Mesh* mesh = ModelLoader::LoadPlyFile(plyFilePath.c_str());
+			mesh->SetMaterial(scene->GetMaterial(materialId));
+			if (mesh != nullptr)
+			{
+				scene->AddMesh(mesh);
+			}
+			stream.clear();
+			element = element->NextSiblingElement("Mesh");
+			continue;
+		}
+
+		Mesh* mesh = new Mesh();
 		mesh->SetMaterial(scene->GetMaterial(materialId));
 
 		child = element->FirstChildElement("Vertices");

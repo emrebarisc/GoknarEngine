@@ -9,7 +9,7 @@
 #include "Goknar/Model/Mesh.h"
 #include "Goknar/Model/MeshInstance.h"
 
-#include "Goknar/Managers/IOManager.h"
+#include "Goknar/IO/IOManager.h"
 #include "Goknar/Renderer/Shader.h"
 
 #include <Windows.h>
@@ -91,23 +91,23 @@ void Renderer::SetBufferData()
 		vertexStartingIndex += mesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
 	}
 
-	// Vertex position
+	// Vertex color
 	long long offset = 0;
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
+
+	// Vertex position
+	offset += sizeof(VertexData::color);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
 
 	// Vertex normal
 	offset += sizeof(VertexData::position);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
-	glEnableVertexAttribArray(1);
-
-	// Vertex color
-	offset += sizeof(VertexData::normal);
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
 
 	// Vertex UV
-	offset += sizeof(VertexData::color);
+	offset += sizeof(VertexData::normal);
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
 }

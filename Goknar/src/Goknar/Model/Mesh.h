@@ -13,21 +13,35 @@ class Material;
 class GOKNAR_API Face
 {
 public:
+	Face()
+	{
+		vertexIndices[0] = 0;
+		vertexIndices[1] = 0;
+		vertexIndices[2] = 0;
+	}
+
+	Face(int faceIndex1, int faceIndex2, int faceIndex3)
+	{
+		vertexIndices[0] = faceIndex1;
+		vertexIndices[1] = faceIndex2;
+		vertexIndices[2] = faceIndex3;
+	}
+
 	unsigned int vertexIndices[3];
 };
 
 class GOKNAR_API VertexData
 {
 public:
-	VertexData() : position(Vector3::ZeroVector), normal(Vector3::ZeroVector), color(Vector3::ZeroVector), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& p) : position(p), normal(Vector3::ZeroVector), color(Vector3::ZeroVector), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& pos, const Vector3& n) : position(pos), normal(n), color(Vector3::ZeroVector), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& pos, const Vector3& n, const Vector3& c) : position(pos), normal(n), color(c), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& pos, const Vector3& n, const Vector3& c, const Vector2& uvCoord) : position(pos), normal(n), color(c), uv(uvCoord) { }
+	VertexData() : position(Vector3::ZeroVector), normal(Vector3::ZeroVector), color(Vector4::ZeroVector), uv(Vector2::ZeroVector) { }
+	VertexData(const Vector3& p) : position(p), normal(Vector3::ZeroVector), color(Vector4::ZeroVector), uv(Vector2::ZeroVector) { }
+	VertexData(const Vector3& pos, const Vector3& n) : position(pos), normal(n), color(Vector4(1.f)), uv(Vector2::ZeroVector) { }
+	VertexData(const Vector3& pos, const Vector3& n, const Vector4& c) : position(pos), normal(n), color(c), uv(Vector2::ZeroVector) { }
+	VertexData(const Vector3& pos, const Vector3& n, const Vector4& c, const Vector2& uvCoord) : position(pos), normal(n), color(c), uv(uvCoord) { }
 
+	Vector4 color;
 	Vector3 position;
 	Vector3 normal;
-	Vector3 color;
 	Vector2 uv;
 };
 
@@ -56,6 +70,12 @@ public:
 	void AddVertex(const Vector3& vertex)
 	{
 		vertices_->push_back(VertexData(vertex));
+		vertexCount_++;
+	}
+
+	void AddVertexData(const VertexData& vertexData)
+	{
+		vertices_->push_back(vertexData);
 		vertexCount_++;
 	}
 

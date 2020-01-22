@@ -7,7 +7,7 @@
 #include "Goknar/Camera.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
-#include "Goknar/Managers/IOManager.h"
+#include "Goknar/IO/IOManager.h"
 #include "Goknar/Log.h"
 #include "Goknar/Matrix.h"
 #include "Goknar/Renderer/Shader.h"

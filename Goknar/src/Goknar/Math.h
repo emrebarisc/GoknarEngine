@@ -228,18 +228,18 @@ struct GOKNAR_API Vector4
 
 	Vector4(float xVal, float yVal, float zVal, float wVal);
 
-  /* Vector4(const Vector4 &rhs) : x(rhs.x), y(rhs.y), z(rhs.z), w(rhs.w)
-  {
+	Vector4(const Vector4 &rhs) : x(rhs.x), y(rhs.y), z(rhs.z), w(rhs.w)
+	{
 
-  } */
+	}
 
 	Vector4(const Vector3& rhs, float value = 0);
-
-  Vector4 operator*(const Matrix &rhs) const;
+	Vector4 operator*(const Matrix &rhs) const;
 
 	inline friend std::ostream& operator<<(std::ostream& out, const Vector4& val);
 
-  float x, y, z, w;
+	static const Vector4 ZeroVector;
+	float x, y, z, w;
 };
 
 class GOKNAR_API Math
