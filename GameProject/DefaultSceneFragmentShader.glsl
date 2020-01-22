@@ -4,7 +4,6 @@
 out vec3 color;
 in vec3 fragmentPosition;
 in vec3 vertexNormal;
-in vec3 vertexColor;
 uniform vec3 viewPosition;
 // Base Material Variables
 uniform vec3 ambientReflectance;

@@ -130,10 +130,10 @@ struct GOKNAR_API Vector3
 	inline float Length() const;
 
 	static inline Vector3 Cross(const Vector3& v1, const Vector3& v2);
-
 	inline Vector3 Cross(const Vector3& rhs) const;
 
 	static inline float Dot(const Vector3& v1, const Vector3& v2);
+	inline float Dot(const Vector3& rhs);
 
 	void Normalize();
 

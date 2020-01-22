@@ -174,7 +174,7 @@ float Vector3::Length() const
 	return sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2));
 }
 
-Vector3 Vector3::Cross(const Vector3& v1, const Vector3& v2)
+inline Vector3 Vector3::Cross(const Vector3& v1, const Vector3& v2)
 {
 	return Vector3(v1.y * v2.z - v1.z * v2.y,
 	               v1.z * v2.x - v1.x * v2.z,
@@ -188,9 +188,14 @@ Vector3 Vector3::Cross(const Vector3& rhs) const
 				   x * rhs.y - y * rhs.x);
 }
 
-float Vector3::Dot(const Vector3& v1, const Vector3& v2)
+inline float Vector3::Dot(const Vector3& v1, const Vector3& v2)
 {
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+float Vector3::Dot(const Vector3& rhs)
+{
+	return x * rhs.x + y * rhs.y + z * rhs.z;
 }
 
 void Vector3::Normalize()

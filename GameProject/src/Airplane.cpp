@@ -54,8 +54,8 @@ void Airplane::Tick(float deltaTime)
 
 	propellerMeshComponent_->SetRelativeRotation(propellerMeshComponent_->GetRelativeRotation() + Vector3(0.f, DEGREE_TO_RADIAN(deltaTime * propellerRotationSpeed_), 0.f));
 
-	//SetWorldPosition(GetWorldPosition() + GetLeftVector() * 5.f * deltaTime);
-	//SetWorldRotation(GetWorldRotation() + GetUpVector() * deltaTime);
+	//SetWorldPosition(GetWorldPosition() + GetLeftVector() * 25.f * deltaTime);
+	SetWorldRotation(GetWorldRotation() + GetUpVector() * deltaTime);
 	SetWorldRotation(GetWorldRotation() + GetLeftVector() * deltaTime);
 
 	//planeMeshComponent_->SetRelativePosition(planeMeshComponent_->GetRelativePosition() + planeMeshComponent_->GetForwardVector() * 5.f * deltaTime);

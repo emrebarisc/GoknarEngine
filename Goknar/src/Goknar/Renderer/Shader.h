@@ -50,9 +50,9 @@ public:
 		textures_.push_back(texture);
 	}
 
-	const std::vector<const Texture*>& GetTextures() const
+	const std::vector<const Texture*>* GetTextures() const
 	{
-		return textures_;
+		return &textures_;
 	}
 
 	void SetMVP(const Matrix& model/*, const Matrix& view, const Matrix& projection*/) const;

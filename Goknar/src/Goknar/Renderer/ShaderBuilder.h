@@ -4,6 +4,7 @@
 #include "Goknar/Core.h"
 
 class DirectionalLight;
+class Material;
 class PointLight;
 class SpotLight;
 
@@ -42,6 +43,8 @@ public:
 		shaderVersion_ = shaderVersion;
 	}
 
+	void GetShaderForMaterial(const Material* material, std::string& vertexShader, std::string& fragmentShader);
+
 protected:
 
 private:
@@ -49,24 +52,28 @@ private:
 
 	ShaderBuilder();
 	~ShaderBuilder();
-
-	void BuildSceneVertexShader();
-	void BuildSceneFragmentShader();
-
-	void CombineShader();
-
+	
 	std::string shaderVersion_;
 
-	// Vertex shader variables
+	// Vertex shader
+	void VS_BuildScene();
+	std::string VS_GetVariableTexts();
+	std::string VS_GetMain();
+	std::string VS_GetVertexNormalText();
+
 	std::string vertexShaderOutsideMain_;
 	std::string vertexShaderInsideMain_;
 	std::string sceneVertexShader_;
 
 	// Fragment Shader
+	void FS_BuildScene();
+	std::string FS_GetVariableTexts();
 
 	// Fragment shader builder getter functions
 	std::string GetShaderVersionText();
 	std::string GetMaterialVariables();
+
+	void CombineFragmentShader();
 
 	// Point Light
 	std::string GetPointLightUniformTexts(const std::string& lightVariableName);
@@ -90,6 +97,8 @@ private:
 	std::string uniforms_;
 	std::string fragmentShaderOutsideMain_;
 	std::string fragmentShaderInsideMain_;
+	std::string fragmentShaderVertexNormalText_;
+
 	std::string sceneFragmentShader_;
 };
 

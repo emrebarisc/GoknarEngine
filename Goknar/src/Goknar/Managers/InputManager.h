@@ -11,7 +11,7 @@ struct GLFWwindow;
 
 enum class GOKNAR_API INPUT_TYPE : uint8_t
 {
-	G_KEYBOARD = 0,
+	G_KEYBOARD = 0x00,
 	G_CHAR,
 	G_MOUSE,
 	G_CURSOR,
@@ -20,7 +20,7 @@ enum class GOKNAR_API INPUT_TYPE : uint8_t
 
 enum class GOKNAR_API INPUT_ACTION : uint8_t
 {
-	G_PRESS = 0,
+	G_PRESS = 0x00,
 	G_RELEASE,
 	G_REPEAT
 };
@@ -241,15 +241,15 @@ public:
 private:
 	// Keyboard Delegates
 	std::unordered_map< int, KeyboardDelegateVector > pressedKeyDelegates_;
-	std::unordered_map< int, KeyboardDelegateVector > releasedKeyDelegates_;
 	std::unordered_map< int, KeyboardDelegateVector > repeatedKeyDelegates_;
+	std::unordered_map< int, KeyboardDelegateVector > releasedKeyDelegates_;
 
 	KeyboardListenerVector keyboardListeners_;
 
 	// Mouse Delegates
 	std::unordered_map< int, MouseDelegateVector > pressedMouseDelegates_;
-	std::unordered_map< int, MouseDelegateVector > releasedMouseDelegates_;
 	std::unordered_map< int, MouseDelegateVector > repeatedMouseDelegates_;
+	std::unordered_map< int, MouseDelegateVector > releasedMouseDelegates_;
 
 	// Cursor Delegates
 	CursorDelegateVector cursorDelegates_;

@@ -91,7 +91,7 @@ Mesh* ModelLoader::LoadPlyFile(const char* path)
 	float blue = 255.f;
 	float alpha = 255.f;
 	
-	for (unsigned int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
+	for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
 	{
 		std::getline(file, line);
 		stringStream << line;
@@ -116,7 +116,7 @@ Mesh* ModelLoader::LoadPlyFile(const char* path)
 		stringStream.clear();
 	}
 
-	for (unsigned int faceIndex = 0; faceIndex < faceCount; faceIndex++)
+	for (int faceIndex = 0; faceIndex < faceCount; faceIndex++)
 	{
 		std::getline(file, line);
 		stringStream << line;
