@@ -9,3 +9,6 @@ obj/
 *.vcxproj
 *.filters
 GameProject/Goknar.dll
+Goknar/outsourced/spdlog
+Goknar/outsourced/imgui/imgui
+Goknar/outsourced/GLFW/GLFW

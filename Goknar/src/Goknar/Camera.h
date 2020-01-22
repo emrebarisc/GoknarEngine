@@ -55,6 +55,11 @@ public:
 		}
 	}
 
+	~Camera()
+	{
+
+	}
+
 	void Init();
 	void Update();
 

@@ -129,7 +129,7 @@
 	</Meshes>
 
   <Objects>
-    <Object id = "0">
+    <MeshObject id = "0">
       <RelativePosition>0 0 0</RelativePosition>
       <RelativeRotation>0 0 0</RelativeRotation>
       <RelativeScaling>1 1 1</RelativeScaling>
@@ -137,8 +137,8 @@
       <WorldRotation>0 0 0</WorldRotation>
       <WorldScaling>1 1 1</WorldScaling>
       <Mesh>0</Mesh>
-    </Object>
-    <Object id = "1">
+    </MeshObject>
+    <MeshObject id = "1">
       <RelativePosition>0 0 0</RelativePosition>
       <RelativeRotation>0 0 0</RelativeRotation>
       <RelativeScaling>1 1 1</RelativeScaling>
@@ -146,7 +146,7 @@
       <WorldRotation>0 0 0</WorldRotation>
       <WorldScaling>1 1 1</WorldScaling>
       <Mesh>1</Mesh>
-    </Object>
+    </MeshObject>
   </Objects>
 
 </Scene>

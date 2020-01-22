@@ -596,7 +596,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	element = root->FirstChildElement("Objects");
 	if (element)
 	{
-		element = element->FirstChildElement("Object");
+		element = element->FirstChildElement("MeshObject");
 		ObjectBase* object;
 		while (element)
 		{
@@ -686,7 +686,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream.clear();
 
 			scene->AddStaticObject(object);
-			element = element->NextSiblingElement("Object");
+			element = element->NextSiblingElement("MeshObject");
 		}
 		stream.clear();
 	}
