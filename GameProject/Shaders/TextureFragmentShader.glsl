@@ -14,7 +14,7 @@ uniform sampler2D texture0;
 
 vec4 diffuseReflectance;
 
-vec3 sceneAmbient = vec3(0.392157, 0.392157, 0.392157);
+vec3 sceneAmbient = vec3(0.2, 0.2, 0.2);
 
 vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 {
@@ -46,8 +46,8 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	return clamp(color, 0.f, 1.f);
 }
 
-vec3 DirectionalLight0Direction = vec3(0.615457, 0.492366, -0.615457);
-vec3 DirectionalLight0Intensity = vec3(0.750000, 0.750000, 0.750000);
+vec3 DirectionalLight0Direction = vec3(0.785398163, 0.785398163, 0.0);
+vec3 DirectionalLight0Intensity = vec3(1.0, 0.99, 0.83);
 
 void main()
 {
