@@ -31,7 +31,8 @@ Game::Game() : Application()
 	//mainScene_->ReadSceneData("./Content/Scenes/ThreeDifferentShapesTransformations.xml");
 	//mainScene_->ReadSceneData("./Content/Scenes/2DScene.xml");
 	//mainScene_->ReadSceneData("./Content/Scenes/GameProjectScene.xml");
-	mainScene_->ReadSceneData("./Content/Scenes/AirPlane.xml");
+	//mainScene_->ReadSceneData("./Content/Scenes/AirPlane.xml");
+	mainScene_->ReadSceneData("./Content/Scenes/Village.xml");
 
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
@@ -39,7 +40,7 @@ Game::Game() : Application()
 
 	lastFrameTimePoint = currentTimePoint;
 
-	airplaneGameObject = new Airplane();
+	//airplaneGameObject = new Airplane();
 }
 
 void Game::Run()

@@ -8,11 +8,17 @@
 
 class Texture;
 
-enum class MaterialShadingModel
+enum class MaterialBlendModel
 {
 	Opaque = 0,
 	Masked,
 	Translucent
+};
+
+enum class MaterialShadingModel
+{
+	Default,
+	TwoSided
 };
 
 class GOKNAR_API Material
@@ -63,6 +69,16 @@ public:
 		phongExponent_ = phongExponent;
 	}
 
+	MaterialBlendModel GetBlendModel() const
+	{
+		return blendModel_;
+	}
+
+	void SetBlendModel(MaterialBlendModel blendModel)
+	{
+		blendModel_ = blendModel;
+	}
+
 	MaterialShadingModel GetShadingModel() const
 	{
 		return shadingModel_;
@@ -96,6 +112,7 @@ private:
 
 	float phongExponent_;
 
+	MaterialBlendModel blendModel_;
 	MaterialShadingModel shadingModel_;
 };
 

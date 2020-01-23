@@ -17,7 +17,8 @@ Material::Material() :
 	specularReflectance_(Vector3::ZeroVector),
 	phongExponent_(0.f),
 	shader_(nullptr),
-	shadingModel_(MaterialShadingModel::Opaque)
+	blendModel_(MaterialBlendModel::Opaque),
+	shadingModel_(MaterialShadingModel::Default)
 {
 }
 
@@ -37,6 +38,15 @@ void Material::Init()
 
 void Material::Render(const Matrix& modelMatrix) const
 {
+	if (shadingModel_ == MaterialShadingModel::Default)
+	{
+		glEnable(GL_CULL_FACE);
+	}
+	else if (shadingModel_ == MaterialShadingModel::TwoSided)
+	{
+		glDisable(GL_CULL_FACE);
+	}
+
 	shader_->Use();
 	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, ambientReflectance_);
 	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, diffuseReflectance_);

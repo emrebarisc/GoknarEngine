@@ -155,16 +155,16 @@ void Renderer::AddMeshToRenderer(Mesh* mesh)
 
 void Renderer::AddMeshInstanceToRenderer(MeshInstance* meshInstance)
 {
-	MaterialShadingModel materialShadingModel = meshInstance->GetMesh()->GetMaterial()->GetShadingModel();
+	MaterialBlendModel materialShadingModel = meshInstance->GetMesh()->GetMaterial()->GetBlendModel();
 	switch (materialShadingModel)
 	{
-	case MaterialShadingModel::Opaque:
+	case MaterialBlendModel::Opaque:
 		opaqueMeshInstances_.push_back(meshInstance);
 		break;
-	case MaterialShadingModel::Masked:
+	case MaterialBlendModel::Masked:
 		maskedMeshInstances_.push_back(meshInstance);
 		break;
-	case MaterialShadingModel::Translucent:
+	case MaterialBlendModel::Translucent:
 		translucentMeshInstances_.push_back(meshInstance);
 		break;
 	default:

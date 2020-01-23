@@ -360,6 +360,21 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			}
 			stream.clear();
 
+			child = element->FirstChildElement("Wrapping");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string textureWrapping;
+				stream >> textureWrapping;
+
+				texture->SetTextureWrapping(textureWrapping == "Repeat" ? TextureWrapping::REPEAT :
+											textureWrapping == "MirroredRepeat" ? TextureWrapping::MIRRORED_REPEAT :
+											textureWrapping == "ClampToEdge" ? TextureWrapping::CLAMP_TO_EDGE :
+											textureWrapping == "ClampToBorder" ? TextureWrapping::CLAMP_TO_BORDER :
+											texture->GetTextureWrapping());
+			}
+			stream.clear();
+
 			child = element->FirstChildElement("Name");
 			if (child)
 			{
@@ -429,15 +444,26 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		{
 			material = new Material();
 
+			child = element->FirstChildElement("BlendModel");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string blendModel;
+				stream >> blendModel;
+				material->SetBlendModel(blendModel == "Masked" ? MaterialBlendModel::Masked :
+					blendModel == "Translucent" ? MaterialBlendModel::Translucent :
+					MaterialBlendModel::Opaque);
+			}
+
 			child = element->FirstChildElement("ShadingModel");
 			if (child)
 			{
 				stream << child->GetText() << std::endl;
 				std::string shadingModel;
 				stream >> shadingModel;
-				material->SetShadingModel(shadingModel == "Masked" ? MaterialShadingModel::Masked :
-					shadingModel == "Translucent" ? MaterialShadingModel::Translucent :
-					MaterialShadingModel::Opaque);
+				material->SetShadingModel(shadingModel == "Default" ? MaterialShadingModel::Default :
+										  shadingModel == "TwoSided" ? MaterialShadingModel::TwoSided :
+										  material->GetShadingModel());
 			}
 
 			child = element->FirstChildElement("Shader");

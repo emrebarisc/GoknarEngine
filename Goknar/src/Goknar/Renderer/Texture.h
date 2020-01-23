@@ -6,6 +6,14 @@
 
 class Shader;
 
+enum class TextureWrapping
+{
+	REPEAT = GL_REPEAT,
+	MIRRORED_REPEAT = GL_MIRRORED_REPEAT,
+	CLAMP_TO_EDGE = GL_CLAMP_TO_EDGE,
+	CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER
+};
+
 class Texture
 {
 public:
@@ -15,7 +23,8 @@ public:
 		width_(0),
 		height_(0),
 		channels_(0),
-		rendererTextureId_(-1)
+		rendererTextureId_(-1),
+		textureWrapping_(TextureWrapping::CLAMP_TO_BORDER)
 	{
 		objectId_ = ObjectIDManager::GetInstance()->GetAndIncreaseTextureID();
 		name_ = std::string("texture" + std::to_string(objectId_));
@@ -46,6 +55,16 @@ public:
 		name_ = name;
 	}
 
+	TextureWrapping GetTextureWrapping() const
+	{
+		return textureWrapping_;
+	}
+
+	void SetTextureWrapping(TextureWrapping textureWrapping)
+	{
+		textureWrapping_ = textureWrapping;
+	}
+
 	bool LoadTextureImage();
 
 	void Init();
@@ -58,6 +77,8 @@ private:
 	std::string imagePath_;
 	unsigned char* buffer_;
 	GEuint rendererTextureId_;
+
+	TextureWrapping textureWrapping_;
 
 	int objectId_;
 	int width_;

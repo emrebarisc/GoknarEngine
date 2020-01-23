@@ -1,0 +1,122 @@
+<Scene>
+	<BackgroundColor>50 50 50</BackgroundColor>
+	<Cameras>
+        <Camera id = "1">
+            <Projection>Perspective</Projection>
+        	<Position>7.5 -7.5 7.5</Position>
+        	<Gaze>-0.6123725175857544 0.6123723983764648 -0.4999999403953552</Gaze>
+        	<Up>-0.3535534143447876 0.3535533547401428 0.866025447845459</Up>
+        	<NearPlane>-0.5 0.5 -0.28125 0.28125</NearPlane>
+        	<NearDistance>1</NearDistance>
+        	<ImageResolution>1600 900</ImageResolution>
+        </Camera>
+	</Cameras>
+
+    <Lights>
+		<AmbientLight>100 100 100</AmbientLight>
+    	<PointLight>
+	      <Position>-7.5 7.5 7.5</Position>
+	      <Color>1.0 1.0 1.0</Color>
+	      <Intensity>100</Intensity>
+	    </PointLight>
+	    <PointLight>
+	      <Position>7.5 -7.5 10</Position>
+	      <Color>1.0 1.0 1.0</Color>
+	      <Intensity>100</Intensity>
+	    </PointLight>
+	</Lights>
+
+    <Textures>
+        <Texture>
+            <Path>./Content/Textures/treeBranch.png</Path>
+        </Texture>
+        <Texture>
+            <Path>./Content/Textures/treeBark.png</Path>
+            <Wrapping>Repeat</Wrapping>
+        </Texture>
+    </Textures>
+
+    <Shaders>
+        <Shader id="0">
+            <Type>
+            SelfContained
+            </Type>
+            <VertexShaderPath>
+            ./Shaders/TextureVertexShader.glsl
+            </VertexShaderPath>
+            <FragmentShaderPath>
+            ./Shaders/TextureFragmentShader.glsl
+            </FragmentShaderPath>
+        </Shader>
+        <Shader id="0">
+            <Type>
+            SelfContained
+            </Type>
+            <VertexShaderPath>
+            ./Shaders/TextureVertexShader.glsl
+            </VertexShaderPath>
+            <FragmentShaderPath>
+            ./Shaders/TextureFragmentShader.glsl
+            </FragmentShaderPath>
+        </Shader>
+    </Shaders>
+	
+	<Materials>
+        <Material id = "0">
+          <Shader id="0"/>
+          <Texture id="0"/>
+          <ShadingModel>TwoSided</ShadingModel>
+          <BlendModel>Masked</BlendModel>
+          <AmbientReflectance>0.2 0.2 0.2</AmbientReflectance>
+          <DiffuseReflectance>0.94 0.90 0.55</DiffuseReflectance>
+          <SpecularReflectance>0.2 0.2 0.2</SpecularReflectance>
+          <PhongExponent>3</PhongExponent>
+        </Material>
+        <Material id = "1">
+          <Shader id="1"/>
+          <Texture id="1"/>
+          <BlendModel>Opaque</BlendModel>
+          <AmbientReflectance>0.2 0.2 0.2</AmbientReflectance>
+          <DiffuseReflectance>0.94 0.90 0.55</DiffuseReflectance>
+          <SpecularReflectance>0.2 0.2 0.2</SpecularReflectance>
+          <PhongExponent>3</PhongExponent>
+        </Material>
+	</Materials>
+
+    <Meshes>
+        <Mesh id = "0">
+            <Name>TreeBranches</Name>
+            <Material>0</Material>
+            <PLYPath>./Content/Meshes/Tree/TreeBranches.ply</PLYPath>
+        </Mesh>
+        <Mesh id = "2">
+            <Name>TreeBody</Name>
+            <Material>1</Material>
+            <PLYPath>./Content/Meshes/Tree/TreeBody.ply</PLYPath>
+        </Mesh>
+    </Meshes>
+
+    <Objects>
+        <MeshObject id = "0">
+            <Name>TreeBranches</Name>
+            <RelativePosition>0 0 0</RelativePosition>
+            <RelativeRotation>0 0 0</RelativeRotation>
+            <RelativeScaling>1 1 1</RelativeScaling>
+            <WorldPosition>0 0 0</WorldPosition>
+            <WorldRotation>0 0 0</WorldRotation>
+            <WorldScaling>1 1 1</WorldScaling>
+            <Mesh>0</Mesh>
+        </MeshObject>
+        <MeshObject id = "0">
+            <Name>TreeBody</Name>
+            <RelativePosition>0 0 0</RelativePosition>
+            <RelativeRotation>0 0 0</RelativeRotation>
+            <RelativeScaling>1 1 1</RelativeScaling>
+            <WorldPosition>0 0 0</WorldPosition>
+            <WorldRotation>0 0 0</WorldRotation>
+            <WorldScaling>1 1 1</WorldScaling>
+            <Mesh>1</Mesh>
+        </MeshObject>
+    </Objects>
+
+</Scene>
