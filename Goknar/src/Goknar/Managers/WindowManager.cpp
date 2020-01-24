@@ -72,7 +72,6 @@ void WindowManager::Init()
 
 bool WindowManager::GetWindowShouldBeClosed()
 {
-
 	return glfwWindowShouldClose(mainWindow_);
 }
 

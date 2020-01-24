@@ -23,6 +23,7 @@ Renderer::~Renderer()
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(3);
 
 	glDeleteBuffers(1, &vertexBufferId_);
 	glDeleteBuffers(1, &indexBufferId_);

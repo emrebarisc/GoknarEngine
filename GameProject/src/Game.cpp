@@ -1,6 +1,7 @@
 #include <Goknar.h>
 
 #include "Airplane.h"
+#include "CameraController.h"
 #include "Goknar/Scene.h"
 
 #include <chrono>
@@ -17,6 +18,7 @@ public:
 private:
 
 	Airplane* airplaneGameObject;
+	CameraController* cameraController;
 };
 
 Game::Game() : Application()
@@ -30,7 +32,6 @@ Game::Game() : Application()
 	//mainScene_->ReadSceneData("./Content/Scenes/SphereWithNormals.xml");
 	//mainScene_->ReadSceneData("./Content/Scenes/ThreeDifferentShapesTransformations.xml");
 	//mainScene_->ReadSceneData("./Content/Scenes/2DScene.xml");
-	//mainScene_->ReadSceneData("./Content/Scenes/GameProjectScene.xml");
 	//mainScene_->ReadSceneData("./Content/Scenes/AirPlane.xml");
 	mainScene_->ReadSceneData("./Content/Scenes/Village.xml");
 
@@ -41,6 +42,7 @@ Game::Game() : Application()
 	lastFrameTimePoint = currentTimePoint;
 
 	//airplaneGameObject = new Airplane();
+	cameraController = new CameraController();
 }
 
 void Game::Run()

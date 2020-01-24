@@ -6,6 +6,7 @@
 #include "Log.h"
 #include "ObjectBase.h"
 #include "Scene.h"
+#include "Renderer/Shader.h"
 #include "Renderer/ShaderBuilder.h"
 #include "Editor/ImGuiEditor/ImGuiEditor.h"
 #include "Managers/CameraManager.h"
@@ -19,7 +20,7 @@
 
 GOKNAR_API Engine *engine;
 
-Engine::Engine() : deltaTime_(0.f)
+Engine::Engine() : deltaTime_(0.f), elapsedTime_(0.f)
 {
 	engine = this;
 
@@ -127,6 +128,7 @@ void Engine::Run()
 
 		currentTimePoint = std::chrono::steady_clock::now();
 		deltaTime_ = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
+		elapsedTime_ += deltaTime_;
 
 		lastFrameTimePoint = currentTimePoint;
 	}
@@ -171,4 +173,10 @@ void Engine::AddObjectToRenderer(Mesh* mesh)
 void Engine::SetApplication(Application* application)
 {
 	application_ = application;
+}
+
+void Engine::SetShaderEngineVariables(Shader* shader)
+{
+	shader->SetFloat(SHADER_VARIABLE_NAMES::TIMING::DELTA_TIME, deltaTime_);
+	shader->SetFloat(SHADER_VARIABLE_NAMES::TIMING::ELAPSED_TIME, elapsedTime_);
 }

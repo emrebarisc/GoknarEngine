@@ -56,4 +56,5 @@ void Material::Render(const Matrix& modelMatrix) const
 	shader_->SetMVP(modelMatrix);
 
 	engine->GetApplication()->GetMainScene()->SetShaderDynamicLightUniforms(shader_);
+	engine->SetShaderEngineVariables(shader_);
 }

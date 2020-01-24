@@ -15,7 +15,7 @@
 
 	<Lights>
 		<AmbientLight>25 25 25</AmbientLight>
-    <!--<PointLight>
+    <PointLight>
 	      <Position>-7.5 7.5 7.5</Position>
 	      <Color>1.0 1.0 1.0</Color>
 	      <Intensity>50</Intensity>
@@ -37,7 +37,7 @@
       <Intensity>200</Intensity>
       <CoverageAngle>10</CoverageAngle>
       <FalloffAngle>8</FalloffAngle>
-    </SpotLight>-->
+    </SpotLight>
   </Lights>
 
 	<Materials>        
@@ -65,7 +65,7 @@
 
 	</Materials>
 
-	<Objects>
+	<Meshes>
 		<Mesh id = "1">
 			<Material>0</Material>
 			<Vertices>
@@ -556,6 +556,36 @@
 				1 3 2
 			</Faces>
 		</Mesh>
-	</Objects>
+	</Meshes>
+
+  <Objects>
+    <MeshObject id = "0">
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0 0 0</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>0</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0 0 0</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0 0 0</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+  </Objects>
 
 </Scene>

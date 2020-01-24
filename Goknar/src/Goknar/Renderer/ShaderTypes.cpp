@@ -6,6 +6,14 @@ const char* DEFAULT_SHADER_VERSION = "440 core";
 
 inline namespace SHADER_VARIABLE_NAMES
 {
+	inline namespace VERTEX
+	{
+		const char* POSITION = "position";
+		const char* NORMAL = "normal";
+		const char* COLOR = "color";
+		const char* UV = "uv";
+	}
+
 	inline namespace MATERIAL
 	{
 		const char* AMBIENT = "ambientReflectance";
@@ -45,6 +53,24 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* MODEL_MATRIX = "transformationMatrix";
 		const char* VIEW_MATRIX = "viewMatrix";
 		const char* PROJECTION_MATRIX = "projectionMatrix";
+		const char* TRANSFORMATION_MATRIX = "transformationMatrix";
 		const char* VIEW_POSITION = "viewPosition";
+	}
+
+	inline namespace TIMING
+	{
+		const char* DELTA_TIME = "deltaTime";
+		const char* ELAPSED_TIME = "elapsedTime";
+	}
+
+	inline namespace VERTEX_SHADER_OUTS
+	{
+		const char* FRAGMENT_POSITION = "fragmentPosition";
+		const char* VERTEX_NORMAL = "vertexNormal";
+	}
+
+	inline namespace FRAGMENT_SHADER_OUTS
+	{
+		const char* FRAGMENT_COLOR = "fragmentColor";
 	}
 }

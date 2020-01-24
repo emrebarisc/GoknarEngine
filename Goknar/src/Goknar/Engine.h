@@ -12,6 +12,7 @@ class Mesh;
 class ObjectBase;
 class ObjectManager;
 class Renderer;
+class Shader;
 class WindowManager;
 
 // Global Engine variable
@@ -62,6 +63,8 @@ public:
 
 	void SetApplication(Application* application);
 
+	void SetShaderEngineVariables(Shader* shader);
+
 	void RegisterObject(ObjectBase *object);
 	void AddToTickableObjects(ObjectBase *object);
 
@@ -70,6 +73,11 @@ public:
 	float GetDeltaTime() const
 	{
 		return deltaTime_;
+	}
+
+	float GetElapsedTime() const
+	{
+		return elapsedTime_;
 	}
 
 private:
@@ -86,6 +94,7 @@ private:
 	std::vector<ObjectBase *> tickableObjects_;
 
 	float deltaTime_;
+	float elapsedTime_;
 };
 
 #endif

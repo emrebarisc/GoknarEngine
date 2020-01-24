@@ -1,7 +1,7 @@
 #version 440 core
 
 
-out vec3 color;
+out vec3 fragmentColor;
 in vec3 fragmentPosition;
 in vec3 vertexNormal;
 uniform vec3 viewPosition;
@@ -43,13 +43,12 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	return clamp(color, 0.f, 1.f);
 }
 
-vec3 DirectionalLight0Direction = vec3(0.707107, 0.707107, 0.000000);
+vec3 DirectionalLight0Direction = vec3(0.577350, 0.577350, -0.577350);
 vec3 DirectionalLight0Intensity = vec3(0.750000, 0.742500, 0.622500);
 
 void main()
 {
 	vec3 lightColor = sceneAmbient * ambientReflectance;
 	lightColor += CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity);
-	color = lightColor;
-
+	fragmentColor = lightColor;
 }

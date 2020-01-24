@@ -26,15 +26,6 @@
 	    </PointLight>
 	</Lights>
 
-  <Textures>
-    <Texture>
-      <Path>./Content/Textures/testTexture.jpg</Path>
-    </Texture>
-    <Texture>
-      <Path>./Content/Textures/treesBusheShrums.png</Path>
-    </Texture>
-  </Textures>
-
   <Shaders>
     <Shader id="0">
       <Type>
@@ -1236,5 +1227,35 @@
       </UVs>
     </Mesh>
   </Meshes>
+
+  <Objects>
+    <MeshObject id = "0">
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-5 -5 0</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>0</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0 0 0</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>5 5 0</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+  </Objects>
 
 </Scene>

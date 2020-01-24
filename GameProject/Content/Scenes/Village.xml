@@ -1,5 +1,5 @@
 <Scene>
-	<BackgroundColor>135 210 237</BackgroundColor>
+  <BackgroundColor>135 210 237</BackgroundColor>
 
   <Cameras>
     <Camera id = "0">
@@ -11,359 +11,1148 @@
       <ImageResolution>1600 900</ImageResolution>
     </Camera>
   </Cameras>
+  <!--<Cameras>
+    <Camera id = "1">
+      --><!--<Projection>Orthographic</Projection>--><!--
+      <Position>-10.0 -10.0 50.0</Position>
+      <Gaze>0.0 0.0 -1.0</Gaze>
+      <Up>0.0 1.0 0.0</Up>
+      <NearPlane>-0.5 0.5 -0.28125 0.28125</NearPlane>
+      <NearDistance>1</NearDistance>
+      <FarDistance>10000</FarDistance>
+      <ImageResolution>1600 900</ImageResolution>
+    </Camera>
+  </Cameras>-->
 
   <Lights>
-		<AmbientLight>100 100 100</AmbientLight>
+    <AmbientLight>100 100 100</AmbientLight>
     <DirectionalLight>
-      <Direction>0.785398163 0.785398163 0</Direction>
+      <Direction>0.57735 0.57735 -0.57735</Direction>
       <Color>1.0 0.99 0.83</Color>
       <Intensity>0.75</Intensity>
     </DirectionalLight>
-	</Lights>
+  </Lights>
 
-    <Textures>
-        <Texture>
-          <Name>texture0</Name>
-          <Path>./Content/Village/Textures/T_Terrain.png</Path>
-        </Texture>
-        <Texture>
-          <Name>texture0</Name>
-          <Path>./Content/Village/Textures/T_TreeBranch.png</Path>
-        </Texture>
-        <Texture>
-          <Name>texture0</Name>
-          <Path>./Content/Village/Textures/T_TreeBark.png</Path>
-          <Wrapping>Repeat</Wrapping>
-        </Texture>
-    </Textures>
+  <Textures>
+    <Texture>
+      <Name>texture0</Name>
+      <Path>./Content/Village/Textures/T_Terrain.png</Path>
+    </Texture>
+    <Texture>
+      <Name>texture0</Name>
+      <Path>./Content/Village/Textures/T_TreeBranch.png</Path>
+    </Texture>
+    <Texture>
+      <Name>texture0</Name>
+      <Path>./Content/Village/Textures/T_TreeBark.png</Path>
+      <Wrapping>Repeat</Wrapping>
+    </Texture>
+    <Texture>
+      <Name>texture0</Name>
+      <Path>./Content/Village/Textures/T_SkySphere.jpg</Path>
+    </Texture>
+    <Texture>
+      <Name>texture0</Name>
+      <Path>./Content/Village/Textures/T_Grass.png</Path>
+    </Texture>
+    <Texture>
+      <Name>texture0</Name>
+      <Path>./Content/Village/Textures/T_Bush.png</Path>
+    </Texture>
+    <Texture>
+      <Name>texture0</Name>
+      <Path>./Content/Village/Textures/T_Rock.jpg</Path>
+    </Texture>
+  </Textures>
 
-    <Shaders>
-        <Shader id="0">
-            <Type>
-            SelfContained
-            </Type>
-            <VertexShaderPath>
-            ./Shaders/TextureVertexShader.glsl
-            </VertexShaderPath>
-            <FragmentShaderPath>
-            ./Shaders/TextureFragmentShader.glsl
-            </FragmentShaderPath>
-        </Shader>
-        <Shader id="0">
-            <Type>
-            SelfContained
-            </Type>
-            <VertexShaderPath>
-            ./Shaders/TextureVertexShader.glsl
-            </VertexShaderPath>
-            <FragmentShaderPath>
-            ./Shaders/TextureFragmentShader.glsl
-            </FragmentShaderPath>
-        </Shader>
-        <Shader id="0">
-            <Type>
-            SelfContained
-            </Type>
-            <VertexShaderPath>
-            ./Shaders/TextureVertexShader.glsl
-            </VertexShaderPath>
-            <FragmentShaderPath>
-            ./Shaders/TextureFragmentShader.glsl
-            </FragmentShaderPath>
-        </Shader>
-    </Shaders>
-	
-	<Materials>
-        <Material id = "0">
-          <Shader id="0"/>
-          <Texture id="0"/>
-          <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
-          <DiffuseReflectance>0.94 0.90 0.55</DiffuseReflectance>
-          <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
-          <PhongExponent>1</PhongExponent>
-        </Material>
-    
-        <Material id = "1">
-          <Shader id="1"/>
-          <Texture id="1"/>
-          <ShadingModel>TwoSided</ShadingModel>
-          <BlendModel>Masked</BlendModel>
-          <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
-          <DiffuseReflectance>0.94 0.90 0.55</DiffuseReflectance>
-          <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
-          <PhongExponent>3</PhongExponent>
-        </Material>
-        <Material id = "2">
-          <Shader id="2"/>
-          <Texture id="2"/>
-          <BlendModel>Opaque</BlendModel>
-          <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
-          <DiffuseReflectance>0.94 0.90 0.55</DiffuseReflectance>
-          <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
-          <PhongExponent>1</PhongExponent>
-        </Material>
-	</Materials>
+  <Shaders>
+    <Shader id="0">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        ./Shaders/TextureVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        ./Shaders/TextureFragmentShader.glsl
+      </FragmentShaderPath>
+    </Shader>
+    <Shader id="1">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        ./Content/Village/Shaders/TreeBranchesVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        ./Content/Village/Shaders/TreeBranchesFragmentShader.glsl
+      </FragmentShaderPath>
+    </Shader>
+    <Shader id="2">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        ./Shaders/TextureVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        ./Shaders/TextureFragmentShader.glsl
+      </FragmentShaderPath>
+    </Shader>
+    <Shader id="3">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        ./Shaders/OnlyDiffuseVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        ./Shaders/OnlyDiffuseFragmentShader.glsl
+      </FragmentShaderPath>
+    </Shader>
+    <Shader id="4">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        ./Content/Village/Shaders/GrassVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        ./Content/Village/Shaders/GrassFragmentShader.glsl
+      </FragmentShaderPath>
+    </Shader>
+    <Shader id="5">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        ./Content/Village/Shaders/GrassVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        ./Content/Village/Shaders/GrassFragmentShader.glsl
+      </FragmentShaderPath>
+    </Shader>
+    <Shader id="6">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        ./Shaders/TextureVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        ./Shaders/TextureFragmentShader.glsl
+      </FragmentShaderPath>
+    </Shader>
+  </Shaders>
 
-    <Meshes>
-      <Mesh id = "0">
-        <Name>Terrain</Name>
-        <Material>0</Material>
-        <PLYPath>./Content/Village/Meshes/Terrain/M_Terrain.ply</PLYPath>
-      </Mesh>
-      <Mesh id = "1">
-          <Name>TreeBranches</Name>
-          <Material>1</Material>
-          <PLYPath>./Content/Village/Meshes/Tree/TreeBranches.ply</PLYPath>
-      </Mesh>
-      <Mesh id = "2">
-          <Name>TreeBody</Name>
-          <Material>2</Material>
-          <PLYPath>./Content/Village/Meshes/Tree/TreeBody.ply</PLYPath>
-      </Mesh>
-    </Meshes>
+  <Materials>
 
-    <Objects>
-        <MeshObject id = "0">
-            <Name>Terrain</Name>
-            <RelativePosition>0 0 0</RelativePosition>
-            <RelativeRotation>0 0 0</RelativeRotation>
-            <RelativeScaling>1 1 1</RelativeScaling>
-            <WorldPosition>0 0 0</WorldPosition>
-            <WorldRotation>0 0 0</WorldRotation>
-            <WorldScaling>1 1 1</WorldScaling>
-            <Mesh>0</Mesh>
-        </MeshObject>
-      
-        <MeshObject id = "0">
-            <Name>TreeBranches</Name>
-            <RelativePosition>0 0 0</RelativePosition>
-            <RelativeRotation>0 0 0</RelativeRotation>
-            <RelativeScaling>1 1 1</RelativeScaling>
-            <WorldPosition>0 0 5.44</WorldPosition>
-            <WorldRotation>0 0 0</WorldRotation>
-            <WorldScaling>1 1 1</WorldScaling>
-            <Mesh>1</Mesh>
-        </MeshObject>
-        <MeshObject id = "0">
-            <Name>TreeBody</Name>
-            <RelativePosition>0 0 0</RelativePosition>
-            <RelativeRotation>0 0 0</RelativeRotation>
-            <RelativeScaling>1 1 1</RelativeScaling>
-            <WorldPosition>0 0 5.44</WorldPosition>
-            <WorldRotation>0 0 0</WorldRotation>
-            <WorldScaling>1 1 1</WorldScaling>
-            <Mesh>2</Mesh>
-        </MeshObject>
-      
-        <MeshObject id = "0">
-          <Name>TreeBranches</Name>
-          <RelativePosition>0 0 0</RelativePosition>
-          <RelativeRotation>0 0 0</RelativeRotation>
-          <RelativeScaling>1 1 1</RelativeScaling>
-          <WorldPosition>-1.94 -5.73 7.95</WorldPosition>
-          <WorldRotation>0 0 45</WorldRotation>
-          <WorldScaling>1 1 1</WorldScaling>
-          <Mesh>1</Mesh>
-        </MeshObject>
-        <MeshObject id = "0">
-          <Name>TreeBody</Name>
-          <RelativePosition>0 0 0</RelativePosition>
-          <RelativeRotation>0 0 0</RelativeRotation>
-          <RelativeScaling>1 1 1</RelativeScaling>
-          <WorldPosition>-1.94 -5.73 7.95</WorldPosition>
-          <WorldRotation>0 0 45</WorldRotation>
-          <WorldScaling>1 1 1</WorldScaling>
-          <Mesh>2</Mesh>
-        </MeshObject>
+    <!-- TERRAIN -->
+    <Material id = "0">
+      <Shader id="0"/>
+      <Texture id="0"/>
+      <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
+      <DiffuseReflectance>0.94 0.90 0.55</DiffuseReflectance>
+      <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
+      <PhongExponent>1</PhongExponent>
+    </Material>
 
-      <MeshObject id = "0">
-        <Name>TreeBranches</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-6.51 3.47 4.082</WorldPosition>
-        <WorldRotation>0 0 225</WorldRotation>
-        <WorldScaling>1 1 1</WorldScaling>
-        <Mesh>1</Mesh>
-      </MeshObject>
-      <MeshObject id = "0">
-        <Name>TreeBody</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-6.51 3.47 4.082</WorldPosition>
-        <WorldRotation>0 0 225</WorldRotation>
-        <WorldScaling>1 1 1</WorldScaling>
-        <Mesh>2</Mesh>
-      </MeshObject>
 
-      <MeshObject id = "0">
-        <Name>TreeBranches</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-10.47 -5.46 4.69</WorldPosition>
-        <WorldRotation>0 0 110</WorldRotation>
-        <WorldScaling>1.5 1.5 1.5</WorldScaling>
-        <Mesh>1</Mesh>
-      </MeshObject>
-      <MeshObject id = "0">
-        <Name>TreeBody</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-10.47 -5.46 4.69</WorldPosition>
-        <WorldRotation>0 0 110</WorldRotation>
-        <WorldScaling>1.5 1.5 1.5</WorldScaling>
-        <Mesh>2</Mesh>
-      </MeshObject>
+    <!-- TREE BRANCHES -->
+    <Material id = "1">
+      <Shader id="1"/>
+      <Texture id="1"/>
+      <ShadingModel>TwoSided</ShadingModel>
+      <BlendModel>Masked</BlendModel>
+      <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
+      <DiffuseReflectance>0.94 0.90 0.55</DiffuseReflectance>
+      <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
+      <PhongExponent>3</PhongExponent>
+    </Material>
 
-      <MeshObject id = "0">
-        <Name>TreeBranches</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-14.6 -4.83 4.12</WorldPosition>
-        <WorldRotation>0 0 60</WorldRotation>
-        <WorldScaling>1.2 1.2 1.2</WorldScaling>
-        <Mesh>1</Mesh>
-      </MeshObject>
-      <MeshObject id = "0">
-        <Name>TreeBody</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-14.6 -4.83 4.12</WorldPosition>
-        <WorldRotation>0 0 60</WorldRotation>
-        <WorldScaling>1.2 1.2 1.2</WorldScaling>
-        <Mesh>2</Mesh>
-      </MeshObject>
+    <!-- TREE BODY -->
+    <Material id = "2">
+      <Shader id="2"/>
+      <Texture id="2"/>
+      <BlendModel>Opaque</BlendModel>
+      <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
+      <DiffuseReflectance>0.94 0.90 0.55</DiffuseReflectance>
+      <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
+      <PhongExponent>1</PhongExponent>
+    </Material>
 
-      <MeshObject id = "0">
-        <Name>TreeBranches</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-11.89 -10.44 5.67</WorldPosition>
-        <WorldRotation>0 0 50</WorldRotation>
-        <WorldScaling>0.75 0.75 0.75</WorldScaling>
-        <Mesh>1</Mesh>
-      </MeshObject>
-      <MeshObject id = "0">
-        <Name>TreeBody</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-11.89 -10.44 5.67</WorldPosition>
-        <WorldRotation>0 0 50</WorldRotation>
-        <WorldScaling>0.75 0.75 0.75</WorldScaling>
-        <Mesh>2</Mesh>
-      </MeshObject>
+    <!-- SKY SPHERE -->
+    <Material id = "3">
+      <Shader id="3"/>
+      <Texture id="3"/>
+      <BlendModel>Opaque</BlendModel>
+      <ShadingModel>TwoSided</ShadingModel>
+      <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
+      <DiffuseReflectance>1.0 1.0 1.0</DiffuseReflectance>
+      <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
+      <PhongExponent>1</PhongExponent>
+    </Material>
 
-      <MeshObject id = "0">
-        <Name>TreeBranches</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-17.2 -16.4 5.67</WorldPosition>
-        <WorldRotation>0 0 0</WorldRotation>
-        <WorldScaling>1.0 1.0 1.0</WorldScaling>
-        <Mesh>1</Mesh>
-      </MeshObject>
-      <MeshObject id = "0">
-        <Name>TreeBody</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-17.2 -16.4 5.67</WorldPosition>
-        <WorldRotation>0 0 0</WorldRotation>
-        <WorldScaling>1.0 1.0 1.0</WorldScaling>
-        <Mesh>2</Mesh>
-      </MeshObject>
+    <!-- GRASS -->
+    <Material id = "4">
+      <Shader id="4"/>
+      <Texture id="4"/>
+      <BlendModel>Opaque</BlendModel>
+      <ShadingModel>TwoSided</ShadingModel>
+      <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
+      <DiffuseReflectance>1.0 1.0 1.0</DiffuseReflectance>
+      <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
+      <PhongExponent>1</PhongExponent>
+    </Material>
 
-      <MeshObject id = "0">
-        <Name>TreeBranches</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-18.86 -20.48 6.95</WorldPosition>
-        <WorldRotation>0 0 60</WorldRotation>
-        <WorldScaling>1.0 1.0 1.0</WorldScaling>
-        <Mesh>1</Mesh>
-      </MeshObject>
-      <MeshObject id = "0">
-        <Name>TreeBody</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-18.86 -20.48 6.95</WorldPosition>
-        <WorldRotation>0 0 60</WorldRotation>
-        <WorldScaling>1.0 1.0 1.0</WorldScaling>
-        <Mesh>2</Mesh>
-      </MeshObject>
+    <!-- BUSH -->
+    <Material id = "5">
+      <Shader id="5"/>
+      <Texture id="5"/>
+      <BlendModel>Opaque</BlendModel>
+      <ShadingModel>TwoSided</ShadingModel>
+      <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
+      <DiffuseReflectance>1.0 1.0 1.0</DiffuseReflectance>
+      <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
+      <PhongExponent>1</PhongExponent>
+    </Material>
 
-      <MeshObject id = "0">
-        <Name>TreeBranches</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-9.11 -20.0 6.79</WorldPosition>
-        <WorldRotation>0 0 115</WorldRotation>
-        <WorldScaling>2.0 2.0 2.0</WorldScaling>
-        <Mesh>1</Mesh>
-      </MeshObject>
-      <MeshObject id = "0">
-        <Name>TreeBody</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-9.11 -20.0 6.79</WorldPosition>
-        <WorldRotation>0 0 115</WorldRotation>
-        <WorldScaling>2.0 2.0 2.0</WorldScaling>
-        <Mesh>2</Mesh>
-      </MeshObject>
+    <!-- ROCK -->
+    <Material id = "6">
+      <Shader id="6"/>
+      <Texture id="6"/>
+      <BlendModel>Opaque</BlendModel>
+      <ShadingModel>TwoSided</ShadingModel>
+      <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
+      <DiffuseReflectance>1.0 1.0 1.0</DiffuseReflectance>
+      <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
+      <PhongExponent>1</PhongExponent>
+    </Material>
+  </Materials>
 
-      <MeshObject id = "0">
-        <Name>TreeBranches</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-17.92 -10.34 4.64</WorldPosition>
-        <WorldRotation>0 0 225</WorldRotation>
-        <WorldScaling>1.75 1.75 1.75</WorldScaling>
-        <Mesh>1</Mesh>
-      </MeshObject>
-      <MeshObject id = "0">
-        <Name>TreeBody</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-17.92 -10.34 4.64</WorldPosition>
-        <WorldRotation>0 0 225</WorldRotation>
-        <WorldScaling>1.75 1.75 1.75</WorldScaling>
-        <Mesh>2</Mesh>
-      </MeshObject>
+  <Meshes>
+    <Mesh id = "0">
+      <Name>Terrain</Name>
+      <Material>0</Material>
+      <PLYPath>./Content/Village/Meshes/Terrain/M_Terrain.ply</PLYPath>
+    </Mesh>
+    <Mesh id = "1">
+      <Name>TreeBranches</Name>
+      <Material>1</Material>
+      <PLYPath>./Content/Village/Meshes/Tree/M_TreeBranches.ply</PLYPath>
+    </Mesh>
+    <Mesh id = "2">
+      <Name>TreeBody</Name>
+      <Material>2</Material>
+      <PLYPath>./Content/Village/Meshes/Tree/M_TreeBody.ply</PLYPath>
+    </Mesh>
+    <Mesh id = "3">
+      <Name>SkySphere</Name>
+      <Material>3</Material>
+      <PLYPath>./Content/Village/Meshes/SkySphere/M_SkySphere.ply</PLYPath>
+    </Mesh>
+    <Mesh id = "4">
+      <Name>Grass</Name>
+      <Material>4</Material>
+      <PLYPath>./Content/Village/Meshes/Grass/M_Grass.ply</PLYPath>
+    </Mesh>
+    <Mesh id = "5">
+      <Name>Bush</Name>
+      <Material>5</Material>
+      <PLYPath>./Content/Village/Meshes/Bush/M_Bush.ply</PLYPath>
+    </Mesh>
+    <Mesh id = "6">
+      <Name>Bush</Name>
+      <Material>6</Material>
+      <PLYPath>./Content/Village/Meshes/Rock/M_Rock.ply</PLYPath>
+    </Mesh>
+  </Meshes>
 
-      <MeshObject id = "0">
-        <Name>TreeBranches</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-1.27 -13.77 11.33</WorldPosition>
-        <WorldRotation>0 0 165</WorldRotation>
-        <WorldScaling>1.0 1.0 1.0</WorldScaling>
-        <Mesh>1</Mesh>
-      </MeshObject>
-      <MeshObject id = "0">
-        <Name>TreeBody</Name>
-        <RelativePosition>0 0 0</RelativePosition>
-        <RelativeRotation>0 0 0</RelativeRotation>
-        <RelativeScaling>1 1 1</RelativeScaling>
-        <WorldPosition>-1.27 -13.77 11.33</WorldPosition>
-        <WorldRotation>0 0 165</WorldRotation>
-        <WorldScaling>1.0 1.0 1.0</WorldScaling>
-        <Mesh>2</Mesh>
-      </MeshObject>
-    </Objects>
+  <Objects>
+    <MeshObject id = "0">
+      <Name>Terrain</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0 0 0</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>0</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>SkySphere</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0 0 0</WorldPosition>
+      <WorldRotation>0 0 180</WorldRotation>
+      <WorldScaling>100 100 100</WorldScaling>
+      <Mesh>3</Mesh>
+    </MeshObject>
+
+
+    <!-- Trees -->
+    <MeshObject id = "0">
+      <Name>TreeBranches</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0 0 5.44</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>TreeBody</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0 0 5.44</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>TreeBranches</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-1.94 -5.73 7.95</WorldPosition>
+      <WorldRotation>0 0 45</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>TreeBody</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-1.94 -5.73 7.95</WorldPosition>
+      <WorldRotation>0 0 45</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>TreeBranches</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-6.51 3.47 4.082</WorldPosition>
+      <WorldRotation>0 0 225</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>TreeBody</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-6.51 3.47 4.082</WorldPosition>
+      <WorldRotation>0 0 225</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>TreeBranches</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-10.47 -5.46 4.69</WorldPosition>
+      <WorldRotation>0 0 110</WorldRotation>
+      <WorldScaling>1.5 1.5 1.5</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>TreeBody</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-10.47 -5.46 4.69</WorldPosition>
+      <WorldRotation>0 0 110</WorldRotation>
+      <WorldScaling>1.5 1.5 1.5</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>TreeBranches</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-14.6 -4.83 4.12</WorldPosition>
+      <WorldRotation>0 0 60</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>TreeBody</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-14.6 -4.83 4.12</WorldPosition>
+      <WorldRotation>0 0 60</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>TreeBranches</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-11.89 -10.44 5.67</WorldPosition>
+      <WorldRotation>0 0 50</WorldRotation>
+      <WorldScaling>0.75 0.75 0.75</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>TreeBody</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-11.89 -10.44 5.67</WorldPosition>
+      <WorldRotation>0 0 50</WorldRotation>
+      <WorldScaling>0.75 0.75 0.75</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>TreeBranches</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-17.2 -16.4 5.67</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>TreeBody</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-17.2 -16.4 5.67</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>TreeBranches</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-18.86 -20.48 6.95</WorldPosition>
+      <WorldRotation>0 0 60</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>TreeBody</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-18.86 -20.48 6.95</WorldPosition>
+      <WorldRotation>0 0 60</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>TreeBranches</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-9.11 -20.0 6.79</WorldPosition>
+      <WorldRotation>0 0 115</WorldRotation>
+      <WorldScaling>2.0 2.0 2.0</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>TreeBody</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-9.11 -20.0 6.79</WorldPosition>
+      <WorldRotation>0 0 115</WorldRotation>
+      <WorldScaling>2.0 2.0 2.0</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>TreeBranches</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-17.92 -10.34 4.64</WorldPosition>
+      <WorldRotation>0 0 225</WorldRotation>
+      <WorldScaling>1.75 1.75 1.75</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>TreeBody</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-17.92 -10.34 4.64</WorldPosition>
+      <WorldRotation>0 0 225</WorldRotation>
+      <WorldScaling>1.75 1.75 1.75</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>TreeBranches</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-1.27 -13.77 11.33</WorldPosition>
+      <WorldRotation>0 0 165</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>1</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>TreeBody</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-1.27 -13.77 11.33</WorldPosition>
+      <WorldRotation>0 0 165</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>2</Mesh>
+    </MeshObject>
+
+
+    <!-- Grass -->
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-19.14 -20.85 6.82</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-13.1 -17.78 5.85</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1.25 1.25 1.25</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-12.84 -18.36 5.85</WorldPosition>
+      <WorldRotation>0 12.5 0</WorldRotation>
+      <WorldScaling>1.5 1.5 1.5</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-13.4 -17.46 5.47</WorldPosition>
+      <WorldRotation>0 0 60</WorldRotation>
+      <WorldScaling>0.85 0.85 0.85</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-12.33 -19.0 6.05</WorldPosition>
+      <WorldRotation>0 12.5 0</WorldRotation>
+      <WorldScaling>1.25 1.25 1.25</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-12.33 -18.0 6.05</WorldPosition>
+      <WorldRotation>0 12.5 0</WorldRotation>
+      <WorldScaling>1.1 1.1 1.1</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-11.46 -18.78 6.2</WorldPosition>
+      <WorldRotation>0 15 0</WorldRotation>
+      <WorldScaling>1.15 1.15 1.15</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-11.72 -18.3 6.2</WorldPosition>
+      <WorldRotation>0 15 0</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-11.23 -19.56 6.36</WorldPosition>
+      <WorldRotation>0 15 0</WorldRotation>
+      <WorldScaling>1.25 1.25 1.25</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-10.24 -18.92 6.49</WorldPosition>
+      <WorldRotation>0 20 0</WorldRotation>
+      <WorldScaling>1.1 1.1 1.1</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-11.33 -20.47 6.39</WorldPosition>
+      <WorldRotation>0 15 0</WorldRotation>
+      <WorldScaling>0.75 0.75 0.75</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-12.28 -20 6.22</WorldPosition>
+      <WorldRotation>0 15 0</WorldRotation>
+      <WorldScaling>1.15 1.15 1.15</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-10.23 -20.18 6.60</WorldPosition>
+      <WorldRotation>0 15 0</WorldRotation>
+      <WorldScaling>0.75 0.75 0.75</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-9.02 -20.62 7.02</WorldPosition>
+      <WorldRotation>0 20 0</WorldRotation>
+      <WorldScaling>1.25 1.25 1.25</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-10.11 -21.24 6.8</WorldPosition>
+      <WorldRotation>0 20 15</WorldRotation>
+      <WorldScaling>0.75 0.75 0.75</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-8.24 -22.49 7.56</WorldPosition>
+      <WorldRotation>0 20 15</WorldRotation>
+      <WorldScaling>1.13 1.13 1.13</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-6.5 -21.67 8.13</WorldPosition>
+      <WorldRotation>0 30 15</WorldRotation>
+      <WorldScaling>1 1 1</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-8.17 -18.22 7.1</WorldPosition>
+      <WorldRotation>0 20 0</WorldRotation>
+      <WorldScaling>1.25 1.25 1.25</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-6.62 -16.04 7.55</WorldPosition>
+      <WorldRotation>0 30 0</WorldRotation>
+      <WorldScaling>1.15 1.15 1.15</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-6.07 -18.9 8.01</WorldPosition>
+      <WorldRotation>0 30 0</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-6.97 -17.58 7.44</WorldPosition>
+      <WorldRotation>0 20 15</WorldRotation>
+      <WorldScaling>0.9 0.9 0.9</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-7.88 -16.6 7.08</WorldPosition>
+      <WorldRotation>0 20 30</WorldRotation>
+      <WorldScaling>0.75 0.75 0.75</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-10.01 -16.74 6.44</WorldPosition>
+      <WorldRotation>0 20 30</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-11.35 -15.08 5.99</WorldPosition>
+      <WorldRotation>0 15 0</WorldRotation>
+      <WorldScaling>0.8 0.8 0.8</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-11.76 -16.04 5.97</WorldPosition>
+      <WorldRotation>0 15 0</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-10.8 -17.53 6.29</WorldPosition>
+      <WorldRotation>0 15 0</WorldRotation>
+      <WorldScaling>1.1 1.1 1.1</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-13.92 -19.7 5.98</WorldPosition>
+      <WorldRotation>0 10 0</WorldRotation>
+      <WorldScaling>1.03 1.03 1.03</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-14.79 -18.51 5.77</WorldPosition>
+      <WorldRotation>0 5 0</WorldRotation>
+      <WorldScaling>1.14 1.14 1.14</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-14.69 -15.65 5.43</WorldPosition>
+      <WorldRotation>0 5 45</WorldRotation>
+      <WorldScaling>1.25 1.25 1.25</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-16.03 -17.18 5.63</WorldPosition>
+      <WorldRotation>0 5 60</WorldRotation>
+      <WorldScaling>1.1 1.1 1.1</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-13.34 -14.28 5.52</WorldPosition>
+      <WorldRotation>0 5 90</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-5.65 -14.77 7.9</WorldPosition>
+      <WorldRotation>0 30 15</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-21.67 -16.91 5.23</WorldPosition>
+      <WorldRotation>0 0 60</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-23.76 -13.95 4.61</WorldPosition>
+      <WorldRotation>0 0 60</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-20.53 -12.89 4.60</WorldPosition>
+      <WorldRotation>0 0 225</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-27.13 -8.04 4.03</WorldPosition>
+      <WorldRotation>0 0 225</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-23.12 -6.23 4.03</WorldPosition>
+      <WorldRotation>0 0 30</WorldRotation>
+      <WorldScaling>0.8 0.8 0.8</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-27.68 -3.3 4.0</WorldPosition>
+      <WorldRotation>0 0 10</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-32.49 -6.77 3.99</WorldPosition>
+      <WorldRotation>0 0 15</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-31.27 -9.91 4.12</WorldPosition>
+      <WorldRotation>0 0 15</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-34.74 -9.60 3.94</WorldPosition>
+      <WorldRotation>0 0 30</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-1.43 -13.96 11.27</WorldPosition>
+      <WorldRotation>0 40 0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-0.9 -13.47 12.0</WorldPosition>
+      <WorldRotation>0 40 60</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-14.94 -5.04 4.18</WorldPosition>
+      <WorldRotation>0 0 60</WorldRotation>
+      <WorldScaling>1.1 1.1 1.1</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-18.24 -10.74 4.69</WorldPosition>
+      <WorldRotation>0 5 45</WorldRotation>
+      <WorldScaling>1.1 1.1 1.1</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-17.46 -16.42 5.41</WorldPosition>
+      <WorldRotation>5 0 45</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Grass</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-17.23 -16.83 5.52</WorldPosition>
+      <WorldRotation>5 0 60</WorldRotation>
+      <WorldScaling>1.25 1.25 1.25</WorldScaling>
+      <Mesh>4</Mesh>
+    </MeshObject>
+
+    <!-- Bushes -->
+    <MeshObject id = "0">
+      <Name>Bush</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-21.37 -8.0 4.16</WorldPosition>
+      <WorldRotation>0 0 60</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>5</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Bush</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-30.30 -14.10 4.42</WorldPosition>
+      <WorldRotation>0 0 0</WorldRotation>
+      <WorldScaling>1.5 1.5 1.5</WorldScaling>
+      <Mesh>5</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Bush</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-20.84 -20.03 5.59</WorldPosition>
+      <WorldRotation>0 10 0</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>5</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Bush</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-18.04 -12.84 4.77</WorldPosition>
+      <WorldRotation>0 5 0</WorldRotation>
+      <WorldScaling>2.0 2.0 2.0</WorldScaling>
+      <Mesh>5</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Bush</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-25.64 -10.51 4.10</WorldPosition>
+      <WorldRotation>0 5 0</WorldRotation>
+      <WorldScaling>1.2 1.2 1.2</WorldScaling>
+      <Mesh>5</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Bush</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-26.05 -0.43 3.90</WorldPosition>
+      <WorldRotation>0 5 30</WorldRotation>
+      <WorldScaling>1.5 1.5 1.5</WorldScaling>
+      <Mesh>5</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Bush</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-9.35 -18.52 6.72</WorldPosition>
+      <WorldRotation>0 20 0</WorldRotation>
+      <WorldScaling>1.25 1.25 1.25</WorldScaling>
+      <Mesh>5</Mesh>
+    </MeshObject>
+
+    <MeshObject id = "0">
+      <Name>Bush</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-18.92 -2.33 3.84</WorldPosition>
+      <WorldRotation>0 0 20</WorldRotation>
+      <WorldScaling>1.6 1.6 1.6</WorldScaling>
+      <Mesh>5</Mesh>
+    </MeshObject>
+
+    <!-- Rocks -->
+    <MeshObject id = "0">
+      <Name>Rock</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-14.39 -10.46 5.72</WorldPosition>
+      <WorldRotation>0 10 0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>6</Mesh>
+    </MeshObject>
+    <MeshObject id = "0">
+      <Name>Rock</Name>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-22.51 -10.73 4.45</WorldPosition>
+      <WorldRotation>0 90 60</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>6</Mesh>
+    </MeshObject>
+  </Objects>
 
 </Scene>

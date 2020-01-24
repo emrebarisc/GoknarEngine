@@ -142,7 +142,7 @@ void ShaderBuilder::FS_BuildScene()
 			}
 		}
 	}
-	fragmentShaderInsideMain_ += "\tcolor = lightColor;\n";
+	fragmentShaderInsideMain_ += "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " = lightColor;";
 
 	CombineFragmentShader();
 	
@@ -152,19 +152,33 @@ void ShaderBuilder::FS_BuildScene()
 
 std::string ShaderBuilder::VS_GetVertexNormalText()
 {
-	return R"(
-	vertexNormal = vec3(vec4(normal, 0.f)* transpose(inverse(transformationMatrix)));
-)";
+	std::string vertexNormalText = "\n";
+	vertexNormalText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
+	vertexNormalText += " = vec3(vec4(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::NORMAL) + ", 0.f) * transpose(inverse(" + SHADER_VARIABLE_NAMES::POSITIONING::TRANSFORMATION_MATRIX + ")));\n";
+
+	return vertexNormalText;
 }
 
 std::string ShaderBuilder::FS_GetVariableTexts()
 {
-	return R"(
-out vec3 color;
-in vec3 fragmentPosition;
-in vec3 vertexNormal;
-uniform vec3 viewPosition;
-)";
+	std::string variableTexts = "\n";
+	variableTexts += "out vec3 ";
+	variableTexts += SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR;
+	variableTexts += ";\n";
+
+	variableTexts += "in vec3 ";
+	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION;
+	variableTexts += ";\n";
+
+	variableTexts += "in vec3 ";
+	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
+	variableTexts += ";\n";
+
+	variableTexts += "uniform vec3 ";
+	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION;
+	variableTexts += ";\n";
+	
+	return variableTexts;
 }
 
 void ShaderBuilder::VS_BuildScene()
@@ -192,23 +206,51 @@ std::string ShaderBuilder::VS_GetMain()
 
 std::string ShaderBuilder::VS_GetVariableTexts()
 {
-	return R"(
-layout(location = 0) in vec4 color;
-layout(location = 1) in vec3 position;
-layout(location = 2) in vec3 normal;
-layout(location = 3) in vec2 uv;
+	std::string variableTexts = "";
 
-// Transformation matrix is calculated by multiplying  
-// world and relative transformation matrices
-uniform mat4 transformationMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
+	variableTexts += "\n\n\nlayout(location = 0) in vec4 ";
+	variableTexts += SHADER_VARIABLE_NAMES::VERTEX::COLOR;
+	variableTexts += ";\n";
 
+	variableTexts += "layout(location = 1) in vec3 ";
+	variableTexts += SHADER_VARIABLE_NAMES::VERTEX::POSITION;
+	variableTexts += ";\n";
+
+	variableTexts += "layout(location = 2) in vec3 ";
+	variableTexts += SHADER_VARIABLE_NAMES::VERTEX::NORMAL;
+	variableTexts += ";\n";
+
+	variableTexts += "layout(location = 3) in vec2 ";
+	variableTexts += SHADER_VARIABLE_NAMES::VERTEX::UV;
+	variableTexts += ";\n";
+
+	//variableTexts += "// Transformation matrix is calculated by multiplying \n// world and relative transformation matrices\n";
+	variableTexts += "uniform mat4 ";
+	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::TRANSFORMATION_MATRIX;
+	variableTexts += ";\n";
+
+	variableTexts += "uniform mat4 ";
+	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::VIEW_MATRIX;
+	variableTexts += ";\n";
+
+	variableTexts += "uniform mat4 ";
+	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::PROJECTION_MATRIX;
+	variableTexts += ";\n";
+
+	variableTexts += "uniform float ";
+	variableTexts += SHADER_VARIABLE_NAMES::TIMING::DELTA_TIME;
+	variableTexts += ";\n";
+
+	variableTexts += "uniform float ";
+	variableTexts += SHADER_VARIABLE_NAMES::TIMING::ELAPSED_TIME;
+	variableTexts += ";\n";
+
+	variableTexts += R"(
 out vec3 fragmentPosition;
 out vec3 vertexNormal;
-
-
 )";
+
+	return variableTexts;
 }
 
 std::string ShaderBuilder::GetShaderVersionText()

@@ -5,6 +5,14 @@ extern const char* DEFAULT_SHADER_VERSION;
 
 inline namespace SHADER_VARIABLE_NAMES
 {
+	inline namespace VERTEX
+	{
+		extern const char* POSITION;
+		extern const char* NORMAL;
+		extern const char* COLOR;
+		extern const char* UV;
+	}
+
 	inline namespace MATERIAL
 	{
 		extern const char* AMBIENT;
@@ -39,7 +47,25 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* MODEL_MATRIX;
 		extern const char* VIEW_MATRIX;
 		extern const char* PROJECTION_MATRIX;
+		extern const char* TRANSFORMATION_MATRIX;
 		extern const char* VIEW_POSITION;
+	}
+
+	inline namespace TIMING
+	{
+		extern const char* DELTA_TIME;
+		extern const char* ELAPSED_TIME;
+	}
+
+	inline namespace VERTEX_SHADER_OUTS
+	{
+		extern const char* FRAGMENT_POSITION;
+		extern const char* VERTEX_NORMAL;
+	}
+
+	inline namespace FRAGMENT_SHADER_OUTS
+	{
+		extern const char* FRAGMENT_COLOR;
 	}
 }
 

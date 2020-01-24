@@ -1,6 +1,6 @@
 #version 440 core
 
-out vec4 color;
+out vec4 fragmentColor;
 in vec3 fragmentPosition;
 in vec3 vertexNormal;
 in vec2 textureUV;
@@ -46,14 +46,20 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	return clamp(color, 0.f, 1.f);
 }
 
-vec3 DirectionalLight0Direction = vec3(0.785398163, 0.785398163, 0.0);
+vec3 DirectionalLight0Direction = vec3(0.57735f, 0.57735f, -0.57735f);
 vec3 DirectionalLight0Intensity = vec3(1.0, 0.99, 0.83);
+
+float fogDistance = 75.f;
 
 void main()
 {
 	diffuseReflectance = texture(texture0, textureUV);
 	if (diffuseReflectance.a < 0.5f) discard;
+
 	vec3 lightColor = sceneAmbient * ambientReflectance;
 	lightColor += CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity);
-	color = vec4(lightColor, diffuseReflectance.a);
+
+	vec3 depthValue = vec3(clamp(length(fragmentPosition - viewPosition) / fogDistance, 0.f, 1.f));
+
+	fragmentColor = vec4(lightColor * (1 - depthValue) + vec3(1.f) * depthValue, diffuseReflectance.a);
 }
