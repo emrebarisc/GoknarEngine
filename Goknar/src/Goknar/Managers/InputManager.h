@@ -160,8 +160,8 @@ typedef std::vector < KeyboardListener > KeyboardListenerVector;
 typedef std::function<void()> MouseDelegate;
 typedef std::vector < MouseDelegate > MouseDelegateVector;
 
-typedef std::function<void(double, double)> CursorDelegate;
-typedef std::vector < CursorDelegate > CursorDelegateVector;
+typedef std::function<void(double, double)> CursorPositionDelegate;
+typedef std::vector < CursorPositionDelegate > CursorDelegateVector;
 
 typedef std::function<void(double, double)> ScrollDelegate;
 typedef std::vector < ScrollDelegate > ScrollDelegateVector;
@@ -223,7 +223,7 @@ public:
 		}
 	}
 
-	void AddCursorDelegate(const CursorDelegate &cursorDelegate)
+	void AddCursorDelegate(const CursorPositionDelegate &cursorDelegate)
 	{
 		cursorDelegates_.push_back(cursorDelegate);
 	}

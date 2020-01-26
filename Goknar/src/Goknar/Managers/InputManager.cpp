@@ -23,6 +23,9 @@ void InputManager::Init()
 	glfwSetMouseButtonCallback(window, InputManager::MouseButtonCallback);
 	glfwSetScrollCallback(window, InputManager::ScrollCallback);
 	glfwSetCharCallback(window, InputManager::CharCallback);
+
+	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
+	glfwSetCursorPos(window, windowSize.x * 0.5, windowSize.y * 0.5);
 }
 
 void InputManager::KeyboardCallback(GLFWwindow *window, int key, int scanCode, int action, int mod)
@@ -68,7 +71,7 @@ void InputManager::KeyboardCallback(GLFWwindow *window, int key, int scanCode, i
 
 void InputManager::CursorPositionCallback(GLFWwindow* window, double xPosition, double yPosition)
 {
-	for (const CursorDelegate &cursorDelegate : engine->GetInputManager()->cursorDelegates_)
+	for (const CursorPositionDelegate &cursorDelegate : engine->GetInputManager()->cursorDelegates_)
 	{
 		cursorDelegate(xPosition, yPosition);
 	}

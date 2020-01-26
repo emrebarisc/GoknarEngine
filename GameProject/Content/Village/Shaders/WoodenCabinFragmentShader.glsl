@@ -10,7 +10,7 @@ uniform vec3 viewPosition;
 uniform vec3 ambientReflectance;
 uniform vec3 specularReflectance;
 uniform float phongExponent;
-uniform sampler2D texture0;
+uniform sampler2D diffuseTexture;
 
 vec4 diffuseReflectance;
 
@@ -49,14 +49,14 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 vec3 DirectionalLight0Direction = vec3(0.57735f, 0.57735f, -0.57735f);
 vec3 DirectionalLight0Intensity = vec3(1.0, 0.99, 0.83);
 
-float fogDistance = 150.f;
+float fogDistance = 300.f;
 float fogMinHeight = 0.f;
 float fogMaxHeight = 25.f;
 vec3 fogColor = vec3(0.90f);
 
 void main()
 {
-	diffuseReflectance = texture(texture0, textureUV);
+	diffuseReflectance = texture(diffuseTexture, textureUV);
 	if (diffuseReflectance.a < 0.5f) discard;
 
 	vec3 lightColor = sceneAmbient * ambientReflectance;

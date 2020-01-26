@@ -49,7 +49,10 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 vec3 DirectionalLight0Direction = vec3(0.57735f, 0.57735f, -0.57735f);
 vec3 DirectionalLight0Intensity = vec3(0.750000f, 0.742500f, 0.622500f);
 
-float fogDistance = 75.f;
+float fogDistance = 300.f;
+float fogMinHeight = 0.f;
+float fogMaxHeight = 25.f;
+vec3 fogColor = vec3(0.90f);
 
 void main()
 {
@@ -59,7 +62,8 @@ void main()
 	vec3 lightColor = sceneAmbient * ambientReflectance;
 	lightColor += CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity);
 
-	vec3 depthValue = vec3(clamp(length(fragmentPosition - viewPosition) / fogDistance, 0.f, 1.f));
+	float depthValue = clamp(length(fragmentPosition - viewPosition) / fogDistance, 0.f, 1.f);
+	depthValue = (fogMaxHeight - fogMinHeight) / (fragmentPosition.z - fogMinHeight) * depthValue;
 
-	fragmentColor = vec4(lightColor * (1 - depthValue) + vec3(1.f) * depthValue, diffuseReflectance.a);
+	fragmentColor = vec4(lightColor * (1.f - depthValue) + fogColor * depthValue, diffuseReflectance.a);
 }

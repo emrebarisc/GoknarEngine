@@ -10,6 +10,7 @@
 #include "Goknar/Model/Mesh.h"
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/Managers/InputManager.h"
+#include "Goknar/Managers/WindowManager.h"
 
 #include "Goknar/Log.h"
 
@@ -20,6 +21,7 @@ CameraController::CameraController() : ObjectBase()
 
 	activeCamera_ = engine->GetCameraManager()->GetActiveCamera();
 	movementSpeed_ = 10.f;
+	previousCursorPosition_ = Vector2(0.f, 0.f);
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveLeft, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveRight, this));
@@ -27,6 +29,10 @@ CameraController::CameraController() : ObjectBase()
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveBackward, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::LEFT_CONTROL, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveDown, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveUp, this));
+
+	engine->GetInputManager()->AddCursorDelegate(std::bind(&CameraController::CursorMovement, this, std::placeholders::_1, std::placeholders::_2));
+
+	engine->GetWindowManager()->ToggleFullscreen();
 }
 
 CameraController::~CameraController()
@@ -42,20 +48,34 @@ void CameraController::Tick(float deltaTime)
 {
 }
 
-void CameraController::PositiveYaw()
+void CameraController::CursorMovement(double x, double y)
 {
+	static bool firstTime = true;
+
+	if (firstTime)
+	{
+		firstTime = false;
+		previousCursorPosition_ = Vector2(x, y);
+		return;
+	}
+
+	Vector2 currentCursorPosition(x, y);
+	Vector2 cursorMovementVector = (previousCursorPosition_ - currentCursorPosition) / 250.f;
+
+	Yaw(cursorMovementVector.x);
+	Pitch(cursorMovementVector.y);
+
+	previousCursorPosition_ = currentCursorPosition;
 }
 
-void CameraController::NegativeYaw()
+void CameraController::Yaw(float value)
 {
+	activeCamera_->RotateAbout(Vector3::UpVector, value);
 }
 
-void CameraController::PositivePitch()
+void CameraController::Pitch(float value)
 {
-}
-
-void CameraController::NegativePitch()
-{
+	activeCamera_->Pitch(value);
 }
 
 void CameraController::MoveForward()
@@ -80,10 +100,10 @@ void CameraController::MoveLeft()
 
 void CameraController::MoveUp()
 {
-	activeCamera_->SetPosition(activeCamera_->GetPosition() + activeCamera_->GetUpVector() * engine->GetDeltaTime() * movementSpeed_);
+	activeCamera_->SetPosition(activeCamera_->GetPosition() + Vector3::UpVector * engine->GetDeltaTime() * movementSpeed_);
 }
 
 void CameraController::MoveDown()
 {
-	activeCamera_->SetPosition(activeCamera_->GetPosition() - activeCamera_->GetUpVector() * engine->GetDeltaTime() * movementSpeed_);
+	activeCamera_->SetPosition(activeCamera_->GetPosition() - Vector3::UpVector * engine->GetDeltaTime() * movementSpeed_);
 }

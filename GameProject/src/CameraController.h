@@ -16,10 +16,10 @@ public:
 	void Tick(float deltaTime) override;
 
 private:
-	void PositiveYaw();
-	void NegativeYaw();
-	void PositivePitch();
-	void NegativePitch();
+	void CursorMovement(double x, double y);
+
+	void Yaw(float value);
+	void Pitch(float value);
 
 	void MoveForward();
 	void MoveBackward();
@@ -29,6 +29,8 @@ private:
 	void MoveDown();
 
 	Camera* activeCamera_;
+
+	Vector2 previousCursorPosition_;
 
 	float movementSpeed_;
 };

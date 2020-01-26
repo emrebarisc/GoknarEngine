@@ -478,7 +478,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			{
 				int textureId = std::stoi(child->Attribute("id"));
 				material->GetShader()->AddTexture(scene->GetTexture(textureId));
-				child = element->NextSiblingElement("Texture");
+				child = child->NextSiblingElement("Texture");
 			}
 
 			child = element->FirstChildElement("AmbientReflectance");

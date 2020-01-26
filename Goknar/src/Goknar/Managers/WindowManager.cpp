@@ -45,6 +45,7 @@ void WindowManager::Init()
 	windowWidth_ = activeCamera->GetImageWidth();
 	windowHeight_ = activeCamera->GetImageHeight();
 
+	mainMonitor_ = glfwGetPrimaryMonitor();
 	mainWindow_ = glfwCreateWindow(windowWidth_, windowHeight_, windowTitle_, mainMonitor_, 0);
 
 	glfwSetWindowSizeCallback(mainWindow_, WindowSizeCallback);
@@ -142,8 +143,12 @@ void WindowManager::ToggleFullscreen()
 {
 	if (!isInFullscreen_)
 	{
-		mainMonitor_ = glfwGetPrimaryMonitor();
 		glfwSetWindowMonitor(mainWindow_, mainMonitor_, 0, 0, windowWidth_, windowHeight_, GLFW_DONT_CARE);
+
+		int code = glfwGetError(NULL);
+
+		if (code != GLFW_NO_ERROR)
+			printf("%d\n", code);
 	}
 
 	isInFullscreen_ = !isInFullscreen_;
