@@ -31,8 +31,6 @@ CameraController::CameraController() : ObjectBase()
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveUp, this));
 
 	engine->GetInputManager()->AddCursorDelegate(std::bind(&CameraController::CursorMovement, this, std::placeholders::_1, std::placeholders::_2));
-
-	engine->GetWindowManager()->ToggleFullscreen();
 }
 
 CameraController::~CameraController()

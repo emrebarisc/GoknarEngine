@@ -5,6 +5,7 @@
 
 #include "Application.h"
 
+class TimeDependentObject;
 class CameraManager;
 class Editor;
 class InputManager;
@@ -67,6 +68,7 @@ public:
 
 	void RegisterObject(ObjectBase *object);
 	void AddToTickableObjects(ObjectBase *object);
+	void RegisterAnimatedObject(TimeDependentObject* animatedMesh2D);
 
 	void Exit();
 
@@ -92,6 +94,7 @@ private:
 	
 	std::vector<ObjectBase *> registeredObjects_;
 	std::vector<ObjectBase *> tickableObjects_;
+	std::vector<TimeDependentObject*> timeDependentObjects_;
 
 	float deltaTime_;
 	float elapsedTime_;

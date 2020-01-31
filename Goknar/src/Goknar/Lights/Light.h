@@ -5,7 +5,7 @@
 
 class Shader;
 
-enum LightMobility : uint8_t
+enum class LightMobility : uint8_t
 {
 	Static = 0,
 	Movable
@@ -14,14 +14,7 @@ enum LightMobility : uint8_t
 class GOKNAR_API Light
 {
 public:
-	Light() :
-		id_(0),
-		position_(Vector3::ZeroVector), 
-		color_(Vector3::ZeroVector), 
-		intensity_(0.f), 
-		name_(""),
-		mobility_(LightMobility::Static)
-	{}
+	Light();
 
 	virtual void SetShaderUniforms(const Shader* shader) const;
 
@@ -90,6 +83,16 @@ public:
 		id_ = id;
 	}
 
+	bool GetIsShadowEnabled() const
+	{
+		return isShadowEnabled_;
+	}
+
+	void SetIsShadowEnabled(bool isShadowEnabled)
+	{
+		isShadowEnabled_ = isShadowEnabled;
+	}
+
 protected:
 
 	Vector3 position_;
@@ -100,6 +103,9 @@ protected:
 	int id_;
 
 	float intensity_;
+
+	unsigned int shadowMappingFBO_;
+	bool isShadowEnabled_;
 
 private:
 

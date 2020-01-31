@@ -55,7 +55,7 @@ public:
 
 	~Mesh();
 
-	void Init();
+	virtual void Init();
 
 	void SetMaterial(/*const*/ Material* material)
 	{

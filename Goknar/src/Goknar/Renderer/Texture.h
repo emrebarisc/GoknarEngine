@@ -1,8 +1,11 @@
 #ifndef __TEXTURE_H__
 #define __TEXTURE_H__
 
+#include "Goknar/Core.h"
 #include "Goknar/Managers/ObjectIDManager.h"
 #include "Types.h"
+
+#include <string>
 
 class Shader;
 
@@ -14,21 +17,11 @@ enum class TextureWrapping
 	CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER
 };
 
-class Texture
+class GOKNAR_API Texture
 {
 public:
-	Texture() :
-		imagePath_(""),
-		buffer_(nullptr),
-		width_(0),
-		height_(0),
-		channels_(0),
-		rendererTextureId_(-1),
-		textureWrapping_(TextureWrapping::CLAMP_TO_BORDER)
-	{
-		objectId_ = ObjectIDManager::GetInstance()->GetAndIncreaseTextureID();
-		name_ = std::string("texture" + std::to_string(objectId_));
-	}
+	Texture();
+	Texture(std::string imagePath);
 
 	~Texture() 
 	{

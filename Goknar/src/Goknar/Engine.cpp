@@ -2,17 +2,19 @@
 
 // Goknar Libraries
 #include "Engine.h"
+
 #include "Application.h"
+#include "Managers/CameraManager.h"
 #include "Log.h"
 #include "ObjectBase.h"
-#include "Scene.h"
-#include "Renderer/Shader.h"
-#include "Renderer/ShaderBuilder.h"
 #include "Editor/ImGuiEditor/ImGuiEditor.h"
-#include "Managers/CameraManager.h"
 #include "Managers/InputManager.h"
 #include "Managers/ObjectManager.h"
 #include "Renderer/Renderer.h"
+#include "Scene.h"
+#include "Renderer/Shader.h"
+#include "Renderer/ShaderBuilder.h"
+#include "TimeDependentObject.h"
 #include "Managers/WindowManager.h"
 
 // OpenGL Libraries
@@ -148,6 +150,11 @@ void Engine::Tick(float deltaTime)
 	{
 		object->Tick(deltaTime);
 	}
+
+	for (TimeDependentObject* object : timeDependentObjects_)
+	{
+		object->Tick(deltaTime);
+	}
 }
 
 void Engine::RegisterObject(ObjectBase* object)
@@ -158,6 +165,11 @@ void Engine::RegisterObject(ObjectBase* object)
 void Engine::AddToTickableObjects(ObjectBase* object)
 {
 	tickableObjects_.push_back(object);
+}
+
+void Engine::RegisterAnimatedObject(TimeDependentObject* animatedObject)
+{
+	timeDependentObjects_.push_back(animatedObject);
 }
 
 void Engine::Exit()

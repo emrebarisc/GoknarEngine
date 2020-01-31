@@ -6,6 +6,22 @@
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
 
+Light::Light() :
+	id_(0),
+	position_(Vector3::ZeroVector),
+	color_(Vector3::ZeroVector),
+	intensity_(0.f),
+	name_(""),
+	isShadowEnabled_(true),
+	mobility_(LightMobility::Static)
+{
+	if (isShadowEnabled_)
+	{
+		//glGenFramebuffers(1, &shadowMappingFBO_);
+		//glBindFramebuffer(GL_FRAMEBUFFER, shadowMappingFBO_);
+	}
+}
+
 void Light::SetShaderUniforms(const Shader* shader) const
 {
 	std::string positionName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION;

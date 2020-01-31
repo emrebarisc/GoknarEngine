@@ -27,6 +27,21 @@ Renderer::~Renderer()
 
 	glDeleteBuffers(1, &vertexBufferId_);
 	glDeleteBuffers(1, &indexBufferId_);
+
+	for (MeshInstance* opaqueMeshInstance : opaqueMeshInstances_)
+	{
+		delete opaqueMeshInstance;
+	}
+
+	for (MeshInstance* maskedMeshInstance : maskedMeshInstances_)
+	{
+		delete maskedMeshInstance;
+	}
+
+	for (MeshInstance* translucentMeshInstance : translucentMeshInstances_)
+	{
+		delete translucentMeshInstance;
+	}
 }
 
 void Renderer::Init()
