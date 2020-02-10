@@ -109,6 +109,9 @@ struct GOKNAR_API Vector2i
 
 	Vector2i(const Vector2& vec2f);
 
+	inline Vector2i operator-(const Vector2i& rhs) const;
+	inline Vector2i operator+(const Vector2i& rhs) const;
+
 	int x, y;
 };
 

@@ -16,6 +16,8 @@ public:
 
 	}
 
+	virtual void Destroy() = 0;
+
 	const ObjectBase* GetParent() const
 	{
 		return parent_;
@@ -64,6 +66,13 @@ public:
 	{
 		return Vector3(relativeTransformationMatrix_[2], relativeTransformationMatrix_[6], relativeTransformationMatrix_[10]);
 	}
+	
+	virtual void SetIsRendered(bool isRendered) = 0;
+	
+	bool GetIsRendered() const
+	{
+		return isRendered_;
+	}
 
 	virtual void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) = 0;
 
@@ -71,6 +80,7 @@ protected:
 	Matrix relativeTransformationMatrix_;
 	inline virtual void UpdateRelativeTransformationMatrix();
 
+	bool isRendered_;
 private:
 	Vector3 pivotPoint_;
 
@@ -79,6 +89,5 @@ private:
 	Vector3 relativeScaling_;
 
 	ObjectBase* parent_;
-
 };
 #endif

@@ -16,6 +16,8 @@ public:
 	MeshComponent(ObjectBase* parent);
 	~MeshComponent();
 
+	void Destroy() override;
+
 	void SetMesh(Mesh* mesh);
 
 	const Matrix& GetRelativeTransformationMatrix() const
@@ -29,6 +31,8 @@ public:
 	}
 
 	void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override;
+
+	void SetIsRendered(bool isRendered);
 
 protected:
 	inline void UpdateRelativeTransformationMatrix() override;

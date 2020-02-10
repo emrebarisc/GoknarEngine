@@ -16,6 +16,18 @@ ObjectBase::ObjectBase() :
 	engine->RegisterObject(this);
 }
 
+void ObjectBase::Destroy()
+{
+	int componentSize = components_.size();
+	for (int componentIndex = 0; componentIndex < componentSize; componentIndex++)
+	{
+		components_[componentIndex]->Destroy();
+		delete components_[componentIndex];
+		components_.erase(components_.begin() + componentIndex);
+	}
+	engine->DestroyObject(this);
+}
+
 void ObjectBase::SetTickable(bool tickable)
 {
 	tickable_ = tickable;
@@ -41,6 +53,15 @@ void ObjectBase::SetWorldScaling(const Vector3& scaling)
 {
 	worldScaling_ = scaling;
 	UpdateWorldTransformationMatrix();
+}
+
+void ObjectBase::SetIsRendered(bool isRendered)
+{
+	isRendered_ = isRendered;
+	for (int i = 0; i < components_.size(); i++)
+	{
+		components_[i]->SetIsRendered(isRendered);
+	}
 }
 
 void ObjectBase::UpdateWorldTransformationMatrix()

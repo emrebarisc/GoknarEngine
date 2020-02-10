@@ -45,7 +45,6 @@ void WindowManager::Init()
 	windowWidth_ = activeCamera->GetImageWidth();
 	windowHeight_ = activeCamera->GetImageHeight();
 
-	mainMonitor_ = glfwGetPrimaryMonitor();
 	mainWindow_ = glfwCreateWindow(windowWidth_, windowHeight_, windowTitle_, mainMonitor_, 0);
 
 	glfwSetWindowSizeCallback(mainWindow_, WindowSizeCallback);

@@ -23,7 +23,8 @@ public:
 	void Render();
 
 	void AddMeshToRenderer(Mesh* object);
-	void AddMeshInstanceToRenderer(MeshInstance* object);
+	void AddMeshInstance(MeshInstance* object);
+	void RemoveMeshInstance(MeshInstance* object);
 
 private:
 	std::vector<Mesh*> meshes_;

@@ -28,7 +28,13 @@ public:
 
     }
 
+	void Destroy();
+
     void SetTickable(bool tickable);
+	bool GetTickable()
+	{
+		return tickable_; 
+	}
 
 	void SetWorldPosition(const Vector3& position);
 	const Vector3& GetWorldPosition() const
@@ -73,6 +79,14 @@ public:
 	{
 		return Vector3(worldTransformationMatrix_[1], worldTransformationMatrix_[5], worldTransformationMatrix_[9]);
 	}
+
+	void SetIsRendered(bool isRendered);
+
+	bool GetIsRendered() const
+	{
+		return isRendered_;
+	}
+
 protected:
 
 private:
@@ -89,6 +103,8 @@ private:
 	int totalComponentCount_;
 
     bool tickable_;
+
+	bool isRendered_;
 };
 
 #endif

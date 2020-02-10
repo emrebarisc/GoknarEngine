@@ -36,6 +36,8 @@
   <Textures>
     <Texture id="0">
       <Name>texture0</Name>
+      <MinFilter>LinearMipMapLinear</MinFilter>
+      <MagFilter>Linear</MagFilter>
       <Path>./Content/Village/Textures/T_Terrain.png</Path>
     </Texture>
     <Texture id="1">
