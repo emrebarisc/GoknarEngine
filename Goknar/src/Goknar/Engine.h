@@ -75,7 +75,9 @@ public:
 	}
 	
 	void RegisterObject(ObjectBase *object);
-	void AddToTickableObjects(ObjectBase *object);
+	void RemoveObject(ObjectBase* object);
+	void AddToTickableObjects(ObjectBase* object);
+	void RemoveFromTickableObjects(ObjectBase* object);
 	void RegisterAnimatedObject(TimeDependentObject* animatedMesh2D);
 
 	void SetApplication(Application* application);
@@ -93,11 +95,6 @@ public:
 	}
 
 	void DestroyObject(ObjectBase* object);
-
-	void RegisterObject(ObjectBase* object);
-	void RemoveObject(ObjectBase* object);
-	void AddToTickableObjects(ObjectBase* object);
-	void RemoveFromTickableObjects(ObjectBase* object);
 
 	void Exit();
 

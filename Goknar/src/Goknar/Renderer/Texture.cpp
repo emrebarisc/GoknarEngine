@@ -16,7 +16,9 @@ Texture::Texture() :
 	height_(0),
 	channels_(0),
 	rendererTextureId_(-1),
-	textureWrapping_(TextureWrapping::CLAMP_TO_BORDER)
+	textureWrapping_(TextureWrapping::CLAMP_TO_BORDER),
+	minFilter_(TextureMinFilter::LINEAR),
+	magFilter_(TextureMagFilter::LINEAR)
 {
 	objectId_ = ObjectIDManager::GetInstance()->GetAndIncreaseTextureID();
 	name_ = std::string("texture" + std::to_string(objectId_));
