@@ -375,6 +375,36 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			}
 			stream.clear();
 
+			child = element->FirstChildElement("MinFilter");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string textureMinFilter;
+				stream >> textureMinFilter;
+
+				texture->SetTextureMinFilter(textureMinFilter == "Nearest" ? TextureMinFilter::NEAREST :
+											textureMinFilter == "Linear" ? TextureMinFilter::LINEAR :
+											textureMinFilter == "NearestMipMapNearest" ? TextureMinFilter::NEAREST_MIPMAP_NEAREST :
+											textureMinFilter == "LinearMipMapNearest" ? TextureMinFilter::LINEAR_MIPMAP_NEAREST :
+											textureMinFilter == "NearestMipMapLinear" ? TextureMinFilter::NEAREST_MIPMAP_LINEAR :
+											textureMinFilter == "LinearMipMapLinear" ? TextureMinFilter::LINEAR_MIPMAP_LINEAR :
+											texture->GetTextureMinFilter());
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("MagFilter");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string textureMagFilter;
+				stream >> textureMagFilter;
+
+				texture->SetTextureMagFilter(textureMagFilter == "Nearest" ? TextureMagFilter::NEAREST :
+											 textureMagFilter == "Linear" ? TextureMagFilter::LINEAR :
+											 texture->GetTextureMagFilter());
+			}
+			stream.clear();
+
 			child = element->FirstChildElement("Name");
 			if (child)
 			{
@@ -546,11 +576,11 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			stream >> plyFilePath;
 
 			Mesh* mesh = ModelLoader::LoadPlyFile(plyFilePath.c_str());
-			mesh->SetMaterial(scene->GetMaterial(materialId));
 			if (mesh != nullptr)
 			{
 				scene->AddMesh(mesh);
 			}
+			mesh->SetMaterial(scene->GetMaterial(materialId));
 			stream.clear();
 			element = element->NextSiblingElement("Mesh");
 			continue;
@@ -595,7 +625,6 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		}
 		stream.clear();
 
-		const FaceArray* faceArray = mesh->GetFacesPointer();
 		child = element->FirstChildElement("UVs");
 		if (child)
 		{
@@ -608,6 +637,10 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				if (uvIndex < mesh->GetVertexCount())
 				{
 					mesh->SetVertexUV(uvIndex++, UV);
+				}
+				else
+				{
+					break;
 				}
 			}
 		}

@@ -17,11 +17,45 @@ enum class TextureWrapping
 	CLAMP_TO_BORDER = GL_CLAMP_TO_BORDER
 };
 
+enum class TextureMinFilter
+{
+	NEAREST = GL_NEAREST,
+	LINEAR = GL_LINEAR,
+	NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST,
+	LINEAR_MIPMAP_NEAREST = GL_LINEAR_MIPMAP_NEAREST,
+	NEAREST_MIPMAP_LINEAR = GL_NEAREST_MIPMAP_LINEAR,
+	LINEAR_MIPMAP_LINEAR = GL_LINEAR_MIPMAP_LINEAR
+};
+
 class GOKNAR_API Texture
 {
 public:
 	Texture();
 	Texture(std::string imagePath);
+
+enum class TextureMagFilter
+{
+	NEAREST = GL_NEAREST,
+	LINEAR = GL_LINEAR
+};
+
+class Texture
+{
+public:
+	Texture() :
+		imagePath_(""),
+		buffer_(nullptr),
+		width_(0),
+		height_(0),
+		channels_(0),
+		rendererTextureId_(-1),
+		textureWrapping_(TextureWrapping::CLAMP_TO_BORDER),
+		minFilter_(TextureMinFilter::LINEAR),
+		magFilter_(TextureMagFilter::LINEAR)
+	{
+		objectId_ = ObjectIDManager::GetInstance()->GetAndIncreaseTextureID();
+		name_ = std::string("texture" + std::to_string(objectId_));
+	}
 
 	~Texture() 
 	{
@@ -58,6 +92,26 @@ public:
 		textureWrapping_ = textureWrapping;
 	}
 
+	TextureMinFilter GetTextureMinFilter() const
+	{
+		return minFilter_;
+	}
+
+	void SetTextureMinFilter(TextureMinFilter minFilter)
+	{
+		minFilter_ = minFilter;
+	}
+
+	TextureMagFilter GetTextureMagFilter() const
+	{
+		return magFilter_;
+	}
+
+	void SetTextureMagFilter(TextureMagFilter magFilter)
+	{
+		magFilter_ = magFilter;
+	}
+
 	bool LoadTextureImage();
 
 	void Init();
@@ -72,6 +126,8 @@ private:
 	GEuint rendererTextureId_;
 
 	TextureWrapping textureWrapping_;
+	TextureMinFilter minFilter_;
+	TextureMagFilter magFilter_;
 
 	int objectId_;
 	int width_;

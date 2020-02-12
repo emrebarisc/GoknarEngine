@@ -1,5 +1,10 @@
 #pragma once
 
+#define _CRTDBG_MAP_ALLOC
+
+#include <stdlib.h>
+#include <crtdbg.h>
+
 #include "pch.h"
 
 #include "Engine.h"
@@ -34,5 +39,8 @@ int main(int argc, char **argv)
 
 	delete mainEngine;
 	
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtDumpMemoryLeaks();
+
 	return 0;
 }

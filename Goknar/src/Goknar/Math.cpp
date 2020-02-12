@@ -157,6 +157,16 @@ Vector2i::Vector2i(const Vector2& vec2f)
 	y = (int)vec2f.y;
 }
 
+inline Vector2i Vector2i::operator-(const Vector2i& rhs) const
+{
+	return Vector2i(x - rhs.x, y - rhs.y);
+}
+
+inline Vector2i Vector2i::operator+(const Vector2i& rhs) const
+{
+	return Vector2i(x + rhs.x, y + rhs.y);
+}
+
 Vector3::Vector3(): x(0), y(0), z(0)
 {
 }

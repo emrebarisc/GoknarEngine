@@ -44,8 +44,8 @@ void Texture::Init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (int)textureWrapping_);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (int)textureWrapping_);
 	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (int)minFilter_);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (int)magFilter_);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, channels_ == 3 ? GL_RGB : GL_RGBA, width_, height_, 0, channels_ == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, buffer_);
 

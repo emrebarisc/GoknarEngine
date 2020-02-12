@@ -3,10 +3,12 @@
 
 #include <vector>
 
-#include "Application.h"
+#include "Core.h"
 
 class TimeDependentObject;
+class Application;
 class CameraManager;
+class Controller;
 class Editor;
 class InputManager;
 class Mesh;
@@ -62,15 +64,23 @@ public:
 		return application_;
 	}
 
-	void SetApplication(Application* application);
+	Controller* GetController()
+	{
+		return controller_;
+	}
 
-	void SetShaderEngineVariables(Shader* shader);
-
+	void SetController(Controller* controller)
+	{
+		controller_ = controller;
+	}
+	
 	void RegisterObject(ObjectBase *object);
 	void AddToTickableObjects(ObjectBase *object);
 	void RegisterAnimatedObject(TimeDependentObject* animatedMesh2D);
 
-	void Exit();
+	void SetApplication(Application* application);
+
+	void SetShaderEngineVariables(Shader* shader);
 
 	float GetDeltaTime() const
 	{
@@ -82,6 +92,15 @@ public:
 		return elapsedTime_;
 	}
 
+	void DestroyObject(ObjectBase* object);
+
+	void RegisterObject(ObjectBase* object);
+	void RemoveObject(ObjectBase* object);
+	void AddToTickableObjects(ObjectBase* object);
+	void RemoveFromTickableObjects(ObjectBase* object);
+
+	void Exit();
+
 private:
 	InputManager* inputManager_;
 	ObjectManager* objectManager_;
@@ -89,6 +108,7 @@ private:
 	WindowManager* windowManager_;
 	Editor* editor_;
 	CameraManager* cameraManager_;
+	Controller* controller_;
 
 	Application *application_;
 	

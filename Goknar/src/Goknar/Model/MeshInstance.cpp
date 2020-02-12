@@ -10,10 +10,15 @@
 
 int MeshInstance::lastComponentId_ = 0;
 
+void MeshInstance::RemoveFromRenderer()
+{
+	engine->GetRenderer()->RemoveMeshInstance(this);
+}
+
 void MeshInstance::SetMesh(Mesh* mesh)
 {
 	mesh_ = mesh;
-	engine->GetRenderer()->AddMeshInstanceToRenderer(this);
+	engine->GetRenderer()->AddMeshInstance(this);
 }
 
 void MeshInstance::Render() const

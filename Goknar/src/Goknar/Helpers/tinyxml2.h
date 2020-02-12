@@ -331,7 +331,7 @@ namespace tinyxml2
 		}
 
 		void Clear() {
-			// Delete the blocks.
+			// Destroy the blocks.
 			while (!_blockPtrs.Empty()) {
 				Block* b = _blockPtrs.Pop();
 				delete b;
@@ -837,12 +837,12 @@ namespace tinyxml2
 		XMLNode* InsertAfterChild(XMLNode* afterThis, XMLNode* addThis);
 
 		/**
-			Delete all the children of this node.
+			Destroy all the children of this node.
 		*/
 		void DeleteChildren();
 
 		/**
-			Delete a child of this node.
+			Destroy a child of this node.
 		*/
 		void DeleteChild(XMLNode* node);
 
@@ -1418,7 +1418,7 @@ namespace tinyxml2
 		}
 
 		/**
-			Delete an attribute.
+			Destroy an attribute.
 		*/
 		void DeleteAttribute(const char* name);
 
@@ -1757,7 +1757,7 @@ namespace tinyxml2
 		XMLUnknown* NewUnknown(const char* text);
 
 		/**
-			Delete a node associated with this document.
+			Destroy a node associated with this document.
 			It will be unlinked from the DOM.
 		*/
 		void DeleteNode(XMLNode* node);

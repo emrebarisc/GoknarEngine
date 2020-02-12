@@ -5,10 +5,11 @@
 
 #include "Application.h"
 #include "Managers/CameraManager.h"
-#include "Log.h"
-#include "ObjectBase.h"
+#include "Controller.h"
 #include "Editor/ImGuiEditor/ImGuiEditor.h"
 #include "Managers/InputManager.h"
+#include "Log.h"
+#include "ObjectBase.h"
 #include "Managers/ObjectManager.h"
 #include "Renderer/Renderer.h"
 #include "Scene.h"
@@ -22,7 +23,7 @@
 
 GOKNAR_API Engine *engine;
 
-Engine::Engine() : deltaTime_(0.f), elapsedTime_(0.f)
+Engine::Engine() : deltaTime_(0.f), elapsedTime_(0.f), application_(nullptr), editor_(nullptr), controller_(nullptr)
 {
 	engine = this;
 
@@ -90,6 +91,10 @@ void Engine::Init() const
 	GOKNAR_CORE_INFO("Application Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
+	if (controller_)
+	{
+		controller_->SetupInputs();
+	}
 
 	renderer_->Init();
 	currentTimePoint = std::chrono::steady_clock::now();
@@ -111,6 +116,12 @@ void Engine::Run()
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
+		if (1.f < deltaTime_)
+		{
+			deltaTime_ = 0.f;
+			continue;
+		}
+
 		{
 			static float oneSecondCounter = 0.f;
 			oneSecondCounter += deltaTime_;
@@ -157,9 +168,33 @@ void Engine::Tick(float deltaTime)
 	}
 }
 
+void Engine::DestroyObject(ObjectBase* object)
+{
+	RemoveObject(object);
+	if (object->GetTickable())
+	{
+		engine->RemoveFromTickableObjects(object);
+	}
+	delete object;
+}
+
 void Engine::RegisterObject(ObjectBase* object)
 {
 	registeredObjects_.push_back(object);
+}
+
+void Engine::RemoveObject(ObjectBase* object)
+{
+	int registeredObjectsSize = registeredObjects_.size();
+
+	for (int registeredObjectIndex = 0; registeredObjectIndex < registeredObjectsSize; registeredObjectIndex++)
+	{
+		if (registeredObjects_[registeredObjectIndex] == object)
+		{
+			registeredObjects_.erase(registeredObjects_.begin() + registeredObjectIndex);
+			return;
+		}
+	}
 }
 
 void Engine::AddToTickableObjects(ObjectBase* object)
@@ -170,6 +205,20 @@ void Engine::AddToTickableObjects(ObjectBase* object)
 void Engine::RegisterAnimatedObject(TimeDependentObject* animatedObject)
 {
 	timeDependentObjects_.push_back(animatedObject);
+}
+
+void Engine::RemoveFromTickableObjects(ObjectBase* object)
+{
+	int tickableObjectsSize = tickableObjects_.size();
+
+	for (int tickableObjectIndex = 0; tickableObjectIndex < tickableObjectsSize; tickableObjectIndex++)
+	{
+		if (tickableObjects_[tickableObjectIndex] == object)
+		{
+			tickableObjects_.erase(tickableObjects_.begin() + tickableObjectIndex);
+			return;
+		}
+	}
 }
 
 void Engine::Exit()
