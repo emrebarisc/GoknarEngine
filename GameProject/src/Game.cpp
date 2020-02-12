@@ -19,7 +19,7 @@ public:
 private:
 
 	Airplane* airplaneGameObject;
-	CameraController* cameraController;
+	//CameraController* cameraController;
 
 	TestSprite* testSprite;
 };
@@ -40,7 +40,7 @@ Game::Game() : Application()
 	lastFrameTimePoint = currentTimePoint;
 
 	//airplaneGameObject = new Airplane();
-	cameraController = new CameraController();
+	//cameraController = new CameraController();
 	testSprite = new TestSprite();
 }
 

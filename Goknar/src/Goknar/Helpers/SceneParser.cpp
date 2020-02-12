@@ -559,97 +559,100 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 	
 	//Get Meshes
 	element = root->FirstChildElement("Meshes");
-	element = element->FirstChildElement("Mesh");
-	while (element)
+	if (element)
 	{
-		child = element->FirstChildElement("Material");
-		stream << child->GetText() << std::endl;
-
-		int materialId;
-		stream >> materialId;
-
-		child = element->FirstChildElement("PLYPath");
-		if (child)
+		element = element->FirstChildElement("Mesh");
+		while (element)
 		{
-			std::string plyFilePath;
+			child = element->FirstChildElement("Material");
 			stream << child->GetText() << std::endl;
-			stream >> plyFilePath;
 
-			Mesh* mesh = ModelLoader::LoadPlyFile(plyFilePath.c_str());
-			if (mesh != nullptr)
+			int materialId;
+			stream >> materialId;
+
+			child = element->FirstChildElement("PLYPath");
+			if (child)
 			{
-				scene->AddMesh(mesh);
+				std::string plyFilePath;
+				stream << child->GetText() << std::endl;
+				stream >> plyFilePath;
+
+				Mesh* mesh = ModelLoader::LoadPlyFile(plyFilePath.c_str());
+				if (mesh != nullptr)
+				{
+					scene->AddMesh(mesh);
+				}
+				mesh->SetMaterial(scene->GetMaterial(materialId));
+				stream.clear();
+				element = element->NextSiblingElement("Mesh");
+				continue;
 			}
+
+			Mesh* mesh = new Mesh();
 			mesh->SetMaterial(scene->GetMaterial(materialId));
+
+			child = element->FirstChildElement("Vertices");
+			stream << child->GetText() << std::endl;
+			Vector3 vertex;
+			while (!(stream >> vertex.x).eof())
+			{
+				stream >> vertex.y >> vertex.z;
+				mesh->AddVertex(vertex);
+			}
 			stream.clear();
+
+			child = element->FirstChildElement("Normals");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				int normalIndex = 0;
+				Vector3 normal;
+				while (!(stream >> normal.x).eof())
+				{
+					stream >> normal.y >> normal.z;
+					mesh->SetVertexNormal(normalIndex++, normal);
+				}
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("Faces");
+			stream << child->GetText() << std::endl;
+			unsigned int v0;
+			while (!(stream >> v0).eof())
+			{
+				Face face = Face();
+				face.vertexIndices[0] = v0;
+				stream >> face.vertexIndices[1] >> face.vertexIndices[2];
+				mesh->AddFace(face);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("UVs");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				unsigned int uvIndex = 0;
+				Vector2 UV;
+				while (!(stream >> UV.x).eof())
+				{
+					stream >> UV.y;
+					if (uvIndex < mesh->GetVertexCount())
+					{
+						mesh->SetVertexUV(uvIndex++, UV);
+					}
+					else
+					{
+						break;
+					}
+				}
+			}
+			stream.clear();
+
+			scene->AddMesh(mesh);
 			element = element->NextSiblingElement("Mesh");
-			continue;
-		}
-
-		Mesh* mesh = new Mesh();
-		mesh->SetMaterial(scene->GetMaterial(materialId));
-
-		child = element->FirstChildElement("Vertices");
-		stream << child->GetText() << std::endl;
-		Vector3 vertex;
-		while (!(stream >> vertex.x).eof())
-		{
-			stream >> vertex.y >> vertex.z;
-			mesh->AddVertex(vertex);
 		}
 		stream.clear();
-
-		child = element->FirstChildElement("Normals");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			int normalIndex = 0;
-			Vector3 normal;
-			while (!(stream >> normal.x).eof())
-			{
-				stream >> normal.y >> normal.z;
-				mesh->SetVertexNormal(normalIndex++, normal);
-			}
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("Faces");
-		stream << child->GetText() << std::endl;
-		unsigned int v0;
-		while (!(stream >> v0).eof())
-		{
-			Face face = Face();
-			face.vertexIndices[0] = v0;
-			stream >> face.vertexIndices[1] >> face.vertexIndices[2];
-			mesh->AddFace(face);
-		}
-		stream.clear();
-
-		child = element->FirstChildElement("UVs");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			unsigned int uvIndex = 0;
-			Vector2 UV;
-			while (!(stream >> UV.x).eof())
-			{
-				stream >> UV.y;
-				if (uvIndex < mesh->GetVertexCount())
-				{
-					mesh->SetVertexUV(uvIndex++, UV);
-				}
-				else
-				{
-					break;
-				}
-			}
-		}
-		stream.clear();
-
-		scene->AddMesh(mesh);
-		element = element->NextSiblingElement("Mesh");
 	}
-	stream.clear();
 
 	//Get Objects
 	element = root->FirstChildElement("Objects");

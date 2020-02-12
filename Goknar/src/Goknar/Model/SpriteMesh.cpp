@@ -14,16 +14,19 @@ SpriteMesh::SpriteMesh() : texture_(nullptr)
 	Material* material = new Material();
 	material->SetBlendModel(MaterialBlendModel::Masked);
 	material->SetShadingModel(MaterialShadingModel::TwoSided);
+	material->SetDiffuseReflectance(Vector3(1.f));
+	material->SetSpecularReflectance(Vector3(0.f));
+	material->SetShadingModel(MaterialShadingModel::TwoSided);
 	SetMaterial(material);
 	scene->AddMaterial(material);
 
 	AddVertexData(VertexData(Vector3(0.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(0.f, 0.f)));
-	AddVertexData(VertexData(Vector3(0.f, 1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(0.f, 1.f)));
 	AddVertexData(VertexData(Vector3(1.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(1.f, 0.f)));
-	AddVertexData(VertexData(Vector3(1.f, 1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(1.f, 1.f)));
+	AddVertexData(VertexData(Vector3(0.f, -1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(0.f, 1.f)));
+	AddVertexData(VertexData(Vector3(1.f, -1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(1.f, 1.f)));
 
-	AddFace(Face(0, 2, 1));
-	AddFace(Face(2, 3, 1));
+	AddFace(Face(1, 0, 2));
+	AddFace(Face(1, 2, 3));
 
 	scene->AddMesh(this);
 }
@@ -36,8 +39,8 @@ SpriteMesh::SpriteMesh(Texture* texture) : SpriteMesh()
 	scene->AddTexture(texture);
 	
 	Shader* shader = new Shader();
-	shader->SetVertexShaderPath("./Content/2DScene/Shaders/2DScene_TextureVertexShader.glsl");
-	shader->SetFragmentShaderPath("./Content/2DScene/Shaders/2DScene_TextureFragmentShader.glsl");
+	shader->SetVertexShaderPath("./Content/2DScene/Shaders/2DVertexShader.glsl");
+	shader->SetFragmentShaderPath("./Content/2DScene/Shaders/2DFragmentShader.glsl");
 	shader->SetShaderType(ShaderType::SelfContained);
 	shader->AddTexture(texture_);
 	scene->AddShader(shader);

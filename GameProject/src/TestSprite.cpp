@@ -6,7 +6,7 @@
 
 TestSprite::TestSprite()
 {
-	Texture* texture = new Texture("./Content/2DScene/Sprites/Sprite.png");
+	Texture* texture = new Texture("./Content/Textures/T_Airplane.png");
 	texture->SetName("texture0");
 	SpriteMesh* spriteMesh = new SpriteMesh(texture);
 	spriteMeshComponent_ = new MeshComponent(this);
