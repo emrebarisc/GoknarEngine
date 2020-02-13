@@ -19,7 +19,7 @@ enum class ShaderType
 	Scene
 };
 
-class Shader
+class GOKNAR_API Shader
 {
 public:
 	Shader();

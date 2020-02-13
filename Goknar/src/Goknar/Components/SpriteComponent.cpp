@@ -4,7 +4,7 @@
 
 #include "Goknar/Engine.h"
 #include "Goknar/Model/MeshInstance.h"
-#include "Goknar/Model/SpriteMesh.h"
+#include "Goknar/Model/2D/SpriteMesh.h"
 
 SpriteComponent::SpriteComponent(ObjectBase* parent) : Component(parent), meshInstance_(new MeshInstance(this))
 {
