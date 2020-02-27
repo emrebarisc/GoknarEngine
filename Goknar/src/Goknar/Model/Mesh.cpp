@@ -17,7 +17,8 @@ Mesh::Mesh() :
 	vertexCount_(0), 
 	faceCount_(0),
 	baseVertex_(0),
-	vertexStartingIndex_(0)
+	vertexStartingIndex_(0),
+	meshType_(MeshType::None)
 {
 	vertices_ = new VertexArray();
 	faces_ = new FaceArray();

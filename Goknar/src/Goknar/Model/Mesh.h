@@ -10,6 +10,14 @@
 class Shader;
 class Material;
 
+enum class GOKNAR_API MeshType
+{
+	None = 0,
+	Static,
+	Stream,
+	Dynamic
+};
+
 class GOKNAR_API Face
 {
 public:
@@ -134,6 +142,12 @@ public:
 		return vertexStartingIndex_;
 	}
 
+protected:
+	unsigned int baseVertex_;
+	unsigned int vertexStartingIndex_;
+
+	MeshType meshType_;
+
 private:
 	VertexArray* vertices_;
 	FaceArray* faces_;
@@ -142,9 +156,6 @@ private:
 
 	unsigned int vertexCount_;
 	unsigned int faceCount_;
-
-	unsigned int baseVertex_;
-	unsigned int vertexStartingIndex_;
 };
 
 #endif

@@ -2,12 +2,14 @@
 
 #include "SpriteComponent.h"
 
+#include "Goknar/Model/DynamicMeshInstance.h"
 #include "Goknar/Engine.h"
-#include "Goknar/Model/MeshInstance.h"
 #include "Goknar/Model/2D/SpriteMesh.h"
 
-SpriteComponent::SpriteComponent(ObjectBase* parent) : Component(parent), meshInstance_(new MeshInstance(this))
+SpriteComponent::SpriteComponent(ObjectBase* parent) : 
+	Component(parent)
 {
+	meshInstance_ = new DynamicMeshInstance(this);
 }
 
 SpriteComponent::~SpriteComponent()

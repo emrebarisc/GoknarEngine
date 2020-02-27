@@ -226,9 +226,9 @@ void Engine::Exit()
 	windowManager_->CloseWindow();
 }
 
-void Engine::AddObjectToRenderer(Mesh* mesh)
+void Engine::AddStaticMeshToRenderer(StaticMesh* staticMesh)
 {
-	renderer_->AddMeshToRenderer(mesh);
+	renderer_->AddStaticMeshToRenderer(staticMesh);
 }
 
 void Engine::SetApplication(Application* application)

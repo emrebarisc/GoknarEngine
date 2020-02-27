@@ -6,7 +6,7 @@
 #include "Goknar/Model/MeshInstance.h"
 #include "Goknar/ObjectBase.h"
 
-MeshComponent::MeshComponent(ObjectBase* parent) : Component(parent), meshInstance_(new MeshInstance(this))
+MeshComponent::MeshComponent(ObjectBase* parent) : Component(parent)
 {
 	WorldTransformationMatrixIsUpdated(parent->GetWorldTransformationMatrix());
 }
@@ -18,8 +18,11 @@ MeshComponent::~MeshComponent()
 
 void MeshComponent::Destroy()
 {
-	meshInstance_->RemoveFromRenderer();
-	delete meshInstance_;
+	if (meshInstance_)
+	{
+		meshInstance_->Destroy();
+	}
+	delete this;
 }
 
 void MeshComponent::SetMesh(Mesh* mesh)

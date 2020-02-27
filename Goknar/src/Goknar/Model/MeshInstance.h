@@ -17,7 +17,8 @@ public:
 		worldTransformationMatrix_(Matrix::IdentityMatrix),
 		parentComponent_(parentComponent),
 		mesh_(nullptr),
-		componentId_(lastComponentId_++)
+		componentId_(lastComponentId_++),
+		isRendered_(true)
 	{
 	}
 
@@ -31,9 +32,11 @@ public:
 		componentId_ = componentId;
 	}
 
-	void RemoveFromRenderer();
-
-	void SetMesh(Mesh* mesh);
+	void SetMesh(Mesh* mesh)
+	{
+		mesh_ = mesh;
+		AddMeshInstanceToRenderer();
+	}
 
 	Mesh* GetMesh() const
 	{
@@ -72,7 +75,11 @@ public:
 		return isRendered_;
 	}
 
+	virtual void Destroy() = 0;
+
 protected:
+	virtual void AddMeshInstanceToRenderer() = 0;
+	virtual void RemoveMeshInstanceFromRenderer() = 0;
 
 private:
 	Matrix relativeTransformationMatrix_, worldTransformationMatrix_;

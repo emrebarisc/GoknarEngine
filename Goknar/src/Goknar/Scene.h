@@ -41,14 +41,14 @@ public:
 		return meshes_[index];
 	}
 
-	void AddStaticObject(ObjectBase* object)
+	void AddObject(ObjectBase* object)
 	{
-		staticObjects_.push_back(object);
+		objects_.push_back(object);
 	}
 
 	ObjectBase* GetStaticObject(int index)
 	{
-		return staticObjects_[index];
+		return objects_[index];
 	}
 
 	void AddPointLight(const PointLight* pointLight);
@@ -157,7 +157,7 @@ private:
 	std::vector<Shader*> shaders_;
 	std::vector<Texture*> textures_;
     std::vector<Mesh*> meshes_;
-	std::vector<ObjectBase*> staticObjects_;
+	std::vector<ObjectBase*> objects_;
 
 	std::vector<const PointLight*> staticPointLights_;
 	std::vector<const DirectionalLight*> staticDirectionalLights_;

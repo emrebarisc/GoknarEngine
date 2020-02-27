@@ -7,8 +7,10 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Log.h"
 #include "Goknar/Material.h"
-#include "Goknar/Model/Mesh.h"
-#include "Goknar/Model/MeshInstance.h"
+#include "Goknar/Model/DynamicMesh.h"
+#include "Goknar/Model/StaticMesh.h"
+#include "Goknar/Model/DynamicMeshInstance.h"
+#include "Goknar/Model/StaticMeshInstance.h"
 
 #include "Goknar/IO/IOManager.h"
 #include "Goknar/Renderer/Shader.h"
@@ -29,19 +31,34 @@ Renderer::~Renderer()
 	glDeleteBuffers(1, &vertexBufferId_);
 	glDeleteBuffers(1, &indexBufferId_);
 
-	for (MeshInstance* opaqueMeshInstance : opaqueMeshInstances_)
+	for (StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
 	{
-		delete opaqueMeshInstance;
+		delete opaqueStaticMeshInstance;
 	}
 
-	for (MeshInstance* maskedMeshInstance : maskedMeshInstances_)
+	for (StaticMeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
 	{
-		delete maskedMeshInstance;
+		delete maskedStaticMeshInstance;
 	}
 
-	for (MeshInstance* translucentMeshInstance : translucentMeshInstances_)
+	for (StaticMeshInstance* translucentStaticMeshInstance : translucentStaticMeshInstances_)
 	{
-		delete translucentMeshInstance;
+		delete translucentStaticMeshInstance;
+	}
+
+	for (DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
+	{
+		delete opaqueDynamicMeshInstance;
+	}
+
+	for (DynamicMeshInstance* maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
+	{
+		delete maskedDynamicMeshInstance;
+	}
+
+	for (DynamicMeshInstance* translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
+	{
+		delete translucentDynamicMeshInstance;
 	}
 }
 
@@ -53,7 +70,7 @@ void Renderer::Init()
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
-	for (Mesh* mesh : meshes_)
+	for (StaticMesh* mesh : staticMeshes_)
 	{
 		totalVertexSize_ += (unsigned int)mesh->GetVerticesPointer()->size();
 		totalFaceSize_ += (unsigned int)mesh->GetFacesPointer()->size();
@@ -88,7 +105,7 @@ void Renderer::SetBufferData()
 
 	int vertexOffset = 0;
 	int faceOffset = 0;
-	for (Mesh* mesh : meshes_)
+	for (Mesh* mesh : staticMeshes_)
 	{
 		mesh->SetBaseVertex(baseVertex);
 		mesh->SetVertexStartingIndex(vertexStartingIndex);
@@ -135,34 +152,34 @@ void Renderer::Render()
 	const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
 	glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
 	
- 	for (const MeshInstance* opaqueMeshInstance : opaqueMeshInstances_)
+ 	for (const StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
 	{
-		if (!opaqueMeshInstance->GetIsRendered()) continue;
+		if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
 
-		const Mesh* mesh = opaqueMeshInstance->GetMesh();
-		opaqueMeshInstance->Render();
+		const Mesh* mesh = opaqueStaticMeshInstance->GetMesh();
+		opaqueStaticMeshInstance->Render();
 
 		int facePointCount = mesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 	}
 
-	for (const MeshInstance* maskedMeshInstance : maskedMeshInstances_)
+	for (const MeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
 	{
-		if (!maskedMeshInstance->GetIsRendered()) continue;
+		if (!maskedStaticMeshInstance->GetIsRendered()) continue;
 
-		const Mesh* mesh = maskedMeshInstance->GetMesh();
-		maskedMeshInstance->Render();
+		const Mesh* mesh = maskedStaticMeshInstance->GetMesh();
+		maskedStaticMeshInstance->Render();
 
 		int facePointCount = mesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 	}
 
 	glEnable(GL_BLEND);
-	for (const MeshInstance* translucentMeshInstance : translucentMeshInstances_)
+	for (const MeshInstance* translucentStaticMeshInstance : translucentStaticMeshInstances_)
 	{
-		if (!translucentMeshInstance->GetIsRendered()) continue;
-		const Mesh* mesh = translucentMeshInstance->GetMesh();
-		translucentMeshInstance->Render();
+		if (!translucentStaticMeshInstance->GetIsRendered()) continue;
+		const Mesh* mesh = translucentStaticMeshInstance->GetMesh();
+		translucentStaticMeshInstance->Render();
 
 		int facePointCount = mesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -170,58 +187,71 @@ void Renderer::Render()
 	glDisable(GL_BLEND);
 }
 
-void Renderer::AddMeshToRenderer(Mesh* mesh)
+void Renderer::AddStaticMeshToRenderer(StaticMesh* staticMesh)
 {
-	meshes_.push_back(mesh);
+	staticMeshes_.push_back(staticMesh);
 }
 
-void Renderer::AddMeshInstance(MeshInstance* meshInstance)
+void Renderer::AddDynamicMeshToRenderer(DynamicMesh* object)
+{
+	dynamicMeshes_.push_back(object);
+}
+
+void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* object)
+{
+}
+
+void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* object)
+{
+}
+
+void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 {
 	MaterialBlendModel materialShadingModel = meshInstance->GetMesh()->GetMaterial()->GetBlendModel();
 	switch (materialShadingModel)
 	{
 	case MaterialBlendModel::Opaque:
-		opaqueMeshInstances_.push_back(meshInstance);
+		opaqueStaticMeshInstances_.push_back(meshInstance);
 		break;
 	case MaterialBlendModel::Masked:
-		maskedMeshInstances_.push_back(meshInstance);
+		maskedStaticMeshInstances_.push_back(meshInstance);
 		break;
 	case MaterialBlendModel::Translucent:
-		translucentMeshInstances_.push_back(meshInstance);
+		translucentStaticMeshInstances_.push_back(meshInstance);
 		break;
 	default:
 		break;
 	}
 }
 
-void Renderer::RemoveMeshInstance(MeshInstance* object)
+void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* object)
 {
-	int meshInstanceCount = opaqueMeshInstances_.size();
+	int meshInstanceCount = opaqueStaticMeshInstances_.size();
 	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 	{
-		if (opaqueMeshInstances_[meshInstanceIndex] == object)
+		if (opaqueStaticMeshInstances_[meshInstanceIndex] == object)
 		{
-			opaqueMeshInstances_.erase(opaqueMeshInstances_.begin() + meshInstanceIndex);
+			opaqueStaticMeshInstances_.erase(opaqueStaticMeshInstances_.begin() + meshInstanceIndex);
 			return;
 		}
 	}
 	
-	meshInstanceCount = maskedMeshInstances_.size();
+	meshInstanceCount = maskedStaticMeshInstances_.size();
 	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 	{
-		if (maskedMeshInstances_[meshInstanceIndex] == object)
+		if (maskedStaticMeshInstances_[meshInstanceIndex] == object)
 		{
-			maskedMeshInstances_.erase(maskedMeshInstances_.begin() + meshInstanceIndex);
+			maskedStaticMeshInstances_.erase(maskedStaticMeshInstances_.begin() + meshInstanceIndex);
 			return;
 		}
 	}
 	
-	meshInstanceCount = translucentMeshInstances_.size();
+	meshInstanceCount = translucentStaticMeshInstances_.size();
 	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 	{
-		if (translucentMeshInstances_[meshInstanceIndex] == object)
+		if (translucentStaticMeshInstances_[meshInstanceIndex] == object)
 		{
-			translucentMeshInstances_.erase(translucentMeshInstances_.begin() + meshInstanceIndex);
+			translucentStaticMeshInstances_.erase(translucentStaticMeshInstances_.begin() + meshInstanceIndex);
 			return;
 		}
 	}

@@ -13,7 +13,6 @@ class GOKNAR_API MeshComponent : public Component
 {
 public:
 	MeshComponent() = delete;
-	MeshComponent(ObjectBase* parent);
 	~MeshComponent();
 
 	void Destroy() override;
@@ -33,11 +32,11 @@ public:
 	void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override;
 
 	void SetIsRendered(bool isRendered);
-
 protected:
+	MeshComponent(ObjectBase* parent);
 	inline void UpdateRelativeTransformationMatrix() override;
 
-private:
 	MeshInstance* meshInstance_;
+private:
 };
 #endif

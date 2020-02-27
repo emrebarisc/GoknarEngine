@@ -16,6 +16,7 @@ class ObjectBase;
 class ObjectManager;
 class Renderer;
 class Shader;
+class StaticMesh;
 class WindowManager;
 
 // Global Engine variable
@@ -47,7 +48,7 @@ public:
 		return renderer_;
 	}
 
-	void AddObjectToRenderer(Mesh* mesh);
+	void AddStaticMeshToRenderer(StaticMesh* staticMesh);
 
 	Editor* GetEditor() const
 	{

@@ -56,7 +56,7 @@ Scene::~Scene()
 		delete object;
 	}
 
-	for (auto object : staticObjects_)
+	for (auto object : objects_)
 	{
 		delete object;
 	}
@@ -67,7 +67,7 @@ void Scene::Init()
 	for (Mesh* mesh : meshes_)
 	{
 		mesh->Init();
-		engine->AddObjectToRenderer(mesh);
+		engine->AddStaticMeshToRenderer(mesh);
 	}
 
 	for (Texture* texture : textures_)
