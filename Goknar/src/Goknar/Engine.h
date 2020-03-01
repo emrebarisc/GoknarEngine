@@ -11,13 +11,14 @@ class CameraManager;
 class Controller;
 class Editor;
 class InputManager;
-class Mesh;
 class ObjectBase;
 class ObjectManager;
 class Renderer;
 class Shader;
-class StaticMesh;
 class WindowManager;
+
+class DynamicMesh;
+class StaticMesh;
 
 // Global Engine variable
 GOKNAR_API extern class Engine *engine;
@@ -49,6 +50,7 @@ public:
 	}
 
 	void AddStaticMeshToRenderer(StaticMesh* staticMesh);
+	void AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh);
 
 	Editor* GetEditor() const
 	{

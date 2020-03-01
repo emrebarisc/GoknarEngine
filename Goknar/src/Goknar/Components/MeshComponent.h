@@ -17,7 +17,7 @@ public:
 
 	void Destroy() override;
 
-	void SetMesh(Mesh* mesh);
+	virtual void SetMesh(Mesh* mesh) = 0;
 
 	const Matrix& GetRelativeTransformationMatrix() const
 	{
@@ -33,7 +33,7 @@ public:
 
 	void SetIsRendered(bool isRendered);
 protected:
-	MeshComponent(ObjectBase* parent);
+	MeshComponent(ObjectBase* parent, MeshInstance* meshInstance);
 	inline void UpdateRelativeTransformationMatrix() override;
 
 	MeshInstance* meshInstance_;

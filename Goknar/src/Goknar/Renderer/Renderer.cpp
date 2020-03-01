@@ -17,7 +17,17 @@
 
 #include <Windows.h>
 
-Renderer::Renderer(): vertexBufferId_(0), indexBufferId_(0), totalVertexSize_(0), totalFaceSize_(0)
+Renderer::Renderer() :
+	staticVertexBufferId_(0),
+	staticIndexBufferId_(0),
+	dynamicVertexBufferId_(0),
+	dynamicIndexBufferId_(0),
+	totalStaticMeshVertexSize_(0),
+	totalStaticMeshFaceSize_(0),
+	totalDynamicMeshVertexSize_(0),
+	totalDynamicMeshFaceSize_(0),
+	totalStaticMeshCount_(0),
+	totalDynamicMeshCount_(0)
 {
 }
 
@@ -28,8 +38,8 @@ Renderer::~Renderer()
 	glDisableVertexAttribArray(2);
 	glDisableVertexAttribArray(3);
 
-	glDeleteBuffers(1, &vertexBufferId_);
-	glDeleteBuffers(1, &indexBufferId_);
+	glDeleteBuffers(1, &staticVertexBufferId_);
+	glDeleteBuffers(1, &staticIndexBufferId_);
 
 	for (StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
 	{
@@ -70,32 +80,38 @@ void Renderer::Init()
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
-	for (StaticMesh* mesh : staticMeshes_)
+	for (StaticMesh* staticMesh : staticMeshes_)
 	{
-		totalVertexSize_ += (unsigned int)mesh->GetVerticesPointer()->size();
-		totalFaceSize_ += (unsigned int)mesh->GetFacesPointer()->size();
+		totalStaticMeshVertexSize_ += (unsigned int)staticMesh->GetVerticesPointer()->size();
+		totalStaticMeshFaceSize_ += (unsigned int)staticMesh->GetFacesPointer()->size();
+	}
+
+	for (DynamicMesh* dynamicMesh : dynamicMeshes_)
+	{
+		totalDynamicMeshVertexSize_ += (unsigned int)dynamicMesh->GetVerticesPointer()->size();
+		totalDynamicMeshFaceSize_ += (unsigned int)dynamicMesh->GetFacesPointer()->size();
 	}
 
 	SetBufferData();
 }
 
-void Renderer::SetBufferData()
+void Renderer::SetStaticBufferData()
 {
 	/*
 		Vertex buffer
 	*/
 	unsigned long long sizeOfVertexData = sizeof(VertexData);
 
-	glGenBuffers(1, &vertexBufferId_);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferId_);
-	glBufferData(GL_ARRAY_BUFFER, totalVertexSize_ * sizeOfVertexData, nullptr, GL_STATIC_DRAW);
+	glGenBuffers(1, &staticVertexBufferId_);
+	glBindBuffer(GL_ARRAY_BUFFER, staticVertexBufferId_);
+	glBufferData(GL_ARRAY_BUFFER, totalStaticMeshVertexSize_ * sizeOfVertexData, nullptr, GL_STATIC_DRAW);
 
 	/*
 		Index buffer
 	*/
-	glGenBuffers(1, &indexBufferId_);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferId_);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalFaceSize_ * sizeof(Face), nullptr, GL_STATIC_DRAW);
+	glGenBuffers(1, &staticIndexBufferId_);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticIndexBufferId_);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalStaticMeshFaceSize_ * sizeof(Face), nullptr, GL_STATIC_DRAW);
 
 	/*
 		Buffer Sub-Data
@@ -105,24 +121,24 @@ void Renderer::SetBufferData()
 
 	int vertexOffset = 0;
 	int faceOffset = 0;
-	for (Mesh* mesh : staticMeshes_)
+	for (Mesh* staticMesh : staticMeshes_)
 	{
-		mesh->SetBaseVertex(baseVertex);
-		mesh->SetVertexStartingIndex(vertexStartingIndex);
+		staticMesh->SetBaseVertex(baseVertex);
+		staticMesh->SetVertexStartingIndex(vertexStartingIndex);
 
-		const VertexArray* vertexArrayPtr = mesh->GetVerticesPointer();
+		const VertexArray* vertexArrayPtr = staticMesh->GetVerticesPointer();
 		int vertexSizeInBytes = (int)vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
 		glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
 
-		const FaceArray* faceArrayPtr = mesh->GetFacesPointer();
+		const FaceArray* faceArrayPtr = staticMesh->GetFacesPointer();
 		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
 
 		vertexOffset += vertexSizeInBytes;
 		faceOffset += faceSizeInBytes;
 
-		baseVertex += mesh->GetVertexCount();
-		vertexStartingIndex += mesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
+		baseVertex += staticMesh->GetVertexCount();
+		vertexStartingIndex += staticMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
 	}
 
 	// Vertex color
@@ -146,34 +162,128 @@ void Renderer::SetBufferData()
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
 }
 
+void Renderer::SetDynamicBufferData()
+{
+	/*
+		Vertex buffer
+	*/
+	unsigned long long sizeOfVertexData = sizeof(VertexData);
+
+	glGenBuffers(1, &dynamicVertexBufferId_);
+	glBindBuffer(GL_ARRAY_BUFFER, dynamicVertexBufferId_);
+	glBufferData(GL_ARRAY_BUFFER, totalDynamicMeshVertexSize_ * sizeOfVertexData, nullptr, GL_DYNAMIC_DRAW);
+
+	/*
+		Index buffer
+	*/
+	glGenBuffers(1, &dynamicIndexBufferId_);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dynamicIndexBufferId_);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalDynamicMeshFaceSize_ * sizeof(Face), nullptr, GL_DYNAMIC_DRAW);
+
+	/*
+		Buffer Sub-Data
+	*/
+	unsigned int baseVertex = 0;
+	unsigned int vertexStartingIndex = 0;
+
+	int vertexOffset = 0;
+	int faceOffset = 0;
+	for (DynamicMesh* dynamicMesh : dynamicMeshes_)
+	{
+		dynamicMesh->SetBaseVertex(baseVertex);
+		dynamicMesh->SetVertexStartingIndex(vertexStartingIndex);
+
+		const VertexArray* vertexArrayPtr = dynamicMesh->GetVerticesPointer();
+		int vertexSizeInBytes = (int)vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
+		glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
+
+		const FaceArray* faceArrayPtr = dynamicMesh->GetFacesPointer();
+		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
+
+		vertexOffset += vertexSizeInBytes;
+		faceOffset += faceSizeInBytes;
+
+		baseVertex += dynamicMesh->GetVertexCount();
+		vertexStartingIndex += dynamicMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
+	}
+
+	SetAttribPointers();
+}
+
+void Renderer::SetBufferData()
+{
+	if (0 < totalStaticMeshCount_) SetStaticBufferData();
+	if (0 < totalDynamicMeshCount_) SetDynamicBufferData();
+}
+
 void Renderer::Render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
 	glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
-	
- 	for (const StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
+
+	// Static Mesh Instances
 	{
-		if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
+		if (0 < totalStaticMeshCount_)
+		{
+			BindStaticVBO();
 
-		const Mesh* mesh = opaqueStaticMeshInstance->GetMesh();
-		opaqueStaticMeshInstance->Render();
+			for (const StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
+			{
+				if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
 
-		int facePointCount = mesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				const Mesh* mesh = opaqueStaticMeshInstance->GetMesh();
+				opaqueStaticMeshInstance->Render();
+
+				int facePointCount = mesh->GetFaceCount() * 3;
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+			}
+
+			for (const StaticMeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
+			{
+				if (!maskedStaticMeshInstance->GetIsRendered()) continue;
+
+				const Mesh* mesh = maskedStaticMeshInstance->GetMesh();
+				maskedStaticMeshInstance->Render();
+
+				int facePointCount = mesh->GetFaceCount() * 3;
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+			}
+		}
 	}
 
-	for (const MeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
+	// Dynamic Mesh Instances
 	{
-		if (!maskedStaticMeshInstance->GetIsRendered()) continue;
+		if (0 < totalDynamicMeshCount_)
+		{
+			BindDynamicVBO();
 
-		const Mesh* mesh = maskedStaticMeshInstance->GetMesh();
-		maskedStaticMeshInstance->Render();
+			for (const DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
+			{
+				if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
 
-		int facePointCount = mesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				const Mesh* mesh = opaqueDynamicMeshInstance->GetMesh();
+				opaqueDynamicMeshInstance->Render();
+
+				int facePointCount = mesh->GetFaceCount() * 3;
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+			}
+
+			for (const DynamicMeshInstance* maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
+			{
+				if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
+
+				const Mesh* mesh = maskedDynamicMeshInstance->GetMesh();
+				maskedDynamicMeshInstance->Render();
+
+				int facePointCount = mesh->GetFaceCount() * 3;
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+			}
+		}
 	}
 
+	// Translucent meshes needs to be hold in a single ordered array in order to work correctly in the future
 	glEnable(GL_BLEND);
 	for (const MeshInstance* translucentStaticMeshInstance : translucentStaticMeshInstances_)
 	{
@@ -184,25 +294,119 @@ void Renderer::Render()
 		int facePointCount = mesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 	}
+
+	for (const MeshInstance* translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
+	{
+		if (!translucentDynamicMeshInstance->GetIsRendered()) continue;
+		const Mesh* mesh = translucentDynamicMeshInstance->GetMesh();
+		translucentDynamicMeshInstance->Render();
+
+		int facePointCount = mesh->GetFaceCount() * 3;
+		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+	}
 	glDisable(GL_BLEND);
 }
 
 void Renderer::AddStaticMeshToRenderer(StaticMesh* staticMesh)
 {
 	staticMeshes_.push_back(staticMesh);
+	totalStaticMeshCount_++;
 }
 
-void Renderer::AddDynamicMeshToRenderer(DynamicMesh* object)
+void Renderer::AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh)
 {
-	dynamicMeshes_.push_back(object);
+	dynamicMeshes_.push_back(dynamicMesh);
+	totalDynamicMeshCount_++;
 }
 
-void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* object)
+void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
+	MaterialBlendModel materialShadingModel = dynamicMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+	switch (materialShadingModel)
+	{
+	case MaterialBlendModel::Opaque:
+		opaqueDynamicMeshInstances_.push_back(dynamicMeshInstance);
+		break;
+	case MaterialBlendModel::Masked:
+		maskedDynamicMeshInstances_.push_back(dynamicMeshInstance);
+		break;
+	case MaterialBlendModel::Translucent:
+		translucentDynamicMeshInstances_.push_back(dynamicMeshInstance);
+		break;
+	default:
+		break;
+	}
 }
 
-void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* object)
+void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
+	int meshInstanceCount = opaqueDynamicMeshInstances_.size();
+	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+	{
+		if (opaqueDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
+		{
+			opaqueDynamicMeshInstances_.erase(opaqueDynamicMeshInstances_.begin() + meshInstanceIndex);
+			return;
+		}
+	}
+
+	meshInstanceCount = maskedDynamicMeshInstances_.size();
+	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+	{
+		if (maskedDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
+		{
+			maskedDynamicMeshInstances_.erase(maskedDynamicMeshInstances_.begin() + meshInstanceIndex);
+			return;
+		}
+	}
+
+	meshInstanceCount = translucentDynamicMeshInstances_.size();
+	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+	{
+		if (translucentDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
+		{
+			translucentDynamicMeshInstances_.erase(translucentDynamicMeshInstances_.begin() + meshInstanceIndex);
+			return;
+		}
+	}
+}
+
+void Renderer::BindStaticVBO()
+{
+	glBindBuffer(GL_ARRAY_BUFFER, staticVertexBufferId_);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticIndexBufferId_);
+	SetAttribPointers();
+}
+
+void Renderer::BindDynamicVBO()
+{
+	glBindBuffer(GL_ARRAY_BUFFER, dynamicVertexBufferId_);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dynamicIndexBufferId_);
+	SetAttribPointers();
+}
+
+void Renderer::SetAttribPointers()
+{
+	unsigned long long sizeOfVertexData = sizeof(VertexData);
+	// Vertex color
+	long long offset = 0;
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
+
+	// Vertex position
+	offset += sizeof(VertexData::color);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
+
+	// Vertex normal
+	offset += sizeof(VertexData::position);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
+
+	// Vertex UV
+	offset += sizeof(VertexData::normal);
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
 }
 
 void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
@@ -235,7 +439,7 @@ void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* object)
 			return;
 		}
 	}
-	
+
 	meshInstanceCount = maskedStaticMeshInstances_.size();
 	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 	{
@@ -245,7 +449,7 @@ void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* object)
 			return;
 		}
 	}
-	
+
 	meshInstanceCount = translucentStaticMeshInstances_.size();
 	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 	{

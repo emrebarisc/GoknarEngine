@@ -7,6 +7,7 @@ class GOKNAR_API DynamicMesh : public Mesh
 {
 public:
 	DynamicMesh();
+	DynamicMesh(const Mesh& mesh);
 
 	~DynamicMesh();
 

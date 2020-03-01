@@ -5,12 +5,16 @@
 #include "Goknar/Model/StaticMeshInstance.h"
 
 StaticMeshComponent::StaticMeshComponent(ObjectBase* parent) : 
-	MeshComponent(parent)	
+	MeshComponent(parent, new StaticMeshInstance(this))
 {
-	meshInstance_ = new StaticMeshInstance(this);
 }
 
 StaticMeshComponent::~StaticMeshComponent()
 {
 
+}
+
+void StaticMeshComponent::SetMesh(Mesh* mesh)
+{
+	meshInstance_->SetMesh(mesh);
 }

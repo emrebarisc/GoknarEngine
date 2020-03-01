@@ -8,7 +8,8 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Material.h"
 #include "Goknar/Model/Mesh.h"
-#include "Goknar/Components/MeshComponent.h"
+#include "Goknar/Model/StaticMesh.h"
+#include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Managers/InputManager.h"
 
 #include "Goknar/Log.h"
@@ -16,10 +17,10 @@
 
 Airplane::Airplane() : ObjectBase()
 {
-	planeMeshComponent_ = new MeshComponent(this);
+	planeMeshComponent_ = new StaticMeshComponent(this);
 	planeMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(0));
 
-	propellerMeshComponent_ = new MeshComponent(this);
+	propellerMeshComponent_ = new StaticMeshComponent(this);
 	propellerMeshComponent_->SetMesh(engine->GetApplication()->GetMainScene()->GetMesh(1));
 
 	propellerRotationSpeed_ = 3600.f;

@@ -11,6 +11,7 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Material.h"
 #include "Goknar/Model/Mesh.h"
+#include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/IO/ModelLoader.h"
 #include "Goknar/ObjectBase.h"
@@ -580,10 +581,10 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				stream << child->GetText() << std::endl;
 				stream >> plyFilePath;
 
-				Mesh* mesh = ModelLoader::LoadPlyFile(plyFilePath.c_str());
+				StaticMesh* mesh = ModelLoader::LoadPlyFile(plyFilePath.c_str());
 				if (mesh != nullptr)
 				{
-					scene->AddMesh(mesh);
+					scene->AddStaticMesh(mesh);
 				}
 				mesh->SetMaterial(scene->GetMaterial(materialId));
 				stream.clear();
@@ -591,7 +592,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				continue;
 			}
 
-			Mesh* mesh = new Mesh();
+			StaticMesh* mesh = new StaticMesh();
 			mesh->SetMaterial(scene->GetMaterial(materialId));
 
 			child = element->FirstChildElement("Vertices");
@@ -651,13 +652,13 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			}
 			stream.clear();
 
-			scene->AddMesh(mesh);
+			scene->AddStaticMesh(mesh);
 			element = element->NextSiblingElement("Mesh");
 		}
 		stream.clear();
 	}
 
-	//Get Objects
+	//Get Static Objects
 	element = root->FirstChildElement("Objects");
 	if (element)
 	{
@@ -752,12 +753,19 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 			scene->AddObject(object);
 			element = element->NextSiblingElement("StaticMeshObject");
-		
+
 		}
 		stream.clear();
+	}
 
+
+	//Get Dynamic Objects
+	element = root->FirstChildElement("Objects");
+	if(element)
+	{
 		// DynamicMeshObject
 		element = element->FirstChildElement("DynamicMeshObject");
+		ObjectBase* object;
 		while (element)
 		{
 			object = new ObjectBase();

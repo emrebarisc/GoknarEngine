@@ -6,12 +6,15 @@
 #include "Goknar/Model/DynamicMeshInstance.h"
 
 DynamicMeshComponent::DynamicMeshComponent(ObjectBase* parent) : 
-	MeshComponent(parent)
-{
-	meshInstance_ = new DynamicMeshInstance(this);
-}
+	MeshComponent(parent, new DynamicMeshInstance(this))
+{}
 
 DynamicMeshComponent::~DynamicMeshComponent()
 {
 
+}
+
+void DynamicMeshComponent::SetMesh(Mesh* mesh)
+{
+	meshInstance_->SetMesh(mesh);
 }

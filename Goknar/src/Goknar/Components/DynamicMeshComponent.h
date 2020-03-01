@@ -10,6 +10,8 @@ public:
 	DynamicMeshComponent(ObjectBase* parent);
 	~DynamicMeshComponent();
 
+	void SetMesh(Mesh* mesh) override;
+
 protected:
 private:
 };

@@ -9,6 +9,8 @@ public:
 	StaticMeshComponent() = delete;
 	StaticMeshComponent(ObjectBase* parent);
 	~StaticMeshComponent();
+	
+	void SetMesh(Mesh* mesh) override;
 
 protected:
 private:

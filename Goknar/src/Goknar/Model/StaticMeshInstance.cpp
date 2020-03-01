@@ -25,3 +25,9 @@ void StaticMeshInstance::Destroy()
 	RemoveMeshInstanceFromRenderer();
 	delete this;
 }
+
+void StaticMeshInstance::SetMesh(Mesh* mesh)
+{
+	mesh_ = mesh;
+	AddMeshInstanceToRenderer();
+}

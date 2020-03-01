@@ -1,11 +1,11 @@
 #ifndef __SPRITEMESH_H__
 #define __SPRITEMESH_H__
 
-#include "Goknar/Model/Mesh.h"
+#include "Goknar/Model/DynamicMesh.h"
 
 class Material;
 
-class GOKNAR_API SpriteMesh : public Mesh
+class GOKNAR_API SpriteMesh : public DynamicMesh
 {
 public:
 	SpriteMesh();

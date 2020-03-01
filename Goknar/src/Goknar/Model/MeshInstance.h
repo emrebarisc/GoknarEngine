@@ -32,11 +32,7 @@ public:
 		componentId_ = componentId;
 	}
 
-	void SetMesh(Mesh* mesh)
-	{
-		mesh_ = mesh;
-		AddMeshInstanceToRenderer();
-	}
+	virtual void SetMesh(Mesh* mesh) = 0;
 
 	Mesh* GetMesh() const
 	{
@@ -81,11 +77,13 @@ protected:
 	virtual void AddMeshInstanceToRenderer() = 0;
 	virtual void RemoveMeshInstanceFromRenderer() = 0;
 
+	Mesh* mesh_;
+
 private:
-	Matrix relativeTransformationMatrix_, worldTransformationMatrix_;
+	Matrix relativeTransformationMatrix_;
+	Matrix worldTransformationMatrix_;
 
 	Component* parentComponent_;
-	Mesh* mesh_;
 
 	int componentId_;
 

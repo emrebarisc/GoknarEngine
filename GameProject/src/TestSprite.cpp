@@ -3,12 +3,12 @@
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Material.h"
-#include "Goknar/Components/MeshComponent.h"
+#include "Goknar/Components/DynamicMeshComponent.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Model/2D/SpriteMesh.h"
 #include "Goknar/Renderer/Texture.h"
 
-TestSprite::TestSprite()
+TestSprite::TestSprite() : ObjectBase()
 {
 	Texture* texture = new Texture("./Content/Textures/T_Airplane.png");
 	texture->SetName("texture0");
@@ -32,7 +32,7 @@ TestSprite::TestSprite()
 	material->SetShader(shader);
 
 	SpriteMesh* spriteMesh = new SpriteMesh(material);
-	spriteMeshComponent_ = new MeshComponent(this);
+	spriteMeshComponent_ = new DynamicMeshComponent(this);
 	spriteMeshComponent_->SetMesh(spriteMesh);
 }
 

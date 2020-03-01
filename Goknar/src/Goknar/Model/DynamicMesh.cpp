@@ -10,6 +10,11 @@ DynamicMesh::DynamicMesh() :
 	meshType_ = MeshType::Dynamic;
 }
 
+DynamicMesh::DynamicMesh(const Mesh& mesh) :
+	Mesh(mesh)
+{
+}
+
 DynamicMesh::~DynamicMesh()
 {
 }
@@ -21,5 +26,5 @@ void DynamicMesh::Init()
 
 void DynamicMesh::UpdateVertexDataAt(int index, const VertexData& vertexData)
 {
-	engine->GetRenderer()->
+	//engine->GetRenderer()->
 }

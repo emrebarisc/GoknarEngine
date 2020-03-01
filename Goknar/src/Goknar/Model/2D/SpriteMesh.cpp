@@ -8,10 +8,10 @@
 #include "Goknar/Material.h"
 #include "Goknar/Scene.h"
 
-SpriteMesh::SpriteMesh() : Mesh(), material_(nullptr), width_(1), height_(1)
+SpriteMesh::SpriteMesh() : DynamicMesh(), material_(nullptr), width_(1), height_(1)
 {
 	Scene* scene = engine->GetApplication()->GetMainScene();
-	scene->AddMesh(this);
+	scene->AddDynamicMesh(this);
 }
 
 SpriteMesh::SpriteMesh(Material* material) : SpriteMesh()

@@ -231,6 +231,11 @@ void Engine::AddStaticMeshToRenderer(StaticMesh* staticMesh)
 	renderer_->AddStaticMeshToRenderer(staticMesh);
 }
 
+void Engine::AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh)
+{
+	renderer_->AddDynamicMeshToRenderer(dynamicMesh);
+}
+
 void Engine::SetApplication(Application* application)
 {
 	application_ = application;

@@ -1,14 +1,14 @@
 #ifndef __MODELLOADER_H__
 #define __MODELLOADER_H__
 
-class Mesh;
+class StaticMesh;
 
 class ModelLoader
 {
 public:
 	ModelLoader() = delete;
 
-	static Mesh* LoadPlyFile(const char* path);
+	static StaticMesh* LoadPlyFile(const char* path);
 
 protected:
 

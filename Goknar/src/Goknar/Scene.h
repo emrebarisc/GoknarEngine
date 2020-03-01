@@ -10,10 +10,12 @@ class DirectionalLight;
 class PointLight;
 class SpotLight;
 class Material;
-class Mesh;
 class ObjectBase;
 class Shader;
 class Texture;
+
+class DynamicMesh;
+class StaticMesh;
 
 /*
     Scene class containing all the scene data
@@ -31,14 +33,24 @@ public:
     // Scene data parser
     void ReadSceneData(char *filePath);
 
-	void AddMesh(Mesh* mesh)
+	void AddStaticMesh(StaticMesh* staticMesh)
 	{
-		meshes_.push_back(mesh);
+		staticMeshes_.push_back(staticMesh);
 	}
 
-	Mesh* GetMesh(int index)
+	StaticMesh* GetMesh(int index)
 	{
-		return meshes_[index];
+		return staticMeshes_[index];
+	}
+
+	void AddDynamicMesh(DynamicMesh* dynamicMesh)
+	{
+		dynamicMeshes_.push_back(dynamicMesh);
+	}
+
+	DynamicMesh* GetDynamicMesh(int index)
+	{
+		return dynamicMeshes_[index];
 	}
 
 	void AddObject(ObjectBase* object)
@@ -156,7 +168,8 @@ private:
 	std::vector<Material*> materials_;
 	std::vector<Shader*> shaders_;
 	std::vector<Texture*> textures_;
-    std::vector<Mesh*> meshes_;
+    std::vector<StaticMesh*> staticMeshes_;
+    std::vector<DynamicMesh*> dynamicMeshes_;
 	std::vector<ObjectBase*> objects_;
 
 	std::vector<const PointLight*> staticPointLights_;

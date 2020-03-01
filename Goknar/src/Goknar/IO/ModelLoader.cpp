@@ -2,9 +2,9 @@
 
 #include "ModelLoader.h"
 
-#include "Goknar/Model/Mesh.h"
+#include "Goknar/Model/StaticMesh.h"
 
-Mesh* ModelLoader::LoadPlyFile(const char* path)
+StaticMesh* ModelLoader::LoadPlyFile(const char* path)
 {
 	std::ifstream file(path);
 	if (!file.is_open())
@@ -15,7 +15,7 @@ Mesh* ModelLoader::LoadPlyFile(const char* path)
 	std::string line;
 	std::stringstream stringStream;
 
-	Mesh* mesh = new Mesh();
+	StaticMesh* mesh = new StaticMesh();
 	int vertexCount = 0;
 	int faceCount = 0;
 

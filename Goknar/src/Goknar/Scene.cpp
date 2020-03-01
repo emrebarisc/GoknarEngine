@@ -4,10 +4,12 @@
 
 #include "Engine.h"
 #include "Material.h"
-#include "Model/Mesh.h"
 #include "ObjectBase.h"
 #include "Helpers/SceneParser.h"
 #include "Renderer/Texture.h"
+
+#include "Model/DynamicMesh.h"
+#include "Model/StaticMesh.h"
 
 #include "Lights/DirectionalLight.h"
 #include "Lights/PointLight.h"
@@ -21,7 +23,7 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-	for (auto object : meshes_)
+	for (auto object : staticMeshes_)
 	{
 		delete object;
 	}
@@ -64,10 +66,16 @@ Scene::~Scene()
 
 void Scene::Init()
 {
-	for (Mesh* mesh : meshes_)
+	for (StaticMesh* staticMesh : staticMeshes_)
 	{
-		mesh->Init();
-		engine->AddStaticMeshToRenderer(mesh);
+		staticMesh->Init();
+		engine->AddStaticMeshToRenderer(staticMesh);
+	}
+
+	for (DynamicMesh* dynamicMesh : dynamicMeshes_)
+	{
+		dynamicMesh->Init();
+		engine->AddDynamicMeshToRenderer(dynamicMesh);
 	}
 
 	for (Texture* texture : textures_)

@@ -20,6 +20,8 @@ public:
 	Renderer();
 	~Renderer();
 
+	void SetStaticBufferData();
+	void SetDynamicBufferData();
 	void SetBufferData();
 	void Init();
 
@@ -34,6 +36,10 @@ public:
 	void RemoveDynamicMeshInstance(DynamicMeshInstance* object);
 
 private:
+	void BindStaticVBO();
+	void BindDynamicVBO();
+	void SetAttribPointers();
+
 	std::vector<StaticMesh*> staticMeshes_;
 	std::vector<DynamicMesh*> dynamicMeshes_;
 
@@ -47,11 +53,20 @@ private:
 	std::vector<DynamicMeshInstance*> maskedDynamicMeshInstances_;
 	std::vector<DynamicMeshInstance*> translucentDynamicMeshInstances_;
 
-	unsigned int totalVertexSize_;
-	unsigned int totalFaceSize_;
+	unsigned int totalStaticMeshVertexSize_;
+	unsigned int totalStaticMeshFaceSize_;
+	
+	unsigned int totalDynamicMeshVertexSize_;
+	unsigned int totalDynamicMeshFaceSize_;
 
-	GEuint vertexBufferId_;
-	GEuint indexBufferId_;
+	int totalStaticMeshCount_;
+	int totalDynamicMeshCount_;
+
+	GEuint staticVertexBufferId_;
+	GEuint staticIndexBufferId_;
+
+	GEuint dynamicVertexBufferId_;
+	GEuint dynamicIndexBufferId_;
 };
 
 #endif

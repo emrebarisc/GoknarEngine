@@ -1229,7 +1229,7 @@
   </Meshes>
 
   <Objects>
-    <MeshObject id = "0">
+    <StaticMeshObject id = "0">
       <RelativePosition>0 0 0</RelativePosition>
       <RelativeRotation>0 0 0</RelativeRotation>
       <RelativeScaling>1 1 1</RelativeScaling>
@@ -1237,8 +1237,8 @@
       <WorldRotation>0 0 0</WorldRotation>
       <WorldScaling>1.0 1.0 1.0</WorldScaling>
       <Mesh>0</Mesh>
-    </MeshObject>
-    <MeshObject id = "0">
+    </StaticMeshObject>
+    <StaticMeshObject id = "0">
       <RelativePosition>0 0 0</RelativePosition>
       <RelativeRotation>0 0 0</RelativeRotation>
       <RelativeScaling>1 1 1</RelativeScaling>
@@ -1246,8 +1246,8 @@
       <WorldRotation>0 0 0</WorldRotation>
       <WorldScaling>1.0 1.0 1.0</WorldScaling>
       <Mesh>1</Mesh>
-    </MeshObject>
-    <MeshObject id = "0">
+    </StaticMeshObject>
+    <StaticMeshObject id = "0">
       <RelativePosition>0 0 0</RelativePosition>
       <RelativeRotation>0 0 0</RelativeRotation>
       <RelativeScaling>1 1 1</RelativeScaling>
@@ -1255,7 +1255,7 @@
       <WorldRotation>0 0 0</WorldRotation>
       <WorldScaling>1.0 1.0 1.0</WorldScaling>
       <Mesh>2</Mesh>
-    </MeshObject>
+    </StaticMeshObject>
   </Objects>
 
 </Scene>
