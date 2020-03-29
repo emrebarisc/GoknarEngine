@@ -21,6 +21,8 @@ public:
 	void Init() override;
 private:
 	void Operate() override;
+
+	std::vector<Rect> textureCoordinates_;
 };
 
 #endif

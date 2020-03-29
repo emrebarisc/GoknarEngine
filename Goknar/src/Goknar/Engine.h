@@ -81,7 +81,7 @@ public:
 	void RemoveObject(ObjectBase* object);
 	void AddToTickableObjects(ObjectBase* object);
 	void RemoveFromTickableObjects(ObjectBase* object);
-	void RegisterAnimatedObject(TimeDependentObject* animatedMesh2D);
+	void RegisterTimeDependentObject(TimeDependentObject* animatedMesh2D);
 
 	void SetApplication(Application* application);
 

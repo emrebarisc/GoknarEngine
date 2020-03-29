@@ -12,6 +12,8 @@ TestSprite::TestSprite() : ObjectBase()
 {
 	Texture* texture = new Texture("./Content/2DScene/Textures/ScaryMammal.png");
 	texture->SetName("texture0");
+	texture->SetTextureMinFilter(TextureMinFilter::NEAREST);
+	texture->SetTextureMagFilter(TextureMagFilter::NEAREST);
 
 	Scene* scene = engine->GetApplication()->GetMainScene();
 	scene->AddTexture(texture);

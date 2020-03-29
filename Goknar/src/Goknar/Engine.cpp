@@ -202,7 +202,7 @@ void Engine::AddToTickableObjects(ObjectBase* object)
 	tickableObjects_.push_back(object);
 }
 
-void Engine::RegisterAnimatedObject(TimeDependentObject* animatedObject)
+void Engine::RegisterTimeDependentObject(TimeDependentObject* animatedObject)
 {
 	timeDependentObjects_.push_back(animatedObject);
 }

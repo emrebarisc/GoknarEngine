@@ -52,6 +52,7 @@ void SpriteMesh::SetTexturePosition(const Rect& texturePosition)
 
 void SpriteMesh::NormalizeTexturePosition()
 {
+	// TODO: Change getting texture with index to a hast table where it is gotten with GetShader()->GetDiffuseTexture()
 	const Texture* texture = material_->GetShader()->GetTextures()->at(0);
 	float textureWidth = (float)texture->GetWidth();
 	float textureHeight = (float)texture->GetHeight();

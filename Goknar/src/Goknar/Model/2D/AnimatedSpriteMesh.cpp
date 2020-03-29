@@ -2,7 +2,11 @@
 
 #include "AnimatedSpriteMesh.h"
 
-AnimatedSpriteMesh::AnimatedSpriteMesh() : SpriteMesh()
+#include "Goknar/Application.h"
+#include "Goknar/Engine.h"
+#include "Goknar/Scene.h"
+
+AnimatedSpriteMesh::AnimatedSpriteMesh() : SpriteMesh(), TimeDependentObject()
 {
 }
 
@@ -17,4 +21,5 @@ void AnimatedSpriteMesh::Init()
 
 void AnimatedSpriteMesh::Operate()
 {
+	std::cout << "Operate" << std::endl;
 }
