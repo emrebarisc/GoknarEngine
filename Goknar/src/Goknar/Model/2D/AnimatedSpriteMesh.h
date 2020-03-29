@@ -5,11 +5,13 @@
 #include "Goknar/TimeDependentObject.h"
 
 class Component;
+class Material;
 
 class GOKNAR_API AnimatedSpriteMesh : public SpriteMesh, public TimeDependentObject
 {
 public:
 	AnimatedSpriteMesh();
+	AnimatedSpriteMesh(Material* material);
 
 	~AnimatedSpriteMesh()
 	{

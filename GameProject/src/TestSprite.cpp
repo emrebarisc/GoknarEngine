@@ -5,12 +5,12 @@
 #include "Goknar/Material.h"
 #include "Goknar/Components/DynamicMeshComponent.h"
 #include "Goknar/Scene.h"
-#include "Goknar/Model/2D/SpriteMesh.h"
+#include "Goknar/Model/2D/AnimatedSpriteMesh.h"
 #include "Goknar/Renderer/Texture.h"
 
 TestSprite::TestSprite() : ObjectBase()
 {
-	Texture* texture = new Texture("./Content/Textures/T_Airplane.png");
+	Texture* texture = new Texture("./Content/2DScene/Textures/ScaryMammal.png");
 	texture->SetName("texture0");
 
 	Scene* scene = engine->GetApplication()->GetMainScene();
@@ -31,7 +31,9 @@ TestSprite::TestSprite() : ObjectBase()
 	scene->AddShader(shader);
 	material->SetShader(shader);
 
-	SpriteMesh* spriteMesh = new SpriteMesh(material);
+	AnimatedSpriteMesh* spriteMesh = new AnimatedSpriteMesh(material);
+	spriteMesh->SetTexturePosition(Rect(Vector2(52.f, 256.f), Vector2(69.f, 269.f)));
+
 	spriteMeshComponent_ = new DynamicMeshComponent(this);
 	spriteMeshComponent_->SetMesh(spriteMesh);
 }

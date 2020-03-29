@@ -2,15 +2,17 @@
 
 #include "AnimatedSpriteMesh.h"
 
-#include "Goknar/Components/Component.h"
-
 AnimatedSpriteMesh::AnimatedSpriteMesh() : SpriteMesh()
 {
+}
 
+AnimatedSpriteMesh::AnimatedSpriteMesh(Material* material) : SpriteMesh(material)
+{
 }
 
 void AnimatedSpriteMesh::Init()
 {
+	SpriteMesh::Init();
 }
 
 void AnimatedSpriteMesh::Operate()

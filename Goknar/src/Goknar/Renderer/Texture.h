@@ -44,6 +44,17 @@ public:
 		delete[] buffer_;
 	}
 
+	int GetWidth() const
+	{
+		return width_;
+	}
+	
+
+	int GetHeight() const
+	{
+		return height_;
+	}
+
 	void SetTextureImagePath(const std::string& imagePath)
 	{
 		imagePath_ = imagePath;

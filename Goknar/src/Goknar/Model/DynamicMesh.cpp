@@ -5,7 +5,8 @@
 #include "Goknar/Engine.h"
 
 DynamicMesh::DynamicMesh() :
-	Mesh()
+	Mesh(),
+	rendererVertexOffset_(0)
 {
 	meshType_ = MeshType::Dynamic;
 }

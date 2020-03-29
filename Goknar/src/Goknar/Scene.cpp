@@ -66,6 +66,16 @@ Scene::~Scene()
 
 void Scene::Init()
 {
+	for (Texture* texture : textures_)
+	{
+		texture->Init();
+	}
+
+	for (Material* material : materials_)
+	{
+		material->Init();
+	}
+
 	for (StaticMesh* staticMesh : staticMeshes_)
 	{
 		staticMesh->Init();
@@ -76,16 +86,6 @@ void Scene::Init()
 	{
 		dynamicMesh->Init();
 		engine->AddDynamicMeshToRenderer(dynamicMesh);
-	}
-
-	for (Texture* texture : textures_)
-	{
-		texture->Init();
-	}
-
-	for (Material* material : materials_)
-	{
-		material->Init();
 	}
 }
 

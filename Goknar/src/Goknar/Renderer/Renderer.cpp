@@ -192,6 +192,7 @@ void Renderer::SetDynamicBufferData()
 	{
 		dynamicMesh->SetBaseVertex(baseVertex);
 		dynamicMesh->SetVertexStartingIndex(vertexStartingIndex);
+		dynamicMesh->SetRendererVertexOffset(vertexOffset);
 
 		const VertexArray* vertexArrayPtr = dynamicMesh->GetVerticesPointer();
 		int vertexSizeInBytes = (int)vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
@@ -340,35 +341,57 @@ void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 
 void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
-	int meshInstanceCount = opaqueDynamicMeshInstances_.size();
-	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-	{
-		if (opaqueDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
-		{
-			opaqueDynamicMeshInstances_.erase(opaqueDynamicMeshInstances_.begin() + meshInstanceIndex);
-			return;
-		}
-	}
+	MaterialBlendModel blendModel = dynamicMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
 
-	meshInstanceCount = maskedDynamicMeshInstances_.size();
-	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+	switch (blendModel)
 	{
-		if (maskedDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
+	case MaterialBlendModel::Opaque:
+	{
+		int meshInstanceCount = opaqueDynamicMeshInstances_.size();
+		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 		{
-			maskedDynamicMeshInstances_.erase(maskedDynamicMeshInstances_.begin() + meshInstanceIndex);
-			return;
+			if (opaqueDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
+			{
+				opaqueDynamicMeshInstances_.erase(opaqueDynamicMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
 		}
+		break;
 	}
+	case MaterialBlendModel::Masked:
+	{
+		int meshInstanceCount = maskedDynamicMeshInstances_.size();
+		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			if (maskedDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
+			{
+				maskedDynamicMeshInstances_.erase(maskedDynamicMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
+		}
+		break;
+	}
+	case MaterialBlendModel::Translucent:
+	{
+		int meshInstanceCount = translucentDynamicMeshInstances_.size();
+		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			if (translucentDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
+			{
+				translucentDynamicMeshInstances_.erase(translucentDynamicMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
+		}
+		break;
+	}
+	default:
+		break;
+	}
+}
 
-	meshInstanceCount = translucentDynamicMeshInstances_.size();
-	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-	{
-		if (translucentDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
-		{
-			translucentDynamicMeshInstances_.erase(translucentDynamicMeshInstances_.begin() + meshInstanceIndex);
-			return;
-		}
-	}
+void Renderer::UpdateDynamicMeshVertex(const DynamicMesh* object, int vertexIndex, const VertexData& newVertexData)
+{
+	glBufferSubData(GL_ARRAY_BUFFER, object->GetRendererVertexOffset(), sizeof(VertexData), &newVertexData);
 }
 
 void Renderer::BindStaticVBO()
@@ -428,35 +451,54 @@ void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 	}
 }
 
-void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* object)
+void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 {
-	int meshInstanceCount = opaqueStaticMeshInstances_.size();
-	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+	MaterialBlendModel blendModel = staticMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+
+	switch (blendModel)
 	{
-		if (opaqueStaticMeshInstances_[meshInstanceIndex] == object)
+	case MaterialBlendModel::Opaque:
+	{
+		int meshInstanceCount = opaqueStaticMeshInstances_.size();
+		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 		{
-			opaqueStaticMeshInstances_.erase(opaqueStaticMeshInstances_.begin() + meshInstanceIndex);
-			return;
+			if (opaqueStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
+			{
+				opaqueStaticMeshInstances_.erase(opaqueStaticMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
 		}
+		break;
+	}
+	case MaterialBlendModel::Masked:
+	{
+		int meshInstanceCount = maskedStaticMeshInstances_.size();
+		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			if (maskedStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
+			{
+				maskedStaticMeshInstances_.erase(maskedStaticMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
+		}
+		break;
+	}
+	case MaterialBlendModel::Translucent:
+	{
+		int meshInstanceCount = translucentStaticMeshInstances_.size();
+		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			if (translucentStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
+			{
+				translucentStaticMeshInstances_.erase(translucentStaticMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
+		}
+		break;
+	}
+	default:
+		break;
 	}
 
-	meshInstanceCount = maskedStaticMeshInstances_.size();
-	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-	{
-		if (maskedStaticMeshInstances_[meshInstanceIndex] == object)
-		{
-			maskedStaticMeshInstances_.erase(maskedStaticMeshInstances_.begin() + meshInstanceIndex);
-			return;
-		}
-	}
 
-	meshInstanceCount = translucentStaticMeshInstances_.size();
-	for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-	{
-		if (translucentStaticMeshInstances_[meshInstanceIndex] == object)
-		{
-			translucentStaticMeshInstances_.erase(translucentStaticMeshInstances_.begin() + meshInstanceIndex);
-			return;
-		}
-	}
 }

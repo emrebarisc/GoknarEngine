@@ -29,10 +29,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/2DScene/Shaders/2DScene_TextureVertexShader.glsl
+        ./Content/2DScene/Shaders/2DVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/2DScene/Shaders/2DScene_TextureFragmentShader.glsl
+        ./Content/2DScene/Shaders/2DFragmentShader.glsl
       </FragmentShaderPath>
       <Model>
         Opaque
@@ -43,10 +43,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/2DScene/Shaders/2DScene_TextureVertexShader.glsl
+        ./Content/2DScene/Shaders/2DVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/2DScene/Shaders/2DScene_TextureFragmentShader.glsl
+        ./Content/2DScene/Shaders/2DFragmentShader.glsl
       </FragmentShaderPath>
       <Model>
         Masked

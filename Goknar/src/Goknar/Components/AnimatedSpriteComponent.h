@@ -1,22 +1,22 @@
-#ifndef __SPRITECOMPONENT_H__
-#define __SPRITECOMPONENT_H__
+#ifndef __ANIMATEDSPRITECOMPONENT_H__
+#define __ANIMATEDSPRITECOMPONENT_H__
 
 #include "Component.h"
 
 #include "Goknar/Core.h"
 
-class SpriteMesh;
+class AnimatedSpriteMesh;
 class MeshInstance;
 class ObjectBase;
 
-class GOKNAR_API SpriteComponent : public Component
+class GOKNAR_API AnimatedSpriteComponent : public Component
 {
 public:
-	SpriteComponent() = delete;
-	SpriteComponent(ObjectBase* parent);
-	~SpriteComponent();
+	AnimatedSpriteComponent() = delete;
+	AnimatedSpriteComponent(ObjectBase* parent);
+	~AnimatedSpriteComponent();
 
-	void SetMesh(SpriteMesh* sprite);
+	void SetMesh(AnimatedSpriteMesh* sprite);
 
 	const Matrix& GetRelativeTransformationMatrix() const
 	{

@@ -4,12 +4,13 @@
 #include "Goknar/Core.h"
 #include "Goknar/Renderer/Types.h"
 
+#include "Goknar/Model/Mesh.h"
+
 #include "glad/glad.h"
 
 #include <vector>
 
 class GOKNAR_API DynamicMesh;
-class GOKNAR_API Mesh;
 class GOKNAR_API StaticMesh;
 class GOKNAR_API DynamicMeshInstance;
 class GOKNAR_API StaticMeshInstance;
@@ -34,6 +35,8 @@ public:
 	void AddDynamicMeshToRenderer(DynamicMesh* object);
 	void AddDynamicMeshInstance(DynamicMeshInstance* object);
 	void RemoveDynamicMeshInstance(DynamicMeshInstance* object);
+
+	void UpdateDynamicMeshVertex(const DynamicMesh* object, int vertexIndex, const VertexData& newVertexData);
 
 private:
 	void BindStaticVBO();

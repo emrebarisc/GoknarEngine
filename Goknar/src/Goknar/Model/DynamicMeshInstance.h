@@ -1,14 +1,16 @@
 #ifndef __DYNAMICMESHINSTANCE_H__
 #define __DYNAMICMESHINSTANCE_H__
 
+#include "Mesh.h"
 #include "MeshInstance.h"
 
 class GOKNAR_API DynamicMeshInstance : public MeshInstance
 {
 public:
 	DynamicMeshInstance() = delete;
-
 	DynamicMeshInstance(Component* parentComponent);
+
+	void UpdateVertexDataAt(int index, const VertexData& newVertexData);
 
 protected:
 	void AddMeshInstanceToRenderer() override;

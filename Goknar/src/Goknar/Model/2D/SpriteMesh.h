@@ -3,6 +3,8 @@
 
 #include "Goknar/Model/DynamicMesh.h"
 
+#include "Goknar/Geometry/Rect.h"
+
 class Material;
 
 class GOKNAR_API SpriteMesh : public DynamicMesh
@@ -18,17 +20,28 @@ public:
 
 	void Init() override;
 
-	void SetSize(int width, int height)
+	void SetSize(float width, float height)
 	{
 		width_ = width;
 		height_ = height;
 	}
 
-private:
+	void SetTexturePosition(const Rect& texturePosition);
+	const Rect& GetTexturePosition() const
+	{
+		return texturePosition_;
+	}
+
+protected:
+	Rect texturePosition_;
+
 	Material* material_;
 
-	int width_;
-	int height_;
+	float width_;
+	float height_;
+
+private:
+	void NormalizeTexturePosition();
 };
 
 #endif

@@ -15,7 +15,18 @@ public:
 
 	void UpdateVertexDataAt(int index, const VertexData& vertexData);
 
+	int GetRendererVertexOffset() const
+	{
+		return rendererVertexOffset_;
+	}
+
+	void SetRendererVertexOffset(int rendererVertexOffset)
+	{
+		rendererVertexOffset_ = rendererVertexOffset;
+	}
+
 private:
+	int rendererVertexOffset_;
 };
 
 #endif

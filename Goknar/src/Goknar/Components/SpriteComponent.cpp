@@ -17,7 +17,7 @@ SpriteComponent::~SpriteComponent()
 
 }
 
-void SpriteComponent::SetSpriteMesh(SpriteMesh* spriteMesh)
+void SpriteComponent::SetMesh(SpriteMesh* spriteMesh)
 {
 	meshInstance_->SetMesh(spriteMesh);
 }

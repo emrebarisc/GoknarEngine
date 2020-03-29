@@ -14,6 +14,11 @@ DynamicMeshInstance::DynamicMeshInstance(Component* parentComponent) :
 
 }
 
+void DynamicMeshInstance::UpdateVertexDataAt(int index, const VertexData& newVertexData)
+{
+	engine->GetRenderer()->UpdateDynamicMeshVertex(static_cast<DynamicMesh*>(mesh_), index, newVertexData);
+}
+
 void DynamicMeshInstance::AddMeshInstanceToRenderer()
 {
 	engine->GetRenderer()->AddDynamicMeshInstance(this);
