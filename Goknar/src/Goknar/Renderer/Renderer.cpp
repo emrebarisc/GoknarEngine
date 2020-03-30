@@ -391,7 +391,9 @@ void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstanc
 
 void Renderer::UpdateDynamicMeshVertex(const DynamicMesh* object, int vertexIndex, const VertexData& newVertexData)
 {
-	glBufferSubData(GL_ARRAY_BUFFER, object->GetRendererVertexOffset(), sizeof(VertexData), &newVertexData);
+	//BindDynamicVBO();
+	int sizeOfVertexData = sizeof(VertexData);
+	glNamedBufferSubData(dynamicVertexBufferId_, object->GetRendererVertexOffset() + vertexIndex * sizeOfVertexData, sizeOfVertexData, &newVertexData);
 }
 
 void Renderer::BindStaticVBO()

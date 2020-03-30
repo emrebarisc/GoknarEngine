@@ -34,7 +34,10 @@ TestSprite::TestSprite() : ObjectBase()
 	material->SetShader(shader);
 
 	AnimatedSpriteMesh* spriteMesh = new AnimatedSpriteMesh(material);
-	spriteMesh->SetTexturePosition(Rect(Vector2(52.f, 256.f), Vector2(69.f, 269.f)));
+	spriteMesh->AddTextureCoordinate(Rect(Vector2(52.f, 256.f), Vector2(69.f, 269.f)));
+	spriteMesh->AddTextureCoordinate(Rect(Vector2(70.f, 256.f), Vector2(87.f, 269.f)));
+	spriteMesh->AddTextureCoordinate(Rect(Vector2(88.f, 256.f), Vector2(105.f, 269.f)));
+	spriteMesh->SetTicksPerSecond(12);
 
 	spriteMeshComponent_ = new DynamicMeshComponent(this);
 	spriteMeshComponent_->SetMesh(spriteMesh);

@@ -32,12 +32,17 @@ void SpriteMesh::Init()
 {
 	NormalizeTexturePosition();
 
-	float sizeRatio = (float)width_ / height_;
+	float minX = texturePosition_.GetMinX();
+	float minY = texturePosition_.GetMinY();
+	float maxX = texturePosition_.GetMaxX();
+	float maxY = texturePosition_.GetMaxY();
 
-	AddVertexData(VertexData(Vector3(0.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(texturePosition_.GetMinX(), texturePosition_.GetMinY())));
-	AddVertexData(VertexData(Vector3(sizeRatio, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(texturePosition_.GetMaxX(), texturePosition_.GetMinY())));
-	AddVertexData(VertexData(Vector3(0.f, -1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(texturePosition_.GetMinX(), texturePosition_.GetMaxY())));
-	AddVertexData(VertexData(Vector3(sizeRatio, -1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(texturePosition_.GetMaxX(), texturePosition_.GetMaxY())));
+	float sizeRatio = (float)width_ / height_;
+	
+	AddVertexData(VertexData(Vector3(0.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(minX, minY)));
+	AddVertexData(VertexData(Vector3(sizeRatio, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(maxX, minY)));
+	AddVertexData(VertexData(Vector3(0.f, -1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(minX, maxY)));
+	AddVertexData(VertexData(Vector3(sizeRatio, -1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(maxX, maxY)));
 
 	AddFace(Face(1, 0, 2));
 	AddFace(Face(1, 2, 3));
@@ -48,6 +53,23 @@ void SpriteMesh::Init()
 void SpriteMesh::SetTexturePosition(const Rect& texturePosition)
 {
 	texturePosition_ = texturePosition;
+}
+
+void SpriteMesh::UpdateSpriteMeshVertexData()
+{
+	NormalizeTexturePosition();
+
+	float minX = texturePosition_.GetMinX();
+	float minY = texturePosition_.GetMinY();
+	float maxX = texturePosition_.GetMaxX();
+	float maxY = texturePosition_.GetMaxY();
+
+	float sizeRatio = (float)width_ / height_;
+
+	UpdateVertexDataAt(0, VertexData(Vector3(0.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(minX, minY)));
+	UpdateVertexDataAt(1, VertexData(Vector3(sizeRatio, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(maxX, minY)));
+	UpdateVertexDataAt(2, VertexData(Vector3(0.f, -1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(minX, maxY)));
+	UpdateVertexDataAt(3, VertexData(Vector3(sizeRatio, -1.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(maxX, maxY)));
 }
 
 void SpriteMesh::NormalizeTexturePosition()

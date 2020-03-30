@@ -33,6 +33,8 @@ public:
 	}
 
 protected:
+	void UpdateSpriteMeshVertexData();
+
 	Rect texturePosition_;
 
 	Material* material_;

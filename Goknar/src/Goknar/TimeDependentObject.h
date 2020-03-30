@@ -15,13 +15,10 @@ public:
 		elapsedTime_ += deltaSecond;
 		if (timeToRefreshTimeVariables_ < elapsedTime_)
 		{
-			timeToRefreshTimeVariables_ -= elapsedTime_;
+			elapsedTime_ -= timeToRefreshTimeVariables_;
 			Operate();
 		}
 	}
-
-protected:
-	virtual void Operate() = 0;
 
 	int GetTicksPerSecond() const
 	{
@@ -33,6 +30,9 @@ protected:
 		ticksPerSecond_ = ticksPerSecond;
 		timeToRefreshTimeVariables_ = 1.f / ticksPerSecond;
 	}
+
+protected:
+	virtual void Operate() = 0;
 
 	int ticksPerSecond_;
 	float timeToRefreshTimeVariables_;

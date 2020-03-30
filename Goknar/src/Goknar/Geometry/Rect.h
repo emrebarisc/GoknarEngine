@@ -15,60 +15,61 @@ public:
 		return min_;
 	}
 
-	void SetMin(const Vector2& min)
+	inline void SetMin(const Vector2& min)
 	{
 		min_ = min;
 		width_ = abs(max_.x - min_.x);
 		height_ = abs(max_.y - min_.y);
 	}
 
-	float GetMinX() const
+	inline float GetMinX() const
 	{
 		return min_.x;
 	}
 
-	void SetMinX(float minX)
+	inline void SetMinX(float minX)
 	{
 		min_.x = minX;
 	}
 
-	float GetMinY() const
+	inline float GetMinY() const
 	{
 		return min_.y;
 	}
 
-	void SetMinY(float minY)
+	inline void SetMinY(float minY)
 	{
 		min_.y = minY;
 	}
 
-	const Vector2& GetMax() const
+	inline const Vector2& GetMax() const
 	{
 		return max_;
 	}
 
-	void SetMax(const Vector2& max)
+	inline void SetMax(const Vector2& max)
 	{
 		max_ = max;
 		width_ = abs(max_.x - min_.x);
 		height_ = abs(max_.y - min_.y);
 	}
-	float GetMaxX() const
+
+	inline float GetMaxX() const
 	{
 		return max_.x;
 	}
 
-	void SetMaxX(float maxX)
+	inline void SetMaxX(float maxX)
 	{
 		max_.x = maxX;
 	}
 
-	float GetMaxY() const
+	inline float GetMaxY() const
 	{
 		return max_.y;
 	}
 
-	void SetMaxY(float maxY)
+	inline void SetMaxY(float maxY)
 	{
 		max_.y = maxY;
 	}

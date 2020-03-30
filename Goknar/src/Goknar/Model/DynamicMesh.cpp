@@ -3,6 +3,7 @@
 #include "DynamicMesh.h"
 
 #include "Goknar/Engine.h"
+#include "Goknar/Renderer/Renderer.h"
 
 DynamicMesh::DynamicMesh() :
 	Mesh(),
@@ -27,5 +28,5 @@ void DynamicMesh::Init()
 
 void DynamicMesh::UpdateVertexDataAt(int index, const VertexData& vertexData)
 {
-	//engine->GetRenderer()->
+	engine->GetRenderer()->UpdateDynamicMeshVertex(this, index, vertexData);
 }

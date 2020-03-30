@@ -8,19 +8,18 @@ class GOKNAR_API DynamicMesh : public Mesh
 public:
 	DynamicMesh();
 	DynamicMesh(const Mesh& mesh);
-
 	~DynamicMesh();
 
 	virtual void Init();
 
-	void UpdateVertexDataAt(int index, const VertexData& vertexData);
+	inline void UpdateVertexDataAt(int index, const VertexData& vertexData);
 
-	int GetRendererVertexOffset() const
+	inline int GetRendererVertexOffset() const
 	{
 		return rendererVertexOffset_;
 	}
 
-	void SetRendererVertexOffset(int rendererVertexOffset)
+	inline void SetRendererVertexOffset(int rendererVertexOffset)
 	{
 		rendererVertexOffset_ = rendererVertexOffset;
 	}

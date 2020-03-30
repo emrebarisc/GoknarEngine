@@ -37,8 +37,6 @@ void DynamicMeshInstance::Destroy()
 
 void DynamicMeshInstance::SetMesh(Mesh* mesh)
 {
-	DynamicMesh* dynamicMesh = new DynamicMesh(*mesh);
-	engine->GetApplication()->GetMainScene()->AddDynamicMesh(dynamicMesh);
-	mesh_ = dynamicMesh;
+	mesh_ = mesh;
 	AddMeshInstanceToRenderer();
 }
