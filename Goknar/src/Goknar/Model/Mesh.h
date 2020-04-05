@@ -65,6 +65,11 @@ public:
 
 	virtual void Init();
 
+	bool GetIsInitialized() const
+	{
+		return isInitialized_;
+	}
+
 	void SetMaterial(/*const*/ Material* material)
 	{
 		material_ = material;
@@ -147,6 +152,8 @@ protected:
 	unsigned int vertexStartingIndex_;
 
 	MeshType meshType_;
+
+	bool isInitialized_;
 
 private:
 	VertexArray* vertices_;

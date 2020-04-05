@@ -40,7 +40,10 @@ int main(int argc, char **argv)
 	delete mainEngine;
 	
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	_CrtDumpMemoryLeaks();
+	if (_CrtDumpMemoryLeaks())
+	{
+		std::cerr << std::endl << std::endl << std::endl << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! MEMORY LEAK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl << std::endl << std::endl << std::endl;
+	}
 
 	return 0;
 }

@@ -26,16 +26,16 @@ public:
 		height_ = height;
 	}
 
-	void SetTexturePosition(const Rect& texturePosition);
-	const Rect& GetTexturePosition() const
+	void SetTextureCoordinate(const Rect& textureCoordinate);
+	const Rect& GetTextureCoordinate() const
 	{
-		return texturePosition_;
+		return textureCoordinate_;
 	}
 
 protected:
 	void UpdateSpriteMeshVertexData();
 
-	Rect texturePosition_;
+	Rect textureCoordinate_;
 
 	Material* material_;
 

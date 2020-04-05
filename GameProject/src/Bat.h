@@ -3,19 +3,19 @@
 
 #include "Goknar/ObjectBase.h"
 
-class MeshComponent;
+class AnimatedSpriteComponent;
 
-class TestSprite : public ObjectBase
+class Bat : public ObjectBase
 {
 public:
-	TestSprite();
-	~TestSprite();
+	Bat();
+	~Bat();
 
 	void BeginGame() override;
 	void Tick(float deltaTime) override;
 
 private:
-	MeshComponent* spriteMeshComponent_;
+	AnimatedSpriteComponent* batSprite_;
 };
 
 #endif

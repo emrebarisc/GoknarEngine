@@ -12,10 +12,10 @@ public:
 	virtual void Init() {};
 	void Tick(float deltaSecond)
 	{
-		elapsedTime_ += deltaSecond;
-		if (timeToRefreshTimeVariables_ < elapsedTime_)
+		animationElapsedTime_ += deltaSecond;
+		if (timeToRefreshTimeVariables_ < animationElapsedTime_)
 		{
-			elapsedTime_ -= timeToRefreshTimeVariables_;
+			animationElapsedTime_ -= timeToRefreshTimeVariables_;
 			Operate();
 		}
 	}
@@ -36,7 +36,7 @@ protected:
 
 	int ticksPerSecond_;
 	float timeToRefreshTimeVariables_;
-	float elapsedTime_;
+	float animationElapsedTime_;
 };
 
 #endif

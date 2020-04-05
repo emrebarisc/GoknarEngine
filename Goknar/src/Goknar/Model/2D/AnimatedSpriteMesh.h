@@ -1,11 +1,51 @@
 #ifndef __ANIMATEDSPRITEMESH_H__
 #define __ANIMATEDSPRITEMESH_H__
 
+#include <unordered_map>
+
 #include "SpriteMesh.h"
 #include "Goknar/TimeDependentObject.h"
 
 class Component;
 class Material;
+
+class AnimatedSpriteAnimation
+{
+public:
+	AnimatedSpriteAnimation() = delete;
+	AnimatedSpriteAnimation(const std::string& animationName) : 
+		name(animationName),
+		textureCoordinatesIndex(0),
+		textureCoordinatesSize(0)
+	{
+
+	}
+
+	void AddTextureCoordinate(const Rect& textureCoordinate)
+	{
+		textureCoordinates.push_back(textureCoordinate);
+		textureCoordinatesSize++;
+	}
+
+	void ResetTextureCoordinateAt(int index, const Rect& textureCoordinate)
+	{
+		textureCoordinates[index] = textureCoordinate;
+	}
+
+	void RemoveTextureCoordinateAt(int index)
+	{
+		textureCoordinates.erase(textureCoordinates.begin() + index);
+		textureCoordinatesSize++;
+	}
+
+	// TODO: Change vector with a "better" container.
+	std::vector<Rect> textureCoordinates;
+
+	std::string name;
+
+	int textureCoordinatesIndex;
+	int textureCoordinatesSize;
+};
 
 class GOKNAR_API AnimatedSpriteMesh : public SpriteMesh, public TimeDependentObject
 {
@@ -15,36 +55,27 @@ public:
 
 	~AnimatedSpriteMesh()
 	{
-
+		for (std::unordered_map<std::string, AnimatedSpriteAnimation*>::iterator ite = animations_.begin(); ite != animations_.end(); ite++)
+		{
+			delete ite->second;
+		}
 	}
 
 	void Init() override;
 
-	void AddTextureCoordinate(const Rect& textureCoordinate)
-	{
-		textureCoordinates_.push_back(textureCoordinate);
-		textureCoordinatesSize_++;
-	}
+	void PlayAnimation(const std::string& name);
+	void AddAnimation(AnimatedSpriteAnimation* animation);
 
-	void ResetTextureCoordinateAt(int index, const Rect& textureCoordinate)
+	const std::unordered_map<std::string, AnimatedSpriteAnimation*>& GetAnimationsHashMap() const
 	{
-		textureCoordinates_[index] = textureCoordinate;
-	}
-
-	void RemoveTextureCoordinateAt(int index)
-	{
-		textureCoordinates_.erase(textureCoordinates_.begin() + index);
-		textureCoordinatesSize_++;
+		return animations_;
 	}
 
 private:
 	void Operate() override;
 
-	int textureCoordinatesIndex_;
-	int textureCoordinatesSize_;
-
-	// TODO: Change vector with a "better" container.
-	std::vector<Rect> textureCoordinates_;
+	std::string currentAnimationName_;
+	std::unordered_map<std::string, AnimatedSpriteAnimation*> animations_;
 };
 
 #endif

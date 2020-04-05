@@ -1,7 +1,7 @@
 #ifndef __SPRITECOMPONENT_H__
 #define __SPRITECOMPONENT_H__
 
-#include "Component.h"
+#include "MeshComponent.h"
 
 #include "Goknar/Core.h"
 
@@ -9,14 +9,14 @@ class SpriteMesh;
 class MeshInstance;
 class ObjectBase;
 
-class GOKNAR_API SpriteComponent : public Component
+class GOKNAR_API SpriteComponent : public MeshComponent
 {
 public:
 	SpriteComponent() = delete;
 	SpriteComponent(ObjectBase* parent);
 	~SpriteComponent();
 
-	void SetMesh(SpriteMesh* sprite);
+	void SetMesh(Mesh* sprite) override;
 
 	const Matrix& GetRelativeTransformationMatrix() const
 	{
@@ -34,6 +34,5 @@ protected:
 	inline void UpdateRelativeTransformationMatrix() override;
 
 private:
-	MeshInstance* meshInstance_;
 };
 #endif

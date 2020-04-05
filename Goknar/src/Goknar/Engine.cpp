@@ -43,6 +43,8 @@ Engine::Engine() : deltaTime_(0.f), elapsedTime_(0.f), application_(nullptr), ed
 
 Engine::~Engine()
 {
+	glfwTerminate();
+
 	delete cameraManager_;
 	//delete editor_;
 	delete renderer_;
@@ -50,8 +52,6 @@ Engine::~Engine()
 	delete inputManager_;
 	delete windowManager_;
 	delete application_;
-	
-	glfwTerminate();
 }
 
 void Engine::Init() const

@@ -7,9 +7,8 @@
 #include "Goknar/Model/2D/AnimatedSpriteMesh.h"
 
 AnimatedSpriteComponent::AnimatedSpriteComponent(ObjectBase* parent) : 
-	Component(parent)
+	MeshComponent(parent, new DynamicMeshInstance(this))
 {
-	meshInstance_ = new DynamicMeshInstance(this);
 }
 
 AnimatedSpriteComponent::~AnimatedSpriteComponent()
@@ -17,7 +16,7 @@ AnimatedSpriteComponent::~AnimatedSpriteComponent()
 
 }
 
-void AnimatedSpriteComponent::SetMesh(AnimatedSpriteMesh* animatedSpriteMesh)
+void AnimatedSpriteComponent::SetMesh(Mesh* animatedSpriteMesh)
 {
 	meshInstance_->SetMesh(animatedSpriteMesh);
 }

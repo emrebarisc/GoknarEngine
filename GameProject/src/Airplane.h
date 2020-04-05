@@ -3,7 +3,7 @@
 
 #include <Goknar/ObjectBase.h>
 
-class MeshComponent;
+class StaticMeshComponent;
 
 class Airplane : public ObjectBase
 {
@@ -21,8 +21,8 @@ private:
 	void PositivePitch();
 	void NegativePitch();
 
-	MeshComponent* planeMeshComponent_;
-	MeshComponent* propellerMeshComponent_;
+	StaticMeshComponent* planeMeshComponent_;
+	StaticMeshComponent* propellerMeshComponent_;
 
 	float moveRightSpeed_;
 	float moveLefttSpeed_;

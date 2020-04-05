@@ -7,9 +7,8 @@
 #include "Goknar/Model/2D/SpriteMesh.h"
 
 SpriteComponent::SpriteComponent(ObjectBase* parent) : 
-	Component(parent)
+	MeshComponent(parent, new DynamicMeshInstance(this))
 {
-	meshInstance_ = new DynamicMeshInstance(this);
 }
 
 SpriteComponent::~SpriteComponent()
@@ -17,7 +16,7 @@ SpriteComponent::~SpriteComponent()
 
 }
 
-void SpriteComponent::SetMesh(SpriteMesh* spriteMesh)
+void SpriteComponent::SetMesh(Mesh* spriteMesh)
 {
 	meshInstance_->SetMesh(spriteMesh);
 }

@@ -4,44 +4,84 @@
 
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Log.h"
 #include "Goknar/Scene.h"
 
-AnimatedSpriteMesh::AnimatedSpriteMesh() : 
-	SpriteMesh(), 
-	TimeDependentObject(),
-	textureCoordinatesIndex_(0),
-	textureCoordinatesSize_(0)
+AnimatedSpriteMesh::AnimatedSpriteMesh() :
+	SpriteMesh(),
+	TimeDependentObject()
 {
 }
 
-AnimatedSpriteMesh::AnimatedSpriteMesh(Material* material) : 
+AnimatedSpriteMesh::AnimatedSpriteMesh(Material* material) :
 	SpriteMesh(material),
-	TimeDependentObject(),
-	textureCoordinatesIndex_(0),
-	textureCoordinatesSize_(0)
+	TimeDependentObject()
 {
 }
 
 void AnimatedSpriteMesh::Init()
 {
-	if (textureCoordinatesSize_ > 0)
+	if(animations_.count(currentAnimationName_) != 0)
 	{
-		texturePosition_ = textureCoordinates_[0];
+		AnimatedSpriteAnimation* currentAnimation = animations_[currentAnimationName_];
+		if (currentAnimation->textureCoordinatesSize > 0)
+		{
+			textureCoordinate_ = currentAnimation->textureCoordinates[0];
+		}
 	}
+
 	SpriteMesh::Init();
+}
+
+void AnimatedSpriteMesh::PlayAnimation(const std::string& name)
+{
+	if (!isInitialized_)
+	{
+		GOKNAR_ERROR("Animation cannot be played at constructor or before initialization.", name);
+		return;
+	}
+
+	if (animations_.count(name) == 0)
+	{
+		GOKNAR_ERROR("Animation '{}' is not found.", name);
+		return;
+	}
+
+	currentAnimationName_ = name;
+	Operate();
+	animationElapsedTime_ = 0.f;
+}
+
+void AnimatedSpriteMesh::AddAnimation(AnimatedSpriteAnimation* animation)
+{
+	if (animations_.count(animation->name) != 0)
+	{
+		GOKNAR_ERROR("Animation '{}' already exists.", animation->name);
+		return;
+	}
+	else
+	{
+		animations_[animation->name] = animation;
+	}
 }
 
 void AnimatedSpriteMesh::Operate()
 {
-	if (textureCoordinatesIndex_ < textureCoordinatesSize_ - 1)
+	AnimatedSpriteAnimation* currentAnimation = animations_[currentAnimationName_];
+	if (currentAnimation == nullptr)
 	{
-		textureCoordinatesIndex_++;
+		return;
+	}
+
+	if (currentAnimation->textureCoordinatesIndex < currentAnimation->textureCoordinatesSize - 1)
+	{
+		currentAnimation->textureCoordinatesIndex++;
 	}
 	else
 	{
-		textureCoordinatesIndex_ = 0;
+		currentAnimation->textureCoordinatesIndex = 0;
 	}
 
-	texturePosition_ = textureCoordinates_[textureCoordinatesIndex_];
+	textureCoordinate_ = currentAnimation->textureCoordinates[currentAnimation->textureCoordinatesIndex];
 	UpdateSpriteMeshVertexData();
 }

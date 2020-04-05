@@ -18,6 +18,7 @@ Mesh::Mesh() :
 	faceCount_(0),
 	baseVertex_(0),
 	vertexStartingIndex_(0),
+	isInitialized_(false),
 	meshType_(MeshType::None)
 {
 	vertices_ = new VertexArray();
@@ -34,4 +35,5 @@ void Mesh::Init()
 {
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
+	isInitialized_ = true;
 }
