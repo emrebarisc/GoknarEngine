@@ -24,11 +24,6 @@ public:
 		return relativeTransformationMatrix_;
 	}
 
-	const Matrix& GetRerlativeTransformationMatrix() const
-	{
-		return relativeTransformationMatrix_;
-	}
-
 	void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override;
 
 	void SetIsRendered(bool isRendered);

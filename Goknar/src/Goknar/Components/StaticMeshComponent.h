@@ -3,6 +3,8 @@
 
 #include "MeshComponent.h"
 
+class StaticMesh;
+
 class GOKNAR_API StaticMeshComponent : public MeshComponent
 {
 public:
@@ -12,7 +14,13 @@ public:
 	
 	void SetMesh(Mesh* mesh) override;
 
+	StaticMesh* GetStaticMesh()
+	{
+		return staticMesh_;
+	}
+
 protected:
 private:
+	StaticMesh* staticMesh_;
 };
 #endif

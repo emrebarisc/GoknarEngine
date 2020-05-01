@@ -9,11 +9,11 @@
 #include "Goknar/Model/2D/AnimatedSpriteMesh.h"
 #include "Goknar/Renderer/Texture.h"
 
-// TODO: DELETE
-AnimatedSpriteMesh* firedSkullsMesh;
 Environment::Environment() :
 	ObjectBase()
 {
+	SetTickable(false);
+
 	Texture* texture = new Texture("./Content/ScaryMammal/Sprites/ScaryMammal.png");
 	texture->SetName("texture0");
 	texture->SetTextureMinFilter(TextureMinFilter::NEAREST);
@@ -49,17 +49,16 @@ Environment::Environment() :
 	floor_ = new SpriteComponent(this);
 	floor_->SetMesh(floorMesh);
 
-	firedSkullsMesh = new AnimatedSpriteMesh(material);
+	AnimatedSpriteMesh* firedSkullsMesh = new AnimatedSpriteMesh(material);
+	firedSkullsMesh->SetTicksPerSecond(12);
+	firedSkullsMesh->SetSize(126.f, 20.f);
 
 	AnimatedSpriteAnimation* fireAnimation = new AnimatedSpriteAnimation("fire");
 	fireAnimation->AddTextureCoordinate(Rect(Vector2(0.f, 419.f), Vector2(125.f, 439.f)));
 	fireAnimation->AddTextureCoordinate(Rect(Vector2(126.f, 419.f), Vector2(251.f, 439.f)));
 	fireAnimation->AddTextureCoordinate(Rect(Vector2(252.f, 419.f), Vector2(377.f, 439.f)));
-
 	firedSkullsMesh->AddAnimation(fireAnimation);
 
-	firedSkullsMesh->SetTicksPerSecond(12);
-	firedSkullsMesh->SetSize(126.f, 20.f);
 	firedSkulls_ = new AnimatedSpriteComponent(this);
 	firedSkulls_->SetMesh(firedSkullsMesh);
 }
@@ -74,7 +73,7 @@ void Environment::BeginGame()
 	floor_->SetRelativePosition(Vector3(0.f, -246.f, -0.1f));
 	firedSkulls_->SetRelativePosition(Vector3(9.f, -25.f, 0.f));
 
-	firedSkullsMesh->PlayAnimation("fire");
+	firedSkulls_->GetAnimatedSpriteMesh()->PlayAnimation("fire");
 }
 
 void Environment::Tick(float deltaTime)

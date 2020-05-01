@@ -3,6 +3,8 @@
 
 #include "MeshComponent.h"
 
+class DynamicMesh;
+
 class GOKNAR_API DynamicMeshComponent : public MeshComponent
 {
 public:
@@ -12,7 +14,13 @@ public:
 
 	void SetMesh(Mesh* mesh) override;
 
+	DynamicMesh* GetDynamicMesh()
+	{
+		return dynamicMesh_;
+	}
+
 protected:
 private:
+	DynamicMesh* dynamicMesh_;
 };
 #endif

@@ -25,9 +25,16 @@ public:
 
 	void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override;
 
+	AnimatedSpriteMesh* GetAnimatedSpriteMesh()
+	{
+		return animatedSpriteMesh_;
+	}
+
 protected:
 	inline void UpdateRelativeTransformationMatrix() override;
 
 private:
+
+	AnimatedSpriteMesh* animatedSpriteMesh_;
 };
 #endif

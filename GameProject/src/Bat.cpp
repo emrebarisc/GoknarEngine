@@ -1,15 +1,13 @@
 #include "Bat.h"
 
+#include "Goknar/Model/2D/AnimatedSpriteMesh.h"
+#include "Goknar/Components/AnimatedSpriteComponent.h"
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Material.h"
-#include "Goknar/Components/AnimatedSpriteComponent.h"
-#include "Goknar/Scene.h"
-#include "Goknar/Model/2D/AnimatedSpriteMesh.h"
 #include "Goknar/Renderer/Texture.h"
+#include "Goknar/Scene.h"
 
-// TODO: DELETE
-AnimatedSpriteMesh* spriteMesh;
 Bat::Bat() : ObjectBase()
 {
 	Texture* texture = new Texture("./Content/ScaryMammal/Sprites/ScaryMammal.png");
@@ -35,7 +33,7 @@ Bat::Bat() : ObjectBase()
 	scene->AddShader(shader);
 	material->SetShader(shader);
 
-	spriteMesh = new AnimatedSpriteMesh(material);
+	AnimatedSpriteMesh* spriteMesh = new AnimatedSpriteMesh(material);
 	spriteMesh->SetSize(17.f, 13.f);
 
 	AnimatedSpriteAnimation* flyAnimation = new AnimatedSpriteAnimation("fly");
@@ -56,7 +54,7 @@ Bat::~Bat()
 
 void Bat::BeginGame()
 {
-	spriteMesh->PlayAnimation("fly");
+	batSprite_->GetAnimatedSpriteMesh()->PlayAnimation("fly");
 	batSprite_->SetRelativePosition(Vector3(25.f, -128.f, 5.f));
 }
 
