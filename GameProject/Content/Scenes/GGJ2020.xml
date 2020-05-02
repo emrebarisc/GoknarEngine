@@ -1,0 +1,163 @@
+<Scene>
+	<BackgroundColor>50 50 50</BackgroundColor>
+	<Cameras>
+		<Camera id = "1">
+      <Projection>Orthographic</Projection>
+			<Position>0 8 16</Position>
+			<Gaze>0 0 -1.2</Gaze>
+			<Up>0 1.0 0</Up>
+			<NearPlane>-0.28125 0.28125 -0.5 0.5</NearPlane>
+			<NearDistance>1</NearDistance>
+			<ImageResolution>506 900</ImageResolution>
+		</Camera>
+	</Cameras>
+
+  <Lights>
+    <AmbientLight>100 100 100</AmbientLight>
+    <DirectionalLight>
+      <Direction>0.0 0.0 -1.0</Direction>
+      <Color>1.0 1.0 1.0</Color>
+      <Intensity>0.2</Intensity>
+    </DirectionalLight>
+  </Lights>
+
+  <Textures>
+    <Texture>
+      <Path>./Content/Textures/T_RetroRadio.png</Path>
+    </Texture>
+    <Texture>
+      <Name>UITexture</Name>
+      <Path>./Content/Textures/T_UI.png</Path>
+    </Texture>
+  </Textures>
+
+  <Shaders>
+    <Shader id="0">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        ./Content/Shaders/TextureVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        ./Content/Shaders/TextureFragmentShader.glsl
+      </FragmentShaderPath>
+      <Model>
+        Opaque
+      </Model>
+    </Shader>
+    <Shader id="1">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        ./Content/Shaders/UIVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        ./Content/Shaders/UIFragmentShader.glsl
+      </FragmentShaderPath>
+      <Model>
+        Opaque
+      </Model>
+    </Shader>
+  </Shaders>
+	
+	<Materials>
+    <Material id="0">
+      <Shader id="0"/>
+      <Texture id="0"/>
+      <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
+      <DiffuseReflectance>1.0 0.0 0.0</DiffuseReflectance>
+      <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
+      <PhongExponent>0</PhongExponent>
+    </Material>
+    <Material id="1">
+      <Shader id="1"/>
+      <Texture id="1"/>
+      <BlendModel>TwoSided</BlendModel>
+      <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
+      <DiffuseReflectance>1.0 0.0 0.0</DiffuseReflectance>
+      <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
+      <PhongExponent>0</PhongExponent>
+    </Material>
+	</Materials>
+
+  <Meshes>
+    <Mesh id = "0">
+      <Name>CubeBottomLeft</Name>
+      <Material>0</Material>
+      <PLYPath>./Content/Meshes/Cube/CubeBottomLeft.ply</PLYPath>
+    </Mesh>
+    <Mesh id = "1">
+      <Name>CubeBottomRight</Name>
+      <Material>0</Material>
+      <PLYPath>./Content/Meshes/Cube/CubeBottomRight.ply</PLYPath>
+    </Mesh>
+    <Mesh id = "2">
+      <Name>CubeTopLeft</Name>
+      <Material>0</Material>
+      <PLYPath>./Content/Meshes/Cube/CubeTopLeft.ply</PLYPath>
+    </Mesh>
+    <Mesh id = "3">
+      <Name>CubeTopRight</Name>
+      <Material>0</Material>
+      <PLYPath>./Content/Meshes/Cube/CubeTopRight.ply</PLYPath>
+    </Mesh>
+
+    <Mesh id = "4">
+      <Material>1</Material>
+      <Vertices>
+        0.0 0.0 5
+        1.0 0.0 5
+        0.0 -0.7714286 5
+        1.0 -0.7714286 5
+      </Vertices>
+      <Normals>
+        0.0 0.0 1.0
+        0.0 0.0 1.0
+        0.0 0.0 1.0
+        0.0 0.0 1.0
+      </Normals>
+      <Faces>
+        1 0 2
+        1 2 3
+      </Faces>
+      <UVs>
+        0.0 0.015625
+        0.068359375 0.015625
+        0.0 0.0683
+        0.068359375 0.0683
+      </UVs>
+    </Mesh>
+
+    <Mesh id = "5">
+      <Material>1</Material>
+      <Vertices>
+        0.0 0.0 5
+        1.0 0.0 5
+        0.0 -0.3404255 5
+        1.0 -0.3404255 5
+      </Vertices>
+      <Normals>
+        0.0 0.0 1.0
+        0.0 0.0 1.0
+        0.0 0.0 1.0
+        0.0 0.0 1.0
+      </Normals>
+      <Faces>
+        1 0 2
+        1 2 3
+      </Faces>
+      <UVs>
+        0.0 0.0683
+        0.0918 0.0683
+        0.0 0.09955
+        0.0918 0.09955
+      </UVs>
+    </Mesh>
+  </Meshes>
+
+  <Objects>
+  </Objects>
+
+</Scene>

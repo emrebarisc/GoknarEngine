@@ -1,0 +1,25 @@
+ply
+format ascii 1.0
+comment Created by Blender 2.80 (sub 75) - www.blender.org, source file: 'Radio.blend'
+element vertex 4
+property float x
+property float y
+property float z
+property float nx
+property float ny
+property float nz
+property float s
+property float t
+property uchar red
+property uchar green
+property uchar blue
+property uchar alpha
+element face 2
+property list uchar uint vertex_indices
+end_header
+0 0 5 0.0 0.0 1.0 0.0 0.015625 255 255 255 255
+0 5 5 0.0 0.0 1.0 0.0 0.0703125 255 255 255 255
+5 0 5 0.0 0.0 1.0 0.068359375 0.015625 255 255 255 255
+5 5 5 0.0 0.0 1.0 0.068359375 0.0703125 255 255 255 255
+3 0 1 2
+3 2 3 1

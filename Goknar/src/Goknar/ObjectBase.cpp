@@ -29,10 +29,10 @@ void ObjectBase::Destroy()
 	for (int componentIndex = 0; componentIndex < componentSize; componentIndex++)
 	{
 		components_[componentIndex]->Destroy();
-		delete components_[componentIndex];
 		components_.erase(components_.begin() + componentIndex);
 	}
 	engine->DestroyObject(this);
+	engine->GetApplication()->GetMainScene()->RemoveObject(this);
 }
 
 void ObjectBase::SetTickable(bool tickable)

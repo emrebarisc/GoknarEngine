@@ -6,10 +6,7 @@
 
 // Game includes
 #include "GameController.h"
-#include "GameManager.h"
-#include "GridManager.h"
 #include "MovableObjectFactory.h"
-#include "SpawnManager.h"
 #include "UI.h"
 
 #include <chrono>
@@ -30,15 +27,6 @@ Game::Game() : Application()
 	MovableObjectFactory::GetInstance()->CreateMovableObject();
 
 	ui_ = new UI();
-}
-
-Game::~Game()
-{
-	delete GameController::GetInstance();
-	delete SpawnManager::GetInstance();
-	delete MovableObjectFactory::GetInstance();
-	delete GridManager::GetInstance();
-	delete GameManager::GetInstance();
 }
 
 void Game::Run()

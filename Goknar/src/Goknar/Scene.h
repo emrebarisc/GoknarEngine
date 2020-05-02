@@ -65,6 +65,20 @@ public:
 		objects_.push_back(object);
 	}
 
+	// TODO: Optimize!
+	void RemoveObject(ObjectBase* object)
+	{
+		size_t objectSize = objects_.size();
+		for (size_t objectIndex = 0; objectIndex < objectSize; objectIndex++)
+		{
+			if (objects_[objectIndex] == object)
+			{
+				objects_.erase(objects_.begin() + objectIndex);
+				return;
+			}
+		}
+	}
+
 	ObjectBase* GetStaticObject(int index)
 	{
 		return objects_[index];
