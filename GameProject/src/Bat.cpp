@@ -50,6 +50,7 @@ Bat::Bat() : ObjectBase()
 
 Bat::~Bat()
 {
+	delete batSprite_;
 }
 
 void Bat::BeginGame()

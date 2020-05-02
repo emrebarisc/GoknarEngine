@@ -10,6 +10,7 @@
 #include "Managers/InputManager.h"
 #include "Log.h"
 #include "ObjectBase.h"
+#include "Managers/ObjectIDManager.h"
 #include "Managers/ObjectManager.h"
 #include "Renderer/Renderer.h"
 #include "Scene.h"
@@ -52,6 +53,10 @@ Engine::~Engine()
 	delete inputManager_;
 	delete windowManager_;
 	delete application_;
+
+	// Delete singletons
+	delete ObjectIDManager::GetInstance();
+	delete ShaderBuilder::GetInstance();
 }
 
 void Engine::Init() const

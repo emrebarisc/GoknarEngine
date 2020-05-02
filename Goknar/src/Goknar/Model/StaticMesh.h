@@ -8,7 +8,7 @@ class GOKNAR_API StaticMesh : public Mesh
 public:
 	StaticMesh();
 
-	~StaticMesh();
+	virtual ~StaticMesh();
 
 	virtual void Init();
 

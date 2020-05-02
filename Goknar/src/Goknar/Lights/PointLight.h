@@ -16,7 +16,7 @@ public:
 		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT) + std::to_string(id_);
     }
 
-    ~PointLight() override
+    virtual ~PointLight() override
     {
         
     }

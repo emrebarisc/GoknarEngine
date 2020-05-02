@@ -11,7 +11,7 @@ class GOKNAR_API Component
 public:
 	Component() = delete;
 	Component(ObjectBase* parent);
-	~Component()
+	virtual ~Component()
 	{
 
 	}

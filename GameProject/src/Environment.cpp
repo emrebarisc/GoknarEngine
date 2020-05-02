@@ -65,6 +65,9 @@ Environment::Environment() :
 
 Environment::~Environment()
 {
+	delete firedSkulls_;
+	delete floor_;
+	delete background_;
 }
 
 void Environment::BeginGame()

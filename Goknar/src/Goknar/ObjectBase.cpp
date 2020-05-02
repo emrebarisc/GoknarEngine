@@ -2,8 +2,10 @@
 
 #include "ObjectBase.h"
 
+#include "Goknar/Application.h"
 #include "Goknar/Components/Component.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Scene.h"
 
 ObjectBase::ObjectBase() : 
 	tickable_(false),
@@ -13,7 +15,12 @@ ObjectBase::ObjectBase() :
 	worldScaling_(Vector3(1.f)),
 	totalComponentCount_(0)
 {
+	engine->GetApplication()->GetMainScene()->AddObject(this);
 	engine->RegisterObject(this);
+}
+
+ObjectBase::~ObjectBase()
+{
 }
 
 void ObjectBase::Destroy()

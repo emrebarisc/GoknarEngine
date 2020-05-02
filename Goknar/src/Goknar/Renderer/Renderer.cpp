@@ -501,6 +501,4 @@ void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 	default:
 		break;
 	}
-
-
 }

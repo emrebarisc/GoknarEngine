@@ -15,7 +15,7 @@ MeshComponent::MeshComponent(ObjectBase* parent, MeshInstance* meshInstance) :
 
 MeshComponent::~MeshComponent()
 {
-
+	
 }
 
 void MeshComponent::Destroy()

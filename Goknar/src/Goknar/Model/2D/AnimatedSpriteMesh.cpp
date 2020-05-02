@@ -11,12 +11,23 @@ AnimatedSpriteMesh::AnimatedSpriteMesh() :
 	SpriteMesh(),
 	TimeDependentObject()
 {
+	animations_ = {};
 }
 
 AnimatedSpriteMesh::AnimatedSpriteMesh(Material* material) :
 	SpriteMesh(material),
 	TimeDependentObject()
 {
+	animations_ = {};
+}
+
+AnimatedSpriteMesh::~AnimatedSpriteMesh()
+{
+	for (std::unordered_map<std::string, AnimatedSpriteAnimation*>::iterator ite = animations_.begin(); ite != animations_.end(); ite++)
+	{
+		delete ite->second;
+	}
+	animations_.clear();
 }
 
 void AnimatedSpriteMesh::Init()
@@ -57,6 +68,7 @@ void AnimatedSpriteMesh::AddAnimation(AnimatedSpriteAnimation* animation)
 	if (animations_.count(animation->name) != 0)
 	{
 		GOKNAR_ERROR("Animation '{}' already exists.", animation->name);
+		delete animation;
 		return;
 	}
 	else

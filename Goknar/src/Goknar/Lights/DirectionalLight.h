@@ -16,7 +16,7 @@ public:
 		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT) + std::to_string(id_);
 	}
 
-    ~DirectionalLight() override
+	virtual ~DirectionalLight() override
     {
         
     }

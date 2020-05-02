@@ -22,6 +22,8 @@ public:
 	{
 	}
 
+	virtual ~MeshInstance() {}
+
 	int GetComponentId() const
 	{
 		return componentId_;

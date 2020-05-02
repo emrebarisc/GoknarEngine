@@ -61,7 +61,7 @@ class GOKNAR_API Mesh
 public:
 	Mesh();
 
-	~Mesh();
+	virtual ~Mesh();
 
 	virtual void Init();
 

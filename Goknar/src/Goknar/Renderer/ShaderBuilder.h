@@ -4,6 +4,7 @@
 #include "Goknar/Core.h"
 
 class DirectionalLight;
+class Engine;
 class Material;
 class PointLight;
 class SpotLight;
@@ -11,6 +12,8 @@ class SpotLight;
 class GOKNAR_API ShaderBuilder
 {
 public:
+	friend Engine;
+
 	static ShaderBuilder* GetInstance()
 	{
 		if (instance_ == nullptr)

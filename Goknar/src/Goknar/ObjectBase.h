@@ -17,6 +17,7 @@ class GOKNAR_API ObjectBase
 {
 public:
     ObjectBase();
+	virtual ~ObjectBase();
 
 	virtual void BeginGame()
 	{

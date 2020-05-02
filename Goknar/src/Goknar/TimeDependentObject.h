@@ -1,13 +1,17 @@
 #ifndef __TIMEDEPENDENTOBJECT_H__
 #define __TIMEDEPENDENTOBJECT_H__
 
+#include "ObjectBase.h"
+
 #include "Goknar/Core.h"
 
 class GOKNAR_API TimeDependentObject
 {
 public:
-	TimeDependentObject();
-	~TimeDependentObject() {}
+	virtual ~TimeDependentObject()
+	{
+
+	}
 
 	virtual void Init() {};
 	void Tick(float deltaSecond)
@@ -32,6 +36,8 @@ public:
 	}
 
 protected:
+	TimeDependentObject();
+
 	virtual void Operate() = 0;
 
 	int ticksPerSecond_;

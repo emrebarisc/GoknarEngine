@@ -53,13 +53,7 @@ public:
 	AnimatedSpriteMesh();
 	AnimatedSpriteMesh(Material* material);
 
-	~AnimatedSpriteMesh()
-	{
-		for (std::unordered_map<std::string, AnimatedSpriteAnimation*>::iterator ite = animations_.begin(); ite != animations_.end(); ite++)
-		{
-			delete ite->second;
-		}
-	}
+	virtual ~AnimatedSpriteMesh();
 
 	void Init() override;
 

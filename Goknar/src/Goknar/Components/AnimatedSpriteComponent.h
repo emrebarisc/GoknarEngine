@@ -14,7 +14,7 @@ class GOKNAR_API AnimatedSpriteComponent : public MeshComponent
 public:
 	AnimatedSpriteComponent() = delete;
 	AnimatedSpriteComponent(ObjectBase* parent);
-	~AnimatedSpriteComponent();
+	virtual ~AnimatedSpriteComponent();
 
 	void SetMesh(Mesh* sprite) override;
 

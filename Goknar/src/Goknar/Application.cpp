@@ -11,7 +11,7 @@ Application::Application()
 
 Application::~Application()
 {
-
+	delete mainScene_;
 }
 
 void Application::Init()

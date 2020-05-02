@@ -13,7 +13,7 @@ public:
 	SpriteMesh();
 	SpriteMesh(Material* material);
 
-	~SpriteMesh()
+	virtual ~SpriteMesh()
 	{
 
 	}

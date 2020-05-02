@@ -11,6 +11,8 @@ public:
 	AnimatedSpriteMeshInstance() = delete;
 	AnimatedSpriteMeshInstance(Component* parentComponent);
 
+	virtual ~AnimatedSpriteMeshInstance() {}
+
 	void SetAnimatedSpriteMesh(AnimatedSpriteMesh* animatedspriteMesh);
 	AnimatedSpriteMesh* GetAnimatedSpriteMesh()
 	{

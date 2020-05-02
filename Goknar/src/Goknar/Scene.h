@@ -13,6 +13,7 @@ class Material;
 class ObjectBase;
 class Shader;
 class Texture;
+class TimeDependentObject;
 
 class DynamicMesh;
 class StaticMesh;
@@ -38,6 +39,9 @@ public:
 		staticMeshes_.push_back(staticMesh);
 	}
 
+	// TODO: TEST
+	void DeleteStaticMesh(StaticMesh* staticMesh);
+
 	StaticMesh* GetMesh(int index)
 	{
 		return staticMeshes_[index];
@@ -47,6 +51,9 @@ public:
 	{
 		dynamicMeshes_.push_back(dynamicMesh);
 	}
+
+	// TODO: TEST
+	void DeleteDynamicMesh(DynamicMesh* dynamicMesh);
 
 	DynamicMesh* GetDynamicMesh(int index)
 	{

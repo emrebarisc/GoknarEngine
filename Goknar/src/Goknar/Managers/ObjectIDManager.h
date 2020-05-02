@@ -14,6 +14,10 @@ public:
 		return instance_;
 	}
 
+	~ObjectIDManager()
+	{
+	}
+
 	int GetAndIncreasePointLightID()
 	{
 		return pointLightID++;

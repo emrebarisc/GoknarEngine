@@ -19,7 +19,7 @@ void ShaderBuilder::GetShaderForMaterial(const Material* material, std::string& 
 	size_t textureSize = textures->size();
 
 	// Vertex Shader
-	vertexShader = "";
+	vertexShader = "// DefaultVertexShader";
 
 	vertexShader += GetShaderVersionText();
 	vertexShader += VS_GetVariableTexts();
@@ -32,7 +32,7 @@ void main()
 })";
 	
 	// Fragment Shader
-	fragmentShader = "";
+	fragmentShader = "// DefaultFragmentShader";
 	fragmentShader += FS_GetVariableTexts();
 	for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
 	{
@@ -59,8 +59,8 @@ ShaderBuilder::~ShaderBuilder()
 
 void ShaderBuilder::Init()
 {
-	VS_BuildScene();
-	FS_BuildScene();
+	//VS_BuildScene();
+	//FS_BuildScene();
 }
 
 void ShaderBuilder::FS_BuildScene()
@@ -183,6 +183,7 @@ std::string ShaderBuilder::FS_GetVariableTexts()
 
 void ShaderBuilder::VS_BuildScene()
 {
+	sceneVertexShader_ = "// DefaultVertexShader";
 	sceneVertexShader_ = GetShaderVersionText();
 	sceneVertexShader_ += VS_GetVariableTexts();
 	sceneVertexShader_ += R"(
@@ -485,6 +486,7 @@ std::string ShaderBuilder::GetSpotLightColorSummationText(const std::string& lig
 
 void ShaderBuilder::CombineFragmentShader()
 {
+	sceneFragmentShader_ = "// DefaultFragmentShader";
 	sceneFragmentShader_ = GetShaderVersionText() + "\n\n";
 	sceneFragmentShader_ += uniforms_;
 

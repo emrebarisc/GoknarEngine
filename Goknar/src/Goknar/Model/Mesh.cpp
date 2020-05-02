@@ -27,8 +27,15 @@ Mesh::Mesh() :
 
 Mesh::~Mesh()
 {
-	if (vertices_) delete[] vertices_;
-	if (faces_) delete[] faces_;
+	if (vertices_)
+	{
+		delete vertices_;
+	}
+
+	if (faces_)
+	{
+		delete faces_;
+	}
 }
 
 void Mesh::Init()

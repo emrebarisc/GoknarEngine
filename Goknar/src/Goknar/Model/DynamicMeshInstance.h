@@ -10,6 +10,8 @@ public:
 	DynamicMeshInstance() = delete;
 	DynamicMeshInstance(Component* parentComponent);
 
+	virtual ~DynamicMeshInstance() {}
+
 	void UpdateVertexDataAt(int index, const VertexData& newVertexData);
 
 protected:

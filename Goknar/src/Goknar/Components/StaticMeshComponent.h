@@ -10,7 +10,7 @@ class GOKNAR_API StaticMeshComponent : public MeshComponent
 public:
 	StaticMeshComponent() = delete;
 	StaticMeshComponent(ObjectBase* parent);
-	~StaticMeshComponent();
+	virtual ~StaticMeshComponent();
 	
 	void SetMesh(Mesh* mesh) override;
 

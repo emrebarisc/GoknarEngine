@@ -31,6 +31,7 @@ void Material::Init()
 	if (shader_ == nullptr)
 	{
 		shader_ = new Shader();
+		engine->GetApplication()->GetMainScene()->AddShader(shader_);
 	}
 
 	shader_->Init();

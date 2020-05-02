@@ -13,7 +13,7 @@ class GOKNAR_API MeshComponent : public Component
 {
 public:
 	MeshComponent() = delete;
-	~MeshComponent();
+	virtual ~MeshComponent();
 
 	void Destroy() override;
 

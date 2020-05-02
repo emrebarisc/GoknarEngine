@@ -25,7 +25,7 @@ public:
         falloffAngle_ = DEGREE_TO_RADIAN(falloffAngle_);
     }
 
-    ~SpotLight() override
+	virtual ~SpotLight() override
     {
         
     }
