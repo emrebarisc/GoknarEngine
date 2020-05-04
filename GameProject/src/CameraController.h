@@ -21,6 +21,13 @@ private:
 	void Yaw(float value);
 	void Pitch(float value);
 
+	void OnMouseRightClickPressed();
+
+	void OnMouseRightClickReleased()
+	{
+		isRotatingTheCamera_ = false;
+	}
+
 	void MoveForward();
 	void MoveBackward();
 	void MoveRight();
@@ -33,6 +40,8 @@ private:
 	Vector2 previousCursorPosition_;
 
 	float movementSpeed_;
+
+	bool isRotatingTheCamera_;
 };
 
 #endif

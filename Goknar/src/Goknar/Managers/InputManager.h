@@ -25,6 +25,22 @@ enum class GOKNAR_API INPUT_ACTION : uint8_t
 	G_REPEAT
 };
 
+enum class GOKNAR_API MOUSE_MAP : int
+{
+	BUTTON_1 = GLFW_MOUSE_BUTTON_1,
+	BUTTON_2 = GLFW_MOUSE_BUTTON_2,
+	BUTTON_3 = GLFW_MOUSE_BUTTON_3,
+	BUTTON_4 = GLFW_MOUSE_BUTTON_4,
+	BUTTON_5 = GLFW_MOUSE_BUTTON_5,
+	BUTTON_6 = GLFW_MOUSE_BUTTON_6,
+	BUTTON_7 = GLFW_MOUSE_BUTTON_7,
+	BUTTON_8 = GLFW_MOUSE_BUTTON_8,
+	BUTTON_LAST = GLFW_MOUSE_BUTTON_LAST,
+	BUTTON_LEFT = GLFW_MOUSE_BUTTON_LEFT,
+	BUTTON_RIGHT = GLFW_MOUSE_BUTTON_RIGHT,
+	BUTTON_MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE
+};
+
 enum class GOKNAR_API KEY_MAP : int
 {
 	UNKNOWN = GLFW_KEY_UNKNOWN,
@@ -206,18 +222,18 @@ public:
 		keyboardListeners_.push_back(keyboardListener);
 	}
 
-	void AddMouseInputDelegate(int keyCode, INPUT_ACTION inputAction, const KeyboardDelegate &binderFunction)
+	void AddMouseInputDelegate(MOUSE_MAP keyCode, INPUT_ACTION inputAction, const KeyboardDelegate &binderFunction)
 	{
 		switch (inputAction)
 		{
 		case INPUT_ACTION::G_PRESS:
-			pressedMouseDelegates_[keyCode].push_back(binderFunction);
+			pressedMouseDelegates_[(int)keyCode].push_back(binderFunction);
 			break;
 		case INPUT_ACTION::G_RELEASE:
-			releasedMouseDelegates_[keyCode].push_back(binderFunction);
+			releasedMouseDelegates_[(int)keyCode].push_back(binderFunction);
 			break;
 		case INPUT_ACTION::G_REPEAT:
-			repeatedMouseDelegates_[keyCode].push_back(binderFunction);
+			repeatedMouseDelegates_[(int)keyCode].push_back(binderFunction);
 			break;
 		default:;
 		}
@@ -236,6 +252,11 @@ public:
 	void AddCharDelegate(const CharDelegate &charDelegate)
 	{
 		charDelegates_.push_back(charDelegate);
+	}
+
+	static void GetCursorPosition(GLFWwindow* window, double& x, double& y)
+	{
+		glfwGetCursorPos(window, &x, &y);
 	}
 
 private:

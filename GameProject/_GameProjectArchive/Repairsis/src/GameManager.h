@@ -1,9 +1,13 @@
 #ifndef __GAMEMANAGER_H__
 #define __GAMEMANAGER_H__
 
+class Game;
+
 class GameManager
 {
 public:
+	friend Game;
+
 	static GameManager* GetInstance()
 	{
 		if (instance_ == nullptr)

@@ -19,7 +19,6 @@ void GameController::SetupInputs()
 {
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_RELEASE, std::bind(&GameController::HandleRestartInput, this));
 
-
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::Q, INPUT_ACTION::G_PRESS, std::bind(&GameController::RollCurrentObjectLeft, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::E, INPUT_ACTION::G_PRESS, std::bind(&GameController::RollCurrentObjectRight, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_PRESS, std::bind(&GameController::MoveCurrentObjectLeft, this));

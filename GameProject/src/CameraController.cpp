@@ -15,13 +15,19 @@
 #include "Goknar/Log.h"
 
 
-CameraController::CameraController() : ObjectBase()
+CameraController::CameraController() : 
+	ObjectBase(),
+	isRotatingTheCamera_(false)
 {
 	SetTickable(false);
 
 	activeCamera_ = engine->GetCameraManager()->GetActiveCamera();
 	movementSpeed_ = 10.f;
 	previousCursorPosition_ = Vector2(0.f, 0.f);
+
+	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_PRESS, std::bind(&CameraController::OnMouseRightClickPressed, this));
+	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_RELEASE, std::bind(&CameraController::OnMouseRightClickReleased, this));
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveLeft, this));
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveLeft, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveRight, this));
@@ -31,6 +37,8 @@ CameraController::CameraController() : ObjectBase()
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveUp, this));
 
 	engine->GetInputManager()->AddCursorDelegate(std::bind(&CameraController::CursorMovement, this, std::placeholders::_1, std::placeholders::_2));
+
+	engine->GetWindowManager()->ToggleFullscreen();
 }
 
 CameraController::~CameraController()
@@ -48,12 +56,8 @@ void CameraController::Tick(float deltaTime)
 
 void CameraController::CursorMovement(double x, double y)
 {
-	static bool firstTime = true;
-
-	if (firstTime)
+	if (!isRotatingTheCamera_)
 	{
-		firstTime = false;
-		previousCursorPosition_ = Vector2(x, y);
 		return;
 	}
 
@@ -74,6 +78,14 @@ void CameraController::Yaw(float value)
 void CameraController::Pitch(float value)
 {
 	activeCamera_->Pitch(value);
+}
+
+void CameraController::OnMouseRightClickPressed()
+{
+	isRotatingTheCamera_ = true;
+	double x, y;
+	InputManager::GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
+	previousCursorPosition_ = Vector2(x, y);
 }
 
 void CameraController::MoveForward()

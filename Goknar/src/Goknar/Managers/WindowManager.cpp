@@ -19,7 +19,7 @@ WindowManager::WindowManager()
 	windowHeight_ = 768;
 	windowTitle_ = "Goknar Engine";
 	mainMonitor_ = nullptr;
-	MSAAValue_ = 4;
+	MSAAValue_ = 16;
 	isInFullscreen_ = false;
 	SetContextVersion(4, 6);
 }

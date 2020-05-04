@@ -21,6 +21,12 @@ ObjectBase::ObjectBase() :
 
 ObjectBase::~ObjectBase()
 {
+	for (size_t componentIndex = 0; componentIndex < totalComponentCount_; componentIndex++)
+	{
+		delete components_[componentIndex];
+	}
+	components_.clear();
+	totalComponentCount_ = 0;
 }
 
 void ObjectBase::Destroy()

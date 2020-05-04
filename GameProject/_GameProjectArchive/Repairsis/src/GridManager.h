@@ -5,11 +5,13 @@
 
 #include <functional>
 
+class Game;
 class MovableObject;
 
 class GridManager
 {
 public:
+	friend Game;
 	static GridManager* GetInstance()
 	{
 		if (instance_ == nullptr)

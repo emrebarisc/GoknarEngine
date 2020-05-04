@@ -10,7 +10,7 @@ class Game : public Application
 public:
 	Game();
 
-	~Game() = default;
+	~Game();
 
 	void Run() override;
 

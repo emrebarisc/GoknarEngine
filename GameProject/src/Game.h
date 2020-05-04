@@ -2,8 +2,7 @@
 
 #include <Goknar/Application.h>
 
-class GameController;
-class UI;
+class CameraController;
 
 class Game : public Application
 {
@@ -14,12 +13,6 @@ public:
 
 	void Run() override;
 
-	UI* GetUI()
-	{
-		return ui_;
-	}
-
 private:
-	GameController* gameController_;
-	UI* ui_;
+	CameraController* cameraController_;
 };

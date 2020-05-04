@@ -33,7 +33,7 @@ void Texture::Init()
 {
 	if (!LoadTextureImage())
 	{
-		GOKNAR_CORE_ERROR("Texture file could not be found!");
+		GOKNAR_CORE_ERROR("Texture file {0} could not be found!", imagePath_);
 		return;
 	}
 

@@ -750,8 +750,6 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 			}
 			stream.clear();
 			stream.clear();
-
-			scene->AddObject(object);
 			element = element->NextSiblingElement("StaticMeshObject");
 
 		}

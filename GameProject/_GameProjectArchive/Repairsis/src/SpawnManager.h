@@ -1,8 +1,13 @@
 #pragma once
+
+class Game;
+
 class SpawnManager
 {
 public:
-	SpawnManager* GetInstance();
+	friend Game;
+
+	static SpawnManager* GetInstance();
 
 private:
 	SpawnManager();

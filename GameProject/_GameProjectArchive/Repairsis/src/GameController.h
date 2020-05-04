@@ -3,9 +3,13 @@
 
 #include "Goknar/Controller.h"
 
+class Game;
+
 class GameController : public Controller
 {
 public:
+	friend Game;
+
 	static GameController* GetInstance()
 	{
 		if (instance_ == nullptr)
