@@ -59,8 +59,8 @@ ShaderBuilder::~ShaderBuilder()
 
 void ShaderBuilder::Init()
 {
-	//VS_BuildScene();
-	//FS_BuildScene();
+	VS_BuildScene();
+	FS_BuildScene();
 }
 
 void ShaderBuilder::FS_BuildScene()

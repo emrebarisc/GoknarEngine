@@ -33,7 +33,7 @@
 		} \
 	}
 #else
-	#define GOKNAR_ASSERT(x, ...) ENGINE_WARN("Assertion is not enabled!");
+	#define GOKNAR_ASSERT(x, ...) GOKNAR_WARN("Assertion is not enabled!");
 	#define GOKNAR_CORE_ASSERT(x, ...) ENGINE_WARN("Assertion is not enabled!");
 #endif
 

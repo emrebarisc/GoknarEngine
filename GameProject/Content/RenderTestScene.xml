@@ -18,12 +18,12 @@
     <DirectionalLight>
       <Direction>0.57735 0.57735 -0.57735</Direction>
       <Color>1.0 0.99 0.83</Color>
-      <Intensity>0.75</Intensity>
+      <Intensity>0.25</Intensity>
     </DirectionalLight>
   </Lights>
 
   <Textures>
-    <Texture id="0">
+    <!--<Texture id="0">
       <Name>diffuseTexture</Name>
       <Path>./Content/Meshes/Rock1/Textures/T_Rock1Diffuse.png</Path>
     </Texture>
@@ -39,7 +39,7 @@
     <Texture id="3">
       <Name>rougnessTexture</Name>
       <Path>./Content/Meshes/Rock1/Textures/T_Rock1Roughness.png</Path>
-    </Texture>
+    </Texture>-->
   </Textures>
 
   <Shaders>
@@ -65,16 +65,22 @@
         ./Content/Shaders/Rock1FragmentShader.glsl
       </FragmentShaderPath>
     </Shader>
+    <Shader id="2">
+      <Type>
+        Scene
+      </Type>
+    </Shader>
   </Shaders>
 
   <Materials>
     <!-- GroundGrid -->
     <Material id = "0">
+      <ShadingModel>TwoSided</ShadingModel>
       <Shader id="0"/>
     </Material>
     
     <!-- Rock -->
-    <Material id = "1">
+    <!--<Material id = "1">
       <Shader id="1"/>
       <Texture id="0"/>
       <Texture id="1"/>
@@ -83,6 +89,14 @@
       <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
       <DiffuseReflectance>0.0 0.0 0.0</DiffuseReflectance>
       <SpecularReflectance>0.0 0.0 0.0</SpecularReflectance>
+      <PhongExponent>1</PhongExponent>
+    </Material>-->
+    
+    <Material id = "2">
+      <Shader id="2"/>
+      <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
+      <DiffuseReflectance>1.0 1.0 1.0</DiffuseReflectance>
+      <SpecularReflectance>1.0 1.0 1.0</SpecularReflectance>
       <PhongExponent>1</PhongExponent>
     </Material>
   </Materials>
@@ -102,10 +116,15 @@
         1 2 3
       </Faces>
     </Mesh>
-    <Mesh id = "1">
+    <!--<Mesh id = "1">
       <Name>Rock1_0</Name>
       <Material>1</Material>
       <PLYPath>./Content/Meshes/Rock1/Rock1.ply</PLYPath>
+    </Mesh>-->
+    <Mesh id = "2">
+      <Name>SimpleCube</Name>
+      <Material>1</Material>
+      <PLYPath>./Content/Meshes/SimpleCube/SimpleCube.ply</PLYPath>
     </Mesh>
   </Meshes>
 
@@ -122,12 +141,24 @@
       <Mesh>0</Mesh>
     </StaticMeshObject>
     
-    <StaticMeshObject id = "1">
+    <!--<StaticMeshObject id = "1">
       <Name>Rock</Name>
       <PivotPoint>0 0 0</PivotPoint>
       <RelativePosition>0 0 0</RelativePosition>
       <RelativeRotation>0 0 0</RelativeRotation>
       <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0.0 0.0 0.0</WorldPosition>
+      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>1</Mesh>
+    </StaticMeshObject>-->
+    
+    <StaticMeshObject id = "2">
+      <Name>SimpleCube</Name>
+      <PivotPoint>0 0 0</PivotPoint>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1.0 1.0 1.0</RelativeScaling>
       <WorldPosition>0.0 0.0 0.0</WorldPosition>
       <WorldRotation>0.0 0.0 0.0</WorldRotation>
       <WorldScaling>1.0 1.0 1.0</WorldScaling>

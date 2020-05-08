@@ -17,28 +17,39 @@
 
 CameraController::CameraController() : 
 	ObjectBase(),
-	isRotatingTheCamera_(false)
+	isRotatingTheCamera_(false),
+	isMovingCameraIn2D_(false)
 {
 	SetTickable(false);
 
 	activeCamera_ = engine->GetCameraManager()->GetActiveCamera();
 	movementSpeed_ = 10.f;
-	previousCursorPosition_ = Vector2(0.f, 0.f);
+	previousCursorPositionForRotating_ = Vector2(0.f, 0.f);
+	previousCursorPositionFor2DMovement_ = Vector2(0.f, 0.f);
 
-	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_PRESS, std::bind(&CameraController::OnMouseRightClickPressed, this));
-	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_RELEASE, std::bind(&CameraController::OnMouseRightClickReleased, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveLeft, this));
+	InputManager* inputManager = engine->GetInputManager();
 
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveLeft, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveRight, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveForward, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveBackward, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::LEFT_CONTROL, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveDown, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveUp, this));
+	GOKNAR_ASSERT(inputManager, "Input manager is NULL.");
+	if (inputManager)
+	{
+		inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_PRESS, std::bind(&CameraController::OnMouseRightClickPressed, this));
+		inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_RELEASE, std::bind(&CameraController::OnMouseRightClickReleased, this));
 
-	engine->GetInputManager()->AddCursorDelegate(std::bind(&CameraController::CursorMovement, this, std::placeholders::_1, std::placeholders::_2));
+		inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_MIDDLE, INPUT_ACTION::G_PRESS, std::bind(&CameraController::OnMouseMiddleClickPressed, this));
+		inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_MIDDLE, INPUT_ACTION::G_RELEASE, std::bind(&CameraController::OnMouseMiddleClickReleased, this));
 
-	engine->GetWindowManager()->ToggleFullscreen();
+		inputManager->AddScrollDelegate(std::bind(&CameraController::ScrollListener, this, std::placeholders::_1, std::placeholders::_2));
+
+		inputManager->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveLeftListener, this));
+		inputManager->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveLeftListener, this));
+		inputManager->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveRightListener, this));
+		inputManager->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveForwardListener, this));
+		inputManager->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveBackwardListener, this));
+		inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT_CONTROL, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveDownListener, this));
+		inputManager->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_REPEAT, std::bind(&CameraController::MoveUpListener, this));
+
+		inputManager->AddCursorDelegate(std::bind(&CameraController::CursorMovement, this, std::placeholders::_1, std::placeholders::_2));
+	}
 }
 
 CameraController::~CameraController()
@@ -56,18 +67,31 @@ void CameraController::Tick(float deltaTime)
 
 void CameraController::CursorMovement(double x, double y)
 {
-	if (!isRotatingTheCamera_)
+	Vector2 currentCursorPosition(x, y);
+
+	if (isRotatingTheCamera_)
 	{
-		return;
+		Vector2 cursorMovementVector = (currentCursorPosition - previousCursorPositionForRotating_) / 250.f;
+		Yaw(cursorMovementVector.x);
+		Pitch(cursorMovementVector.y);
+
+		previousCursorPositionForRotating_ = currentCursorPosition;
 	}
 
-	Vector2 currentCursorPosition(x, y);
-	Vector2 cursorMovementVector = (previousCursorPosition_ - currentCursorPosition) / 250.f;
+	if (isMovingCameraIn2D_)
+	{
+		Vector2 cursorMovementVector = currentCursorPosition - previousCursorPositionFor2DMovement_;
 
-	Yaw(cursorMovementVector.x);
-	Pitch(cursorMovementVector.y);
+		MoveRight(cursorMovementVector.x);
+		MoveUp(-cursorMovementVector.y);
 
-	previousCursorPosition_ = currentCursorPosition;
+		previousCursorPositionFor2DMovement_ = currentCursorPosition;
+	}
+}
+
+void CameraController::ScrollListener(double x, double y)
+{
+	MoveForward(y * movementSpeed_);
 }
 
 void CameraController::Yaw(float value)
@@ -82,38 +106,31 @@ void CameraController::Pitch(float value)
 
 void CameraController::OnMouseRightClickPressed()
 {
-	isRotatingTheCamera_ = true;
 	double x, y;
 	InputManager::GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
-	previousCursorPosition_ = Vector2(x, y);
+	previousCursorPositionForRotating_ = Vector2(x, y);
+	isRotatingTheCamera_ = true;
 }
 
-void CameraController::MoveForward()
+void CameraController::OnMouseMiddleClickPressed()
 {
-	activeCamera_->SetPosition(activeCamera_->GetPosition() + activeCamera_->GetForwardVector() * engine->GetDeltaTime() * movementSpeed_);
+	double x, y;
+	InputManager::GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
+	previousCursorPositionFor2DMovement_ = Vector2(x, y);
+	isMovingCameraIn2D_ = true;
 }
 
-void CameraController::MoveBackward()
+void CameraController::MoveForward(float multiplier/* = 1.f*/)
 {
-	activeCamera_->SetPosition(activeCamera_->GetPosition() - activeCamera_->GetForwardVector() * engine->GetDeltaTime() * movementSpeed_);
+	activeCamera_->SetPosition(activeCamera_->GetPosition() + activeCamera_->GetForwardVector() * engine->GetDeltaTime() * multiplier);
 }
 
-void CameraController::MoveRight()
+void CameraController::MoveRight(float multiplier/* = 1.f*/)
 {
-	activeCamera_->SetPosition(activeCamera_->GetPosition() + activeCamera_->GetRightVector() * engine->GetDeltaTime() * movementSpeed_);
+	activeCamera_->SetPosition(activeCamera_->GetPosition() + activeCamera_->GetRightVector() * engine->GetDeltaTime() * multiplier);
 }
 
-void CameraController::MoveLeft()
+void CameraController::MoveUp(float multiplier/* = 1.f*/)
 {
-	activeCamera_->SetPosition(activeCamera_->GetPosition() - activeCamera_->GetRightVector() * engine->GetDeltaTime() * movementSpeed_);
-}
-
-void CameraController::MoveUp()
-{
-	activeCamera_->SetPosition(activeCamera_->GetPosition() + Vector3::UpVector * engine->GetDeltaTime() * movementSpeed_);
-}
-
-void CameraController::MoveDown()
-{
-	activeCamera_->SetPosition(activeCamera_->GetPosition() - Vector3::UpVector * engine->GetDeltaTime() * movementSpeed_);
+	activeCamera_->SetPosition(activeCamera_->GetPosition() + Vector3::UpVector * engine->GetDeltaTime() * multiplier);
 }

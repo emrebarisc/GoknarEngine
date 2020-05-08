@@ -222,7 +222,7 @@ public:
 		keyboardListeners_.push_back(keyboardListener);
 	}
 
-	void AddMouseInputDelegate(MOUSE_MAP keyCode, INPUT_ACTION inputAction, const KeyboardDelegate &binderFunction)
+	void AddMouseInputDelegate(MOUSE_MAP keyCode, INPUT_ACTION inputAction, const MouseDelegate& binderFunction)
 	{
 		switch (inputAction)
 		{
@@ -244,9 +244,9 @@ public:
 		cursorDelegates_.push_back(cursorDelegate);
 	}
 
-	void AddScrollDelegate(const ScrollDelegate &cursorDelegate)
+	void AddScrollDelegate(const ScrollDelegate &scrollDelegate)
 	{
-		scrollDelegates_.push_back(cursorDelegate);
+		scrollDelegates_.push_back(scrollDelegate);
 	}
 
 	void AddCharDelegate(const CharDelegate &charDelegate)
