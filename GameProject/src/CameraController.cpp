@@ -71,7 +71,7 @@ void CameraController::CursorMovement(double x, double y)
 
 	if (isRotatingTheCamera_)
 	{
-		Vector2 cursorMovementVector = (currentCursorPosition - previousCursorPositionForRotating_) / 250.f;
+		Vector2 cursorMovementVector = (previousCursorPositionForRotating_ - currentCursorPosition) / 250.f;
 		Yaw(cursorMovementVector.x);
 		Pitch(cursorMovementVector.y);
 
