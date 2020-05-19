@@ -11,11 +11,11 @@
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Texture.h"
 
-SpriteMesh::SpriteMesh() : 
+SpriteMesh::SpriteMesh() :
 	DynamicMesh(),
 	textureCoordinate_(Vector2(0.f, 0.f), Vector2(1.f, 1.f)),
-	material_(nullptr), 
-	width_(1.f), 
+	material_(nullptr),
+	width_(1.f),
 	height_(1.f)
 {
 	// TODO: For every sprite a mesh is created.
@@ -40,10 +40,155 @@ void SpriteMesh::Init()
 	float maxX = textureCoordinate_.GetMaxX();
 	float maxY = textureCoordinate_.GetMaxY();
 
-	AddVertexData(VertexData(Vector3(0.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(minX, minY)));
-	AddVertexData(VertexData(Vector3(width_, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(maxX, minY)));
-	AddVertexData(VertexData(Vector3(0.f, -height_, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(minX, maxY)));
-	AddVertexData(VertexData(Vector3(width_, -height_, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(maxX, maxY)));
+	Vector3 position1, position2, position3, position4;
+	Vector3 normal1, normal2, normal3, normal4;
+
+	AppType applicationType = engine->GetApplication()->GetAppType();
+	switch (applicationType)
+	{
+	case AppType::Application2D:
+	{
+		switch (pivotPoint_)
+		{
+		case SPRITE_PIVOT_POINT::TOP_LEFT:
+			position1 = Vector3(0.f, 0.f, 0.f);
+			position2 = Vector3(width_, 0.f, 0.f);
+			position3 = Vector3(0.f, -height_, 0.f);
+			position4 = Vector3(width_, -height_, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::TOP_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, 0.f, 0.f);
+			position2 = Vector3(width_ * 0.5f, 0.f, 0.f);
+			position3 = Vector3(-width_ * 0.5f, -height_, 0.f);
+			position4 = Vector3(width_ * 0.5f, -height_, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::TOP_RIGHT:
+			position1 = Vector3(-width_, 0.f, 0.f);
+			position2 = Vector3(0.f, 0.f, 0.f);
+			position3 = Vector3(-width_, -height_, 0.f);
+			position4 = Vector3(0.f, -height_, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_LEFT:
+			position1 = Vector3(0.f, height_ * 0.5f, 0.f);
+			position2 = Vector3(width_, height_ * 0.5f, 0.f);
+			position3 = Vector3(0.f, -height_ * 0.5f, 0.f);
+			position4 = Vector3(width_, -height_ * 0.5f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, height_ * 0.5f, 0.f);
+			position2 = Vector3(width_ * 0.5f, height_ * 0.5f, 0.f);
+			position3 = Vector3(-width_ * 0.5f, -height_ * 0.5f, 0.f);
+			position4 = Vector3(width_ * 0.5f, -height_ * 0.5f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_RIGHT:
+			position1 = Vector3(-width_, height_ * 0.5f, 0.f);
+			position2 = Vector3(0.f, height_ * 0.5f, 0.f);
+			position3 = Vector3(-width_, -height_ * 0.5f, 0.f);
+			position4 = Vector3(0.f, -height_ * 0.5f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_LEFT:
+			position1 = Vector3(0.f, height_, 0.f);
+			position2 = Vector3(width_, height_, 0.f);
+			position3 = Vector3(0.f, 0.f, 0.f);
+			position4 = Vector3(width_, 0.f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, height_, 0.f);
+			position2 = Vector3(width_ * 0.5f, height_, 0.f);
+			position3 = Vector3(-width_ * 0.5f, 0.f, 0.f);
+			position4 = Vector3(width_ * 0.5f, 0.f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_RIGHT:
+			position1 = Vector3(-width_, height_, 0.f);
+			position2 = Vector3(0.f, height_, 0.f);
+			position3 = Vector3(-width_, 0.f, 0.f);
+			position4 = Vector3(0.f, 0.f, 0.f);
+			break;
+		default:
+			break;
+		}
+
+		normal1 = Vector3(0.f, 0.f, 1.f);
+		normal2 = Vector3(0.f, 0.f, 1.f);
+		normal3 = Vector3(0.f, 0.f, 1.f);
+		normal4 = Vector3(0.f, 0.f, 1.f);
+		break;
+	}
+	case AppType::Application3D:
+	{
+		switch (pivotPoint_)
+		{
+		case SPRITE_PIVOT_POINT::TOP_LEFT:
+			position1 = Vector3(0.f, 0.f, 0.f);
+			position2 = Vector3(width_, 0.f, 0.f);
+			position3 = Vector3(0.f, 0.f, -height_);
+			position4 = Vector3(width_, 0.f, -height_);
+			break;
+		case SPRITE_PIVOT_POINT::TOP_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, 0.f, 0.f);
+			position2 = Vector3(width_ * 0.5f, 0.f, 0.f);
+			position3 = Vector3(-width_ * 0.5f, 0.f, -height_);
+			position4 = Vector3(width_ * 0.5f, 0.f, -height_);
+			break;
+		case SPRITE_PIVOT_POINT::TOP_RIGHT:
+			position1 = Vector3(-width_, 0.f, 0.f);
+			position2 = Vector3(0.f, 0.f, 0.f);
+			position3 = Vector3(-width_, 0.f, -height_);
+			position4 = Vector3(0.f, 0.f, -height_);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_LEFT:
+			position1 = Vector3(0.f, 0.f, height_ * 0.5f);
+			position2 = Vector3(width_, 0.f, height_ * 0.5f);
+			position3 = Vector3(0.f, 0.f, -height_ * 0.5f);
+			position4 = Vector3(width_, 0.f, -height_ * 0.5f);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, 0.f, height_ * 0.5f);
+			position2 = Vector3(width_ * 0.5f, 0.f, height_ * 0.5f);
+			position3 = Vector3(-width_ * 0.5f, 0.f, -height_ * 0.5f);
+			position4 = Vector3(width_ * 0.5f, 0.f, -height_ * 0.5f);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_RIGHT:
+			position1 = Vector3(-width_, 0.f, height_ * 0.5f);
+			position2 = Vector3(0.f, 0.f, height_ * 0.5f);
+			position3 = Vector3(-width_, 0.f, -height_ * 0.5f);
+			position4 = Vector3(0.f, 0.f, -height_ * 0.5f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_LEFT:
+			position1 = Vector3(0.f, 0.f, height_);
+			position2 = Vector3(width_, 0.f, height_);
+			position3 = Vector3(0.f, 0.f, 0.f);
+			position4 = Vector3(width_, 0.f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, 0.f, height_);
+			position2 = Vector3(width_ * 0.5f, 0.f, height_);
+			position3 = Vector3(-width_ * 0.5f, 0.f, 0.f);
+			position4 = Vector3(width_ * 0.5f, 0.f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_RIGHT:
+			position1 = Vector3(-width_, 0.f, height_);
+			position2 = Vector3(0.f, 0.f, height_);
+			position3 = Vector3(-width_, 0.f, 0.f);
+			position4 = Vector3(0.f, 0.f, 0.f);
+			break;
+		default:
+			break;
+		}
+		normal1 = Vector3(0.f, 1.f, 0.f);
+		normal2 = Vector3(0.f, 1.f, 0.f);
+		normal3 = Vector3(0.f, 1.f, 0.f);
+		normal4 = Vector3(0.f, 1.f, 0.f);
+		break;
+	}
+	default:
+		break;
+	}
+
+	AddVertexData(VertexData(position1, normal1, Vector4::ZeroVector, Vector2(minX, minY)));
+	AddVertexData(VertexData(position2, normal2, Vector4::ZeroVector, Vector2(maxX, minY)));
+	AddVertexData(VertexData(position3, normal3, Vector4::ZeroVector, Vector2(minX, maxY)));
+	AddVertexData(VertexData(position4, normal4, Vector4::ZeroVector, Vector2(maxX, maxY)));
 
 	AddFace(Face(1, 0, 2));
 	AddFace(Face(1, 2, 3));
@@ -54,6 +199,7 @@ void SpriteMesh::Init()
 void SpriteMesh::SetTextureCoordinate(const Rect& textureCoordinate)
 {
 	textureCoordinate_ = textureCoordinate;
+	SetSize(abs(textureCoordinate.GetMaxX() - textureCoordinate.GetMinX()), abs(textureCoordinate.GetMaxY() - textureCoordinate.GetMinY()));
 }
 
 void SpriteMesh::UpdateSpriteMeshVertexData()
@@ -65,10 +211,144 @@ void SpriteMesh::UpdateSpriteMeshVertexData()
 	float maxX = textureCoordinate_.GetMaxX();
 	float maxY = textureCoordinate_.GetMaxY();
 
-	UpdateVertexDataAt(0, VertexData(Vector3(0.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(minX, minY)));
-	UpdateVertexDataAt(1, VertexData(Vector3(width_, 0.f, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(maxX, minY)));
-	UpdateVertexDataAt(2, VertexData(Vector3(0.f, -height_, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(minX, maxY)));
-	UpdateVertexDataAt(3, VertexData(Vector3(width_, -height_, 0.f), Vector3(0.f, 0.f, 1.f), Vector4::ZeroVector, Vector2(maxX, maxY)));
+	Vector3 position1, position2, position3, position4;
+	Vector3 normal1, normal2, normal3, normal4;
+
+	AppType applicationType = engine->GetApplication()->GetAppType();
+	switch (applicationType)
+	{
+	case AppType::Application2D:
+		switch (pivotPoint_)
+		{
+		case SPRITE_PIVOT_POINT::TOP_LEFT:
+			position1 = Vector3(0.f, 0.f, 0.f);
+			position2 = Vector3(width_, 0.f, 0.f);
+			position3 = Vector3(0.f, -height_, 0.f);
+			position4 = Vector3(width_, -height_, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::TOP_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, 0.f, 0.f);
+			position2 = Vector3(width_ * 0.5f, 0.f, 0.f);
+			position3 = Vector3(-width_ * 0.5f, -height_, 0.f);
+			position4 = Vector3(width_ * 0.5f, -height_, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::TOP_RIGHT:
+			position1 = Vector3(-width_, 0.f, 0.f);
+			position2 = Vector3(0.f, 0.f, 0.f);
+			position3 = Vector3(-width_, -height_, 0.f);
+			position4 = Vector3(0.f, -height_, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_LEFT:
+			position1 = Vector3(0.f, height_ * 0.5f, 0.f);
+			position2 = Vector3(width_, height_ * 0.5f, 0.f);
+			position3 = Vector3(0.f, -height_ * 0.5f, 0.f);
+			position4 = Vector3(width_, -height_ * 0.5f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, height_ * 0.5f, 0.f);
+			position2 = Vector3(width_ * 0.5f, height_ * 0.5f, 0.f);
+			position3 = Vector3(-width_ * 0.5f, -height_ * 0.5f, 0.f);
+			position4 = Vector3(width_ * 0.5f, -height_ * 0.5f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_RIGHT:
+			position1 = Vector3(-width_, height_ * 0.5f, 0.f);
+			position2 = Vector3(0.f, height_ * 0.5f, 0.f);
+			position3 = Vector3(-width_, -height_ * 0.5f, 0.f);
+			position4 = Vector3(0.f, -height_ * 0.5f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_LEFT:
+			position1 = Vector3(0.f, height_, 0.f);
+			position2 = Vector3(width_, height_, 0.f);
+			position3 = Vector3(0.f, 0.f, 0.f);
+			position4 = Vector3(width_, 0.f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, height_, 0.f);
+			position2 = Vector3(width_ * 0.5f, height_, 0.f);
+			position3 = Vector3(-width_ * 0.5f, 0.f, 0.f);
+			position4 = Vector3(width_ * 0.5f, 0.f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_RIGHT:
+			position1 = Vector3(-width_, height_, 0.f);
+			position2 = Vector3(0.f, height_, 0.f);
+			position3 = Vector3(-width_, 0.f, 0.f);
+			position4 = Vector3(0.f, 0.f, 0.f);
+			break;
+		default:
+			break;
+		}
+
+		normal1 = Vector3(0.f, 0.f, 1.f);
+		normal2 = Vector3(0.f, 0.f, 1.f);
+		normal3 = Vector3(0.f, 0.f, 1.f);
+		normal4 = Vector3(0.f, 0.f, 1.f);
+		break;
+	case AppType::Application3D:
+		switch (pivotPoint_)
+		{
+		case SPRITE_PIVOT_POINT::TOP_LEFT:
+			position1 = Vector3(0.f, 0.f, 0.f);
+			position2 = Vector3(width_, 0.f, 0.f);
+			position3 = Vector3(0.f, 0.f, -height_);
+			position4 = Vector3(width_, 0.f, -height_);
+			break;
+		case SPRITE_PIVOT_POINT::TOP_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, 0.f, 0.f);
+			position2 = Vector3(width_ * 0.5f, 0.f, 0.f);
+			position3 = Vector3(-width_ * 0.5f, 0.f, -height_);
+			position4 = Vector3(width_ * 0.5f, 0.f, -height_);
+			break;
+		case SPRITE_PIVOT_POINT::TOP_RIGHT:
+			position1 = Vector3(-width_, 0.f, 0.f);
+			position2 = Vector3(0.f, 0.f, 0.f);
+			position3 = Vector3(-width_, 0.f, -height_);
+			position4 = Vector3(0.f, 0.f, -height_);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_LEFT:
+			position1 = Vector3(0.f, 0.f, height_ * 0.5f);
+			position2 = Vector3(width_, 0.f, height_ * 0.5f);
+			position3 = Vector3(0.f, 0.f, -height_ * 0.5f);
+			position4 = Vector3(width_, 0.f, -height_ * 0.5f);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, 0.f, height_ * 0.5f);
+			position2 = Vector3(width_ * 0.5f, 0.f, height_ * 0.5f);
+			position3 = Vector3(-width_ * 0.5f, 0.f, -height_ * 0.5f);
+			position4 = Vector3(width_ * 0.5f, 0.f, -height_ * 0.5f);
+			break;
+		case SPRITE_PIVOT_POINT::MIDDLE_RIGHT:
+			position1 = Vector3(-width_, 0.f, height_ * 0.5f);
+			position2 = Vector3(0.f, 0.f, height_ * 0.5f);
+			position3 = Vector3(-width_, 0.f, -height_ * 0.5f);
+			position4 = Vector3(0.f, 0.f, -height_ * 0.5f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_LEFT:
+			position1 = Vector3(0.f, 0.f, height_);
+			position2 = Vector3(width_, 0.f, height_);
+			position3 = Vector3(0.f, 0.f, 0.f);
+			position4 = Vector3(width_, 0.f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_MIDDLE:
+			position1 = Vector3(-width_ * 0.5f, 0.f, height_);
+			position2 = Vector3(width_ * 0.5f, 0.f, height_);
+			position3 = Vector3(-width_ * 0.5f, 0.f, 0.f);
+			position4 = Vector3(width_ * 0.5f, 0.f, 0.f);
+			break;
+		case SPRITE_PIVOT_POINT::BOTTOM_RIGHT:
+			position1 = Vector3(-width_, 0.f, height_);
+			position2 = Vector3(0.f, 0.f, height_);
+			position3 = Vector3(-width_, 0.f, 0.f);
+			position4 = Vector3(0.f, 0.f, 0.f);
+			break;
+		default:
+			break;
+		}
+	}
+
+	UpdateVertexDataAt(0, VertexData(position1, normal1, Vector4::ZeroVector, Vector2(minX, minY)));
+	UpdateVertexDataAt(1, VertexData(position2, normal2, Vector4::ZeroVector, Vector2(maxX, minY)));
+	UpdateVertexDataAt(2, VertexData(position3, normal3, Vector4::ZeroVector, Vector2(minX, maxY)));
+	UpdateVertexDataAt(3, VertexData(position4, normal4, Vector4::ZeroVector, Vector2(maxX, maxY)));
 }
 
 void SpriteMesh::NormalizeTexturePosition()

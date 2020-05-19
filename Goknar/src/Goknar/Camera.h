@@ -71,12 +71,12 @@ public:
 	void Roll(float value);
 	void RotateAbout(const Vector3& axis, float angle);
 
-	const Matrix& GetViewingMatrix() const
+	inline const Matrix& GetViewingMatrix() const
 	{
 		return viewingMatrix_;
 	}
 
-	const Matrix& GetProjectionMatrix() const
+	inline const Matrix& GetProjectionMatrix() const
 	{
 		return projectionMatrix_;
 	}

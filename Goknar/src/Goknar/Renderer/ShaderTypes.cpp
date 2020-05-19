@@ -50,6 +50,8 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace POSITIONING
 	{
+		const char* WORLD_TRANSFORMATION_MATRIX = "worldTransformationMatrix";
+		const char* RELATIVE_TRANSFORMATION_MATRIX = "relativeTransformationMatrix";
 		const char* MODEL_MATRIX = "transformationMatrix";
 		const char* VIEW_MATRIX = "viewMatrix";
 		const char* PROJECTION_MATRIX = "projectionMatrix";

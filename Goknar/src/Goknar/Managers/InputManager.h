@@ -1,7 +1,7 @@
 #ifndef __INPUTMANAGER_H__
 #define __INPUTMANAGER_H__
 
-#include "pch.h"
+#include <functional>
 
 #include "GLFW/glfw3.h"
 

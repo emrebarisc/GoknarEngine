@@ -347,8 +347,8 @@ void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstanc
 	{
 	case MaterialBlendModel::Opaque:
 	{
-		int meshInstanceCount = opaqueDynamicMeshInstances_.size();
-		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		size_t meshInstanceCount = opaqueDynamicMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 		{
 			if (opaqueDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
 			{
@@ -360,8 +360,8 @@ void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstanc
 	}
 	case MaterialBlendModel::Masked:
 	{
-		int meshInstanceCount = maskedDynamicMeshInstances_.size();
-		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		size_t meshInstanceCount = maskedDynamicMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 		{
 			if (maskedDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
 			{
@@ -373,8 +373,8 @@ void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstanc
 	}
 	case MaterialBlendModel::Translucent:
 	{
-		int meshInstanceCount = translucentDynamicMeshInstances_.size();
-		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		size_t meshInstanceCount = translucentDynamicMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 		{
 			if (translucentDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
 			{
@@ -461,8 +461,8 @@ void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 	{
 	case MaterialBlendModel::Opaque:
 	{
-		int meshInstanceCount = opaqueStaticMeshInstances_.size();
-		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		size_t meshInstanceCount = opaqueStaticMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 		{
 			if (opaqueStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
 			{
@@ -474,8 +474,8 @@ void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 	}
 	case MaterialBlendModel::Masked:
 	{
-		int meshInstanceCount = maskedStaticMeshInstances_.size();
-		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		size_t meshInstanceCount = maskedStaticMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 		{
 			if (maskedStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
 			{
@@ -487,8 +487,8 @@ void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 	}
 	case MaterialBlendModel::Translucent:
 	{
-		int meshInstanceCount = translucentStaticMeshInstances_.size();
-		for (int meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		size_t meshInstanceCount = translucentStaticMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 		{
 			if (translucentStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
 			{

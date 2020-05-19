@@ -43,8 +43,8 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	return clamp(color, 0.f, 1.f);
 }
 
-vec3 DirectionalLight0Direction = vec3(0.577350, 0.577350, -0.577350);
-vec3 DirectionalLight0Intensity = vec3(0.250000, 0.247500, 0.207500);
+vec3 DirectionalLight0Direction = vec3(0.615457, 0.492366, -0.615457);
+vec3 DirectionalLight0Intensity = vec3(0.750000, 0.750000, 0.750000);
 
 void main()
 {

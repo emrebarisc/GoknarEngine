@@ -24,15 +24,3 @@ void AnimatedSpriteComponent::SetMesh(Mesh* animatedSpriteMesh)
 	GOKNAR_ASSERT(animatedSpriteMesh_, "AnimatedSpriteComponent::SetMesh(Mesh*) assigned mesh is not a AnimatedSpriteMesh!");
 	meshInstance_->SetMesh(animatedSpriteMesh);
 }
-
-void AnimatedSpriteComponent::WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix)
-{
-	meshInstance_->SetWorldTransformationMatrix(worldTransformationMatrix);
-}
-
-void AnimatedSpriteComponent::UpdateRelativeTransformationMatrix()
-{
-	Component::UpdateRelativeTransformationMatrix();
-
-	meshInstance_->SetRelativeTransformationMatrix(relativeTransformationMatrix_);
-}

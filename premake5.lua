@@ -74,7 +74,7 @@ project "Goknar"
 			"GOKNAR_PLATFORM_WINDOWS",
 			"GOKNAR_BUILD_DLL",
 			"GOKNAR_ENABLE_ASSERTS",
-			"GLFW_INCLUDE_NONE"
+			"GLFW_INCLUDE_NONE",
 		}
 
 		postbuildcommands
@@ -130,7 +130,8 @@ project "GameProject"
 
 		defines
 		{
-			"GOKNAR_PLATFORM_WINDOWS"
+			"GOKNAR_PLATFORM_WINDOWS",
+			"GLFW_INCLUDE_NONE"
 		}
 
 	filter "configurations:Debug"

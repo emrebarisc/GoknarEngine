@@ -69,11 +69,13 @@ Shader::~Shader()
 	glDeleteProgram(programId_);
 }
 
-void Shader::SetMVP(const Matrix& model/*, const Matrix& view, const Matrix& projection*/) const
+void Shader::SetMVP(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix/*, const Matrix& view, const Matrix& projection*/) const
 {
 	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 
-	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX, model);
+	//SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX, model);
+	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX, worldTransformationMatrix);
+	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX, relativeTransformationMatrix);
 	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_MATRIX, activeCamera->GetViewingMatrix());
 	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::PROJECTION_MATRIX, activeCamera->GetProjectionMatrix());
 	SetVector3(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION, activeCamera->GetPosition());

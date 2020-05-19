@@ -18,20 +18,12 @@ public:
 
 	void SetMesh(Mesh* sprite) override;
 
-	const Matrix& GetRelativeTransformationMatrix() const
-	{
-		return relativeTransformationMatrix_;
-	}
-
-	void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override;
-
 	AnimatedSpriteMesh* GetAnimatedSpriteMesh()
 	{
 		return animatedSpriteMesh_;
 	}
 
 protected:
-	inline void UpdateRelativeTransformationMatrix() override;
 
 private:
 

@@ -12,5 +12,5 @@ int MeshInstance::lastComponentId_ = 0;
 
 void MeshInstance::Render() const
 {
-	mesh_->GetMaterial()->Render(worldTransformationMatrix_ * relativeTransformationMatrix_);
+	mesh_->GetMaterial()->Render(worldTransformationMatrix_, relativeTransformationMatrix_);
 }

@@ -55,7 +55,7 @@ public:
 		return &textures_;
 	}
 
-	void SetMVP(const Matrix& model/*, const Matrix& view, const Matrix& projection*/) const;
+	void SetMVP(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const;
 
 	unsigned int GetProgramId() const
 	{

@@ -1,24 +1,28 @@
 #include "Game.h"
 
-#include <Goknar.h>
-
-#include "CameraController.h"
+// Engine includes
+#include "Goknar.h"
 #include "Goknar/Scene.h"
+
+#include "Deceased.h"
+#include "Hyena.h"
 
 #include <chrono>
 
 Game::Game() : Application()
 {
 	engine->SetApplication(this);
+	SetAppType(AppType::Application3D);
+
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
-	mainScene_->ReadSceneData("./Content/RenderTestScene.xml");
+	mainScene_->ReadSceneData("./Content/Scenes/2_5DScene.xml");
 
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_WARN("Scene is read in {} seconds.", elapsedTime);
 
-	lastFrameTimePoint = currentTimePoint;
-	cameraController_ = new CameraController();
+	deceased_ = new Deceased();
+	hyena_ = new Hyena();
 }
 
 Game::~Game()
@@ -29,7 +33,7 @@ void Game::Run()
 {
 }
 
-Application *CreateApplication()
+Application* CreateApplication()
 {
 	return new Game();
 }

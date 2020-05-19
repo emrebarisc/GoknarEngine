@@ -2,7 +2,8 @@
 
 #include <Goknar/Application.h>
 
-class CameraController;
+class Deceased;
+class Hyena;
 
 class Game : public Application
 {
@@ -14,5 +15,6 @@ public:
 	void Run() override;
 
 private:
-	CameraController* cameraController_;
+	Deceased* deceased_;
+	Hyena* hyena_;
 };

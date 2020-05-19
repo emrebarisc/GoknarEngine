@@ -210,7 +210,11 @@ float Vector3::Dot(const Vector3& rhs)
 
 void Vector3::Normalize()
 {
-	*this /= this->Length();
+	float length = this->Length();
+	if (0.f < length)
+	{
+		*this /= length;
+	}
 }
 
 void Vector3::Normalize(Vector3& vec)
@@ -256,6 +260,13 @@ void Vector3::operator+=(const Vector3& rhs)
 	x = x + rhs.x;
 	y = y + rhs.y;
 	z = z + rhs.z;
+}
+
+void Vector3::operator-=(const Vector3& rhs)
+{
+	x = x - rhs.x;
+	y = y - rhs.y;
+	z = z - rhs.z;
 }
 
 Vector3 Vector3::operator*(float val) const 

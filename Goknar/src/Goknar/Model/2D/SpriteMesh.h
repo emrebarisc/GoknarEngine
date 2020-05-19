@@ -7,6 +7,19 @@
 
 class Material;
 
+enum class GOKNAR_API SPRITE_PIVOT_POINT
+{
+	TOP_LEFT = 0,
+	TOP_MIDDLE,
+	TOP_RIGHT,
+	MIDDLE_LEFT,
+	MIDDLE_MIDDLE,
+	MIDDLE_RIGHT,
+	BOTTOM_LEFT,
+	BOTTOM_MIDDLE,
+	BOTTOM_RIGHT
+};
+
 class GOKNAR_API SpriteMesh : public DynamicMesh
 {
 public:
@@ -32,6 +45,16 @@ public:
 		return textureCoordinate_;
 	}
 
+	void SetPivotPoint(SPRITE_PIVOT_POINT pivotPoint)
+	{
+		pivotPoint_ = pivotPoint;
+	}
+
+	SPRITE_PIVOT_POINT GetPivotPoint() const
+	{
+		return pivotPoint_;
+	}
+
 protected:
 	void UpdateSpriteMeshVertexData();
 
@@ -41,6 +64,8 @@ protected:
 
 	float width_;
 	float height_;
+
+	SPRITE_PIVOT_POINT pivotPoint_;
 
 private:
 	void NormalizeTexturePosition();

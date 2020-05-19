@@ -12,6 +12,7 @@
 #include "Goknar/Log.h"
 
 ImGuiEditor::ImGuiEditor() :
+	Editor(),
 	showAbout_(false),
 	showLog_(false)
 {
@@ -24,6 +25,8 @@ ImGuiEditor::~ImGuiEditor()
 
 void ImGuiEditor::Init()
 {
+	Editor::Init();
+
 	engine->GetInputManager()->AddKeyboardListener(std::bind(&ImGuiEditor::OnKeyboardEvent, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4));
 
 	engine->GetInputManager()->AddCursorDelegate(std::bind(&ImGuiEditor::OnCursorMove, this, std::placeholders::_1, std::placeholders::_2));

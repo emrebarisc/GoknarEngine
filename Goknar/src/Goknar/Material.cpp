@@ -37,7 +37,7 @@ void Material::Init()
 	shader_->Init();
 }
 
-void Material::Render(const Matrix& modelMatrix) const
+void Material::Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const
 {
 	if (shadingModel_ == MaterialShadingModel::Default)
 	{
@@ -54,7 +54,7 @@ void Material::Render(const Matrix& modelMatrix) const
 	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);
 	shader_->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, phongExponent_);
 
-	shader_->SetMVP(modelMatrix);
+	shader_->SetMVP(worldTransformationMatrix, relativeTransformationMatrix);
 
 	engine->GetApplication()->GetMainScene()->SetShaderDynamicLightUniforms(shader_);
 	engine->SetShaderEngineVariables(shader_);

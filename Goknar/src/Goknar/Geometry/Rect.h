@@ -18,8 +18,7 @@ public:
 	inline void SetMin(const Vector2& min)
 	{
 		min_ = min;
-		width_ = abs(max_.x - min_.x);
-		height_ = abs(max_.y - min_.y);
+		CalculateSize();
 	}
 
 	inline float GetMinX() const
@@ -30,6 +29,7 @@ public:
 	inline void SetMinX(float minX)
 	{
 		min_.x = minX;
+		CalculateSize();
 	}
 
 	inline float GetMinY() const
@@ -40,6 +40,7 @@ public:
 	inline void SetMinY(float minY)
 	{
 		min_.y = minY;
+		CalculateSize();
 	}
 
 	inline const Vector2& GetMax() const
@@ -50,8 +51,7 @@ public:
 	inline void SetMax(const Vector2& max)
 	{
 		max_ = max;
-		width_ = abs(max_.x - min_.x);
-		height_ = abs(max_.y - min_.y);
+		CalculateSize();
 	}
 
 	inline float GetMaxX() const
@@ -62,6 +62,7 @@ public:
 	inline void SetMaxX(float maxX)
 	{
 		max_.x = maxX;
+		CalculateSize();
 	}
 
 	inline float GetMaxY() const
@@ -72,11 +73,18 @@ public:
 	inline void SetMaxY(float maxY)
 	{
 		max_.y = maxY;
+		CalculateSize();
 	}
 
 protected:
 
 private:
+	void CalculateSize()
+	{
+		width_ = abs(max_.x - min_.x) + 1;
+		height_ = abs(max_.y - min_.y) + 1;
+	}
+
 	Vector2 min_;
 	Vector2 max_;
 

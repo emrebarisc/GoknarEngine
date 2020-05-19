@@ -99,7 +99,7 @@ public:
 		shader_ = shader;
 	}
 
-	void Render(const Matrix& modelMatrix) const;
+	void Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const;
 
 protected:
 

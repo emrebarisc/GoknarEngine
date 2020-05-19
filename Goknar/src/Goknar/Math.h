@@ -166,6 +166,7 @@ struct GOKNAR_API Vector3
 	} */
 
 	inline void operator+=(const Vector3& rhs);
+	inline void operator-=(const Vector3& rhs);
 
 	inline Vector3 operator*(float val) const;
 

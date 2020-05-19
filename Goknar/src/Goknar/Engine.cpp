@@ -107,7 +107,6 @@ void Engine::Init() const
 	GOKNAR_CORE_INFO("Renderer Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
-
 	//editor_->Init();
 	//currentTimePoint = std::chrono::steady_clock::now();
 	//elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
@@ -123,7 +122,7 @@ void Engine::Run()
 	{
 		if (1.f < deltaTime_)
 		{
-			deltaTime_ = 0.f;
+			deltaTime_ = 1.f / 60.f;
 			continue;
 		}
 
@@ -190,9 +189,9 @@ void Engine::RegisterObject(ObjectBase* object)
 
 void Engine::RemoveObject(ObjectBase* object)
 {
-	int registeredObjectsSize = registeredObjects_.size();
+	size_t registeredObjectsSize = registeredObjects_.size();
 
-	for (int registeredObjectIndex = 0; registeredObjectIndex < registeredObjectsSize; registeredObjectIndex++)
+	for (size_t registeredObjectIndex = 0; registeredObjectIndex < registeredObjectsSize; registeredObjectIndex++)
 	{
 		if (registeredObjects_[registeredObjectIndex] == object)
 		{
@@ -214,9 +213,9 @@ void Engine::RegisterTimeDependentObject(TimeDependentObject* animatedObject)
 
 void Engine::RemoveFromTickableObjects(ObjectBase* object)
 {
-	int tickableObjectsSize = tickableObjects_.size();
+	size_t tickableObjectsSize = tickableObjects_.size();
 
-	for (int tickableObjectIndex = 0; tickableObjectIndex < tickableObjectsSize; tickableObjectIndex++)
+	for (size_t tickableObjectIndex = 0; tickableObjectIndex < tickableObjectsSize; tickableObjectIndex++)
 	{
 		if (tickableObjects_[tickableObjectIndex] == object)
 		{

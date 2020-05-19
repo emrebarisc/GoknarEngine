@@ -44,6 +44,8 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace POSITIONING
 	{
+		extern const char* WORLD_TRANSFORMATION_MATRIX;
+		extern const char* RELATIVE_TRANSFORMATION_MATRIX;
 		extern const char* MODEL_MATRIX;
 		extern const char* VIEW_MATRIX;
 		extern const char* PROJECTION_MATRIX;
