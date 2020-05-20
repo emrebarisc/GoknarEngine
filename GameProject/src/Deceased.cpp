@@ -13,7 +13,8 @@
 Deceased::Deceased() :
 	ObjectBase(),
 	velocity_(1.f), 
-	movementDirection_(Vector3::ZeroVector)
+	movementDirection_(Vector3::ZeroVector),
+	health_(100.f)
 {
 	SetTickable(true);
 
@@ -78,6 +79,7 @@ Deceased::Deceased() :
 	deathAnimation->AddTextureCoordinate(Rect(Vector2(144.f, 192.f), Vector2(191.f, 239.f)));
 	deathAnimation->AddTextureCoordinate(Rect(Vector2(192.f, 192.f), Vector2(239.f, 239.f)));
 	deathAnimation->AddTextureCoordinate(Rect(Vector2(240.f, 192.f), Vector2(287.f, 239.f)));
+	deathAnimation->SetRepeat(false);
 	spriteMesh->AddAnimation(deathAnimation);
 
 	spriteMesh->SetSize(1, 1);
@@ -85,7 +87,8 @@ Deceased::Deceased() :
 
 	deceasedSprite_ = new AnimatedSpriteComponent(this);
 	deceasedSprite_->SetMesh(spriteMesh);
-	//deceasedSprite_->SetRelativeRotation(Vector3(0.f, 0.f, DEGREE_TO_RADIAN(180.f)));
+	deceasedSprite_->SetPivotPoint(Vector3(-0.1f, -0.1f, 0.f));
+	deceasedSprite_->SetRelativeRotation(Vector3(0.f, 0.f, DEGREE_TO_RADIAN(180.f)));
 }
 
 Deceased::~Deceased()
@@ -117,7 +120,27 @@ void Deceased::Tick(float deltaTime)
 	if (0 < movementDirection_.Length())
 	{
 		SetWorldPosition(GetWorldPosition() + movementDirection_.GetNormalized() * velocity_ * deltaTime);
+		float angle = RADIAN_TO_DEGREE(atan2(movementDirection_.x, movementDirection_.y));
+		if (-45.f <= angle && angle <= 135.f)
+		{
+			SetWorldScaling(Vector3(-1.f, -1.f, 1.f));
+		}
+		else
+		{
+			SetWorldScaling(Vector3(1.f, 1.f, 1.f));
+		}
 	}
+}
+
+void Deceased::Hurt(float damage)
+{
+	health_ -= damage;
+	if (health_ <= 0.f)
+	{
+		health_ = 0.f;
+		deceasedSprite_->GetAnimatedSpriteMesh()->PlayAnimation("death");
+	}
+	std::cout << "Deceased HP: " << health_ << std::endl;
 }
 
 void Deceased::WalkForward()

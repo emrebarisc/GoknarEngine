@@ -35,12 +35,13 @@ void AnimatedSpriteMesh::Init()
 	if(animations_.count(currentAnimationName_) != 0)
 	{
 		AnimatedSpriteAnimation* currentAnimation = animations_[currentAnimationName_];
-		if (currentAnimation->textureCoordinatesSize > 0)
+		if (currentAnimation->textureCoordinatesSize_ > 0)
 		{
 			textureCoordinate_ = currentAnimation->textureCoordinates[0];
 		}
 	}
 
+	Activate();
 	SpriteMesh::Init();
 }
 
@@ -58,22 +59,25 @@ void AnimatedSpriteMesh::PlayAnimation(const std::string& name)
 		return;
 	}
 
-	currentAnimationName_ = name;
-	Operate();
-	animationElapsedTime_ = 0.f;
+	if (currentAnimationName_ != name)
+	{
+		currentAnimationName_ = name;
+		Operate();
+		elapsedTime_ = 0.f;
+	}
 }
 
 void AnimatedSpriteMesh::AddAnimation(AnimatedSpriteAnimation* animation)
 {
-	if (animations_.count(animation->name) != 0)
+	if (animations_.count(animation->name_) != 0)
 	{
-		GOKNAR_ERROR("Animation '{}' already exists.", animation->name);
+		GOKNAR_ERROR("Animation '{}' already exists.", animation->name_);
 		delete animation;
 		return;
 	}
 	else
 	{
-		animations_[animation->name] = animation;
+		animations_[animation->name_] = animation;
 	}
 }
 
@@ -85,15 +89,15 @@ void AnimatedSpriteMesh::Operate()
 		return;
 	}
 
-	if (currentAnimation->textureCoordinatesIndex < currentAnimation->textureCoordinatesSize - 1)
+	if (currentAnimation->textureCoordinatesIndex_ < currentAnimation->textureCoordinatesSize_ - 1)
 	{
-		currentAnimation->textureCoordinatesIndex++;
+		currentAnimation->textureCoordinatesIndex_++;
 	}
-	else
+	else if(currentAnimation->repeat_)
 	{
-		currentAnimation->textureCoordinatesIndex = 0;
+		currentAnimation->textureCoordinatesIndex_ = 0;
 	}
 
-	textureCoordinate_ = currentAnimation->textureCoordinates[currentAnimation->textureCoordinatesIndex];
+	textureCoordinate_ = currentAnimation->textureCoordinates[currentAnimation->textureCoordinatesIndex_];
 	UpdateSpriteMeshVertexData();
 }

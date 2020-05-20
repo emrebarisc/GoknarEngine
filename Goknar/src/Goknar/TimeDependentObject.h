@@ -16,10 +16,15 @@ public:
 	virtual void Init() {};
 	void Tick(float deltaSecond)
 	{
-		animationElapsedTime_ += deltaSecond;
-		if (timeToRefreshTimeVariables_ < animationElapsedTime_)
+		if (!isActive_)
 		{
-			animationElapsedTime_ -= timeToRefreshTimeVariables_;
+			return;
+		}
+
+		elapsedTime_ += deltaSecond;
+		if (timeToRefreshTimeVariables_ < elapsedTime_)
+		{
+			elapsedTime_ -= timeToRefreshTimeVariables_;
 			Operate();
 		}
 	}
@@ -35,6 +40,22 @@ public:
 		timeToRefreshTimeVariables_ = 1.f / ticksPerSecond;
 	}
 
+	bool GetIsActive()
+	{
+		return isActive_;
+	}
+
+	void Activate()
+	{
+		isActive_ = true;
+	}
+
+	void Deactivate()
+	{
+		isActive_ = false;
+		elapsedTime_ = 0.f;
+	}
+
 protected:
 	TimeDependentObject();
 
@@ -42,7 +63,9 @@ protected:
 
 	int ticksPerSecond_;
 	float timeToRefreshTimeVariables_;
-	float animationElapsedTime_;
+	float elapsedTime_;
+
+	bool isActive_;
 };
 
 #endif

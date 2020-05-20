@@ -9,10 +9,15 @@
 #include "Goknar/Math.h"
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Scene.h"
+#include "Goknar/Timer.h"
+
+#include "Game.h"
+
+#include "Deceased.h"
 
 Hyena::Hyena() :
 	ObjectBase(),
-	velocity_(1.f), 
+	velocity_(0.5f), 
 	movementDirection_(Vector3::ZeroVector)
 {
 	SetTickable(true);
@@ -87,7 +92,12 @@ Hyena::Hyena() :
 
 	hyenaSprite_ = new AnimatedSpriteComponent(this);
 	hyenaSprite_->SetMesh(spriteMesh);
-	//hyenaSprite_->SetRelativeRotation(Vector3(0.f, 0.f, DEGREE_TO_RADIAN(180.f)));
+	hyenaSprite_->SetPivotPoint(Vector3(-0.1f, -0.1f, 0.f));
+	hyenaSprite_->SetRelativeRotation(Vector3(0.f, 0.f, DEGREE_TO_RADIAN(180.f)));
+
+	attackTimer_ = new Timer();
+	attackTimer_->SetTicksPerSecond(2);
+	attackTimer_->CallOnTick(std::bind(&Hyena::Attack, this));
 }
 
 Hyena::~Hyena()
@@ -97,30 +107,85 @@ Hyena::~Hyena()
 void Hyena::BeginGame()
 {
 	hyenaSprite_->SetRelativePosition(Vector3::ZeroVector);
-	SetWorldPosition(Vector3(1.f, 0.f, 0.f));
+	SetWorldPosition(Vector3(3.f, 3.f, 0.f));
 	hyenaSprite_->GetAnimatedSpriteMesh()->PlayAnimation("idle");
 
-	InputManager* inputManager = engine->GetInputManager();
-	if (inputManager)
-	{
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_PRESS, std::bind(&Hyena::WalkForward, this));
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_PRESS, std::bind(&Hyena::WalkBackward, this));
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_PRESS, std::bind(&Hyena::WalkLeftward, this));
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_PRESS, std::bind(&Hyena::WalkRightward, this));
+	//InputManager* inputManager = engine->GetInputManager();
+	//if (inputManager)
+	//{
+	//	inputManager->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_PRESS, std::bind(&Hyena::WalkForward, this));
+	//	inputManager->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_PRESS, std::bind(&Hyena::WalkBackward, this));
+	//	inputManager->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_PRESS, std::bind(&Hyena::WalkLeftward, this));
+	//	inputManager->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_PRESS, std::bind(&Hyena::WalkRightward, this));
 
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_RELEASE, std::bind(&Hyena::WalkForwardStopped, this));
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_RELEASE, std::bind(&Hyena::WalkBackwardStopped, this));
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, std::bind(&Hyena::WalkLeftwardStopped, this));
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_RELEASE, std::bind(&Hyena::WalkRightwardStopped, this));
-	}
+	//	inputManager->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_RELEASE, std::bind(&Hyena::WalkForwardStopped, this));
+	//	inputManager->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_RELEASE, std::bind(&Hyena::WalkBackwardStopped, this));
+	//	inputManager->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, std::bind(&Hyena::WalkLeftwardStopped, this));
+	//	inputManager->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_RELEASE, std::bind(&Hyena::WalkRightwardStopped, this));
+	//}
 }
 
 void Hyena::Tick(float deltaTime)
 {
-	if (0 < movementDirection_.Length())
+	Game* game = dynamic_cast<Game*>(engine->GetApplication());
+	if (!game)
 	{
-		SetWorldPosition(GetWorldPosition() + movementDirection_.GetNormalized() * velocity_ * deltaTime);
+		return;
 	}
+
+	Deceased* deceasedCharacter = game->GetDeceased();
+
+	Vector3 toCharacter = deceasedCharacter->GetWorldPosition() - GetWorldPosition();
+	float toCharacterLength = toCharacter.Length();
+
+	static float elapsedTime = 0.f;
+
+	if (0.75f < toCharacterLength)
+	{
+		attackTimer_->Deactivate();
+		movementDirection_ = toCharacter / toCharacterLength;
+
+		if (0 < movementDirection_.Length())
+		{
+			hyenaSprite_->GetAnimatedSpriteMesh()->PlayAnimation("walk");
+			SetWorldPosition(GetWorldPosition() + movementDirection_.GetNormalized() * velocity_ * deltaTime);
+			float angle = RADIAN_TO_DEGREE(atan2(movementDirection_.x, movementDirection_.y));
+			if (-45.f <= angle && angle <= 135.f)
+			{
+				SetWorldScaling(Vector3(-1.f, -1.f, 1.f));
+			}
+			else
+			{
+				SetWorldScaling(Vector3(1.f, 1.f, 1.f));
+			}
+		}
+	}
+	else
+	{
+		if (deceasedCharacter->GetIsDead())
+		{
+			hyenaSprite_->GetAnimatedSpriteMesh()->PlayAnimation("idle");
+			attackTimer_->Deactivate();
+		}
+		else
+		{
+			if(!attackTimer_->GetIsActive()) Attack();
+			attackTimer_->Activate();
+		}
+	}
+}
+
+void Hyena::Attack()
+{
+	Game* game = dynamic_cast<Game*>(engine->GetApplication());
+	if (!game)
+	{
+		return;
+	}
+	Deceased* deceasedCharacter = game->GetDeceased();
+	movementDirection_ = Vector3::ZeroVector;
+	deceasedCharacter->Hurt(10.f);
+	hyenaSprite_->GetAnimatedSpriteMesh()->PlayAnimation("attack");
 }
 
 void Hyena::WalkForward()

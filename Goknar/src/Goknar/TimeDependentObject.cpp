@@ -8,9 +8,10 @@
 
 TimeDependentObject::TimeDependentObject()
 	:
-	animationElapsedTime_(0.f),
+	elapsedTime_(0.f),
 	ticksPerSecond_(30), // Default 30 ticks per second
-	timeToRefreshTimeVariables_(1.f / ticksPerSecond_)
+	timeToRefreshTimeVariables_(1.f / ticksPerSecond_),
+	isActive_(false)
 {
 	engine->RegisterTimeDependentObject(this);
 }

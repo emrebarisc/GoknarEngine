@@ -14,6 +14,11 @@ public:
 
 	void Run() override;
 
+	Deceased* GetDeceased() const
+	{
+		return deceased_;
+	}
+
 private:
 	Deceased* deceased_;
 	Hyena* hyena_;

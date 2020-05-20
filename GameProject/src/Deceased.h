@@ -14,6 +14,13 @@ public:
 	void BeginGame() override;
 	void Tick(float deltaTime) override;
 
+	void Hurt(float damage);
+
+	bool GetIsDead() const
+	{
+		return health_ <= 0;
+	}
+
 private:
 	void WalkForward();
 	void WalkForwardStopped();
@@ -31,6 +38,7 @@ private:
 	AnimatedSpriteComponent* deceasedSprite_;
 
 	float velocity_;
+	float health_;
 };
 
 #endif

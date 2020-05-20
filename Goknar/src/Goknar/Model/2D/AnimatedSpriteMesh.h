@@ -11,12 +11,14 @@ class Material;
 
 class AnimatedSpriteAnimation
 {
+	friend class AnimatedSpriteMesh;
 public:
 	AnimatedSpriteAnimation() = delete;
-	AnimatedSpriteAnimation(const std::string& animationName) : 
-		name(animationName),
-		textureCoordinatesIndex(0),
-		textureCoordinatesSize(0)
+	AnimatedSpriteAnimation(const std::string& animationName) :
+		name_(animationName),
+		textureCoordinatesIndex_(0),
+		textureCoordinatesSize_(0),
+		repeat_(true)
 	{
 
 	}
@@ -24,7 +26,7 @@ public:
 	void AddTextureCoordinate(const Rect& textureCoordinate)
 	{
 		textureCoordinates.push_back(textureCoordinate);
-		textureCoordinatesSize++;
+		textureCoordinatesSize_++;
 	}
 
 	void ResetTextureCoordinateAt(int index, const Rect& textureCoordinate)
@@ -35,16 +37,24 @@ public:
 	void RemoveTextureCoordinateAt(int index)
 	{
 		textureCoordinates.erase(textureCoordinates.begin() + index);
-		textureCoordinatesSize++;
+		textureCoordinatesSize_++;
 	}
 
+	void SetRepeat(bool repeat)
+	{
+		repeat_ = repeat;
+	}
+
+private:
 	// TODO: Change vector with a "better" container.
 	std::vector<Rect> textureCoordinates;
 
-	std::string name;
+	std::string name_;
 
-	int textureCoordinatesIndex;
-	int textureCoordinatesSize;
+	int textureCoordinatesIndex_;
+	int textureCoordinatesSize_;
+
+	bool repeat_;
 };
 
 class GOKNAR_API AnimatedSpriteMesh : public SpriteMesh, public TimeDependentObject

@@ -4,6 +4,7 @@
 #include "Goknar/ObjectBase.h"
 
 class AnimatedSpriteComponent;
+class Timer;
 
 class Hyena : public ObjectBase
 {
@@ -15,6 +16,8 @@ public:
 	void Tick(float deltaTime) override;
 
 private:
+	void Attack();
+
 	void WalkForward();
 	void WalkForwardStopped();
 	void WalkBackward();
@@ -29,6 +32,7 @@ private:
 	Vector3 movementDirection_;
 
 	AnimatedSpriteComponent* hyenaSprite_;
+	Timer* attackTimer_;
 
 	float velocity_;
 };
