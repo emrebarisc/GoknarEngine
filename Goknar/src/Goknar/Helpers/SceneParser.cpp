@@ -749,7 +749,6 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				object->SetWorldScaling(worldScaling);
 			}
 			stream.clear();
-			stream.clear();
 			element = element->NextSiblingElement("StaticMeshObject");
 
 		}

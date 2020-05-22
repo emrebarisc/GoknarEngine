@@ -3,6 +3,7 @@
 #include "Goknar/Core.h"
 
 class EditorCameraController;
+class EditorGroundGrid;
 class WindowManager;
 
 class GOKNAR_API Editor
@@ -15,6 +16,7 @@ public:
 	virtual void Tick(float deltaTime) = 0;
 
 protected:
+	EditorCameraController* editorCameraController_;
+	EditorGroundGrid* editorGroundGrid_;
 	WindowManager* windowManager_;
-	EditorCameraController* editorCameraController;
 };

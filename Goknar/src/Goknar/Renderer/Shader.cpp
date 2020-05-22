@@ -73,9 +73,13 @@ void Shader::SetMVP(const Matrix& worldTransformationMatrix, const Matrix& relat
 {
 	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 
-	//SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX, model);
-	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX, worldTransformationMatrix);
-	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX, relativeTransformationMatrix);
+	/* TODO: DECIDE WHETHER WORLD AND RELATIVE TRANSFORMATION MATRICES SHOULD BE MULTIPLIED AND SENT TO THE GPU OR THEY SHOULD BE SENT SEPERATELY */
+	/* THIS MAY AFFECT PERFORMANCE ****************************************************************************************************************/
+	/**/SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX, worldTransformationMatrix * relativeTransformationMatrix);
+	/**/SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX, worldTransformationMatrix);
+	/**/SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX, relativeTransformationMatrix);
+	/**********************************************************************************************************************************************/
+	
 	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_MATRIX, activeCamera->GetViewingMatrix());
 	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::PROJECTION_MATRIX, activeCamera->GetProjectionMatrix());
 	SetVector3(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION, activeCamera->GetPosition());
@@ -85,10 +89,10 @@ void Shader::Init()
 {
 	if (shaderType_ == ShaderType::Dependent || shaderType_ == ShaderType::SelfContained)
 	{
-		GOKNAR_ASSERT((vertexShaderPath_ != "" && fragmentShaderPath_ != ""), "Shader vertex and/or fragment shader path(s) are not given.");
+		GOKNAR_ASSERT(((!vertexShaderPath_.empty() && !fragmentShaderPath_.empty()) || (!vertexShaderScript_.empty() && !fragmentShaderScript_.empty())), "No data to compile the shader! (No shader paths or scripts are given.");
 
-		IOManager::ReadFile(vertexShaderPath_.c_str(), vertexShaderScript_);
-		IOManager::ReadFile(fragmentShaderPath_.c_str(), fragmentShaderScript_);
+		if(!vertexShaderPath_.empty()) IOManager::ReadFile(vertexShaderPath_.c_str(), vertexShaderScript_);
+		if(!fragmentShaderPath_.empty())IOManager::ReadFile(fragmentShaderPath_.c_str(), fragmentShaderScript_);
 	}
 	else
 	{

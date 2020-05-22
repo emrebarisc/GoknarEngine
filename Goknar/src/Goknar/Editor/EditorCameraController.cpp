@@ -50,11 +50,10 @@ void EditorCameraController::BeginGame()
 
 		inputManager->AddScrollDelegate(std::bind(&EditorCameraController::ScrollListener, this, std::placeholders::_1, std::placeholders::_2));
 
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&EditorCameraController::MoveLeftListener, this));
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_REPEAT, std::bind(&EditorCameraController::MoveLeftListener, this));
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_REPEAT, std::bind(&EditorCameraController::MoveRightListener, this));
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_REPEAT, std::bind(&EditorCameraController::MoveForwardListener, this));
-		inputManager->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_REPEAT, std::bind(&EditorCameraController::MoveBackwardListener, this));
+		inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT, INPUT_ACTION::G_REPEAT, std::bind(&EditorCameraController::MoveLeftListener, this));
+		inputManager->AddKeyboardInputDelegate(KEY_MAP::RIGHT, INPUT_ACTION::G_REPEAT, std::bind(&EditorCameraController::MoveRightListener, this));
+		inputManager->AddKeyboardInputDelegate(KEY_MAP::UP, INPUT_ACTION::G_REPEAT, std::bind(&EditorCameraController::MoveForwardListener, this));
+		inputManager->AddKeyboardInputDelegate(KEY_MAP::DOWN, INPUT_ACTION::G_REPEAT, std::bind(&EditorCameraController::MoveBackwardListener, this));
 		inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT_CONTROL, INPUT_ACTION::G_REPEAT, std::bind(&EditorCameraController::MoveDownListener, this));
 		inputManager->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_REPEAT, std::bind(&EditorCameraController::MoveUpListener, this));
 
@@ -138,5 +137,5 @@ void EditorCameraController::MoveRight(float multiplier/* = 1.f*/)
 void EditorCameraController::MoveUp(float multiplier/* = 1.f*/)
 {
 	activeCamera_ = engine->GetCameraManager()->GetActiveCamera();
-	activeCamera_->SetPosition(activeCamera_->GetPosition() + Vector3::UpVector * engine->GetDeltaTime() * multiplier);
+	activeCamera_->SetPosition(activeCamera_->GetPosition() + activeCamera_->GetUpVector() * engine->GetDeltaTime() * multiplier);
 }

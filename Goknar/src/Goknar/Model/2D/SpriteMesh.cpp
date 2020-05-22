@@ -16,7 +16,8 @@ SpriteMesh::SpriteMesh() :
 	textureCoordinate_(Vector2(0.f, 0.f), Vector2(1.f, 1.f)),
 	material_(nullptr),
 	width_(1.f),
-	height_(1.f)
+	height_(1.f),
+	pivotPoint_(SPRITE_PIVOT_POINT::TOP_LEFT)
 {
 	// TODO: For every sprite a mesh is created.
 	Scene* scene = engine->GetApplication()->GetMainScene();
@@ -343,6 +344,11 @@ void SpriteMesh::UpdateSpriteMeshVertexData()
 		default:
 			break;
 		}
+
+		normal1 = Vector3(0.f, 1.f, 0.f);
+		normal2 = Vector3(0.f, 1.f, 0.f);
+		normal3 = Vector3(0.f, 1.f, 0.f);
+		normal4 = Vector3(0.f, 1.f, 0.f);
 	}
 
 	UpdateVertexDataAt(0, VertexData(position1, normal1, Vector4::ZeroVector, Vector2(minX, minY)));

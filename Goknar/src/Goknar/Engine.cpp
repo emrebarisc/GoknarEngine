@@ -101,17 +101,17 @@ void Engine::Init() const
 		controller_->SetupInputs();
 	}
 
-	renderer_->Init();
-	currentTimePoint = std::chrono::steady_clock::now();
-	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Renderer Initialization: {} s.", elapsedTime);
-	lastFrameTimePoint = currentTimePoint;
-
 	//editor_->Init();
 	//currentTimePoint = std::chrono::steady_clock::now();
 	//elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	//GOKNAR_CORE_INFO("Editor Initialization: {} s.", elapsedTime);
 	//lastFrameTimePoint = currentTimePoint;
+
+	renderer_->Init();
+	currentTimePoint = std::chrono::steady_clock::now();
+	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
+	GOKNAR_CORE_INFO("Renderer Initialization: {} s.", elapsedTime);
+	lastFrameTimePoint = currentTimePoint;
 }
 
 void Engine::Run()

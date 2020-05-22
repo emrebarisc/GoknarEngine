@@ -8,7 +8,8 @@ Component::Component(ObjectBase* parent) :
 	relativeTransformationMatrix_(Matrix::IdentityMatrix),
 	relativePosition_(Vector3::ZeroVector),
 	relativeRotation_(Vector3::ZeroVector),
-	relativeScaling_(Vector3(1.f))
+	relativeScaling_(Vector3(1.f)),
+	pivotPoint_(Vector3::ZeroVector)
 {
 	parent->AddComponent(this);
 }

@@ -25,6 +25,16 @@ public:
 	Shader();
 	~Shader();
 
+	void SetVertexShaderScript(const std::string& vertexShaderScript)
+	{
+		vertexShaderScript_ = vertexShaderScript;
+	}
+
+	void SetFragmentShaderScript(const std::string& fragmentShaderScript)
+	{
+		fragmentShaderScript_ = fragmentShaderScript;
+	}
+
 	void SetVertexShaderPath(const std::string& vertexShaderPath)
 	{
 		vertexShaderPath_ = vertexShaderPath;

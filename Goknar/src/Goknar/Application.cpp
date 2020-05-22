@@ -4,7 +4,8 @@
 #include "Log.h"
 #include "Scene.h"
 
-Application::Application()
+Application::Application() :
+	applicationType_(AppType::Application3D)
 {
 	mainScene_ = new Scene();
 }
