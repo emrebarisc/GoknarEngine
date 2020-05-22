@@ -1,7 +1,6 @@
 #include <Goknar.h>
 
 #include "Airplane.h"
-#include "CameraController.h"
 #include "Goknar/Scene.h"
 
 #include <chrono>
@@ -18,7 +17,6 @@ public:
 private:
 
 	Airplane* airplaneGameObject;
-	CameraController* cameraController;
 };
 
 Game::Game() : Application()
@@ -42,7 +40,6 @@ Game::Game() : Application()
 	lastFrameTimePoint = currentTimePoint;
 
 	//airplaneGameObject = new Airplane();
-	cameraController = new CameraController();
 }
 
 void Game::Run()

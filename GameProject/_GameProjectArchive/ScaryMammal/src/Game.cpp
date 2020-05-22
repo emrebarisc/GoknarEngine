@@ -12,6 +12,7 @@
 Game::Game() : Application()
 {
 	engine->SetApplication(this);
+	SetAppType(AppType::Application2D);
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
 	mainScene_->ReadSceneData("./Content/Scenes/ScaryMammal.xml");
 

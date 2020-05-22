@@ -16,7 +16,7 @@ Environment::Environment() :
 {
 	SetTickable(false);
 
-	Texture* texture = new Texture("./Content/ScaryMammal/Sprites/ScaryMammal.png");
+	Texture* texture = new Texture("./Content/Sprites/ScaryMammal.png");
 	texture->SetName("texture0");
 	texture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	texture->SetTextureMagFilter(TextureMagFilter::NEAREST);
@@ -32,8 +32,8 @@ Environment::Environment() :
 	scene->AddMaterial(material);
 
 	Shader* shader = new Shader();
-	shader->SetVertexShaderPath("./Content/ScaryMammal/Shaders/2DVertexShader.glsl");
-	shader->SetFragmentShaderPath("./Content/ScaryMammal/Shaders/2DFragmentShader.glsl");
+	shader->SetVertexShaderPath("./Content/Shaders/2DVertexShader.glsl");
+	shader->SetFragmentShaderPath("./Content/Shaders/2DFragmentShader.glsl");
 	shader->SetShaderType(ShaderType::SelfContained);
 	shader->AddTexture(texture);
 	scene->AddShader(shader);

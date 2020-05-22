@@ -70,6 +70,7 @@ Deceased::Deceased() :
 	AnimatedSpriteAnimation* hurtAnimation = new AnimatedSpriteAnimation("hurt");
 	hurtAnimation->AddTextureCoordinate(Rect(Vector2(0.f, 144.f), Vector2(47.f, 191.f)));
 	hurtAnimation->AddTextureCoordinate(Rect(Vector2(48.f, 144.f), Vector2(95.f, 191.f)));
+	hurtAnimation->SetRepeat(false);
 	spriteMesh->AddAnimation(hurtAnimation);
 
 	AnimatedSpriteAnimation* deathAnimation = new AnimatedSpriteAnimation("death");
@@ -117,10 +118,15 @@ void Deceased::BeginGame()
 
 void Deceased::Tick(float deltaTime)
 {
+	if (GetIsDead())
+	{
+		return;
+	}
+
 	if (0 < movementDirection_.Length())
 	{
 		SetWorldPosition(GetWorldPosition() + movementDirection_.GetNormalized() * velocity_ * deltaTime);
-		float angle = RADIAN_TO_DEGREE(atan2(movementDirection_.x, movementDirection_.y));
+		float angle = RADIAN_TO_DEGREE(atan2(movementDirection_.y, movementDirection_.x));
 		if (-45.f <= angle && angle <= 135.f)
 		{
 			SetWorldScaling(Vector3(-1.f, -1.f, 1.f));
@@ -193,6 +199,11 @@ void Deceased::WalkRightwardStopped()
 
 void Deceased::DetermineAnimation()
 {
+	if (GetIsDead())
+	{
+		return;
+	}
+
 	if (0.001f < movementDirection_.Length())
 	{
 		deceasedSprite_->GetAnimatedSpriteMesh()->PlayAnimation("walk");

@@ -24,7 +24,7 @@ void main()
 	vec3 posToView = position - viewPosition;
 	posToView.z = 0.f;
 
-	float radian = acos(dot(normalize(posToView), vec3(1.f, 0.f, 0.f)));
+	float radian = atan(posToView.y, posToView.x);
 
 	float cosAngle = cos(radian);
 	float sinAngle = sin(radian);
