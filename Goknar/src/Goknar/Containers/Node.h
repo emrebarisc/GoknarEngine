@@ -5,21 +5,30 @@ template <class T>
 class SinglyNode
 {
 public:
+	SinglyNode() :
+		next(nullptr)
+	{
 
-private:
+	}
+
 	T data;
-	SinglyNode next;
+	SinglyNode* next;
 };
 
 template <class T>
 class DoublyNode
 {
 public:
+	DoublyNode() :
+		next(nullptr),
+		prev(nullptr)
+	{
 
-private:
+	}
+
 	T data;
-	DoublyNode next;
-	DoublyNode prev;
+	DoublyNode* next;
+	DoublyNode* prev;
 };
 
 #endif

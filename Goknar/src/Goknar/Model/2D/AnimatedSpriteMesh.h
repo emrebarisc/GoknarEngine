@@ -57,6 +57,13 @@ private:
 	bool repeat_;
 };
 
+class AnimatedSpriteStateMachine
+{
+public:
+
+private:
+};
+
 class GOKNAR_API AnimatedSpriteMesh : public SpriteMesh, public TimeDependentObject
 {
 public:

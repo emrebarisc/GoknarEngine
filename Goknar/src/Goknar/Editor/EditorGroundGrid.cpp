@@ -51,7 +51,8 @@ out vec4 fragmentColor;
 
 vec4 oneGridColor = vec4(0.25f, 0.25f, 0.25f, 1.f);
 vec4 oneTenthGridColor = vec4(0.125f, 0.125f, 0.125f, 1.f);
-vec4 axisColor = vec4(0.588235294f, 0.196078431f, 0.196078431f, 1.f);
+vec4 axisColorX = vec4(0.588235294f, 0.196078431f, 0.196078431f, 1.f);
+vec4 axisColorY = vec4(0.196078431f, 0.588235294f, 0.196078431f, 1.f);
 
 float maxGridDistance = 250.f;
 
@@ -66,11 +67,13 @@ void main()
 	float oneThirdValueY = absoluteDifferenceY / 0.2f;
 	float oneThirdValueYRound = round(oneThirdValueY);
 
-
-	if (abs(fragmentPosition.x) < 0.01f ||
-		abs(fragmentPosition.y) < 0.01f)
+	if (abs(fragmentPosition.x) < 0.01f)
 	{
-		fragmentColor = axisColor;
+		fragmentColor = axisColorX;
+	}
+	else if (abs(fragmentPosition.y) < 0.01f)
+	{
+		fragmentColor = axisColorY;
 	}
 	else if(absoluteDifferenceX < 0.005f || absoluteDifferenceY < 0.005f)
 	{
@@ -98,6 +101,7 @@ EditorGroundGrid::EditorGroundGrid()
 	groundGridMeshShader->Init();
 
 	Material* groundGridMeshMaterial = new Material();
+	groundGridMeshMaterial->SetShadingModel(MaterialShadingModel::TwoSided);
 	groundGridMeshMaterial->SetShader(groundGridMeshShader);
 	groundGridMeshMaterial->Init();
 

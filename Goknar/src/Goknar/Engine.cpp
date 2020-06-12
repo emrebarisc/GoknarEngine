@@ -35,7 +35,7 @@ Engine::Engine() : deltaTime_(0.f), elapsedTime_(0.f), application_(nullptr), ed
 	inputManager_ = new InputManager();
 	objectManager_ = new ObjectManager();
 	renderer_ = new Renderer();
-	//editor_ = new ImGuiEditor();
+	editor_ = new ImGuiEditor();
 	cameraManager_ = new CameraManager();
 
 	// TODO
@@ -47,7 +47,7 @@ Engine::~Engine()
 	glfwTerminate();
 
 	delete cameraManager_;
-	//delete editor_;
+	delete editor_;
 	delete renderer_;
 	delete objectManager_;
 	delete inputManager_;
@@ -101,11 +101,11 @@ void Engine::Init() const
 		controller_->SetupInputs();
 	}
 
-	//editor_->Init();
-	//currentTimePoint = std::chrono::steady_clock::now();
-	//elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	//GOKNAR_CORE_INFO("Editor Initialization: {} s.", elapsedTime);
-	//lastFrameTimePoint = currentTimePoint;
+	editor_->Init();
+	currentTimePoint = std::chrono::steady_clock::now();
+	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
+	GOKNAR_CORE_INFO("Editor Initialization: {} s.", elapsedTime);
+	lastFrameTimePoint = currentTimePoint;
 
 	renderer_->Init();
 	currentTimePoint = std::chrono::steady_clock::now();
@@ -140,7 +140,7 @@ void Engine::Run()
 		Tick(deltaTime_);
 
 		renderer_->Render();
-		//editor_->Tick(deltaTime_);
+		editor_->Tick(deltaTime_);
 		windowManager_->Update();
 
 		currentTimePoint = std::chrono::steady_clock::now();
