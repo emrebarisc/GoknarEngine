@@ -585,7 +585,7 @@ namespace tinyxml2
 		}
 
 		static const char* ReadBOM(const char* p, bool* hasBOM);
-		// p is the starting location,
+		// p_ is the starting location,
 		// the UTF-8 value of the entity will be placed in value, and length filled in.
 		static const char* GetCharacterRef(const char* p, char* value, int* length);
 		static void ConvertUTF32ToUTF8(unsigned long input, char* output, int* length);

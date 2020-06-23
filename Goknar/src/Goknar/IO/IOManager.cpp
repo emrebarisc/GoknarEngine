@@ -62,7 +62,7 @@ bool IOManager::ReadImage(const char* filePath, int& width, int& height, int& ch
 	return *rawDataBuffer != nullptr;
 }
 
-bool IOManager::WritePng(const char* filePath, int& width, int& height, int& channels, const unsigned char* rawDataBuffer)
+bool IOManager::WritePng(const char* filePath, int width, int height, int channels, const unsigned char* rawDataBuffer)
 {
 	return stbi_write_png(filePath, width, height, channels, rawDataBuffer, width * channels) == 1;
 }

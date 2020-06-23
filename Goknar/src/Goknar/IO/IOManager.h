@@ -13,7 +13,7 @@ public:
 	static bool WriteFile(const char* filePath, const char* rawTextBuffer);
 
 	static bool ReadImage(const char* filePath, int& width, int& height, int& channels, unsigned char** rawDataBuffer);
-	static bool WritePng(const char* filePath, int& width, int& height, int& channels, const unsigned char* rawDataBuffer);
+	static bool WritePng(const char* filePath, int width, int height, int channels, const unsigned char* rawDataBuffer);
 	static bool WritePpm(const char* filePath, int width, int height, const unsigned char* rawDataBuffer);
 protected:
 
