@@ -21,6 +21,10 @@ public:
         
     }
 
+    void Init() override;
+
+	void RenderShadowMap() override;
+
 protected:
 
 private:

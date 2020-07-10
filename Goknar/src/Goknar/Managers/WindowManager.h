@@ -25,6 +25,7 @@ public:
 	}
 
 	void Update();
+	void UpdateWindow();
 
 	void SetWindowWidth(int w);
 	void SetWindowHeight(int h);

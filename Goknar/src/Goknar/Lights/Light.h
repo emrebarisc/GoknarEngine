@@ -2,8 +2,11 @@
 #define __LIGHT_H__
 
 #include "Goknar/Math.h"
+#include "Goknar/Renderer/Types.h"
 
+class Camera;
 class Shader;
+class Texture;
 
 enum class LightMobility : uint8_t
 {
@@ -16,12 +19,11 @@ class GOKNAR_API Light
 public:
 	Light();
 
+	virtual ~Light();
+
 	virtual void SetShaderUniforms(const Shader* shader) const;
 
-    virtual ~Light()
-    {
-        
-    }
+	virtual void Init();
 
 	void SetPosition(const Vector3& position)
 	{
@@ -93,22 +95,53 @@ public:
 		isShadowEnabled_ = isShadowEnabled;
 	}
 
+	int GetShadowWidth()
+	{
+		return shadowWidth_;
+	}
+
+	int GetShadowHeight()
+	{
+		return shadowHeight_;
+	}
+
+	GEuint GetShadowMapFBO()
+	{
+		return shadowMapDepthFBO_;
+	}
+
+	virtual void RenderShadowMap() = 0;
+	Texture* GetShadowMapTexture()
+	{
+		return shadowMapTexture_;
+	}
+
+	Camera* GetShadowMapRenderCamera()
+	{
+		return shadowMapRenderCamera_;
+	}
+
 protected:
 
 	Vector3 position_;
 	Vector3 color_;
 
+	Texture* shadowMapTexture_;
+	Camera* shadowMapRenderCamera_;
+
 	std::string name_;
 
 	int id_;
 
+	int shadowWidth_;
+	int shadowHeight_;
+
 	float intensity_;
 
-	unsigned int shadowMappingFBO_;
+	GEuint shadowMapDepthFBO_;
 	bool isShadowEnabled_;
 
 private:
-
 	LightMobility mobility_;
 };
 

@@ -10,16 +10,13 @@
 class GOKNAR_API DirectionalLight : public Light
 {
 public:
-	DirectionalLight() : Light() 
-	{
-		id_ = ObjectIDManager::GetInstance()->GetAndIncreaseDirectionalLightID();
-		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT) + std::to_string(id_);
-	}
-
+	DirectionalLight();
 	virtual ~DirectionalLight() override
     {
         
     }
+
+	void Init() override;
 
 	void SetShaderUniforms(const Shader* shader) const;
 
@@ -30,8 +27,10 @@ public:
 
 	void SetDirection(const Vector3& direction)
 	{
-		direction_ = direction;
+		direction_ = direction.GetNormalized();
 	}
+
+	void RenderShadowMap() override;
 	
 private:
     Vector3 direction_;

@@ -36,6 +36,9 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* DIRECTION = "Direction";
 		const char* COVERAGE_ANGLE = "CoverageAngle";
 		const char* FALLOFF_ANGLE = "FalloffAngle";
+
+		const char* IS_CASTING_SHADOW = "IsCastingShadow";
+		const char* SHADOW_MAP = "ShadowMap";
 	}
 
 	inline namespace TEXTURE

@@ -9,6 +9,21 @@
 
 class Shader;
 
+enum class TextureTarget
+{
+	TEXTURE_1D = GL_TEXTURE_1D,
+	TEXTURE_2D = GL_TEXTURE_2D,
+	TEXTURE_3D = GL_TEXTURE_3D,
+	TEXTURE_RECTANGLE = GL_TEXTURE_RECTANGLE,
+	TEXTURE_BUFFER = GL_TEXTURE_BUFFER,
+	TEXTURE_CUBE_MAP = GL_TEXTURE_CUBE_MAP,
+	TEXTURE_1D_ARRAY = GL_TEXTURE_1D_ARRAY,
+	TEXTURE_2D_ARRAY = GL_TEXTURE_2D_ARRAY,
+	TEXTURE_CUBE_MAP_ARRAY = GL_TEXTURE_CUBE_MAP_ARRAY,
+	TEXTURE_2D_MULTISAMPLE = GL_TEXTURE_2D_MULTISAMPLE,
+	TEXTURE_2D_MULTISAMPLE_ARRAY = GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+};
+
 enum class TextureWrapping
 {
 	REPEAT = GL_REPEAT,
@@ -19,6 +34,7 @@ enum class TextureWrapping
 
 enum class TextureMinFilter
 {
+	NONE = -1,
 	NEAREST = GL_NEAREST,
 	LINEAR = GL_LINEAR,
 	NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST,
@@ -29,8 +45,49 @@ enum class TextureMinFilter
 
 enum class TextureMagFilter
 {
+	NONE = -1,
 	NEAREST = GL_NEAREST,
 	LINEAR = GL_LINEAR
+};
+
+enum class TextureFormat
+{
+	DEPTH = GL_DEPTH_COMPONENT,
+	DEPTH_STENCIL = GL_DEPTH_STENCIL,
+	RED = GL_RED,
+	RG = GL_RG,
+	RGB = GL_RGB,
+	RGBA = GL_RGBA
+};
+
+enum class TextureType
+{
+	UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
+	BYTE = GL_BYTE,
+	UNSIGNED_SHORT = GL_UNSIGNED_SHORT,
+	SHORT = GL_SHORT,
+	UNSIGNED_INT = GL_UNSIGNED_INT,
+	INT = GL_INT,
+	HALF_FLOAT = GL_HALF_FLOAT,
+	FLOAT = GL_FLOAT,
+	UNSIGNED_BYTE_3_3_2 = GL_UNSIGNED_BYTE_3_3_2,
+	UNSIGNED_BYTE_2_3_3_REV = GL_UNSIGNED_BYTE_2_3_3_REV,
+	UNSIGNED_SHORT_5_6_5 = GL_UNSIGNED_SHORT_5_6_5,
+	UNSIGNED_SHORT_5_6_5_REV = GL_UNSIGNED_SHORT_5_6_5_REV,
+	UNSIGNED_SHORT_4_4_4_4 = GL_UNSIGNED_SHORT_4_4_4_4,
+	UNSIGNED_SHORT_4_4_4_4_REV = GL_UNSIGNED_SHORT_4_4_4_4_REV,
+	UNSIGNED_SHORT_5_5_5_1 = GL_UNSIGNED_SHORT_5_5_5_1,
+	UNSIGNED_SHORT_1_5_5_5_REV = GL_UNSIGNED_SHORT_1_5_5_5_REV,
+	UNSIGNED_INT_8_8_8_8 = GL_UNSIGNED_INT_8_8_8_8,
+	UNSIGNED_INT_8_8_8_8_REV = GL_UNSIGNED_INT_8_8_8_8_REV,
+	UNSIGNED_INT_10_10_10_2 = GL_UNSIGNED_INT_10_10_10_2,
+	UNSIGNED_INT_2_10_10_10_REV = GL_UNSIGNED_INT_2_10_10_10_REV
+};
+
+enum class TextureDataType : unsigned char
+{
+	STATIC = 0,
+	DYNAMIC
 };
 
 class GOKNAR_API Texture
@@ -39,9 +96,20 @@ public:
 	Texture();
 	Texture(std::string imagePath);
 
-	~Texture() 
+	~Texture();
+
+	void Init();
+	void Bind(Shader* shader = nullptr) const;
+	void Unbind();
+
+	bool LoadTextureImage();
+
+	void ReadFromFramebuffer(GEuint framebuffer);
+	void Save(std::string path);
+
+	GEuint GetRendererTextureId()
 	{
-		delete[] buffer_;
+		return rendererTextureId_;
 	}
 
 	int GetWidth() const
@@ -49,10 +117,19 @@ public:
 		return width_;
 	}
 	
+	void SetWidth(int width)
+	{
+		width_ = width;
+	}
 
 	int GetHeight() const
 	{
 		return height_;
+	}
+
+	void SetHeight(int height)
+	{
+		height_ = height;
 	}
 
 	void SetTextureImagePath(const std::string& imagePath)
@@ -75,14 +152,44 @@ public:
 		name_ = name;
 	}
 
-	TextureWrapping GetTextureWrapping() const
+	TextureTarget GetTextureTarget() const
 	{
-		return textureWrapping_;
+		return textureTarget_;
 	}
 
-	void SetTextureWrapping(TextureWrapping textureWrapping)
+	void SetTextureTarget(TextureTarget textureTarget)
 	{
-		textureWrapping_ = textureWrapping;
+		textureTarget_ = textureTarget;
+	}
+
+	TextureWrapping GetTextureWrappingS() const
+	{
+		return textureWrappingS_;
+	}
+
+	void SetTextureWrappingS(TextureWrapping textureWrappingS)
+	{
+		textureWrappingS_ = textureWrappingS;
+	}
+
+	TextureWrapping GetTextureWrappingT() const
+	{
+		return textureWrappingT_;
+	}
+
+	void SetTextureWrappingT(TextureWrapping textureWrappingT)
+	{
+		textureWrappingT_ = textureWrappingT;
+	}
+
+	TextureWrapping GetTextureWrappingR() const
+	{
+		return textureWrappingR_;
+	}
+
+	void SetTextureWrappingR(TextureWrapping textureWrappingR)
+	{
+		textureWrappingR_ = textureWrappingR;
 	}
 
 	TextureMinFilter GetTextureMinFilter() const
@@ -105,10 +212,45 @@ public:
 		magFilter_ = magFilter;
 	}
 
-	bool LoadTextureImage();
+	TextureFormat GetTextureFormat()
+	{
+		return textureFormat_;
+	}
 
-	void Init();
-	void Bind(Shader* shader) const;
+	void SetTextureFormat(TextureFormat textureFormat)
+	{
+		textureFormat_ = textureFormat;
+	}
+
+	TextureDataType GetTextureDataType()
+	{
+		return textureDataType_;
+	}
+
+	void SetTextureDataType(TextureDataType textureDataType)
+	{
+		textureDataType_ = textureDataType;
+	}
+
+	TextureType GetTextureType()
+	{
+		return textureType_;
+	}
+
+	void SetTextureType(TextureType textureType)
+	{
+		textureType_ = textureType;
+	}
+
+	int GetChannels() const
+	{
+		return channels_;
+	}
+
+	unsigned char* GetBuffer()
+	{
+		return buffer_;
+	}
 
 protected:
 
@@ -118,9 +260,16 @@ private:
 	unsigned char* buffer_;
 	GEuint rendererTextureId_;
 
-	TextureWrapping textureWrapping_;
+	TextureTarget textureTarget_;
+	TextureWrapping textureWrappingS_;
+	TextureWrapping textureWrappingT_;
+	TextureWrapping textureWrappingR_;
 	TextureMinFilter minFilter_;
 	TextureMagFilter magFilter_;
+	TextureFormat textureFormat_;
+	TextureType textureType_;
+
+	TextureDataType textureDataType_;
 
 	int objectId_;
 	int width_;

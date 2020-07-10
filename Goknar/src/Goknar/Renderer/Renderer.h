@@ -14,6 +14,7 @@ class GOKNAR_API DynamicMesh;
 class GOKNAR_API StaticMesh;
 class GOKNAR_API DynamicMeshInstance;
 class GOKNAR_API StaticMeshInstance;
+class GOKNAR_API ShadowManager;
 
 class GOKNAR_API Renderer
 {
@@ -38,6 +39,21 @@ public:
 
 	void UpdateDynamicMeshVertex(const DynamicMesh* object, int vertexIndex, const VertexData& newVertexData);
 
+	ShadowManager* GetShadowManager()
+	{
+		return shadowManager_;
+	}
+
+	void SetIsRenderingOnlyDepth(bool isRenderingOnlyDepth)
+	{
+		isRenderingOnlyDepth_ = isRenderingOnlyDepth;
+	}
+
+	bool GetIsRenderingOnlyDepth()
+	{
+		return isRenderingOnlyDepth_;
+	}
+
 private:
 	void BindStaticVBO();
 	void BindDynamicVBO();
@@ -56,6 +72,8 @@ private:
 	std::vector<DynamicMeshInstance*> maskedDynamicMeshInstances_;
 	std::vector<DynamicMeshInstance*> translucentDynamicMeshInstances_;
 
+	ShadowManager* shadowManager_;
+
 	unsigned int totalStaticMeshVertexSize_;
 	unsigned int totalStaticMeshFaceSize_;
 	
@@ -70,6 +88,8 @@ private:
 
 	GEuint dynamicVertexBufferId_;
 	GEuint dynamicIndexBufferId_;
+
+	bool isRenderingOnlyDepth_;
 };
 
 #endif

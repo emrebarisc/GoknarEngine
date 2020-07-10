@@ -35,6 +35,9 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* DIRECTION;
 		extern const char* COVERAGE_ANGLE;
 		extern const char* FALLOFF_ANGLE;
+
+		extern const char* IS_CASTING_SHADOW;
+		extern const char* SHADOW_MAP;
 	}
 
 	inline namespace TEXTURE

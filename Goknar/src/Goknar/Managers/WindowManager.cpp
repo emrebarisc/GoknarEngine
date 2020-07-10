@@ -78,7 +78,7 @@ bool WindowManager::GetWindowShouldBeClosed()
 void WindowManager::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	engine->GetWindowManager()->SetWindowWidth(width);
-	engine->GetWindowManager()->SetWindowWidth(height);
+	engine->GetWindowManager()->SetWindowHeight(height);
 
 	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 	activeCamera->SetImageWidth(width);
@@ -94,11 +94,23 @@ void WindowManager::CloseWindow()
 void WindowManager::SetWindowWidth(int w)
 {
 	windowWidth_ = w;
+	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+	if (activeCamera && activeCamera->GetCameraType() == CameraType::Scene)
+	{
+		activeCamera->SetImageWidth(windowWidth_);
+		UpdateWindow();
+	}
 }
 
 void WindowManager::SetWindowHeight(int h)
 {
 	windowHeight_ = h;
+	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+	if (activeCamera && activeCamera->GetCameraType() == CameraType::Scene)
+	{
+		activeCamera->SetImageHeight(windowHeight_);
+		UpdateWindow();
+	}
 }
 
 void WindowManager::SetWindowTitle(const char *title)
@@ -152,4 +164,13 @@ void WindowManager::Update()
 {
 	glfwPollEvents();
 	glfwSwapBuffers(mainWindow_);
+}
+
+void WindowManager::UpdateWindow()
+{
+	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+	if (activeCamera)
+	{
+		glViewport(0, 0, activeCamera->GetImageWidth(), activeCamera->GetImageHeight());
+	}
 }

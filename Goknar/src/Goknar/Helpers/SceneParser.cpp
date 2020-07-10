@@ -120,7 +120,6 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		}
 
 		const char* cameraType = element->Attribute("type");
-
 		if (cameraType && std::string(cameraType) == "simple")
 		{
 			child = element->FirstChildElement("GazePoint");
@@ -181,13 +180,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 		stream >> up.x >> up.y >> up.z;
 		camera->SetUpVector(up);
 
-		// Set up the right vector and make forward and up vector perpenticular in case they are not
-		camera->SetRightVector(Vector3::Cross(camera->GetForwardVector().GetNormalized(), camera->GetUpVector().GetNormalized()));
-		camera->SetUpVector(Vector3::Cross(camera->GetRightVector().GetNormalized(), camera->GetForwardVector().GetNormalized()));
-		camera->SetForwardVector(Vector3::Cross(camera->GetUpVector().GetNormalized(), camera->GetRightVector().GetNormalized()));
-
-		camera->InitMatrices();
-
+		camera->Init();
 		engine->GetCameraManager()->AddCamera(camera);
 		element = element->NextSiblingElement("Camera");
 		stream.clear();
@@ -371,11 +364,11 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				std::string textureWrapping;
 				stream >> textureWrapping;
 
-				texture->SetTextureWrapping(textureWrapping == "Repeat" ? TextureWrapping::REPEAT :
+				texture->SetTextureWrappingS(textureWrapping == "Repeat" ? TextureWrapping::REPEAT :
 											textureWrapping == "MirroredRepeat" ? TextureWrapping::MIRRORED_REPEAT :
 											textureWrapping == "ClampToEdge" ? TextureWrapping::CLAMP_TO_EDGE :
 											textureWrapping == "ClampToBorder" ? TextureWrapping::CLAMP_TO_BORDER :
-											texture->GetTextureWrapping());
+											texture->GetTextureWrappingS());
 			}
 			stream.clear();
 
@@ -585,8 +578,8 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				if (mesh != nullptr)
 				{
 					scene->AddStaticMesh(mesh);
+					mesh->SetMaterial(scene->GetMaterial(materialId));
 				}
-				mesh->SetMaterial(scene->GetMaterial(materialId));
 				stream.clear();
 				element = element->NextSiblingElement("Mesh");
 				continue;

@@ -5,6 +5,7 @@
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
+#include "Goknar/Lights/ShadowManager/ShadowManager.h"
 #include "Goknar/Log.h"
 #include "Goknar/Material.h"
 #include "Goknar/Model/DynamicMesh.h"
@@ -27,12 +28,16 @@ Renderer::Renderer() :
 	totalDynamicMeshVertexSize_(0),
 	totalDynamicMeshFaceSize_(0),
 	totalStaticMeshCount_(0),
-	totalDynamicMeshCount_(0)
+	totalDynamicMeshCount_(0),
+	shadowManager_(nullptr),
+	isRenderingOnlyDepth_(false)
 {
 }
 
 Renderer::~Renderer()
 {
+	delete shadowManager_;
+
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
@@ -74,6 +79,8 @@ Renderer::~Renderer()
 
 void Renderer::Init()
 {
+	shadowManager_ = new ShadowManager();
+
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
@@ -220,9 +227,19 @@ void Renderer::SetBufferData()
 
 void Renderer::Render()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
-	glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+	Material* renderMaterial = nullptr;
+	if (!isRenderingOnlyDepth_)
+	{
+		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
+		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+	else
+	{
+		glClearColor(0.f, 0.f, 0.f, 1.f);
+		renderMaterial = shadowManager_->GetDepthBufferMaterial();
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
 
 	// Static Mesh Instances
 	{
@@ -235,7 +252,7 @@ void Renderer::Render()
 				if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
 
 				const Mesh* mesh = opaqueStaticMeshInstance->GetMesh();
-				opaqueStaticMeshInstance->Render();
+				opaqueStaticMeshInstance->Render(renderMaterial);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -246,7 +263,7 @@ void Renderer::Render()
 				if (!maskedStaticMeshInstance->GetIsRendered()) continue;
 
 				const Mesh* mesh = maskedStaticMeshInstance->GetMesh();
-				maskedStaticMeshInstance->Render();
+				maskedStaticMeshInstance->Render(renderMaterial);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -265,7 +282,7 @@ void Renderer::Render()
 				if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
 
 				const Mesh* mesh = opaqueDynamicMeshInstance->GetMesh();
-				opaqueDynamicMeshInstance->Render();
+				opaqueDynamicMeshInstance->Render(renderMaterial);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -276,7 +293,7 @@ void Renderer::Render()
 				if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
 
 				const Mesh* mesh = maskedDynamicMeshInstance->GetMesh();
-				maskedDynamicMeshInstance->Render();
+				maskedDynamicMeshInstance->Render(renderMaterial);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -290,7 +307,7 @@ void Renderer::Render()
 	{
 		if (!translucentStaticMeshInstance->GetIsRendered()) continue;
 		const Mesh* mesh = translucentStaticMeshInstance->GetMesh();
-		translucentStaticMeshInstance->Render();
+		translucentStaticMeshInstance->Render(renderMaterial);
 
 		int facePointCount = mesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -300,7 +317,7 @@ void Renderer::Render()
 	{
 		if (!translucentDynamicMeshInstance->GetIsRendered()) continue;
 		const Mesh* mesh = translucentDynamicMeshInstance->GetMesh();
-		translucentDynamicMeshInstance->Render();
+		translucentDynamicMeshInstance->Render(renderMaterial);
 
 		int facePointCount = mesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());

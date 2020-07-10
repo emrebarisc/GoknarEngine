@@ -157,8 +157,8 @@ void Shader::SetBool(const char* name, bool value)
 
 void Shader::SetInt(const char* name, int value) const
 {
-	GEint comolokko = glGetUniformLocation(programId_, name);
-	glUniform1i(glGetUniformLocation(programId_, name), value);
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniform1i(uniformLocation, value);
 }
 
 void Shader::SetFloat(const char* name, float value) const

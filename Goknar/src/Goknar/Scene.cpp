@@ -89,6 +89,36 @@ Scene::~Scene()
 
 void Scene::Init()
 {
+	for (auto object : staticPointLights_)
+	{
+		object->Init();
+	}
+
+	for (auto object : staticDirectionalLights_)
+	{
+		object->Init();
+	}
+
+	for (auto object : staticSpotLights_)
+	{
+		object->Init();
+	}
+
+	for (auto object : dynamicDirectionalLights_)
+	{
+		object->Init();
+	}
+
+	for (auto object : dynamicPointLights_)
+	{
+		object->Init();
+	}
+
+	for (auto object : dynamicSpotLights_)
+	{
+		object->Init();
+	}
+
 	for (Texture* texture : textures_)
 	{
 		texture->Init();
@@ -140,8 +170,8 @@ void Scene::DeleteStaticMesh(StaticMesh* staticMesh)
 {
 	bool found = false;
 
-	int staticMeshCount = staticMeshes_.size();
-	for (int staticMeshIndex = 0; staticMeshIndex < staticMeshCount; staticMeshIndex++)
+	size_t staticMeshCount = staticMeshes_.size();
+	for (size_t staticMeshIndex = 0; staticMeshIndex < staticMeshCount; staticMeshIndex++)
 	{
 		if (staticMeshes_[staticMeshIndex] == staticMesh)
 		{
@@ -159,8 +189,8 @@ void Scene::DeleteDynamicMesh(DynamicMesh* dynamicMesh)
 {
 	bool found = false;
 
-	int dynamicMeshCount = dynamicMeshes_.size();
-	for (int dynamicMeshIndex = 0; dynamicMeshIndex < dynamicMeshCount; dynamicMeshIndex++)
+	size_t dynamicMeshCount = dynamicMeshes_.size();
+	for (size_t dynamicMeshIndex = 0; dynamicMeshIndex < dynamicMeshCount; dynamicMeshIndex++)
 	{
 		if (dynamicMeshes_[dynamicMeshIndex] == dynamicMesh)
 		{
@@ -173,7 +203,7 @@ void Scene::DeleteDynamicMesh(DynamicMesh* dynamicMesh)
 	GOKNAR_ASSERT(!found, "Destroyed StaticMesh is not found in the scene!");
 }
 
-void Scene::AddPointLight(const PointLight* pointLight)
+void Scene::AddPointLight(PointLight* pointLight)
 {
 	switch (pointLight->GetLightMobility())
 	{
@@ -187,7 +217,7 @@ void Scene::AddPointLight(const PointLight* pointLight)
 
 }
 
-void Scene::AddDirectionalLight(const DirectionalLight* directionalLight)
+void Scene::AddDirectionalLight(DirectionalLight* directionalLight)
 {
 	switch (directionalLight->GetLightMobility())
 	{
@@ -201,7 +231,7 @@ void Scene::AddDirectionalLight(const DirectionalLight* directionalLight)
 }
 
 
-void Scene::AddSpotLight(const SpotLight* spotLight)
+void Scene::AddSpotLight(SpotLight* spotLight)
 {
 	switch (spotLight->GetLightMobility())
 	{

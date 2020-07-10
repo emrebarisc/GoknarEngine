@@ -16,8 +16,15 @@
 #include "Scene.h"
 #include "Renderer/Shader.h"
 #include "Renderer/ShaderBuilder.h"
+#include "Lights/ShadowManager/ShadowManager.h"
 #include "TimeDependentObject.h"
 #include "Managers/WindowManager.h"
+
+
+#include "Goknar/Lights/Light.h"
+#include "Goknar/Lights/DirectionalLight.h"
+#include "Goknar/Lights/PointLight.h"
+#include "Goknar/Lights/SpotLight.h"
 
 // OpenGL Libraries
 #include "GLFW/glfw3.h"
@@ -67,7 +74,6 @@ void Engine::Init() const
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Window Manager Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
-
 
 	inputManager_->Init();
 	currentTimePoint = std::chrono::steady_clock::now();
@@ -139,6 +145,7 @@ void Engine::Run()
 		application_->Run();
 		Tick(deltaTime_);
 
+		renderer_->GetShadowManager()->RenderShadowMaps();
 		renderer_->Render();
 		editor_->Tick(deltaTime_);
 		windowManager_->Update();

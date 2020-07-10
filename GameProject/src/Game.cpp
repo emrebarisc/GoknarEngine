@@ -1,39 +1,44 @@
-#include "Game.h"
+#include <Goknar.h>
 
-// Engine includes
-#include "Goknar.h"
 #include "Goknar/Scene.h"
 
-#include "Deceased.h"
-#include "Hyena.h"
-
 #include <chrono>
+
+#include "RenderToTextureObject.h"
+
+class Game : public Application
+{
+public:
+	Game();
+
+	~Game() = default;
+
+	void Run() override;
+
+private:
+	RenderToTextureObject* renderToTextureObject;
+};
 
 Game::Game() : Application()
 {
 	engine->SetApplication(this);
-	SetAppType(AppType::Application3D);
-
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
-	mainScene_->ReadSceneData("./Content/Scenes/2_5DScene.xml");
+	mainScene_->ReadSceneData("./Content/Scenes/ShadowMapScene.xml");
 
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_WARN("Scene is read in {} seconds.", elapsedTime);
 
-	deceased_ = new Deceased();
-	hyena_ = new Hyena();
-}
+	lastFrameTimePoint = currentTimePoint;
 
-Game::~Game()
-{
+	renderToTextureObject = new RenderToTextureObject();
 }
 
 void Game::Run()
 {
 }
 
-Application* CreateApplication()
+Application *CreateApplication()
 {
 	return new Game();
 }

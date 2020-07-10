@@ -30,6 +30,8 @@ public:
         
     }
 
+	void Init() override;
+
 	void SetShaderUniforms(const Shader* shader) const;
 
 	const Vector3& GetDirection() const
@@ -61,6 +63,8 @@ public:
 	{
 		falloffAngle_ = DEGREE_TO_RADIAN(falloffAngleInDegrees);
 	}
+
+	void RenderShadowMap() override;
 
 private:
     Vector3 direction_;

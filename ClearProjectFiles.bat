@@ -3,6 +3,8 @@ rmdir /Q/S .vs
 rmdir /Q/S bin
 rmdir /Q/S obj
 del /F/Q/S Goknar\Goknar.vcx*
+del /F/Q/S GameProject\GameProject.vcx*
+del /F/Q/S GameProject\GoknarEngine.dll
 del /F/Q/S Goknar\outsourced\GLAD\GLAD.vcx*
 rmdir /Q/S Goknar\outsourced\GLAD\bin
 rmdir /Q/S Goknar\outsourced\GLAD\obj

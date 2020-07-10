@@ -48,7 +48,8 @@ void main()
 })";
 }
 
-ShaderBuilder::ShaderBuilder()
+ShaderBuilder::ShaderBuilder() : 
+	isInstantiated_(false)
 {
 	shaderVersion_ = DEFAULT_SHADER_VERSION;
 }
@@ -61,6 +62,7 @@ void ShaderBuilder::Init()
 {
 	VS_BuildScene();
 	FS_BuildScene();
+	isInstantiated_ = true;
 }
 
 void ShaderBuilder::FS_BuildScene()
@@ -78,8 +80,8 @@ void ShaderBuilder::FS_BuildScene()
 
 	// Lights
 	{
-		const std::vector<const PointLight*>& staticPointLights = scene->GetStaticPointLights();
-		const std::vector<const PointLight*>& dynamicPointLights = scene->GetDynamicPointLights();
+		const std::vector<PointLight*>& staticPointLights = scene->GetStaticPointLights();
+		const std::vector<PointLight*>& dynamicPointLights = scene->GetDynamicPointLights();
 		if (staticPointLights.size() > 0 || dynamicPointLights.size() > 0)
 		{
 			fragmentShaderOutsideMain_ += GetPointLightColorFunctionText() + "\n";
@@ -99,8 +101,8 @@ void ShaderBuilder::FS_BuildScene()
 			}
 		}
 
-		const std::vector<const DirectionalLight*>& staticDirectionalLights = scene->GetStaticDirectionalLights();
-		const std::vector<const DirectionalLight*>& dynamicDirectionalLights = scene->GetDynamicDirectionalLights();
+		const std::vector<DirectionalLight*>& staticDirectionalLights = scene->GetStaticDirectionalLights();
+		const std::vector<DirectionalLight*>& dynamicDirectionalLights = scene->GetDynamicDirectionalLights();
 		if (staticDirectionalLights.size() > 0 || dynamicDirectionalLights.size() > 0)
 		{
 			fragmentShaderOutsideMain_ += GetDirectionalLightColorFunctionText() + "\n";
@@ -121,8 +123,8 @@ void ShaderBuilder::FS_BuildScene()
 			}
 		}
 
-		const std::vector<const SpotLight*>& staticSpotLights = scene->GetStaticSpotLights();
-		const std::vector<const SpotLight*>& dynamicSpotLights = scene->GetDynamicSpotLights();
+		const std::vector<SpotLight*>& staticSpotLights = scene->GetStaticSpotLights();
+		const std::vector<SpotLight*>& dynamicSpotLights = scene->GetDynamicSpotLights();
 		if (staticSpotLights.size() > 0 || dynamicSpotLights.size() > 0)
 		{
 			fragmentShaderOutsideMain_ += GetSpotLightColorFunctionText() + "\n";

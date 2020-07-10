@@ -5,6 +5,7 @@
 #include "Goknar/Matrix.h"
 
 class Component;
+class Material;
 class Mesh;
 
 class GOKNAR_API MeshInstance
@@ -61,7 +62,7 @@ public:
 		return worldTransformationMatrix_;
 	}
 
-	void Render() const;
+	void Render(Material* renderMaterial = nullptr) const;
 
 	void SetIsRendered(bool isRendered)
 	{

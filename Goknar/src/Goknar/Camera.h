@@ -10,6 +10,12 @@ enum class GOKNAR_API CameraProjection : unsigned char
 	Perspective
 };
 
+enum class GOKNAR_API CameraType : unsigned char
+{
+	Scene,
+	Shadow
+};
+
 class GOKNAR_API Camera
 {
 public:
@@ -19,15 +25,15 @@ public:
 		forwardVector_(Vector3::ForwardVector),
 		leftVector_(Vector3::LeftVector),
 		upVector_(Vector3::UpVector),
-		nearPlane_(0.1f),
-		nearDistance_(0.1f),
-		farDistance_(100.f),
-		imageWidth_(1024),
-		imageHeight_(768),
-		projection_(CameraProjection::Perspective)
+		nearPlane_(Vector4(-0.5f, 0.5f, -0.28125f, 0.28125f)),
+		nearDistance_(1.f),
+		farDistance_(10000.f),
+		imageWidth_(1600),
+		imageHeight_(900),
+		projection_(CameraProjection::Perspective),
+		cameraType_(CameraType::Scene)
 	{
-		SetProjectionMatrix();
-		LookAt();
+		Update();
 	}
 
 	Camera(const Vector3& position, const Vector3& forward, const Vector3& up);
@@ -49,13 +55,9 @@ public:
 			projectionMatrix_ = rhs->projectionMatrix_;
 			viewingMatrix_ = rhs->viewingMatrix_;
 		}
-		else
-		{
-			Camera();
-		}
 	}
 
-	~Camera()
+	virtual ~Camera()
 	{
 
 	}
@@ -125,6 +127,8 @@ public:
 	void SetImageWidth(int width)
 	{
 		imageWidth_ = width;
+		nearPlane_ = Vector4(-0.5f, 0.5f, -(float)imageHeight_ / imageWidth_ * 0.5f, (float)imageHeight_ / imageWidth_ * 0.5f);
+		Update();
 	}
 
 	int GetImageWidth() const
@@ -135,6 +139,8 @@ public:
 	void SetImageHeight(int height)
 	{
 		imageHeight_ = height;
+		nearPlane_ = Vector4(-0.5f, 0.5f, -(float)imageHeight_ / imageWidth_ * 0.5f, (float)imageHeight_ / imageWidth_ * 0.5f);
+		Update();
 	}
 
 	int GetImageHeight() const
@@ -170,12 +176,6 @@ public:
 	float GetFarDistance() const
 	{
 		return farDistance_;
-	}
-
-	void InitMatrices()
-	{
-		LookAt();
-		SetProjectionMatrix();
 	}
 
 	void SetProjectionMatrix()
@@ -223,6 +223,16 @@ public:
 		return projection_;
 	}
 
+	void SetCameraType(CameraType cameraType)
+	{
+		cameraType_ = cameraType;
+	}
+
+	CameraType GetCameraType() const
+	{
+		return cameraType_;
+	}
+
 protected:
 
 private:
@@ -244,6 +254,7 @@ private:
 	int imageWidth_, imageHeight_;
 
 	CameraProjection projection_;
+	CameraType cameraType_;
 };
 
 #endif

@@ -84,38 +84,38 @@ public:
 		return objects_[index];
 	}
 
-	void AddPointLight(const PointLight* pointLight);
+	void AddPointLight(PointLight* pointLight);
 
-	const std::vector<const PointLight*>& GetStaticPointLights() const
+	const std::vector<PointLight*>& GetStaticPointLights() const
 	{
 		return staticPointLights_;
 	}
 
-	const std::vector<const PointLight*>& GetDynamicPointLights() const
+	const std::vector<PointLight*>& GetDynamicPointLights() const
 	{
 		return dynamicPointLights_;
 	}
 
-	void AddDirectionalLight(const DirectionalLight* directionalLight);
+	void AddDirectionalLight(DirectionalLight* directionalLight);
 
-	const std::vector<const DirectionalLight*>& GetStaticDirectionalLights() const
+	const std::vector<DirectionalLight*>& GetStaticDirectionalLights() const
 	{
 		return staticDirectionalLights_;
 	}
 
-	const std::vector<const DirectionalLight*>& GetDynamicDirectionalLights() const
+	const std::vector<DirectionalLight*>& GetDynamicDirectionalLights() const
 	{
 		return dynamicDirectionalLights_;
 	}
 
-	void AddSpotLight(const SpotLight* spotLight);
+	void AddSpotLight(SpotLight* spotLight);
 
-	const std::vector<const SpotLight*>& GetStaticSpotLights() const
+	const std::vector<SpotLight*>& GetStaticSpotLights() const
 	{
 		return staticSpotLights_;
 	}
 
-	const std::vector<const SpotLight*>& GetDynamicSpotLights() const
+	const std::vector<SpotLight*>& GetDynamicSpotLights() const
 	{
 		return dynamicSpotLights_;
 	}
@@ -193,13 +193,13 @@ private:
     std::vector<DynamicMesh*> dynamicMeshes_;
 	std::vector<ObjectBase*> objects_;
 
-	std::vector<const PointLight*> staticPointLights_;
-	std::vector<const DirectionalLight*> staticDirectionalLights_;
-	std::vector<const SpotLight*> staticSpotLights_;
+	std::vector<PointLight*> staticPointLights_;
+	std::vector<DirectionalLight*> staticDirectionalLights_;
+	std::vector<SpotLight*> staticSpotLights_;
 
-	std::vector<const PointLight*> dynamicPointLights_;
-	std::vector<const DirectionalLight*> dynamicDirectionalLights_;
-	std::vector<const SpotLight*> dynamicSpotLights_;
+	std::vector<PointLight*> dynamicPointLights_;
+	std::vector<DirectionalLight*> dynamicDirectionalLights_;
+	std::vector<SpotLight*> dynamicSpotLights_;
 
 	Vector3 ambientLight_;
 

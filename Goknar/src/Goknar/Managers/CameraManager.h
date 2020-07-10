@@ -25,10 +25,7 @@ public:
 		}
 	}
 
-	void SetActiveCamera(Camera* camera)
-	{
-		activeCamera_ = camera;
-	}
+	void SetActiveCamera(Camera* camera);
 
 	Camera* GetActiveCamera() const
 	{

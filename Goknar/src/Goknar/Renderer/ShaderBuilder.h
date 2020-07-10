@@ -48,6 +48,11 @@ public:
 
 	void GetShaderForMaterial(const Material* material, std::string& vertexShader, std::string& fragmentShader);
 
+	bool GetIsInstatiated() const
+	{
+		return isInstantiated_;
+	}
+
 protected:
 
 private:
@@ -103,6 +108,8 @@ private:
 	std::string fragmentShaderVertexNormalText_;
 
 	std::string sceneFragmentShader_;
+
+	bool isInstantiated_;
 };
 
 #endif

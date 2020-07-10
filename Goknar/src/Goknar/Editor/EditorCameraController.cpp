@@ -20,11 +20,12 @@
 EditorCameraController::EditorCameraController() : 
 	ObjectBase(),
 	isRotatingTheCamera_(false),
-	isMovingCameraIn2D_(false)
+	isMovingCameraIn2D_(false),
+	activeCamera_(nullptr)
 {
 	SetTickable(false);
 
-	movementSpeed_ = 10.f;
+	movementSpeed_ = 50.f;
 	previousCursorPositionForRotating_ = Vector2(0.f, 0.f);
 	previousCursorPositionFor2DMovement_ = Vector2(0.f, 0.f);
 }
@@ -125,17 +126,17 @@ void EditorCameraController::OnMouseMiddleClickPressed()
 void EditorCameraController::MoveForward(float multiplier/* = 1.f*/)
 {
 	activeCamera_ = engine->GetCameraManager()->GetActiveCamera();
-	activeCamera_->SetPosition(activeCamera_->GetPosition() + activeCamera_->GetForwardVector() * engine->GetDeltaTime() * multiplier);
+	activeCamera_->MoveForward(engine->GetDeltaTime() * multiplier);
 }
 
 void EditorCameraController::MoveRight(float multiplier/* = 1.f*/)
 {
 	activeCamera_ = engine->GetCameraManager()->GetActiveCamera();
-	activeCamera_->SetPosition(activeCamera_->GetPosition() + activeCamera_->GetRightVector() * engine->GetDeltaTime() * multiplier);
+	activeCamera_->MoveRight(engine->GetDeltaTime() * multiplier);
 }
 
 void EditorCameraController::MoveUp(float multiplier/* = 1.f*/)
 {
 	activeCamera_ = engine->GetCameraManager()->GetActiveCamera();
-	activeCamera_->SetPosition(activeCamera_->GetPosition() + activeCamera_->GetUpVector() * engine->GetDeltaTime() * multiplier);
+	activeCamera_->MoveUpward(engine->GetDeltaTime() * multiplier);
 }
