@@ -13,7 +13,6 @@ uniform vec3 diffuseReflectance;
 uniform vec3 specularReflectance;
 uniform float phongExponent;
 uniform sampler2D DirectionalLight0ShadowMap;
-uniform sampler2D sampleTexture;
 
 vec3 diffuseColor;
 vec3 sceneAmbient = vec3(0.392157, 0.392157, 0.392157);
@@ -54,7 +53,7 @@ vec3 DirectionalLight0Intensity = vec3(0.750000, 0.742500, 0.622500);
 void main()
 {
 	fragmentColor = texture(DirectionalLight0ShadowMap, textureUV);
-
+	
 	//vec3 lightColor = sceneAmbient * ambientReflectance;
 	//lightColor += CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity);
 

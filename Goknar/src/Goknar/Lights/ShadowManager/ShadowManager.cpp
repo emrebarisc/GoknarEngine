@@ -34,10 +34,10 @@ ShadowManager::ShadowManager() :
 
 //layout(location = 0) out vec3 fragmentColor;
 //in vec3 fragmentPosition;
-void main()
-{
-	//fragmentColor = vec3(1.f, fragmentPosition.z / 10.f, 0.f);
-}
+//void main()
+//{
+//	//fragmentColor = vec3(1.f, fragmentPosition.z / 10.f, 0.f);
+//}
 )");
 		depthBufferMaterial_->SetShader(depthBufferShader_);
 		depthBufferMaterial_->SetShadingModel(MaterialShadingModel::TwoSided);

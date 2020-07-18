@@ -2,6 +2,7 @@
 
 #include "Light.h"
 
+#include "Goknar/Camera.h"
 #include "Goknar/Log.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderTypes.h"
@@ -24,8 +25,8 @@ Light::Light() :
 	shadowMapTexture_->SetWidth(shadowWidth_);
 	shadowMapTexture_->SetHeight(shadowHeight_);
 	shadowMapTexture_->SetTextureTarget(TextureTarget::TEXTURE_2D);
-	shadowMapTexture_->SetTextureMinFilter(TextureMinFilter::LINEAR);
-	shadowMapTexture_->SetTextureMagFilter(TextureMagFilter::LINEAR);
+	shadowMapTexture_->SetTextureMinFilter(TextureMinFilter::NEAREST);
+	shadowMapTexture_->SetTextureMagFilter(TextureMagFilter::NEAREST);
 	shadowMapTexture_->SetTextureWrappingS(TextureWrapping::REPEAT);
 	shadowMapTexture_->SetTextureWrappingT(TextureWrapping::REPEAT);
 	shadowMapTexture_->SetTextureFormat(TextureFormat::DEPTH);

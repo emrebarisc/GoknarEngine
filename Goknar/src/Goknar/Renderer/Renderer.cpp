@@ -81,11 +81,10 @@ void Renderer::Init()
 {
 	shadowManager_ = new ShadowManager();
 
-	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
+	//glDepthFunc(GL_LESS); // Already default
 
 	for (StaticMesh* staticMesh : staticMeshes_)
 	{
@@ -238,6 +237,7 @@ void Renderer::Render()
 	{
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 		renderMaterial = shadowManager_->GetDepthBufferMaterial();
+		//glClear(GL_DEPTH_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 

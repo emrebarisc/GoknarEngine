@@ -50,7 +50,7 @@ void Texture::ReadFromFramebuffer(GEuint framebuffer)
 	delete buffer_;
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	buffer_ = new unsigned char[width_ * height_ * channels_];
-	glReadPixels(0, 0, width_, height_, (int)textureFormat_, (int)textureType_, (GLvoid*)buffer_);
+	glReadPixels(0, 0, width_, height_, (int)textureFormat_, GL_UNSIGNED_BYTE, (GLvoid*)buffer_);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -99,9 +99,10 @@ void Texture::Init()
 	glBindTexture((int)textureTarget_, rendererTextureId_);
 
 	glTexImage2D((int)textureTarget_, 0, (int)textureFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 
-	if(minFilter_ != TextureMinFilter::NONE) glTexParameteri((int)textureTarget_, GL_TEXTURE_MIN_FILTER, (int)minFilter_);
-	if (magFilter_ != TextureMagFilter::NONE) glTexParameteri((int)textureTarget_, GL_TEXTURE_MAG_FILTER, (int)magFilter_);
+	glTexParameteri((int)textureTarget_, GL_TEXTURE_MIN_FILTER, (int)minFilter_);
+	glTexParameteri((int)textureTarget_, GL_TEXTURE_MAG_FILTER, (int)magFilter_);
 
 	glTexParameteri((int)textureTarget_, GL_TEXTURE_WRAP_S, (int)textureWrappingS_);
 	glTexParameteri((int)textureTarget_, GL_TEXTURE_WRAP_T, (int)textureWrappingT_);

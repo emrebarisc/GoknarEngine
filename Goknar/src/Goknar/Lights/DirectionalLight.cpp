@@ -24,6 +24,7 @@ void DirectionalLight::Init()
 	shadowMapRenderCamera_ = new Camera(Vector3(14.f, -14.f, 15.f), direction_, lightUpVector);
 	shadowMapRenderCamera_->SetProjection(CameraProjection::Orthographic);
 	shadowMapRenderCamera_->SetCameraType(CameraType::Shadow);
+	shadowMapRenderCamera_->SetFarDistance(100);
 	shadowMapRenderCamera_->Init();
 }
 

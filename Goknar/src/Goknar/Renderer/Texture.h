@@ -34,7 +34,7 @@ enum class TextureWrapping
 
 enum class TextureMinFilter
 {
-	NONE = -1,
+	NONE = GL_NONE,
 	NEAREST = GL_NEAREST,
 	LINEAR = GL_LINEAR,
 	NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST,
