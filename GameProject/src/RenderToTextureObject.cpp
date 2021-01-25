@@ -17,12 +17,18 @@ RenderToTextureObject::RenderToTextureObject() : ObjectBase()
 
 	Scene* scene = engine->GetApplication()->GetMainScene();
 
+	Texture* sampleTexture = new Texture();
+	sampleTexture->SetName("sampleTexture");
+	sampleTexture->SetTextureImagePath("./Content/Textures/CENG_Floor4.JPG");
+	scene->AddTexture(sampleTexture);
+
 	Shader* renderToTextureMeshShader = new Shader();
 	renderToTextureMeshShader->SetShaderType(ShaderType::SelfContained);
 	renderToTextureMeshShader->SetVertexShaderPath("./Content/Shaders/TextureVertexShader.glsl");
 	renderToTextureMeshShader->SetFragmentShaderPath("./Content/Shaders/TextureFragmentShader.glsl");
 
 	renderToTextureMeshShader->AddTexture(scene->GetStaticDirectionalLights()[0]->GetShadowMapTexture());
+	renderToTextureMeshShader->AddTexture(sampleTexture);
 	scene->AddShader(renderToTextureMeshShader);
 
 	Material* renderToTextureMeshMaterial = new Material();

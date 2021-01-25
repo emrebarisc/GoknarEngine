@@ -2,7 +2,7 @@
 
 
 out vec3 fragmentColor;
-in vec3 fragmentPosition;
+in vec4 fragmentPosition;
 in vec3 vertexNormal;
 uniform vec3 viewPosition;
 // Base Material Variables
@@ -26,7 +26,7 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	vec3 color = diffuseReflectance * max(0, normalDotLightDirection);
 
 	// To viewpoint vector
-	vec3 wo = viewPosition - fragmentPosition;
+	vec3 wo = viewPosition - vec3(fragmentPosition);
 	float woLength = length(wo);
 	wo /= woLength;
 

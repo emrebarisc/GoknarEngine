@@ -23,6 +23,9 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace LIGHT
 	{
+		extern const char* SHADOW_MAP_POSTFIX;
+		extern const char* VIEW_MATRIX_POSTFIX;
+
 		extern const char* DIRECTIONAL_LIGHT;
 		extern const char* POINT_LIGHT;
 		extern const char* SPOT_LIGHT;

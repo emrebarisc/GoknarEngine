@@ -154,9 +154,9 @@ void ShaderBuilder::FS_BuildScene()
 
 std::string ShaderBuilder::VS_GetVertexNormalText()
 {
-	std::string vertexNormalText = "\n";
+	std::string vertexNormalText = "\n\t";
 	vertexNormalText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
-	vertexNormalText += " = vec3(vec4(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::NORMAL) + ", 0.f) * transpose(inverse(" + SHADER_VARIABLE_NAMES::POSITIONING::TRANSFORMATION_MATRIX + ")));\n";
+	vertexNormalText += " = vec3(vec4(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::NORMAL) + ", 0.f) * transpose(inverse(" + SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX + " * " + SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX + ")));\n";
 
 	return vertexNormalText;
 }
@@ -168,7 +168,7 @@ std::string ShaderBuilder::FS_GetVariableTexts()
 	variableTexts += SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR;
 	variableTexts += ";\n";
 
-	variableTexts += "in vec3 ";
+	variableTexts += "in vec4 ";
 	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION;
 	variableTexts += ";\n";
 
@@ -201,9 +201,10 @@ void main()
 std::string ShaderBuilder::VS_GetMain()
 {
 	return R"(
-	vec4 fragmentPosition4Channel = vec4(position, 1.f) * transformationMatrix;
+	vec4 fragmentPosition4Channel = vec4(position, 1.f) * )" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX) + " * " + std::string(SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX) + ";" +
+R"(
 	gl_Position = projectionMatrix * viewMatrix * fragmentPosition4Channel;
-	fragmentPosition = vec3(fragmentPosition4Channel);
+	fragmentPosition = fragmentPosition4Channel;
 )";
 }
 
@@ -227,9 +228,12 @@ std::string ShaderBuilder::VS_GetVariableTexts()
 	variableTexts += SHADER_VARIABLE_NAMES::VERTEX::UV;
 	variableTexts += ";\n";
 
-	//variableTexts += "// Transformation matrix is calculated by multiplying \n// world and relative transformation matrices\n";
 	variableTexts += "uniform mat4 ";
-	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::TRANSFORMATION_MATRIX;
+	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX;
+	variableTexts += ";\n";
+
+	variableTexts += "uniform mat4 ";
+	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX;
 	variableTexts += ";\n";
 
 	variableTexts += "uniform mat4 ";
@@ -249,7 +253,7 @@ std::string ShaderBuilder::VS_GetVariableTexts()
 	variableTexts += ";\n";
 
 	variableTexts += R"(
-out vec3 fragmentPosition;
+out vec4 fragmentPosition;
 out vec3 vertexNormal;
 )";
 
@@ -294,14 +298,14 @@ std::string ShaderBuilder::GetPointLightColorFunctionText()
 vec3 CalculatePointLightColor(vec3 position, vec3 intensity)
 {
 	// To light vector
-	vec3 wi = position - fragmentPosition;
+	vec3 wi = position - vec3(fragmentPosition);
 	float wiLength = length(wi);
 	wi /= wiLength;
 
 	if(dot(vertexNormal, wi) < 0.f) return vec3(0.f, 0.f, 0.f);
 
 	// To viewpoint vector
-	vec3 wo = viewPosition - fragmentPosition;
+	vec3 wo = viewPosition - vec3(fragmentPosition);
 	float woLength = length(wo);
 	wo /= woLength;
 
@@ -364,7 +368,7 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	vec3 color = diffuseReflectance * max(0, normalDotLightDirection);
 
 	// To viewpoint vector
-	vec3 wo = viewPosition - fragmentPosition;
+	vec3 wo = viewPosition - vec3(fragmentPosition);
 	float woLength = length(wo);
 	wo /= woLength;
 
@@ -419,14 +423,14 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 	vec3 specular = vec3(0.f, 0.f, 0.f);
 
 	// To light vector
-	vec3 wi = fragmentPosition - position;
+	vec3 wi = vec3(fragmentPosition) - position;
 	float wiLength = length(wi);
 	wi /= wiLength;
 
 	if(dot(vertexNormal, wi) < 0.f) return vec3(0.f, 0.f, 0.f);
 
 	// To viewpoint vector
-	vec3 wo = viewPosition - fragmentPosition;
+	vec3 wo = viewPosition - vec3(fragmentPosition);
 	float woLength = length(wo);
 	wo /= woLength;
 

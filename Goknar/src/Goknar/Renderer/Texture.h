@@ -137,6 +137,11 @@ public:
 		imagePath_ = imagePath;
 	}
 
+	const std::string& GetTextureImagePath() const
+	{
+		return imagePath_;
+	}
+
 	GEuint GetTextureObjectId() const
 	{
 		return objectId_;

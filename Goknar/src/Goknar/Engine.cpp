@@ -29,6 +29,8 @@
 // OpenGL Libraries
 #include "GLFW/glfw3.h"
 
+#define GOKNAR_EDITOR true
+
 GOKNAR_API Engine *engine;
 
 Engine::Engine() : deltaTime_(0.f), elapsedTime_(0.f), application_(nullptr), editor_(nullptr), controller_(nullptr)
@@ -42,7 +44,9 @@ Engine::Engine() : deltaTime_(0.f), elapsedTime_(0.f), application_(nullptr), ed
 	inputManager_ = new InputManager();
 	objectManager_ = new ObjectManager();
 	renderer_ = new Renderer();
-	//editor_ = new ImGuiEditor();
+#if GOKNAR_EDITOR
+	editor_ = new ImGuiEditor();
+#endif
 	cameraManager_ = new CameraManager();
 
 	// TODO
@@ -54,7 +58,9 @@ Engine::~Engine()
 	glfwTerminate();
 
 	delete cameraManager_;
+#if GOKNAR_EDITOR
 	delete editor_;
+#endif
 	delete renderer_;
 	delete objectManager_;
 	delete inputManager_;
@@ -107,11 +113,13 @@ void Engine::Init() const
 		controller_->SetupInputs();
 	}
 
-	//editor_->Init();
-	//currentTimePoint = std::chrono::steady_clock::now();
-	//elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	//GOKNAR_CORE_INFO("Editor Initialization: {} s.", elapsedTime);
-	//lastFrameTimePoint = currentTimePoint;
+#if GOKNAR_EDITOR
+	editor_->Init();
+	currentTimePoint = std::chrono::steady_clock::now();
+	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
+	GOKNAR_CORE_INFO("Editor Initialization: {} s.", elapsedTime);
+	lastFrameTimePoint = currentTimePoint;
+#endif
 
 	renderer_->Init();
 	currentTimePoint = std::chrono::steady_clock::now();
@@ -147,7 +155,10 @@ void Engine::Run()
 
 		renderer_->GetShadowManager()->RenderShadowMaps();
 		renderer_->Render();
-		//editor_->Tick(deltaTime_);
+
+#if GOKNAR_EDITOR
+		editor_->Tick(deltaTime_);
+#endif
 		windowManager_->Update();
 
 		currentTimePoint = std::chrono::steady_clock::now();
@@ -256,4 +267,6 @@ void Engine::SetShaderEngineVariables(Shader* shader)
 {
 	shader->SetFloat(SHADER_VARIABLE_NAMES::TIMING::DELTA_TIME, deltaTime_);
 	shader->SetFloat(SHADER_VARIABLE_NAMES::TIMING::ELAPSED_TIME, elapsedTime_);
+
+	renderer_->SetShaderShadowVariables(shader);
 }

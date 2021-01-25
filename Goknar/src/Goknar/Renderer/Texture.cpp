@@ -112,8 +112,8 @@ void Texture::Init()
 	{
 		glGenerateMipmap((int)textureTarget_);
 	}
-		
-	//glBindTexture((int)textureTarget_, 0);
+	
+	glBindTexture((int)textureTarget_, 0);
 }
 
 void Texture::Bind(Shader* shader) const

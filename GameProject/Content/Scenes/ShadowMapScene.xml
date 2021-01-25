@@ -94,7 +94,7 @@
       <WorldScaling>1.0 1.0 1.0</WorldScaling>
       <Mesh>0</Mesh>
     </StaticMeshObject>
-    <StaticMeshObject id = "1">
+    <StaticMeshObject id = "2">
       <Name>Wall</Name>
       <PivotPoint>0 0 0</PivotPoint>
       <RelativePosition>0 0 0</RelativePosition>
@@ -105,7 +105,7 @@
       <WorldScaling>1.0 1.0 1.0</WorldScaling>
       <Mesh>1</Mesh>
     </StaticMeshObject>
-    <StaticMeshObject id = "2">
+    <StaticMeshObject id = "3">
       <Name>Wall</Name>
       <PivotPoint>0 0 0</PivotPoint>
       <RelativePosition>0 0 0</RelativePosition>
@@ -116,7 +116,7 @@
       <WorldScaling>1.0 1.0 1.0</WorldScaling>
       <Mesh>1</Mesh>
     </StaticMeshObject>
-    <StaticMeshObject id = "3">
+    <StaticMeshObject id = "4">
       <Name>Cube</Name>
       <PivotPoint>0 0 0</PivotPoint>
       <RelativePosition>0 0 0</RelativePosition>
@@ -127,7 +127,7 @@
       <WorldScaling>1.0 1.0 1.0</WorldScaling>
       <Mesh>2</Mesh>
     </StaticMeshObject>
-    <StaticMeshObject id = "3">
+    <StaticMeshObject id = "5">
       <Name>Cylinder</Name>
       <PivotPoint>0 0 0</PivotPoint>
       <RelativePosition>0 0 0</RelativePosition>

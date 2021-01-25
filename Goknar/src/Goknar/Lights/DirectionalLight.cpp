@@ -13,7 +13,7 @@ DirectionalLight::DirectionalLight() : Light()
 {
 	id_ = ObjectIDManager::GetInstance()->GetAndIncreaseDirectionalLightID();
 	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT) + std::to_string(id_);
-	shadowMapTexture_->SetName(name_ + "ShadowMap");
+	shadowMapTexture_->SetName(name_ + LIGHT::SHADOW_MAP_POSTFIX);
 }
 
 void DirectionalLight::Init()
@@ -21,7 +21,7 @@ void DirectionalLight::Init()
 	Light::Init();
 
 	Vector3 lightUpVector = Vector3::Cross(Vector3::Cross(direction_, Vector3::UpVector).GetNormalized(), direction_).GetNormalized();
-	shadowMapRenderCamera_ = new Camera(Vector3(14.f, -14.f, 15.f), direction_, lightUpVector);
+	shadowMapRenderCamera_ = new Camera(direction_ * -100.f, direction_, lightUpVector);
 	shadowMapRenderCamera_->SetProjection(CameraProjection::Orthographic);
 	shadowMapRenderCamera_->SetCameraType(CameraType::Shadow);
 	shadowMapRenderCamera_->SetFarDistance(100);
@@ -38,6 +38,15 @@ void DirectionalLight::SetShaderUniforms(const Shader* shader) const
 
 	std::string isCastingShadowName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW;
 	shader->SetInt(isCastingShadowName.c_str(), isShadowEnabled_);
+	shader->SetInt(shadowMapTexture_->GetName().c_str(), shadowMapTexture_->GetRendererTextureId());
+
+	Matrix biasedViewMatrix = shadowMapRenderCamera_->GetViewingMatrix() * 
+		Matrix(	0.5, 0.0, 0.0, 0.0,
+				0.0, 0.5, 0.0, 0.0,
+				0.0, 0.0, 0.5, 0.0,
+				0.5, 0.5, 0.5, 1.0);
+
+	shader->SetMatrix((name_ + LIGHT::VIEW_MATRIX_POSTFIX).c_str(), biasedViewMatrix);
 }
 
 void DirectionalLight::RenderShadowMap()

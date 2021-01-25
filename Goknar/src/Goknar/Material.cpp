@@ -1,4 +1,4 @@
-#include "pch.h"
+ #include "pch.h"
 
 #include "Material.h"
 
@@ -9,7 +9,6 @@
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
-#include "Goknar/Renderer/Texture.h"
 
 Material::Material() : 
 	ambientReflectance_(Vector3::ZeroVector), 

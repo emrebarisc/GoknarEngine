@@ -54,6 +54,9 @@ public:
 		return isRenderingOnlyDepth_;
 	}
 
+	void BindShadowTextures(Shader* shader);
+	void SetShaderShadowVariables(Shader* shader);
+
 private:
 	void BindStaticVBO();
 	void BindDynamicVBO();

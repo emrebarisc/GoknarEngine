@@ -2,18 +2,26 @@
 
 #include "Renderer.h"
 
+#include "Texture.h"
+
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Lights/ShadowManager/ShadowManager.h"
 #include "Goknar/Log.h"
 #include "Goknar/Material.h"
+
+#include "Goknar/Lights/DirectionalLight.h"
+#include "Goknar/Lights/PointLight.h"
+#include "Goknar/Lights/SpotLight.h"
+
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Model/DynamicMeshInstance.h"
 #include "Goknar/Model/StaticMeshInstance.h"
 
 #include "Goknar/IO/IOManager.h"
+
 #include "Goknar/Renderer/Shader.h"
 
 #include <Windows.h>
@@ -81,10 +89,9 @@ void Renderer::Init()
 {
 	shadowManager_ = new ShadowManager();
 
-	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
 	glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_LESS); // Already default
+	glDepthFunc(GL_LEQUAL);
 
 	for (StaticMesh* staticMesh : staticMeshes_)
 	{
@@ -229,15 +236,16 @@ void Renderer::Render()
 	Material* renderMaterial = nullptr;
 	if (!isRenderingOnlyDepth_)
 	{
+		glDepthMask(GL_TRUE);
 		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
 		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	else
 	{
+		glDepthMask(GL_FALSE);
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 		renderMaterial = shadowManager_->GetDepthBufferMaterial();
-		//glClear(GL_DEPTH_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
@@ -411,6 +419,30 @@ void Renderer::UpdateDynamicMeshVertex(const DynamicMesh* object, int vertexInde
 	//BindDynamicVBO();
 	int sizeOfVertexData = sizeof(VertexData);
 	glNamedBufferSubData(dynamicVertexBufferId_, object->GetRendererVertexOffset() + vertexIndex * sizeOfVertexData, sizeOfVertexData, &newVertexData);
+}
+
+void Renderer::BindShadowTextures(Shader* shader)
+{
+	Scene* scene = engine->GetApplication()->GetMainScene();
+	const std::vector<DirectionalLight*>& staticDirectionalLights = scene->GetStaticDirectionalLights();
+	size_t staticDirectionalLightCount = staticDirectionalLights.size();
+	for (size_t i = 0; i < staticDirectionalLightCount; i++)
+	{
+		DirectionalLight* directionalLight = staticDirectionalLights[i];
+		Texture* shadowTexture = directionalLight->GetShadowMapTexture();
+		shadowTexture->Bind(shader);
+	}
+}
+
+void Renderer::SetShaderShadowVariables(Shader* shader)
+{
+	Scene* scene = engine->GetApplication()->GetMainScene();
+	const std::vector<DirectionalLight*>& staticDirectionalLights = scene->GetStaticDirectionalLights();
+	size_t staticDirectionalLightCount = staticDirectionalLights.size();
+	for (size_t i = 0; i < staticDirectionalLightCount; i++)
+	{
+		staticDirectionalLights[i]->SetShaderUniforms(shader);
+	}
 }
 
 void Renderer::BindStaticVBO()

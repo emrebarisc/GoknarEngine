@@ -10,9 +10,11 @@
 #include "Goknar/IO/IOManager.h"
 #include "Goknar/Log.h"
 #include "Goknar/Matrix.h"
+#include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Texture.h"
 
+#include <string>
 
 #include <glad/glad.h>
 
@@ -104,13 +106,13 @@ void Shader::Init()
 	GEuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShaderId, 1, &vertexSource, 0);
 	glCompileShader(vertexShaderId);
-	ExitOnShaderIsNotCompiled(vertexShaderId, "Vertex shader compilation error!");
+	ExitOnShaderIsNotCompiled(vertexShaderId, (std::string("Vertex shader compilation error!(" + vertexShaderPath_ + ").")).c_str());
 
 	const GEchar* fragmentSource = (const GEchar*)fragmentShaderScript_.c_str();
 	GEuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShaderId, 1, &fragmentSource, 0);
 	glCompileShader(fragmentShaderId);
-	ExitOnShaderIsNotCompiled(fragmentShaderId, "Fragment shader compilation error!");
+	ExitOnShaderIsNotCompiled(fragmentShaderId, (std::string("Fragment shader compilation error!(") + fragmentShaderPath_ + ").").c_str());
 
 	programId_ = glCreateProgram();
 
@@ -128,6 +130,8 @@ void Shader::Init()
 	{
 		textures_[textureIndex]->Bind(this);
 	}
+
+	engine->GetRenderer()->BindShadowTextures(this);
 
 	Unbind();
 

@@ -24,6 +24,9 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace LIGHT
 	{
+		const char* SHADOW_MAP_POSTFIX = "ShadowMap";
+		const char* VIEW_MATRIX_POSTFIX = "ViewMatrix";
+
 		const char* DIRECTIONAL_LIGHT = "DirectionalLight";
 		const char* POINT_LIGHT = "PointLight";
 		const char* SPOT_LIGHT = "SpotLight";
@@ -55,7 +58,7 @@ inline namespace SHADER_VARIABLE_NAMES
 	{
 		const char* WORLD_TRANSFORMATION_MATRIX = "worldTransformationMatrix";
 		const char* RELATIVE_TRANSFORMATION_MATRIX = "relativeTransformationMatrix";
-		const char* MODEL_MATRIX = "transformationMatrix";
+		const char* MODEL_MATRIX = "modelMatrix";
 		const char* VIEW_MATRIX = "viewMatrix";
 		const char* PROJECTION_MATRIX = "projectionMatrix";
 		const char* TRANSFORMATION_MATRIX = "transformationMatrix";
