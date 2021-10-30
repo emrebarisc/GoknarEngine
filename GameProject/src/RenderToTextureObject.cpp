@@ -1,5 +1,7 @@
 #include "RenderToTextureObject.h"
 
+#include <cmath>
+
 #include "Goknar/Application.h"
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Engine.h"

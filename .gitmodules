@@ -1,9 +1,9 @@
-[submodule "Goknar/outsourced/spdlog"]
-	path = Goknar/outsourced/spdlog
+[submodule "Goknar/thirdparty/spdlog"]
+	path = Goknar/thirdparty/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "Goknar/outsourced/GLFW/GLFW"]
-	path = Goknar/outsourced/GLFW/GLFW
+[submodule "Goknar/thirdparty/GLFW/GLFW"]
+	path = Goknar/thirdparty/GLFW/GLFW
 	url = https://github.com/glfw/glfw
-[submodule "Goknar/outsourced/imgui/imgui"]
-	path = Goknar/outsourced/imgui/imgui
+[submodule "Goknar/thirdparty/imgui/imgui"]
+	path = Goknar/thirdparty/imgui/imgui
 	url = https://github.com/ocornut/imgui

@@ -5,13 +5,13 @@ rmdir /Q/S obj
 del /F/Q/S Goknar\Goknar.vcx*
 del /F/Q/S GameProject\GameProject.vcx*
 del /F/Q/S GameProject\GoknarEngine.dll
-del /F/Q/S Goknar\outsourced\GLAD\GLAD.vcx*
-rmdir /Q/S Goknar\outsourced\GLAD\bin
-rmdir /Q/S Goknar\outsourced\GLAD\obj
-del /F/Q/S Goknar\outsourced\GLFW\GLFW.vcx*
-rmdir /Q/S Goknar\outsourced\GLFW\bin
-rmdir /Q/S Goknar\outsourced\GLFW\obj
-del /F/Q/S Goknar\outsourced\ImGui\ImGui.vcx*
-rmdir /Q/S Goknar\outsourced\ImGui\obj
+del /F/Q/S Goknar\thirdparty\GLAD\GLAD.vcx*
+rmdir /Q/S Goknar\thirdparty\GLAD\bin
+rmdir /Q/S Goknar\thirdparty\GLAD\obj
+del /F/Q/S Goknar\thirdparty\GLFW\GLFW.vcx*
+rmdir /Q/S Goknar\thirdparty\GLFW\bin
+rmdir /Q/S Goknar\thirdparty\GLFW\obj
+del /F/Q/S Goknar\thirdparty\ImGui\ImGui.vcx*
+rmdir /Q/S Goknar\thirdparty\ImGui\obj
 
 PAUSE

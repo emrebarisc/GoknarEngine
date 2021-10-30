@@ -1,8 +1,6 @@
-#include <Goknar.h>
+#include "Goknar.h"
 
 #include "Goknar/Scene.h"
-
-#include <chrono>
 
 #include "RenderToTextureObject.h"
 
