@@ -1,4 +1,4 @@
-#include "pch.h"
+//#include "pch.h"
 
 #include "Goknar/Model/DynamicMesh.h"
 #include "DynamicMeshComponent.h"

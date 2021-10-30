@@ -1,8 +1,12 @@
-#include "pch.h"
+//#include "pch.h"
 
 #include "Camera.h"
 
-#include <gl\GLU.h>
+#ifdef GOKNAR_PLATFORM_WINDOWS
+#include <GL/GLU.h>
+#elif defined(GOKNAR_PLATFORM_UNIX)
+#include <GL/gl.h>
+#endif
 
 Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) : 
 	Camera()

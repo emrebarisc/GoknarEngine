@@ -4,9 +4,9 @@
 #include "Component.h"
 
 #include "Goknar/Core.h"
+#include "Goknar/Model/MeshInstance.h"
 
 class Mesh;
-class MeshInstance;
 class ObjectBase;
 
 class GOKNAR_API MeshComponent : public Component
@@ -29,7 +29,12 @@ public:
 	void SetIsRendered(bool isRendered);
 protected:
 	MeshComponent(ObjectBase* parent, MeshInstance* meshInstance);
-	inline void UpdateRelativeTransformationMatrix() override;
+	inline void UpdateRelativeTransformationMatrix() override
+	{
+		Component::UpdateRelativeTransformationMatrix();
+
+		meshInstance_->SetRelativeTransformationMatrix(relativeTransformationMatrix_);
+	}
 
 	MeshInstance* meshInstance_;
 private:

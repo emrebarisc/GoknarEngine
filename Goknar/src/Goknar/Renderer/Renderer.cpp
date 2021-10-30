@@ -1,4 +1,4 @@
-#include "pch.h"
+//#include "pch.h"
 
 #include "Renderer.h"
 
@@ -23,8 +23,6 @@
 #include "Goknar/IO/IOManager.h"
 
 #include "Goknar/Renderer/Shader.h"
-
-#include <Windows.h>
 
 Renderer::Renderer() :
 	staticVertexBufferId_(0),

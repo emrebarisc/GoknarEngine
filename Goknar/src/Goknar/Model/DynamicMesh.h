@@ -12,7 +12,7 @@ public:
 
 	virtual void Init();
 
-	inline void UpdateVertexDataAt(int index, const VertexData& vertexData);
+	void UpdateVertexDataAt(int index, const VertexData& vertexData);
 
 	inline int GetRendererVertexOffset() const
 	{

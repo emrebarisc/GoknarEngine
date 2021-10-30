@@ -1,4 +1,4 @@
-#include "pch.h"
+//#include "pch.h"
 
 #include "Math.h"
 #include "Matrix.h"
@@ -32,115 +32,14 @@ Vector2::Vector2(float vx, float vy): x(vx), y(vy)
 {
 }
 
-float Vector2::Length() const
-{
-	return sqrt(std::pow(x, 2) + std::pow(y, 2));
-}
-
-Vector2 Vector2::Cross(const Vector2& v1, const Vector2& v2)
-{
-	return Vector2(v1.x * v2.y - v1.y * v2.x);
-}
-
-float Vector2::Dot(const Vector2& v1, const Vector2& v2)
-{
-	return v1.x * v2.x + v1.y * v2.y;
-}
-
 void Vector2::Normalize()
 {
 	*this /= this->Length();
 }
 
-void Vector2::Normalize(Vector2& vec)
-{
-	float vecLen = vec.Length();
-	/*if(vecLen == 0) 
-	{
-	  //throw std::runtime_error("Error: Vector length is 0. Division by zero.");
-	  std::cerr << "Division by zero." << std::endl;
-	  return;
-	}*/
-
-	vec = vec / vecLen;
-}
-
 Vector2 Vector2::GetNormalized() const
 {
 	return *this / this->Length();
-}
-
-Vector2 Vector2::operator-() const
-{
-	return Vector2(-x, -y);
-}
-
-Vector2 Vector2::operator-(const Vector2& rhs) const
-{
-	return Vector2(x - rhs.x, y - rhs.y);
-}
-
-Vector2 Vector2::operator+(const Vector2& rhs) const
-{
-	return Vector2(x + rhs.x, y + rhs.y);
-}
-
-void Vector2::operator+=(const Vector2& rhs)
-{
-	x = x + rhs.x;
-	y = y + rhs.y;
-}
-
-Vector2 Vector2::operator*(float val) const
-{
-	return Vector2(x * val, y * val);
-}
-
-Vector2 operator*(float val, const Vector2& rhs)
-{
-	return Vector2(rhs.x * val, rhs.y * val);
-}
-
-Vector2 Vector2::operator*(const Vector2& rhs) const
-{
-	return Vector2(x * rhs.x, y * rhs.y);
-}
-
-Vector2 Vector2::operator/(float val) const
-{
-	return Vector2(x / val, y / val);
-}
-
-Vector2 Vector2::operator/(const Vector2& rhs) const
-{
-	return Vector2(x / rhs.x, y / rhs.y);
-}
-
-void Vector2::operator/=(const float& val)
-{
-	x /= val;
-	y /= val;
-}
-
-bool Vector2::operator==(const Vector2& val) const
-{
-	return x == val.x && y == val.y;
-}
-
-bool Vector2::operator!=(const Vector2& val) const
-{
-	return x != val.x && y != val.y;
-}
-
-std::ostream& operator<<(std::ostream& out, const Vector2& val)
-{
-	return out << "[" << val.x << ", " << val.y << "]";
-}
-
-void Vector2::Clamp(float min, float max)
-{
-	x = mathClamp(x, min, max);
-	y = mathClamp(y, min, max);
 }
 
 Vector2i::Vector2i(): x(0), y(0)
@@ -157,16 +56,6 @@ Vector2i::Vector2i(const Vector2& vec2f)
 	y = (int)vec2f.y;
 }
 
-inline Vector2i Vector2i::operator-(const Vector2i& rhs) const
-{
-	return Vector2i(x - rhs.x, y - rhs.y);
-}
-
-inline Vector2i Vector2i::operator+(const Vector2i& rhs) const
-{
-	return Vector2i(x + rhs.x, y + rhs.y);
-}
-
 Vector3::Vector3(): x(0), y(0), z(0)
 {
 }
@@ -179,35 +68,6 @@ Vector3::Vector3(float vx, float vy, float vz): x(vx), y(vy), z(vz)
 {
 }
 
-float Vector3::Length() const
-{
-	return sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2));
-}
-
-inline Vector3 Vector3::Cross(const Vector3& v1, const Vector3& v2)
-{
-	return Vector3(v1.y * v2.z - v1.z * v2.y,
-	               v1.z * v2.x - v1.x * v2.z,
-	               v1.x * v2.y - v1.y * v2.x);
-}
-
-Vector3 Vector3::Cross(const Vector3& rhs) const
-{
-	return Vector3(y * rhs.z - z * rhs.y,
-				   z * rhs.x - x * rhs.z,
-				   x * rhs.y - y * rhs.x);
-}
-
-inline float Vector3::Dot(const Vector3& v1, const Vector3& v2)
-{
-	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
-}
-
-float Vector3::Dot(const Vector3& rhs)
-{
-	return x * rhs.x + y * rhs.y + z * rhs.z;
-}
-
 void Vector3::Normalize()
 {
 	float length = this->Length();
@@ -215,114 +75,6 @@ void Vector3::Normalize()
 	{
 		*this /= length;
 	}
-}
-
-void Vector3::Normalize(Vector3& vec)
-{
-	try
-	{
-		float vecLen = vec.Length();
-		vec = vec / vecLen;
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << "Exception thrown: " << e.what() << std::endl;
-	}
-}
-
-Vector3 Vector3::GetNormalized() const
-{
-	return *this / this->Length();
-}
-
-Vector3 Vector3::GetNormalized(const Vector3& vec)
-{
-	return vec / vec.Length();
-}
-
-Vector3 Vector3::operator-() const
-{
-	return Vector3(-x, -y, -z);
-}
-
-Vector3 Vector3::operator-(const Vector3& rhs) const
-{
-	return Vector3(x - rhs.x, y - rhs.y, z - rhs.z);
-}
-
-Vector3 Vector3::operator+(const Vector3& rhs) const
-{
-	return Vector3(x + rhs.x, y + rhs.y, z + rhs.z);
-}
-
-void Vector3::operator+=(const Vector3& rhs)
-{
-	x = x + rhs.x;
-	y = y + rhs.y;
-	z = z + rhs.z;
-}
-
-void Vector3::operator-=(const Vector3& rhs)
-{
-	x = x - rhs.x;
-	y = y - rhs.y;
-	z = z - rhs.z;
-}
-
-Vector3 Vector3::operator*(float val) const 
-{
-	return Vector3(x * val, y * val, z * val);
-}
-
-void Vector3::operator*=(float val)
-{
-	x *= val;
-	y *= val;
-	z *= val;
-}
-
-Vector3 operator*(float val, const Vector3& rhs)
-{
-	return Vector3(rhs.x * val, rhs.y * val, rhs.z * val);
-}
-
-Vector3 Vector3::operator*(const Vector3& rhs) const
-{
-	return Vector3(x * rhs.x, y * rhs.y, z * rhs.z);
-}
-
-Vector3 Vector3::operator/(float val) const
-{
-	return Vector3(x / val, y / val, z / val);
-}
-
-Vector3 Vector3::operator/(const Vector3& rhs) const
-{
-	return Vector3(x / rhs.x, y / rhs.y, z / rhs.z);
-}
-
-void Vector3::operator/=(const float& val)
-{
-	x /= val;
-	y /= val;
-	z /= val;
-}
-
-bool Vector3::operator==(const Vector3& val) const
-{
-	return x == val.x && y == val.y && z == val.z;
-}
-
-bool Vector3::operator!=(const Vector3& val) const
-{
-	return x != val.x && y != val.y && z != val.z;
-}
-
-void Vector3::Clamp(int min, int max)
-{
-	x = mathClamp(x, min, max);
-	y = mathClamp(y, min, max);
-	z = mathClamp(z, min, max);
 }
 
 void Vector3::ConvertDegreeToRadian()
@@ -449,14 +201,8 @@ Vector4::Vector4(const Vector3& rhs, float value): x(rhs.x), y(rhs.y), z(rhs.z),
 {
 }
 
-std::ostream& operator<<(std::ostream& out, const Vector4& val)
-{
-	return out << "[" << val.x << ", " << val.y << ", " << val.z << ", " << val.w << "]";
-}
-
 Vector2::Vector2(const Vector3& rhs) : x(rhs.x), y(rhs.y)
 {
-    
 }
 
 Vector3::Vector3(const Vector4& rhs) : x(rhs.x), y(rhs.y), z(rhs.z)
@@ -486,19 +232,4 @@ void Math::LookAt(Matrix& viewingMatrix, const Vector3& position, const Vector3&
 		left.y, up.y, forward.y, 0.f,
 		left.z, up.z, forward.z, 0.f,
 		-left.x * position.x - left.y * position.y - left.z * position.z, -up.x * position.x - up.y * position.y - up.z * position.z, -forward.x * position.x - forward.y * position.y - forward.z * position.z, 1.f);
-}
-
-float Math::Determinant(const Vector3& a, const Vector3& b, const Vector3& c)
-{
-	return a.x * ((b.y * c.z) - (c.y * b.z))
-		+ a.y * ((c.x * b.z) - (b.x * c.z))
-		+ a.z * ((b.x * c.y) - (c.x * b.y));
-}
-
-float Math::Determinant(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& d)
-{
-	return a.x * Determinant(Vector3(b.y, b.z, b.w), Vector3(c.y, c.z, c.w), Vector3(d.y, d.z, d.w))
-		- a.y * Determinant(Vector3(b.x, b.z, b.w), Vector3(c.x, c.z, c.w), Vector3(d.x, d.z, d.w))
-		+ a.z * Determinant(Vector3(b.x, b.y, b.w), Vector3(c.x, c.y, c.w), Vector3(d.x, d.y, d.w))
-		- a.w * Determinant(Vector3(b.x, b.y, b.z), Vector3(c.x, c.y, c.z), Vector3(d.x, d.y, d.z));
 }

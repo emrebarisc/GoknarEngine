@@ -90,8 +90,49 @@ protected:
 	Matrix worldTransformationMatrix_;
 
 private:
-	inline void UpdateRelativeTransformationMatrix();
-	inline void UpdateWorldTransformationMatrix();
+	inline void UpdateRelativeTransformationMatrix()
+	{
+		// Since OpenGL uses column-major matriced and Goknar does not
+		// all matrix multiplications are done in reverse order
+		relativeTransformationMatrix_ = Matrix(1.f, 0.f, 0.f, pivotPoint_.x,
+											0.f, 1.f, 0.f, pivotPoint_.y,
+											0.f, 0.f, 1.f, pivotPoint_.z,
+											0.f, 0.f, 0.f, 1.f);
+
+		relativeTransformationMatrix_ *= Matrix(1.f, 0.f, 0.f, relativePosition_.x,
+												0.f, 1.f, 0.f, relativePosition_.y,
+												0.f, 0.f, 1.f, relativePosition_.z,
+												0.f, 0.f, 0.f, 1.f);
+
+		relativeTransformationMatrix_ *= Matrix::GetRotationMatrix(relativeRotation_);
+
+		relativeTransformationMatrix_ *= Matrix(relativeScaling_.x, 0.f, 0.f, 0.f,
+												0.f, relativeScaling_.y, 0.f, 0.f,
+												0.f, 0.f, relativeScaling_.z, 0.f,
+												0.f, 0.f, 0.f, 1.f);
+
+		relativeTransformationMatrix_ *= Matrix(1.f, 0.f, 0.f, -pivotPoint_.x,
+												0.f, 1.f, 0.f, -pivotPoint_.y,
+												0.f, 0.f, 1.f, -pivotPoint_.z,
+												0.f, 0.f, 0.f, 1.f);
+	}
+
+	inline void UpdateWorldTransformationMatrix()
+	{
+		// Since OpenGL uses column-major matriced and Goknar does not
+		// all matrix multiplications are done in reverse order
+		worldTransformationMatrix_ = Matrix(1.f, 0.f, 0.f, worldPosition_.x,
+											0.f, 1.f, 0.f, worldPosition_.y,
+											0.f, 0.f, 1.f, worldPosition_.z,
+											0.f, 0.f, 0.f, 1.f);
+
+		worldTransformationMatrix_ *= Matrix(worldScaling_.x, 0.f, 0.f, 0.f,
+											0.f, worldScaling_.y, 0.f, 0.f,
+											0.f, 0.f, worldScaling_.z, 0.f,
+											0.f, 0.f, 0.f, 1.f);
+
+		worldTransformationMatrix_ *= Matrix::GetRotationMatrix(worldRotation_);
+	}
 
 	Vector3 pivotPoint_;
 

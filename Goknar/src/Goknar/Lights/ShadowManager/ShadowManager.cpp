@@ -1,4 +1,4 @@
-#include "pch.h"
+//#include "pch.h"
 
 #include "ShadowManager.h"
 
@@ -18,49 +18,49 @@
 #include "Goknar/IO/IOManager.h"
 #include "Goknar/Renderer/Texture.h"
 
-ShadowManager::ShadowManager() : 
+ShadowManager::ShadowManager() :
 	depthBufferMaterial_(nullptr),
 	depthBufferShader_(nullptr)
 {
 	ShaderBuilder* shaderBuilder = ShaderBuilder::GetInstance();
 	if (shaderBuilder->GetIsInstatiated())
 	{
-//		depthBufferMaterial_ = new Material();
-//		depthBufferShader_ = new Shader();
-//		depthBufferShader_->SetShaderType(ShaderType::SelfContained);
-//		depthBufferShader_->SetVertexShaderScript(shaderBuilder->GetDefaultSceneVertexShader());
-//		//depthBufferShader_->SetFragmentShaderScript(shaderBuilder->GetDefaultSceneFragmentShader());
-////		depthBufferShader_->SetFragmentShaderScript("#version " + shaderBuilder->GetShaderVersion() + R"(
-////layout(location = 0) out vec3 fragmentColor;
-////in vec3 fragmentPosition;
-////void main()
-////{
-////	fragmentColor = vec3(gl_FragCoord.z);
-////	//fragmentColor = vec3(0.f, /*gl_FragDepth*/fragmentPosition.z / 10.f, 0.f);
-////}
-////)");
-//		
+		depthBufferMaterial_ = new Material();
+		depthBufferShader_ = new Shader();
+		depthBufferShader_->SetShaderType(ShaderType::SelfContained);
+		depthBufferShader_->SetVertexShaderScript(shaderBuilder->GetDefaultSceneVertexShader());
+		//depthBufferShader_->SetFragmentShaderScript(shaderBuilder->GetDefaultSceneFragmentShader());
 //		depthBufferShader_->SetFragmentShaderScript("#version " + shaderBuilder->GetShaderVersion() + R"(
-//float near = 0.1; 
-//float far  = 100.0; 
-//
-//layout(location = 0) out vec4 fragmentColor;  
-//
-//float LinearizeDepth(float depth) 
-//{
-//    float z = depth * 2.0 - 1.0; // back to NDC 
-//    return (2.0 * near * far) / (far + near - z * (far - near));	
-//}
-//
+//layout(location = 0) out vec3 fragmentColor;
+//in vec3 fragmentPosition;
 //void main()
-//{             
-//    float depth = LinearizeDepth(gl_FragCoord.z) / far; // divide by far for demonstration
-//    fragmentColor = vec4(vec3(depth), 1.0);
+//{
+//	fragmentColor = vec3(gl_FragCoord.z);
+//	//fragmentColor = vec3(0.f, /*gl_FragDepth*/fragmentPosition.z / 10.f, 0.f);
 //}
 //)");
-//		depthBufferMaterial_->SetShader(depthBufferShader_);
-//		depthBufferMaterial_->SetShadingModel(MaterialShadingModel::TwoSided);
-//		depthBufferMaterial_->Init();
+
+		depthBufferShader_->SetFragmentShaderScript("#version " + shaderBuilder->GetShaderVersion() + R"(
+float near = 0.1; 
+float far  = 100.0; 
+
+layout(location = 0) out vec4 fragmentColor;  
+
+float LinearizeDepth(float depth) 
+{
+    float z = depth * 2.0 - 1.0; // back to NDC 
+    return (2.0 * near * far) / (far + near - z * (far - near));	
+}
+
+void main()
+{             
+    float depth = LinearizeDepth(gl_FragCoord.z) / far; // divide by far for demonstration
+    fragmentColor = vec4(vec3(depth), 1.0);
+}
+)");
+		depthBufferMaterial_->SetShader(depthBufferShader_);
+		depthBufferMaterial_->SetShadingModel(MaterialShadingModel::TwoSided);
+		depthBufferMaterial_->Init();
 	}
 	else
 	{

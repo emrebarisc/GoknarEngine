@@ -1,9 +1,14 @@
-#include "pch.h"
+//#include "pch.h"
 
 #include "Texture.h"
 
 #include "glad/glad.h"
-#include <gl/GLU.h>
+
+#ifdef GOKNAR_PLATFORM_WINDOWS
+#include <GL/GLU.h>
+#elif defined(GOKNAR_PLATFORM_UNIX)
+#include <GL/gl.h>
+#endif
 
 #include "Goknar/IO/IOManager.h"
 #include "Goknar/Log.h"

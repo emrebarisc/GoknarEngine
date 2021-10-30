@@ -13,8 +13,15 @@
 		#define GOKNAR_API __declspec(dllimport)
 	#endif
 
+#elif defined(GOKNAR_PLATFORM_UNIX)
+	#ifndef GOKNAR_BUILD_DLL
+		#define GOKNAR_API __declspec(dllexport)
+	#else
+		#define GOKNAR_API __attribute__((visibility("default")))
+	#endif
+
 #else
-#error Game Engine only supports Windows!
+	#error Game Engine only supports Windows and Unix!
 #endif
 
 #ifdef GOKNAR_ENABLE_ASSERTS

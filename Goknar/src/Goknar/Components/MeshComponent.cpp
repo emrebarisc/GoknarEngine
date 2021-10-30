@@ -1,4 +1,4 @@
-#include "pch.h"
+//#include "pch.h"
 
 #include "MeshComponent.h"
 
@@ -36,11 +36,4 @@ void MeshComponent::SetIsRendered(bool isRendered)
 {
 	isRendered_ = isRendered;
 	meshInstance_->SetIsRendered(isRendered_);
-}
-
-void MeshComponent::UpdateRelativeTransformationMatrix()
-{
-	Component::UpdateRelativeTransformationMatrix();
-
-	meshInstance_->SetRelativeTransformationMatrix(relativeTransformationMatrix_);
 }

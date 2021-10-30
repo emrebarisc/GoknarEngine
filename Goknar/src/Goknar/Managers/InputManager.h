@@ -2,6 +2,7 @@
 #define __INPUTMANAGER_H__
 
 #include <functional>
+#include <unordered_map>
 
 #include "GLFW/glfw3.h"
 

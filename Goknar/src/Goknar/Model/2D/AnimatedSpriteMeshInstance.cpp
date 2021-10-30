@@ -1,8 +1,8 @@
-#include "pch.h"
+//#include "pch.h"
 
 #include "AnimatedSpriteMeshInstance.h"
 
-#include "Goknar/Model/2D/AnimatedspriteMesh.h"
+#include "Goknar/Model/2D/AnimatedSpriteMesh.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Renderer/Renderer.h"
 
