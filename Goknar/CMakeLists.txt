@@ -33,7 +33,7 @@ endif()
 
 
 add_subdirectory(thirdparty/GLAD/)
-add_subdirectory(thirdparty/GLFW/GLFW/)
+add_subdirectory(thirdparty/glfw)
 add_subdirectory(thirdparty/imgui/)
 add_subdirectory(thirdparty/spdlog/)
 add_subdirectory(thirdparty/TinyXML/)
@@ -54,7 +54,7 @@ target_include_directories(${APP_NAME} PUBLIC
 	src/Goknar
 	thirdparty
 	thirdparty/GLAD/GLAD/include
-	thirdparty/GLFW/GLFW/include
+	thirdparty/GLFW/include
 	thirdparty/imgui/imgui
 	thirdparty/spdlog/include
 	thirdparty/TinyXML/include)
