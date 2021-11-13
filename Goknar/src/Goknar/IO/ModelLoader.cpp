@@ -4,7 +4,7 @@
 
 #include "Goknar/Model/StaticMesh.h"
 
-StaticMesh* ModelLoader::LoadPlyFile(const char* path)
+StaticMesh* ModelLoader::LoadPlyFile(const std::string& path)
 {
 	std::ifstream file(path);
 	if (!file.is_open())

@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#include "Log.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -37,7 +39,10 @@ bool IOManager::ReadFile(const char* filePath, std::string& buffer)
         file.close();
     }
     else
+    {
+        GOKNAR_CORE_ERROR("File is not found on {}.", filePath);
         return false;
+    }
 
     return true;
 }

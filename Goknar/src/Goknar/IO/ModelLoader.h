@@ -8,7 +8,7 @@ class ModelLoader
 public:
 	ModelLoader() = delete;
 
-	static StaticMesh* LoadPlyFile(const char* path);
+	static StaticMesh* LoadPlyFile(const std::string& path);
 
 protected:
 

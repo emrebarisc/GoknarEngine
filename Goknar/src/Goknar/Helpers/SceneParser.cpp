@@ -27,7 +27,7 @@
 
 #include "tinyxml2.h"
 
-void SceneParser::Parse(Scene* scene, char* filePath)
+void SceneParser::Parse(Scene* scene, const std::string& filePath)
 {
 	tinyxml2::XMLDocument xmlFile;
 	std::stringstream stream;
@@ -36,7 +36,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 
 	try
 	{
-		res = xmlFile.LoadFile(filePath);
+		res = xmlFile.LoadFile(filePath.c_str());
 		if (res)
 		{
 			throw std::runtime_error("Error: Scene XML file could not be loaded.");
@@ -353,7 +353,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				stream << child->GetText() << std::endl;
 				std::string textureImagePath;
 				stream >> textureImagePath;
-				texture->SetTextureImagePath(textureImagePath.c_str());
+				texture->SetTextureImagePath(ContentDir + textureImagePath);
 			}
 			stream.clear();
 
@@ -443,7 +443,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				stream << child->GetText() << std::endl;
 				std::string vertexShaderPath;
 				stream >> vertexShaderPath;
-				shader->SetVertexShaderPath(vertexShaderPath);
+				shader->SetVertexShaderPath(ContentDir + vertexShaderPath);
 			}
 
 			child = element->FirstChildElement("FragmentShaderPath");
@@ -452,7 +452,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				stream << child->GetText() << std::endl;
 				std::string fragmentShaderPath;
 				stream >> fragmentShaderPath;
-				shader->SetFragmentShaderPath(fragmentShaderPath);
+				shader->SetFragmentShaderPath(ContentDir + fragmentShaderPath);
 			}
 
 			scene->AddShader(shader);
@@ -574,7 +574,7 @@ void SceneParser::Parse(Scene* scene, char* filePath)
 				stream << child->GetText() << std::endl;
 				stream >> plyFilePath;
 
-				StaticMesh* mesh = ModelLoader::LoadPlyFile(plyFilePath.c_str());
+				StaticMesh* mesh = ModelLoader::LoadPlyFile(ContentDir + plyFilePath);
 				if (mesh != nullptr)
 				{
 					scene->AddStaticMesh(mesh);

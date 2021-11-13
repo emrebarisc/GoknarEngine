@@ -59,7 +59,10 @@ target_include_directories(${APP_NAME} PUBLIC
 	thirdparty/spdlog/include
 	thirdparty/TinyXML/include)
 
+target_compile_definitions(${APP_NAME} PUBLIC "CONTENT_DIR=\"${CMAKE_BINARY_DIR}/Content/\"")
+
 add_compile_definitions(GOKNAR_BUILD_DLL GOKNAR_ENABLE_ASSERTS GLFW_INCLUDE_NONE)
+
 target_precompile_headers(${APP_NAME} PRIVATE 
     <fstream> 
     <iostream>

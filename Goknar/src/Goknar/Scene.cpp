@@ -162,7 +162,7 @@ void Scene::SetShaderDynamicLightUniforms(const Shader* shader) const
 
 void Scene::ReadSceneData(char *filePath)
 {
-    SceneParser::Parse(this, filePath);
+    SceneParser::Parse(this, ContentDir + filePath);
 }
 
 // TODO: TEST

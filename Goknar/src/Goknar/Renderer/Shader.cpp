@@ -91,10 +91,19 @@ void Shader::Init()
 {
 	if (shaderType_ == ShaderType::Dependent || shaderType_ == ShaderType::SelfContained)
 	{
-		GOKNAR_ASSERT(((!vertexShaderPath_.empty() && !fragmentShaderPath_.empty()) || (!vertexShaderScript_.empty() && !fragmentShaderScript_.empty())), "No data to compile the shader! (No shader paths or scripts are given.");
+		GOKNAR_CORE_ASSERT(	(	(!vertexShaderPath_.empty() && !fragmentShaderPath_.empty()) ||
+								(!vertexShaderScript_.empty() && !fragmentShaderScript_.empty())
+					  		), "No data to compile the shader! (No shader paths or scripts are given.");
 
-		if(!vertexShaderPath_.empty()) IOManager::ReadFile(vertexShaderPath_.c_str(), vertexShaderScript_);
-		if(!fragmentShaderPath_.empty())IOManager::ReadFile(fragmentShaderPath_.c_str(), fragmentShaderScript_);
+		if(!vertexShaderPath_.empty())
+		{
+			bool isVertexShaderFound = IOManager::ReadFile(vertexShaderPath_.c_str(), vertexShaderScript_);
+		}
+
+		if(!fragmentShaderPath_.empty())
+		{
+			bool isFragmentShaderFound = IOManager::ReadFile(fragmentShaderPath_.c_str(), fragmentShaderScript_);
+		}
 	}
 	else
 	{

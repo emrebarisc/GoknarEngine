@@ -1,6 +1,4 @@
-#include <Goknar.h>
-
-#include "Airplane.h"
+#include "Goknar.h"
 #include "Goknar/Scene.h"
 
 #include <chrono>
@@ -15,8 +13,6 @@ public:
 	void Run() override;
 
 private:
-
-	Airplane* airplaneGameObject;
 };
 
 Game::Game() : Application()
@@ -35,11 +31,9 @@ Game::Game() : Application()
 
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_WARN("Scene is read in {} seconds.", elapsedTime);
+	GOKNAR_WARN("Scene is read in {} seconds.", elapsedTime);
 
 	lastFrameTimePoint = currentTimePoint;
-
-	//airplaneGameObject = new Airplane();
 }
 
 void Game::Run()

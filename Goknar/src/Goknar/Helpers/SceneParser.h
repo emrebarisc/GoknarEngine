@@ -8,7 +8,7 @@ class Scene;
 class GOKNAR_API SceneParser
 {
 public:
-	static void Parse(Scene* scene, char* filePath);
+	static void Parse(Scene* scene, const std::string& filePath);
 };
 
 #endif

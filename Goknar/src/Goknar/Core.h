@@ -1,9 +1,17 @@
 #ifndef __CORE_H__
 #define __CORE_H__
 
+#include <string>
+
 #ifdef _WIN32
 // Disable warnings on extern before template instantiation
 #pragma warning (disable : 4251)
+#endif
+
+#ifdef CONTENT_DIR
+	static const std::string ContentDir = CONTENT_DIR;
+#else
+	static const std::string ContentDir = "";
 #endif
 
 #ifdef GOKNAR_PLATFORM_WINDOWS
