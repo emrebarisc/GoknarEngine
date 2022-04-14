@@ -4,7 +4,7 @@ set(APP_NAME GOKNAR)
 
 project(${APP_NAME})
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 set(GAME_SOURCE)
 set(GAME_HEADER)
@@ -30,7 +30,6 @@ else()
     add_library(${APP_NAME} SHARED ${all_code_files})
     target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
 endif()
-
 
 add_subdirectory(thirdparty/GLAD/)
 add_subdirectory(thirdparty/glfw)
@@ -63,18 +62,20 @@ target_compile_definitions(${APP_NAME} PUBLIC "CONTENT_DIR=\"${CMAKE_BINARY_DIR}
 
 add_compile_definitions(GOKNAR_BUILD_DLL GOKNAR_ENABLE_ASSERTS GLFW_INCLUDE_NONE)
 
-target_precompile_headers(${APP_NAME} PRIVATE 
-    <fstream> 
-    <iostream>
-    <sstream>
-    <memory>
-    <limits>
-    <cmath>
-    <algorithm>
-    <functional>
-    <utility>
-    <stdexcept>
-    <chrono>
-    <string>
-    <vector>
-    <map>)
+#target_precompile_headers(${APP_NAME} PRIVATE 
+#    <fstream> 
+#    <iostream>
+#    <sstream>
+#    <memory>
+#    <limits>
+#    <cmath>
+#    <algorithm>
+#    <functional>
+#    <utility>
+#    <stdexcept>
+#    <chrono>
+#    <string>
+#    <vector>
+#    <map>)
+
+target_precompile_headers(${APP_NAME} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/src/pch.h>")
