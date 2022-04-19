@@ -23,11 +23,11 @@
 
   <Textures>
     <Texture>
-      <Path>./Content/Textures/T_RetroRadio.png</Path>
+      <Path>Textures/T_RetroRadio.png</Path>
     </Texture>
     <Texture>
       <Name>UITexture</Name>
-      <Path>./Content/Textures/T_UI.png</Path>
+      <Path>Textures/T_UI.png</Path>
     </Texture>
   </Textures>
 
@@ -37,10 +37,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Shaders/TextureVertexShader.glsl
+        Shaders/TextureVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Shaders/TextureFragmentShader.glsl
+        Shaders/TextureFragmentShader.glsl
       </FragmentShaderPath>
       <Model>
         Opaque
@@ -51,10 +51,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Shaders/UIVertexShader.glsl
+        Shaders/UIVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Shaders/UIFragmentShader.glsl
+        Shaders/UIFragmentShader.glsl
       </FragmentShaderPath>
       <Model>
         Opaque
@@ -86,22 +86,22 @@
     <Mesh id = "0">
       <Name>CubeBottomLeft</Name>
       <Material>0</Material>
-      <PLYPath>./Content/Meshes/Cube/CubeBottomLeft.ply</PLYPath>
+      <PLYPath>Meshes/Cube/CubeBottomLeft.ply</PLYPath>
     </Mesh>
     <Mesh id = "1">
       <Name>CubeBottomRight</Name>
       <Material>0</Material>
-      <PLYPath>./Content/Meshes/Cube/CubeBottomRight.ply</PLYPath>
+      <PLYPath>Meshes/Cube/CubeBottomRight.ply</PLYPath>
     </Mesh>
     <Mesh id = "2">
       <Name>CubeTopLeft</Name>
       <Material>0</Material>
-      <PLYPath>./Content/Meshes/Cube/CubeTopLeft.ply</PLYPath>
+      <PLYPath>Meshes/Cube/CubeTopLeft.ply</PLYPath>
     </Mesh>
     <Mesh id = "3">
       <Name>CubeTopRight</Name>
       <Material>0</Material>
-      <PLYPath>./Content/Meshes/Cube/CubeTopRight.ply</PLYPath>
+      <PLYPath>Meshes/Cube/CubeTopRight.ply</PLYPath>
     </Mesh>
 
     <Mesh id = "4">

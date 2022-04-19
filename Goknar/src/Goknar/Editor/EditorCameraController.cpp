@@ -1,4 +1,4 @@
-//#include "pch.h"
+#include "pch.h"
 
 #include "EditorCameraController.h"
 
@@ -25,7 +25,7 @@ EditorCameraController::EditorCameraController() :
 {
 	SetTickable(false);
 
-	movementSpeed_ = 50.f;
+	movementSpeed_ = 500.f;
 	previousCursorPositionForRotating_ = Vector2(0.f, 0.f);
 	previousCursorPositionFor2DMovement_ = Vector2(0.f, 0.f);
 }

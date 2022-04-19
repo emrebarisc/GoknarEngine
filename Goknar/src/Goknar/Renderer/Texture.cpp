@@ -1,4 +1,4 @@
-//#include "pch.h"
+#include "pch.h"
 
 #include "Texture.h"
 
@@ -42,8 +42,8 @@ Texture::Texture(std::string imagePath) : Texture()
 
 Texture::~Texture()
 {
-	delete[] buffer_;
 	glDeleteTextures(1, &rendererTextureId_);
+	delete[] buffer_;
 }
 
 void Texture::ReadFromFramebuffer(GEuint framebuffer)
@@ -87,7 +87,7 @@ void Texture::Init()
 	}
 	else if (!LoadTextureImage())
 	{
-		GOKNAR_CORE_ERROR("Texture file {0} could not be found!", imagePath_);
+		GOKNAR_CORE_ERROR("Texture file at {0} could not be found!", imagePath_);
 		return;
 	}
 
@@ -97,14 +97,14 @@ void Texture::Init()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
 	glGenTextures(1, &rendererTextureId_);
 	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
 	glBindTexture((int)textureTarget_, rendererTextureId_);
 
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
 	glTexImage2D((int)textureTarget_, 0, (int)textureFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glTexParameteri((int)textureTarget_, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 
 	glTexParameteri((int)textureTarget_, GL_TEXTURE_MIN_FILTER, (int)minFilter_);
 	glTexParameteri((int)textureTarget_, GL_TEXTURE_MAG_FILTER, (int)magFilter_);
@@ -119,6 +119,7 @@ void Texture::Init()
 	}
 	
 	glBindTexture((int)textureTarget_, 0);
+	EXIT_ON_GL_ERROR("Texture::Init");
 }
 
 void Texture::Bind(Shader* shader) const
@@ -130,6 +131,7 @@ void Texture::Bind(Shader* shader) const
 
 	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
 	glBindTexture((int)textureTarget_, rendererTextureId_);
+	EXIT_ON_GL_ERROR("Texture::Bind");
 }
 
 void Texture::Unbind()

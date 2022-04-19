@@ -32,13 +32,13 @@ private:
 #define GOKNAR_CORE_INFO(...)			::Log::GetCoreLogger()->info(__VA_ARGS__)
 #define GOKNAR_CORE_WARN(...)			::Log::GetCoreLogger()->warn(__VA_ARGS__)
 #define GOKNAR_CORE_ERROR(...)			::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define GOKNAR_CORE_FATAL(...)			::Log::GetCoreLogger()->fatal(__VA_ARGS__)
+#define GOKNAR_CORE_FATAL(...)			::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 // Client log macros
 #define GOKNAR_TRACE(...)			::Log::GetClientLogger()->trace(__VA_ARGS__)
 #define GOKNAR_INFO(...)			::Log::GetClientLogger()->info(__VA_ARGS__)
 #define GOKNAR_WARN(...)			::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define GOKNAR_ERROR(...)			::Log::GetClientLogger()->error(__VA_ARGS__)
-#define GOKNAR_FATAL(...)			::Log::GetClientLogger()->fatal(__VA_ARGS__)
+#define GOKNAR_FATAL(...)			::Log::GetClientLogger()->critical(__VA_ARGS__)
 
 #endif

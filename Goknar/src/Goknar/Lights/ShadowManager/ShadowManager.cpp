@@ -1,4 +1,4 @@
-//#include "pch.h"
+#include "pch.h"
 
 #include "ShadowManager.h"
 
@@ -26,6 +26,8 @@ ShadowManager::ShadowManager() :
 	if (shaderBuilder->GetIsInstatiated())
 	{
 		depthBufferMaterial_ = new Material();
+		engine->GetApplication()->GetMainScene()->AddMaterial(depthBufferMaterial_);
+		
 		depthBufferShader_ = new Shader();
 		depthBufferShader_->SetShaderType(ShaderType::SelfContained);
 		depthBufferShader_->SetVertexShaderScript(shaderBuilder->GetDefaultSceneVertexShader());
@@ -70,8 +72,6 @@ void main()
 
 ShadowManager::~ShadowManager()
 {
-	delete depthBufferMaterial_;
-	delete depthBufferShader_;
 }
 
 void ShadowManager::RenderShadowMaps()
@@ -102,8 +102,8 @@ void ShadowManager::RenderShadowMaps()
 		glViewport(0, 0, shadowMapTexture->GetWidth(), shadowMapTexture->GetHeight());
 		glBindFramebuffer(GL_FRAMEBUFFER, directionalLight->GetShadowMapFBO());
 		renderer->Render();
-		//shadowMapTexture->ReadFromFramebuffer(directionalLight->GetShadowMapFBO());
-		//shadowMapTexture->Save(std::string("./") + directionalLight->GetName() + "FrameBufferTexture.png");
+		// shadowMapTexture->ReadFromFramebuffer(directionalLight->GetShadowMapFBO());
+		// shadowMapTexture->Save(CONTENT_DIR + directionalLight->GetName() + "FrameBufferTexture.png");
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);

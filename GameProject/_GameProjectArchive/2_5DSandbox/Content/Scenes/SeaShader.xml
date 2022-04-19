@@ -27,10 +27,10 @@
 			SelfContained
 			</Type>
 			<VertexShaderPath>
-			./Content/Shaders/SeaVertexShader.glsl
+			Shaders/SeaVertexShader.glsl
 			</VertexShaderPath>
 			<FragmentShaderPath>
-			./Content/Shaders/SeaFragmentShader.glsl
+			Shaders/SeaFragmentShader.glsl
 			</FragmentShaderPath>
 			<Model>
 			Opaque
@@ -52,7 +52,7 @@
 		<Mesh id = "0">
 			<Name>Sea</Name>
 			<Material>0</Material>
-			<PLYPath>./Content/Meshes/Sea.ply</PLYPath>
+			<PLYPath>Meshes/Sea.ply</PLYPath>
 		</Mesh>
 	</Meshes>
 

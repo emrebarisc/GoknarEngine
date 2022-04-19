@@ -1,4 +1,4 @@
-//#include "pch.h"
+#include "pch.h"
 
 #include "ImGuiEditor.h"
 
@@ -10,6 +10,8 @@
 #include "Goknar/Managers/WindowManager.h"
 #include "Goknar/Managers/InputManager.h"
 #include "Goknar/Log.h"
+#include "Goknar/Editor/EditorGroundGrid.h"
+#include "Goknar/Model/MeshInstance.h"
 
 ImGuiEditor::ImGuiEditor() :
 	Editor(),
@@ -197,10 +199,38 @@ void ImGuiEditor::ShowMainMenu()
 
 		if (ImGui::BeginMenu("View"))
 		{
+			if (ImGui::MenuItem("Toggle Grid"))
+			{
+				editorGroundGrid_->SetIsRendered(!editorGroundGrid_->GetIsRendered());
+			}
 			if (ImGui::MenuItem(showLog_ ? MAIN_MENU_ACTIVEABLE_ITEMS::VIEW_LOG_ACTIVE : MAIN_MENU_ACTIVEABLE_ITEMS::VIEW_LOG_PASSIVE))
 			{
 				showLog_ = !showLog_;
 			}
+			// if (ImGui::MenuItem("Window Size"))
+			// {
+			// 	ImGui::Begin("About", &showAbout_, ImGuiWindowFlags_NoCollapse);
+			// 	static char widthChar[4] = "";
+			// 	static char heightChar[4] = "";
+			// 	ImGui::InputText("Width", widthChar, IM_ARRAYSIZE(widthChar));
+			// 	ImGui::InputText("Height", heightChar, IM_ARRAYSIZE(heightChar));
+			// 	if (ImGui::Button("Save"))
+			// 	{
+			// 		std::stringstream ss;
+			// 		ss << widthChar;
+			// 		float width;
+			// 		ss >> width;
+			// 		ss << heightChar;
+			// 		float height;
+			// 		ss >> height;
+
+			// 		engine->GetWindowManager()->SetWindowWidth(width);
+			// 		engine->GetWindowManager()->SetWindowHeight(height);
+			// 	}
+
+			// 	ImGui::End();
+			// }
+			
 			ImGui::EndMenu();
 		}
 

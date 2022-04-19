@@ -1,4 +1,4 @@
-//#include "pch.h"
+#include "pch.h"
 
 #include "Scene.h"
 
@@ -160,7 +160,7 @@ void Scene::SetShaderDynamicLightUniforms(const Shader* shader) const
 	}
 }
 
-void Scene::ReadSceneData(char *filePath)
+void Scene::ReadSceneData(const std::string& filePath)
 {
     SceneParser::Parse(this, ContentDir + filePath);
 }

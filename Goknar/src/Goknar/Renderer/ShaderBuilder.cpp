@@ -1,4 +1,4 @@
-//#include "pch.h"
+#include "pch.h"
 #include "ShaderBuilder.h"
 
 #include "Goknar/Application.h"

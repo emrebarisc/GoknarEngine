@@ -20,7 +20,7 @@ Bat::Bat() :
 {
 	SetTickable(true);
 
-	Texture* texture = new Texture("./Content/Sprites/ScaryMammal.png");
+	Texture* texture = new Texture("Sprites/ScaryMammal.png");
 	texture->SetName("texture0");
 	texture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	texture->SetTextureMagFilter(TextureMagFilter::NEAREST);
@@ -36,8 +36,8 @@ Bat::Bat() :
 	scene->AddMaterial(material);
 
 	Shader* shader = new Shader();
-	shader->SetVertexShaderPath("./Content/Shaders/2DVertexShader.glsl");
-	shader->SetFragmentShaderPath("./Content/Shaders/2DFragmentShader.glsl");
+	shader->SetVertexShaderPath("Shaders/2DVertexShader.glsl");
+	shader->SetFragmentShaderPath("Shaders/2DFragmentShader.glsl");
 	shader->SetShaderType(ShaderType::SelfContained);
 	shader->AddTexture(texture);
 	scene->AddShader(shader);

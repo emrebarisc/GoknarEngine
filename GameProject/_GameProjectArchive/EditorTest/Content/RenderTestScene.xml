@@ -25,20 +25,20 @@
   <Textures>
     <!--<Texture id="0">
       <Name>diffuseTexture</Name>
-      <Path>./Content/Meshes/Rock1/Textures/T_Rock1Diffuse.png</Path>
+      <Path>Meshes/Rock1/Textures/T_Rock1Diffuse.png</Path>
     </Texture>
     <Texture id="1">
       <Name>normalTexture</Name>
-      <Path>./Content/Meshes/Rock1/Textures/T_Rock1Normal.png</Path>
+      <Path>Meshes/Rock1/Textures/T_Rock1Normal.png</Path>
     </Texture>
     <Texture id="2">
       <Name>ambientOcclusionTexture</Name>
-      <Path>./Content/Meshes/Rock1/Textures/T_Rock1AmbienOcclusion.png</Path>
+      <Path>Meshes/Rock1/Textures/T_Rock1AmbienOcclusion.png</Path>
       <Wrapping>Repeat</Wrapping>
     </Texture>
     <Texture id="3">
       <Name>rougnessTexture</Name>
-      <Path>./Content/Meshes/Rock1/Textures/T_Rock1Roughness.png</Path>
+      <Path>Meshes/Rock1/Textures/T_Rock1Roughness.png</Path>
     </Texture>-->
   </Textures>
 
@@ -48,10 +48,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Shaders/GroundGridVertexShader.glsl
+        Shaders/GroundGridVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Shaders/GroundGridFragmentShader.glsl
+        Shaders/GroundGridFragmentShader.glsl
       </FragmentShaderPath>
     </Shader>
     <Shader id="1">
@@ -59,10 +59,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Shaders/Rock1VertexShader.glsl
+        Shaders/Rock1VertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Shaders/Rock1FragmentShader.glsl
+        Shaders/Rock1FragmentShader.glsl
       </FragmentShaderPath>
     </Shader>
     <Shader id="2">
@@ -119,12 +119,12 @@
     <!--<Mesh id = "1">
       <Name>Rock1_0</Name>
       <Material>1</Material>
-      <PLYPath>./Content/Meshes/Rock1/Rock1.ply</PLYPath>
+      <PLYPath>Meshes/Rock1/Rock1.ply</PLYPath>
     </Mesh>-->
     <Mesh id = "2">
       <Name>SimpleCube</Name>
       <Material>1</Material>
-      <PLYPath>./Content/Meshes/SimpleCube/SimpleCube.ply</PLYPath>
+      <PLYPath>Meshes/SimpleCube/SimpleCube.ply</PLYPath>
     </Mesh>
   </Meshes>
 

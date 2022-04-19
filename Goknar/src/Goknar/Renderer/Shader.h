@@ -38,12 +38,12 @@ public:
 
 	void SetVertexShaderPath(const std::string& vertexShaderPath)
 	{
-		vertexShaderPath_ = vertexShaderPath;
+		vertexShaderPath_ = ContentDir + vertexShaderPath;
 	}
 
 	void SetFragmentShaderPath(const std::string& fragmentShaderPath)
 	{
-		fragmentShaderPath_ = fragmentShaderPath;
+		fragmentShaderPath_ = ContentDir + fragmentShaderPath;
 	}
 
 	ShaderType GetShaderType() const

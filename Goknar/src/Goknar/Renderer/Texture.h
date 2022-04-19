@@ -134,7 +134,7 @@ public:
 
 	void SetTextureImagePath(const std::string& imagePath)
 	{
-		imagePath_ = imagePath;
+		imagePath_ = ContentDir + imagePath;
 	}
 
 	const std::string& GetTextureImagePath() const

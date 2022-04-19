@@ -1,4 +1,4 @@
-//#include "pch.h"
+#include "pch.h"
 
 #include "Renderer.h"
 
@@ -43,6 +43,8 @@ Renderer::Renderer() :
 Renderer::~Renderer()
 {
 	delete shadowManager_;
+
+	EXIT_ON_GL_ERROR("Renderer::~Renderer");
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
@@ -151,26 +153,7 @@ void Renderer::SetStaticBufferData()
 		baseVertex += staticMesh->GetVertexCount();
 		vertexStartingIndex += staticMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
 	}
-
-	// Vertex color
-	long long offset = 0;
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
-
-	// Vertex position
-	offset += sizeof(VertexData::color);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
-
-	// Vertex normal
-	offset += sizeof(VertexData::position);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
-
-	// Vertex UV
-	offset += sizeof(VertexData::normal);
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
+	SetAttribPointers();
 }
 
 void Renderer::SetDynamicBufferData()

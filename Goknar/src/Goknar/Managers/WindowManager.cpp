@@ -1,4 +1,4 @@
-//#include "pch.h"
+#include "pch.h"
 
 #include "WindowManager.h"
 
@@ -19,8 +19,8 @@ WindowManager::WindowManager()
 	windowHeight_ = 768;
 	windowTitle_ = "Goknar Engine";
 	mainMonitor_ = nullptr;
-	MSAAValue_ = 16;
-	isInFullscreen_ = false;
+	MSAAValue_ = 4;
+	isInFullscreen_ = true;
 	SetContextVersion(4, 6);
 }
 
@@ -47,18 +47,20 @@ void WindowManager::Init()
 
 	mainWindow_ = glfwCreateWindow(windowWidth_, windowHeight_, windowTitle_, mainMonitor_, 0);
 
-	glfwSetWindowSizeCallback(mainWindow_, WindowSizeCallback);
-
-	glfwSetInputMode(mainWindow_, GLFW_STICKY_KEYS, GL_TRUE);
-	SetVSync(true);
-	glfwMakeContextCurrent(mainWindow_);
-
-	const int gladResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	GOKNAR_CORE_ASSERT(gladResult, "Failed to initialize GLAD!.");
-
-	if (!mainWindow_)
+	if(mainWindow_)
 	{
-		std::cerr << "Window could not be created.\n" << std::endl;
+		glfwSetWindowSizeCallback(mainWindow_, WindowSizeCallback);
+
+		glfwSetInputMode(mainWindow_, GLFW_STICKY_KEYS, GL_TRUE);
+		SetVSync(true);
+		glfwMakeContextCurrent(mainWindow_);
+
+		const int gladResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		GOKNAR_CORE_ASSERT(gladResult, "Failed to initialize GLAD!.");
+	}
+	else
+	{
+		GOKNAR_CORE_FATAL("Window could not be created.\n");
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
@@ -132,6 +134,8 @@ void WindowManager::SetMSAA(int MSAAValue)
 
 	MSAAValue_ = MSAAValue;
 	glfwWindowHint(GLFW_SAMPLES, MSAAValue);
+
+	GOKNAR_CORE_INFO("MSAA Value is set to {}", MSAAValue_);
 }
 
 void WindowManager::SetContextVersion(int major, int minor)

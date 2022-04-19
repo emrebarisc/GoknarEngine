@@ -28,10 +28,10 @@
 
   <Textures>
     <Texture>
-      <Path>./Content/Textures/testTexture.jpg</Path>
+      <Path>Textures/testTexture.jpg</Path>
     </Texture>
     <Texture>
-      <Path>./Content/Textures/treesBusheShrums.png</Path>
+      <Path>Textures/treesBusheShrums.png</Path>
     </Texture>
   </Textures>
 
@@ -41,10 +41,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Shaders/TextureVertexShader.glsl
+        Shaders/TextureVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Shaders/TextureFragmentShader.glsl
+        Shaders/TextureFragmentShader.glsl
       </FragmentShaderPath>
       <Model>
         Opaque
@@ -55,10 +55,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Shaders/TextureVertexShader.glsl
+        Shaders/TextureVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Shaders/TextureFragmentShader.glsl
+        Shaders/TextureFragmentShader.glsl
       </FragmentShaderPath>
       <Model>
         Masked

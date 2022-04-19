@@ -1,4 +1,4 @@
-//#include "pch.h"
+#include "pch.h"
 
 #include "Editor.h"
 
@@ -21,6 +21,6 @@ Editor::~Editor()
 void Editor::Init()
 {
 	editorCameraController_ = new EditorCameraController();
-	//editorGroundGrid_ = new EditorGroundGrid();
-	//editorGroundGrid_->Init();
+	editorGroundGrid_ = new EditorGroundGrid();
+	editorGroundGrid_->Init();
 }

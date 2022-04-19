@@ -18,7 +18,7 @@ Game::Game() : Application()
 {
 	engine->SetApplication(this);
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
-	mainScene_->ReadSceneData("./Content/Scenes/GGJ2020.xml");
+	mainScene_->ReadSceneData("Scenes/GGJ2020.xml");
 
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();

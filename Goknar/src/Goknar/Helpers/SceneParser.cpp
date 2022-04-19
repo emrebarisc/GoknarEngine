@@ -1,4 +1,4 @@
-//#include "pch.h"
+#include "pch.h"
 
 #include "SceneParser.h"
 
@@ -39,7 +39,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 		res = xmlFile.LoadFile(filePath.c_str());
 		if (res)
 		{
-			throw std::runtime_error("Error: Scene XML file could not be loaded.");
+			throw std::runtime_error("Error: Scene XML file could not be loaded at " + filePath + ".");
 		}
 	}
 	catch (std::exception & exception)
@@ -353,7 +353,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				std::string textureImagePath;
 				stream >> textureImagePath;
-				texture->SetTextureImagePath(ContentDir + textureImagePath);
+				texture->SetTextureImagePath(textureImagePath);
 			}
 			stream.clear();
 
@@ -443,7 +443,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				std::string vertexShaderPath;
 				stream >> vertexShaderPath;
-				shader->SetVertexShaderPath(ContentDir + vertexShaderPath);
+				shader->SetVertexShaderPath(vertexShaderPath);
 			}
 
 			child = element->FirstChildElement("FragmentShaderPath");
@@ -452,7 +452,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				std::string fragmentShaderPath;
 				stream >> fragmentShaderPath;
-				shader->SetFragmentShaderPath(ContentDir + fragmentShaderPath);
+				shader->SetFragmentShaderPath(fragmentShaderPath);
 			}
 
 			scene->AddShader(shader);

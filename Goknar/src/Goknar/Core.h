@@ -38,6 +38,7 @@
 		if(!x) \
 		{ \
 			GOKNAR_ERROR("Assertion Failed: {0}", __VA_ARGS__); /*__debugbreak();*/ \
+			exit(EXIT_FAILURE); \
 		} \
 	}
 	#define GOKNAR_CORE_ASSERT(x, ...) \
@@ -45,23 +46,24 @@
 		if (!x)\
 		{ \
 			GOKNAR_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); /*__debugbreak();*/ \
+			exit(EXIT_FAILURE); \
 		} \
 	}
 #else
 	#define GOKNAR_ASSERT(x, ...) GOKNAR_WARN("Assertion is not enabled!");
-	#define GOKNAR_CORE_ASSERT(x, ...) ENGINE_WARN("Assertion is not enabled!");
+	#define GOKNAR_CORE_ASSERT(x, ...) GOKNAR_CORE_WARN("Assertion is not enabled!");
 #endif
 
 #define BUFFER_OFFSET(index) ((const void *) index)
 
-//#define EXIT_ON_GL_ERROR(errorMessage) \
-//{ \
-//	const GLenum errorValue = glGetError(); \
-//	if(errorValue != GL_NO_ERROR) \
-//	{ \
-//		fprintf(stderr, "%s: %s\n", errorMessage, gluErrorString(errorValue)); \
-//		exit(EXIT_FAILURE); \
-//	} \
-//}
+#define EXIT_ON_GL_ERROR(errorMessage) \
+{ \
+	const GLenum errorValue = glGetError(); \
+	if(errorValue != GL_NO_ERROR) \
+	{ \
+		GOKNAR_CORE_FATAL("{0}: {1}\n", errorMessage, "_.-^-._"/*gluErrorString(errorValue));*/); \
+		exit(EXIT_FAILURE); \
+	} \
+}
 
 #endif

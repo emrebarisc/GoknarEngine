@@ -24,7 +24,7 @@
 
   <Textures>
     <Texture>
-      <Path>./Content/Textures/T_Airplane.png</Path>
+      <Path>Textures/T_Airplane.png</Path>
     </Texture>
   </Textures>
 
@@ -34,10 +34,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Shaders/TextureVertexShader.glsl
+        Shaders/TextureVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Shaders/TextureFragmentShader.glsl
+        Shaders/TextureFragmentShader.glsl
       </FragmentShaderPath>
       <Model>
         Opaque
@@ -91,7 +91,7 @@
     <Mesh id = "0">
       <Name>AirPlane</Name>
       <Material>0</Material>
-      <PLYPath>./Content/Meshes/Airplane/Airplane.ply</PLYPath>
+      <PLYPath>Meshes/Airplane/Airplane.ply</PLYPath>
     </Mesh>
     <Mesh id = "1">
       <Name>Propeller</Name>
@@ -26867,7 +26867,7 @@
     <Mesh id = "5">
       <Name>AirPlane</Name>
       <Material>5</Material>
-      <PLYPath>./Content/Meshes/House/ForestHouse.ply</PLYPath>
+      <PLYPath>Meshes/House/ForestHouse.ply</PLYPath>
     </Mesh>
   </Meshes>
 

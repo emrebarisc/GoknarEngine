@@ -36,42 +36,44 @@
   <Textures>
     <Texture id="0">
       <Name>texture0</Name>
-      <Path>./Content/Village/Textures/T_Terrain.png</Path>
+      <MinFilter>LinearMipMapLinear</MinFilter>
+      <MagFilter>Linear</MagFilter>
+      <Path>Textures/T_Terrain.png</Path>
     </Texture>
     <Texture id="1">
       <Name>texture0</Name>
-      <Path>./Content/Village/Textures/T_TreeBranch.png</Path>
+      <Path>Textures/T_TreeBranch.png</Path>
     </Texture>
     <Texture id="2">
       <Name>texture0</Name>
-      <Path>./Content/Village/Textures/T_TreeBark.png</Path>
+      <Path>Textures/T_TreeBark.png</Path>
       <Wrapping>Repeat</Wrapping>
     </Texture>
     <Texture id="3">
       <Name>texture0</Name>
-      <Path>./Content/Village/Textures/T_SkySphere.jpg</Path>
+      <Path>Textures/T_SkySphere.jpg</Path>
     </Texture>
     <Texture id="4">
       <Name>texture0</Name>
-      <Path>./Content/Village/Textures/T_Grass.png</Path>
+      <Path>Textures/T_Grass.png</Path>
     </Texture>
     <Texture id="5">
       <Name>texture0</Name>
-      <Path>./Content/Village/Textures/T_Bush.png</Path>
+      <Path>Textures/T_Bush.png</Path>
     </Texture>
     <Texture id="6">
       <Name>texture0</Name>
-      <Path>./Content/Village/Textures/T_Rock.jpg</Path>
+      <Path>Textures/T_Rock.jpg</Path>
     </Texture>
 
     <!-- LOG CABIN -->
     <Texture id="7">
       <Name>diffuseTexture</Name>
-      <Path>./Content/Village/Textures/WoodenCabin/T_WoodenCabinDiffuse.jpg</Path>
+      <Path>Textures/WoodenCabin/T_WoodenCabinDiffuse.jpg</Path>
     </Texture>
     <Texture id="8">
       <Name>normalTexture</Name>
-      <Path>./Content/Village/Textures/WoodenCabin/T_WoodenCabinNormal.jpg</Path>
+      <Path>Textures/WoodenCabin/T_WoodenCabinNormal.jpg</Path>
     </Texture>
   </Textures>
 
@@ -81,10 +83,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Village/Shaders/TextureVertexShader.glsl
+        Shaders/TextureVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Village/Shaders/TextureFragmentShader.glsl
+        Shaders/TextureFragmentShader.glsl
       </FragmentShaderPath>
     </Shader>
     <Shader id="1">
@@ -92,10 +94,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Village/Shaders/TreeBranchesVertexShader.glsl
+        Shaders/TreeBranchesVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Village/Shaders/TreeBranchesFragmentShader.glsl
+        Shaders/TreeBranchesFragmentShader.glsl
       </FragmentShaderPath>
     </Shader>
     <Shader id="2">
@@ -103,10 +105,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Village/Shaders/TextureVertexShader.glsl
+        Shaders/TextureVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Village/Shaders/TextureFragmentShader.glsl
+        Shaders/TextureFragmentShader.glsl
       </FragmentShaderPath>
     </Shader>
     <Shader id="3">
@@ -114,10 +116,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Village/Shaders/OnlyDiffuseVertexShader.glsl
+        Shaders/OnlyDiffuseVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Village/Shaders/OnlyDiffuseFragmentShader.glsl
+        Shaders/OnlyDiffuseFragmentShader.glsl
       </FragmentShaderPath>
     </Shader>
     <Shader id="4">
@@ -125,10 +127,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Village/Shaders/GrassVertexShader.glsl
+        Shaders/GrassVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Village/Shaders/GrassFragmentShader.glsl
+        Shaders/GrassFragmentShader.glsl
       </FragmentShaderPath>
     </Shader>
     <Shader id="5">
@@ -136,10 +138,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Village/Shaders/GrassVertexShader.glsl
+        Shaders/GrassVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Village/Shaders/GrassFragmentShader.glsl
+        Shaders/GrassFragmentShader.glsl
       </FragmentShaderPath>
     </Shader>
     <Shader id="6">
@@ -147,10 +149,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Village/Shaders/TextureVertexShader.glsl
+        Shaders/TextureVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Village/Shaders/TextureFragmentShader.glsl
+        Shaders/TextureFragmentShader.glsl
       </FragmentShaderPath>
     </Shader>
     <Shader id="7">
@@ -158,10 +160,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Content/Village/Shaders/WoodenCabinVertexShader.glsl
+        Shaders/WoodenCabinVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Content/Village/Shaders/WoodenCabinFragmentShader.glsl
+        Shaders/WoodenCabinFragmentShader.glsl
       </FragmentShaderPath>
     </Shader>
   </Shaders>
@@ -267,42 +269,42 @@
     <Mesh id = "0">
       <Name>M_Terrain</Name>
       <Material>0</Material>
-      <PLYPath>./Content/Village/Meshes/Terrain/M_Terrain.ply</PLYPath>
+      <PLYPath>Meshes/Terrain/M_Terrain.ply</PLYPath>
     </Mesh>
     <Mesh id = "1">
       <Name>M_TreeBranches</Name>
       <Material>1</Material>
-      <PLYPath>./Content/Village/Meshes/Tree/M_TreeBranches.ply</PLYPath>
+      <PLYPath>Meshes/Tree/M_TreeBranches.ply</PLYPath>
     </Mesh>
     <Mesh id = "2">
       <Name>M_TreeBody</Name>
       <Material>2</Material>
-      <PLYPath>./Content/Village/Meshes/Tree/M_TreeBody.ply</PLYPath>
+      <PLYPath>Meshes/Tree/M_TreeBody.ply</PLYPath>
     </Mesh>
     <Mesh id = "3">
       <Name>M_SkySphere</Name>
       <Material>3</Material>
-      <PLYPath>./Content/Village/Meshes/SkySphere/M_SkySphere.ply</PLYPath>
+      <PLYPath>Meshes/SkySphere/M_SkySphere.ply</PLYPath>
    </Mesh>
     <Mesh id = "4">
       <Name>M_Grass</Name>
       <Material>4</Material>
-      <PLYPath>./Content/Village/Meshes/Grass/M_Grass.ply</PLYPath>
+      <PLYPath>Meshes/Grass/M_Grass.ply</PLYPath>
     </Mesh>
     <Mesh id = "5">
       <Name>M_Bush</Name>
       <Material>5</Material>
-      <PLYPath>./Content/Village/Meshes/Bush/M_Bush.ply</PLYPath>
+      <PLYPath>Meshes/Bush/M_Bush.ply</PLYPath>
     </Mesh>
     <Mesh id = "6">
       <Name>M_Rock</Name>
       <Material>6</Material>
-      <PLYPath>./Content/Village/Meshes/Rock/M_Rock.ply</PLYPath>
+      <PLYPath>Meshes/Rock/M_Rock.ply</PLYPath>
     </Mesh>
     <Mesh id = "7">
       <Name>M_WoodenCabin</Name>
       <Material>7</Material>
-      <PLYPath>./Content/Village/Meshes/WoodenCabin/M_WoodenCabin.ply</PLYPath>
+      <PLYPath>Meshes/WoodenCabin/M_WoodenCabin.ply</PLYPath>
     </Mesh>
   </Meshes>
   <Objects>

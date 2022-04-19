@@ -32,10 +32,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Shaders/TextureVertexShader.glsl
+        Shaders/TextureVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Shaders/TextureFragmentShader.glsl
+        Shaders/TextureFragmentShader.glsl
       </FragmentShaderPath>
       <Model>
         Opaque
@@ -46,10 +46,10 @@
         SelfContained
       </Type>
       <VertexShaderPath>
-        ./Shaders/TextureVertexShader.glsl
+        Shaders/TextureVertexShader.glsl
       </VertexShaderPath>
       <FragmentShaderPath>
-        ./Shaders/TextureFragmentShader.glsl
+        Shaders/TextureFragmentShader.glsl
       </FragmentShaderPath>
       <Model>
         Masked

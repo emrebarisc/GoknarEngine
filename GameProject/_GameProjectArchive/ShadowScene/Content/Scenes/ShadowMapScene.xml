@@ -63,22 +63,22 @@
     <Mesh id = "0">
       <Name>M_Floor</Name>
       <Material>0</Material>
-      <PLYPath>./Content/Meshes/Floor.ply</PLYPath>
+      <PLYPath>Meshes/Floor.ply</PLYPath>
     </Mesh>
     <Mesh id = "1">
       <Name>M_Wall</Name>
       <Material>0</Material>
-      <PLYPath>./Content/Meshes/Wall.ply</PLYPath>
+      <PLYPath>Meshes/Wall.ply</PLYPath>
     </Mesh>
     <Mesh id = "2">
       <Name>M_Cube</Name>
       <Material>1</Material>
-      <PLYPath>./Content/Meshes/Cube.ply</PLYPath>
+      <PLYPath>Meshes/Cube.ply</PLYPath>
     </Mesh>
     <Mesh id = "3">
       <Name>M_Cylinder</Name>
       <Material>2</Material>
-      <PLYPath>./Content/Meshes/CylinderWithAHole.ply</PLYPath>
+      <PLYPath>Meshes/CylinderWithAHole.ply</PLYPath>
     </Mesh>
   </Meshes>
 

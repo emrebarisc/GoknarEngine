@@ -1,4 +1,4 @@
-//#include "pch.h"
+#include "pch.h"
 
 // Goknar Libraries
 #include "Engine.h"
@@ -55,21 +55,20 @@ Engine::Engine() : deltaTime_(0.f), elapsedTime_(0.f), application_(nullptr), ed
 
 Engine::~Engine()
 {
-	glfwTerminate();
-
+	delete renderer_;
 	delete cameraManager_;
 #if GOKNAR_EDITOR
 	delete editor_;
 #endif
-	delete renderer_;
 	delete objectManager_;
 	delete inputManager_;
-	delete windowManager_;
 	delete application_;
 
 	// Delete singletons
 	delete ObjectIDManager::GetInstance();
 	delete ShaderBuilder::GetInstance();
+
+	delete windowManager_;
 }
 
 void Engine::Init() const
@@ -94,13 +93,11 @@ void Engine::Init() const
 	GOKNAR_CORE_INFO("Object Manager Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
-
 	ShaderBuilder::GetInstance()->Init();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Shader Builder Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
-
 
 	application_->Init();
 	currentTimePoint = std::chrono::steady_clock::now();
@@ -153,7 +150,7 @@ void Engine::Run()
 		application_->Run();
 		Tick(deltaTime_);
 
-		renderer_->GetShadowManager()->RenderShadowMaps();
+		//renderer_->GetShadowManager()->RenderShadowMaps();
 		renderer_->Render();
 
 #if GOKNAR_EDITOR
