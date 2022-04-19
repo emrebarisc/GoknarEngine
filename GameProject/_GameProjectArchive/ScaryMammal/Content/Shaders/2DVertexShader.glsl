@@ -10,6 +10,9 @@ layout(location = 3) in vec2 uv;
 // Transformation matrix is calculated by multiplying  
 // world and relative transformation matrices
 uniform mat4 transformationMatrix;
+
+uniform mat4 worldTransformationMatrix;
+uniform mat4 relativeTransformationMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
@@ -19,9 +22,9 @@ out vec2 textureUV;
 
 void main()
 {
-	vec4 fragmentPosition4Channel = vec4(position, 1.f) * transformationMatrix;
+	vec4 fragmentPosition4Channel = vec4(position, 1.f) * relativeTransformationMatrix * worldTransformationMatrix;
 	gl_Position = projectionMatrix * viewMatrix * fragmentPosition4Channel;
-	vertexNormal = vec3(vec4(normal, 0.f) * transpose(inverse(transformationMatrix)));
+	vertexNormal = vec3(vec4(normal, 0.f) * transpose(inverse(relativeTransformationMatrix * worldTransformationMatrix)));
 	fragmentPosition = vec3(fragmentPosition4Channel);
 
 	textureUV = vec2(uv.x, uv.y);

@@ -37,7 +37,7 @@ Texture::Texture() :
 
 Texture::Texture(std::string imagePath) : Texture()
 {
-	imagePath_ = imagePath;
+	imagePath_ = CONTENT_DIR + imagePath;
 }
 
 Texture::~Texture()
