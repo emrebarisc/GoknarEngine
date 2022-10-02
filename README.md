@@ -5,9 +5,8 @@
 # How to Run
 
 - In order to be able to run the engine, you need to clone submodules as well.
-- Git command: 
   ```
   git clone https://github.com/emrebarisc/GoknarEngine.git --recurse-submodules
   ```
-- After cloning, just click GenerateProjectFiles.bat to create Visual Studio project file.
-- Then open it and set GameProject as startup project, and run it.
+
+- Cmake configurations are work in progress right now. Therefore the project can be built only in linux systems.
