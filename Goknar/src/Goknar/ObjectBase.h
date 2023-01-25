@@ -5,7 +5,7 @@
 
 #include "Core.h"
 
-#include "Math.h"
+#include "GoknarMath.h"
 #include "Matrix.h"
 
 class Component;

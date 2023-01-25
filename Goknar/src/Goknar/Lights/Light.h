@@ -1,7 +1,7 @@
 #ifndef __LIGHT_H__
 #define __LIGHT_H__
 
-#include "Goknar/Math.h"
+#include "Goknar/GoknarMath.h"
 #include "Goknar/Renderer/Types.h"
 
 class Camera;

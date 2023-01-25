@@ -3,7 +3,7 @@
 
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
-#include "Goknar/Math.h"
+#include "Goknar/GoknarMath.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Scene.h"

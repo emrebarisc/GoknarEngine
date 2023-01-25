@@ -2,7 +2,7 @@
 #define __MESH_H__
 
 #include "Goknar/Core.h"
-#include "Goknar/Math.h"
+#include "Goknar/GoknarMath.h"
 #include "Goknar/Matrix.h"
 
 #include <vector>

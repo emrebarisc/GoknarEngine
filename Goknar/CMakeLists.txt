@@ -23,7 +23,6 @@ elseif(UNIX)
     add_compile_definitions(GOKNAR_PLATFORM_UNIX)
 endif()
 
-
 if(NOT ANDROID)
     add_library(${APP_NAME} ${GAME_SOURCE})
 else()

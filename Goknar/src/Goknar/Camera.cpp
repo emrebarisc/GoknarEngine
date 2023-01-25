@@ -104,7 +104,7 @@ void Camera::LookAt()
 {
 	Vector3 lookAtPos = position_ + forwardVector_ * nearDistance_;
 
-	Math::LookAt(viewingMatrix_, 
+	GoknarMath::LookAt(viewingMatrix_, 
 				 position_,
 				 lookAtPos,
 				 upVector_);

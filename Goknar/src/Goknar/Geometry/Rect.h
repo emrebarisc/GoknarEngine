@@ -2,7 +2,7 @@
 #define __RECT_H__
 
 #include "Goknar/Core.h"
-#include "Goknar/Math.h"
+#include "Goknar/GoknarMath.h"
 
 class GOKNAR_API Rect
 {

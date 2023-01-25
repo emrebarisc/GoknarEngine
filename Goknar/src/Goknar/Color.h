@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "Core.h"
-#include "Math.h"
+#include "GoknarMath.h"
 
 class GOKNAR_API Colori
 {

@@ -1,7 +1,7 @@
 #ifndef __GRIDMANAGER_H__
 #define __GRIDMANAGER_H__
 
-#include "Goknar/Math.h"
+#include "Goknar/GoknarMath.h"
 
 #include <functional>
 

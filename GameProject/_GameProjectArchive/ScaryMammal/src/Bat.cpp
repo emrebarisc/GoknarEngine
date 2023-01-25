@@ -6,7 +6,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Managers/InputManager.h"
 #include "Goknar/Material.h"
-#include "Goknar/Math.h"
+#include "Goknar/GoknarMath.h"
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Scene.h"
 
