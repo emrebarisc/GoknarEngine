@@ -40,10 +40,6 @@ add_compile_definitions(GOKNAR_BUILD_DLL GOKNAR_ENABLE_ASSERTS GLFW_INCLUDE_NONE
 
 file(COPY "Content" DESTINATION ${CMAKE_BINARY_DIR}/)
 
-
-
-
-
 # target_precompile_headers(${APP_NAME} PRIVATE 
 #    <fstream> 
 #    <iostream>

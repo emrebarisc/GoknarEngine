@@ -7,15 +7,104 @@ project(${APP_NAME})
 set(CMAKE_CXX_STANDARD 17)
 
 set(GAME_SOURCE)
-set(GAME_HEADER)
 
-file (GLOB_RECURSE sourceFiles "src/*.c" "src/*.cpp" "src/*.cxx")
-file (GLOB_RECURSE headerFiles "src/*.h" "src/*.hpp" "src/*.hxx")
+file(GLOB SRC_FILES
+	src/*
+)
+source_group(Source FILES ${SRC_FILES})
+list(APPEND GAME_SOURCE ${SRC_FILES})
 
-list(APPEND GAME_SOURCE ${sourceFiles})
-list(APPEND GAME_HEADER ${headerFiles})
+file(GLOB GOKNAR_FILES
+	src/Goknar/*
+)
+source_group(Source/Goknar FILES ${GOKNAR_FILES})
+list(APPEND GAME_SOURCE ${GOKNAR_FILES})
 
-set(all_code_files ${GAME_HEADER} ${GAME_SOURCE} )
+file(GLOB COMPONENTS_FILES
+	src/Goknar/Components/*
+)
+source_group(Source/Goknar/Components FILES ${COMPONENTS_FILES})
+list(APPEND GAME_SOURCE ${COMPONENTS_FILES})
+
+file(GLOB CONTAINERS_FILES
+	src/Goknar/Containers/*
+)
+source_group(Source/Goknar/Containers FILES ${CONTAINERS_FILES})
+list(APPEND GAME_SOURCE ${CONTAINERS_FILES})
+
+file(GLOB EDITOR_FILES
+	src/Goknar/Editor/*
+)
+source_group(Source/Goknar/Editor FILES ${EDITOR_FILES})
+list(APPEND GAME_SOURCE ${EDITOR_FILES})
+
+file(GLOB IMGUI_EDITOR_FILES
+	src/Goknar/Editor/ImGuiEditor/*
+)
+source_group(Source/Goknar/Editor/ImGuiEditor FILES ${IMGUI_EDITOR_FILES})
+list(APPEND GAME_SOURCE ${IMGUI_EDITOR_FILES})
+
+file(GLOB GEOMETRY_FILES
+	src/Goknar/Geometry/*
+)
+source_group(Source/Goknar/Geometry FILES ${GEOMETRY_FILES})
+list(APPEND GAME_SOURCE ${GEOMETRY_FILES})
+
+file(GLOB HELPERS_FILES
+	src/Goknar/Helpers/*
+)
+source_group(Source/Goknar/Helpers FILES ${HELPERS_FILES})
+list(APPEND GAME_SOURCE ${HELPERS_FILES})
+
+file(GLOB IO_FILES
+	src/Goknar/IO/*
+)
+source_group(Source/Goknar/IO FILES ${IO_FILES})
+list(APPEND GAME_SOURCE ${IO_FILES})
+
+file(GLOB LIGHTS_FILES
+	src/Goknar/Lights/*
+)
+source_group(Source/Goknar/Lights FILES ${LIGHTS_FILES})
+list(APPEND GAME_SOURCE ${LIGHTS_FILES})
+
+file(GLOB LIGHTS_SHADOW_MANAGER_FILES
+	src/Goknar/Lights/ShadowManager/*
+)
+source_group(Source/Goknar/Lights/ShadowManager FILES ${LIGHTS_SHADOW_MANAGER_FILES})
+list(APPEND GAME_SOURCE ${LIGHTS_SHADOW_MANAGER_FILES})
+
+file(GLOB MANAGERS_FILES
+	src/Goknar/Managers/*
+)
+source_group(Source/Goknar/Managers FILES ${MANAGERS_FILES})
+list(APPEND GAME_SOURCE ${MANAGERS_FILES})
+
+file(GLOB MODEL_FILES
+	src/Goknar/Model/*
+)
+source_group(Source/Goknar/Model FILES ${MODEL_FILES})
+list(APPEND GAME_SOURCE ${MODEL_FILES})
+
+file(GLOB MODEL_2D_FILES
+	src/Goknar/Model/2D/*
+)
+source_group(Source/Goknar/Model/2D FILES ${MODEL_2D_FILES})
+list(APPEND GAME_SOURCE ${MODEL_2D_FILES})
+
+file(GLOB RENDERER_FILES
+	src/Goknar/Renderer/*
+)
+source_group(Source/Goknar/Renderer FILES ${RENDERER_FILES})
+list(APPEND GAME_SOURCE ${RENDERER_FILES})
+
+file(GLOB RENDERER_MATERIAL_EDITOR_FILES
+	src/Goknar/Renderer/MaterialEditor/*
+)
+source_group(Source/Goknar/Renderer/MaterialEditor FILES ${RENDERER_MATERIAL_EDITOR_FILES})
+list(APPEND GAME_SOURCE ${RENDERER_MATERIAL_EDITOR_FILES})
+
+set(all_code_files ${GAME_SOURCE})
 
 if(WIN32 OR MSVC)
     add_compile_definitions(GOKNAR_PLATFORM_WINDOWS)
