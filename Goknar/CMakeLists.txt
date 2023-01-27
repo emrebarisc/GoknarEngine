@@ -84,21 +84,3 @@ target_include_directories(${APP_NAME} PUBLIC
 target_compile_definitions(${APP_NAME} PUBLIC "CONTENT_DIR=\"${CMAKE_BINARY_DIR}/Content/\"")
 
 add_compile_definitions(GOKNAR_BUILD_DLL GOKNAR_ENABLE_ASSERTS GLFW_INCLUDE_NONE)
-
-#target_precompile_headers(${APP_NAME} PRIVATE 
-#    <fstream> 
-#    <iostream>
-#    <sstream>
-#    <memory>
-#    <limits>
-#    <cmath>
-#    <algorithm>
-#    <functional>
-#    <utility>
-#    <stdexcept>
-#    <chrono>
-#    <string>
-#    <vector>
-#    <map>)
-
-target_precompile_headers(${APP_NAME} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/${SOURCE_DIR_NAME}/pch.h>")
