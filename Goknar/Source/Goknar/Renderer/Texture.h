@@ -90,6 +90,18 @@ enum class TextureDataType : unsigned char
 	DYNAMIC
 };
 
+enum class TextureUsage : unsigned char
+{
+	None = 0,
+	Diffuse,
+	Normal,
+	AmbientOcclusion,
+	Metallic,
+	Specular,
+	Roughness,
+	Height
+};
+
 class GOKNAR_API Texture
 {
 public:
@@ -135,6 +147,11 @@ public:
 	void SetTextureImagePath(const std::string& imagePath)
 	{
 		imagePath_ = ContentDir + imagePath;
+	}
+
+	void SetTextureImagePathAbsolute(const std::string& imagePath)
+	{
+		imagePath_ = imagePath;
 	}
 
 	const std::string& GetTextureImagePath() const
@@ -217,7 +234,7 @@ public:
 		magFilter_ = magFilter;
 	}
 
-	TextureFormat GetTextureFormat()
+	TextureFormat GetTextureFormat() const
 	{
 		return textureFormat_;
 	}
@@ -227,7 +244,7 @@ public:
 		textureFormat_ = textureFormat;
 	}
 
-	TextureDataType GetTextureDataType()
+	TextureDataType GetTextureDataType() const
 	{
 		return textureDataType_;
 	}
@@ -237,7 +254,7 @@ public:
 		textureDataType_ = textureDataType;
 	}
 
-	TextureType GetTextureType()
+	TextureType GetTextureType() const
 	{
 		return textureType_;
 	}
@@ -245,6 +262,16 @@ public:
 	void SetTextureType(TextureType textureType)
 	{
 		textureType_ = textureType;
+	}
+
+	TextureUsage GetTextureUsage() const
+	{
+		return textureUsage_;
+	}
+
+	void SetTextureUsage(TextureUsage textureUsage)
+	{
+		textureUsage_ = textureUsage;
 	}
 
 	int GetChannels() const
@@ -275,6 +302,8 @@ private:
 	TextureType textureType_;
 
 	TextureDataType textureDataType_;
+
+	TextureUsage textureUsage_;
 
 	int objectId_;
 	int width_;

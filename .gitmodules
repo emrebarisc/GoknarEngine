@@ -7,3 +7,6 @@
 [submodule "spdlog"]
 	path = Goknar/thirdparty/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "Goknar/thirdparty/assimp"]
+	path = Goknar/thirdparty/assimp
+	url = https://github.com/assimp/assimp.git

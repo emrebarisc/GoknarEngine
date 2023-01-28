@@ -17,57 +17,37 @@
     <DirectionalLight>
       <Direction>-0.57735 0.57735 -0.57735</Direction>
       <Color>1.0 0.99 0.83</Color>
-      <Intensity>0.75</Intensity>
+      <Intensity>1.0</Intensity>
     </DirectionalLight>
   </Lights>
 
   <Materials>
-    <Material id = "0">
-      <BlendModel>Opaque</BlendModel>
-      <ShadingModel>OneSided</ShadingModel>
-      <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
-      <DiffuseReflectance>1.0 1.0 1.0</DiffuseReflectance>
-      <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
-      <PhongExponent>1</PhongExponent>
-    </Material>
-    <Material id = "1">
-      <BlendModel>Opaque</BlendModel>
-      <ShadingModel>OneSided</ShadingModel>
-      <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
-      <DiffuseReflectance>1.0 0.25 0.25</DiffuseReflectance>
-      <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
-      <PhongExponent>1</PhongExponent>
-    </Material>
-    <Material id = "2">
-      <BlendModel>Opaque</BlendModel>
-      <ShadingModel>OneSided</ShadingModel>
-      <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
-      <DiffuseReflectance>0.25 1.0 0.25</DiffuseReflectance>
-      <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
-      <PhongExponent>1</PhongExponent>
-    </Material>
   </Materials>
 
   <Meshes>
     <Mesh id = "0">
-      <Name>M_Floor</Name>
-      <Material>0</Material>
-      <PLYPath>Meshes/Floor.ply</PLYPath>
+      <Name>SM_Floor</Name>
+      <Path>Meshes/SM_Floor.fbx</Path>
     </Mesh>
     <Mesh id = "1">
-      <Name>M_Wall</Name>
-      <Material>0</Material>
-      <PLYPath>Meshes/Wall.ply</PLYPath>
+      <Name>SM_Wall</Name>
+      <Path>Meshes/SM_Wall.fbx</Path>
     </Mesh>
     <Mesh id = "2">
-      <Name>M_Cube</Name>
-      <Material>1</Material>
-      <PLYPath>Meshes/Cube.ply</PLYPath>
+      <Name>SM_Cube</Name>
+      <Path>Meshes/SM_Cube.fbx</Path>
     </Mesh>
     <Mesh id = "3">
-      <Name>M_Cylinder</Name>
-      <Material>2</Material>
-      <PLYPath>Meshes/CylinderWithAHole.ply</PLYPath>
+      <Name>SM_CylinderWithAHole</Name>
+      <Path>Meshes/SM_CylinderWithAHole.fbx</Path>
+    </Mesh>
+    <Mesh id = "4">
+      <Name>SM_Monkey</Name>
+      <Path>Meshes/SM_Monkey.fbx</Path>
+    </Mesh>
+    <Mesh id = "5">
+      <Name>SM_TexturedPlane</Name>
+      <Path>Meshes/SM_TexturedPlane.fbx</Path>
     </Mesh>
   </Meshes>
 
@@ -126,6 +106,28 @@
       <WorldRotation>0.0 0.0 0.0</WorldRotation>
       <WorldScaling>1.0 1.0 1.0</WorldScaling>
       <Mesh>3</Mesh>
+    </StaticMeshObject>
+    <StaticMeshObject id = "4">
+      <Name>Monkey</Name>
+      <PivotPoint>0 0 0</PivotPoint>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0.0 0.0 10.0</WorldPosition>
+      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>4</Mesh>
+    </StaticMeshObject>
+    <StaticMeshObject id = "5">
+      <Name>TexturedPlane</Name>
+      <PivotPoint>0 0 0</PivotPoint>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0.0 10.0 10.0</WorldPosition>
+      <WorldRotation>90.0 0.0 0.0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>5</Mesh>
     </StaticMeshObject>
   </Objects>
 

@@ -29,7 +29,8 @@ Texture::Texture() :
 	magFilter_(TextureMagFilter::LINEAR),
 	textureFormat_(TextureFormat::RGB),
 	textureType_(TextureType::UNSIGNED_BYTE),
-	textureDataType_(TextureDataType::STATIC)
+	textureDataType_(TextureDataType::STATIC),
+	textureUsage_(TextureUsage::Diffuse)
 {
 	objectId_ = ObjectIDManager::GetInstance()->GetAndIncreaseTextureID();
 	name_ = std::string("texture" + std::to_string(objectId_));

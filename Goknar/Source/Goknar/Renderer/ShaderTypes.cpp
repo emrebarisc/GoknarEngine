@@ -46,6 +46,8 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace TEXTURE
 	{
+		const char* UV = "textureUV";
+
 		const char* DIFFUSE = "diffuseTexture";
 		const char* NORMAL = "normalTexture";
 		const char* AMBIENT_OCCLUSION = "ambientOcclusionTexture";

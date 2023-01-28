@@ -2,6 +2,7 @@
 #include "ShaderBuilder.h"
 
 #include "Goknar/Application.h"
+#include "Goknar/Core.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Lights/DirectionalLight.h"
@@ -19,8 +20,6 @@ void ShaderBuilder::GetShaderForMaterial(const Material* material, std::string& 
 	size_t textureSize = textures->size();
 
 	// Vertex Shader
-	vertexShader = "// DefaultVertexShader";
-
 	vertexShader += GetShaderVersionText();
 	vertexShader += VS_GetVariableTexts();
 
@@ -32,20 +31,43 @@ void main()
 })";
 	
 	// Fragment Shader
-	fragmentShader = "// DefaultFragmentShader";
+	fragmentShader += GetShaderVersionText();
 	fragmentShader += FS_GetVariableTexts();
 	for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
 	{
 		const Texture* texture = textures->at(textureIndex);
-		fragmentShader += "uniform sampler2D" + texture->GetName() + ";\n";
+		fragmentShader += "uniform sampler2D " + texture->GetName() + ";\n";
 	}
+
+	fragmentShader += fragmentShaderOutsideMain_;
 
 	fragmentShader += R"(
 void main()
 {)";
-	fragmentShader += fragmentShaderInsideMain_;
+	for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
+	{
+		const Texture* texture = textures->at(textureIndex);
+		if (texture->GetTextureUsage() == TextureUsage::Diffuse)
+		{
+			std::string textureColorVariable = texture->GetName() + "Color";
+
+			fragmentShader += std::string("vec4 ") + textureColorVariable + " = texture(" + texture->GetName() + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + "); \n";
+
+			if (material->GetBlendModel() == MaterialBlendModel::Masked)
+			{
+				fragmentShader += "if (" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) +  ".a < 0.5f) discard;\n";
+			}
+
+			fragmentShader += std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + " = vec3(" + textureColorVariable + "); \n";
+		}
+	}
+
+	fragmentShader += "\n" + fragmentShaderInsideMain_;
 	fragmentShader += R"(
 })";
+
+	IOManager::WriteFile((ContentDir + material->GetName() + "VertexShader.glsl").c_str(), vertexShader.c_str());
+	IOManager::WriteFile((ContentDir + material->GetName() + "FragmentShader.glsl").c_str(), fragmentShader.c_str());
 }
 
 ShaderBuilder::ShaderBuilder() : 
@@ -60,6 +82,10 @@ ShaderBuilder::~ShaderBuilder()
 
 void ShaderBuilder::Init()
 {
+	diffuseReflectanceVariable_ = "uniform vec3 ";
+	diffuseReflectanceVariable_ += SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE;
+	diffuseReflectanceVariable_ += ";\n";
+
 	VS_BuildScene();
 	FS_BuildScene();
 	isInstantiated_ = true;
@@ -70,7 +96,6 @@ void ShaderBuilder::FS_BuildScene()
 	const Scene* scene = engine->GetApplication()->GetMainScene();
 
 	uniforms_ += FS_GetVariableTexts();
-
 	fragmentShaderOutsideMain_ += GetMaterialVariables();
 
 	const Vector3& sceneAmbientLight = scene->GetAmbientLight();
@@ -176,6 +201,10 @@ std::string ShaderBuilder::FS_GetVariableTexts()
 	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
 	variableTexts += ";\n";
 
+	variableTexts += "in vec2 ";
+	variableTexts += SHADER_VARIABLE_NAMES::TEXTURE::UV;
+	variableTexts += ";\n";
+
 	variableTexts += "uniform vec3 ";
 	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION;
 	variableTexts += ";\n";
@@ -200,12 +229,16 @@ void main()
 
 std::string ShaderBuilder::VS_GetMain()
 {
-	return R"(
+	std::string vsMain = R"(
 	vec4 fragmentPosition4Channel = vec4(position, 1.f) * )" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX) + " * " + std::string(SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX) + ";" +
 R"(
 	gl_Position = projectionMatrix * viewMatrix * fragmentPosition4Channel;
 	fragmentPosition = fragmentPosition4Channel;
 )";
+
+	vsMain += std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = vec2(" + SHADER_VARIABLE_NAMES::VERTEX::UV + ".x, 1 - " + SHADER_VARIABLE_NAMES::VERTEX::UV + ".y);\n";
+
+	return vsMain;
 }
 
 std::string ShaderBuilder::VS_GetVariableTexts()
@@ -257,6 +290,10 @@ out vec4 fragmentPosition;
 out vec3 vertexNormal;
 )";
 
+	variableTexts += "out vec2 ";
+	variableTexts += SHADER_VARIABLE_NAMES::TEXTURE::UV;
+	variableTexts += ";\n";
+
 	return variableTexts;
 }
 
@@ -272,9 +309,7 @@ std::string ShaderBuilder::GetMaterialVariables()
 	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT;
 	materialVariableText += ";\n";
 
-	materialVariableText += "uniform vec3 ";
-	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE;
-	materialVariableText += ";\n";
+	materialVariableText += diffuseReflectanceVariable_;
 
 	materialVariableText += "uniform vec3 ";
 	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR;
@@ -316,7 +351,7 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity)
 
 	// Diffuse
 	float cosThetaPrime = max(0.f, dot(wi, vertexNormal));
-	vec3 color = diffuseReflectance * cosThetaPrime;
+	vec3 color = )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"( * cosThetaPrime;
 
 	// Specular
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), phongExponent);
@@ -365,7 +400,7 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 
 	float normalDotLightDirection = dot(vertexNormal, wi);
 
-	vec3 color = diffuseReflectance * max(0, normalDotLightDirection);
+	vec3 color = )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"( * max(0, normalDotLightDirection);
 
 	// To viewpoint vector
 	vec3 wo = viewPosition - vec3(fragmentPosition);
@@ -446,12 +481,12 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 
 	if(cosTheta > cosFalloff)
 	{
-		diffuse = diffuseReflectance;
+		diffuse = )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"(;
 	}
 	else if(cosTheta > cosCoverage)
 	{
 		float c = pow((cosTheta - cosCoverage) / (cosFalloff - cosCoverage), 4);
-		diffuse = diffuseReflectance * c;
+		diffuse = )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"( * c;
 	}
 
 	// Specular
@@ -501,6 +536,7 @@ void ShaderBuilder::CombineFragmentShader()
 void main()
 {
 )";
-	sceneFragmentShader_ += fragmentShaderInsideMain_ + "\n";
-	sceneFragmentShader_ += "}";
+	sceneFragmentShader_ += fragmentShaderInsideMain_;
+	sceneFragmentShader_ += R"(
+})";
 }

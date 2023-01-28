@@ -107,6 +107,8 @@ private:
 	std::string fragmentShaderInsideMain_;
 	std::string fragmentShaderVertexNormalText_;
 
+	std::string diffuseReflectanceVariable_;
+
 	std::string sceneFragmentShader_;
 
 	bool isInstantiated_;

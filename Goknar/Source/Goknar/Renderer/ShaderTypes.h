@@ -45,7 +45,14 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace TEXTURE
 	{
+		extern const char* UV;
+
 		extern const char* DIFFUSE;
+		extern const char* NORMAL;
+		extern const char* AMBIENT_OCCLUSION;
+		extern const char* METALLIC;
+		extern const char* SPECULAR;
+		extern const char* ROUGHNESS;
 	}
 
 	inline namespace POSITIONING

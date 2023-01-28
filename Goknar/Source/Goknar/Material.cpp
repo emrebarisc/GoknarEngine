@@ -14,7 +14,7 @@ Material::Material() :
 	ambientReflectance_(Vector3::ZeroVector), 
 	diffuseReflectance_(Vector3::ZeroVector), 
 	specularReflectance_(Vector3::ZeroVector),
-	phongExponent_(0.f),
+	phongExponent_(1.f),
 	shader_(nullptr),
 	blendModel_(MaterialBlendModel::Opaque),
 	shadingModel_(MaterialShadingModel::Default)
@@ -30,6 +30,7 @@ void Material::Init()
 	if (shader_ == nullptr)
 	{
 		shader_ = new Shader();
+		shader_->SetHolderMaterial(this);
 		engine->GetApplication()->GetMainScene()->AddShader(shader_);
 	}
 

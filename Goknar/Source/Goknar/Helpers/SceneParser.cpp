@@ -497,7 +497,10 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			if (child)
 			{
 				int shaderID = std::stoi(child->Attribute("id"));
-				material->SetShader(scene->GetShader(shaderID));
+
+				Shader* shader = scene->GetShader(shaderID);
+				shader->SetHolderMaterial(material);
+				material->SetShader(shader);
 			}
 
 			child = element->FirstChildElement("Texture");
@@ -561,24 +564,30 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 		element = element->FirstChildElement("Mesh");
 		while (element)
 		{
+			int materialId = -1;
 			child = element->FirstChildElement("Material");
-			stream << child->GetText() << std::endl;
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				stream >> materialId;
+			}
 
-			int materialId;
-			stream >> materialId;
-
-			child = element->FirstChildElement("PLYPath");
+			child = element->FirstChildElement("Path");
 			if (child)
 			{
 				std::string plyFilePath;
 				stream << child->GetText() << std::endl;
 				stream >> plyFilePath;
 
-				StaticMesh* mesh = ModelLoader::LoadPlyFile(ContentDir + plyFilePath);
+				StaticMesh* mesh = ModelLoader::LoadModel(ContentDir + plyFilePath);
 				if (mesh != nullptr)
 				{
 					scene->AddStaticMesh(mesh);
-					mesh->SetMaterial(scene->GetMaterial(materialId));
+
+					if (0 <= materialId)
+					{
+						mesh->SetMaterial(scene->GetMaterial(materialId));
+					}
 				}
 				stream.clear();
 				element = element->NextSiblingElement("Mesh");
@@ -586,7 +595,10 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			}
 
 			StaticMesh* mesh = new StaticMesh();
-			mesh->SetMaterial(scene->GetMaterial(materialId));
+			if (0 <= materialId)
+			{
+				mesh->SetMaterial(scene->GetMaterial(materialId));
+			}
 
 			child = element->FirstChildElement("Vertices");
 			stream << child->GetText() << std::endl;

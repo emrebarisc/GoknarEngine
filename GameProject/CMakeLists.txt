@@ -2,19 +2,11 @@ cmake_minimum_required(VERSION 3.20)
 
 set(APP_NAME GameProject)
 
-set(CMAKE_CXX_STANDARD 11)
-
 project(${APP_NAME})
 
-set(SOURCE_DIR_NAME Source)
+set(CMAKE_CXX_STANDARD 17)
 
-set(ENGINE_PATH ${CMAKE_BINARY_DIR}/../../Goknar)
-
-if(WIN32 OR MSVC)
-    add_compile_definitions(GOKNAR_PLATFORM_WINDOWS)
-elseif(UNIX)
-    add_compile_definitions(GOKNAR_PLATFORM_UNIX)
-endif()
+set(SOURCE_DIR_NAME "Source")
 
 ######################################################################
 ##############################	FILES	##############################
@@ -35,6 +27,14 @@ endforeach()
 
 ######################################################################
 
+set(ENGINE_PATH ${CMAKE_BINARY_DIR}/../../Goknar)
+
+if(WIN32 OR MSVC)
+    add_compile_definitions(GOKNAR_PLATFORM_WINDOWS)
+elseif(UNIX)
+    add_compile_definitions(GOKNAR_PLATFORM_UNIX)
+endif()
+
 if(UNIX)
     SET(GCC_COVERAGE_LINK_FLAGS "-ldl -lglfw -lglut -lGLU -lGL")
     add_definitions(${GCC_COVERAGE_LINK_FLAGS})
@@ -47,7 +47,7 @@ else()
     target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
 endif()
 
-add_subdirectory(${ENGINE_PATH} ./Engine/Goknar)
+add_subdirectory(${ENGINE_PATH} ./Goknar)
 
 target_link_libraries(${APP_NAME} PUBLIC GOKNAR)
 

@@ -107,8 +107,9 @@ void Shader::Init()
 	}
 	else
 	{
-		vertexShaderScript_ = ShaderBuilder::GetInstance()->GetDefaultSceneVertexShader();
-		fragmentShaderScript_ = ShaderBuilder::GetInstance()->GetDefaultSceneFragmentShader();
+		//vertexShaderScript_ = ShaderBuilder::GetInstance()->GetDefaultSceneVertexShader();
+		//fragmentShaderScript_ = ShaderBuilder::GetInstance()->GetDefaultSceneFragmentShader();
+		ShaderBuilder::GetInstance()->GetShaderForMaterial(holderMaterial_, vertexShaderScript_, fragmentShaderScript_);
 	}
 
 	const GEchar* vertexSource = (const GEchar*)vertexShaderScript_.c_str();
