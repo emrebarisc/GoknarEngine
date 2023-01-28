@@ -172,10 +172,11 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				}
 
 				Vector2 vertexUV = Vector2::ZeroVector;
-				if (assimpMesh->HasTextureCoords(vertexIndex))
+				if (assimpMesh->HasTextureCoords(0))
 				{
-					aiVector3D* uv = assimpMesh->mTextureCoords[vertexIndex];
-					vertexUV = Vector2(uv->x, uv->y);
+					aiVector3D assimpUV = assimpMesh->mTextureCoords[0][vertexIndex];
+					vertexUV.x = assimpUV.x;
+					vertexUV.y = assimpUV.y;
 				}
 
 				staticMesh->AddVertexData(
@@ -242,6 +243,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 						Texture* texture = new Texture();
 						texture->SetTextureImagePath(texturePath.C_Str());
+						texture->SetTextureUsage(TextureUsage::Diffuse);
 						gameScene->AddTexture(texture);
 						material->GetShader()->AddTexture(texture);
 					}

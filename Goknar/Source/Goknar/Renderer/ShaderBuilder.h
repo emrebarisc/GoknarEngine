@@ -64,7 +64,7 @@ private:
 	std::string shaderVersion_;
 
 	// Vertex shader
-	void VS_BuildScene();
+	std::string VS_BuildScene();
 	std::string VS_GetVariableTexts();
 	std::string VS_GetMain();
 	std::string VS_GetVertexNormalText();
@@ -80,6 +80,8 @@ private:
 	// Fragment shader builder getter functions
 	std::string GetShaderVersionText();
 	std::string GetMaterialVariables();
+	std::string GetMaterialDiffuseVariable();
+	std::string GetTextureDiffuseVariable();
 
 	void CombineFragmentShader();
 
@@ -106,8 +108,6 @@ private:
 	std::string fragmentShaderOutsideMain_;
 	std::string fragmentShaderInsideMain_;
 	std::string fragmentShaderVertexNormalText_;
-
-	std::string diffuseReflectanceVariable_;
 
 	std::string sceneFragmentShader_;
 

@@ -7,8 +7,6 @@
 #include "GoknarMath.h"
 #include "Renderer/Shader.h"
 
-class Texture;
-
 enum class MaterialBlendModel
 {
 	Opaque = 0,
