@@ -151,6 +151,9 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 	StaticMesh* staticMesh = nullptr;
 
 	Assimp::Importer importer;
+
+	// aiProcess_Triangulate caused problems with vertex weights
+	// Try exporting skeletal meshes as triangulated in modeling software
 	const aiScene* assimpScene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 	if (assimpScene)
 	{
