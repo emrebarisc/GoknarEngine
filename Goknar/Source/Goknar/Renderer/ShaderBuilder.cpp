@@ -21,21 +21,23 @@ void ShaderBuilder::GetShaderForMaterial(const Material* material, std::string& 
 
 	// Vertex Shader
 	vertexShader = VS_BuildScene();
-	
+
 	// Fragment Shader
-	fragmentShader += GetShaderVersionText();
-	fragmentShader += GetMaterialVariables();
-	fragmentShader += GetTextureDiffuseVariable();
-	fragmentShader += FS_GetVariableTexts();
+
+	std::string fragmentShaderVariables = GetShaderVersionText();
+	fragmentShaderVariables += GetMaterialVariables();
+	fragmentShaderVariables += FS_GetVariableTexts();
 	for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
 	{
 		const Texture* texture = textures->at(textureIndex);
-		fragmentShader += "uniform sampler2D " + texture->GetName() + ";\n";
+		fragmentShaderVariables += "uniform sampler2D " + texture->GetName() + ";\n";
 	}
 
-	fragmentShader += fragmentShaderOutsideMain_;
+	std::string fragmentShaderOutsideMain = fragmentShaderOutsideMain_;
 
-	fragmentShader += R"(
+	bool hasADiffuseShader = false;
+
+	std::string fragmentShaderMain = R"(
 void main()
 {
 )";
@@ -44,22 +46,42 @@ void main()
 		const Texture* texture = textures->at(textureIndex);
 		if (texture->GetTextureUsage() == TextureUsage::Diffuse)
 		{
+			hasADiffuseShader = true;
+
 			std::string textureColorVariable = texture->GetName() + "Color";
 
-			fragmentShader += std::string("\tvec4 ") + textureColorVariable + " = texture(" + texture->GetName() + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + "); \n";
+			fragmentShaderMain += std::string("\tvec4 ") + textureColorVariable + " = texture(" + texture->GetName() + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + "); \n";
 
 			if (material->GetBlendModel() == MaterialBlendModel::Masked)
 			{
-				fragmentShader += "\tif (" + textureColorVariable +  ".a < 0.5f) discard;\n";
+				fragmentShaderMain += "\tif (" + textureColorVariable + ".a < 0.5f) discard;\n";
 			}
 
-			fragmentShader += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + " = vec3(" + textureColorVariable + "); \n";
+			fragmentShaderMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + " = vec3(" + textureColorVariable + "); \n";
 		}
 	}
 
-	fragmentShader += "\n" + fragmentShaderInsideMain_;
-	fragmentShader += R"(
+	fragmentShaderMain += "\n" + fragmentShaderInsideMain_;
+	fragmentShaderMain += R"(
 })";
+
+	if (hasADiffuseShader)
+	{
+		fragmentShaderVariables += GetTextureDiffuseVariable();
+	}
+	else
+	{
+		fragmentShaderVariables += GetMaterialDiffuseVariable();
+	}
+
+	fragmentShader = fragmentShaderVariables;
+	fragmentShader += fragmentShaderOutsideMain;
+	fragmentShader += fragmentShaderMain;
+
+	/*
+	IOManager::WriteFile((ContentDir + material->GetName() + "VertexShader.glsl").c_str(), vertexShader.c_str());
+	IOManager::WriteFile((ContentDir + material->GetName() + "FragmentShader.glsl").c_str(), fragmentShader.c_str());
+	*/
 }
 
 ShaderBuilder::ShaderBuilder() : 
