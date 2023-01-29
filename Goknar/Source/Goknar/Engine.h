@@ -19,6 +19,7 @@ class WindowManager;
 
 class DynamicMesh;
 class StaticMesh;
+class SkeletalMesh;
 
 // Global Engine variable
 GOKNAR_API extern class Engine *engine;
@@ -50,6 +51,7 @@ public:
 	}
 
 	void AddStaticMeshToRenderer(StaticMesh* staticMesh);
+	void AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh);
 	void AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh);
 
 	Editor* GetEditor() const

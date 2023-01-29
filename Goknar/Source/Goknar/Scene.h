@@ -17,6 +17,7 @@ class TimeDependentObject;
 
 class DynamicMesh;
 class StaticMesh;
+class SkeletalMesh;
 
 /*
     Scene class containing all the scene data
@@ -42,9 +43,22 @@ public:
 	// TODO: TEST
 	void DeleteStaticMesh(StaticMesh* staticMesh);
 
-	StaticMesh* GetMesh(int index)
+	StaticMesh* GetStaticMesh(int index)
 	{
 		return staticMeshes_[index];
+	}
+
+	void AddSkeletalMesh(SkeletalMesh* skeletalMesh)
+	{
+		skeletalMeshes_.push_back(skeletalMesh);
+	}
+
+	// TODO: TEST
+	void DeleteSkeletalMesh(SkeletalMesh* skeletalMesh);
+
+	SkeletalMesh* GetSkeletalMesh(int index)
+	{
+		return skeletalMeshes_[index];
 	}
 
 	void AddDynamicMesh(DynamicMesh* dynamicMesh)
@@ -189,7 +203,8 @@ private:
 	std::vector<Material*> materials_;
 	std::vector<Shader*> shaders_;
 	std::vector<Texture*> textures_;
-    std::vector<StaticMesh*> staticMeshes_;
+	std::vector<StaticMesh*> staticMeshes_;
+	std::vector<SkeletalMesh*> skeletalMeshes_;
     std::vector<DynamicMesh*> dynamicMeshes_;
 	std::vector<ObjectBase*> objects_;
 

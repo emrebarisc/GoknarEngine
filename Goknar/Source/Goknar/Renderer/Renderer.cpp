@@ -17,23 +17,38 @@
 
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/StaticMesh.h"
+#include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Model/DynamicMeshInstance.h"
 #include "Goknar/Model/StaticMeshInstance.h"
+#include "Goknar/Model/SkeletalMeshInstance.h"
 
 #include "Goknar/IO/IOManager.h"
 
 #include "Goknar/Renderer/Shader.h"
 
+
+#define VERTEX_COLOR_LOCATION 0
+#define VERTEX_POSITION_LOCATION 1
+#define VERTEX_NORMAL_LOCATION 2
+#define VERTEX_UV_LOCATION 3
+#define BONE_ID_LOCATION 4
+#define BONE_WEIGHT_LOCATION 5
+
 Renderer::Renderer() :
 	staticVertexBufferId_(0),
 	staticIndexBufferId_(0),
+	skeletalVertexBufferId_(0),
+	skeletalIndexBufferId_(0),
 	dynamicVertexBufferId_(0),
 	dynamicIndexBufferId_(0),
 	totalStaticMeshVertexSize_(0),
 	totalStaticMeshFaceSize_(0),
+	totalSkeletalMeshVertexSize_(0),
+	totalSkeletalMeshFaceSize_(0),
 	totalDynamicMeshVertexSize_(0),
 	totalDynamicMeshFaceSize_(0),
 	totalStaticMeshCount_(0),
+	totalSkeletalMeshCount_(0),
 	totalDynamicMeshCount_(0),
 	shadowManager_(nullptr),
 	isRenderingOnlyDepth_(false)
@@ -52,6 +67,7 @@ Renderer::~Renderer()
 	glDisableVertexAttribArray(3);
 
 	glDeleteBuffers(1, &staticVertexBufferId_);
+	glDeleteBuffers(1, &skeletalVertexBufferId_);
 	glDeleteBuffers(1, &staticIndexBufferId_);
 
 	for (StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
@@ -67,6 +83,21 @@ Renderer::~Renderer()
 	for (StaticMeshInstance* translucentStaticMeshInstance : translucentStaticMeshInstances_)
 	{
 		delete translucentStaticMeshInstance;
+	}
+
+	for (SkeletalMeshInstance* opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
+	{
+		delete opaqueSkeletalMeshInstance;
+	}
+
+	for (SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
+	{
+		delete maskedSkeletalMeshInstance;
+	}
+
+	for (SkeletalMeshInstance* translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
+	{
+		delete translucentSkeletalMeshInstance;
 	}
 
 	for (DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
@@ -97,6 +128,12 @@ void Renderer::Init()
 	{
 		totalStaticMeshVertexSize_ += (unsigned int)staticMesh->GetVerticesPointer()->size();
 		totalStaticMeshFaceSize_ += (unsigned int)staticMesh->GetFacesPointer()->size();
+	}
+
+	for (SkeletalMesh* skeletalMesh : skeletalMeshes_)
+	{
+		totalSkeletalMeshVertexSize_ += (unsigned int)skeletalMesh->GetVerticesPointer()->size();
+		totalSkeletalMeshFaceSize_ += (unsigned int)skeletalMesh->GetFacesPointer()->size();
 	}
 
 	for (DynamicMesh* dynamicMesh : dynamicMeshes_)
@@ -156,6 +193,63 @@ void Renderer::SetStaticBufferData()
 	SetAttribPointers();
 }
 
+void Renderer::SetSkeletalBufferData()
+{
+	/*
+		Vertex buffer
+	*/
+	GEsizei sizeOfSkeletalMeshVertexData = (GEsizei)(sizeof(VertexData) + sizeof(VertexToBoneData));
+
+	glGenBuffers(1, &skeletalVertexBufferId_);
+	glBindBuffer(GL_ARRAY_BUFFER, skeletalVertexBufferId_);
+	glBufferData(GL_ARRAY_BUFFER, totalSkeletalMeshVertexSize_ * sizeOfSkeletalMeshVertexData, nullptr, GL_STATIC_DRAW);
+
+	/*
+		Index buffer
+	*/
+	glGenBuffers(1, &skeletalIndexBufferId_);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skeletalIndexBufferId_);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalSkeletalMeshFaceSize_ * sizeof(Face), nullptr, GL_STATIC_DRAW);
+
+	/*
+		Buffer Sub-Data
+	*/
+	unsigned int baseVertex = 0;
+	unsigned int vertexStartingIndex = 0;
+
+	int vertexOffset = 0;
+	int faceOffset = 0;
+	int vertexToBoneDataArrayOffset = 0;
+	for (SkeletalMesh* skeletalMesh : skeletalMeshes_)
+	{
+		skeletalMesh->SetBaseVertex(baseVertex);
+		skeletalMesh->SetVertexStartingIndex(vertexStartingIndex);
+
+		const VertexArray* vertexArrayPtr = skeletalMesh->GetVerticesPointer();
+		unsigned int vertexArrayPtrSize = vertexArrayPtr->size();
+		for (unsigned int i = 0; i < vertexArrayPtrSize; ++i)
+		{
+			int vertexSizeInBytes = sizeof(vertexArrayPtr->at(i));
+			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(i));
+
+			const VertexToBoneDataArray* vertexToBoneDataArray = skeletalMesh->GetVertexToBonesArray();
+			int vertexToBoneDataArraySizeInBytes = sizeof(vertexToBoneDataArray->at(i));
+			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset + vertexSizeInBytes, vertexToBoneDataArraySizeInBytes, &vertexToBoneDataArray->at(i));
+
+			vertexOffset += vertexSizeInBytes + vertexToBoneDataArraySizeInBytes;
+		}
+
+		const FaceArray* faceArrayPtr = skeletalMesh->GetFacesPointer();
+		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
+		faceOffset += faceSizeInBytes;
+
+		baseVertex += skeletalMesh->GetVertexCount();
+		vertexStartingIndex += skeletalMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
+	}
+	SetAttribPointersForSkeletalMesh();
+}
+
 void Renderer::SetDynamicBufferData()
 {
 	/*
@@ -209,6 +303,7 @@ void Renderer::SetDynamicBufferData()
 void Renderer::SetBufferData()
 {
 	if (0 < totalStaticMeshCount_) SetStaticBufferData();
+	if (0 < totalSkeletalMeshCount_) SetSkeletalBufferData();
 	if (0 < totalDynamicMeshCount_) SetDynamicBufferData();
 }
 
@@ -253,6 +348,36 @@ void Renderer::Render()
 
 				const Mesh* mesh = maskedStaticMeshInstance->GetMesh();
 				maskedStaticMeshInstance->Render(renderMaterial);
+
+				int facePointCount = mesh->GetFaceCount() * 3;
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+			}
+		}
+	}
+
+	// Skeletal Mesh Instances
+	{
+		if (0 < totalSkeletalMeshCount_)
+		{
+			BindSkeletalVBO();
+
+			for (const SkeletalMeshInstance* opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
+			{
+				if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
+
+				const Mesh* mesh = opaqueSkeletalMeshInstance->GetMesh();
+				opaqueSkeletalMeshInstance->Render(renderMaterial);
+
+				int facePointCount = mesh->GetFaceCount() * 3;
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+			}
+
+			for (const SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
+			{
+				if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
+
+				const Mesh* mesh = maskedSkeletalMeshInstance->GetMesh();
+				maskedSkeletalMeshInstance->Render(renderMaterial);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -318,6 +443,150 @@ void Renderer::AddStaticMeshToRenderer(StaticMesh* staticMesh)
 {
 	staticMeshes_.push_back(staticMesh);
 	totalStaticMeshCount_++;
+}
+
+void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
+{
+	MaterialBlendModel materialShadingModel = meshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+	switch (materialShadingModel)
+	{
+	case MaterialBlendModel::Opaque:
+		opaqueStaticMeshInstances_.push_back(meshInstance);
+		break;
+	case MaterialBlendModel::Masked:
+		maskedStaticMeshInstances_.push_back(meshInstance);
+		break;
+	case MaterialBlendModel::Translucent:
+		translucentStaticMeshInstances_.push_back(meshInstance);
+		break;
+	default:
+		break;
+	}
+}
+
+void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
+{
+	MaterialBlendModel blendModel = staticMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+
+	switch (blendModel)
+	{
+	case MaterialBlendModel::Opaque:
+	{
+		size_t meshInstanceCount = opaqueStaticMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			if (opaqueStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
+			{
+				opaqueStaticMeshInstances_.erase(opaqueStaticMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
+		}
+		break;
+	}
+	case MaterialBlendModel::Masked:
+	{
+		size_t meshInstanceCount = maskedStaticMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			if (maskedStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
+			{
+				maskedStaticMeshInstances_.erase(maskedStaticMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
+		}
+		break;
+	}
+	case MaterialBlendModel::Translucent:
+	{
+		size_t meshInstanceCount = translucentStaticMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			if (translucentStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
+			{
+				translucentStaticMeshInstances_.erase(translucentStaticMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
+		}
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void Renderer::AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh)
+{
+	skeletalMeshes_.push_back(skeletalMesh);
+	totalSkeletalMeshCount_++;
+}
+
+void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
+{
+	MaterialBlendModel materialShadingModel = skeletalMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+	switch (materialShadingModel)
+	{
+	case MaterialBlendModel::Opaque:
+		opaqueSkeletalMeshInstances_.push_back(skeletalMeshInstance);
+		break;
+	case MaterialBlendModel::Masked:
+		maskedSkeletalMeshInstances_.push_back(skeletalMeshInstance);
+		break;
+	case MaterialBlendModel::Translucent:
+		translucentSkeletalMeshInstances_.push_back(skeletalMeshInstance);
+		break;
+	default:
+		break;
+	}
+}
+
+void Renderer::RemoveSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
+{
+	MaterialBlendModel blendModel = skeletalMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+
+	switch (blendModel)
+	{
+	case MaterialBlendModel::Opaque:
+	{
+		size_t meshInstanceCount = opaqueSkeletalMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			if (opaqueSkeletalMeshInstances_[meshInstanceIndex] == skeletalMeshInstance)
+			{
+				opaqueSkeletalMeshInstances_.erase(opaqueSkeletalMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
+		}
+		break;
+	}
+	case MaterialBlendModel::Masked:
+	{
+		size_t meshInstanceCount = maskedSkeletalMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			if (maskedSkeletalMeshInstances_[meshInstanceIndex] == skeletalMeshInstance)
+			{
+				maskedSkeletalMeshInstances_.erase(maskedSkeletalMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
+		}
+		break;
+	}
+	case MaterialBlendModel::Translucent:
+	{
+		size_t meshInstanceCount = translucentSkeletalMeshInstances_.size();
+		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			if (translucentSkeletalMeshInstances_[meshInstanceIndex] == skeletalMeshInstance)
+			{
+				translucentSkeletalMeshInstances_.erase(translucentSkeletalMeshInstances_.begin() + meshInstanceIndex);
+				return;
+			}
+		}
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 void Renderer::AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh)
@@ -433,6 +702,13 @@ void Renderer::BindStaticVBO()
 	SetAttribPointers();
 }
 
+void Renderer::BindSkeletalVBO()
+{
+	glBindBuffer(GL_ARRAY_BUFFER, skeletalVertexBufferId_);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skeletalIndexBufferId_);
+	SetAttribPointersForSkeletalMesh();
+}
+
 void Renderer::BindDynamicVBO()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, dynamicVertexBufferId_);
@@ -442,93 +718,59 @@ void Renderer::BindDynamicVBO()
 
 void Renderer::SetAttribPointers()
 {
-	unsigned long long sizeOfVertexData = sizeof(VertexData);
+	GEsizei sizeOfVertexData = (GEsizei)sizeof(VertexData);
 	// Vertex color
 	long long offset = 0;
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
+	glEnableVertexAttribArray(VERTEX_COLOR_LOCATION);
+	glVertexAttribPointer(VERTEX_COLOR_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
 
 	// Vertex position
 	offset += sizeof(VertexData::color);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
+	glEnableVertexAttribArray(VERTEX_POSITION_LOCATION);
+	glVertexAttribPointer(VERTEX_POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
 
 	// Vertex normal
 	offset += sizeof(VertexData::position);
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
+	glEnableVertexAttribArray(VERTEX_NORMAL_LOCATION);
+	glVertexAttribPointer(VERTEX_NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
 
 	// Vertex UV
 	offset += sizeof(VertexData::normal);
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, (GEsizei)sizeOfVertexData, (void*)offset);
+	glEnableVertexAttribArray(VERTEX_UV_LOCATION);
+	glVertexAttribPointer(VERTEX_UV_LOCATION, 2, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
 }
 
-void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
+void Renderer::SetAttribPointersForSkeletalMesh()
 {
-	MaterialBlendModel materialShadingModel = meshInstance->GetMesh()->GetMaterial()->GetBlendModel();
-	switch (materialShadingModel)
-	{
-	case MaterialBlendModel::Opaque:
-		opaqueStaticMeshInstances_.push_back(meshInstance);
-		break;
-	case MaterialBlendModel::Masked:
-		maskedStaticMeshInstances_.push_back(meshInstance);
-		break;
-	case MaterialBlendModel::Translucent:
-		translucentStaticMeshInstances_.push_back(meshInstance);
-		break;
-	default:
-		break;
-	}
-}
+	GEsizei sizeOfSkeletalMeshVertexData = (GEsizei)(sizeof(VertexData) + sizeof(VertexToBoneData));
 
-void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
-{
-	MaterialBlendModel blendModel = staticMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+	// Vertex color
+	long long offset = 0;
+	glEnableVertexAttribArray(VERTEX_COLOR_LOCATION);
+	glVertexAttribPointer(VERTEX_COLOR_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
 
-	switch (blendModel)
-	{
-	case MaterialBlendModel::Opaque:
-	{
-		size_t meshInstanceCount = opaqueStaticMeshInstances_.size();
-		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-		{
-			if (opaqueStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
-			{
-				opaqueStaticMeshInstances_.erase(opaqueStaticMeshInstances_.begin() + meshInstanceIndex);
-				return;
-			}
-		}
-		break;
-	}
-	case MaterialBlendModel::Masked:
-	{
-		size_t meshInstanceCount = maskedStaticMeshInstances_.size();
-		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-		{
-			if (maskedStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
-			{
-				maskedStaticMeshInstances_.erase(maskedStaticMeshInstances_.begin() + meshInstanceIndex);
-				return;
-			}
-		}
-		break;
-	}
-	case MaterialBlendModel::Translucent:
-	{
-		size_t meshInstanceCount = translucentStaticMeshInstances_.size();
-		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-		{
-			if (translucentStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
-			{
-				translucentStaticMeshInstances_.erase(translucentStaticMeshInstances_.begin() + meshInstanceIndex);
-				return;
-			}
-		}
-		break;
-	}
-	default:
-		break;
-	}
+	// Vertex position
+	offset += sizeof(VertexData::color);
+	glEnableVertexAttribArray(VERTEX_POSITION_LOCATION);
+	glVertexAttribPointer(VERTEX_POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+
+	// Vertex normal
+	offset += sizeof(VertexData::position);
+	glEnableVertexAttribArray(VERTEX_NORMAL_LOCATION);
+	glVertexAttribPointer(VERTEX_NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+
+	// Vertex UV
+	offset += sizeof(VertexData::normal);
+	glEnableVertexAttribArray(VERTEX_UV_LOCATION);
+	glVertexAttribPointer(VERTEX_UV_LOCATION, 2, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+
+	// Bone ID
+	offset += sizeof(VertexToBoneData::boneIDs);
+	glEnableVertexAttribArray(BONE_ID_LOCATION);
+	glVertexAttribIPointer(BONE_ID_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GL_INT, sizeOfSkeletalMeshVertexData, (void*)offset);
+
+	// Bone Weight
+	offset += sizeof(VertexToBoneData::weights);
+	glEnableVertexAttribArray(BONE_WEIGHT_LOCATION);
+	glVertexAttribPointer(BONE_WEIGHT_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
 }

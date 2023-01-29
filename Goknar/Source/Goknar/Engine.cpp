@@ -250,6 +250,11 @@ void Engine::AddStaticMeshToRenderer(StaticMesh* staticMesh)
 	renderer_->AddStaticMeshToRenderer(staticMesh);
 }
 
+void Engine::AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh)
+{
+	renderer_->AddSkeletalMeshToRenderer(skeletalMesh);
+}
+
 void Engine::AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh)
 {
 	renderer_->AddDynamicMeshToRenderer(dynamicMesh);

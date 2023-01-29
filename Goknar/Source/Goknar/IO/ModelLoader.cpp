@@ -5,6 +5,7 @@
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Material.h"
+#include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Log.h"
 #include "Goknar/Scene.h"
@@ -153,11 +154,34 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 	const aiScene* assimpScene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 	if (assimpScene)
 	{
-		staticMesh = new StaticMesh();
-
 		for (unsigned int meshIndex = 0; meshIndex < assimpScene->mNumMeshes; ++meshIndex)
 		{
 			aiMesh* assimpMesh = assimpScene->mMeshes[meshIndex];
+
+			if (assimpMesh->HasBones())
+			{
+				SkeletalMesh* skeletalMesh = new SkeletalMesh();
+				skeletalMesh->ResizeVertexToBonesArray(assimpMesh->mNumVertices);
+
+				for (unsigned int boneIndex = 0; boneIndex < assimpMesh->mNumBones; ++boneIndex)
+				{
+					aiBone* assimpBone = assimpMesh->mBones[boneIndex];
+
+					unsigned int boneId = skeletalMesh->GetBoneId(assimpBone->mName.C_Str());
+
+					for (unsigned int weightIndex = 0; weightIndex < assimpBone->mNumWeights; ++weightIndex)
+					{
+						const aiVertexWeight& assimpVertexWeight = assimpBone->mWeights[weightIndex];
+						skeletalMesh->AddVertexToBoneData(assimpVertexWeight.mVertexId, boneId, assimpVertexWeight.mWeight);
+					}
+				}
+
+				staticMesh = skeletalMesh;
+			}
+			else
+			{
+				staticMesh = new StaticMesh();
+			}
 
 			for (unsigned int vertexIndex = 0; vertexIndex < assimpMesh->mNumVertices; ++vertexIndex)
 			{

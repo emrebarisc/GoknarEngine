@@ -11,6 +11,7 @@
 
 #include "Model/DynamicMesh.h"
 #include "Model/StaticMesh.h"
+#include "Model/SkeletalMesh.h"
 
 #include "Lights/DirectionalLight.h"
 #include "Lights/PointLight.h"
@@ -135,6 +136,12 @@ void Scene::Init()
 		engine->AddStaticMeshToRenderer(staticMesh);
 	}
 
+	for (SkeletalMesh* skeletalMesh : skeletalMeshes_)
+	{
+		skeletalMesh->Init();
+		engine->AddSkeletalMeshToRenderer(skeletalMesh);
+	}
+
 	for (DynamicMesh* dynamicMesh : dynamicMeshes_)
 	{
 		dynamicMesh->Init();
@@ -182,6 +189,25 @@ void Scene::DeleteStaticMesh(StaticMesh* staticMesh)
 	}
 
 	GOKNAR_ASSERT(!found, "Destroyed StaticMesh is not found in the scene!");
+}
+
+// TODO: TEST
+void Scene::DeleteSkeletalMesh(SkeletalMesh* skeletalMesh)
+{
+	bool found = false;
+
+	size_t skeletalMeshCount = skeletalMeshes_.size();
+	for (size_t skeletalMeshIndex = 0; skeletalMeshIndex < skeletalMeshCount; skeletalMeshIndex++)
+	{
+		if (skeletalMeshes_[skeletalMeshIndex] == skeletalMesh)
+		{
+			skeletalMeshes_.erase(skeletalMeshes_.begin() + skeletalMeshIndex);
+			found = true;
+			break;
+		}
+	}
+
+	GOKNAR_ASSERT(!found, "Destroyed SkeletalMesh is not found in the scene!");
 }
 
 // TODO: TEST
