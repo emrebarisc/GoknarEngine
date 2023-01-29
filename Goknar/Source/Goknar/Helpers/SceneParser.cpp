@@ -740,41 +740,25 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			}
 
 			child = element->FirstChildElement("Path");
+			SkeletalMesh* skeletalMesh;
 			if (child)
 			{
 				std::string modelFilePath;
 				stream << child->GetText() << std::endl;
 				stream >> modelFilePath;
 
-				StaticMesh* mesh = ModelLoader::LoadModel(ContentDir + modelFilePath);
-				if (mesh != nullptr)
+				skeletalMesh = dynamic_cast<SkeletalMesh*>(ModelLoader::LoadModel(ContentDir + modelFilePath));
+				if (skeletalMesh != nullptr)
 				{
-					if (SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(mesh))
-					{
-						scene->AddSkeletalMesh(skeletalMesh);
-					}
-					else
-					{
-						scene->AddStaticMesh(mesh);
-					}
+					scene->AddSkeletalMesh(skeletalMesh);
 
 					if (0 <= materialId)
 					{
-						mesh->SetMaterial(scene->GetMaterial(materialId));
+						skeletalMesh->SetMaterial(scene->GetMaterial(materialId));
 					}
 				}
 				stream.clear();
-				element = element->NextSiblingElement("SkeletalMesh");
-				continue;
 			}
-
-			SkeletalMesh* mesh = new SkeletalMesh();
-			if (0 <= materialId)
-			{
-				mesh->SetMaterial(scene->GetMaterial(materialId));
-			}
-
-			scene->AddSkeletalMesh(mesh);
 			element = element->NextSiblingElement("SkeletalMesh");
 		}
 		stream.clear();

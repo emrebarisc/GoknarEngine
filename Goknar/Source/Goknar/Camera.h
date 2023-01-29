@@ -38,7 +38,7 @@ public:
 
 	Camera(const Vector3& position, const Vector3& forward, const Vector3& up);
 
-	Camera(const Camera* rhs)
+	Camera(const Camera* rhs) : Camera()
 	{
 		if (rhs != this)
 		{

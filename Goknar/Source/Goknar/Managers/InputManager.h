@@ -186,7 +186,6 @@ typedef std::vector < ScrollDelegate > ScrollDelegateVector;
 typedef std::function<void(unsigned int)> CharDelegate;
 typedef std::vector < CharDelegate > CharDelegateVector;
 
-
 class GOKNAR_API InputManager
 {
 public:

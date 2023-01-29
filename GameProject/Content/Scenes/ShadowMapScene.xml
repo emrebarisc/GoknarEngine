@@ -21,7 +21,28 @@
     </DirectionalLight>
   </Lights>
 
+  <Shaders>
+    <Shader id="0">
+      <Type>
+        SelfContained
+      </Type>
+      <VertexShaderPath>
+        Shaders/SkeletalMeshBoneWeightTestVertexShader.glsl
+      </VertexShaderPath>
+      <FragmentShaderPath>
+        Shaders/SkeletalMeshBoneWeightTestFragmentShader.glsl
+      </FragmentShaderPath>
+    </Shader>
+  </Shaders>
+
   <Materials>
+    <Material id = "0">
+      <Shader id="0"/>
+      <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
+      <DiffuseReflectance>0.0 0.0 0.0</DiffuseReflectance>
+      <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
+      <PhongExponent>1</PhongExponent>
+    </Material>
   </Materials>
 
   <Meshes>
@@ -51,6 +72,7 @@
     </StaticMesh>
     <SkeletalMesh id = "0">
       <Name>BasicSkeletalMesh</Name>
+      <Material>0</Material>
       <Path>Meshes/SkeletalMesh_BasicSkeletalMesh.fbx</Path>
     </SkeletalMesh>
   </Meshes>

@@ -198,18 +198,11 @@ void Renderer::SetSkeletalBufferData()
 	/*
 		Vertex buffer
 	*/
-	GEsizei sizeOfSkeletalMeshVertexData = (GEsizei)(sizeof(VertexData) + sizeof(VertexToBoneData));
+	unsigned long long int sizeOfSkeletalMeshVertexData = sizeof(VertexData) + sizeof(VertexToBoneData);
 
 	glGenBuffers(1, &skeletalVertexBufferId_);
 	glBindBuffer(GL_ARRAY_BUFFER, skeletalVertexBufferId_);
 	glBufferData(GL_ARRAY_BUFFER, totalSkeletalMeshVertexSize_ * sizeOfSkeletalMeshVertexData, nullptr, GL_STATIC_DRAW);
-
-	/*
-		Index buffer
-	*/
-	glGenBuffers(1, &skeletalIndexBufferId_);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skeletalIndexBufferId_);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalSkeletalMeshFaceSize_ * sizeof(Face), nullptr, GL_STATIC_DRAW);
 
 	/*
 		Buffer Sub-Data
@@ -219,25 +212,38 @@ void Renderer::SetSkeletalBufferData()
 
 	int vertexOffset = 0;
 	int faceOffset = 0;
-	int vertexToBoneDataArrayOffset = 0;
 	for (SkeletalMesh* skeletalMesh : skeletalMeshes_)
 	{
 		skeletalMesh->SetBaseVertex(baseVertex);
 		skeletalMesh->SetVertexStartingIndex(vertexStartingIndex);
 
 		const VertexArray* vertexArrayPtr = skeletalMesh->GetVerticesPointer();
+
 		unsigned int vertexArrayPtrSize = vertexArrayPtr->size();
+		if (vertexArrayPtrSize == 0)
+		{
+			continue;
+		}
+
+		GLintptr vertexSizeInBytes = sizeof(vertexArrayPtr->at(0));
+
+		const VertexToBoneDataArray* vertexToBoneDataArray = skeletalMesh->GetVertexToBonesArray();
+		int vertexToBoneDataArraySizeInBytes = sizeof(vertexToBoneDataArray->at(0));
 		for (unsigned int i = 0; i < vertexArrayPtrSize; ++i)
 		{
-			int vertexSizeInBytes = sizeof(vertexArrayPtr->at(i));
 			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(i));
+			vertexOffset += vertexSizeInBytes;
 
-			const VertexToBoneDataArray* vertexToBoneDataArray = skeletalMesh->GetVertexToBonesArray();
-			int vertexToBoneDataArraySizeInBytes = sizeof(vertexToBoneDataArray->at(i));
-			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset + vertexSizeInBytes, vertexToBoneDataArraySizeInBytes, &vertexToBoneDataArray->at(i));
-
-			vertexOffset += vertexSizeInBytes + vertexToBoneDataArraySizeInBytes;
+			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexToBoneDataArraySizeInBytes, &vertexToBoneDataArray->at(i));
+			vertexOffset += vertexToBoneDataArraySizeInBytes;
 		}
+
+		/*
+			Index buffer
+		*/
+		glGenBuffers(1, &skeletalIndexBufferId_);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skeletalIndexBufferId_);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalSkeletalMeshFaceSize_ * sizeof(Face), nullptr, GL_STATIC_DRAW);
 
 		const FaceArray* faceArrayPtr = skeletalMesh->GetFacesPointer();
 		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
@@ -339,7 +345,7 @@ void Renderer::Render()
 				opaqueStaticMeshInstance->Render(renderMaterial);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 			}
 
 			for (const StaticMeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
@@ -350,7 +356,7 @@ void Renderer::Render()
 				maskedStaticMeshInstance->Render(renderMaterial);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 			}
 		}
 	}
@@ -369,7 +375,7 @@ void Renderer::Render()
 				opaqueSkeletalMeshInstance->Render(renderMaterial);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 			}
 
 			for (const SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
@@ -380,7 +386,7 @@ void Renderer::Render()
 				maskedSkeletalMeshInstance->Render(renderMaterial);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 			}
 		}
 	}
@@ -399,7 +405,7 @@ void Renderer::Render()
 				opaqueDynamicMeshInstance->Render(renderMaterial);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 			}
 
 			for (const DynamicMeshInstance* maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
@@ -410,7 +416,7 @@ void Renderer::Render()
 				maskedDynamicMeshInstance->Render(renderMaterial);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 			}
 		}
 	}
@@ -424,7 +430,17 @@ void Renderer::Render()
 		translucentStaticMeshInstance->Render(renderMaterial);
 
 		int facePointCount = mesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+	}
+
+	for (const MeshInstance* translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
+	{
+		if (!translucentSkeletalMeshInstance->GetIsRendered()) continue;
+		const Mesh* mesh = translucentSkeletalMeshInstance->GetMesh();
+		translucentSkeletalMeshInstance->Render(renderMaterial);
+
+		int facePointCount = mesh->GetFaceCount() * 3;
+		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 	}
 
 	for (const MeshInstance* translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
@@ -434,7 +450,7 @@ void Renderer::Render()
 		translucentDynamicMeshInstance->Render(renderMaterial);
 
 		int facePointCount = mesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 	}
 	glDisable(GL_BLEND);
 }
@@ -744,33 +760,34 @@ void Renderer::SetAttribPointersForSkeletalMesh()
 {
 	GEsizei sizeOfSkeletalMeshVertexData = (GEsizei)(sizeof(VertexData) + sizeof(VertexToBoneData));
 
-	// Vertex color
 	long long offset = 0;
+
+	// Vertex color
 	glEnableVertexAttribArray(VERTEX_COLOR_LOCATION);
 	glVertexAttribPointer(VERTEX_COLOR_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+	offset += sizeof(VertexData::color);
 
 	// Vertex position
-	offset += sizeof(VertexData::color);
 	glEnableVertexAttribArray(VERTEX_POSITION_LOCATION);
 	glVertexAttribPointer(VERTEX_POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+	offset += sizeof(VertexData::position);
 
 	// Vertex normal
-	offset += sizeof(VertexData::position);
 	glEnableVertexAttribArray(VERTEX_NORMAL_LOCATION);
 	glVertexAttribPointer(VERTEX_NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+	offset += sizeof(VertexData::normal);
 
 	// Vertex UV
-	offset += sizeof(VertexData::normal);
 	glEnableVertexAttribArray(VERTEX_UV_LOCATION);
 	glVertexAttribPointer(VERTEX_UV_LOCATION, 2, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+	offset += sizeof(VertexData::uv);
 
 	// Bone ID
-	offset += sizeof(VertexToBoneData::boneIDs);
 	glEnableVertexAttribArray(BONE_ID_LOCATION);
 	glVertexAttribIPointer(BONE_ID_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GL_INT, sizeOfSkeletalMeshVertexData, (void*)offset);
+	offset += sizeof(VertexToBoneData::boneIDs);
 
 	// Bone Weight
-	offset += sizeof(VertexToBoneData::weights);
 	glEnableVertexAttribArray(BONE_WEIGHT_LOCATION);
 	glVertexAttribPointer(BONE_WEIGHT_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
 }

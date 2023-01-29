@@ -38,6 +38,7 @@ public:
 	unsigned int vertexIndices[3];
 };
 
+// ANOTHER VARIABLE CANNOT BE ADDED WITHOUT MODIFYING THE RENDERER
 class GOKNAR_API VertexData
 {
 public:
