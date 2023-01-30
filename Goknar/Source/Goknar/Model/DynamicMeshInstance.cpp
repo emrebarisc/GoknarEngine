@@ -28,15 +28,3 @@ void DynamicMeshInstance::RemoveMeshInstanceFromRenderer()
 {
 	engine->GetRenderer()->RemoveDynamicMeshInstance(this);
 }
-
-void DynamicMeshInstance::Destroy()
-{
-	RemoveMeshInstanceFromRenderer();
-	delete this;
-}
-
-void DynamicMeshInstance::SetMesh(Mesh* mesh)
-{
-	mesh_ = mesh;
-	AddMeshInstanceToRenderer();
-}

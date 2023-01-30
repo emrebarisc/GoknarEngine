@@ -35,7 +35,7 @@ public:
 		componentId_ = componentId;
 	}
 
-	virtual void SetMesh(Mesh* mesh) = 0;
+	virtual void SetMesh(Mesh* mesh);
 
 	Mesh* GetMesh() const
 	{
@@ -74,7 +74,7 @@ public:
 		return isRendered_;
 	}
 
-	virtual void Destroy() = 0;
+	virtual void Destroy();
 
 protected:
 	virtual void AddMeshInstanceToRenderer() = 0;

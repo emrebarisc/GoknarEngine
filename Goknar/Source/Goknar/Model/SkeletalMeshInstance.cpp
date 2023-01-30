@@ -6,7 +6,7 @@
 #include "Goknar/Renderer/Renderer.h"
 
 SkeletalMeshInstance::SkeletalMeshInstance(Component* parentComponent) :
-	StaticMeshInstance(parentComponent)
+	MeshInstance(parentComponent)
 {
 
 }

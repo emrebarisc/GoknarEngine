@@ -21,10 +21,19 @@ struct GOKNAR_API Bone
 
     Matrix offset;
     Matrix transformation;
+
+    std::vector<Bone*> children;
+};
+
+struct GOKNAR_API Armature
+{
+    Armature() : root(nullptr) {}
+
+    Bone* root;
 };
 
 // ANOTHER VARIABLE CANNOT BE ADDED WITHOUT MODIFYING THE RENDERER
-struct GOKNAR_API VertexToBoneData
+struct GOKNAR_API VertexBoneData
 {
     unsigned int boneIDs[MAX_BONE_SIZE_PER_VERTEX] = { 0 };
     float weights[MAX_BONE_SIZE_PER_VERTEX] = { 0.f };
@@ -54,7 +63,7 @@ struct GOKNAR_API VertexToBoneData
     }
 };
 
-typedef std::vector<VertexToBoneData> VertexToBoneDataArray;
+typedef std::vector<VertexBoneData> VertexBoneDataArray;
 typedef std::unordered_map<std::string, unsigned int> BoneNameToIdMap;
 
 class GOKNAR_API SkeletalMesh : public StaticMesh
@@ -68,15 +77,15 @@ public:
 
     void ResizeVertexToBonesArray(unsigned int size)
     {
-        vertexToBonesArray_->resize(size);
+        vertexBoneDataArray_->resize(size);
     }
 
-    void AddVertexToBoneData(unsigned int index, unsigned int id, float weight)
+    void AddVertexBoneData(unsigned int index, unsigned int id, float weight)
     {
-        vertexToBonesArray_->at(index).AddBoneData(id, weight);
+        vertexBoneDataArray_->at(index).AddBoneData(id, weight);
     }
 
-    void AddBone(const Bone& bone)
+    void AddBone(Bone* bone)
     {
         bones_.push_back(bone);
         ++boneSize_;
@@ -84,7 +93,7 @@ public:
 
     void AddBone(const Matrix& offset)
     {
-        bones_.emplace_back(offset);
+        bones_.emplace_back(new Bone(offset));
         ++boneSize_;
     }
 
@@ -111,9 +120,9 @@ public:
         return boneId;
     }
 
-    const VertexToBoneDataArray* GetVertexToBonesArray() const
+    const VertexBoneDataArray* GetVertexBoneDataArray() const
     {
-        return vertexToBonesArray_;
+        return vertexBoneDataArray_;
     }
 
     const BoneNameToIdMap* GetBoneNameToIdMap() const
@@ -121,11 +130,26 @@ public:
         return boneNameToIdMap_;
     }
 
+    Armature* GetArmature()
+    {
+        return armature;
+    }
+
+    Bone* GetBone(unsigned int index)
+    {
+        return bones_[index];
+    }
+
+    void GetBoneTransforms(std::vector<Matrix>& transforms);
+
 private:
-    VertexToBoneDataArray* vertexToBonesArray_;
+    void SetupTransforms(Bone* bone, const Matrix& parentTransform);
+
+    VertexBoneDataArray* vertexBoneDataArray_;
     BoneNameToIdMap* boneNameToIdMap_;
 
-    std::vector<Bone> bones_;
+    std::vector<Bone*> bones_;
+    Armature* armature;
 
     unsigned int boneNameToIdMapSize;
     unsigned int boneSize_;

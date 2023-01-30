@@ -13,8 +13,6 @@ public:
 
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;
-	void Destroy() override;
-	void SetMesh(Mesh* mesh) override;
 protected:
 
 private:

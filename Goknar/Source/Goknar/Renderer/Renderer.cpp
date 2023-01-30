@@ -198,7 +198,7 @@ void Renderer::SetSkeletalBufferData()
 	/*
 		Vertex buffer
 	*/
-	unsigned long long int sizeOfSkeletalMeshVertexData = sizeof(VertexData) + sizeof(VertexToBoneData);
+	unsigned long long int sizeOfSkeletalMeshVertexData = sizeof(VertexData) + sizeof(VertexBoneData);
 
 	glGenBuffers(1, &skeletalVertexBufferId_);
 	glBindBuffer(GL_ARRAY_BUFFER, skeletalVertexBufferId_);
@@ -227,15 +227,15 @@ void Renderer::SetSkeletalBufferData()
 
 		GLintptr vertexSizeInBytes = sizeof(vertexArrayPtr->at(0));
 
-		const VertexToBoneDataArray* vertexToBoneDataArray = skeletalMesh->GetVertexToBonesArray();
-		int vertexToBoneDataArraySizeInBytes = sizeof(vertexToBoneDataArray->at(0));
+		const VertexBoneDataArray* vertexBoneDataArray = skeletalMesh->GetVertexBoneDataArray();
+		int vertexBoneDataArraySizeInBytes = sizeof(vertexBoneDataArray->at(0));
 		for (unsigned int i = 0; i < vertexArrayPtrSize; ++i)
 		{
 			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(i));
 			vertexOffset += vertexSizeInBytes;
 
-			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexToBoneDataArraySizeInBytes, &vertexToBoneDataArray->at(i));
-			vertexOffset += vertexToBoneDataArraySizeInBytes;
+			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexBoneDataArraySizeInBytes, &vertexBoneDataArray->at(i));
+			vertexOffset += vertexBoneDataArraySizeInBytes;
 		}
 
 		/*
@@ -371,22 +371,24 @@ void Renderer::Render()
 			{
 				if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
 
-				const Mesh* mesh = opaqueSkeletalMeshInstance->GetMesh();
+				// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
+				const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(opaqueSkeletalMeshInstance->GetMesh());
 				opaqueSkeletalMeshInstance->Render(renderMaterial);
 
-				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				int facePointCount = skeletalMesh->GetFaceCount() * 3;
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
 			}
 
 			for (const SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
 			{
 				if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
 
-				const Mesh* mesh = maskedSkeletalMeshInstance->GetMesh();
+				// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
+				const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(maskedSkeletalMeshInstance->GetMesh());
 				maskedSkeletalMeshInstance->Render(renderMaterial);
 
-				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				int facePointCount = skeletalMesh->GetFaceCount() * 3;
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
 			}
 		}
 	}
@@ -423,7 +425,7 @@ void Renderer::Render()
 
 	// Translucent meshes needs to be hold in a single ordered array in order to work correctly in the future
 	glEnable(GL_BLEND);
-	for (const MeshInstance* translucentStaticMeshInstance : translucentStaticMeshInstances_)
+	for (const StaticMeshInstance* translucentStaticMeshInstance : translucentStaticMeshInstances_)
 	{
 		if (!translucentStaticMeshInstance->GetIsRendered()) continue;
 		const Mesh* mesh = translucentStaticMeshInstance->GetMesh();
@@ -433,17 +435,18 @@ void Renderer::Render()
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 	}
 
-	for (const MeshInstance* translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
+	for (const SkeletalMeshInstance* translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
 	{
 		if (!translucentSkeletalMeshInstance->GetIsRendered()) continue;
-		const Mesh* mesh = translucentSkeletalMeshInstance->GetMesh();
+		// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
+		const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(translucentSkeletalMeshInstance->GetMesh());
 		translucentSkeletalMeshInstance->Render(renderMaterial);
 
-		int facePointCount = mesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+		int facePointCount = skeletalMesh->GetFaceCount() * 3;
+		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
 	}
 
-	for (const MeshInstance* translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
+	for (const DynamicMeshInstance* translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
 	{
 		if (!translucentDynamicMeshInstance->GetIsRendered()) continue;
 		const Mesh* mesh = translucentDynamicMeshInstance->GetMesh();
@@ -758,7 +761,7 @@ void Renderer::SetAttribPointers()
 
 void Renderer::SetAttribPointersForSkeletalMesh()
 {
-	GEsizei sizeOfSkeletalMeshVertexData = (GEsizei)(sizeof(VertexData) + sizeof(VertexToBoneData));
+	GEsizei sizeOfSkeletalMeshVertexData = (GEsizei)(sizeof(VertexData) + sizeof(VertexBoneData));
 
 	long long offset = 0;
 
@@ -785,7 +788,7 @@ void Renderer::SetAttribPointersForSkeletalMesh()
 	// Bone ID
 	glEnableVertexAttribArray(BONE_ID_LOCATION);
 	glVertexAttribIPointer(BONE_ID_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GL_INT, sizeOfSkeletalMeshVertexData, (void*)offset);
-	offset += sizeof(VertexToBoneData::boneIDs);
+	offset += sizeof(VertexBoneData::boneIDs);
 
 	// Bone Weight
 	glEnableVertexAttribArray(BONE_WEIGHT_LOCATION);

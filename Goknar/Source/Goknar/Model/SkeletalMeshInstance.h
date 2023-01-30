@@ -3,7 +3,7 @@
 
 #include "StaticMeshInstance.h"
 
-class GOKNAR_API SkeletalMeshInstance : public StaticMeshInstance
+class GOKNAR_API SkeletalMeshInstance : public MeshInstance
 {
 public:
 	SkeletalMeshInstance() = delete;

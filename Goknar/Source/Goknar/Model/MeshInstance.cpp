@@ -21,3 +21,16 @@ void MeshInstance::Render(Material* renderMaterial) const
 		renderMaterial->Render(worldTransformationMatrix_, relativeTransformationMatrix_);
 	}
 }
+
+void MeshInstance::SetMesh(Mesh* mesh)
+{
+	mesh_ = mesh;
+	AddMeshInstanceToRenderer();
+}
+
+void MeshInstance::Destroy()
+{
+	RemoveMeshInstanceFromRenderer();
+	delete this;
+}
+

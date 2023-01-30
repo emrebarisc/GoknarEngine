@@ -144,6 +144,49 @@ for (int faceIndex = 0; faceIndex < faceCount; faceIndex++)
 return mesh;
 }
 
+aiNode* GetRootBone(const BoneNameToIdMap* boneNameToIdMap, aiNode* assimpNode)
+{
+	if (boneNameToIdMap->find(assimpNode->mName.C_Str()) != boneNameToIdMap->end())
+	{
+		return assimpNode;
+	}
+
+	for (unsigned int childIndex = 0; childIndex < assimpNode->mNumChildren; ++childIndex)
+	{
+		aiNode* childNode = GetRootBone(boneNameToIdMap, assimpNode->mChildren[childIndex]);
+		if (childNode != nullptr)
+		{
+			return childNode;
+		}
+	}
+
+	return nullptr;
+}
+
+void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, aiNode* assimpNode)
+{
+	if (assimpNode->mNumChildren == 0)
+	{
+		return;
+	}
+
+	const BoneNameToIdMap* boneNameToIdMap = skeletalMesh->GetBoneNameToIdMap();
+	for (unsigned int childrenIndex = 0; childrenIndex < assimpNode->mNumChildren; ++childrenIndex)
+	{
+		aiNode* assimpChildNode = assimpNode->mChildren[childrenIndex];
+		std::string assimpChildNodeName = assimpChildNode->mName.C_Str();
+
+		if (boneNameToIdMap->find(assimpChildNodeName) != boneNameToIdMap->end())
+		{
+			std::cout << assimpChildNodeName << std::endl;
+
+			Bone* childBone = skeletalMesh->GetBone(skeletalMesh->GetBoneId(assimpChildNodeName));
+			bone->children.push_back(childBone);
+			SetupArmature(skeletalMesh, childBone, assimpChildNode);
+		}
+	}
+}
+
 StaticMesh* ModelLoader::LoadModel(const std::string& path)
 {
 	Scene* gameScene = engine->GetApplication()->GetMainScene();
@@ -174,24 +217,26 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 					if (boneId == skeletalMesh->GetBoneSize())
 					{
-						skeletalMesh->AddBone
-						(
+						skeletalMesh->AddBone(new Bone(
 							Matrix
 							(
 								assimpBone->mOffsetMatrix.a1, assimpBone->mOffsetMatrix.a2, assimpBone->mOffsetMatrix.a3, assimpBone->mOffsetMatrix.a4, 
 								assimpBone->mOffsetMatrix.b1, assimpBone->mOffsetMatrix.b2, assimpBone->mOffsetMatrix.b3, assimpBone->mOffsetMatrix.b4, 
 								assimpBone->mOffsetMatrix.c1, assimpBone->mOffsetMatrix.c2, assimpBone->mOffsetMatrix.c3, assimpBone->mOffsetMatrix.c4, 
 								assimpBone->mOffsetMatrix.d1, assimpBone->mOffsetMatrix.d2, assimpBone->mOffsetMatrix.d3, assimpBone->mOffsetMatrix.d4
-							)
-						);
+							)));
 					}
 
 					for (unsigned int weightIndex = 0; weightIndex < assimpBone->mNumWeights; ++weightIndex)
 					{
 						const aiVertexWeight& assimpVertexWeight = assimpBone->mWeights[weightIndex];
-						skeletalMesh->AddVertexToBoneData(assimpVertexWeight.mVertexId, boneId, assimpVertexWeight.mWeight);
+						skeletalMesh->AddVertexBoneData(assimpVertexWeight.mVertexId, boneId, assimpVertexWeight.mWeight);
 					}
 				}
+
+				aiNode* rootAssimpBone = GetRootBone(skeletalMesh->GetBoneNameToIdMap(), assimpScene->mRootNode);
+				skeletalMesh->GetArmature()->root = skeletalMesh->GetBone(skeletalMesh->GetBoneId(rootAssimpBone->mName.C_Str()));
+				SetupArmature(skeletalMesh, skeletalMesh->GetArmature()->root, rootAssimpBone);
 
 				staticMesh = skeletalMesh;
 			}

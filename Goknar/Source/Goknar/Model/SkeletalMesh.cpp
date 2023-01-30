@@ -4,8 +4,9 @@
 
 SkeletalMesh::SkeletalMesh() :
 	StaticMesh(),
-	vertexToBonesArray_(new VertexToBoneDataArray()),
+	vertexBoneDataArray_(new VertexBoneDataArray()),
 	boneNameToIdMap_(new BoneNameToIdMap()),
+	armature(new Armature()),
 	boneNameToIdMapSize(0),
 	boneSize_(0)
 {
@@ -13,11 +14,36 @@ SkeletalMesh::SkeletalMesh() :
 
 SkeletalMesh::~SkeletalMesh()
 {
-	delete vertexToBonesArray_;
+	delete vertexBoneDataArray_;
 	delete boneNameToIdMap_;
+	delete armature;
 }
 
 void SkeletalMesh::Init()
 {
 	StaticMesh::Init();
+}
+
+void SkeletalMesh::GetBoneTransforms(std::vector<Matrix>& transforms)
+{
+	transforms.resize(boneSize_);
+
+	SetupTransforms(armature->root, Matrix::IdentityMatrix);
+
+	for(unsigned int boneIndex = 0; boneIndex < boneSize_; ++boneIndex)
+	{
+		transforms[boneIndex] = bones_[boneIndex]->transformation;
+	}
+}
+
+void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform)
+{
+	Matrix boneTransformation = bone->transformation;
+	bone->transformation = parentTransform * boneTransformation * bone->offset;
+
+	unsigned int childrenSize = bone->children.size();
+	for (unsigned int childIndex = 0; childIndex < childrenSize; ++childIndex)
+	{
+		SetupTransforms(bone->children[childIndex], bone->transformation);
+	}
 }

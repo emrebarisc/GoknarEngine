@@ -7,7 +7,8 @@
 #include "Goknar/Log.h"
 
 SkeletalMeshComponent::SkeletalMeshComponent(ObjectBase* parent) : 
-	MeshComponent(parent, new SkeletalMeshInstance(this))
+	MeshComponent(parent, new SkeletalMeshInstance(this)),
+	skeletalMesh_(nullptr)
 {
 }
 

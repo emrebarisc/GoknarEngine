@@ -16,7 +16,7 @@ public:
 	AnimatedSpriteComponent(ObjectBase* parent);
 	virtual ~AnimatedSpriteComponent();
 
-	void SetMesh(Mesh* sprite) override;
+	void SetMesh(Mesh* mesh) override;
 
 	AnimatedSpriteMesh* GetAnimatedSpriteMesh()
 	{
