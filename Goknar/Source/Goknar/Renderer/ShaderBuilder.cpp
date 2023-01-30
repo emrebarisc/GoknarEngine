@@ -112,7 +112,7 @@ void ShaderBuilder::FS_BuildScene()
 	const Vector3& sceneAmbientLight = scene->GetAmbientLight();
 	fragmentShaderOutsideMain_ += "vec3 sceneAmbient = vec3(" + std::to_string(sceneAmbientLight.x / 255.f) + ", " + std::to_string(sceneAmbientLight.y / 255.f) + ", " + std::to_string(sceneAmbientLight.z / 255.f) + ");\n";
 
-	fragmentShaderInsideMain_ += "\tvec3 lightColor = sceneAmbient * ambientReflectance;\n";
+	fragmentShaderInsideMain_ += "\tvec3 lightColor = sceneAmbient * ambientReflectance * " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";\n";
 
 	// Lights
 	{
@@ -192,7 +192,7 @@ std::string ShaderBuilder::VS_GetVertexNormalText()
 {
 	std::string vertexNormalText = "\n\t";
 	vertexNormalText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
-	vertexNormalText += " = vec3(vec4(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::NORMAL) + ", 0.f) * transpose(inverse(" + SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX + " * " + SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX + ")));\n";
+	vertexNormalText += " = normalize(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::NORMAL) + " * transpose(inverse(mat3(" + SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX + " * " + SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX + "))));\n";
 
 	return vertexNormalText;
 }
@@ -373,13 +373,13 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity)
 
 	// Diffuse
 	float cosThetaPrime = max(0.f, dot(wi, vertexNormal));
-	vec3 color = )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"( * cosThetaPrime;
+	vec3 color = vec3(0.f);
 
 	// Specular
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), phongExponent);
 	color += specularReflectance * cosAlphaPrimeToThePowerOfPhongExponent;
 
-	color *= intensity * inverseDistanceSquare;
+	color *= )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"( * cosThetaPrime * intensity * inverseDistanceSquare;
 
 	return clamp(color, 0.f, 1.f);
 }
@@ -422,7 +422,7 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 
 	float normalDotLightDirection = dot(vertexNormal, wi);
 
-	vec3 color = )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"( * max(0, normalDotLightDirection);
+	vec3 color = vec3(0.f);
 
 	// To viewpoint vector
 	vec3 wo = viewPosition - vec3(fragmentPosition);
@@ -437,7 +437,7 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), phongExponent);
 	color += specularReflectance * cosAlphaPrimeToThePowerOfPhongExponent;
 
-	color *= intensity * inverseDistanceSquare;
+	color *= )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"(  * max(0, normalDotLightDirection) * intensity * inverseDistanceSquare;
 
 	return clamp(color, 0.f, 1.f);
 }

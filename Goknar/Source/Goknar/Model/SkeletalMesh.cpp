@@ -4,9 +4,10 @@
 
 SkeletalMesh::SkeletalMesh() :
 	StaticMesh(),
-	boneNameToIdMapSize(0),
 	vertexToBonesArray_(new VertexToBoneDataArray()),
-	boneNameToIdMap_(new BoneNameToIdMap())
+	boneNameToIdMap_(new BoneNameToIdMap()),
+	boneNameToIdMapSize(0),
+	boneSize_(0)
 {
 }
 

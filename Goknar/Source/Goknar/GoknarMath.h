@@ -248,7 +248,14 @@ struct GOKNAR_API Vector3
 
 	inline Vector3 GetNormalized() const
 	{
-		return *this / this->Length();
+		float length = this->Length();
+
+		if (length != 0.f)
+		{
+			return *this / this->Length();
+		}
+
+		return *this;
 	}
 
 	static inline Vector3 GetNormalized(const Vector3& vec)

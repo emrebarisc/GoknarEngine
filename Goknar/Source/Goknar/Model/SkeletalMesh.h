@@ -8,8 +8,20 @@
 #include "StaticMesh.h"
 #include "Goknar/Core.h"
 #include "Goknar/Log.h"
+#include "Goknar/GoknarMath.h"
 
 #define MAX_BONE_SIZE_PER_VERTEX 4
+
+struct GOKNAR_API Bone
+{
+    Bone() : offset(Matrix::IdentityMatrix), transformation(Matrix::IdentityMatrix) {}
+    Bone(const Matrix& o) : offset(o), transformation(Matrix::IdentityMatrix) {}
+    Bone(const Matrix& o, const Matrix& t) : offset(o), transformation(t) {}
+    Bone(const Bone& rhs) : offset(rhs.offset), transformation(rhs.transformation) {}
+
+    Matrix offset;
+    Matrix transformation;
+};
 
 // ANOTHER VARIABLE CANNOT BE ADDED WITHOUT MODIFYING THE RENDERER
 struct GOKNAR_API VertexToBoneData
@@ -19,17 +31,26 @@ struct GOKNAR_API VertexToBoneData
 
     void AddBoneData(unsigned int id, float weight)
     {
-        for (unsigned int i = 0; i < MAX_BONE_SIZE_PER_VERTEX; i++)
+        int smallestIndex = -1;
+        int largestDifference = 0.f;
+        for (unsigned int i = 0; i < MAX_BONE_SIZE_PER_VERTEX; ++i)
         {
-            if (weights[i] == 0.0)
+            // TODO_Baris: Optimize
+            int difference = weight - weights[i];
+            if (largestDifference < difference)
             {
-                boneIDs[i] = id;
-                weights[i] = weight;
-                return;
+                largestDifference = difference;
+                smallestIndex = i;
+            }
+
+            if (0 <= smallestIndex)
+            {
+                boneIDs[smallestIndex] = id;
+                weights[smallestIndex] = weight;
             }
         }
 
-        GOKNAR_CORE_ASSERT(false, "Bone index size cannot be greater than " + std::to_string(MAX_BONE_SIZE_PER_VERTEX));
+        //GOKNAR_CORE_ASSERT(false, "Bone index size cannot be greater than " + std::to_string(MAX_BONE_SIZE_PER_VERTEX));
     }
 };
 
@@ -53,6 +74,23 @@ public:
     void AddVertexToBoneData(unsigned int index, unsigned int id, float weight)
     {
         vertexToBonesArray_->at(index).AddBoneData(id, weight);
+    }
+
+    void AddBone(const Bone& bone)
+    {
+        bones_.push_back(bone);
+        ++boneSize_;
+    }
+
+    void AddBone(const Matrix& offset)
+    {
+        bones_.emplace_back(offset);
+        ++boneSize_;
+    }
+
+    unsigned int GetBoneSize() const
+    {
+        return boneSize_;
     }
     
     int GetBoneId(const std::string& boneName)
@@ -87,7 +125,10 @@ private:
     VertexToBoneDataArray* vertexToBonesArray_;
     BoneNameToIdMap* boneNameToIdMap_;
 
+    std::vector<Bone> bones_;
+
     unsigned int boneNameToIdMapSize;
+    unsigned int boneSize_;
 };
 
 #endif

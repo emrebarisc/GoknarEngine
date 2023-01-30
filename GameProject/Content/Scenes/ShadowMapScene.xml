@@ -1,5 +1,5 @@
 <Scene>
-  <BackgroundColor>135 210 237</BackgroundColor>
+  <BackgroundColor>183 230 247</BackgroundColor>
 
   <Cameras>
     <Camera id = "0">
@@ -17,7 +17,7 @@
     <DirectionalLight>
       <Direction>-0.57735 0.57735 -0.57735</Direction>
       <Color>1.0 0.99 0.83</Color>
-      <Intensity>1.0</Intensity>
+      <Intensity>1.5</Intensity>
     </DirectionalLight>
   </Lights>
 
@@ -71,9 +71,9 @@
       <Path>Meshes/SM_TexturedPlane.fbx</Path>
     </StaticMesh>
     <SkeletalMesh id = "0">
-      <Name>BasicSkeletalMesh</Name>
-      <Material>0</Material>
-      <Path>Meshes/SkeletalMesh_BasicSkeletalMesh.fbx</Path>
+      <Name>SkeletalMesh_Human</Name>
+      <!--<Material>0</Material>-->
+      <Path>Meshes/SkeletalMesh_Human.fbx</Path>
     </SkeletalMesh>
   </Meshes>
 
@@ -161,9 +161,9 @@
       <RelativePosition>0 0 0</RelativePosition>
       <RelativeRotation>0 0 0</RelativeRotation>
       <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>-5.0 -5.0 0.0</WorldPosition>
-      <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <WorldPosition>-5.0 -5.0 0.1</WorldPosition>
+      <WorldRotation>-90.0 0.0 0.0</WorldRotation>
+      <WorldScaling>0.025 0.025 0.025</WorldScaling>
       <Mesh>0</Mesh>
     </SkeletalMeshObject>
   </Objects>

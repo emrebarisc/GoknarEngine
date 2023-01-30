@@ -15,12 +15,11 @@ uniform mat4 projectionMatrix;
 uniform float deltaTime;
 uniform float elapsedTime;
 
+flat out ivec4 outBoneIDs;
+out vec4 outWeights;
 out vec4 fragmentPosition;
 out vec3 vertexNormal;
 out vec2 textureUV;
-
-flat out ivec4 outBoneIDs;
-out vec4 outWeights;
 
 void main()
 {
@@ -29,7 +28,7 @@ void main()
 	fragmentPosition = fragmentPosition4Channel;
 	textureUV = vec2(uv.x, uv.y);
 
-	vertexNormal = vec3(vec4(normal, 0.f) * transpose(inverse(relativeTransformationMatrix * worldTransformationMatrix)));
+	vertexNormal = normalize(normal * transpose(inverse(mat3(relativeTransformationMatrix * worldTransformationMatrix))));
 
 	outBoneIDs = boneIDs;
 	outWeights = weights;

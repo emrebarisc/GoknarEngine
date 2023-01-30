@@ -172,6 +172,20 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 					unsigned int boneId = skeletalMesh->GetBoneId(assimpBone->mName.C_Str());
 
+					if (boneId == skeletalMesh->GetBoneSize())
+					{
+						skeletalMesh->AddBone
+						(
+							Matrix
+							(
+								assimpBone->mOffsetMatrix.a1, assimpBone->mOffsetMatrix.a2, assimpBone->mOffsetMatrix.a3, assimpBone->mOffsetMatrix.a4, 
+								assimpBone->mOffsetMatrix.b1, assimpBone->mOffsetMatrix.b2, assimpBone->mOffsetMatrix.b3, assimpBone->mOffsetMatrix.b4, 
+								assimpBone->mOffsetMatrix.c1, assimpBone->mOffsetMatrix.c2, assimpBone->mOffsetMatrix.c3, assimpBone->mOffsetMatrix.c4, 
+								assimpBone->mOffsetMatrix.d1, assimpBone->mOffsetMatrix.d2, assimpBone->mOffsetMatrix.d3, assimpBone->mOffsetMatrix.d4
+							)
+						);
+					}
+
 					for (unsigned int weightIndex = 0; weightIndex < assimpBone->mNumWeights; ++weightIndex)
 					{
 						const aiVertexWeight& assimpVertexWeight = assimpBone->mWeights[weightIndex];
@@ -186,7 +200,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				staticMesh = new StaticMesh();
 			}
 
-			for (unsigned int vertexIndex = 0; vertexIndex < assimpMesh->mNumVertices; ++vertexIndex)
+			for(unsigned int vertexIndex = 0; vertexIndex < assimpMesh->mNumVertices; ++vertexIndex)
 			{
 				aiVector3D& vertexPosition = assimpMesh->mVertices[vertexIndex];
 				aiVector3D& normal = assimpMesh->mNormals[vertexIndex];
@@ -216,7 +230,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				);
 			}
 
-			if (assimpMesh->HasFaces())
+			if(assimpMesh->HasFaces())
 			{
 				for (unsigned int faceIndex = 0; faceIndex < assimpMesh->mNumFaces; faceIndex++)
 				{
@@ -235,8 +249,9 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 					Material* material = new Material();
 
 					aiColor3D value(0.f, 0.f, 0.f);
-					assimpMaterial->Get(AI_MATKEY_COLOR_AMBIENT, value);
-					material->SetAmbientReflectance(Vector3(value.r, value.g, value.b));
+					//assimpMaterial->Get(AI_MATKEY_COLOR_AMBIENT, value);
+					//material->SetAmbientReflectance(Vector3(value.r, value.g, value.b));
+					material->SetAmbientReflectance(Vector3(1.f, 1.f, 1.f));
 
 					assimpMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, value);
 					material->SetDiffuseReflectance(Vector3(value.r, value.g, value.b));
@@ -259,18 +274,39 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 					assimpMaterial->Get(AI_MATKEY_NAME, name);
 					material->SetName(name.C_Str());
 
-					aiString texturePath;
-					if (assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+					Shader* shader = nullptr;
+
+					aiString diffuseTexturePath;
+					if (assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &diffuseTexturePath, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
 					{
-						Shader* shader = new Shader();
+						shader = new Shader();
 						gameScene->AddShader(shader);
 
 						shader->SetHolderMaterial(material);
 						material->SetShader(shader);
 
 						Texture* texture = new Texture();
-						texture->SetTextureImagePath(texturePath.C_Str());
+						texture->SetTextureImagePath(diffuseTexturePath.C_Str());
 						texture->SetTextureUsage(TextureUsage::Diffuse);
+						gameScene->AddTexture(texture);
+						material->GetShader()->AddTexture(texture);
+					}
+
+					aiString normalTexturePath;
+					if (assimpMaterial->GetTexture(aiTextureType_NORMALS, 0, &normalTexturePath, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+					{
+						if (!shader)
+						{
+							shader = new Shader();
+							gameScene->AddShader(shader);
+						}
+
+						shader->SetHolderMaterial(material);
+						material->SetShader(shader);
+
+						Texture* texture = new Texture();
+						texture->SetTextureImagePath(normalTexturePath.C_Str());
+						texture->SetTextureUsage(TextureUsage::Normal);
 						gameScene->AddTexture(texture);
 						material->GetShader()->AddTexture(texture);
 					}

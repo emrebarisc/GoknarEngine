@@ -20,7 +20,7 @@ in vec4 outWeights;
 
 void main()
 {
-	int boneIndex = int(elapsedTime) % 4;
+	int boneIndex = int(elapsedTime * 2.f) % 88;
 
 	fragmentColor = vec3(0.f);
     for (int i = 0 ; i < 4 ; i++)
