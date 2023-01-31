@@ -178,8 +178,6 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, aiNode* assimpNode)
 
 		if (boneNameToIdMap->find(assimpChildNodeName) != boneNameToIdMap->end())
 		{
-			std::cout << assimpChildNodeName << std::endl;
-
 			Bone* childBone = skeletalMesh->GetBone(skeletalMesh->GetBoneId(assimpChildNodeName));
 			bone->children.push_back(childBone);
 			SetupArmature(skeletalMesh, childBone, assimpChildNode);
@@ -197,7 +195,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 	// aiProcess_Triangulate caused problems with vertex weights
 	// Try exporting skeletal meshes as triangulated in modeling software
-	const aiScene* assimpScene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	const aiScene* assimpScene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_OptimizeGraph);
 	if (assimpScene)
 	{
 		for (unsigned int meshIndex = 0; meshIndex < assimpScene->mNumMeshes; ++meshIndex)

@@ -10,16 +10,9 @@
 
 int MeshInstance::lastComponentId_ = 0;
 
-void MeshInstance::Render(Material* renderMaterial) const
+void MeshInstance::Render() const
 {
-	if (renderMaterial == nullptr)
-	{
-		mesh_->GetMaterial()->Render(worldTransformationMatrix_, relativeTransformationMatrix_);
-	}
-	else
-	{
-		renderMaterial->Render(worldTransformationMatrix_, relativeTransformationMatrix_);
-	}
+	mesh_->GetMaterial()->Render(worldTransformationMatrix_, relativeTransformationMatrix_);
 }
 
 void MeshInstance::SetMesh(Mesh* mesh)

@@ -185,6 +185,11 @@ void Shader::SetMatrix(const char* name, const Matrix& matrix) const
 	glUniformMatrix4fv(glGetUniformLocation(programId_, name), 1, GL_FALSE, &matrix.m[0]);
 }
 
+void Shader::SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector)
+{
+	glUniformMatrix4fv(glGetUniformLocation(programId_, name), matrixVector.size(), GL_FALSE, &matrixVector[0].m[0]);
+}
+
 void Shader::SetVector3(const char* name, const Vector3& vector) const
 {
 	glUniform3fv(glGetUniformLocation(programId_, name), 1, &vector.x);

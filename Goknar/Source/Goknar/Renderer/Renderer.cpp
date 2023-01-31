@@ -315,7 +315,6 @@ void Renderer::SetBufferData()
 
 void Renderer::Render()
 {
-	Material* renderMaterial = nullptr;
 	if (!isRenderingOnlyDepth_)
 	{
 		glDepthMask(GL_TRUE);
@@ -325,9 +324,10 @@ void Renderer::Render()
 	}
 	else
 	{
+		// WORK IN PROGRESS
+
 		glDepthMask(GL_FALSE);
 		glClearColor(0.f, 0.f, 0.f, 1.f);
-		renderMaterial = shadowManager_->GetDepthBufferMaterial();
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
@@ -342,7 +342,7 @@ void Renderer::Render()
 				if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
 
 				const Mesh* mesh = opaqueStaticMeshInstance->GetMesh();
-				opaqueStaticMeshInstance->Render(renderMaterial);
+				opaqueStaticMeshInstance->Render();
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -353,7 +353,7 @@ void Renderer::Render()
 				if (!maskedStaticMeshInstance->GetIsRendered()) continue;
 
 				const Mesh* mesh = maskedStaticMeshInstance->GetMesh();
-				maskedStaticMeshInstance->Render(renderMaterial);
+				maskedStaticMeshInstance->Render();
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -373,7 +373,7 @@ void Renderer::Render()
 
 				// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
 				const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(opaqueSkeletalMeshInstance->GetMesh());
-				opaqueSkeletalMeshInstance->Render(renderMaterial);
+				opaqueSkeletalMeshInstance->Render();
 
 				int facePointCount = skeletalMesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
@@ -385,7 +385,7 @@ void Renderer::Render()
 
 				// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
 				const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(maskedSkeletalMeshInstance->GetMesh());
-				maskedSkeletalMeshInstance->Render(renderMaterial);
+				maskedSkeletalMeshInstance->Render();
 
 				int facePointCount = skeletalMesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
@@ -404,7 +404,7 @@ void Renderer::Render()
 				if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
 
 				const Mesh* mesh = opaqueDynamicMeshInstance->GetMesh();
-				opaqueDynamicMeshInstance->Render(renderMaterial);
+				opaqueDynamicMeshInstance->Render();
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -415,7 +415,7 @@ void Renderer::Render()
 				if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
 
 				const Mesh* mesh = maskedDynamicMeshInstance->GetMesh();
-				maskedDynamicMeshInstance->Render(renderMaterial);
+				maskedDynamicMeshInstance->Render();
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -429,7 +429,7 @@ void Renderer::Render()
 	{
 		if (!translucentStaticMeshInstance->GetIsRendered()) continue;
 		const Mesh* mesh = translucentStaticMeshInstance->GetMesh();
-		translucentStaticMeshInstance->Render(renderMaterial);
+		translucentStaticMeshInstance->Render();
 
 		int facePointCount = mesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -440,7 +440,7 @@ void Renderer::Render()
 		if (!translucentSkeletalMeshInstance->GetIsRendered()) continue;
 		// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
 		const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(translucentSkeletalMeshInstance->GetMesh());
-		translucentSkeletalMeshInstance->Render(renderMaterial);
+		translucentSkeletalMeshInstance->Render();
 
 		int facePointCount = skeletalMesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
@@ -450,7 +450,7 @@ void Renderer::Render()
 	{
 		if (!translucentDynamicMeshInstance->GetIsRendered()) continue;
 		const Mesh* mesh = translucentDynamicMeshInstance->GetMesh();
-		translucentDynamicMeshInstance->Render(renderMaterial);
+		translucentDynamicMeshInstance->Render();
 
 		int facePointCount = mesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());

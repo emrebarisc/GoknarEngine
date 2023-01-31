@@ -96,6 +96,7 @@ public:
 	void SetInt(const char* name, int value) const;
 	void SetFloat(const char* name, float value) const;
 	void SetMatrix(const char* name, const Matrix& matrix) const;
+	void SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector);
 	void SetVector3(const char* name, const Vector3& vector) const;
 
 protected:

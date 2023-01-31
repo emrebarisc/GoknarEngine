@@ -26,10 +26,14 @@ void SkeletalMesh::Init()
 
 void SkeletalMesh::GetBoneTransforms(std::vector<Matrix>& transforms)
 {
-	transforms.resize(boneSize_);
+	transforms.resize(boneSize_, Matrix::IdentityMatrix);
 
-	SetupTransforms(armature->root, Matrix::IdentityMatrix);
-
+	//static bool calculated = false;
+	//if (!calculated)
+	//{
+	//	calculated = true;
+	//	SetupTransforms(armature->root, Matrix::IdentityMatrix);
+	//}
 	for(unsigned int boneIndex = 0; boneIndex < boneSize_; ++boneIndex)
 	{
 		transforms[boneIndex] = bones_[boneIndex]->transformation;
@@ -39,11 +43,13 @@ void SkeletalMesh::GetBoneTransforms(std::vector<Matrix>& transforms)
 void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform)
 {
 	Matrix boneTransformation = bone->transformation;
-	bone->transformation = parentTransform * boneTransformation * bone->offset;
+	Matrix globalTransformation = parentTransform * boneTransformation;
+
+	bone->transformation = globalTransformation * bone->offset;
 
 	unsigned int childrenSize = bone->children.size();
 	for (unsigned int childIndex = 0; childIndex < childrenSize; ++childIndex)
 	{
-		SetupTransforms(bone->children[childIndex], bone->transformation);
+		SetupTransforms(bone->children[childIndex], globalTransformation);
 	}
 }

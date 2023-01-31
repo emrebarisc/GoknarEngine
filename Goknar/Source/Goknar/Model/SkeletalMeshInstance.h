@@ -11,6 +11,8 @@ public:
 
 	virtual ~SkeletalMeshInstance() {}
 
+	virtual void Render() const override;
+
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;
 protected:

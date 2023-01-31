@@ -25,7 +25,7 @@ EditorCameraController::EditorCameraController() :
 {
 	SetTickable(false);
 
-	movementSpeed_ = 500.f;
+	movementSpeed_ = 50.f;
 	previousCursorPositionForRotating_ = Vector2(0.f, 0.f);
 	previousCursorPositionFor2DMovement_ = Vector2(0.f, 0.f);
 }

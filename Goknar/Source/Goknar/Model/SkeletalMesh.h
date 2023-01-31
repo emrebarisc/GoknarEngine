@@ -41,22 +41,27 @@ struct GOKNAR_API VertexBoneData
     void AddBoneData(unsigned int id, float weight)
     {
         int smallestIndex = -1;
-        int largestDifference = 0.f;
+        float largestDifference = 0.f;
         for (unsigned int i = 0; i < MAX_BONE_SIZE_PER_VERTEX; ++i)
         {
+            if (boneIDs[i] == id)
+            {
+                return;
+            }
+
             // TODO_Baris: Optimize
-            int difference = weight - weights[i];
+            float difference = weight - weights[i];
             if (largestDifference < difference)
             {
                 largestDifference = difference;
                 smallestIndex = i;
             }
+        }
 
-            if (0 <= smallestIndex)
-            {
-                boneIDs[smallestIndex] = id;
-                weights[smallestIndex] = weight;
-            }
+        if (0 <= smallestIndex)
+        {
+            boneIDs[smallestIndex] = id;
+            weights[smallestIndex] = weight;
         }
 
         //GOKNAR_CORE_ASSERT(false, "Bone index size cannot be greater than " + std::to_string(MAX_BONE_SIZE_PER_VERTEX));
