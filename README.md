@@ -10,8 +10,8 @@
   ```
   
 - Goknar folder is for engine source and GameProject folder is for game projects.
-- You can see older projects(They may not work due to the changes I made to the engine.) or the current project settings(Always works since I work with this). You can go through the projects to make your own.
-- Then, just generate project files with cmake. (Download cmake, create a Build folder and, via terminal, call cmake ..)
+- You can see older projects(They may not work due to the changes I made to the engine.) or the current project settings(Always works since I test my works with this settings). You can go through the projects to make your own.
+- Then, just generate project files with cmake. (Download cmake, create a Build folder in GameProject folder and, via terminal, call cmake ..)
 - It should work in Linux, Windows and Mac Systems. If you cannot run the engine, please let me know.
 
 This engine is capable of:
@@ -23,7 +23,7 @@ This engine is capable of:
 - Timers
 
 Work in progress:
-- Implementing 3D animations
+- Implementing skeletal animations
 - Implementing a physics engine
 - Implementing shadows
 
