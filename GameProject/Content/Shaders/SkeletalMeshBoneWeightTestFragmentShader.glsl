@@ -15,15 +15,17 @@ uniform float phongExponent;
 uniform float deltaTime;
 uniform float elapsedTime;
 
-flat in ivec4 outBoneIDs;
-in vec4 outWeights;
+flat in int outBoneIDs[4];
+in float outWeights[4];
+
+#define MAX_BONE_SIZE_PER_VERTEX 4
 
 void main()
 {
-	int boneIndex = int(elapsedTime * 2.f) % 88;
+	int boneIndex = int(elapsedTime) % 37;
 
 	fragmentColor = vec3(0.f);
-    for (int i = 0 ; i < 4 ; i++)
+    for (int i = 0 ; i < MAX_BONE_SIZE_PER_VERTEX; i++)
     {
 		if (outBoneIDs[i] == boneIndex)
 		{

@@ -70,10 +70,15 @@
       <Name>SM_TexturedPlane</Name>
       <Path>Meshes/SM_TexturedPlane.fbx</Path>
     </StaticMesh>
-    <SkeletalMesh id = "0">
+    <!--<SkeletalMesh id = "0">
       <Name>SkeletalMesh_Human</Name>
-      <!--<Material>0</Material>-->
+      <Material>0</Material>
       <Path>Meshes/SkeletalMesh_Human.fbx</Path>
+    </SkeletalMesh>-->
+    <SkeletalMesh id = "0">
+      <Name>SkeletalMesh_Mutant</Name>
+      <!--<Material>0</Material>-->
+      <Path>Meshes/SkeletalMesh_Mutant.fbx</Path>
     </SkeletalMesh>
   </Meshes>
 
