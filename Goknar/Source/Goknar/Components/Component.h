@@ -93,12 +93,12 @@ protected:
 												0.f, 0.f, 1.f, relativePosition_.z,
 												0.f, 0.f, 0.f, 1.f);
 
-		relativeTransformationMatrix_ *= Matrix::GetRotationMatrix(relativeRotation_);
-
 		relativeTransformationMatrix_ *= Matrix(relativeScaling_.x, 0.f, 0.f, 0.f,
 												0.f, relativeScaling_.y, 0.f, 0.f,
 												0.f, 0.f, relativeScaling_.z, 0.f,
 												0.f, 0.f, 0.f, 1.f);
+
+		relativeTransformationMatrix_ *= Matrix::GetRotationMatrix(relativeRotation_);
 
 		relativeTransformationMatrix_ *= Matrix(1.f, 0.f, 0.f, -pivotPoint_.x,
 												0.f, 1.f, 0.f, -pivotPoint_.y,

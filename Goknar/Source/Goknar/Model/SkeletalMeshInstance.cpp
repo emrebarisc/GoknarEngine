@@ -11,17 +11,45 @@
 SkeletalMeshInstance::SkeletalMeshInstance(Component* parentComponent) :
 	MeshInstance(parentComponent)
 {
-
 }
 
-void SkeletalMeshInstance::Render() const
+void SkeletalMeshInstance::Render()
 {
 	MeshInstance::Render();
 
-	// TODO_Baris: TEMP
+	static bool trigerredAnimation = false;
+	if (!trigerredAnimation)
+	{
+		trigerredAnimation = true;
+		PlayAnimation("Armature|Armature|mixamo.com|Layer0");
+		//PlayAnimation("Armature|Armature|Take 001|BaseLayer");
+	}
+
+	if (skeletalMeshAnimation_.skeletalAnimation)
+	{
+		skeletalMeshAnimation_.elapsedTimeInSeconds += engine->GetDeltaTime();
+		skeletalMeshAnimation_.animationTime = fmod(skeletalMeshAnimation_.skeletalAnimation->ticksPerSecond * skeletalMeshAnimation_.elapsedTimeInSeconds, skeletalMeshAnimation_.skeletalAnimation->duration);
+	}
+
 	std::vector<Matrix> boneTransformations;
-	dynamic_cast<SkeletalMesh*>(mesh_)->GetBoneTransforms(boneTransformations);
+	/*TODO_Baris: TEMP*/dynamic_cast<SkeletalMesh*>(mesh_)/**/->GetBoneTransforms(boneTransformations, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime);
 	mesh_->GetMaterial()->GetShader()->SetMatrixVector("bones", boneTransformations);
+}
+
+void SkeletalMeshInstance::PlayAnimation(const std::string& animationName)
+{
+	if (!skeletalMeshAnimation_.skeletalAnimation || 
+		skeletalMeshAnimation_.skeletalAnimation && skeletalMeshAnimation_.skeletalAnimation->name != animationName)
+	{
+		SkeletalMesh* skeletalMesh = /*TODO_Baris: TEMP*/dynamic_cast<SkeletalMesh*>(GetMesh())/**/;
+		skeletalMeshAnimation_.skeletalAnimation = skeletalMesh->GetSkeletalAnimation(animationName);
+		if (!skeletalMeshAnimation_.skeletalAnimation)
+		{
+			return;
+		}
+		skeletalMeshAnimation_.animationTime = 0.f;
+		skeletalMeshAnimation_.elapsedTimeInSeconds = 0.f;
+	}
 }
 
 void SkeletalMeshInstance::AddMeshInstanceToRenderer()

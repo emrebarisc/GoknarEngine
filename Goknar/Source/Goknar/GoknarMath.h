@@ -441,6 +441,11 @@ public:
 			+ a.z * Determinant(Vector3(b.x, b.y, b.w), Vector3(c.x, c.y, c.w), Vector3(d.x, d.y, d.w))
 			- a.w * Determinant(Vector3(b.x, b.y, b.z), Vector3(c.x, c.y, c.z), Vector3(d.x, d.y, d.z));
 	}
+
+	static Vector3 LinearInterpolation(const Vector3& start, const Vector3& end, float alpha)
+	{
+		return start + alpha * (end - start);
+	}
 };
 
 extern float EPSILON;

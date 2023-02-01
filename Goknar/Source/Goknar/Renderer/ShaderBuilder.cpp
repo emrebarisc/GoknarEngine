@@ -192,7 +192,7 @@ std::string ShaderBuilder::VS_GetVertexNormalText()
 {
 	std::string vertexNormalText = "\n\t";
 	vertexNormalText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
-	vertexNormalText += " = normalize(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::NORMAL) + " * transpose(inverse(mat3(" + SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX + " * " + SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX + "))));\n";
+	vertexNormalText += " = normalize(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::NORMAL) + " * transpose(inverse(mat3(" + SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX + "))));\n";
 
 	return vertexNormalText;
 }
@@ -244,13 +244,14 @@ void main()
 std::string ShaderBuilder::VS_GetMain()
 {
 	std::string vsMain = R"(
-	vec4 fragmentPosition4Channel = vec4(position, 1.f) * )" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX) + " * " + std::string(SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX) + ";" +
+	mat4 )" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX) + " = " + SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX + " * " + SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX + R"(;
+	vec4 fragmentPosition4Channel = vec4(position, 1.f) * )" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX) + ";" +
 R"(
 	gl_Position = projectionMatrix * viewMatrix * fragmentPosition4Channel;
 	fragmentPosition = fragmentPosition4Channel;
 )";
 
-	vsMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = vec2(" + SHADER_VARIABLE_NAMES::VERTEX::UV + ".x, " + SHADER_VARIABLE_NAMES::VERTEX::UV + ".y);\n";
+	vsMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = " + SHADER_VARIABLE_NAMES::VERTEX::UV + "; \n";
 
 	return vsMain;
 }

@@ -337,7 +337,7 @@ void Renderer::Render()
 		{
 			BindStaticVBO();
 
-			for (const StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
+			for (StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
 			{
 				if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
 
@@ -348,7 +348,7 @@ void Renderer::Render()
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 			}
 
-			for (const StaticMeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
+			for (StaticMeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
 			{
 				if (!maskedStaticMeshInstance->GetIsRendered()) continue;
 
@@ -367,7 +367,7 @@ void Renderer::Render()
 		{
 			BindSkeletalVBO();
 
-			for (const SkeletalMeshInstance* opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
+			for (SkeletalMeshInstance* opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
 			{
 				if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
 
@@ -379,7 +379,7 @@ void Renderer::Render()
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
 			}
 
-			for (const SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
+			for (SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
 			{
 				if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
 
@@ -399,7 +399,7 @@ void Renderer::Render()
 		{
 			BindDynamicVBO();
 
-			for (const DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
+			for (DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
 			{
 				if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
 
@@ -410,7 +410,7 @@ void Renderer::Render()
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 			}
 
-			for (const DynamicMeshInstance* maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
+			for (DynamicMeshInstance* maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
 			{
 				if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
 
@@ -425,7 +425,7 @@ void Renderer::Render()
 
 	// Translucent meshes needs to be hold in a single ordered array in order to work correctly in the future
 	glEnable(GL_BLEND);
-	for (const StaticMeshInstance* translucentStaticMeshInstance : translucentStaticMeshInstances_)
+	for (StaticMeshInstance* translucentStaticMeshInstance : translucentStaticMeshInstances_)
 	{
 		if (!translucentStaticMeshInstance->GetIsRendered()) continue;
 		const Mesh* mesh = translucentStaticMeshInstance->GetMesh();
@@ -435,7 +435,7 @@ void Renderer::Render()
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 	}
 
-	for (const SkeletalMeshInstance* translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
+	for (SkeletalMeshInstance* translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
 	{
 		if (!translucentSkeletalMeshInstance->GetIsRendered()) continue;
 		// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
@@ -446,7 +446,7 @@ void Renderer::Render()
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
 	}
 
-	for (const DynamicMeshInstance* translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
+	for (DynamicMeshInstance* translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
 	{
 		if (!translucentDynamicMeshInstance->GetIsRendered()) continue;
 		const Mesh* mesh = translucentDynamicMeshInstance->GetMesh();

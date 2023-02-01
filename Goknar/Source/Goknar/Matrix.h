@@ -252,6 +252,21 @@ public:
                       0.f,                                                  0.f,                                                 0.f,                   1.f);
 	}
 
+    inline static Matrix GetPositionMatrix(const Vector3& position)
+    {
+        return Matrix(  1.f, 0.f, 0.f, position.x,
+                        0.f, 1.f, 0.f, position.y,
+                        0.f, 0.f, 1.f, position.z,
+                        0.f, 0.f, 0.f, 1.f);
+    }
+    inline static Matrix GetScalingMatrix(const Vector3& scaling)
+    {
+        return Matrix(  scaling.x, 0.f, 0.f, 0.f,
+                        0.f, scaling.y, 0.f, 0.f,
+                        0.f, 0.f, scaling.z, 0.f,
+                        0.f, 0.f, 0.f, 1.f);
+    }
+
 	inline static Matrix GetRotationMatrixAboutAnAxis(Vector3 axis, float angle)
 	{
 		float cosAngle = cos(angle);

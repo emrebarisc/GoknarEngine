@@ -62,7 +62,7 @@ public:
 		return worldTransformationMatrix_;
 	}
 
-	virtual void Render() const;
+	virtual void Render();
 
 	void SetIsRendered(bool isRendered)
 	{

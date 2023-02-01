@@ -407,6 +407,24 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			}
 			stream.clear();
 
+			child = element->FirstChildElement("Usage");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string usage;
+				stream >> usage;
+
+				texture->SetTextureUsage(	usage == "Diffuse" ? TextureUsage::Diffuse :
+											usage == "Normal" ? TextureUsage::Normal :
+											usage == "AmbientOcclusion" ? TextureUsage::AmbientOcclusion :
+											usage == "Height" ? TextureUsage::Height :
+											usage == "Metallic" ? TextureUsage::Metallic :
+											usage == "Roughness" ? TextureUsage::Roughness :
+											usage == "Specular" ? TextureUsage::Specular :
+											TextureUsage::None);
+			}
+			stream.clear();
+
 			child = element->FirstChildElement("Name");
 			if (child)
 			{

@@ -179,6 +179,12 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, aiNode* assimpNode)
 		if (boneNameToIdMap->find(assimpChildNodeName) != boneNameToIdMap->end())
 		{
 			Bone* childBone = skeletalMesh->GetBone(skeletalMesh->GetBoneId(assimpChildNodeName));
+			childBone->transformation = Matrix(
+				assimpChildNode->mTransformation.a1, assimpChildNode->mTransformation.a2, assimpChildNode->mTransformation.a3, assimpChildNode->mTransformation.a4,
+				assimpChildNode->mTransformation.b1, assimpChildNode->mTransformation.b2, assimpChildNode->mTransformation.b3, assimpChildNode->mTransformation.b4,
+				assimpChildNode->mTransformation.c1, assimpChildNode->mTransformation.c2, assimpChildNode->mTransformation.c3, assimpChildNode->mTransformation.c4,
+				assimpChildNode->mTransformation.d1, assimpChildNode->mTransformation.d2, assimpChildNode->mTransformation.d3, assimpChildNode->mTransformation.d4
+			);
 			bone->children.push_back(childBone);
 			SetupArmature(skeletalMesh, childBone, assimpChildNode);
 		}
@@ -215,7 +221,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 					if (boneId == skeletalMesh->GetBoneSize())
 					{
-						skeletalMesh->AddBone(new Bone(
+						skeletalMesh->AddBone(new Bone(assimpBone->mName.C_Str(),
 							Matrix
 							(
 								assimpBone->mOffsetMatrix.a1, assimpBone->mOffsetMatrix.a2, assimpBone->mOffsetMatrix.a3, assimpBone->mOffsetMatrix.a4, 
@@ -233,9 +239,76 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				}
 
 				aiNode* rootAssimpBone = GetRootBone(skeletalMesh->GetBoneNameToIdMap(), assimpScene->mRootNode);
-				skeletalMesh->GetArmature()->root = skeletalMesh->GetBone(skeletalMesh->GetBoneId(rootAssimpBone->mName.C_Str()));
-				SetupArmature(skeletalMesh, skeletalMesh->GetArmature()->root, rootAssimpBone);
 
+				if (rootAssimpBone)
+				{
+					Matrix rootTransformation
+					(
+						rootAssimpBone->mTransformation.a1, rootAssimpBone->mTransformation.a2, rootAssimpBone->mTransformation.a3, rootAssimpBone->mTransformation.a4,
+						rootAssimpBone->mTransformation.b1, rootAssimpBone->mTransformation.b2, rootAssimpBone->mTransformation.b3, rootAssimpBone->mTransformation.b4,
+						rootAssimpBone->mTransformation.c1, rootAssimpBone->mTransformation.c2, rootAssimpBone->mTransformation.c3, rootAssimpBone->mTransformation.c4,
+						rootAssimpBone->mTransformation.d1, rootAssimpBone->mTransformation.d2, rootAssimpBone->mTransformation.d3, rootAssimpBone->mTransformation.d4
+					);
+
+					skeletalMesh->GetArmature()->globalInverseTransform = rootTransformation.GetInverse();
+
+					skeletalMesh->GetArmature()->root = skeletalMesh->GetBone(skeletalMesh->GetBoneId(rootAssimpBone->mName.C_Str()));
+					skeletalMesh->GetArmature()->root->transformation = rootTransformation;
+					SetupArmature(skeletalMesh, skeletalMesh->GetArmature()->root, rootAssimpBone);
+
+					for (unsigned int assimpAnimationIndex = 0; assimpAnimationIndex < assimpScene->mNumAnimations; ++assimpAnimationIndex)
+					{
+						const aiAnimation* assimpAnimation = assimpScene->mAnimations[assimpAnimationIndex];
+						SkeletalAnimation* skeletalAnimation = new SkeletalAnimation();
+
+						skeletalAnimation->name = assimpAnimation->mName.C_Str();
+						skeletalAnimation->animationNodeSize = assimpAnimation->mNumChannels;
+						skeletalAnimation->animationNodes = new SkeletalAnimationNode * [skeletalAnimation->animationNodeSize];
+						skeletalAnimation->duration = assimpAnimation->mDuration;
+						skeletalAnimation->ticksPerSecond = assimpAnimation->mTicksPerSecond;
+
+						for (unsigned int animationNodeIndex = 0; animationNodeIndex < skeletalAnimation->animationNodeSize; ++animationNodeIndex)
+						{
+							aiNodeAnim* assimpAnimationNode = assimpAnimation->mChannels[animationNodeIndex];
+
+							SkeletalAnimationNode* skeletalAnimationNode = new SkeletalAnimationNode();
+							skeletalAnimationNode->affectedBoneName = assimpAnimationNode->mNodeName.C_Str();
+
+							skeletalAnimationNode->rotationKeySize = assimpAnimationNode->mNumRotationKeys;
+							skeletalAnimationNode->rotationKeys = new AnimationQuaternionKey[skeletalAnimationNode->rotationKeySize];
+							for (unsigned int rotationKeyIndex = 0; rotationKeyIndex < skeletalAnimationNode->rotationKeySize; ++rotationKeyIndex)
+							{
+								const aiQuatKey& assimpQuaternionKey = assimpAnimationNode->mRotationKeys[rotationKeyIndex];
+
+								skeletalAnimationNode->rotationKeys[rotationKeyIndex].time = assimpQuaternionKey.mTime;
+								skeletalAnimationNode->rotationKeys[rotationKeyIndex].value = assimpQuaternionKey.mValue;
+							}
+
+							skeletalAnimationNode->positionKeySize = assimpAnimationNode->mNumPositionKeys;
+							skeletalAnimationNode->positionKeys = new AnimationVectorKey[skeletalAnimationNode->positionKeySize];
+							for (unsigned int positionKeyIndex = 0; positionKeyIndex < skeletalAnimationNode->positionKeySize; ++positionKeyIndex)
+							{
+								const aiVectorKey& assimpVectorKey = assimpAnimationNode->mPositionKeys[positionKeyIndex];
+
+								skeletalAnimationNode->positionKeys[positionKeyIndex].time = assimpVectorKey.mTime;
+								skeletalAnimationNode->positionKeys[positionKeyIndex].value = Vector3(assimpVectorKey.mValue.x, assimpVectorKey.mValue.y, assimpVectorKey.mValue.z);
+							}
+
+							skeletalAnimationNode->scalingKeySize = assimpAnimationNode->mNumScalingKeys;
+							skeletalAnimationNode->scalingKeys = new AnimationVectorKey[skeletalAnimationNode->scalingKeySize];
+							for (unsigned int scalingKeyIndex = 0; scalingKeyIndex < skeletalAnimationNode->scalingKeySize; ++scalingKeyIndex)
+							{
+								const aiVectorKey& assimpVectorKey = assimpAnimationNode->mScalingKeys[scalingKeyIndex];
+
+								skeletalAnimationNode->scalingKeys[scalingKeyIndex].time = assimpVectorKey.mTime;
+								skeletalAnimationNode->scalingKeys[scalingKeyIndex].value = Vector3(assimpVectorKey.mValue.x, assimpVectorKey.mValue.y, assimpVectorKey.mValue.z);
+							}
+
+							skeletalAnimation->AddSkeletalAnimationNode(animationNodeIndex, skeletalAnimationNode);
+						}
+						skeletalMesh->AddSkeletalAnimation(skeletalAnimation);
+					}
+				}
 				staticMesh = skeletalMesh;
 			}
 			else

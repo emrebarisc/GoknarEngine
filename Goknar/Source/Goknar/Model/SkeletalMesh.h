@@ -10,14 +10,21 @@
 #include "Goknar/Log.h"
 #include "Goknar/GoknarMath.h"
 
+// TEMP
+#include "assimp/matrix3x3.h"
+#include "assimp/quaternion.h"
+
 #define MAX_BONE_SIZE_PER_VERTEX 4
 
 struct GOKNAR_API Bone
 {
-    Bone() : offset(Matrix::IdentityMatrix), transformation(Matrix::IdentityMatrix) {}
-    Bone(const Matrix& o) : offset(o), transformation(Matrix::IdentityMatrix) {}
-    Bone(const Matrix& o, const Matrix& t) : offset(o), transformation(t) {}
+    Bone() : name(""), offset(Matrix::ZeroMatrix), transformation(Matrix::ZeroMatrix) {}
+    Bone(const std::string& n) : name(n), offset(Matrix::ZeroMatrix), transformation(Matrix::ZeroMatrix) {}
+    Bone(const std::string& n, const Matrix& o) : name(n), offset(o), transformation(Matrix::ZeroMatrix) {}
+    Bone(const std::string& n, const Matrix& o, const Matrix& t) : name(n), offset(o), transformation(t) {}
     Bone(const Bone& rhs) : offset(rhs.offset), transformation(rhs.transformation) {}
+
+    std::string name;
 
     Matrix offset;
     Matrix transformation;
@@ -30,9 +37,11 @@ struct GOKNAR_API Armature
     Armature() : root(nullptr) {}
 
     Bone* root;
+    Matrix globalInverseTransform;
 };
 
-// ANOTHER VARIABLE CANNOT BE ADDED WITHOUT MODIFYING THE RENDERER
+// THIS CLASS IS DIRECTLY SENT TO THE GPU
+// BEWARE OF ADDING MORE DATA TO GPU SPACE
 struct GOKNAR_API VertexBoneData
 {
     unsigned int boneIDs[MAX_BONE_SIZE_PER_VERTEX] = { 0 };
@@ -44,6 +53,13 @@ struct GOKNAR_API VertexBoneData
         float largestDifference = 0.f;
         for (unsigned int i = 0; i < MAX_BONE_SIZE_PER_VERTEX; ++i)
         {
+            if (weights[i] == 0.f)
+            {
+                boneIDs[i] = id;
+                weights[i] = weight;
+            }
+            continue;
+
             if (boneIDs[i] == id)
             {
                 return;
@@ -58,6 +74,8 @@ struct GOKNAR_API VertexBoneData
             }
         }
 
+        return;
+
         if (0 <= smallestIndex)
         {
             boneIDs[smallestIndex] = id;
@@ -68,8 +86,212 @@ struct GOKNAR_API VertexBoneData
     }
 };
 
+struct GOKNAR_API AnimationVectorKey
+{
+    /** The time of this key */
+    float time;
+
+    /** The value of this key */
+    Vector3 value;
+
+    AnimationVectorKey() :
+        time(0.f),
+        value()
+    {}
+
+    AnimationVectorKey(double time, const Vector3& value) :
+        time(time), 
+        value(value)
+    {}
+
+    bool operator==(const AnimationVectorKey& rhs) const
+    {
+        return rhs.value == this->value;
+    }
+    bool operator!=(const AnimationVectorKey& rhs) const
+    {
+        return rhs.value != this->value;
+    }
+
+    bool operator<(const AnimationVectorKey& rhs) const
+    {
+        return time < rhs.time;
+    }
+
+    bool operator>(const AnimationVectorKey& rhs) const
+    {
+        return time > rhs.time;
+    }
+};
+
+struct GOKNAR_API AnimationQuaternionKey
+{
+    double time;
+    aiQuaternion value;
+
+    AnimationQuaternionKey() :
+        time(0.0),
+        value()
+    {}
+
+    AnimationQuaternionKey(double t, const aiQuaternion& v) :
+        time(t), 
+        value(v) 
+    {}
+
+    bool operator==(const AnimationQuaternionKey& rhs) const
+    {
+        return rhs.value == this->value;
+    }
+
+    bool operator!=(const AnimationQuaternionKey& rhs) const
+    {
+        return rhs.value != this->value;
+    }
+
+    bool operator<(const AnimationQuaternionKey& rhs) const
+    {
+        return time < rhs.time;
+    }
+
+    bool operator>(const AnimationQuaternionKey& rhs) const
+    {
+        return time > rhs.time;
+    }
+};
+
+struct GOKNAR_API SkeletalAnimationNode
+{
+    SkeletalAnimationNode() : 
+        rotationKeys(nullptr),
+        positionKeys(nullptr),
+        scalingKeys(nullptr),
+        rotationKeySize(0),
+        positionKeySize(0),
+        scalingKeySize(0)
+    {}
+
+    ~SkeletalAnimationNode()
+    {
+        delete[] rotationKeys;
+        delete[] positionKeys;
+        delete[] scalingKeys;
+    }
+
+    Matrix GetInterpolatedScalingMatrix(float time)
+    {
+        int previousIndex = 0;
+        for (unsigned int scalingIndex = 0; scalingIndex < scalingKeySize; ++scalingIndex)
+        {
+            if (scalingKeys[scalingIndex].time < time)
+            {
+                previousIndex = scalingIndex;
+            }
+        }
+
+        int nextIndex = previousIndex + 1;
+
+        float alpha = (time - scalingKeys[previousIndex].time) / (scalingKeys[nextIndex].time - scalingKeys[previousIndex].time);
+        
+        return Matrix::GetScalingMatrix(GoknarMath::LinearInterpolation(scalingKeys[previousIndex].value, scalingKeys[nextIndex].value, alpha));
+    }
+
+    Matrix GetInterpolatedPositionMatrix(float time)
+    {
+        int previousIndex = 0;
+        for (unsigned int positionIndex = 0; positionIndex < positionKeySize; ++positionIndex)
+        {
+            if (positionKeys[positionIndex].time < time)
+            {
+                previousIndex = positionIndex;
+            }
+        }
+
+        int nextIndex = previousIndex + 1;
+
+        float alpha = (time - positionKeys[previousIndex].time) / (positionKeys[nextIndex].time - positionKeys[previousIndex].time);
+
+        return Matrix::GetPositionMatrix(GoknarMath::LinearInterpolation(positionKeys[previousIndex].value, positionKeys[nextIndex].value, alpha));
+    }
+
+    Matrix GetInterpolatedRotationMatrix(float time)
+    {
+        int previousIndex = 0;
+        for (unsigned int positionIndex = 0; positionIndex < positionKeySize; ++positionIndex)
+        {
+            if (positionKeys[positionIndex].time < time)
+            {
+                previousIndex = positionIndex;
+            }
+        }
+
+        int nextIndex = previousIndex + 1;
+
+        float alpha = (time - positionKeys[previousIndex].time) / (positionKeys[nextIndex].time - positionKeys[previousIndex].time);
+
+        const aiQuaternion& startRotation = rotationKeys[previousIndex].value;
+        const aiQuaternion& endRotation = rotationKeys[nextIndex].value;
+        aiQuaternion out;
+        aiQuaternion::Interpolate(out, startRotation, endRotation, alpha);
+        out.Normalize();
+
+        aiMatrix3x3 assimpMatrix = out.GetMatrix();
+
+        return Matrix(  assimpMatrix.a1, assimpMatrix.a2, assimpMatrix.a3, 0.f,
+                        assimpMatrix.b1, assimpMatrix.b2, assimpMatrix.b3, 0.f,
+                        assimpMatrix.c1, assimpMatrix.c2, assimpMatrix.c3, 0.f,
+                        0.f, 0.f, 0.f, 1.f);
+    }
+
+    std::string affectedBoneName;
+
+    AnimationQuaternionKey* rotationKeys;
+    AnimationVectorKey* positionKeys;
+    AnimationVectorKey* scalingKeys;
+
+    int rotationKeySize;
+    int positionKeySize;
+    int scalingKeySize;
+};
+
+struct GOKNAR_API SkeletalAnimation
+{
+    SkeletalAnimation() :
+        animationNodes(nullptr),
+        name(""),
+        duration(0.f),
+        ticksPerSecond(0.f),
+        animationNodeSize(0)
+    {}
+
+    ~SkeletalAnimation()
+    {
+        for (unsigned int animationNodeIndex = 0; animationNodeIndex < animationNodeSize; ++animationNodeIndex)
+        {
+            delete animationNodes[animationNodeIndex];
+        }
+        delete[] animationNodes;
+    }
+
+    void AddSkeletalAnimationNode(int index, SkeletalAnimationNode* skeletalAnimationNode)
+    {
+        animationNodes[index] = skeletalAnimationNode;
+        affectedBoneNameToSkeletalAnimationNodeMap[skeletalAnimationNode->affectedBoneName] = skeletalAnimationNode;
+    }
+
+    std::unordered_map<std::string, SkeletalAnimationNode*> affectedBoneNameToSkeletalAnimationNodeMap;
+    SkeletalAnimationNode** animationNodes;
+    std::string name;
+    float duration;
+    float ticksPerSecond;
+    unsigned int animationNodeSize;
+};
+
 typedef std::vector<VertexBoneData> VertexBoneDataArray;
 typedef std::unordered_map<std::string, unsigned int> BoneNameToIdMap;
+
+typedef std::vector<SkeletalAnimation*> SkeletalAnimationVector;
+typedef std::unordered_map<std::string, SkeletalAnimation*> NameToSkeletalAnimationMap;
 
 class GOKNAR_API SkeletalMesh : public StaticMesh
 {
@@ -96,12 +318,6 @@ public:
         ++boneSize_;
     }
 
-    void AddBone(const Matrix& offset)
-    {
-        bones_.emplace_back(new Bone(offset));
-        ++boneSize_;
-    }
-
     unsigned int GetBoneSize() const
     {
         return boneSize_;
@@ -113,9 +329,9 @@ public:
 
         if (boneNameToIdMap_->find(boneName) == boneNameToIdMap_->end())
         {
-            boneId = boneNameToIdMapSize;
+            boneId = boneNameToIdMapSize_;
             (*boneNameToIdMap_)[boneName] = boneId;
-            ++boneNameToIdMapSize;
+            ++boneNameToIdMapSize_;
         }
         else
         {
@@ -137,7 +353,7 @@ public:
 
     Armature* GetArmature()
     {
-        return armature;
+        return armature_;
     }
 
     Bone* GetBone(unsigned int index)
@@ -145,18 +361,40 @@ public:
         return bones_[index];
     }
 
-    void GetBoneTransforms(std::vector<Matrix>& transforms);
+    void GetBoneTransforms(std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time);
+
+    void AddSkeletalAnimation(SkeletalAnimation* skeletalAnimation)
+    {
+        skeletalAnimations_.push_back(skeletalAnimation);
+        if (nameToSkeletalAnimationMap_.find(skeletalAnimation->name) == nameToSkeletalAnimationMap_.end())
+        {
+            nameToSkeletalAnimationMap_[skeletalAnimation->name] = skeletalAnimation;
+        }
+    }
+
+    const SkeletalAnimation* GetSkeletalAnimation(const std::string& name)
+    {
+        if (nameToSkeletalAnimationMap_.find(name) != nameToSkeletalAnimationMap_.end())
+        {
+            return nameToSkeletalAnimationMap_[name];
+        }
+
+        return nullptr;
+    }
 
 private:
-    void SetupTransforms(Bone* bone, const Matrix& parentTransform);
+    void SetupTransforms(Bone* bone, const Matrix& parentTransform, std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time);
 
     VertexBoneDataArray* vertexBoneDataArray_;
     BoneNameToIdMap* boneNameToIdMap_;
 
-    std::vector<Bone*> bones_;
-    Armature* armature;
+    SkeletalAnimationVector skeletalAnimations_;
+    NameToSkeletalAnimationMap nameToSkeletalAnimationMap_;
 
-    unsigned int boneNameToIdMapSize;
+    std::vector<Bone*> bones_;
+    Armature* armature_;
+
+    unsigned int boneNameToIdMapSize_;
     unsigned int boneSize_;
 };
 
