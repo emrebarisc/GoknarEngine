@@ -70,6 +70,10 @@
       <Name>SM_TexturedPlane</Name>
       <Path>Meshes/SM_TexturedPlane.fbx</Path>
     </StaticMesh>
+    <StaticMesh id = "6">
+      <Name>StaticMesh_SushiBar</Name>
+      <Path>Meshes/StaticMesh_SushiBar.fbx</Path>
+    </StaticMesh>
     <!--<SkeletalMesh id = "0">
       <Name>SkeletalMesh_Human</Name>
       <Material>0</Material>
@@ -77,8 +81,8 @@
     </SkeletalMesh>-->
     <SkeletalMesh id = "0">
       <Name>SkeletalMesh_Mutant</Name>
-      <!--<Material>0</Material>-->
-      <Path>Meshes/SkeletalMesh_Mutant.fbx</Path>
+      <Material>0</Material>
+      <Path>Meshes/SkeletalMesh_TestBox.fbx</Path>
     </SkeletalMesh>
   </Meshes>
 
@@ -159,6 +163,17 @@
       <WorldRotation>90.0 0.0 0.0</WorldRotation>
       <WorldScaling>1.0 1.0 1.0</WorldScaling>
       <Mesh>5</Mesh>
+    </StaticMeshObject>
+    <StaticMeshObject id = "6">
+      <Name>SushiBar</Name>
+      <PivotPoint>0 0 0</PivotPoint>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0.0 -10.0 0.0</WorldPosition>
+      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>6</Mesh>
     </StaticMeshObject>
     <SkeletalMeshObject id = "0">
       <Name>BasicSkeletalMesh</Name>

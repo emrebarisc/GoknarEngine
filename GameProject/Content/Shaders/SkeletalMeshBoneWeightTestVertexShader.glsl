@@ -27,22 +27,18 @@ out vec2 textureUV;
 
 void main()
 {
-	mat4 boneTransformationMatrix = mat4(1.f);
+	mat4 boneTransformationMatrix = mat4(0.f);
 
 	for(int boneIndex = 0; boneIndex < MAX_BONE_SIZE_PER_VERTEX; ++boneIndex)
 	{
-		boneTransformationMatrix += bones[boneIDs[0]] * weights[0];
-		boneTransformationMatrix += bones[boneIDs[1]] * weights[1];
-		boneTransformationMatrix += bones[boneIDs[2]] * weights[2];
-		boneTransformationMatrix += bones[boneIDs[3]] * weights[3];
+		boneTransformationMatrix += bones[boneIDs[boneIndex]] * weights[boneIndex];
 	}
 
 	mat4 modelMatrix = boneTransformationMatrix * relativeTransformationMatrix * worldTransformationMatrix;
-
 	vec4 fragmentPosition4Channel = vec4(position, 1.f) * modelMatrix;
 	gl_Position = projectionMatrix * viewMatrix * fragmentPosition4Channel;
 	fragmentPosition = fragmentPosition4Channel;
-	textureUV = uv;
+	textureUV = uv; 
 
 	vertexNormal = normalize(normal * transpose(inverse(mat3(modelMatrix))));
 
