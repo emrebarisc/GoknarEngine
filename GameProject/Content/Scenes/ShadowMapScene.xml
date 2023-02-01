@@ -35,9 +35,20 @@
     </Shader>
   </Shaders>
 
+  <Textures>
+    <Texture id="0">
+      <Name>T_MutantDiffuse</Name>
+      <Usage>Diffuse</Usage>
+      <MinFilter>LinearMipMapLinear</MinFilter>
+      <MagFilter>Linear</MagFilter>
+      <Path>Textures/T_MutantDiffuse.png</Path>
+    </Texture>
+  </Textures>
+
   <Materials>
     <Material id = "0">
       <Shader id="0"/>
+      <Texture id="0"/>
       <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
       <DiffuseReflectance>0.0 0.0 0.0</DiffuseReflectance>
       <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
@@ -82,7 +93,7 @@
     <SkeletalMesh id = "0">
       <Name>SkeletalMesh_Mutant</Name>
       <Material>0</Material>
-      <Path>Meshes/SkeletalMesh_TestBox.fbx</Path>
+      <Path>Meshes/SkeletalMesh_Mutant.fbx</Path>
     </SkeletalMesh>
   </Meshes>
 
@@ -168,9 +179,9 @@
       <Name>SushiBar</Name>
       <PivotPoint>0 0 0</PivotPoint>
       <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeRotation>0 0 90</RelativeRotation>
       <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>0.0 -10.0 0.0</WorldPosition>
+      <WorldPosition>0.0 0.0 2.0</WorldPosition>
       <WorldRotation>0.0 0.0 0.0</WorldRotation>
       <WorldScaling>1.0 1.0 1.0</WorldScaling>
       <Mesh>6</Mesh>
