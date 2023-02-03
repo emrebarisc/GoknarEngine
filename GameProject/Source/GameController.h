@@ -25,16 +25,18 @@ private:
 	void IncreaseCurrentBoneIndex();
 	void DecreaseCurrentBoneIndex();
 
+	void ToggleNormalTexture();
+
 	void SetAnimation();
-
 	void IncreaseAnimationIndex();
-
 	void DecreaseAnimationIndex();
 
 	Mutant* mutant;
 
 	int currentBoneIndex;
 	int animationIndex;
+
+	unsigned int useNormalTexture : 1;
 };
 
 #endif

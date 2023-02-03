@@ -17,7 +17,8 @@
 
 GameController::GameController() : 
 	Controller(),
-	mutant(nullptr)
+	mutant(nullptr),
+	useNormalTexture(true)
 {
 	currentBoneIndex = 0;
 	animationIndex = 0;
@@ -30,6 +31,8 @@ void GameController::SetupInputs()
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::RIGHT, INPUT_ACTION::G_PRESS, std::bind(&GameController::IncreaseAnimationIndex, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::LEFT, INPUT_ACTION::G_PRESS, std::bind(&GameController::DecreaseAnimationIndex, this));
+
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, std::bind(&GameController::ToggleNormalTexture, this));
 }
 
 void GameController::IncreaseCurrentBoneIndex()
@@ -48,6 +51,12 @@ void GameController::DecreaseCurrentBoneIndex()
 	}
 	GOKNAR_INFO("Current bone is {}", mutant->GetSkeletalMesh()->GetBone(currentBoneIndex)->name);
 	mutant->GetSkeletalMesh()->GetMaterial()->GetShader()->SetInt("currentBoneIndex", currentBoneIndex);
+}
+
+void GameController::ToggleNormalTexture()
+{
+	useNormalTexture = !useNormalTexture;
+	mutant->GetSkeletalMesh()->GetMaterial()->GetShader()->SetInt("useNormalTexture", useNormalTexture);
 }
 
 void GameController::IncreaseAnimationIndex()
