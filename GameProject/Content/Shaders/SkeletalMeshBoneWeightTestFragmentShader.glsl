@@ -13,8 +13,10 @@ uniform sampler2D T_MutantDiffuse;
 vec3 diffuseReflectance;
 vec3 sceneAmbient = vec3(0.392157, 0.392157, 0.392157);
 
-flat in int outBoneIDs[4];
-in float outWeights[4];
+uniform int currentBoneIndex = 0;
+
+flat in ivec4 outBoneIDs;
+in vec4 outWeights;
 
 vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 {
@@ -57,4 +59,37 @@ void main()
 	vec3 lightColor = sceneAmbient * ambientReflectance * diffuseReflectance;
 	lightColor += CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity);
 	fragmentColor = lightColor;
+
+	bool debugBones = false;
+	if(debugBones)
+	{
+		vec3 boneWeight = vec3(0.f, 0.f, 1.f);
+		for(int boneIndex = 0; boneIndex < 4; ++boneIndex)
+		{
+			// if(outBoneIDs[boneIndex] == 0 && 0.f < outWeights[boneIndex])
+			// {
+			// 	boneWeight = vec3(1.f, 0.f, 0.f);
+			// }
+			if(outBoneIDs[boneIndex] == currentBoneIndex && 0.f < outWeights[boneIndex])
+			{
+				float weight = outWeights[boneIndex];
+
+				if(weight < 0.25f)
+				{
+					boneWeight = vec3(1.f, 1.f, 0.f)/* * weight*/;
+				}
+				else if(weight < 0.5f)
+				{
+					boneWeight = vec3(0.f, 1.f, 0.f)/* * weight*/;
+				}
+				else
+				{
+					boneWeight = vec3(1.f, 0.f, 0.f)/* * weight*/;
+				}
+				break;
+			}
+		}
+
+		fragmentColor = boneWeight * 0.9f + diffuseReflectance * 0.1f;
+	}
 }

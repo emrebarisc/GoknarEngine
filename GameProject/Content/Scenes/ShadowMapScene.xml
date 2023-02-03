@@ -41,6 +41,7 @@
       <Usage>Diffuse</Usage>
       <MinFilter>LinearMipMapLinear</MinFilter>
       <MagFilter>Linear</MagFilter>
+      <!-- <Path>Textures/T_Human.jpg</Path> -->
       <Path>Textures/T_MutantDiffuse.png</Path>
     </Texture>
   </Textures>
@@ -58,43 +59,24 @@
 
   <Meshes>
     <StaticMesh id = "0">
-      <Name>SM_Floor</Name>
-      <Path>Meshes/SM_Floor.fbx</Path>
-    </StaticMesh>
-    <StaticMesh id = "1">
-      <Name>SM_Wall</Name>
-      <Path>Meshes/SM_Wall.fbx</Path>
-    </StaticMesh>
-    <StaticMesh id = "2">
-      <Name>SM_Cube</Name>
-      <Path>Meshes/SM_Cube.fbx</Path>
-    </StaticMesh>
-    <StaticMesh id = "3">
-      <Name>SM_CylinderWithAHole</Name>
-      <Path>Meshes/SM_CylinderWithAHole.fbx</Path>
-    </StaticMesh>
-    <StaticMesh id = "4">
-      <Name>SM_Monkey</Name>
-      <Path>Meshes/SM_Monkey.fbx</Path>
-    </StaticMesh>
-    <StaticMesh id = "5">
-      <Name>SM_TexturedPlane</Name>
-      <Path>Meshes/SM_TexturedPlane.fbx</Path>
-    </StaticMesh>
-    <StaticMesh id = "6">
-      <Name>StaticMesh_SushiBar</Name>
-      <Path>Meshes/StaticMesh_SushiBar.fbx</Path>
+      <Name>StaticMesh_BigFloor</Name>
+      <Path>Meshes/StaticMesh_BigFloor.fbx</Path>
     </StaticMesh>
     <!--<SkeletalMesh id = "0">
       <Name>SkeletalMesh_Human</Name>
       <Material>0</Material>
       <Path>Meshes/SkeletalMesh_Human.fbx</Path>
     </SkeletalMesh>-->
-    <SkeletalMesh id = "0">
+<!--     <SkeletalMesh id = "0">
       <Name>SkeletalMesh_Mutant</Name>
       <Material>0</Material>
       <Path>Meshes/SkeletalMesh_Mutant.fbx</Path>
-    </SkeletalMesh>
+    </SkeletalMesh> -->
+<!--     <SkeletalMesh id = "1">
+      <Name>SkeletalMesh_Bob</Name>
+      <Material>0</Material>
+      <Path>Meshes/SkeletalMesh_Bob.fbx</Path>
+    </SkeletalMesh> -->
   </Meshes>
 
   <Objects>
@@ -109,85 +91,19 @@
       <WorldScaling>2.0 2.0 2.0</WorldScaling>
       <Mesh>0</Mesh>
     </StaticMeshObject>
-    <StaticMeshObject id = "1">
-      <Name>Wall</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>0.0 5.0 0.0</WorldPosition>
-      <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>1</Mesh>
-    </StaticMeshObject>
-    <StaticMeshObject id = "2">
-      <Name>Wall</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>5.0 0.0 0.0</WorldPosition>
-      <WorldRotation>0.0 0.0 90.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>1</Mesh>
-    </StaticMeshObject>
-    <StaticMeshObject id = "3">
-      <Name>Cube</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>0.0 0.0 0.0</WorldPosition>
-      <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>2</Mesh>
-    </StaticMeshObject>
-    <StaticMeshObject id = "3">
-      <Name>Cylinder</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>0.0 0.0 5.0</WorldPosition>
-      <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>3</Mesh>
-    </StaticMeshObject>
-    <StaticMeshObject id = "4">
-      <Name>Monkey</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>0.0 0.0 10.0</WorldPosition>
-      <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>4</Mesh>
-    </StaticMeshObject>
-    <StaticMeshObject id = "5">
-      <Name>TexturedPlane</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>0.0 10.0 10.0</WorldPosition>
-      <WorldRotation>90.0 0.0 0.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>5</Mesh>
-    </StaticMeshObject>
-    <StaticMeshObject id = "6">
-      <Name>SushiBar</Name>
+<!--     <StaticMeshObject id = "7">
+      <Name>StaticMesh_Mutant</Name>
       <PivotPoint>0 0 0</PivotPoint>
       <RelativePosition>0 0 0</RelativePosition>
       <RelativeRotation>0 0 90</RelativeRotation>
       <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>0.0 0.0 2.0</WorldPosition>
+      <WorldPosition>-10.0 0.0 0.0</WorldPosition>
       <WorldRotation>0.0 0.0 0.0</WorldRotation>
       <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>6</Mesh>
+      <Mesh>7</Mesh>
     </StaticMeshObject>
     <SkeletalMeshObject id = "0">
-      <Name>BasicSkeletalMesh</Name>
+      <Name>SkeletalMesh_Mutant</Name>
       <PivotPoint>0 0 0</PivotPoint>
       <RelativePosition>0 0 0</RelativePosition>
       <RelativeRotation>0 0 0</RelativeRotation>
@@ -197,6 +113,28 @@
       <WorldScaling>0.025 0.025 0.025</WorldScaling>
       <Mesh>0</Mesh>
     </SkeletalMeshObject>
+    <SkeletalMeshObject id = "0">
+      <Name>SkeletalMesh_Mutant</Name>
+      <PivotPoint>0 0 0</PivotPoint>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>-10.0 -5.0 0.1</WorldPosition>
+      <WorldRotation>-90.0 0.0 0.0</WorldRotation>
+      <WorldScaling>0.025 0.025 0.025</WorldScaling>
+      <Mesh>0</Mesh>
+    </SkeletalMeshObject> -->
+<!--     <SkeletalMeshObject id = "1">
+      <Name>SkeletalMesh_Bob</Name>
+      <PivotPoint>0 0 0</PivotPoint>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0.0 -10.0 0.1</WorldPosition>
+      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>1</Mesh>
+    </SkeletalMeshObject> -->
   </Objects>
 
 

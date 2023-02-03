@@ -5,8 +5,8 @@ layout(location = 0) in vec4 color;
 layout(location = 1) in vec3 position;
 layout(location = 2) in vec3 normal;
 layout(location = 3) in vec2 uv;
-layout(location = 4) in int boneIDs[4];
-layout(location = 5) in float weights[4];
+layout(location = 4) in ivec4 boneIDs;
+layout(location = 5) in vec4 weights;
 
 uniform mat4 bones[100];
 
@@ -17,8 +17,8 @@ uniform mat4 projectionMatrix;
 uniform float deltaTime;
 uniform float elapsedTime;
 
-flat out int outBoneIDs[4];
-out float outWeights[4];
+flat out ivec4 outBoneIDs;
+out vec4 outWeights;
 out vec4 fragmentPosition;
 out vec3 vertexNormal;
 out vec2 textureUV;
