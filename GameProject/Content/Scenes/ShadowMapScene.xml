@@ -44,12 +44,18 @@
       <!-- <Path>Textures/T_Human.jpg</Path> -->
       <Path>Textures/T_MutantDiffuse.png</Path>
     </Texture>
+    <Texture id="1">
+      <Name>T_MutantNormal</Name>
+      <Usage>Normal</Usage>
+      <Path>Textures/T_MutantNormal.png</Path>
+    </Texture>
   </Textures>
 
   <Materials>
     <Material id = "0">
       <Shader id="0"/>
       <Texture id="0"/>
+      <Texture id="1"/>
       <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
       <DiffuseReflectance>0.0 0.0 0.0</DiffuseReflectance>
       <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>

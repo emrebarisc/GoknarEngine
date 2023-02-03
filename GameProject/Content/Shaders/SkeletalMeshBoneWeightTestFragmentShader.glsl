@@ -66,25 +66,21 @@ void main()
 		vec3 boneWeight = vec3(0.f, 0.f, 1.f);
 		for(int boneIndex = 0; boneIndex < 4; ++boneIndex)
 		{
-			// if(outBoneIDs[boneIndex] == 0 && 0.f < outWeights[boneIndex])
-			// {
-			// 	boneWeight = vec3(1.f, 0.f, 0.f);
-			// }
 			if(outBoneIDs[boneIndex] == currentBoneIndex && 0.f < outWeights[boneIndex])
 			{
 				float weight = outWeights[boneIndex];
 
 				if(weight < 0.25f)
 				{
-					boneWeight = vec3(1.f, 1.f, 0.f)/* * weight*/;
+					boneWeight = vec3(1.f, 1.f, 0.f) * weight;
 				}
 				else if(weight < 0.5f)
 				{
-					boneWeight = vec3(0.f, 1.f, 0.f)/* * weight*/;
+					boneWeight = vec3(0.f, 1.f, 0.f) * weight;
 				}
 				else
 				{
-					boneWeight = vec3(1.f, 0.f, 0.f)/* * weight*/;
+					boneWeight = vec3(1.f, 0.f, 0.f) * weight;
 				}
 				break;
 			}

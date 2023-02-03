@@ -10,12 +10,16 @@ layout(location = 5) in vec4 weights;
 
 uniform mat4 bones[100];
 
+uniform sampler2D T_MutantNormal;
+
 uniform mat4 worldTransformationMatrix;
 uniform mat4 relativeTransformationMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 uniform float deltaTime;
 uniform float elapsedTime;
+
+uniform bool useNormalTexture = true;
 
 flat out ivec4 outBoneIDs;
 out vec4 outWeights;
@@ -40,7 +44,15 @@ void main()
 	fragmentPosition = fragmentPosition4Channel;
 	textureUV = uv; 
 
-	vertexNormal = normalize(normal * transpose(inverse(mat3(modelMatrix))));
+	if(useNormalTexture)
+	{
+		vec3 textureNormal = normalize(texture(T_MutantNormal, textureUV).xyz * 2.f - 1.f);
+		vertexNormal = normalize(textureNormal * transpose(inverse(mat3(modelMatrix))));
+	}
+	else
+	{
+		vertexNormal = normalize(normal * transpose(inverse(mat3(modelMatrix))));
+	}
 
 	outBoneIDs = boneIDs;
 	outWeights = weights;
