@@ -14,8 +14,6 @@
 #include "assimp/matrix3x3.h"
 #include "assimp/quaternion.h"
 
-#define MAX_BONE_SIZE_PER_VERTEX 4
-
 struct GOKNAR_API Bone
 {
     Bone() : name(""), offset(Matrix::ZeroMatrix), transformation(Matrix::ZeroMatrix) {}
@@ -41,7 +39,11 @@ struct GOKNAR_API Armature
 };
 
 // THIS CLASS IS DIRECTLY SENT TO THE GPU
-// BEWARE OF ADDING MORE DATA TO GPU SPACE
+// BE CAUTIOUS OF ADDING OR UPDATING DATA
+//
+// MAX_BONE_SIZE_PER_VERTEX CANNOT EXCEED 4 
+// Since glVertexAttribPointer does not permit sizes more than 4
+#define MAX_BONE_SIZE_PER_VERTEX 4
 struct GOKNAR_API VertexBoneData
 {
     unsigned int boneIDs[MAX_BONE_SIZE_PER_VERTEX] = { 0 };
@@ -53,19 +55,11 @@ struct GOKNAR_API VertexBoneData
         float largestDifference = 0.f;
         for (unsigned int i = 0; i < MAX_BONE_SIZE_PER_VERTEX; ++i)
         {
-            if (weights[i] == 0.f)
-            {
-                boneIDs[i] = id;
-                weights[i] = weight;
-            }
-            continue;
-
-            if (boneIDs[i] == id)
+            if (boneIDs[i] == id && weights[i] != 0.f)
             {
                 return;
             }
 
-            // TODO_Baris: Optimize
             float difference = weight - weights[i];
             if (largestDifference < difference)
             {
@@ -73,8 +67,6 @@ struct GOKNAR_API VertexBoneData
                 smallestIndex = i;
             }
         }
-
-        return;
 
         if (0 <= smallestIndex)
         {
@@ -88,15 +80,12 @@ struct GOKNAR_API VertexBoneData
 
 struct GOKNAR_API AnimationVectorKey
 {
-    /** The time of this key */
     float time;
-
-    /** The value of this key */
     Vector3 value;
 
     AnimationVectorKey() :
         time(0.f),
-        value()
+        value(Vector3::ZeroVector)
     {}
 
     AnimationVectorKey(double time, const Vector3& value) :

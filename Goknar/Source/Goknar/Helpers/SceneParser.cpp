@@ -580,55 +580,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 		stream.clear();
 	}
 
-	//Get Dynamic Meshes
-	element = root->FirstChildElement("Meshes");
-	if (element)
-	{
-		element = element->FirstChildElement("DynamicMesh");
-		while (element)
-		{
-			int materialId = -1;
-			child = element->FirstChildElement("Material");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				stream >> materialId;
-			}
-
-			child = element->FirstChildElement("Path");
-			if (child)
-			{
-				std::string modelFilePath;
-				stream << child->GetText() << std::endl;
-				stream >> modelFilePath;
-
-				DynamicMesh* mesh = dynamic_cast<DynamicMesh*>(ModelLoader::LoadModel(ContentDir + modelFilePath));
-				if (mesh != nullptr)
-				{
-					scene->AddDynamicMesh(mesh);
-
-					if (0 <= materialId)
-					{
-						mesh->SetMaterial(scene->GetMaterial(materialId));
-					}
-				}
-				stream.clear();
-				element = element->NextSiblingElement("DynamicMesh");
-				continue;
-			}
-
-			DynamicMesh* mesh = new DynamicMesh();
-			if (0 <= materialId)
-			{
-				mesh->SetMaterial(scene->GetMaterial(materialId));
-			}
-
-			scene->AddDynamicMesh(mesh);
-			element = element->NextSiblingElement("DynamicMesh");
-		}
-		stream.clear();
-	}
-
 	//Get Static Meshes
 	element = root->FirstChildElement("Meshes");
 	if (element)
@@ -644,6 +595,8 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream >> materialId;
 			}
 
+			bool loadedWithFile = false;
+
 			child = element->FirstChildElement("Path");
 			if (child)
 			{
@@ -651,22 +604,14 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				stream >> modelFilePath;
 
-				StaticMesh* mesh = ModelLoader::LoadModel(ContentDir + modelFilePath);
+				StaticMesh* mesh = ModelLoader::LoadModel(modelFilePath);
 				if (mesh != nullptr)
 				{
-					if (SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(mesh))
-					{
-						scene->AddSkeletalMesh(skeletalMesh);
-					}
-					else
-					{
-						scene->AddStaticMesh(mesh);
-					}
-
 					if (0 <= materialId)
 					{
 						mesh->SetMaterial(scene->GetMaterial(materialId));
 					}
+					loadedWithFile = true;
 				}
 				stream.clear();
 				element = element->NextSiblingElement("StaticMesh");
@@ -736,7 +681,10 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			}
 			stream.clear();
 
-			scene->AddStaticMesh(mesh);
+			if (!loadedWithFile && 0 < mesh->GetVertexCount())
+			{
+				scene->AddStaticMesh(mesh);
+			}
 			element = element->NextSiblingElement("StaticMesh");
 		}
 		stream.clear();
@@ -765,11 +713,9 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				stream >> modelFilePath;
 
-				skeletalMesh = dynamic_cast<SkeletalMesh*>(ModelLoader::LoadModel(ContentDir + modelFilePath));
+				skeletalMesh = dynamic_cast<SkeletalMesh*>(ModelLoader::LoadModel(modelFilePath));
 				if (skeletalMesh != nullptr)
 				{
-					scene->AddSkeletalMesh(skeletalMesh);
-
 					if (0 <= materialId)
 					{
 						skeletalMesh->SetMaterial(scene->GetMaterial(materialId));
@@ -828,7 +774,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 relativeRotation;
 				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-				relativeRotation.ConvertDegreeToRadian();
 				staticMeshComponent->SetRelativeRotation(relativeRotation);
 			}
 			stream.clear();
@@ -859,7 +804,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 worldRotation;
 				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-				worldRotation.ConvertDegreeToRadian();
 				object->SetWorldRotation(worldRotation);
 			}
 			stream.clear();
@@ -916,7 +860,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 relativeRotation;
 				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-				relativeRotation.ConvertDegreeToRadian();
 				skeletalMeshComponent->SetRelativeRotation(relativeRotation);
 			}
 			stream.clear();
@@ -956,7 +899,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 worldRotation;
 				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-				worldRotation.ConvertDegreeToRadian();
 				object->SetWorldRotation(worldRotation);
 			}
 			stream.clear();
@@ -1014,7 +956,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 relativeRotation;
 				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-				relativeRotation.ConvertDegreeToRadian();
 				dynamicMeshComponent->SetRelativeRotation(relativeRotation);
 			}
 			stream.clear();
@@ -1054,7 +995,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 worldRotation;
 				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-				worldRotation.ConvertDegreeToRadian();
 				object->SetWorldRotation(worldRotation);
 			}
 			stream.clear();

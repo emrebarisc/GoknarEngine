@@ -13,7 +13,8 @@ ObjectBase::ObjectBase() :
 	worldPosition_(Vector3::ZeroVector),
 	worldRotation_(Vector3::ZeroVector),
 	worldScaling_(Vector3(1.f)),
-	totalComponentCount_(0)
+	totalComponentCount_(0),
+	isRendered_(true)
 {
 	engine->GetApplication()->GetMainScene()->AddObject(this);
 	engine->RegisterObject(this);
@@ -86,12 +87,15 @@ void ObjectBase::UpdateWorldTransformationMatrix()
 										0.f, 0.f, 1.f, worldPosition_.z,
 										0.f, 0.f, 0.f, 1.f);
 
+	Vector3 worldRotationInRadians = worldRotation_;
+	worldRotationInRadians.ConvertDegreeToRadian();
+	worldTransformationMatrix_ *= Matrix::GetRotationMatrix(worldRotationInRadians);
+
 	worldTransformationMatrix_ *= Matrix(worldScaling_.x, 0.f, 0.f, 0.f,
 										 0.f, worldScaling_.y, 0.f, 0.f,
 										 0.f, 0.f, worldScaling_.z, 0.f,
 										 0.f, 0.f, 0.f, 1.f);
 
-	worldTransformationMatrix_ *= Matrix::GetRotationMatrix(worldRotation_);
 
 	for (int componentIndex = 0; componentIndex < totalComponentCount_; componentIndex++)
 	{

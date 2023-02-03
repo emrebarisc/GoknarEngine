@@ -103,9 +103,8 @@ private:
 
 	int totalComponentCount_;
 
-    bool tickable_;
-
-	bool isRendered_;
+    unsigned int tickable_ : 1;
+	unsigned int isRendered_ : 1;
 };
 
 #endif

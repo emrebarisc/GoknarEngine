@@ -2,6 +2,9 @@
 
 #include "Goknar/Scene.h"
 
+#include "Mutant.h"
+#include "GameController.h"
+
 #include <chrono>
 
 class Game : public Application
@@ -14,6 +17,9 @@ public:
 	void Run() override;
 
 private:
+
+	Mutant* mutant;
+	GameController* gameController;
 };
 
 Game::Game() : Application()
@@ -27,6 +33,10 @@ Game::Game() : Application()
 	GOKNAR_CORE_WARN("\tScene is read in {} seconds.", elapsedTime);
 
 	lastFrameTimePoint = currentTimePoint;
+
+	mutant = new Mutant();
+	gameController = new GameController();
+	gameController->SetMutant(mutant);
 }
 
 void Game::Run()

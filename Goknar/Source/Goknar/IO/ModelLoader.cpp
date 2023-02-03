@@ -196,12 +196,13 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 	Scene* gameScene = engine->GetApplication()->GetMainScene();
 
 	StaticMesh* staticMesh = nullptr;
+	SkeletalMesh* skeletalMesh = nullptr;
 
 	Assimp::Importer importer;
 
 	// aiProcess_Triangulate caused problems with vertex weights
 	// Try exporting skeletal meshes as triangulated in modeling software
-	const aiScene* assimpScene = importer.ReadFile(path.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_OptimizeGraph);
+	const aiScene* assimpScene = importer.ReadFile((ContentDir + path).c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights);
 	if (assimpScene)
 	{
 		for (unsigned int meshIndex = 0; meshIndex < assimpScene->mNumMeshes; ++meshIndex)
@@ -210,7 +211,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 			if (assimpMesh->HasBones())
 			{
-				SkeletalMesh* skeletalMesh = new SkeletalMesh();
+				skeletalMesh = new SkeletalMesh();
 				skeletalMesh->ResizeVertexToBonesArray(assimpMesh->mNumVertices);
 
 				for (unsigned int boneIndex = 0; boneIndex < assimpMesh->mNumBones; ++boneIndex)
@@ -219,17 +220,14 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 					unsigned int boneId = skeletalMesh->GetBoneId(assimpBone->mName.C_Str());
 
-					if (boneId == skeletalMesh->GetBoneSize())
-					{
-						skeletalMesh->AddBone(new Bone(assimpBone->mName.C_Str(),
-							Matrix
-							(
-								assimpBone->mOffsetMatrix.a1, assimpBone->mOffsetMatrix.a2, assimpBone->mOffsetMatrix.a3, assimpBone->mOffsetMatrix.a4, 
-								assimpBone->mOffsetMatrix.b1, assimpBone->mOffsetMatrix.b2, assimpBone->mOffsetMatrix.b3, assimpBone->mOffsetMatrix.b4, 
-								assimpBone->mOffsetMatrix.c1, assimpBone->mOffsetMatrix.c2, assimpBone->mOffsetMatrix.c3, assimpBone->mOffsetMatrix.c4, 
-								assimpBone->mOffsetMatrix.d1, assimpBone->mOffsetMatrix.d2, assimpBone->mOffsetMatrix.d3, assimpBone->mOffsetMatrix.d4
-							)));
-					}
+					skeletalMesh->AddBone(new Bone(assimpBone->mName.C_Str(),
+						Matrix
+						(
+							assimpBone->mOffsetMatrix.a1, assimpBone->mOffsetMatrix.a2, assimpBone->mOffsetMatrix.a3, assimpBone->mOffsetMatrix.a4,
+							assimpBone->mOffsetMatrix.b1, assimpBone->mOffsetMatrix.b2, assimpBone->mOffsetMatrix.b3, assimpBone->mOffsetMatrix.b4,
+							assimpBone->mOffsetMatrix.c1, assimpBone->mOffsetMatrix.c2, assimpBone->mOffsetMatrix.c3, assimpBone->mOffsetMatrix.c4,
+							assimpBone->mOffsetMatrix.d1, assimpBone->mOffsetMatrix.d2, assimpBone->mOffsetMatrix.d3, assimpBone->mOffsetMatrix.d4
+						)));
 
 					for (unsigned int weightIndex = 0; weightIndex < assimpBone->mNumWeights; ++weightIndex)
 					{
@@ -438,5 +436,18 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 		GOKNAR_CORE_ERROR("Error occured while loading the asset({}). What went wrong: {}", path, importer.GetErrorString());
 	}
 
-	return staticMesh;
+	if (skeletalMesh)
+	{
+		engine->GetApplication()->GetMainScene()->AddSkeletalMesh(skeletalMesh);
+
+		return skeletalMesh;
+	}
+	else if (staticMesh)
+	{
+		engine->GetApplication()->GetMainScene()->AddStaticMesh(staticMesh);
+
+		return staticMesh;
+	}
+
+	return nullptr;
 }

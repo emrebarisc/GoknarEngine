@@ -27,6 +27,11 @@ public:
 	void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override;
 
 	void SetIsRendered(bool isRendered);
+
+	MeshInstance* GetMeshInstance() const
+	{
+		return meshInstance_;
+	}
 protected:
 	MeshComponent(ObjectBase* parent, MeshInstance* meshInstance);
 	inline void UpdateRelativeTransformationMatrix() override

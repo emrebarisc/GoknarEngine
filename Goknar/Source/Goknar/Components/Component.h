@@ -93,12 +93,14 @@ protected:
 												0.f, 0.f, 1.f, relativePosition_.z,
 												0.f, 0.f, 0.f, 1.f);
 
+		Vector3 relativeRotationInRadians = relativeRotation_;
+		relativeRotationInRadians.ConvertDegreeToRadian();
+		relativeTransformationMatrix_ *= Matrix::GetRotationMatrix(relativeRotationInRadians);
+
 		relativeTransformationMatrix_ *= Matrix(relativeScaling_.x, 0.f, 0.f, 0.f,
 												0.f, relativeScaling_.y, 0.f, 0.f,
 												0.f, 0.f, relativeScaling_.z, 0.f,
 												0.f, 0.f, 0.f, 1.f);
-
-		relativeTransformationMatrix_ *= Matrix::GetRotationMatrix(relativeRotation_);
 
 		relativeTransformationMatrix_ *= Matrix(1.f, 0.f, 0.f, -pivotPoint_.x,
 												0.f, 1.f, 0.f, -pivotPoint_.y,

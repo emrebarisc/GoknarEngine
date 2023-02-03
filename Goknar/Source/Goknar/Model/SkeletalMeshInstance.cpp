@@ -17,14 +17,6 @@ void SkeletalMeshInstance::Render()
 {
 	MeshInstance::Render();
 
-	static bool trigerredAnimation = false;
-	if (!trigerredAnimation)
-	{
-		trigerredAnimation = true;
-		PlayAnimation("Armature|Armature|mixamo.com|Layer0");
-		//PlayAnimation("Armature|Armature|Take 001|BaseLayer");
-	}
-
 	if (skeletalMeshAnimation_.skeletalAnimation)
 	{
 		skeletalMeshAnimation_.elapsedTimeInSeconds += engine->GetDeltaTime();

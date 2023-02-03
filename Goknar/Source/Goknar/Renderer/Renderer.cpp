@@ -371,6 +371,7 @@ void Renderer::Render()
 			{
 				if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
 
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 				// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
 				const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(opaqueSkeletalMeshInstance->GetMesh());
 				opaqueSkeletalMeshInstance->Render();
@@ -764,7 +765,6 @@ void Renderer::SetAttribPointersForSkeletalMesh()
 	GEsizei sizeOfSkeletalMeshVertexData = (GEsizei)(sizeof(VertexData) + sizeof(VertexBoneData));
 
 	long long offset = 0;
-
 	// Vertex color
 	glEnableVertexAttribArray(VERTEX_COLOR_LOCATION);
 	glVertexAttribPointer(VERTEX_COLOR_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
@@ -787,7 +787,7 @@ void Renderer::SetAttribPointersForSkeletalMesh()
 
 	// Bone ID
 	glEnableVertexAttribArray(BONE_ID_LOCATION);
-	glVertexAttribIPointer(BONE_ID_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GL_INT, sizeOfSkeletalMeshVertexData, (void*)offset);
+	glVertexAttribIPointer(BONE_ID_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GL_UNSIGNED_INT, sizeOfSkeletalMeshVertexData, (void*)offset);
 	offset += sizeof(VertexBoneData::boneIDs);
 
 	// Bone Weight
