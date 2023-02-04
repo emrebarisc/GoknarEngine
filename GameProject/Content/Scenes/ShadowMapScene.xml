@@ -1,5 +1,5 @@
 <Scene>
-  <BackgroundColor>183 230 247</BackgroundColor>
+  <BackgroundColor>10 10 10</BackgroundColor>
 
   <Cameras>
     <Camera id = "0">
@@ -8,17 +8,12 @@
       <Up>0.5 0.5 0.7071068286895752</Up>
       <NearPlane>-0.5 0.5 -0.28125 0.28125</NearPlane>
       <NearDistance>1</NearDistance>
-      <ImageResolution>1600 900</ImageResolution>
+      <ImageResolution>1920 1080</ImageResolution>
     </Camera>
   </Cameras>
 
   <Lights>
     <AmbientLight>100 100 100</AmbientLight>
-    <DirectionalLight>
-      <Direction>-0.57735 0.57735 -0.57735</Direction>
-      <Color>1.0 0.99 0.83</Color>
-      <Intensity>1.5</Intensity>
-    </DirectionalLight>
   </Lights>
 
   <Shaders>
@@ -42,12 +37,12 @@
       <MinFilter>LinearMipMapLinear</MinFilter>
       <MagFilter>Linear</MagFilter>
       <!-- <Path>Textures/T_Human.jpg</Path> -->
-      <Path>Textures/T_MutantDiffuse.png</Path>
+      <Path>Textures/T_Michelle_Diffuse.png</Path>
     </Texture>
     <Texture id="1">
       <Name>T_MutantNormal</Name>
       <Usage>Normal</Usage>
-      <Path>Textures/T_MutantNormal.png</Path>
+      <Path>Textures/T_Michelle_Normal.png</Path>
     </Texture>
   </Textures>
 
@@ -56,7 +51,7 @@
       <Shader id="0"/>
       <Texture id="0"/>
       <Texture id="1"/>
-      <AmbientReflectance>1.0 1.0 1.0</AmbientReflectance>
+      <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
       <DiffuseReflectance>0.0 0.0 0.0</DiffuseReflectance>
       <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
       <PhongExponent>1</PhongExponent>
@@ -67,6 +62,10 @@
     <StaticMesh id = "0">
       <Name>StaticMesh_BigFloor</Name>
       <Path>Meshes/StaticMesh_BigFloor.fbx</Path>
+    </StaticMesh>
+    <StaticMesh id = "1">
+      <Name>SM_Cube</Name>
+      <Path>Meshes/SM_Cube.fbx</Path>
     </StaticMesh>
     <!--<SkeletalMesh id = "0">
       <Name>SkeletalMesh_Human</Name>
@@ -92,10 +91,21 @@
       <RelativePosition>0 0 0</RelativePosition>
       <RelativeRotation>0 0 0</RelativeRotation>
       <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>-5.0 -5.0 0.0</WorldPosition>
+      <WorldPosition>0.0 0.0 0.0</WorldPosition>
       <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>2.0 2.0 2.0</WorldScaling>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
       <Mesh>0</Mesh>
+    </StaticMeshObject>
+    <StaticMeshObject id = "1">
+      <Name>Floor</Name>
+      <PivotPoint>0 0 0</PivotPoint>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0.0 0.0 0.0</WorldPosition>
+      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+      <WorldScaling>0.0 0.0 0.0</WorldScaling>
+      <Mesh>1</Mesh>
     </StaticMeshObject>
 <!--     <StaticMeshObject id = "7">
       <Name>StaticMesh_Mutant</Name>

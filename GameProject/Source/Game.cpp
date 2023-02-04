@@ -7,6 +7,8 @@
 
 #include <chrono>
 
+#include "LightController.h"
+
 class Game : public Application
 {
 public:
@@ -20,6 +22,7 @@ private:
 
 	Mutant* mutant;
 	GameController* gameController;
+	LightController* lightController;
 };
 
 Game::Game() : Application()
@@ -30,13 +33,14 @@ Game::Game() : Application()
 
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_WARN("\tScene is read in {} seconds.", elapsedTime);
+	GOKNAR_CORE_WARN("Scene is read in {} seconds.", elapsedTime);
 
 	lastFrameTimePoint = currentTimePoint;
 
 	mutant = new Mutant();
 	gameController = new GameController();
 	gameController->SetMutant(mutant);
+	lightController = new LightController();
 }
 
 void Game::Run()

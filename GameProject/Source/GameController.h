@@ -25,6 +25,8 @@ private:
 	void IncreaseCurrentBoneIndex();
 	void DecreaseCurrentBoneIndex();
 
+	void ToggleFullscreen();
+
 	void ToggleNormalTexture();
 
 	void SetAnimation();

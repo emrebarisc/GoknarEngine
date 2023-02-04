@@ -13,13 +13,13 @@
 
 Mutant::Mutant() : ObjectBase()
 {
-	skeletalMesh = dynamic_cast<SkeletalMesh*>(ModelLoader::LoadModel("Meshes/SkeletalMesh_Mutant.fbx"));
+	skeletalMesh = dynamic_cast<SkeletalMesh*>(ModelLoader::LoadModel("Meshes/SkeletalMesh_Michelle.fbx"));
 	skeletalMesh->SetMaterial(engine->GetApplication()->GetMainScene()->GetMaterial(0));
 
 
 	skeletalMeshComponent = new SkeletalMeshComponent(this);
 	skeletalMeshComponent->SetMesh(skeletalMesh);
-	skeletalMeshComponent->SetRelativePosition(Vector3(-5.f, -5.f, 0.1f));
+	skeletalMeshComponent->SetRelativePosition(Vector3(0.f, 0.f, 0.f));
 	skeletalMeshComponent->SetRelativeRotation(Vector3(-90.f, 0.f, 0.f));
 	skeletalMeshComponent->SetRelativeScaling(Vector3(0.025f, 0.025f, 0.025f));
 }

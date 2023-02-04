@@ -3,6 +3,7 @@
 // Engine includes
 #include "Goknar/Engine.h"
 #include "Goknar/Managers/InputManager.h"
+#include "Goknar/Managers/WindowManager.h"
 
 #include "Goknar/Material.h"
 #include "Goknar/Components/SkeletalMeshComponent.h"
@@ -33,6 +34,8 @@ void GameController::SetupInputs()
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::LEFT, INPUT_ACTION::G_PRESS, std::bind(&GameController::DecreaseAnimationIndex, this));
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, std::bind(&GameController::ToggleNormalTexture, this));
+
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F, INPUT_ACTION::G_PRESS, std::bind(&GameController::ToggleFullscreen, this));
 }
 
 void GameController::IncreaseCurrentBoneIndex()
@@ -51,6 +54,11 @@ void GameController::DecreaseCurrentBoneIndex()
 	}
 	GOKNAR_INFO("Current bone is {}", mutant->GetSkeletalMesh()->GetBone(currentBoneIndex)->name);
 	mutant->GetSkeletalMesh()->GetMaterial()->GetShader()->SetInt("currentBoneIndex", currentBoneIndex);
+}
+
+void GameController::ToggleFullscreen()
+{
+	engine->GetWindowManager()->ToggleFullscreen();
 }
 
 void GameController::ToggleNormalTexture()
@@ -81,6 +89,9 @@ void GameController::SetAnimation()
 
 	if (skeletalMeshInstance)
 	{
+		skeletalMeshInstance->PlayAnimation("Armature|Armature|mixamo.com|Layer0");
+		return;
+
 		switch (animationIndex)
 		{
 		case 0:
