@@ -371,7 +371,6 @@ void Renderer::Render()
 			{
 				if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
 
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 				// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
 				const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(opaqueSkeletalMeshInstance->GetMesh());
 				opaqueSkeletalMeshInstance->Render();
@@ -704,7 +703,7 @@ void Renderer::BindShadowTextures(Shader* shader)
 	}
 }
 
-void Renderer::SetShaderShadowVariables(Shader* shader)
+void Renderer::SetLightUniforms(Shader* shader)
 {
 	Scene* scene = engine->GetApplication()->GetMainScene();
 	const std::vector<DirectionalLight*>& staticDirectionalLights = scene->GetStaticDirectionalLights();
@@ -712,6 +711,41 @@ void Renderer::SetShaderShadowVariables(Shader* shader)
 	for (size_t i = 0; i < staticDirectionalLightCount; i++)
 	{
 		staticDirectionalLights[i]->SetShaderUniforms(shader);
+	}
+
+	const std::vector<DirectionalLight*>& dynamicDirectionalLights = scene->GetDynamicDirectionalLights();
+	size_t dynamicDirectionalLightCount = dynamicDirectionalLights.size();
+	for (size_t i = 0; i < dynamicDirectionalLightCount; i++)
+	{
+		dynamicDirectionalLights[i]->SetShaderUniforms(shader);
+	}
+
+	const std::vector<PointLight*>& staticPointLights = scene->GetStaticPointLights();
+	size_t staticPointLightCount = staticPointLights.size();
+	for (size_t i = 0; i < staticPointLightCount; i++)
+	{
+		staticPointLights[i]->SetShaderUniforms(shader);
+	}
+
+	const std::vector<PointLight*>& dynamicPointLights = scene->GetDynamicPointLights();
+	size_t dynamicPointLightCount = dynamicPointLights.size();
+	for (size_t i = 0; i < dynamicPointLightCount; i++)
+	{
+		dynamicPointLights[i]->SetShaderUniforms(shader);
+	}
+
+	const std::vector<SpotLight*>& staticSpotLights = scene->GetStaticSpotLights();
+	size_t staticSpotLightCount = staticSpotLights.size();
+	for (size_t i = 0; i < staticSpotLightCount; i++)
+	{
+		staticSpotLights[i]->SetShaderUniforms(shader);
+	}
+
+	const std::vector<SpotLight*>& dynamicSpotLights = scene->GetDynamicSpotLights();
+	size_t dynamicSpotLightCount = dynamicSpotLights.size();
+	for (size_t i = 0; i < dynamicSpotLightCount; i++)
+	{
+		dynamicSpotLights[i]->SetShaderUniforms(shader);
 	}
 }
 

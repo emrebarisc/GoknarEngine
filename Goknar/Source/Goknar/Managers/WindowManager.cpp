@@ -45,6 +45,11 @@ void WindowManager::Init()
 	windowWidth_ = activeCamera->GetImageWidth();
 	windowHeight_ = activeCamera->GetImageHeight();
 
+
+	if (isInFullscreen_)
+	{
+		mainMonitor_ = glfwGetPrimaryMonitor();
+	}
 	mainWindow_ = glfwCreateWindow(windowWidth_, windowHeight_, windowTitle_, mainMonitor_, 0);
 
 	if(mainWindow_)
@@ -156,12 +161,27 @@ void WindowManager::SetVSync(bool isEnable)
 
 void WindowManager::ToggleFullscreen()
 {
-	if (!isInFullscreen_)
+	isInFullscreen_ = !isInFullscreen_;
+
+	GLFWmonitor* monitor = nullptr;
+
+	int positionX = 0;
+	int positionY = 10; // Small value to show window title bar on non-fullscreen mode
+	float w = windowWidth_;
+	float h = windowHeight_;
+	float refreshRate = GLFW_DONT_CARE;
+
+	if (isInFullscreen_)
 	{
-		glfwSetWindowMonitor(mainWindow_, mainMonitor_, 0, 0, windowWidth_, windowHeight_, GLFW_DONT_CARE);
+		monitor = mainMonitor_;
+
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+		w = mode->width;
+		h = mode->height;
+		refreshRate = mode->refreshRate;
 	}
 
-	isInFullscreen_ = !isInFullscreen_;
+	glfwSetWindowMonitor(mainWindow_, monitor, positionX, positionY, w, h, refreshRate);
 }
 
 void WindowManager::Update()

@@ -27,6 +27,7 @@ void ShaderBuilder::GetShaderForMaterial(const Material* material, std::string& 
 	std::string fragmentShaderVariables = GetShaderVersionText();
 	fragmentShaderVariables += GetMaterialVariables();
 	fragmentShaderVariables += FS_GetVariableTexts();
+	fragmentShaderVariables += lightUniforms_;
 	for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
 	{
 		const Texture* texture = textures->at(textureIndex);
@@ -107,12 +108,10 @@ void ShaderBuilder::FS_BuildScene()
 
 	uniforms_ += FS_GetVariableTexts();
 	uniforms_ += GetMaterialDiffuseVariable();
-	uniforms_ += GetMaterialVariables();
 
 	const Vector3& sceneAmbientLight = scene->GetAmbientLight();
 	fragmentShaderOutsideMain_ += "vec3 sceneAmbient = vec3(" + std::to_string(sceneAmbientLight.x / 255.f) + ", " + std::to_string(sceneAmbientLight.y / 255.f) + ", " + std::to_string(sceneAmbientLight.z / 255.f) + ");\n";
-
-	fragmentShaderInsideMain_ += "\tvec3 lightColor = sceneAmbient * ambientReflectance * " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";\n";
+	fragmentShaderInsideMain_ += "\tvec3 lightColor = sceneAmbient * ambientReflectance;\n";
 
 	// Lights
 	{
@@ -132,7 +131,7 @@ void ShaderBuilder::FS_BuildScene()
 			for (const PointLight* dynamicPointLight : dynamicPointLights)
 			{
 				std::string lightVariableName = dynamicPointLight->GetName();
-				uniforms_ += GetPointLightUniformTexts(lightVariableName);
+				lightUniforms_ += GetPointLightUniformTexts(lightVariableName);
 				fragmentShaderInsideMain_ += GetPointLightColorSummationText(lightVariableName);
 			}
 		}
@@ -153,7 +152,7 @@ void ShaderBuilder::FS_BuildScene()
 			for (const DirectionalLight* dynamicDirectionalLight : dynamicDirectionalLights)
 			{
 				std::string lightVariableName = dynamicDirectionalLight->GetName();
-				uniforms_ += GetDirectionalLightUniformTexts(lightVariableName);
+				lightUniforms_ += GetDirectionalLightUniformTexts(lightVariableName);
 				fragmentShaderInsideMain_ += GetDirectionalLightColorSummationText(lightVariableName);
 
 			}
@@ -175,12 +174,16 @@ void ShaderBuilder::FS_BuildScene()
 			for (const SpotLight* dynamicSpotLight : dynamicSpotLights)
 			{
 				std::string lightVariableName = dynamicSpotLight->GetName();
-				uniforms_ += GetSpotLightUniformTexts(lightVariableName);
+				lightUniforms_ += GetSpotLightUniformTexts(lightVariableName);
 				fragmentShaderInsideMain_ += GetSpotLightColorSummationText(lightVariableName);
 			}
 		}
 	}
+
+	fragmentShaderInsideMain_ += "\tlightColor *= " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";\n";
 	fragmentShaderInsideMain_ += "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " = lightColor;";
+
+	uniforms_ = lightUniforms_;
 
 	CombineFragmentShader();
 	
@@ -477,7 +480,7 @@ std::string ShaderBuilder::GetSpotLightColorFunctionText()
 	return R"(
 vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, float coverageAngle, float falloffAngle)
 {
-	vec3 diffuse = vec3(0.f, 0.f, 0.f);
+	float lightMultiplier = 0.f;
 	vec3 specular = vec3(0.f, 0.f, 0.f);
 
 	// To light vector
@@ -485,38 +488,39 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 	float wiLength = length(wi);
 	wi /= wiLength;
 
-	if(dot(vertexNormal, wi) < 0.f) return vec3(0.f, 0.f, 0.f);
-
-	// To viewpoint vector
-	vec3 wo = viewPosition - vec3(fragmentPosition);
-	float woLength = length(wo);
-	wo /= woLength;
-
-	// Half vector
-	vec3 halfVector = (wi + wo) * 0.5f;
+	if(0.f < dot(wi, )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"()) return vec3(0.f);
 
 	float inverseDistanceSquare = 1.f / (wiLength * wiLength);
 
 	float cosCoverage = cos(coverageAngle);
 	float cosFalloff = cos(falloffAngle);
-
 	float cosTheta = dot(wi, direction);
+	
+	if(cosTheta < cosCoverage)
+	{
+		return vec3(0.f);
+	}
 
-	if(cosTheta > cosFalloff)
+	if(cosFalloff < cosTheta)
 	{
-		diffuse = )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"(;
+		lightMultiplier = 1.f;
 	}
-	else if(cosTheta > cosCoverage)
+	else
 	{
-		float c = pow((cosTheta - cosCoverage) / (cosFalloff - cosCoverage), 4);
-		diffuse = )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"( * c;
+		lightMultiplier = pow((cosTheta - cosCoverage) / (cosFalloff - cosCoverage), 8);
 	}
+
+	// To viewpoint vector
+	vec3 wo = normalize(viewPosition - vec3(fragmentPosition));
+
+	// Half vector
+	vec3 halfVector = (-wi + wo) * 0.5f;
 
 	// Specular
-	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), phongExponent);
-	specular = specularReflectance * cosAlphaPrimeToThePowerOfPhongExponent;
+	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"(, halfVector)), phongExponent);
+	specular = )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( * cosAlphaPrimeToThePowerOfPhongExponent;
 
-	vec3 color = (diffuse + specular) * intensity * inverseDistanceSquare;
+	vec3 color = (1.f + specular) * lightMultiplier * intensity * inverseDistanceSquare;
 	return clamp(color, 0.f, 1.f);
 }
 )";
@@ -553,6 +557,7 @@ void ShaderBuilder::CombineFragmentShader()
 	sceneFragmentShader_ = "// DefaultFragmentShader\n\n";
 	sceneFragmentShader_ += GetShaderVersionText() + "\n\n";
 	sceneFragmentShader_ += uniforms_;
+	sceneFragmentShader_ += GetMaterialVariables();
 
 	sceneFragmentShader_ += fragmentShaderOutsideMain_;
 	sceneFragmentShader_ += R"(

@@ -19,8 +19,10 @@ public:
     }
 
     // Pass angles in degrees
-    SpotLight(float coverage, float falloff) : Light(), coverageAngle_(coverage), falloffAngle_(falloff)
+    SpotLight(float coverage, float falloff) : SpotLight()
     {
+		coverageAngle_ = coverage;
+		falloffAngle_ = falloff;
         coverageAngle_ = DEGREE_TO_RADIAN(coverageAngle_);
         falloffAngle_ = DEGREE_TO_RADIAN(falloffAngle_);
     }

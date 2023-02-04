@@ -25,6 +25,8 @@ public:
 
 	void RenderShadowMap() override;
 
+    void SetShaderUniforms(const Shader* shader) const;
+
 protected:
 
 private:

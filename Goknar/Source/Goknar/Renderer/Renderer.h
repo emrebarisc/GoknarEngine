@@ -62,7 +62,7 @@ public:
 	}
 
 	void BindShadowTextures(Shader* shader);
-	void SetShaderShadowVariables(Shader* shader);
+	void SetLightUniforms(Shader* shader);
 
 private:
 	void BindStaticVBO();

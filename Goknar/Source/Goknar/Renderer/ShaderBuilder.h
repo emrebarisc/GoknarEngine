@@ -105,6 +105,7 @@ private:
 
 	// Fragment shader variables
 	std::string uniforms_;
+	std::string lightUniforms_;
 	std::string fragmentShaderOutsideMain_;
 	std::string fragmentShaderInsideMain_;
 	std::string fragmentShaderVertexNormalText_;
