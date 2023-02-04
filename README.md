@@ -2,6 +2,7 @@
 
 ![alt text](http://www.binarytorgb.com/wp-content/uploads/2020/01/Mesh-InstancingTexturingShadingAnd-GenericSceneGeneration.png "Goknar Engine Sample Render")
 ![alt text](http://www.binarytorgb.com/wp-content/uploads/2023/02/Goknar_SkeletalAnimation.gif "Goknar Engine Skeletal Animation")
+![alt text](http://www.binarytorgb.com/wp-content/uploads/2023/02/Goknar_Macarena.gif "Goknar Engine Skeletal Animation")
 
 # How to Run
 
