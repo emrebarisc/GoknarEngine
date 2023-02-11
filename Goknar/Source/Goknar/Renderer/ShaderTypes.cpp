@@ -12,6 +12,8 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* NORMAL = "normal";
 		const char* COLOR = "color";
 		const char* UV = "uv";
+		const char* BONE_IDS = "boneIDs";
+		const char* WEIGHTS = "weights";
 	}
 
 	inline namespace MATERIAL
@@ -44,6 +46,12 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* SHADOW_MAP = "ShadowMap";
 	}
 
+	inline namespace SKELETAL_MESH
+	{
+		const char* BONES = "bones";
+		const char* MAX_BONE_SIZE_MACRO = "MAX_BONE_SIZE_PER_VERTEX";
+	}
+
 	inline namespace TEXTURE
 	{
 		const char* UV = "textureUV";
@@ -58,6 +66,7 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace POSITIONING
 	{
+		const char* BONE_TRANSFORMATION_MATRIX = "boneTransformationMatrix";
 		const char* WORLD_TRANSFORMATION_MATRIX = "worldTransformationMatrix";
 		const char* RELATIVE_TRANSFORMATION_MATRIX = "relativeTransformationMatrix";
 		const char* MODEL_MATRIX = "modelMatrix";
@@ -77,6 +86,8 @@ inline namespace SHADER_VARIABLE_NAMES
 	{
 		const char* FRAGMENT_POSITION = "fragmentPosition";
 		const char* VERTEX_NORMAL = "vertexNormal";
+		const char* BONE_IDS = "outBoneIDs";
+		const char* WEIGHTS = "outWeights";
 	}
 
 	inline namespace FRAGMENT_SHADER_OUTS

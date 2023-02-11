@@ -7,6 +7,8 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/IO/IOManager.h"
+#include "Goknar/Model/Mesh.h"
+#include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Material.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
@@ -14,75 +16,116 @@
 
 ShaderBuilder* ShaderBuilder::instance_ = nullptr;
 
-void ShaderBuilder::GetShaderForMaterial(const Material* material, std::string& vertexShader, std::string& fragmentShader)
+void ShaderBuilder::BuildShader(Mesh* mesh)
 {
-	const std::vector<const Texture*>* textures = material->GetShader()->GetTextures();
-	size_t textureSize = textures->size();
-
-	// Vertex Shader
-	vertexShader = VS_BuildScene();
-
-	// Fragment Shader
-
-	std::string fragmentShaderVariables = GetShaderVersionText();
-	fragmentShaderVariables += GetMaterialVariables();
-	fragmentShaderVariables += FS_GetVariableTexts();
-	fragmentShaderVariables += lightUniforms_;
-	for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
+	Material* material = mesh->GetMaterial();
+	if (material)
 	{
-		const Texture* texture = textures->at(textureIndex);
-		fragmentShaderVariables += "uniform sampler2D " + texture->GetName() + ";\n";
-	}
+		Shader* shader = material->GetShader();
+		if (shader)
+		{
+			std::string vertexShader;
+			std::string fragmentShader;
+			const std::vector<const Texture*>* textures = material->GetShader()->GetTextures();
+			size_t textureSize = textures->size();
 
-	std::string fragmentShaderOutsideMain = fragmentShaderOutsideMain_;
+			// Vertex Shader
+			vertexShader = "// DefaultVertexShader";
+			vertexShader = GetShaderVersionText();
+			vertexShader += VS_GetMainLayouts();
 
-	bool hasADiffuseShader = false;
+			SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(mesh);
+			if (skeletalMesh)
+			{
+				vertexShader += VS_GetSkeletalMeshLayouts();
+				vertexShaderModelMatrixVariable_ = std::string(SHADER_VARIABLE_NAMES::POSITIONING::BONE_TRANSFORMATION_MATRIX) + " * " + vertexShaderModelMatrixVariable_;
+				vertexShader += VS_GetSkeletalMeshVariables();
+				vertexShader += VS_GetSkeletalMeshUniforms(skeletalMesh->GetBoneSize());
+			}
 
-	std::string fragmentShaderMain = R"(
+			vertexShader += VS_GetUniforms();
+			vertexShader += R"(
 void main()
 {
 )";
-	for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
-	{
-		const Texture* texture = textures->at(textureIndex);
-		if (texture->GetTextureUsage() == TextureUsage::Diffuse)
-		{
-			hasADiffuseShader = true;
-
-			std::string textureColorVariable = texture->GetName() + "Color";
-
-			fragmentShaderMain += std::string("\tvec4 ") + textureColorVariable + " = texture(" + texture->GetName() + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + "); \n";
-
-			if (material->GetBlendModel() == MaterialBlendModel::Masked)
+			if (skeletalMesh)
 			{
-				fragmentShaderMain += "\tif (" + textureColorVariable + ".a < 0.5f) discard;\n";
+				vertexShader += VS_GetSkeletalMeshWeightCalculation();
+			}
+			vertexShader += VS_GetMain();
+			vertexShader += VS_GetVertexNormalText();
+			vertexShader += R"(
+}
+)";
+
+			// Fragment Shader
+
+			std::string fragmentShaderVariables = GetShaderVersionText();
+			fragmentShaderVariables += GetMaterialVariables();
+			fragmentShaderVariables += FS_GetVariableTexts();
+			fragmentShaderVariables += lightUniforms_;
+			for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
+			{
+				const Texture* texture = textures->at(textureIndex);
+
+				if (texture->GetTextureUsage() != TextureUsage::Normal)
+				{
+					fragmentShaderVariables += "uniform sampler2D " + texture->GetName() + ";\n";
+				}
 			}
 
-			fragmentShaderMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + " = vec3(" + textureColorVariable + "); \n";
-		}
-	}
+			std::string fragmentShaderOutsideMain = fragmentShaderOutsideMain_;
 
-	fragmentShaderMain += "\n" + fragmentShaderInsideMain_;
-	fragmentShaderMain += R"(
+			bool hasADiffuseShader = false;
+
+			std::string fragmentShaderMain = R"(
+void main()
+{
+)";
+			for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
+			{
+				const Texture* texture = textures->at(textureIndex);
+				if (texture->GetTextureUsage() == TextureUsage::Diffuse)
+				{
+					hasADiffuseShader = true;
+
+					std::string textureColorVariable = texture->GetName() + "Color";
+
+					fragmentShaderMain += std::string("\tvec4 ") + textureColorVariable + " = texture(" + texture->GetName() + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + "); \n";
+
+					if (material->GetBlendModel() == MaterialBlendModel::Masked)
+					{
+						fragmentShaderMain += "\tif (" + textureColorVariable + ".a < 0.5f) discard;\n";
+					}
+
+					fragmentShaderMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + " = vec3(" + textureColorVariable + "); \n";
+				}
+			}
+
+			fragmentShaderMain += "\n" + fragmentShaderInsideMain_;
+			fragmentShaderMain += R"(
 })";
 
-	if (hasADiffuseShader)
-	{
-		fragmentShaderVariables += GetTextureDiffuseVariable();
-	}
-	else
-	{
-		fragmentShaderVariables += GetMaterialDiffuseVariable();
-	}
+			if (hasADiffuseShader)
+			{
+				fragmentShaderVariables += GetTextureDiffuseVariable();
+			}
+			else
+			{
+				fragmentShaderVariables += GetMaterialDiffuseVariable();
+			}
 
-	fragmentShader = fragmentShaderVariables;
-	fragmentShader += fragmentShaderOutsideMain;
-	fragmentShader += fragmentShaderMain;
+			fragmentShader = fragmentShaderVariables;
+			fragmentShader += fragmentShaderOutsideMain;
+			fragmentShader += fragmentShaderMain;
 
-	/*
-	IOManager::WriteFile((ContentDir + material->GetName() + "VertexShader.glsl").c_str(), vertexShader.c_str());
-	IOManager::WriteFile((ContentDir + material->GetName() + "FragmentShader.glsl").c_str(), fragmentShader.c_str());
-	*/
+			IOManager::WriteFile((ContentDir + material->GetName() + "VertexShader.glsl").c_str(), vertexShader.c_str());
+			IOManager::WriteFile((ContentDir + material->GetName() + "FragmentShader.glsl").c_str(), fragmentShader.c_str());
+			
+			shader->SetVertexShaderScript(vertexShader);
+			shader->SetFragmentShaderScript(fragmentShader);
+		}
+	}
 }
 
 ShaderBuilder::ShaderBuilder() : 
@@ -97,6 +140,7 @@ ShaderBuilder::~ShaderBuilder()
 
 void ShaderBuilder::Init()
 {
+	vertexShaderModelMatrixVariable_ = std::string(SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX) + " * " + SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX;
 	sceneVertexShader_ = VS_BuildScene();
 	FS_BuildScene();
 	isInstantiated_ = true;
@@ -231,7 +275,7 @@ std::string ShaderBuilder::VS_BuildScene()
 	std::string vertexShader;
 	vertexShader = "// DefaultVertexShader";
 	vertexShader = GetShaderVersionText();
-	vertexShader += VS_GetVariableTexts();
+	vertexShader += VS_GetUniforms();
 	vertexShader += R"(
 void main()
 {)";
@@ -247,7 +291,7 @@ void main()
 std::string ShaderBuilder::VS_GetMain()
 {
 	std::string vsMain = R"(
-	mat4 )" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX) + " = " + SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX + " * " + SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX + R"(;
+	mat4 )" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX) + " = " + vertexShaderModelMatrixVariable_ + R"(;
 	vec4 fragmentPosition4Channel = vec4(position, 1.f) * )" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX) + ";" +
 R"(
 	gl_Position = projectionMatrix * viewMatrix * fragmentPosition4Channel;
@@ -259,25 +303,100 @@ R"(
 	return vsMain;
 }
 
-std::string ShaderBuilder::VS_GetVariableTexts()
+std::string ShaderBuilder::VS_GetMainLayouts()
+{
+	std::string layouts = "";
+
+	layouts += "\n\n\nlayout(location = 0) in vec4 ";
+	layouts += SHADER_VARIABLE_NAMES::VERTEX::COLOR;
+	layouts += ";\n";
+
+	layouts += "layout(location = 1) in vec3 ";
+	layouts += SHADER_VARIABLE_NAMES::VERTEX::POSITION;
+	layouts += ";\n";
+
+	layouts += "layout(location = 2) in vec3 ";
+	layouts += SHADER_VARIABLE_NAMES::VERTEX::NORMAL;
+	layouts += ";\n";
+
+	layouts += "layout(location = 3) in vec2 ";
+	layouts += SHADER_VARIABLE_NAMES::VERTEX::UV;
+	layouts += ";\n";
+
+	return layouts;
+}
+
+std::string ShaderBuilder::VS_GetSkeletalMeshLayouts()
+{
+	std::string layouts = "";
+
+	layouts += "layout(location = 4) in ivec4 ";
+	layouts += SHADER_VARIABLE_NAMES::VERTEX::BONE_IDS;
+	layouts += ";\n";
+
+	layouts += "layout(location = 5) in vec4 ";
+	layouts += SHADER_VARIABLE_NAMES::VERTEX::WEIGHTS;
+	layouts += ";\n";
+
+	return layouts;
+}
+
+std::string ShaderBuilder::VS_GetSkeletalMeshUniforms(int boneCount)
+{
+	std::string uniforms = "";
+
+	uniforms += "uniform mat4 ";
+	uniforms += SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES;
+	uniforms += "[";
+	uniforms += std::to_string(boneCount);
+	uniforms += "]";
+	uniforms += ";\n";
+
+	return uniforms;
+}
+
+std::string ShaderBuilder::VS_GetSkeletalMeshVariables()
+{
+	std::string variables = "";
+
+	variables += "#define ";
+	variables += SHADER_VARIABLE_NAMES::SKELETAL_MESH::MAX_BONE_SIZE_MACRO;
+	variables += " ";
+	variables += std::to_string(MAX_BONE_SIZE_PER_VERTEX);
+	variables += "\n";
+
+	return variables;
+}
+
+std::string ShaderBuilder::VS_GetSkeletalMeshWeightCalculation()
+{
+	std::string weightCalculation = "";
+
+	weightCalculation += std::string("\t") + "mat4 ";
+	weightCalculation += SHADER_VARIABLE_NAMES::POSITIONING::BONE_TRANSFORMATION_MATRIX;
+	weightCalculation += " = mat4(0.f);\n";
+	weightCalculation += std::string("\t") + "for(int boneIndex = 0; boneIndex < ";
+	weightCalculation += SHADER_VARIABLE_NAMES::SKELETAL_MESH::MAX_BONE_SIZE_MACRO;
+	weightCalculation += "; ++boneIndex)\n";
+	weightCalculation += std::string("\t") + "{\n";
+	weightCalculation += std::string("\t\t") + SHADER_VARIABLE_NAMES::POSITIONING::BONE_TRANSFORMATION_MATRIX;
+	weightCalculation += "+= ";
+	weightCalculation += SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES;
+	weightCalculation += "[";
+	weightCalculation += SHADER_VARIABLE_NAMES::VERTEX::BONE_IDS;
+	weightCalculation += "[boneIndex]";
+	weightCalculation += "]";
+	weightCalculation += " * ";
+	weightCalculation += SHADER_VARIABLE_NAMES::VERTEX::WEIGHTS;
+	weightCalculation += "[boneIndex];\n";
+	weightCalculation += std::string("\t") + "}\n";
+
+	return weightCalculation;
+}
+
+std::string ShaderBuilder::VS_GetUniforms()
 {
 	std::string variableTexts = "";
-
-	variableTexts += "\n\n\nlayout(location = 0) in vec4 ";
-	variableTexts += SHADER_VARIABLE_NAMES::VERTEX::COLOR;
-	variableTexts += ";\n";
-
-	variableTexts += "layout(location = 1) in vec3 ";
-	variableTexts += SHADER_VARIABLE_NAMES::VERTEX::POSITION;
-	variableTexts += ";\n";
-
-	variableTexts += "layout(location = 2) in vec3 ";
-	variableTexts += SHADER_VARIABLE_NAMES::VERTEX::NORMAL;
-	variableTexts += ";\n";
-
-	variableTexts += "layout(location = 3) in vec2 ";
-	variableTexts += SHADER_VARIABLE_NAMES::VERTEX::UV;
-	variableTexts += ";\n";
 
 	variableTexts += "uniform mat4 ";
 	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX;

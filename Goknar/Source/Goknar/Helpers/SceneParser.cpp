@@ -522,7 +522,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				int shaderID = std::stoi(child->Attribute("id"));
 
 				Shader* shader = scene->GetShader(shaderID);
-				shader->SetHolderMaterial(material);
 				material->SetShader(shader);
 			}
 

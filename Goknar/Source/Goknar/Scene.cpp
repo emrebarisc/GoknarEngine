@@ -125,11 +125,6 @@ void Scene::Init()
 		texture->Init();
 	}
 
-	for (Material* material : materials_)
-	{
-		material->Init();
-	}
-
 	for (StaticMesh* staticMesh : staticMeshes_)
 	{
 		staticMesh->Init();

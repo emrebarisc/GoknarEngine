@@ -74,16 +74,6 @@ public:
 		return programId_;
 	}
 
-	const Material* GetHolderMaterial() const
-	{
-		return holderMaterial_;
-	}
-
-	void SetHolderMaterial(const Material* material)
-	{
-		holderMaterial_ = material;
-	}
-
 	void Init();
 
 	void Bind() const;
@@ -109,8 +99,6 @@ private:
 
 	std::string vertexShaderScript_;
 	std::string fragmentShaderScript_;
-
-	const Material* holderMaterial_;
 
 	GEuint programId_;
 

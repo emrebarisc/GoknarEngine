@@ -98,9 +98,9 @@ StaticMesh* ModelLoader::LoadPlyFile(const std::string& path)
 	float s = 0;
 	float t = 0;
 	float red = 255.f;
-float green = 255.f;
-float blue = 255.f;
-float alpha = 255.f;
+	float green = 255.f;
+	float blue = 255.f;
+	float alpha = 255.f;
 
 for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
 {
@@ -396,7 +396,6 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 						shader = new Shader();
 						gameScene->AddShader(shader);
 
-						shader->SetHolderMaterial(material);
 						material->SetShader(shader);
 
 						Texture* texture = new Texture();
@@ -415,7 +414,6 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 							gameScene->AddShader(shader);
 						}
 
-						shader->SetHolderMaterial(material);
 						material->SetShader(shader);
 
 						Texture* texture = new Texture();

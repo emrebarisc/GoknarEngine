@@ -14,8 +14,6 @@
 Mutant::Mutant() : ObjectBase()
 {
 	skeletalMesh = dynamic_cast<SkeletalMesh*>(ModelLoader::LoadModel("Meshes/SkeletalMesh_Michelle.fbx"));
-	skeletalMesh->SetMaterial(engine->GetApplication()->GetMainScene()->GetMaterial(0));
-
 
 	skeletalMeshComponent = new SkeletalMeshComponent(this);
 	skeletalMeshComponent->SetMesh(skeletalMesh);

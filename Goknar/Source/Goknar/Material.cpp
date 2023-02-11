@@ -27,14 +27,6 @@ Material::~Material()
 
 void Material::Init()
 {
-	if (shader_ == nullptr)
-	{
-		shader_ = new Shader();
-		shader_->SetHolderMaterial(this);
-		engine->GetApplication()->GetMainScene()->AddShader(shader_);
-	}
-
-	shader_->Init();
 }
 
 void Material::Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const

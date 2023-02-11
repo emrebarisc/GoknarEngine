@@ -105,12 +105,6 @@ void Shader::Init()
 			bool isFragmentShaderFound = IOManager::ReadFile(fragmentShaderPath_.c_str(), fragmentShaderScript_);
 		}
 	}
-	else
-	{
-		//vertexShaderScript_ = ShaderBuilder::GetInstance()->GetDefaultSceneVertexShader();
-		//fragmentShaderScript_ = ShaderBuilder::GetInstance()->GetDefaultSceneFragmentShader();
-		ShaderBuilder::GetInstance()->GetShaderForMaterial(holderMaterial_, vertexShaderScript_, fragmentShaderScript_);
-	}
 
 	const GEchar* vertexSource = (const GEchar*)vertexShaderScript_.c_str();
 	GEuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);

@@ -2,15 +2,16 @@
 
 #include "Mesh.h"
 
-#include "Goknar/Camera.h"
-#include "Goknar/Engine.h"
-#include "Goknar/Material.h"
-#include "Goknar/Scene.h"
-#include "Goknar/Renderer/Shader.h"
+#include "Application.h"
+#include "Camera.h"
+#include "Engine.h"
+#include "Material.h"
+#include "Scene.h"
+#include "Renderer/Shader.h"
 
-#include "Goknar/Managers/CameraManager.h"
-#include "Goknar/IO/IOManager.h"
-#include "Goknar/Renderer/ShaderBuilder.h"
+#include "Managers/CameraManager.h"
+#include "IO/IOManager.h"
+#include "Renderer/ShaderBuilder.h"
 
 Mesh::Mesh() :
 	material_(0), 
@@ -42,5 +43,25 @@ void Mesh::Init()
 {
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
+
+	if (material_)
+	{
+		Shader* shader = material_->GetShader();
+		if(!shader)
+		{
+			shader = new Shader();
+			material_->SetShader(shader);
+			engine->GetApplication()->GetMainScene()->AddShader(shader);
+		}
+
+		if (shader->GetShaderType() == ShaderType::Scene)
+		{
+			ShaderBuilder::GetInstance()->BuildShader(this);
+		}
+
+		shader->Init();
+		material_->Init();
+	}
+
 	isInitialized_ = true;
 }

@@ -5,7 +5,7 @@
 
 class DirectionalLight;
 class Engine;
-class Material;
+class Mesh;
 class PointLight;
 class SpotLight;
 
@@ -46,7 +46,7 @@ public:
 		shaderVersion_ = shaderVersion;
 	}
 
-	void GetShaderForMaterial(const Material* material, std::string& vertexShader, std::string& fragmentShader);
+	void BuildShader(Mesh* mesh);
 
 	bool GetIsInstatiated() const
 	{
@@ -65,7 +65,12 @@ private:
 
 	// Vertex shader
 	std::string VS_BuildScene();
-	std::string VS_GetVariableTexts();
+	std::string VS_GetMainLayouts();
+	std::string VS_GetSkeletalMeshLayouts();
+	std::string VS_GetSkeletalMeshUniforms(int boneCount);
+	std::string VS_GetSkeletalMeshVariables();
+	std::string VS_GetSkeletalMeshWeightCalculation();
+	std::string VS_GetUniforms();
 	std::string VS_GetMain();
 	std::string VS_GetVertexNormalText();
 
@@ -109,6 +114,8 @@ private:
 	std::string fragmentShaderOutsideMain_;
 	std::string fragmentShaderInsideMain_;
 	std::string fragmentShaderVertexNormalText_;
+
+	std::string vertexShaderModelMatrixVariable_;
 
 	std::string sceneFragmentShader_;
 

@@ -11,6 +11,8 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* NORMAL;
 		extern const char* COLOR;
 		extern const char* UV;
+		extern const char* BONE_IDS;
+		extern const char* WEIGHTS;
 	}
 
 	inline namespace MATERIAL
@@ -43,6 +45,12 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* SHADOW_MAP;
 	}
 
+	inline namespace SKELETAL_MESH
+	{
+		extern const char* BONES;
+		extern const char* MAX_BONE_SIZE_MACRO;
+	}
+
 	inline namespace TEXTURE
 	{
 		extern const char* UV;
@@ -57,6 +65,7 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace POSITIONING
 	{
+		extern const char* BONE_TRANSFORMATION_MATRIX;
 		extern const char* WORLD_TRANSFORMATION_MATRIX;
 		extern const char* RELATIVE_TRANSFORMATION_MATRIX;
 		extern const char* MODEL_MATRIX;
@@ -76,6 +85,8 @@ inline namespace SHADER_VARIABLE_NAMES
 	{
 		extern const char* FRAGMENT_POSITION;
 		extern const char* VERTEX_NORMAL;
+		extern const char* BONE_IDS;
+		extern const char* WEIGHTS;
 	}
 
 	inline namespace FRAGMENT_SHADER_OUTS
