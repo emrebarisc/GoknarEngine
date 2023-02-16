@@ -6,7 +6,7 @@
 #include "ShaderTypes.h"
 
 #include "Goknar/Core.h"
-#include "Goknar/GoknarMath.h"
+#include "Goknar/Math/GoknarMath.h"
 
 class Material;
 class Texture;

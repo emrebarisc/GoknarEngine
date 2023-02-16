@@ -204,7 +204,6 @@ void Renderer::SetSkeletalBufferData()
 	glBindBuffer(GL_ARRAY_BUFFER, skeletalVertexBufferId_);
 	glBufferData(GL_ARRAY_BUFFER, totalSkeletalMeshVertexSize_ * sizeOfSkeletalMeshVertexData, nullptr, GL_STATIC_DRAW);
 
-
 	/*
 		Index buffer
 	*/

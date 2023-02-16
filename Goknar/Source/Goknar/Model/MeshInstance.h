@@ -2,7 +2,7 @@
 #define __MESHINSTANCE_H__
 
 #include "Goknar/Core.h"
-#include "Goknar/Matrix.h"
+#include "Goknar/Math/Matrix.h"
 
 class Component;
 class Material;

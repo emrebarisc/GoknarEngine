@@ -2,7 +2,7 @@
 #define __CAMERA_H__
 
 #include "Goknar/Core.h"
-#include "Goknar/Matrix.h"
+#include "Goknar/Math/Matrix.h"
 
 enum class GOKNAR_API CameraProjection : unsigned char
 {

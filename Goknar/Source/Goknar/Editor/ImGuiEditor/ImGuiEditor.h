@@ -2,7 +2,7 @@
 
 #include "../Editor.h"
 #include "imgui.h"
-#include "Goknar/GoknarMath.h"
+#include "Goknar/Math/GoknarMath.h"
 
 struct GLFWwindow;
 

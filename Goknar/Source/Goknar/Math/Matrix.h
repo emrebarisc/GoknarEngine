@@ -3,7 +3,7 @@
 
 #include "Goknar/Core.h"
 
-#include "GoknarMath.h"
+#include "Math/GoknarMath.h"
 
 /*
     dataArray IS NOT TESTED!!!

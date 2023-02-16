@@ -4,7 +4,7 @@
 #include <string>
 
 #include "Goknar/Core.h"
-#include "GoknarMath.h"
+#include "Math/GoknarMath.h"
 #include "Renderer/Shader.h"
 
 enum class MaterialBlendModel

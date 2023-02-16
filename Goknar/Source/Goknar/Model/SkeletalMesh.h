@@ -8,7 +8,7 @@
 #include "StaticMesh.h"
 #include "Goknar/Core.h"
 #include "Goknar/Log.h"
-#include "Goknar/GoknarMath.h"
+#include "Goknar/Math/GoknarMath.h"
 
 // TEMP
 #include "assimp/matrix3x3.h"

@@ -2,7 +2,7 @@
 #define __COMPONENT_H__
 
 #include "Goknar/Core.h"
-#include "Goknar/Matrix.h"
+#include "Goknar/Math/Matrix.h"
 
 class ObjectBase;
 

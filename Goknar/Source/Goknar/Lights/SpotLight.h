@@ -7,7 +7,7 @@
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 
-#include "GoknarMath.h"
+#include "Math/GoknarMath.h"
 
 class GOKNAR_API SpotLight : public Light
 {

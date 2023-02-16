@@ -34,7 +34,7 @@
 	#error Game Engine only supports Windows and Unix!
 #endif
 
-#define TUPLE_TAIL(x,...) __VA_ARGS__
+#define TUPLE_TAIL(x, ...) __VA_ARGS__
 
 #ifdef GOKNAR_ENABLE_ASSERTS
 	#define GOKNAR_ASSERT(x, ...) \

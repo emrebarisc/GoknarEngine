@@ -1,7 +1,7 @@
 #ifndef __MODEL_H__
 #define __MODEL_H__
 
-#include "Goknar/Matrix.h"
+#include "Goknar/Math/Matrix.h"
 
 class GOKNAR_API Model
 {

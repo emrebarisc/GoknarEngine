@@ -9,7 +9,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/IO/IOManager.h"
 #include "Goknar/Log.h"
-#include "Goknar/Matrix.h"
+#include "Goknar/Math/Matrix.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Texture.h"

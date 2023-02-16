@@ -2,7 +2,7 @@
 #define __WINDOWMANAGER_H__
 
 #include "Goknar/Core.h"
-#include "Goknar/GoknarMath.h"
+#include "Goknar/Math/GoknarMath.h"
 
 struct GLFWwindow;
 struct GLFWmonitor;

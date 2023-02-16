@@ -5,8 +5,8 @@
 
 #include "Core.h"
 
-#include "GoknarMath.h"
-#include "Matrix.h"
+#include "Math/GoknarMath.h"
+#include "Math/Matrix.h"
 
 class Component;
 
