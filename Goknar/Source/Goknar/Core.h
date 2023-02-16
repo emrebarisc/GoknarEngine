@@ -15,6 +15,7 @@
 #endif
 
 #ifdef GOKNAR_PLATFORM_WINDOWS
+	#define DEBUG_BREAK() __debugbreak()
 	#ifdef GOKNAR_BUILD_DLL
 		#define GOKNAR_API __declspec(dllexport)
 	#else
@@ -22,6 +23,7 @@
 	#endif
 
 #elif defined(GOKNAR_PLATFORM_UNIX)
+	#define DEBUG_BREAK() 
 	#ifndef GOKNAR_BUILD_DLL
 		#define GOKNAR_API __declspec(dllexport)
 	#else
@@ -32,12 +34,15 @@
 	#error Game Engine only supports Windows and Unix!
 #endif
 
+#define TUPLE_TAIL(x,...) __VA_ARGS__
+
 #ifdef GOKNAR_ENABLE_ASSERTS
 	#define GOKNAR_ASSERT(x, ...) \
 	{ \
 		if(!x) \
 		{ \
-			GOKNAR_ERROR("Assertion Failed: {0}", __VA_ARGS__); /*__debugbreak();*/ \
+			GOKNAR_ERROR("Assertion Failed: {0}", TUPLE_TAIL(__VA_ARGS__)); \
+			DEBUG_BREAK(); \
 			exit(EXIT_FAILURE); \
 		} \
 	}
@@ -45,7 +50,8 @@
 	{ \
 		if (!x)\
 		{ \
-			GOKNAR_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); /*__debugbreak();*/ \
+			GOKNAR_CORE_ERROR("Assertion Failed: {0}", TUPLE_TAIL(__VA_ARGS__)); \
+			DEBUG_BREAK(); \
 			exit(EXIT_FAILURE); \
 		} \
 	}

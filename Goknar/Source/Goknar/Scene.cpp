@@ -144,24 +144,6 @@ void Scene::Init()
 	}
 }
 
-void Scene::SetShaderDynamicLightUniforms(const Shader* shader) const
-{
-	for (const Light* light : dynamicDirectionalLights_)
-	{
-		light->SetShaderUniforms(shader);
-	}
-
-	for (const Light* light : dynamicPointLights_)
-	{
-		light->SetShaderUniforms(shader);
-	}
-
-	for (const Light* light : dynamicSpotLights_)
-	{
-		light->SetShaderUniforms(shader);
-	}
-}
-
 void Scene::ReadSceneData(const std::string& filePath)
 {
     SceneParser::Parse(this, ContentDir + filePath);

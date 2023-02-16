@@ -72,6 +72,16 @@ public:
 		return isInitialized_;
 	}
 
+	void SetName(const std::string& name)
+	{
+		name_ = name;
+	}
+
+	const std::string& GetName() const
+	{
+		return name_;
+	}
+
 	void SetMaterial(/*const*/ Material* material)
 	{
 		material_ = material;
@@ -162,6 +172,8 @@ private:
 	FaceArray* faces_;
 
 	Material* material_;
+
+	std::string name_;
 
 	unsigned int vertexCount_;
 	unsigned int faceCount_;

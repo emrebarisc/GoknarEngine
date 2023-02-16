@@ -60,6 +60,8 @@ private:
 
 	ShaderBuilder();
 	~ShaderBuilder();
+
+	void ResetVariables();
 	
 	std::string shaderVersion_;
 

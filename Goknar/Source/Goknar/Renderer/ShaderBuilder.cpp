@@ -18,6 +18,8 @@ ShaderBuilder* ShaderBuilder::instance_ = nullptr;
 
 void ShaderBuilder::BuildShader(Mesh* mesh)
 {
+	GOKNAR_ASSERT(mesh);
+
 	Material* material = mesh->GetMaterial();
 	if (material)
 	{
@@ -119,11 +121,13 @@ void main()
 			fragmentShader += fragmentShaderOutsideMain;
 			fragmentShader += fragmentShaderMain;
 
-			IOManager::WriteFile((ContentDir + material->GetName() + "VertexShader.glsl").c_str(), vertexShader.c_str());
-			IOManager::WriteFile((ContentDir + material->GetName() + "FragmentShader.glsl").c_str(), fragmentShader.c_str());
+			IOManager::WriteFile((ContentDir + mesh->GetName() + "VertexShader.glsl").c_str(), vertexShader.c_str());
+			IOManager::WriteFile((ContentDir + mesh->GetName() + "FragmentShader.glsl").c_str(), fragmentShader.c_str());
 			
 			shader->SetVertexShaderScript(vertexShader);
 			shader->SetFragmentShaderScript(fragmentShader);
+
+			ResetVariables();
 		}
 	}
 }
@@ -138,12 +142,23 @@ ShaderBuilder::~ShaderBuilder()
 {
 }
 
-void ShaderBuilder::Init()
+void ShaderBuilder::ResetVariables()
 {
 	vertexShaderModelMatrixVariable_ = std::string(SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX) + " * " + SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX;
+}
+
+void ShaderBuilder::Init()
+{
+	ResetVariables();
+
 	sceneVertexShader_ = VS_BuildScene();
 	FS_BuildScene();
 	isInstantiated_ = true;
+}
+
+std::string ShaderBuilder::GetShaderVersionText()
+{
+	return "#version " + shaderVersion_;
 }
 
 void ShaderBuilder::FS_BuildScene()
@@ -432,11 +447,6 @@ out vec3 vertexNormal;
 	variableTexts += ";\n";
 
 	return variableTexts;
-}
-
-std::string ShaderBuilder::GetShaderVersionText()
-{
-	return "#version " + shaderVersion_;
 }
 
 std::string ShaderBuilder::GetMaterialVariables()

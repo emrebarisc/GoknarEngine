@@ -48,6 +48,5 @@ void Material::Render(const Matrix& worldTransformationMatrix, const Matrix& rel
 
 	shader_->SetMVP(worldTransformationMatrix, relativeTransformationMatrix);
 
-	engine->GetApplication()->GetMainScene()->SetShaderDynamicLightUniforms(shader_);
 	engine->SetShaderEngineVariables(shader_);
 }

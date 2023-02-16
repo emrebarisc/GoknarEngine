@@ -204,6 +204,14 @@ void Renderer::SetSkeletalBufferData()
 	glBindBuffer(GL_ARRAY_BUFFER, skeletalVertexBufferId_);
 	glBufferData(GL_ARRAY_BUFFER, totalSkeletalMeshVertexSize_ * sizeOfSkeletalMeshVertexData, nullptr, GL_STATIC_DRAW);
 
+
+	/*
+		Index buffer
+	*/
+	glGenBuffers(1, &skeletalIndexBufferId_);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skeletalIndexBufferId_);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalSkeletalMeshFaceSize_ * sizeof(Face), nullptr, GL_STATIC_DRAW);
+
 	/*
 		Buffer Sub-Data
 	*/
@@ -237,13 +245,6 @@ void Renderer::SetSkeletalBufferData()
 			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexBoneDataArraySizeInBytes, &vertexBoneDataArray->at(i));
 			vertexOffset += vertexBoneDataArraySizeInBytes;
 		}
-
-		/*
-			Index buffer
-		*/
-		glGenBuffers(1, &skeletalIndexBufferId_);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skeletalIndexBufferId_);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalSkeletalMeshFaceSize_ * sizeof(Face), nullptr, GL_STATIC_DRAW);
 
 		const FaceArray* faceArrayPtr = skeletalMesh->GetFacesPointer();
 		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));

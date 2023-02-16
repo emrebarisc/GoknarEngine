@@ -89,9 +89,6 @@ void GameController::SetAnimation()
 
 	if (skeletalMeshInstance)
 	{
-		skeletalMeshInstance->PlayAnimation("Armature|Armature|mixamo.com|Layer0");
-		return;
-
 		switch (animationIndex)
 		{
 		case 0:

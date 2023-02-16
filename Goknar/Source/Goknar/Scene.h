@@ -30,8 +30,6 @@ public:
 
     void Init();
 
-	void SetShaderDynamicLightUniforms(const Shader* shader) const;
-
     // Scene data parser
     void ReadSceneData(const std::string& filePath);
 

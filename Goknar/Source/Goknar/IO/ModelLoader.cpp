@@ -190,7 +190,6 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, aiNode* assimpNode)
 		}
 	}
 }
-
 StaticMesh* ModelLoader::LoadModel(const std::string& path)
 {
 	Scene* gameScene = engine->GetApplication()->GetMainScene();
@@ -199,7 +198,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 	SkeletalMesh* skeletalMesh = nullptr;
 
 	Assimp::Importer importer;
-
+	
 	// aiProcess_Triangulate caused problems with vertex weights
 	// Try exporting skeletal meshes as triangulated in modeling software
 	const aiScene* assimpScene = importer.ReadFile((ContentDir + path).c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights);
@@ -313,6 +312,8 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 			{
 				staticMesh = new StaticMesh();
 			}
+
+			staticMesh->SetName(assimpMesh->mName.C_Str());
 
 			for(unsigned int vertexIndex = 0; vertexIndex < assimpMesh->mNumVertices; ++vertexIndex)
 			{

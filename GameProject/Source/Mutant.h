@@ -25,5 +25,8 @@ public:
 private:
 	SkeletalMesh* skeletalMesh;
 	SkeletalMeshComponent* skeletalMeshComponent;
+
+	SkeletalMesh* skeletalMesh2;
+	SkeletalMeshComponent* skeletalMeshComponent2;
 };
 
