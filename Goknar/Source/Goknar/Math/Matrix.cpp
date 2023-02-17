@@ -2,12 +2,20 @@
 
 #include "Matrix.h"
 
+const Matrix2x2 Matrix2x2::ZeroMatrix = Matrix2x2(0.f);
+const Matrix2x2 Matrix2x2::IdentityMatrix = Matrix2x2(  1.f, 0.f, 
+                                                        0.f, 1.f );
+
+const Matrix3x3 Matrix3x3::ZeroMatrix = Matrix3x3(0.f);
+const Matrix3x3 Matrix3x3::IdentityMatrix = Matrix3x3(  1.f, 0.f, 0.f,
+                                                        0.f, 1.f, 0.f,
+                                                        0.f, 0.f, 1.f);
+
 const Matrix Matrix::ZeroMatrix = Matrix(0.f);
 const Matrix Matrix::IdentityMatrix = Matrix( 1.f, 0.f, 0.f, 0.f,
                                               0.f, 1.f, 0.f, 0.f,
                                               0.f, 0.f, 1.f, 0.f,
                                               0.f, 0.f, 0.f, 1.f );
-
 
 Matrix2x2 Matrix2x2::GetInverse() const
 {

@@ -16,10 +16,6 @@ const Vector4 Vector4::ZeroVector = Vector4(0.f);
 //constexpr int MAX_INT = std::numeric_limits<int>::max();
 //constexpr unsigned int MAX_UINT = std::numeric_limits<unsigned int>::max();
 
-float EPSILON = 0.001f;
-float INTERSECTION_TEST_EPSILON = 0.001f;
-float SHADOW_EPSILON = 0.001f;
-
 Vector2::Vector2(): x(0), y(0)
 {
 }

@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "Camera.h"
+#include "Math/GoknarMath.h"
 
 #ifdef GOKNAR_PLATFORM_WINDOWS
 #include <GL/GLU.h>
@@ -27,9 +28,7 @@ void Camera::Init()
 	SetUpVector(Vector3::Cross(GetRightVector().GetNormalized(), GetForwardVector().GetNormalized()));
 	SetForwardVector(Vector3::Cross(GetUpVector().GetNormalized(), GetRightVector().GetNormalized()));
 
-	float forwardDotUp = Vector3::Dot(forwardVector_, upVector_);
-
-	if (-EPSILON <= forwardDotUp && forwardDotUp <= EPSILON)
+	if (std::abs(Vector3::Dot(forwardVector_, upVector_)) <= EPSILON)
 	{
 		leftVector_ = forwardVector_.Cross(upVector_);
 		upVector_ = leftVector_.Cross(forwardVector_);

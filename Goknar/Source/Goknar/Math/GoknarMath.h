@@ -2,6 +2,9 @@
 #define __MATH_H__
 
 #include "Goknar/Core.h"
+#include "MathDefines.h"
+
+#include "Quaternion.h"
 
 #include <iostream>
 
@@ -9,15 +12,6 @@
 #define mathMin(f, s) (f > s ? s : f)
 #define mathClamp(value, min, max) (value > max ? max : value < min ? min : value)
 #define mathAbs(value) (value < 0 ? value * -1 : value)
-
-#define PI 3.14159265359f
-#define TWO_PI 6.28318530718f
-#define HALF_PI 1.57079632679f
-#define ONE_OVER_PI 0.31830988618f
-#define NATURAL_LOGARITHM 2.71828182845f
-
-#define RADIAN_TO_DEGREE(radian) (radian * 180.f / PI)
-#define DEGREE_TO_RADIAN(degree) (degree * PI / 180.f)
 
 extern const float MAX_FLOAT;
 extern const int MAX_INT;
@@ -34,17 +28,9 @@ class Matrix;
 struct GOKNAR_API Vector2
 {
 	Vector2();
-
 	Vector2(float val);
-
 	Vector2(float vx, float vy);
-
-  /* Vector2(const Vector2& rhs) : x(rhs.x), y(rhs.y)
-  {
-
-  } */
-
-  Vector2(const Vector3& rhs);
+	Vector2(const Vector3& rhs);
 
 	inline float Length() const
 	{
@@ -430,26 +416,85 @@ public:
 	static inline float Determinant(const Vector3& a, const Vector3& b, const Vector3& c)
 	{
 		return a.x * ((b.y * c.z) - (c.y * b.z))
-			+ a.y * ((c.x * b.z) - (b.x * c.z))
-			+ a.z * ((b.x * c.y) - (c.x * b.y));
+			 + a.y * ((c.x * b.z) - (b.x * c.z))
+			 + a.z * ((b.x * c.y) - (c.x * b.y));
 	}
 
 	static inline float Determinant(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& d)
 	{
-		return a.x * Determinant(Vector3(b.y, b.z, b.w), Vector3(c.y, c.z, c.w), Vector3(d.y, d.z, d.w))
-			- a.y * Determinant(Vector3(b.x, b.z, b.w), Vector3(c.x, c.z, c.w), Vector3(d.x, d.z, d.w))
-			+ a.z * Determinant(Vector3(b.x, b.y, b.w), Vector3(c.x, c.y, c.w), Vector3(d.x, d.y, d.w))
-			- a.w * Determinant(Vector3(b.x, b.y, b.z), Vector3(c.x, c.y, c.z), Vector3(d.x, d.y, d.z));
+		return	  a.x * Determinant(Vector3(b.y, b.z, b.w), Vector3(c.y, c.z, c.w), Vector3(d.y, d.z, d.w))
+				- a.y * Determinant(Vector3(b.x, b.z, b.w), Vector3(c.x, c.z, c.w), Vector3(d.x, d.z, d.w))
+				+ a.z * Determinant(Vector3(b.x, b.y, b.w), Vector3(c.x, c.y, c.w), Vector3(d.x, d.y, d.w))
+				- a.w * Determinant(Vector3(b.x, b.y, b.z), Vector3(c.x, c.y, c.z), Vector3(d.x, d.y, d.z));
 	}
 
-	static Vector3 LinearInterpolation(const Vector3& start, const Vector3& end, float alpha)
+	template<class T>
+	static T LinearInterpolation(const T& start, const T& end, float alpha)
 	{
 		return start + alpha * (end - start);
 	}
-};
 
-extern float EPSILON;
-extern float INTERSECTION_TEST_EPSILON;
-extern float SHADOW_EPSILON;
+	template<class T>
+	static T InterpolationSphericalIn(const T& start, const T& end, float alpha)
+	{
+		float const modifiedAlpha = -1.f * (std::sqrt(1.f - alpha * alpha) - 1.f);
+		return LinearInterpolation(start, end, modifiedAlpha);
+	}
+
+	template<class T>
+	static T InterpolationSphericalOut(const T& start, const T& end, float alpha)
+	{
+		alpha -= 1.f;
+		float const modifiedAlpha = std::sqrt(1.f - alpha * alpha);
+		return LinearInterpolation(start, end, modifiedAlpha);
+	}
+
+	template<class T>
+	static T InterpolationSpherical(const T& start, const T& end, float alpha)
+	{
+		return LinearInterpolation(start, end, (alpha < 0.5f) ?
+			InterpolationSphericalIn(0.f, 1.f, alpha * 2.f) * 0.5f :
+			InterpolationSphericalOut(0.f, 1.f, alpha * 2.f - 1.f) * 0.5f + 0.5f);
+	}
+
+/*	static Quaternion InterpolationSpherical(const Quaternion& start, const Quaternion& end, float alpha)
+	{
+		Quaternion result;
+
+		float cosTheta = start.x * end.x + start.y * end.y + start.z * end.z + start.w * end.w;
+
+		if (cosTheta < 0.f)
+		{
+			cosTheta = -cosTheta;
+			end.x = -end.x;
+			end.y = -end.y;
+			end.z = -end.z;
+			end.w = -end.w;
+		}
+
+		float coefficientP, inverseCoefficientP;
+
+		if (EPSILON < (1.f - cosTheta))
+		{
+			float omega = std::acos(cosTheta);
+			float sinOmega = std::sin(omega);
+			coefficientP = std::sin((1.f - alpha) * omega) / sinOmega;
+			inverseCoefficientP = std::sin(alpha * omega) / sinOmega;
+		}
+		else
+		{
+			coefficientP = 1.f - alpha;
+			inverseCoefficientP = alpha;
+		}
+
+		result.x = coefficientP * start.x + inverseCoefficientP * end.x;
+		result.y = coefficientP * start.y + inverseCoefficientP * end.y;
+		result.z = coefficientP * start.z + inverseCoefficientP * end.z;
+		result.w = coefficientP * start.w + inverseCoefficientP * end.w;
+
+		return result;
+	}
+*/
+};
 
 #endif
