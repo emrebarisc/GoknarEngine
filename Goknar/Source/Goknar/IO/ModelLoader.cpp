@@ -278,7 +278,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 								const aiQuatKey& assimpQuaternionKey = assimpAnimationNode->mRotationKeys[rotationKeyIndex];
 
 								skeletalAnimationNode->rotationKeys[rotationKeyIndex].time = assimpQuaternionKey.mTime;
-								skeletalAnimationNode->rotationKeys[rotationKeyIndex].value = assimpQuaternionKey.mValue;
+								skeletalAnimationNode->rotationKeys[rotationKeyIndex].value = Quaternion(assimpQuaternionKey.mValue.x, assimpQuaternionKey.mValue.y, assimpQuaternionKey.mValue.z, assimpQuaternionKey.mValue.w);
 							}
 
 							skeletalAnimationNode->positionKeySize = assimpAnimationNode->mNumPositionKeys;

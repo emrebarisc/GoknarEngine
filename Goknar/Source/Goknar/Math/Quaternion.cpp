@@ -158,67 +158,6 @@ Quaternion operator*(const Matrix& pMatrix, const Quaternion& quaternion)
     res.w = pMatrix[12] * quaternion.x + pMatrix[13] * quaternion.y + pMatrix[14] * quaternion.z + pMatrix[15] * quaternion.w;
     return res;
 }
-
-inline bool Quaternion::operator==(const Quaternion& other) const
-{
-    return  x == other.x && 
-            y == other.y && 
-            z == other.z && 
-            w == other.w;
-}
-
-inline bool Quaternion::operator!=(const Quaternion& other) const
-{
-    return !(*this == other);
-}
-
-inline Quaternion Quaternion::operator+(const Quaternion& other) const
-{
-    return Quaternion(x + other.x, y + other.y, z + other.z, w + other.w);
-}
-
-inline Quaternion Quaternion::operator+=(const Quaternion& other)
-{
-    this->x += other.x;
-    this->y += other.y;
-    this->z += other.z;
-    this->w += other.w;
-
-    return *this;
-}
-
-inline Quaternion Quaternion::operator-(const Quaternion& other) const
-{
-    return Quaternion(x - other.x, y - other.y, z - other.z, w - other.w);
-}
-
-inline Quaternion Quaternion::operator-=(const Quaternion& other)
-{
-    this->x -= other.x;
-    this->y -= other.y;
-    this->z -= other.z;
-    this->w -= other.w;
-
-    return *this;
-}
-
-inline Quaternion Quaternion::operator/(const float scale) const
-{
-    const float inverseScale = 1.f / scale;
-    return Quaternion(x * inverseScale, y * inverseScale, z * inverseScale, w * inverseScale);
-}
-
-inline Quaternion Quaternion::operator/=(const float scale)
-{
-    const float inverseScale = 1.f / scale;
-    x *= inverseScale;
-    y *= inverseScale;
-    z *= inverseScale;
-    w *= inverseScale;
-
-    return *this;
-}
-
 inline Quaternion Quaternion::operator*(const Matrix& scaleMatrix) const
 {
     return scaleMatrix * (*this);
@@ -227,27 +166,4 @@ inline Quaternion Quaternion::operator*(const Matrix& scaleMatrix) const
 inline Quaternion& Quaternion::operator*=(const Matrix& scaleMatrix)
 {
     return (*this = scaleMatrix * (*this));
-}
-
-inline Quaternion& Quaternion::operator*=(const float scale)
-{
-    x *= scale;
-    y *= scale;
-    z *= scale;
-    w *= scale;
-
-    return *this;
-}
-
-inline Quaternion Quaternion::operator*(const Quaternion& t) const
-{
-    return Quaternion(  w * t.w - x * t.x - y * t.y - z * t.z,
-                        w * t.x + x * t.w + y * t.z - z * t.y,
-                        w * t.y + y * t.w + z * t.x - x * t.z,
-                        w * t.z + z * t.w + x * t.y - y * t.x);
-}
-
-inline Quaternion Quaternion::operator*(const float scale) const
-{
-    return Quaternion(x * scale, y * scale, z * scale, w * scale);
 }

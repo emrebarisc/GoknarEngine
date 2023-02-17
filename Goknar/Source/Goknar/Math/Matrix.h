@@ -408,6 +408,29 @@ public:
         }
     }
 
+    Matrix(const Matrix3x3& other)
+    {
+        m[0] = other.m[0];
+        m[1] = other.m[1];
+        m[2] = other.m[2];
+        m[3] = 0.f;
+
+        m[4] = other.m[3];
+        m[5] = other.m[4];
+        m[6] = other.m[5];
+        m[7] = 0.f;
+
+        m[8] = other.m[6];
+        m[9] = other.m[7];
+        m[10] = other.m[8];
+        m[11] = 0.f;
+
+        m[12] = 0.f;
+        m[13] = 0.f;
+        m[14] = 0.f;
+        m[15] = 1.f;
+    }
+
     ~Matrix()
     {
 

@@ -9,10 +9,7 @@
 #include "Goknar/Core.h"
 #include "Goknar/Log.h"
 #include "Goknar/Math/GoknarMath.h"
-
-// TEMP
-#include "assimp/matrix3x3.h"
-#include "assimp/quaternion.h"
+#include "Goknar/Math/Quaternion.h"
 
 struct GOKNAR_API Bone
 {
@@ -116,14 +113,14 @@ struct GOKNAR_API AnimationVectorKey
 struct GOKNAR_API AnimationQuaternionKey
 {
     double time;
-    aiQuaternion value;
+    Quaternion value;
 
     AnimationQuaternionKey() :
         time(0.0),
         value()
     {}
 
-    AnimationQuaternionKey(double t, const aiQuaternion& v) :
+    AnimationQuaternionKey(double t, const Quaternion& v) :
         time(t), 
         value(v) 
     {}
@@ -218,18 +215,14 @@ struct GOKNAR_API SkeletalAnimationNode
 
         float alpha = (time - positionKeys[previousIndex].time) / (positionKeys[nextIndex].time - positionKeys[previousIndex].time);
 
-        const aiQuaternion& startRotation = rotationKeys[previousIndex].value;
-        const aiQuaternion& endRotation = rotationKeys[nextIndex].value;
-        aiQuaternion out;
-        aiQuaternion::Interpolate(out, startRotation, endRotation, alpha);
+        const Quaternion& startRotation = rotationKeys[previousIndex].value;
+        const Quaternion& endRotation = rotationKeys[nextIndex].value;
+        Quaternion out = GoknarMath::InterpolationSpherical(startRotation, endRotation, alpha);
         out.Normalize();
 
-        aiMatrix3x3 assimpMatrix = out.GetMatrix();
+        Matrix3x3 assimpMatrix = out.GetMatrix();
 
-        return Matrix(  assimpMatrix.a1, assimpMatrix.a2, assimpMatrix.a3, 0.f,
-                        assimpMatrix.b1, assimpMatrix.b2, assimpMatrix.b3, 0.f,
-                        assimpMatrix.c1, assimpMatrix.c2, assimpMatrix.c3, 0.f,
-                        0.f, 0.f, 0.f, 1.f);
+        return Matrix(assimpMatrix);
     }
 
     std::string affectedBoneName;
