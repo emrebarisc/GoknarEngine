@@ -123,6 +123,7 @@ void Texture::Init()
 	EXIT_ON_GL_ERROR("Texture::Init");
 
 	delete[] buffer_;
+	buffer_ = nullptr;
 }
 
 void Texture::Bind(Shader* shader) const

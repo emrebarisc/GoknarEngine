@@ -190,6 +190,7 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, aiNode* assimpNode)
 		}
 	}
 }
+
 StaticMesh* ModelLoader::LoadModel(const std::string& path)
 {
 	Scene* gameScene = engine->GetApplication()->GetMainScene();
