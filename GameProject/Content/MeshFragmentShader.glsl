@@ -29,7 +29,7 @@ uniform vec3 SpotLight3Direction;
 uniform vec3 SpotLight3Intensity;
 uniform float SpotLight3CoverageAngle;
 uniform float SpotLight3FalloffAngle;
-uniform sampler2D texture2;
+uniform sampler2D texture0;
 vec3 diffuseReflectance;
 vec3 sceneAmbient = vec3(0.392157, 0.392157, 0.392157);
 
@@ -87,8 +87,8 @@ float SpotLight4FalloffAngle = 0.174533;
 
 void main()
 {
-	vec4 texture2Color = texture(texture2, textureUV); 
-	diffuseReflectance = vec3(texture2Color); 
+	vec4 texture0Color = texture(texture0, textureUV); 
+	diffuseReflectance = vec3(texture0Color); 
 
 	vec3 lightColor = sceneAmbient * ambientReflectance;
 	lightColor += CalculateSpotLightColor(SpotLight4Position, SpotLight4Direction, SpotLight4Intensity, SpotLight4CoverageAngle, SpotLight4FalloffAngle);

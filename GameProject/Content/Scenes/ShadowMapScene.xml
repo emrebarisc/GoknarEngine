@@ -31,31 +31,9 @@
   </Shaders>
 
   <Textures>
-    <Texture id="0">
-      <Name>T_MutantDiffuse</Name>
-      <Usage>Diffuse</Usage>
-      <MinFilter>LinearMipMapLinear</MinFilter>
-      <MagFilter>Linear</MagFilter>
-      <!-- <Path>Textures/T_Human.jpg</Path> -->
-      <Path>Textures/T_Michelle_Diffuse.png</Path>
-    </Texture>
-    <Texture id="1">
-      <Name>T_MutantNormal</Name>
-      <Usage>Normal</Usage>
-      <Path>Textures/T_Michelle_Normal.png</Path>
-    </Texture>
   </Textures>
 
   <Materials>
-    <Material id = "0">
-      <Shader id="0"/>
-      <Texture id="0"/>
-      <Texture id="1"/>
-      <AmbientReflectance>0.5 0.5 0.5</AmbientReflectance>
-      <DiffuseReflectance>0.0 0.0 0.0</DiffuseReflectance>
-      <SpecularReflectance>0.15 0.15 0.15</SpecularReflectance>
-      <PhongExponent>1</PhongExponent>
-    </Material>
   </Materials>
 
   <Meshes>
