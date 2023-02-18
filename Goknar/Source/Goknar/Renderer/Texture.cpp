@@ -53,7 +53,7 @@ void Texture::ReadFromFramebuffer(GEuint framebuffer)
 	{
 		return;
 	}
-	delete buffer_;
+	delete[] buffer_;
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	buffer_ = new unsigned char[width_ * height_ * channels_];
 	glReadPixels(0, 0, width_, height_, (int)textureFormat_, GL_UNSIGNED_BYTE, (GLvoid*)buffer_);
@@ -121,6 +121,8 @@ void Texture::Init()
 	
 	glBindTexture((int)textureTarget_, 0);
 	EXIT_ON_GL_ERROR("Texture::Init");
+
+	delete[] buffer_;
 }
 
 void Texture::Bind(Shader* shader) const

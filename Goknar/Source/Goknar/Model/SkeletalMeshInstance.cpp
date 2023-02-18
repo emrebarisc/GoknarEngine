@@ -7,6 +7,7 @@
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Renderer.h"
+#include "Goknar/Renderer/ShaderTypes.h"
 
 SkeletalMeshInstance::SkeletalMeshInstance(Component* parentComponent) :
 	MeshInstance(parentComponent)
@@ -25,7 +26,7 @@ void SkeletalMeshInstance::Render()
 
 	std::vector<Matrix> boneTransformations;
 	/*TODO_Baris: TEMP*/dynamic_cast<SkeletalMesh*>(mesh_)/**/->GetBoneTransforms(boneTransformations, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime);
-	mesh_->GetMaterial()->GetShader()->SetMatrixVector("bones", boneTransformations);
+	mesh_->GetMaterial()->GetShader()->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations);
 }
 
 void SkeletalMeshInstance::PlayAnimation(const std::string& animationName)
