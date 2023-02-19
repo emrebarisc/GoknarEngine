@@ -17,7 +17,7 @@ Light::Light() :
 	shadowWidth_(1024),
 	shadowHeight_(1024),
 	shadowMapDepthFBO_(-1),
-	isShadowEnabled_(true),
+	isShadowEnabled_(false),
 	mobility_(LightMobility::Static),
 	shadowMapRenderCamera_(nullptr)
 {
@@ -53,47 +53,50 @@ void Light::SetShaderUniforms(const Shader* shader) const
 
 void Light::Init()
 {
-	glGenFramebuffers(1, &shadowMapDepthFBO_);
-	shadowMapTexture_->Init();
-	shadowMapTexture_->Bind();
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowMapDepthFBO_);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, (int)shadowMapTexture_->GetTextureTarget(), shadowMapTexture_->GetRendererTextureId(), 0);
-	
-	switch (glCheckFramebufferStatus(GL_FRAMEBUFFER))
+	if (isShadowEnabled_)
 	{
-	case GL_FRAMEBUFFER_UNDEFINED:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_UNDEFINED");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
-		break;
-	case GL_FRAMEBUFFER_UNSUPPORTED:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_UNSUPPORTED");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");
-		break;
-	case GL_FRAMEBUFFER_COMPLETE:
-		GOKNAR_CORE_INFO("GL_FRAMEBUFFER_COMPLETE");
-		break;
-	default:
-		break;
-	}
+		glGenFramebuffers(1, &shadowMapDepthFBO_);
+		shadowMapTexture_->Init();
+		shadowMapTexture_->Bind();
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapDepthFBO_);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, (int)shadowMapTexture_->GetTextureTarget(), shadowMapTexture_->GetRendererTextureId(), 0);
 
-	shadowMapTexture_->Unbind();
-	//glDrawBuffer(GL_NONE);
-	//glReadBuffer(GL_NONE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		switch (glCheckFramebufferStatus(GL_FRAMEBUFFER))
+		{
+		case GL_FRAMEBUFFER_UNDEFINED:
+			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_UNDEFINED");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
+			break;
+		case GL_FRAMEBUFFER_UNSUPPORTED:
+			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_UNSUPPORTED");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");
+			break;
+		case GL_FRAMEBUFFER_COMPLETE:
+			GOKNAR_CORE_INFO("GL_FRAMEBUFFER_COMPLETE");
+			break;
+		default:
+			break;
+		}
+
+		shadowMapTexture_->Unbind();
+		//glDrawBuffer(GL_NONE);
+		//glReadBuffer(GL_NONE);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 }
