@@ -13,19 +13,23 @@ DirectionalLight::DirectionalLight() : Light()
 {
 	id_ = ObjectIDManager::GetInstance()->GetAndIncreaseDirectionalLightID();
 	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT) + std::to_string(id_);
-	shadowMapTexture_->SetName(name_ + LIGHT::SHADOW_MAP_POSTFIX);
 }
 
 void DirectionalLight::Init()
 {
 	Light::Init();
 
-	Vector3 lightUpVector = Vector3::Cross(Vector3::Cross(direction_, Vector3::UpVector).GetNormalized(), direction_).GetNormalized();
-	shadowMapRenderCamera_ = new Camera(direction_ * -100.f, direction_, lightUpVector);
-	shadowMapRenderCamera_->SetProjection(CameraProjection::Orthographic);
-	shadowMapRenderCamera_->SetCameraType(CameraType::Shadow);
-	shadowMapRenderCamera_->SetFarDistance(100);
-	shadowMapRenderCamera_->Init();
+	if (isShadowEnabled_)
+	{
+		shadowMapTexture_->SetName(name_ + LIGHT::SHADOW_MAP_POSTFIX);
+
+		Vector3 lightUpVector = Vector3::Cross(Vector3::Cross(direction_, Vector3::UpVector).GetNormalized(), direction_).GetNormalized();
+		shadowMapRenderCamera_ = new Camera(direction_ * -100.f, direction_, lightUpVector);
+		shadowMapRenderCamera_->SetProjection(CameraProjection::Orthographic);
+		shadowMapRenderCamera_->SetCameraType(CameraType::Shadow);
+		shadowMapRenderCamera_->SetFarDistance(100);
+		shadowMapRenderCamera_->Init();
+	}
 }
 
 void DirectionalLight::SetShaderUniforms(const Shader* shader) const
