@@ -43,9 +43,6 @@ public:
 	{
 		windowWidth_ = w;
 		windowHeight_ = h;
-
-		SetWindowWidth(windowWidth_);
-		SetWindowHeight(windowHeight_);
 	}
 
 	Vector2i GetWindowSize() const
