@@ -68,6 +68,8 @@ Engine::~Engine()
 	delete ObjectIDManager::GetInstance();
 	delete ShaderBuilder::GetInstance();
 
+	delete controller_;
+
 	delete windowManager_;
 }
 

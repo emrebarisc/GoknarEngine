@@ -14,7 +14,9 @@ class Game : public Application
 public:
 	Game();
 
-	~Game() = default;
+	~Game()
+	{
+	}
 
 	void Run() override;
 
@@ -37,10 +39,10 @@ Game::Game() : Application()
 
 	lastFrameTimePoint = currentTimePoint;
 
-	mutant = new Mutant();
-	gameController = new GameController();
-	gameController->SetMutant(mutant);
-	lightController = new LightController();
+	//mutant = new Mutant();
+	//gameController = new GameController();
+	//gameController->SetMutant(mutant);
+	//lightController = new LightController();
 }
 
 void Game::Run()

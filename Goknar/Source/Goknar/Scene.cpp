@@ -37,6 +37,11 @@ Scene::~Scene()
 		delete object;
 	}
 
+	for (auto object : skeletalMeshes_)
+	{
+		delete object;
+	}
+
 	for (auto object : shaders_)
 	{
 		delete object;

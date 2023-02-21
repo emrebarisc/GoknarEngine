@@ -101,7 +101,7 @@ bool IOManager::WritePpm(const char* filePath, int width, int height, const unsi
             {
                 color = (unsigned char)(int)rawDataBuffer[idx];
 
-                if (i == width - 1 && c == 2)
+                if (i == (width - 1) && c == 2)
                 {
                     (void)fprintf(outfile, "%d", color);
                 }

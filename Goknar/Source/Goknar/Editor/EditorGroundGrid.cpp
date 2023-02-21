@@ -98,12 +98,10 @@ EditorGroundGrid::EditorGroundGrid()
 	groundGridMeshShader->SetShaderType(ShaderType::SelfContained);
 	groundGridMeshShader->SetVertexShaderScript(vertexShader);
 	groundGridMeshShader->SetFragmentShaderScript(fragmentShader);
-	groundGridMeshShader->Init();
 
 	Material* groundGridMeshMaterial = new Material();
 	groundGridMeshMaterial->SetShadingModel(MaterialShadingModel::TwoSided);
 	groundGridMeshMaterial->SetShader(groundGridMeshShader);
-	groundGridMeshMaterial->Init();
 
 	StaticMesh* groundGridMesh = new StaticMesh();
 	groundGridMesh->AddVertexData(VertexData(Vector3(-1.f, 1.f, 0.f), Vector3(0.f, 0.f, 1.f)));

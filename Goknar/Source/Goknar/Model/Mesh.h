@@ -159,6 +159,8 @@ public:
 		return vertexStartingIndex_;
 	}
 
+	void ClearDataFromMemory();
+
 protected:
 	unsigned int baseVertex_;
 	unsigned int vertexStartingIndex_;

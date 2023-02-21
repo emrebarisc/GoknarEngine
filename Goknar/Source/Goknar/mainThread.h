@@ -1,6 +1,19 @@
 #pragma once
 
-#define _CRTDBG_MAP_ALLOC
+#ifdef GOKNAR_PLATFORM_WINDOWS
+	#define _CRTDBG_MAP_ALLOC
+	#include <stdlib.h>
+	#include <crtdbg.h>
+	#ifdef _DEBUG
+		#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+		// Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
+		// allocations to be of _CLIENT_BLOCK type
+	#else
+		#define DBG_NEW new
+	#endif
+#else
+	#define DBG_NEW new
+#endif
 
 #include <stdlib.h>
 
@@ -11,7 +24,16 @@
 
 int main(int argc, char **argv)
 {
-	Engine *mainEngine = new Engine();
+#ifdef GOKNAR_PLATFORM_WINDOWS
+	int flag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+	flag |= _CRTDBG_LEAK_CHECK_DF;
+	_CrtSetDbgFlag(flag);
+
+	_CrtMemState oldMemoryState;
+	_CrtMemCheckpoint(&oldMemoryState);
+#endif
+
+	Engine* mainEngine = DBG_NEW Engine();
 
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
 	mainEngine->SetApplication(CreateApplication());
@@ -37,5 +59,22 @@ int main(int argc, char **argv)
 	mainEngine->Run();
 
 	delete mainEngine;
+
+#ifdef GOKNAR_PLATFORM_WINDOWS
+	//_CrtMemState newMemoryState;
+	//_CrtMemCheckpoint(&newMemoryState);
+
+	//_CrtMemState stateDiff;
+	//if (_CrtMemDifference(&stateDiff, &oldMemoryState, &newMemoryState))
+	//{
+	//	//OutputDebugString("-----------_CrtMemDumpStatistics ---------");
+	//	//_CrtMemDumpStatistics(&stateDiff);
+	//	//OutputDebugString("-----------_CrtMemDumpAllObjectsSince ---------");
+	//	//_CrtMemDumpAllObjectsSince(&oldMemoryState);
+	//	OutputDebugString("-----------_CrtDumpMemoryLeaks ---------");
+	//	_CrtDumpMemoryLeaks();
+	//}
+#endif
+
 	return 0;
 }

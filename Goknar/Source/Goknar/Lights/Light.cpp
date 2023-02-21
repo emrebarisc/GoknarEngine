@@ -19,19 +19,9 @@ Light::Light() :
 	shadowMapDepthFBO_(-1),
 	isShadowEnabled_(false),
 	mobility_(LightMobility::Static),
+	shadowMapTexture_(nullptr),
 	shadowMapRenderCamera_(nullptr)
 {
-	shadowMapTexture_ = new Texture();
-	shadowMapTexture_->SetWidth(shadowWidth_);
-	shadowMapTexture_->SetHeight(shadowHeight_);
-	shadowMapTexture_->SetTextureTarget(TextureTarget::TEXTURE_2D);
-	shadowMapTexture_->SetTextureMinFilter(TextureMinFilter::NEAREST);
-	shadowMapTexture_->SetTextureMagFilter(TextureMagFilter::NEAREST);
-	shadowMapTexture_->SetTextureWrappingS(TextureWrapping::REPEAT);
-	shadowMapTexture_->SetTextureWrappingT(TextureWrapping::REPEAT);
-	shadowMapTexture_->SetTextureFormat(TextureFormat::DEPTH);
-	shadowMapTexture_->SetTextureType(TextureType::FLOAT);
-	shadowMapTexture_->SetTextureDataType(TextureDataType::DYNAMIC);
 }
 
 Light::~Light()
@@ -55,6 +45,18 @@ void Light::Init()
 {
 	if (isShadowEnabled_)
 	{
+		shadowMapTexture_ = new Texture();
+		shadowMapTexture_->SetWidth(shadowWidth_);
+		shadowMapTexture_->SetHeight(shadowHeight_);
+		shadowMapTexture_->SetTextureTarget(TextureTarget::TEXTURE_2D);
+		shadowMapTexture_->SetTextureMinFilter(TextureMinFilter::NEAREST);
+		shadowMapTexture_->SetTextureMagFilter(TextureMagFilter::NEAREST);
+		shadowMapTexture_->SetTextureWrappingS(TextureWrapping::REPEAT);
+		shadowMapTexture_->SetTextureWrappingT(TextureWrapping::REPEAT);
+		shadowMapTexture_->SetTextureFormat(TextureFormat::DEPTH);
+		shadowMapTexture_->SetTextureType(TextureType::FLOAT);
+		shadowMapTexture_->SetTextureDataType(TextureDataType::DYNAMIC);
+
 		glGenFramebuffers(1, &shadowMapDepthFBO_);
 		shadowMapTexture_->Init();
 		shadowMapTexture_->Bind();

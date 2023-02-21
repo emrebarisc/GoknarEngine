@@ -65,3 +65,14 @@ void Mesh::Init()
 
 	isInitialized_ = true;
 }
+
+void Mesh::ClearDataFromMemory()
+{
+	vertices_->clear();
+	delete vertices_;
+	vertices_ = nullptr;
+
+	faces_->clear();
+	delete faces_;
+	faces_ = nullptr;
+}

@@ -9,9 +9,9 @@
 #endif
 
 #ifdef CONTENT_DIR
-	static const std::string ContentDir = CONTENT_DIR;
+	extern const std::string ContentDir;
 #else
-	static const std::string ContentDir = "";
+	extern const std::string ContentDir;
 #endif
 
 #ifdef GOKNAR_PLATFORM_WINDOWS
@@ -67,7 +67,7 @@
 	const GLenum errorValue = glGetError(); \
 	if(errorValue != GL_NO_ERROR) \
 	{ \
-		GOKNAR_CORE_FATAL("{0}: {1}\n", errorMessage, "_.-^-._"/*gluErrorString(errorValue));*/); \
+		GOKNAR_CORE_FATAL("{0}: Error Value: {1}\n", errorMessage, errorValue/*gluErrorString(errorValue));*/); \
 		exit(EXIT_FAILURE); \
 	} \
 }

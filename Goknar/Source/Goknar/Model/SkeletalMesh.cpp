@@ -20,6 +20,12 @@ SkeletalMesh::~SkeletalMesh()
 		delete skeletalAnimations_[skeletalAnimationIndex];
 	}
 
+	int bonesSize = bones_.size();
+	for (unsigned int boneIndex = 0; boneIndex < bonesSize; ++boneIndex)
+	{
+		delete bones_[boneIndex];
+	}
+
 	delete vertexBoneDataArray_;
 	delete boneNameToIdMap_;
 	delete armature_;

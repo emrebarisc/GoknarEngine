@@ -114,7 +114,8 @@ private:
 	GEuint dynamicVertexBufferId_;
 	GEuint dynamicIndexBufferId_;
 
-	bool isRenderingOnlyDepth_;
+	unsigned char isRenderingOnlyDepth_ : 1;
+	unsigned char removeStaticDataFromMemoryAfterTransferingToGPU : 1;
 };
 
 #endif

@@ -62,6 +62,11 @@ void Texture::ReadFromFramebuffer(GEuint framebuffer)
 
 void Texture::Save(std::string path)
 {
+	if (!buffer_)
+	{
+		GOKNAR_CORE_WARN("NULL Texture buffer was tried to be saved.");
+		return;
+	}
 	IOManager::WritePng(path.c_str(), width_, height_, channels_, buffer_);
 }
 
@@ -120,6 +125,7 @@ void Texture::Init()
 	}
 	
 	glBindTexture((int)textureTarget_, 0);
+	
 	EXIT_ON_GL_ERROR("Texture::Init");
 
 	delete[] buffer_;
