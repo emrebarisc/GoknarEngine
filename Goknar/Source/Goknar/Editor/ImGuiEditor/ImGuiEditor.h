@@ -5,6 +5,7 @@
 #include "Goknar/Math/GoknarMath.h"
 
 struct GLFWwindow;
+struct ImGuiContext;
 
 namespace MAIN_MENU_ACTIVEABLE_ITEMS
 {
@@ -147,6 +148,8 @@ private:
 	ImGuiLog imguiLog_;
 
 	Vector2i windowSize_;
+
+	ImGuiContext* imguiContext_;
 
 	bool showAbout_;
 	bool showLog_;

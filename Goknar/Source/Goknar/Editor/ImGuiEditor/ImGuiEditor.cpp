@@ -15,14 +15,15 @@
 
 ImGuiEditor::ImGuiEditor() :
 	Editor(),
+	imguiContext_(nullptr),
 	showAbout_(false),
-	showLog_(false)
+	showLog_(true)
 {
 }
 
 ImGuiEditor::~ImGuiEditor()
 {
-	
+	ImGui::DestroyContext(imguiContext_);
 }
 
 void ImGuiEditor::Init()
@@ -42,7 +43,7 @@ void ImGuiEditor::Init()
 	windowManager_ = engine->GetWindowManager();
 	const Vector2i windowSize = windowManager_->GetWindowSize();
 	
-	ImGui::CreateContext();
+	imguiContext_ = ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	
 	ImGuiIO& io = ImGui::GetIO();
@@ -83,11 +84,11 @@ void ImGuiEditor::Tick(float deltaTime)
 {
 	windowSize_ = windowManager_->GetWindowSize();
 
-	ImGuiIO& io = ImGui::GetIO();
-	io.DisplaySize = ImVec2((float)windowSize_.x, (float)windowSize_.y);
-
 	ImGui_NewFrame();
 	ImGui::NewFrame();
+
+	ImGuiIO& io = ImGui::GetIO();
+	io.DisplaySize = ImVec2((float)windowSize_.x, (float)windowSize_.y);
 	 
 	//static bool showDemo = true;
 	//ImGui::ShowDemoWindow(&showDemo);
@@ -192,8 +193,12 @@ void ImGuiEditor::ShowMainMenu()
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::BeginMenu("Edit"))
+		if (ImGui::BeginMenu("Settings"))
 		{
+			if (ImGui::MenuItem("Toggle Fullscreen"))
+			{
+				windowManager_->ToggleFullscreen();
+			}
 			ImGui::EndMenu();
 		}
 
