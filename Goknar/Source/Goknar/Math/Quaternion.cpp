@@ -72,7 +72,7 @@ Quaternion::Quaternion(float pitch, float yaw, float roll)
 
 Quaternion::Quaternion(Vector3 axis, float angle)
 {
-    axis.GetNormalized();
+    axis.Normalize();
 
     const float sinAngle = std::sin(angle * 0.5f);
     const float cosAngle = std::cos(angle * 0.5f);
