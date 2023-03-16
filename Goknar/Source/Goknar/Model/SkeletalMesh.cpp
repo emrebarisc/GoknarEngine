@@ -2,6 +2,8 @@
 
 #include "SkeletalMesh.h"
 
+#include "Goknar/Engine.h"
+
 SkeletalMesh::SkeletalMesh() :
 	StaticMesh(),
 	vertexBoneDataArray_(new VertexBoneDataArray()),

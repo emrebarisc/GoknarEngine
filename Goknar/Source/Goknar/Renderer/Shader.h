@@ -10,6 +10,7 @@
 
 class Material;
 class Texture;
+class Image;
 
 enum class ShaderType
 {
@@ -57,6 +58,16 @@ public:
 		shaderType_ = shaderType;
 	}
 
+	void AddTextureImage(const Image* image)
+	{
+		textureImages_.push_back(image);
+	}
+
+	const std::vector<const Image*>* GetTextureImages() const
+	{
+		return &textureImages_;
+	}
+
 	void AddTexture(const Texture* texture)
 	{
 		textures_.push_back(texture);
@@ -74,6 +85,7 @@ public:
 		return programId_;
 	}
 
+	void PreInit();
 	void Init();
 
 	void Bind() const;
@@ -92,6 +104,7 @@ public:
 protected:
 
 private:
+	std::vector<const Image*> textureImages_;
 	std::vector<const Texture*> textures_;
 
 	std::string vertexShaderPath_;

@@ -12,6 +12,7 @@
 #include "ObjectBase.h"
 #include "Managers/ObjectIDManager.h"
 #include "Managers/ObjectManager.h"
+#include "Managers/ResourceManager.h"
 #include "Renderer/Renderer.h"
 #include "Scene.h"
 #include "Renderer/Shader.h"
@@ -19,7 +20,6 @@
 #include "Lights/ShadowManager/ShadowManager.h"
 #include "TimeDependentObject.h"
 #include "Managers/WindowManager.h"
-
 
 #include "Goknar/Lights/Light.h"
 #include "Goknar/Lights/DirectionalLight.h"
@@ -33,7 +33,12 @@
 
 GOKNAR_API Engine *engine;
 
-Engine::Engine() : deltaTime_(0.f), elapsedTime_(0.f), application_(nullptr), editor_(nullptr), controller_(nullptr)
+Engine::Engine() :
+	deltaTime_(0.f),
+	elapsedTime_(0.f),
+	application_(nullptr),
+	editor_(nullptr),
+	controller_(nullptr)
 {
 	engine = this;
 
@@ -42,6 +47,7 @@ Engine::Engine() : deltaTime_(0.f), elapsedTime_(0.f), application_(nullptr), ed
 	windowManager_ = new WindowManager();
 
 	inputManager_ = new InputManager();
+	resourceManager_ = new ResourceManager();
 	objectManager_ = new ObjectManager();
 	renderer_ = new Renderer();
 #if GOKNAR_EDITOR
@@ -61,6 +67,7 @@ Engine::~Engine()
 	delete editor_;
 #endif
 	delete objectManager_;
+	delete resourceManager_;
 	delete inputManager_;
 	delete application_;
 
@@ -88,17 +95,23 @@ void Engine::Init() const
 	GOKNAR_CORE_INFO("Input Manager Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
+	ShaderBuilder::GetInstance()->Init();
+	currentTimePoint = std::chrono::steady_clock::now();
+	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
+	GOKNAR_CORE_INFO("Shader Builder Initialization: {} s.", elapsedTime);
+	lastFrameTimePoint = currentTimePoint;
+
+	resourceManager_->Init();
+	currentTimePoint = std::chrono::steady_clock::now();
+	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
+	GOKNAR_CORE_INFO("Resource Manager Initialization: {} s.", elapsedTime);
+	lastFrameTimePoint = currentTimePoint;
+
 	// TODO: CHECK IF NECESSARY!
 	objectManager_->Init();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Object Manager Initialization: {} s.", elapsedTime);
-	lastFrameTimePoint = currentTimePoint;
-
-	ShaderBuilder::GetInstance()->Init();
-	currentTimePoint = std::chrono::steady_clock::now();
-	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Shader Builder Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	application_->Init();

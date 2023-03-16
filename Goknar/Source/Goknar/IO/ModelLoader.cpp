@@ -3,8 +3,10 @@
 #include "ModelLoader.h"
 
 #include "Goknar/Application.h"
+#include "Goknar/Contents/Image.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Material.h"
+#include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Log.h"
@@ -400,11 +402,15 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 						material->SetShader(shader);
 
-						Texture* texture = new Texture();
-						texture->SetTextureImagePath(diffuseTexturePath.C_Str());
-						texture->SetTextureUsage(TextureUsage::Diffuse);
-						gameScene->AddTexture(texture);
-						material->GetShader()->AddTexture(texture);
+						//Texture* texture = new Texture();
+						//texture->SetTextureImagePath(diffuseTexturePath.C_Str());
+						//texture->SetTextureUsage(TextureUsage::Diffuse);
+						//gameScene->AddTexture(texture);
+						//material->GetShader()->AddTexture(texture);
+
+						Image* image = engine->GetResourceManager()->GetContent<Image>(ContentDir + diffuseTexturePath.C_Str());
+						image->SetTextureUsage(TextureUsage::Diffuse);
+						material->GetShader()->AddTextureImage(image);
 					}
 
 					aiString normalTexturePath;
@@ -418,11 +424,15 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 						material->SetShader(shader);
 
-						Texture* texture = new Texture();
-						texture->SetTextureImagePath(normalTexturePath.C_Str());
-						texture->SetTextureUsage(TextureUsage::Normal);
-						gameScene->AddTexture(texture);
-						material->GetShader()->AddTexture(texture);
+						//Texture* texture = new Texture();
+						//texture->SetTextureImagePath(normalTexturePath.C_Str());
+						//texture->SetTextureUsage(TextureUsage::Normal);
+						//gameScene->AddTexture(texture);
+						//material->GetShader()->AddTexture(texture);
+
+						Image* image = engine->GetResourceManager()->GetContent<Image>(ContentDir + normalTexturePath.C_Str());
+						image->SetTextureUsage(TextureUsage::Normal);
+						shader->AddTextureImage(image);
 					}
 
 					gameScene->AddMaterial(material);
@@ -438,14 +448,12 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 	if (skeletalMesh)
 	{
-		engine->GetApplication()->GetMainScene()->AddSkeletalMesh(skeletalMesh);
-
+		skeletalMesh->SetPath(path);
 		return skeletalMesh;
 	}
 	else if (staticMesh)
 	{
-		engine->GetApplication()->GetMainScene()->AddStaticMesh(staticMesh);
-
+		staticMesh->SetPath(path);
 		return staticMesh;
 	}
 

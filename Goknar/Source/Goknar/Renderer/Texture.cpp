@@ -10,6 +10,7 @@
 #include <GL/gl.h>
 #endif
 
+#include "Goknar/Contents/Image.h"
 #include "Goknar/IO/IOManager.h"
 #include "Goknar/Log.h"
 #include "Goknar/Renderer/Shader.h"
@@ -30,7 +31,8 @@ Texture::Texture() :
 	textureFormat_(TextureFormat::RGB),
 	textureType_(TextureType::UNSIGNED_BYTE),
 	textureDataType_(TextureDataType::STATIC),
-	textureUsage_(TextureUsage::Diffuse)
+	textureUsage_(TextureUsage::Diffuse),
+	isInitialized_(false)
 {
 	objectId_ = ObjectIDManager::GetInstance()->GetAndIncreaseTextureID();
 	name_ = std::string("texture" + std::to_string(objectId_));
@@ -39,6 +41,16 @@ Texture::Texture() :
 Texture::Texture(std::string imagePath) : Texture()
 {
 	imagePath_ = CONTENT_DIR + imagePath;
+}
+
+Texture::Texture(Image* image) :
+	Texture()
+{
+	buffer_ = image->GetBuffer();
+	width_ = image->GetWidth();
+	height_ = image->GetHeight();
+	channels_ = image->GetChannels();
+	textureUsage_ = image->GetTextureUsage();
 }
 
 Texture::~Texture()
@@ -72,6 +84,12 @@ void Texture::Save(std::string path)
 
 void Texture::Init()
 {
+	// Skip if already initialized
+	if (isInitialized_)
+	{
+		return;
+	}
+
 	if (textureDataType_ == TextureDataType::DYNAMIC)
 	{
 		if (textureFormat_ == TextureFormat::DEPTH || textureFormat_ == TextureFormat::RED)
@@ -91,7 +109,7 @@ void Texture::Init()
 			channels_ = 4;
 		}
 	}
-	else if (!LoadTextureImage())
+	else if (!buffer_ && !LoadTextureImage())
 	{
 		GOKNAR_CORE_ERROR("Texture file at {0} could not be found!", imagePath_);
 		return;
@@ -130,6 +148,8 @@ void Texture::Init()
 
 	delete[] buffer_;
 	buffer_ = nullptr;
+
+	isInitialized_ = true;
 }
 
 void Texture::Bind(Shader* shader) const

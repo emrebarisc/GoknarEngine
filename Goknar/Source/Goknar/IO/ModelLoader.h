@@ -8,15 +8,15 @@ struct aiScene;
 
 class ModelLoader
 {
+	friend class IOManager;
 public:
 	ModelLoader() = delete;
-
-	static StaticMesh* LoadPlyFile(const std::string& path);
-	static StaticMesh* LoadModel(const std::string& path);
 
 protected:
 
 private:
+	static StaticMesh* LoadPlyFile(const std::string& path);
+	static StaticMesh* LoadModel(const std::string& path);
 };
 
 #endif

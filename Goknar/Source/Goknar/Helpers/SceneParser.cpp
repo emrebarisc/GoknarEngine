@@ -18,6 +18,8 @@
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Texture.h"
 
+#include "Goknar/Managers/ResourceManager.h"
+
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Model/SkeletalMesh.h"
@@ -603,7 +605,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				stream >> modelFilePath;
 
-				StaticMesh* mesh = ModelLoader::LoadModel(modelFilePath);
+				StaticMesh* mesh = engine->GetResourceManager()->GetContent<StaticMesh>(modelFilePath);
 				if (mesh != nullptr)
 				{
 					if (0 <= materialId)
@@ -712,7 +714,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				stream >> modelFilePath;
 
-				skeletalMesh = dynamic_cast<SkeletalMesh*>(ModelLoader::LoadModel(modelFilePath));
+				skeletalMesh = engine->GetResourceManager()->GetContent<SkeletalMesh>(modelFilePath);
 				if (skeletalMesh != nullptr)
 				{
 					if (0 <= materialId)
@@ -744,7 +746,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				int meshIndex;
 				stream >> meshIndex;
-				staticMeshComponent->SetMesh(scene->GetStaticMesh(meshIndex));
+				staticMeshComponent->SetMesh(engine->GetResourceManager()->GetResourceContainer()->GetMesh(meshIndex));
 			}
 
 			child = element->FirstChildElement("PivotPoint");
@@ -879,7 +881,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				int meshIndex;
 				stream >> meshIndex;
-				skeletalMeshComponent->SetMesh(scene->GetSkeletalMesh(meshIndex));
+				skeletalMeshComponent->SetMesh(engine->GetResourceManager()->GetResourceContainer()->GetMesh(meshIndex));
 			}
 
 			child = element->FirstChildElement("WorldPosition");
@@ -975,7 +977,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				int meshIndex;
 				stream >> meshIndex;
-				dynamicMeshComponent->SetMesh(scene->GetStaticMesh(meshIndex));
+				dynamicMeshComponent->SetMesh(engine->GetResourceManager()->GetResourceContainer()->GetMesh(meshIndex));
 			}
 
 			child = element->FirstChildElement("WorldPosition");

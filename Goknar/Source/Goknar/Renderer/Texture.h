@@ -8,6 +8,7 @@
 #include <string>
 
 class Shader;
+class Image;
 
 enum class TextureTarget
 {
@@ -107,6 +108,7 @@ class GOKNAR_API Texture
 public:
 	Texture();
 	Texture(std::string imagePath);
+	Texture(Image* image);
 
 	~Texture();
 
@@ -274,12 +276,22 @@ public:
 		textureUsage_ = textureUsage;
 	}
 
+	void SetChannels(int channels)
+	{
+		channels_ = channels;
+	}
+
 	int GetChannels() const
 	{
 		return channels_;
 	}
 
-	unsigned char* GetBuffer()
+	void SetBuffer(unsigned char* buffer)
+	{
+		buffer_ = buffer;
+	}
+
+	const unsigned char* GetBuffer()
 	{
 		return buffer_;
 	}
@@ -289,7 +301,7 @@ protected:
 private:
 	std::string name_;
 	std::string imagePath_;
-	unsigned char* buffer_;
+	const unsigned char* buffer_;
 	GEuint rendererTextureId_;
 
 	TextureTarget textureTarget_;
@@ -309,6 +321,8 @@ private:
 	int width_;
 	int height_;
 	int channels_;
+
+	unsigned char isInitialized_ : 1;
 };
 
 #endif

@@ -4,6 +4,7 @@
 
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Log.h"
 #include "Goknar/Material.h"
 #include "Goknar/Scene.h"

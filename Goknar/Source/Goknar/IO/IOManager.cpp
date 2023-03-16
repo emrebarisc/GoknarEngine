@@ -5,6 +5,8 @@
 #include <iostream>
 
 #include "Log.h"
+#include "ModelLoader.h"
+#include "Contents/Image.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -61,7 +63,23 @@ bool IOManager::WriteFile(const char* filePath, const char* rawTextBuffer)
 	return true;
 }
 
-bool IOManager::ReadImage(const char* filePath, int& width, int& height, int& channels, unsigned char** rawDataBuffer)
+Image* IOManager::LoadImage(const std::string& filePath)
+{
+    int width;
+    int height;
+    int channels;
+    unsigned char* buffer = stbi_load(filePath.c_str(), &width, &height, &channels, 0);
+
+    if (buffer == nullptr)
+    {
+        return nullptr;
+    }
+
+    Image* image = new Image(filePath, width, height, channels, buffer);
+    return image;
+}
+
+bool IOManager::ReadImage(const char* filePath, int& width, int& height, int& channels, const unsigned char** rawDataBuffer)
 {
 	*rawDataBuffer = stbi_load(filePath, &width, &height, &channels, 0);
 	return *rawDataBuffer != nullptr;
@@ -118,4 +136,14 @@ bool IOManager::WritePpm(const char* filePath, int width, int height, const unsi
     (void)fclose(outfile);
 
     return true;
+}
+
+StaticMesh* IOManager::LoadPlyFile(const std::string& path)
+{
+    return ModelLoader::LoadPlyFile(path);
+}
+
+StaticMesh* IOManager::LoadModel(const std::string& path)
+{
+    return ModelLoader::LoadModel(path);
 }

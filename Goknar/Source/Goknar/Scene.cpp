@@ -129,24 +129,6 @@ void Scene::Init()
 	{
 		texture->Init();
 	}
-
-	for (StaticMesh* staticMesh : staticMeshes_)
-	{
-		staticMesh->Init();
-		engine->AddStaticMeshToRenderer(staticMesh);
-	}
-
-	for (SkeletalMesh* skeletalMesh : skeletalMeshes_)
-	{
-		skeletalMesh->Init();
-		engine->AddSkeletalMeshToRenderer(skeletalMesh);
-	}
-
-	for (DynamicMesh* dynamicMesh : dynamicMeshes_)
-	{
-		dynamicMesh->Init();
-		engine->AddDynamicMeshToRenderer(dynamicMesh);
-	}
 }
 
 void Scene::ReadSceneData(const std::string& filePath)

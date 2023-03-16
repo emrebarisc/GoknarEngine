@@ -5,6 +5,7 @@
 #include "ShaderBuilder.h"
 
 #include "Goknar/Camera.h"
+#include "Goknar/Contents/Image.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
 #include "Goknar/IO/IOManager.h"
@@ -85,6 +86,15 @@ void Shader::SetMVP(const Matrix& worldTransformationMatrix, const Matrix& relat
 	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_MATRIX, activeCamera->GetViewingMatrix());
 	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::PROJECTION_MATRIX, activeCamera->GetProjectionMatrix());
 	SetVector3(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION, activeCamera->GetPosition());
+}
+
+void Shader::PreInit()
+{
+	std::vector<const Image*>::iterator imageIterator = textureImages_.begin();
+	for (; imageIterator != textureImages_.end(); ++imageIterator)
+	{
+		AddTexture((*imageIterator)->GetGeneratedTexture());
+	}
 }
 
 void Shader::Init()

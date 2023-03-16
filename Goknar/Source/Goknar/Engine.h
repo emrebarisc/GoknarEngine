@@ -14,6 +14,7 @@ class InputManager;
 class ObjectBase;
 class ObjectManager;
 class Renderer;
+class ResourceManager;
 class Shader;
 class WindowManager;
 
@@ -78,6 +79,11 @@ public:
 	{
 		controller_ = controller;
 	}
+
+	ResourceManager* GetResourceManager() const
+	{
+		return resourceManager_;
+	}
 	
 	void RegisterObject(ObjectBase *object);
 	void RemoveObject(ObjectBase* object);
@@ -105,6 +111,7 @@ public:
 
 private:
 	InputManager* inputManager_;
+	ResourceManager* resourceManager_;
 	ObjectManager* objectManager_;
 	Renderer* renderer_;
 	WindowManager* windowManager_;
