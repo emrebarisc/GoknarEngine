@@ -17,17 +17,6 @@
   </Lights>
 
   <Shaders>
-    <Shader id="0">
-      <Type>
-        SelfContained
-      </Type>
-      <VertexShaderPath>
-        Shaders/SkeletalMeshBoneWeightTestVertexShader.glsl
-      </VertexShaderPath>
-      <FragmentShaderPath>
-        Shaders/SkeletalMeshBoneWeightTestFragmentShader.glsl
-      </FragmentShaderPath>
-    </Shader>
   </Shaders>
 
   <Textures>
@@ -45,21 +34,6 @@
       <Name>SM_Cube</Name>
       <Path>Meshes/SM_Cube.fbx</Path>
     </StaticMesh>
-    <!--<SkeletalMesh id = "0">
-      <Name>SkeletalMesh_Human</Name>
-      <Material>0</Material>
-      <Path>Meshes/SkeletalMesh_Human.fbx</Path>
-    </SkeletalMesh>-->
-<!--     <SkeletalMesh id = "0">
-      <Name>SkeletalMesh_Mutant</Name>
-      <Material>0</Material>
-      <Path>Meshes/SkeletalMesh_Mutant.fbx</Path>
-    </SkeletalMesh> -->
-<!--     <SkeletalMesh id = "1">
-      <Name>SkeletalMesh_Bob</Name>
-      <Material>0</Material>
-      <Path>Meshes/SkeletalMesh_Bob.fbx</Path>
-    </SkeletalMesh> -->
   </Meshes>
 
   <Objects>
@@ -85,50 +59,6 @@
       <WorldScaling>0.0 0.0 0.0</WorldScaling>
       <Mesh>1</Mesh>
     </StaticMeshObject>
-<!--     <StaticMeshObject id = "7">
-      <Name>StaticMesh_Mutant</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 90</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>-10.0 0.0 0.0</WorldPosition>
-      <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>7</Mesh>
-    </StaticMeshObject>
-    <SkeletalMeshObject id = "0">
-      <Name>SkeletalMesh_Mutant</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>-5.0 -5.0 0.1</WorldPosition>
-      <WorldRotation>-90.0 0.0 0.0</WorldRotation>
-      <WorldScaling>0.025 0.025 0.025</WorldScaling>
-      <Mesh>0</Mesh>
-    </SkeletalMeshObject>
-    <SkeletalMeshObject id = "0">
-      <Name>SkeletalMesh_Mutant</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>-10.0 -5.0 0.1</WorldPosition>
-      <WorldRotation>-90.0 0.0 0.0</WorldRotation>
-      <WorldScaling>0.025 0.025 0.025</WorldScaling>
-      <Mesh>0</Mesh>
-    </SkeletalMeshObject> -->
-<!--     <SkeletalMeshObject id = "1">
-      <Name>SkeletalMesh_Bob</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>0.0 -10.0 0.1</WorldPosition>
-      <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>1</Mesh>
-    </SkeletalMeshObject> -->
   </Objects>
 
 

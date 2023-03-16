@@ -8,12 +8,13 @@
 #include "Scene.h"
 
 #include "Components/SkeletalMeshComponent.h"
+#include "Managers/ResourceManager.h"
 #include "Model/SkeletalMesh.h"
 #include "Model/SkeletalMeshInstance.h"
 
 Mutant::Mutant() : ObjectBase()
 {
-	skeletalMesh = dynamic_cast<SkeletalMesh*>(ModelLoader::LoadModel("Meshes/SkeletalMesh_Michelle.fbx"));
+	skeletalMesh = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Michelle.fbx");
 	skeletalMeshComponent = new SkeletalMeshComponent(this);
 	skeletalMeshComponent->SetMesh(skeletalMesh);
 	skeletalMeshComponent->SetRelativePosition(Vector3(0.f, 0.f, 0.f));
@@ -21,7 +22,7 @@ Mutant::Mutant() : ObjectBase()
 	skeletalMeshComponent->SetRelativeScaling(Vector3(0.025f, 0.025f, 0.025f));
 	dynamic_cast<SkeletalMeshInstance*>(skeletalMeshComponent->GetMeshInstance())->PlayAnimation("Armature|Armature|mixamo.com|Layer0");
 
-	skeletalMesh2 = dynamic_cast<SkeletalMesh*>(ModelLoader::LoadModel("Meshes/SkeletalMesh_Mutant.fbx"));
+	skeletalMesh2 = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Mutant.fbx");
 	skeletalMeshComponent2 = new SkeletalMeshComponent(this);
 	skeletalMeshComponent2->SetMesh(skeletalMesh2);
 	skeletalMeshComponent2->SetRelativePosition(Vector3(-5.f, -5.f, 0.f));
