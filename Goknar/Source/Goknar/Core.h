@@ -34,30 +34,16 @@
 	#error Game Engine only supports Windows and Unix!
 #endif
 
-#define TUPLE_TAIL(x, ...) __VA_ARGS__
+#define TUPLE_TAIL(...) __VA_ARGS__
+
+#define UNLIKELY(x) (x)
 
 #ifdef GOKNAR_ENABLE_ASSERTS
-	#define GOKNAR_ASSERT(x, ...) \
-	{ \
-		if(!x) \
-		{ \
-			GOKNAR_ERROR("Assertion Failed: {0}", TUPLE_TAIL(__VA_ARGS__)); \
-			DEBUG_BREAK(); \
-			exit(EXIT_FAILURE); \
-		} \
-	}
-	#define GOKNAR_CORE_ASSERT(x, ...) \
-	{ \
-		if (!x)\
-		{ \
-			GOKNAR_CORE_ERROR("Assertion Failed: {0}", TUPLE_TAIL(__VA_ARGS__)); \
-			DEBUG_BREAK(); \
-			exit(EXIT_FAILURE); \
-		} \
-	}
+	#define GOKNAR_ASSERT(x, ...) { if(UNLIKELY(!(x))){ GOKNAR_ERROR("Assertion Failed: {0}", TUPLE_TAIL(__VA_ARGS__)); DEBUG_BREAK(); exit(EXIT_FAILURE); } }
+	#define GOKNAR_CORE_ASSERT(x, ...) { if(UNLIKELY(!(x))){ GOKNAR_CORE_ERROR("Assertion Failed: {0}", TUPLE_TAIL(__VA_ARGS__)); DEBUG_BREAK(); exit(EXIT_FAILURE); } }
 #else
-	#define GOKNAR_ASSERT(x, ...) GOKNAR_WARN("Assertion is not enabled!");
-	#define GOKNAR_CORE_ASSERT(x, ...) GOKNAR_CORE_WARN("Assertion is not enabled!");
+	#define GOKNAR_ASSERT(x, ...)
+	#define GOKNAR_CORE_ASSERT(x, ...)
 #endif
 
 #define BUFFER_OFFSET(index) ((const void *) index)
@@ -68,6 +54,7 @@
 	if(errorValue != GL_NO_ERROR) \
 	{ \
 		GOKNAR_CORE_FATAL("{0}: Error Value: {1}\n", errorMessage, errorValue/*gluErrorString(errorValue));*/); \
+		DEBUG_BREAK(); \
 		exit(EXIT_FAILURE); \
 	} \
 }

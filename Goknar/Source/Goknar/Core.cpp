@@ -1,5 +1,3 @@
-#include "pch.h"
-
 #include "Core.h"
 
 #ifdef CONTENT_DIR

@@ -353,7 +353,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				for (unsigned int faceIndex = 0; faceIndex < assimpMesh->mNumFaces; faceIndex++)
 				{
 					aiFace& face = assimpMesh->mFaces[faceIndex];
-					GOKNAR_CORE_ASSERT((face.mNumIndices == 3u), "ONLY TRIANGLE MESH FACES ARE SUPPORTED!");
+					GOKNAR_CORE_ASSERT(face.mNumIndices == 3u, "ONLY TRIANGLE MESH FACES ARE SUPPORTED!");
 					staticMesh->AddFace(Face(face.mIndices[0], face.mIndices[1], face.mIndices[2]));
 				}
 			}
