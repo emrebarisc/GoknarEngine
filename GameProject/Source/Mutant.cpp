@@ -20,7 +20,7 @@ Mutant::Mutant() : ObjectBase()
 	skeletalMeshComponent->SetRelativePosition(Vector3(0.f, 0.f, 0.f));
 	skeletalMeshComponent->SetRelativeRotation(Vector3(-90.f, 0.f, 0.f));
 	skeletalMeshComponent->SetRelativeScaling(Vector3(0.025f, 0.025f, 0.025f));
-	dynamic_cast<SkeletalMeshInstance*>(skeletalMeshComponent->GetMeshInstance())->PlayAnimation("Armature|Armature|mixamo.com|Layer0");
+	dynamic_cast<SkeletalMeshInstance*>(skeletalMeshComponent->GetMeshInstance())->PlayAnimation("Armature|Layer0");
 
 	skeletalMesh2 = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Mutant.fbx");
 	skeletalMeshComponent2 = new SkeletalMeshComponent(this);

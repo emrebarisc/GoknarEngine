@@ -204,7 +204,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 	
 	// aiProcess_Triangulate caused problems with vertex weights
 	// Try exporting skeletal meshes as triangulated in modeling software
-	const aiScene* assimpScene = importer.ReadFile((ContentDir + path).c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights);
+	const aiScene* assimpScene = importer.ReadFile((ContentDir + path).c_str(), 0);// aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights);
 	if (assimpScene)
 	{
 		for (unsigned int meshIndex = 0; meshIndex < assimpScene->mNumMeshes; ++meshIndex)

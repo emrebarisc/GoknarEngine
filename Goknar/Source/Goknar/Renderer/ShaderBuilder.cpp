@@ -313,7 +313,7 @@ R"(
 	fragmentPosition = fragmentPosition4Channel;
 )";
 
-	vsMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = " + SHADER_VARIABLE_NAMES::VERTEX::UV + "; \n";
+	vsMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = vec2(" + SHADER_VARIABLE_NAMES::VERTEX::UV + ".x, 1.f - " + SHADER_VARIABLE_NAMES::VERTEX::UV + ".y); \n";
 
 	return vsMain;
 }
