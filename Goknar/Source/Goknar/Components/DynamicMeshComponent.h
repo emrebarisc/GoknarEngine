@@ -12,7 +12,7 @@ public:
 	DynamicMeshComponent(ObjectBase* parent);
 	virtual ~DynamicMeshComponent();
 
-	void SetMesh(Mesh* mesh) override;
+	void SetMesh(MeshUnit* mesh) override;
 
 	DynamicMesh* GetDynamicMesh()
 	{

@@ -6,7 +6,7 @@
 #include "Goknar/Core.h"
 #include "Goknar/Model/MeshInstance.h"
 
-class Mesh;
+class MeshUnit;
 class ObjectBase;
 
 class GOKNAR_API MeshComponent : public Component
@@ -17,7 +17,7 @@ public:
 
 	void Destroy() override;
 
-	virtual void SetMesh(Mesh* mesh) = 0;
+	virtual void SetMesh(MeshUnit* mesh) = 0;
 
 	const Matrix& GetRelativeTransformationMatrix() const
 	{

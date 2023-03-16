@@ -6,7 +6,7 @@
 
 class Component;
 class Material;
-class Mesh;
+class MeshUnit;
 
 class GOKNAR_API MeshInstance
 {
@@ -35,9 +35,9 @@ public:
 		componentId_ = componentId;
 	}
 
-	virtual void SetMesh(Mesh* mesh);
+	virtual void SetMesh(MeshUnit* mesh);
 
-	Mesh* GetMesh() const
+	MeshUnit* GetMesh() const
 	{
 		return mesh_;
 	}
@@ -80,7 +80,7 @@ protected:
 	virtual void AddMeshInstanceToRenderer() = 0;
 	virtual void RemoveMeshInstanceFromRenderer() = 0;
 
-	Mesh* mesh_;
+	MeshUnit* mesh_;
 
 private:
 	Matrix relativeTransformationMatrix_;

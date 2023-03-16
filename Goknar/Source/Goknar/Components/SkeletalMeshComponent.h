@@ -12,7 +12,7 @@ public:
 	SkeletalMeshComponent(ObjectBase* parent);
 	virtual ~SkeletalMeshComponent();
 	
-	void SetMesh(Mesh* mesh) override;
+	void SetMesh(MeshUnit* mesh) override;
 
 	SkeletalMesh* GetSkeletalMesh()
 	{

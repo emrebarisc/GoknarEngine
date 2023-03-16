@@ -4,7 +4,7 @@
 #include "Goknar/Core.h"
 #include "Goknar/Renderer/Types.h"
 
-#include "Goknar/Model/Mesh.h"
+#include "Goknar/Model/MeshUnit.h"
 
 #include "glad/glad.h"
 

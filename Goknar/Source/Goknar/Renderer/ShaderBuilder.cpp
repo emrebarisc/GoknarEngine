@@ -7,7 +7,7 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/IO/IOManager.h"
-#include "Goknar/Model/Mesh.h"
+#include "Goknar/Model/MeshUnit.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Material.h"
 #include "Goknar/Lights/PointLight.h"
@@ -16,7 +16,7 @@
 
 ShaderBuilder* ShaderBuilder::instance_ = nullptr;
 
-void ShaderBuilder::BuildShader(Mesh* mesh)
+void ShaderBuilder::BuildShader(MeshUnit* mesh)
 {
 	GOKNAR_ASSERT(mesh);
 

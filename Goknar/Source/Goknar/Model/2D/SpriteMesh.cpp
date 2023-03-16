@@ -195,7 +195,7 @@ void SpriteMesh::Init()
 	AddFace(Face(1, 0, 2));
 	AddFace(Face(1, 2, 3));
 
-	Mesh::Init();
+	MeshUnit::Init();
 }
 
 void SpriteMesh::SetTextureCoordinate(const Rect& textureCoordinate)

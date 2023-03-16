@@ -18,7 +18,7 @@ AnimatedSpriteComponent::~AnimatedSpriteComponent()
 
 }
 
-void AnimatedSpriteComponent::SetMesh(Mesh* animatedSpriteMesh)
+void AnimatedSpriteComponent::SetMesh(MeshUnit* animatedSpriteMesh)
 {
 	animatedSpriteMesh_ = dynamic_cast<AnimatedSpriteMesh*>(animatedSpriteMesh);
 	GOKNAR_ASSERT(animatedSpriteMesh_, "AnimatedSpriteComponent::SetMesh(Mesh*) assigned mesh is not a AnimatedSpriteMesh!");

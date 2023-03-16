@@ -1,13 +1,13 @@
 #ifndef __DYNAMICMESH_H_
 #define __DYNAMICMESH_H_
 
-#include "Mesh.h"
+#include "MeshUnit.h"
 
-class GOKNAR_API DynamicMesh : public Mesh
+class GOKNAR_API DynamicMesh : public MeshUnit
 {
 public:
 	DynamicMesh();
-	DynamicMesh(const Mesh& mesh);
+	DynamicMesh(const MeshUnit& mesh);
 	virtual ~DynamicMesh();
 
 	virtual void Init();

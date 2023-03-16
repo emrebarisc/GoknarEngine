@@ -16,7 +16,7 @@ public:
 	SpriteComponent(ObjectBase* parent);
 	virtual ~SpriteComponent();
 
-	void SetMesh(Mesh* sprite) override;
+	void SetMesh(MeshUnit* sprite) override;
 
 	SpriteMesh* GetSpriteMesh()
 	{

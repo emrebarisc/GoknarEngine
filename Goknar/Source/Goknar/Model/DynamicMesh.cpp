@@ -6,14 +6,14 @@
 #include "Goknar/Renderer/Renderer.h"
 
 DynamicMesh::DynamicMesh() :
-	Mesh(),
+	MeshUnit(),
 	rendererVertexOffset_(0)
 {
 	meshType_ = MeshType::Dynamic;
 }
 
-DynamicMesh::DynamicMesh(const Mesh& mesh) :
-	Mesh(mesh)
+DynamicMesh::DynamicMesh(const MeshUnit& mesh) :
+	MeshUnit(mesh)
 {
 }
 
@@ -23,7 +23,9 @@ DynamicMesh::~DynamicMesh()
 
 void DynamicMesh::Init()
 {
-	Mesh::Init();
+	MeshUnit::Init();
+
+	engine->AddDynamicMeshToRenderer(this);
 }
 
 void DynamicMesh::UpdateVertexDataAt(int index, const VertexData& vertexData)

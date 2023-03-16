@@ -1,9 +1,9 @@
 #ifndef __STATICMESH_H__
 #define __STATICMESH_H__
 
-#include "Mesh.h"
+#include "MeshUnit.h"
 
-class GOKNAR_API StaticMesh : public Mesh
+class GOKNAR_API StaticMesh : public MeshUnit
 {
 public:
 	StaticMesh();

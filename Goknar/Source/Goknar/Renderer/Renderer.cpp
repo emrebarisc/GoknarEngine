@@ -172,7 +172,7 @@ void Renderer::SetStaticBufferData()
 
 	int vertexOffset = 0;
 	int faceOffset = 0;
-	for (Mesh* staticMesh : staticMeshes_)
+	for (MeshUnit* staticMesh : staticMeshes_)
 	{
 		staticMesh->SetBaseVertex(baseVertex);
 		staticMesh->SetVertexStartingIndex(vertexStartingIndex);
@@ -342,7 +342,7 @@ void Renderer::Render()
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
-	// Static Mesh Instances
+	// Static MeshUnit Instances
 	{
 		if (0 < totalStaticMeshCount_)
 		{
@@ -352,7 +352,7 @@ void Renderer::Render()
 			{
 				if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
 
-				const Mesh* mesh = opaqueStaticMeshInstance->GetMesh();
+				const MeshUnit* mesh = opaqueStaticMeshInstance->GetMesh();
 				opaqueStaticMeshInstance->Render();
 
 				int facePointCount = mesh->GetFaceCount() * 3;
@@ -363,7 +363,7 @@ void Renderer::Render()
 			{
 				if (!maskedStaticMeshInstance->GetIsRendered()) continue;
 
-				const Mesh* mesh = maskedStaticMeshInstance->GetMesh();
+				const MeshUnit* mesh = maskedStaticMeshInstance->GetMesh();
 				maskedStaticMeshInstance->Render();
 
 				int facePointCount = mesh->GetFaceCount() * 3;
@@ -372,7 +372,7 @@ void Renderer::Render()
 		}
 	}
 
-	// Skeletal Mesh Instances
+	// Skeletal MeshUnit Instances
 	{
 		if (0 < totalSkeletalMeshCount_)
 		{
@@ -404,7 +404,7 @@ void Renderer::Render()
 		}
 	}
 
-	// Dynamic Mesh Instances
+	// Dynamic MeshUnit Instances
 	{
 		if (0 < totalDynamicMeshCount_)
 		{
@@ -414,7 +414,7 @@ void Renderer::Render()
 			{
 				if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
 
-				const Mesh* mesh = opaqueDynamicMeshInstance->GetMesh();
+				const MeshUnit* mesh = opaqueDynamicMeshInstance->GetMesh();
 				opaqueDynamicMeshInstance->Render();
 
 				int facePointCount = mesh->GetFaceCount() * 3;
@@ -425,7 +425,7 @@ void Renderer::Render()
 			{
 				if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
 
-				const Mesh* mesh = maskedDynamicMeshInstance->GetMesh();
+				const MeshUnit* mesh = maskedDynamicMeshInstance->GetMesh();
 				maskedDynamicMeshInstance->Render();
 
 				int facePointCount = mesh->GetFaceCount() * 3;
@@ -439,7 +439,7 @@ void Renderer::Render()
 	for (StaticMeshInstance* translucentStaticMeshInstance : translucentStaticMeshInstances_)
 	{
 		if (!translucentStaticMeshInstance->GetIsRendered()) continue;
-		const Mesh* mesh = translucentStaticMeshInstance->GetMesh();
+		const MeshUnit* mesh = translucentStaticMeshInstance->GetMesh();
 		translucentStaticMeshInstance->Render();
 
 		int facePointCount = mesh->GetFaceCount() * 3;
@@ -460,7 +460,7 @@ void Renderer::Render()
 	for (DynamicMeshInstance* translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
 	{
 		if (!translucentDynamicMeshInstance->GetIsRendered()) continue;
-		const Mesh* mesh = translucentDynamicMeshInstance->GetMesh();
+		const MeshUnit* mesh = translucentDynamicMeshInstance->GetMesh();
 		translucentDynamicMeshInstance->Render();
 
 		int facePointCount = mesh->GetFaceCount() * 3;

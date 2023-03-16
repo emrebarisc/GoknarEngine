@@ -12,7 +12,7 @@ public:
 	StaticMeshComponent(ObjectBase* parent);
 	virtual ~StaticMeshComponent();
 	
-	void SetMesh(Mesh* mesh) override;
+	void SetMesh(MeshUnit* mesh) override;
 
 	StaticMesh* GetStaticMesh()
 	{

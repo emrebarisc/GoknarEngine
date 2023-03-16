@@ -35,7 +35,9 @@ SkeletalMesh::~SkeletalMesh()
 
 void SkeletalMesh::Init()
 {
-	StaticMesh::Init();
+	MeshUnit::Init();
+
+	engine->AddSkeletalMeshToRenderer(this);
 }
 
 void SkeletalMesh::GetBoneTransforms(std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time)

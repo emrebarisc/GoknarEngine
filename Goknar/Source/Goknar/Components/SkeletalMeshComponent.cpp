@@ -17,7 +17,7 @@ SkeletalMeshComponent::~SkeletalMeshComponent()
 
 }
 
-void SkeletalMeshComponent::SetMesh(Mesh* mesh)
+void SkeletalMeshComponent::SetMesh(MeshUnit* mesh)
 {
 	skeletalMesh_ = dynamic_cast<SkeletalMesh*>(mesh);
 	GOKNAR_ASSERT(skeletalMesh_, "SkeletalMeshComponent::SetMesh(Mesh*) assigned mesh is not a SkeletalMesh!");

@@ -17,7 +17,7 @@ DynamicMeshComponent::~DynamicMeshComponent()
 
 }
 
-void DynamicMeshComponent::SetMesh(Mesh* mesh)
+void DynamicMeshComponent::SetMesh(MeshUnit* mesh)
 {
 	dynamicMesh_ = dynamic_cast<DynamicMesh*>(mesh);
 	GOKNAR_ASSERT(dynamicMesh_, "DynamicMeshComponent::SetMesh(Mesh*) assigned mesh is not a DynamicMesh!");

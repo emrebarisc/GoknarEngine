@@ -17,7 +17,7 @@ SpriteComponent::~SpriteComponent()
 
 }
 
-void SpriteComponent::SetMesh(Mesh* spriteMesh)
+void SpriteComponent::SetMesh(MeshUnit* spriteMesh)
 {
 	spriteMesh_ = dynamic_cast<SpriteMesh*>(spriteMesh);
 	GOKNAR_ASSERT(spriteMesh_, "SpriteComponent::SetMesh(Mesh*) assigned mesh is not a SpriteMesh!");

@@ -17,7 +17,7 @@ StaticMeshComponent::~StaticMeshComponent()
 
 }
 
-void StaticMeshComponent::SetMesh(Mesh* mesh)
+void StaticMeshComponent::SetMesh(MeshUnit* mesh)
 {
 	staticMesh_ = dynamic_cast<StaticMesh*>(mesh);
 	GOKNAR_ASSERT(staticMesh_, "StaticMeshComponent::SetMesh(Mesh*) assigned mesh is not a StaticMesh!");

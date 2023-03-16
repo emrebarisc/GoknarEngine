@@ -1,7 +1,7 @@
 #ifndef __DYNAMICMESHINSTANCE_H__
 #define __DYNAMICMESHINSTANCE_H__
 
-#include "Model/Mesh.h"
+#include "Model/MeshUnit.h"
 #include "MeshInstance.h"
 
 class GOKNAR_API DynamicMeshInstance : public MeshInstance
