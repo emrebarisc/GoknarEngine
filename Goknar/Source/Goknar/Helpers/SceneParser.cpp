@@ -229,6 +229,9 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			child = element->FirstChildElement("Intensity");
 			stream << child->GetText() << std::endl;
 
+			child = element->FirstChildElement("Radius");
+			stream << child->GetText() << std::endl;
+
 			Vector3 position;
 			stream >> position.x >> position.y >> position.z;
 			pointLight->SetPosition(position);
@@ -240,6 +243,10 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			float intensity;
 			stream >> intensity;
 			pointLight->SetIntensity(intensity);
+
+			float radius;
+			stream >> radius;
+			pointLight->SetRadius(radius);
 
 			scene->AddPointLight(pointLight);
 			element = element->NextSiblingElement("PointLight");

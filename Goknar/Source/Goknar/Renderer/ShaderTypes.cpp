@@ -38,6 +38,7 @@ inline namespace SHADER_VARIABLE_NAMES
 	{
 		const char* POSITION = "Position";
 		const char* INTENSITY = "Intensity";
+		const char* RADIUS = "Radius";
 		const char* DIRECTION = "Direction";
 		const char* COVERAGE_ANGLE = "CoverageAngle";
 		const char* FALLOFF_ANGLE = "FalloffAngle";

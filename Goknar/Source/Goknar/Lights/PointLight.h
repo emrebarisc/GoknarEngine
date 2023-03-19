@@ -14,6 +14,8 @@ public:
     {
 		id_ = ObjectIDManager::GetInstance()->GetAndIncreasePointLightID();
 		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT) + std::to_string(id_);
+
+        radius_ = 25.f;
     }
 
     virtual ~PointLight() override
@@ -27,9 +29,21 @@ public:
 
     void SetShaderUniforms(const Shader* shader) const;
 
+    void SetRadius(float radius)
+    {
+        radius_ = radius;
+    }
+
+    float GetRadius() const
+    {
+        return radius_;
+    }
+
 protected:
 
 private:
+
+    float radius_;
 };
 
 #endif

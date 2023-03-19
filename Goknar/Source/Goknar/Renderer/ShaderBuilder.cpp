@@ -485,11 +485,17 @@ std::string ShaderBuilder::GetPointLightUniformTexts(const std::string& lightVar
 std::string ShaderBuilder::GetPointLightColorFunctionText()
 {
 	return R"(
-vec3 CalculatePointLightColor(vec3 position, vec3 intensity)
+vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
 {
 	// To light vector
 	vec3 wi = position - vec3(fragmentPosition);
 	float wiLength = length(wi);
+
+	if(radius < wiLength)
+	{
+		return vec3(0.f);
+	}
+
 	wi /= wiLength;
 
 	if(dot(vertexNormal, wi) < 0.f) return vec3(0.f, 0.f, 0.f);
@@ -512,7 +518,7 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity)
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), phongExponent);
 	color += specularReflectance * cosAlphaPrimeToThePowerOfPhongExponent;
 
-	color *= )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"( * cosThetaPrime * intensity * inverseDistanceSquare;
+	color *= cosThetaPrime * intensity * inverseDistanceSquare;
 
 	return clamp(color, 0.f, 1.f);
 }
@@ -524,22 +530,26 @@ std::string ShaderBuilder::GetStaticPointLightText(const PointLight* pointLight,
 	const Vector3& lightPosition = pointLight->GetPosition();
 	const Vector3& lightColor = pointLight->GetColor();
 	float lightIntensity = pointLight->GetIntensity();
+	float radius = pointLight->GetRadius();
 
 	return "vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + " = vec3(" + std::to_string(lightPosition.x) + ", " + std::to_string(lightPosition.y) + ", " + std::to_string(lightPosition.z) + ");\n" +
-		   "vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + " = vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + ");\n";
+		   "vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + " = vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + ");\n" +
+		   "float " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + " = " + std::to_string(radius) + ";\n";
 }
 
 std::string ShaderBuilder::GetPointLightColorSummationText(const std::string& lightVariableName)
 {
 	return "\tlightColor += CalculatePointLightColor(" +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " +
-			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ");\n";
+			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY +  ", " +
+			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + ");\n";
 }
 
 std::string ShaderBuilder::GetDirectionalLightUniformTexts(const std::string& lightVariableName)
 {
 	return "uniform vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ";\n" +
-		   "uniform vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ";\n";
+		   "uniform vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ";\n" +
+		   "uniform vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + ";\n\n";
 }
 
 std::string ShaderBuilder::GetDirectionalLightColorFunctionText()
@@ -570,7 +580,7 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), phongExponent);
 	color += specularReflectance * cosAlphaPrimeToThePowerOfPhongExponent;
 
-	color *= )" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + R"(  * max(0, normalDotLightDirection) * intensity * inverseDistanceSquare;
+	color *= max(0, normalDotLightDirection) * intensity * inverseDistanceSquare;
 
 	return clamp(color, 0.f, 1.f);
 }

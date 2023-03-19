@@ -20,4 +20,7 @@ void PointLight::SetShaderUniforms(const Shader* shader) const
 
 	std::string intensityName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY;
 	shader->SetVector3(intensityName.c_str(), intensity_);
+
+	std::string radiusName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS;
+	shader->SetVector3(radiusName.c_str(), radius_);
 }
