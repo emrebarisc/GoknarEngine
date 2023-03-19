@@ -146,7 +146,7 @@ void Shader::Init()
 		textures_[textureIndex]->Bind(this);
 	}
 
-	engine->GetRenderer()->BindShadowTextures(this);
+	//engine->GetRenderer()->BindShadowTextures(this);
 
 	Unbind();
 

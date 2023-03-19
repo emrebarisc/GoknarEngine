@@ -40,17 +40,17 @@ void DirectionalLight::SetShaderUniforms(const Shader* shader) const
 	std::string radianceName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY;
 	shader->SetVector3(radianceName.c_str(), color_ * intensity_);
 
-	std::string isCastingShadowName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW;
-	shader->SetInt(isCastingShadowName.c_str(), isShadowEnabled_);
-	shader->SetInt(shadowMapTexture_->GetName().c_str(), shadowMapTexture_->GetRendererTextureId());
+	//std::string isCastingShadowName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW;
+	//shader->SetInt(isCastingShadowName.c_str(), isShadowEnabled_);
+	////shader->SetInt(shadowMapTexture_->GetName().c_str(), shadowMapTexture_->GetRendererTextureId());
 
-	Matrix biasedViewMatrix = shadowMapRenderCamera_->GetViewingMatrix() * 
-		Matrix(	0.5, 0.0, 0.0, 0.0,
-				0.0, 0.5, 0.0, 0.0,
-				0.0, 0.0, 0.5, 0.0,
-				0.5, 0.5, 0.5, 1.0);
+	//Matrix biasedViewMatrix = shadowMapRenderCamera_->GetViewingMatrix() * 
+	//	Matrix(	0.5, 0.0, 0.0, 0.0,
+	//			0.0, 0.5, 0.0, 0.0,
+	//			0.0, 0.0, 0.5, 0.0,
+	//			0.5, 0.5, 0.5, 1.0);
 
-	shader->SetMatrix((name_ + LIGHT::VIEW_MATRIX_POSTFIX).c_str(), biasedViewMatrix);
+	//shader->SetMatrix((name_ + LIGHT::VIEW_MATRIX_POSTFIX).c_str(), biasedViewMatrix);
 }
 
 void DirectionalLight::RenderShadowMap()
