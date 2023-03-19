@@ -11,14 +11,14 @@
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Model/SkeletalMeshInstance.h"
 
-#include "Mutant.h"
+#include "Archer.h"
 
 #define MAX_BONE_INDEX 37
 #define MAX_ANIMATION_INDEX 19
 
 GameController::GameController() : 
 	Controller(),
-	mutant(nullptr),
+	archer(nullptr),
 	useNormalTexture(true)
 {
 	currentBoneIndex = 0;
@@ -27,22 +27,22 @@ GameController::GameController() :
 
 void GameController::SetupInputs()
 {
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::UP, INPUT_ACTION::G_PRESS, std::bind(&GameController::IncreaseCurrentBoneIndex, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::DOWN, INPUT_ACTION::G_PRESS, std::bind(&GameController::DecreaseCurrentBoneIndex, this));
+	//engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::UP, INPUT_ACTION::G_PRESS, std::bind(&GameController::IncreaseCurrentBoneIndex, this));
+	//engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::DOWN, INPUT_ACTION::G_PRESS, std::bind(&GameController::DecreaseCurrentBoneIndex, this));
 
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::RIGHT, INPUT_ACTION::G_PRESS, std::bind(&GameController::IncreaseAnimationIndex, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::LEFT, INPUT_ACTION::G_PRESS, std::bind(&GameController::DecreaseAnimationIndex, this));
+	//engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::RIGHT, INPUT_ACTION::G_PRESS, std::bind(&GameController::IncreaseAnimationIndex, this));
+	//engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::LEFT, INPUT_ACTION::G_PRESS, std::bind(&GameController::DecreaseAnimationIndex, this));
 
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, std::bind(&GameController::ToggleNormalTexture, this));
+	//engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, std::bind(&GameController::ToggleNormalTexture, this));
 
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F, INPUT_ACTION::G_PRESS, std::bind(&GameController::ToggleFullscreen, this));
+	//engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F, INPUT_ACTION::G_PRESS, std::bind(&GameController::ToggleFullscreen, this));
 }
 
 void GameController::IncreaseCurrentBoneIndex()
 {
 	currentBoneIndex = (currentBoneIndex + 1) % MAX_BONE_INDEX;
-	GOKNAR_INFO("Current bone is {}", mutant->GetSkeletalMesh()->GetBone(currentBoneIndex)->name);
-	mutant->GetSkeletalMesh()->GetMaterial()->GetShader()->SetInt("currentBoneIndex", currentBoneIndex);
+	GOKNAR_INFO("Current bone is {}", archer->GetSkeletalMesh()->GetBone(currentBoneIndex)->name);
+	archer->GetSkeletalMesh()->GetMaterial()->GetShader()->SetInt("currentBoneIndex", currentBoneIndex);
 }
 
 void GameController::DecreaseCurrentBoneIndex()
@@ -52,8 +52,8 @@ void GameController::DecreaseCurrentBoneIndex()
 	{
 		currentBoneIndex += MAX_BONE_INDEX;
 	}
-	GOKNAR_INFO("Current bone is {}", mutant->GetSkeletalMesh()->GetBone(currentBoneIndex)->name);
-	mutant->GetSkeletalMesh()->GetMaterial()->GetShader()->SetInt("currentBoneIndex", currentBoneIndex);
+	GOKNAR_INFO("Current bone is {}", archer->GetSkeletalMesh()->GetBone(currentBoneIndex)->name);
+	archer->GetSkeletalMesh()->GetMaterial()->GetShader()->SetInt("currentBoneIndex", currentBoneIndex);
 }
 
 void GameController::ToggleFullscreen()
@@ -64,7 +64,7 @@ void GameController::ToggleFullscreen()
 void GameController::ToggleNormalTexture()
 {
 	useNormalTexture = !useNormalTexture;
-	mutant->GetSkeletalMesh()->GetMaterial()->GetShader()->SetInt("useNormalTexture", useNormalTexture);
+	archer->GetSkeletalMesh()->GetMaterial()->GetShader()->SetInt("useNormalTexture", useNormalTexture);
 }
 
 void GameController::IncreaseAnimationIndex()
@@ -85,7 +85,7 @@ void GameController::DecreaseAnimationIndex()
 
 void GameController::SetAnimation()
 {
-	SkeletalMeshInstance* skeletalMeshInstance = dynamic_cast<SkeletalMeshInstance*>(mutant->GetSkeletalMeshComponent()->GetMeshInstance());
+	SkeletalMeshInstance* skeletalMeshInstance = dynamic_cast<SkeletalMeshInstance*>(archer->GetSkeletalMeshComponent()->GetMeshInstance());
 
 	if (skeletalMeshInstance)
 	{

@@ -3,7 +3,7 @@
 
 #include "Goknar/Controller.h"
 
-class Mutant;
+class Archer;
 
 class GameController : public Controller
 {
@@ -16,9 +16,9 @@ public:
 
 	void SetupInputs() override;
 
-	void SetMutant(Mutant* m)
+	void SetArcher(Archer* a)
 	{
-		mutant = m;
+		archer = a;
 	}
 
 private:
@@ -33,7 +33,7 @@ private:
 	void IncreaseAnimationIndex();
 	void DecreaseAnimationIndex();
 
-	Mutant* mutant;
+	Archer* archer;
 
 	int currentBoneIndex;
 	int animationIndex;
