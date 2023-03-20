@@ -7,7 +7,7 @@
 			<Up>0.0 0.0 1.0000001192092896</Up>
 			<NearPlane>-0.5 0.5 -0.28125 0.28125</NearPlane>
 			<NearDistance>1</NearDistance>
-			<ImageResolution>960 540</ImageResolution>
+			<ImageResolution>1600 900</ImageResolution>
 			<NumSamples>1</NumSamples>
 			<ImageName></ImageName>
 		</Camera>
@@ -82,19 +82,23 @@
 
 	<Meshes>
 		<StaticMesh id = "0">
-			<Name>Cube</Name>
-			<Path>Meshes/SM_Cube.fbx</Path>
+			<Name>Wall</Name>
+			<Path>Meshes/SM_Wall.fbx</Path>
 		</StaticMesh>
 		<StaticMesh id = "1">
-			<Name>Plane</Name>
-			<Path>Meshes/SM_Plane.fbx</Path>
+			<Name>FloorAndCeil</Name>
+			<Path>Meshes/SM_FloorAndCeil.fbx</Path>
+		</StaticMesh>
+		<StaticMesh id = "2">
+			<Name>Chest</Name>
+			<Path>Meshes/SM_Chest.fbx</Path>
 		</StaticMesh>
 	</Meshes>
 
 	<Objects>
 		<StaticMeshObject id = "0">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -106,7 +110,7 @@
 
 		<StaticMeshObject id = "1">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -118,7 +122,7 @@
 
 		<StaticMeshObject id = "2">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -130,7 +134,7 @@
 
 		<StaticMeshObject id = "3">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -142,7 +146,7 @@
 
 		<StaticMeshObject id = "4">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -154,7 +158,7 @@
 
 		<StaticMeshObject id = "5">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -166,7 +170,7 @@
 
 		<StaticMeshObject id = "6">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -178,7 +182,7 @@
 
 		<StaticMeshObject id = "7">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -190,7 +194,7 @@
 
 		<StaticMeshObject id = "8">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -202,7 +206,7 @@
 
 		<StaticMeshObject id = "9">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -214,7 +218,7 @@
 
 		<StaticMeshObject id = "10">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -226,7 +230,7 @@
 
 		<StaticMeshObject id = "11">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -238,7 +242,7 @@
 
 		<StaticMeshObject id = "12">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -250,7 +254,7 @@
 
 		<StaticMeshObject id = "13">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -262,7 +266,7 @@
 
 		<StaticMeshObject id = "14">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -274,7 +278,7 @@
 
 		<StaticMeshObject id = "15">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -286,7 +290,7 @@
 
 		<StaticMeshObject id = "16">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -298,7 +302,7 @@
 
 		<StaticMeshObject id = "17">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -310,7 +314,7 @@
 
 		<StaticMeshObject id = "18">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -322,7 +326,7 @@
 
 		<StaticMeshObject id = "19">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -334,7 +338,7 @@
 
 		<StaticMeshObject id = "20">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -346,7 +350,7 @@
 
 		<StaticMeshObject id = "21">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -358,7 +362,7 @@
 
 		<StaticMeshObject id = "22">
 			<Mesh>1</Mesh>
-			<Name>Plane</Name>
+			<Name>FloorAndCeil</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -370,7 +374,7 @@
 
 		<StaticMeshObject id = "23">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -382,7 +386,7 @@
 
 		<StaticMeshObject id = "24">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
@@ -394,13 +398,25 @@
 
 		<StaticMeshObject id = "25">
 			<Mesh>0</Mesh>
-			<Name>Cube</Name>
+			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
 			<RelativeScaling>1 1 1</RelativeScaling>
 			<WorldPosition>-5.0 2.0 0.0</WorldPosition>
 			<WorldRotation>0.0 0.0 0.0</WorldRotation>
+			<WorldScaling>1.0 1.0 1.0</WorldScaling>
+		</StaticMeshObject>
+
+		<StaticMeshObject id = "26">
+			<Mesh>2</Mesh>
+			<Name>Chest</Name>
+			<PivotPoint>0 0 0</PivotPoint>
+			<RelativePosition>0 0 0</RelativePosition>
+			<RelativeRotation>0 0 0</RelativeRotation>
+			<RelativeScaling>1 1 1</RelativeScaling>
+			<WorldPosition>0.0 6.5 0.0</WorldPosition>
+			<WorldRotation>0.0 -0.0 0.0</WorldRotation>
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
 		</StaticMeshObject>
 
