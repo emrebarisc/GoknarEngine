@@ -563,7 +563,7 @@ def ParseScene():
                 sceneData.objects.append(object)
                 
                 if obj.data.id_data.name not in sceneData.meshMap:
-                    sceneData.meshMap[obj.data.id_data.name] = obj.data.id_data
+                    sceneData.meshMap[obj.data.id_data.name] = obj
                     sceneData.meshIdMap[obj.data.id_data.name] = meshId
                     object.linkedMeshId = meshId
                     
@@ -575,16 +575,18 @@ def ParseScene():
                         
     # Meshes
     for meshName in sceneData.meshMap:
-        object = bpy.data.meshes[meshName]
+        object = sceneData.meshMap[meshName]
         
         exportMesh = Mesh()
         exportMesh.id = sceneData.meshIdMap[meshName]
         exportMesh.name = meshName
         
         bm = bmesh.new()
-        bm.from_mesh(object)
+        bm.from_mesh(object.data)
         
         bmesh.ops.triangulate(bm, faces=bm.faces[:], quad_method='BEAUTY', ngon_method='BEAUTY')
+
+        object.select_set(True)
 
         exportPath = absolutePath + 'Content\\Meshes\\SM_' + meshName + '.fbx'
         bpy.ops.export_scene.fbx(
@@ -594,11 +596,13 @@ def ParseScene():
             object_types={'ARMATURE', 'EMPTY', 'MESH', 'OTHER'}, 
             apply_unit_scale=True, 
             apply_scale_options='FBX_SCALE_ALL',
-            path_mode='RELATIVE', 
+            path_mode='COPY', 
             embed_textures=False, 
             axis_forward='X', 
             axis_up='Z')
-        
+            
+        object.select_set(False)
+                    
         sceneData.meshes.append(exportMesh)
     
     fileName = bpy.context.scene.name
