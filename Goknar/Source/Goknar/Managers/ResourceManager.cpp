@@ -78,8 +78,6 @@ Content* ResourceManager::LoadContent(const std::string& path)
 
 	if (content)
 	{
-		GOKNAR_CORE_ASSERT(resourceContainer_->contentPathMap_.find(path) != resourceContainer_->contentPathMap_.end());
-
 		content->SetPath(path);
 		resourceContainer_->contentPathMap_[path] = content;
 	}

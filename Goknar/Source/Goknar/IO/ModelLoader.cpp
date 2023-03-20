@@ -402,15 +402,25 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 						material->SetShader(shader);
 
-						//Texture* texture = new Texture();
-						//texture->SetTextureImagePath(diffuseTexturePath.C_Str());
-						//texture->SetTextureUsage(TextureUsage::Diffuse);
-						//gameScene->AddTexture(texture);
-						//material->GetShader()->AddTexture(texture);
+						std::string imagePath = ContentDir;
+						std::string diffuseImagePathStdString = std::string(diffuseTexturePath.C_Str());
+						if (diffuseImagePathStdString.find(".fbm") != std::string::npos)
+						{
+							long long lastSlashIndex = path.find_last_of('/');
+							if (lastSlashIndex != std::string::npos)
+							{
+								imagePath += path.substr(0, lastSlashIndex + 1);
+							}
+						}
 
-						Image* image = engine->GetResourceManager()->GetContent<Image>(ContentDir + diffuseTexturePath.C_Str());
-						image->SetTextureUsage(TextureUsage::Diffuse);
-						material->GetShader()->AddTextureImage(image);
+						imagePath += diffuseTexturePath.C_Str();
+
+						Image* image = engine->GetResourceManager()->GetContent<Image>(imagePath);
+						if (image)
+						{
+							image->SetTextureUsage(TextureUsage::Diffuse);
+							material->GetShader()->AddTextureImage(image);
+						}
 					}
 
 					aiString normalTexturePath;
@@ -424,13 +434,20 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 						material->SetShader(shader);
 
-						//Texture* texture = new Texture();
-						//texture->SetTextureImagePath(normalTexturePath.C_Str());
-						//texture->SetTextureUsage(TextureUsage::Normal);
-						//gameScene->AddTexture(texture);
-						//material->GetShader()->AddTexture(texture);
+						std::string normalImagePath = ContentDir;
+						std::string normalImagePathStdString = std::string(normalTexturePath.C_Str());
+						if (normalImagePathStdString.find(".fbm") != std::string::npos)
+						{
+							long long lastSlashIndex = path.find_last_of('/');
+							if (lastSlashIndex != std::string::npos)
+							{
+								normalImagePath += path.substr(0, lastSlashIndex + 1);
+							}
+						}
 
-						Image* image = engine->GetResourceManager()->GetContent<Image>(ContentDir + normalTexturePath.C_Str());
+						normalImagePath += normalTexturePath.C_Str();
+
+						Image* image = engine->GetResourceManager()->GetContent<Image>(normalImagePath);
 						image->SetTextureUsage(TextureUsage::Normal);
 						shader->AddTextureImage(image);
 					}
@@ -448,12 +465,10 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 	if (skeletalMesh)
 	{
-		skeletalMesh->SetPath(path);
 		return skeletalMesh;
 	}
 	else if (staticMesh)
 	{
-		staticMesh->SetPath(path);
 		return staticMesh;
 	}
 
