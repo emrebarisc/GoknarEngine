@@ -24,9 +24,9 @@ Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) 
 void Camera::Init()
 {
 	// Set up the right vector and make forward and up vector perpenticular in case they are not
-	SetRightVector(Vector3::Cross(GetForwardVector().GetNormalized(), GetUpVector().GetNormalized()));
-	SetUpVector(Vector3::Cross(GetRightVector().GetNormalized(), GetForwardVector().GetNormalized()));
-	SetForwardVector(Vector3::Cross(GetUpVector().GetNormalized(), GetRightVector().GetNormalized()));
+	SetLeftVector(Vector3::Cross(GetForwardVector().GetNormalized(), GetUpVector().GetNormalized()));
+	SetUpVector(Vector3::Cross(GetLeftVector().GetNormalized(), GetForwardVector().GetNormalized()));
+	SetForwardVector(Vector3::Cross(GetUpVector().GetNormalized(), GetLeftVector().GetNormalized()));
 
 	if (std::abs(Vector3::Dot(forwardVector_, upVector_)) <= EPSILON)
 	{

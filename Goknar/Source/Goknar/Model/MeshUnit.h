@@ -1,5 +1,5 @@
-#ifndef __MESH_H__
-#define __MESH_H__
+#ifndef __MESHUNIT_H__
+#define __MESHUNIT_H__
 
 #include "Goknar/Core.h"
 #include "Goknar/Contents/Content.h"

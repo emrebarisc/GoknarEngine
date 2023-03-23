@@ -107,6 +107,7 @@ public:
 	void SetUpVector(const Vector3& upVector)
 	{
 		upVector_ = upVector;
+		Update();
 	}
 
 	const Vector3& GetUpVector() const
@@ -114,12 +115,12 @@ public:
 		return upVector_;
 	}
 
-	void SetRightVector(const Vector3& rightVector)
+	void SetLeftVector(const Vector3& leftVector)
 	{
-		leftVector_ = rightVector;
+		leftVector_ = leftVector;
 	}
 
-	const Vector3& GetRightVector() const
+	const Vector3& GetLeftVector() const
 	{
 		return leftVector_;
 	}

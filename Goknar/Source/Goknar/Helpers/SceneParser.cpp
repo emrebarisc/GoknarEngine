@@ -81,116 +81,119 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 
 	//Get Cameras
 	element = root->FirstChildElement("Cameras");
-	element = element->FirstChildElement("Camera");
-	Camera* camera;
-	while (element)
+	if (element)
 	{
-		camera = new Camera();
-		auto child = element->FirstChildElement("Position");
-		stream << child->GetText() << std::endl;
-		float x, y, z;
-		stream >> x >> y >> z;
-		camera->SetPosition(Vector3(x, y, z));
-
-		child = element->FirstChildElement("ImageResolution");
-		stream << child->GetText() << std::endl;
-		int width, height;
-		stream >> width >> height;
-		camera->SetImageWidth(width);
-		camera->SetImageHeight(height);
-
-		child = element->FirstChildElement("NearDistance");
-		if (child)
+		element = element->FirstChildElement("Camera");
+		Camera* camera;
+		while (element)
 		{
+			camera = new Camera();
+			auto child = element->FirstChildElement("Position");
 			stream << child->GetText() << std::endl;
-			float nearDistance;
-			stream >> nearDistance;
-			camera->SetNearDistance(nearDistance);
-		}
+			float x, y, z;
+			stream >> x >> y >> z;
+			camera->SetPosition(Vector3(x, y, z));
 
-		child = element->FirstChildElement("FarDistance");
-		if (child)
-		{
+			child = element->FirstChildElement("ImageResolution");
 			stream << child->GetText() << std::endl;
-			float farDistance;
-			stream >> farDistance;
-			camera->SetFarDistance(farDistance);
-		}
+			int width, height;
+			stream >> width >> height;
+			camera->SetImageWidth(width);
+			camera->SetImageHeight(height);
 
-		child = element->FirstChildElement("Projection");
-		if (child)
-		{
-			stream << child->GetText() << std::endl;
-			std::string projection;
-			stream >> projection;
-			camera->SetProjection(projection == "Orthographic" ? CameraProjection::Orthographic : CameraProjection::Perspective);
-		}
-
-		const char* cameraType = element->Attribute("type");
-		if (cameraType && std::string(cameraType) == "simple")
-		{
-			child = element->FirstChildElement("GazePoint");
+			child = element->FirstChildElement("NearDistance");
 			if (child)
 			{
-				Vector3 gazePoint;
 				stream << child->GetText() << std::endl;
-				stream >> gazePoint.x >> gazePoint.y >> gazePoint.z;
+				float nearDistance;
+				stream >> nearDistance;
+				camera->SetNearDistance(nearDistance);
+			}
 
-				camera->SetForwardVector((gazePoint - camera->GetPosition()).GetNormalized());
+			child = element->FirstChildElement("FarDistance");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				float farDistance;
+				stream >> farDistance;
+				camera->SetFarDistance(farDistance);
+			}
+
+			child = element->FirstChildElement("Projection");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string projection;
+				stream >> projection;
+				camera->SetProjection(projection == "Orthographic" ? CameraProjection::Orthographic : CameraProjection::Perspective);
+			}
+
+			const char* cameraType = element->Attribute("type");
+			if (cameraType && std::string(cameraType) == "simple")
+			{
+				child = element->FirstChildElement("GazePoint");
+				if (child)
+				{
+					Vector3 gazePoint;
+					stream << child->GetText() << std::endl;
+					stream >> gazePoint.x >> gazePoint.y >> gazePoint.z;
+
+					camera->SetForwardVector((gazePoint - camera->GetPosition()).GetNormalized());
+				}
+				else
+				{
+					child = element->FirstChildElement("Gaze");
+					if (child)
+					{
+						stream << child->GetText() << std::endl;
+						float x, y, z;
+						stream >> x >> y >> z;
+						camera->SetForwardVector(Vector3(x, y, z));
+					}
+				}
+
+				float fovY;
+				child = element->FirstChildElement("FovY");
+				stream << child->GetText() << std::endl;
+				stream >> fovY;
+
+				float resolutionProportion = (float)camera->GetImageWidth() / camera->GetImageHeight();
+
+				float halfOfFovY = fovY * 0.5f;
+				float top, bottom, left, right;
+				top = camera->GetNearDistance() * tan(DEGREE_TO_RADIAN(halfOfFovY));
+				bottom = -top;
+				left = bottom * resolutionProportion;
+				right = top * resolutionProportion;
+
+				camera->SetNearPlane(Vector4(left, right, bottom, top));
 			}
 			else
 			{
 				child = element->FirstChildElement("Gaze");
-				if (child)
-				{
-					stream << child->GetText() << std::endl;
-					float x, y, z;
-					stream >> x >> y >> z;
-					camera->SetForwardVector(Vector3(x, y, z));
-				}
+				stream << child->GetText() << std::endl;
+				Vector3 forward;
+				stream >> forward.x >> forward.y >> forward.z;
+				camera->SetForwardVector(forward);
+
+				child = element->FirstChildElement("NearPlane");
+				stream << child->GetText() << std::endl;
+				Vector4 nearPlane;
+				stream >> nearPlane.x >> nearPlane.y >> nearPlane.z >> nearPlane.w;
+				camera->SetNearPlane(nearPlane);
 			}
 
-			float fovY;
-			child = element->FirstChildElement("FovY");
+			child = element->FirstChildElement("Up");
 			stream << child->GetText() << std::endl;
-			stream >> fovY;
+			Vector3 up;
+			stream >> up.x >> up.y >> up.z;
+			camera->SetUpVector(up);
 
-			float resolutionProportion = (float)camera->GetImageWidth() / camera->GetImageHeight();
-
-			float halfOfFovY = fovY * 0.5f;
-			float top, bottom, left, right;
-			top = camera->GetNearDistance() * tan(DEGREE_TO_RADIAN(halfOfFovY));
-			bottom = -top;
-			left = bottom * resolutionProportion;
-			right = top * resolutionProportion;
-
-			camera->SetNearPlane(Vector4(left, right, bottom, top));
+			camera->Init();
+			engine->GetCameraManager()->AddCamera(camera);
+			element = element->NextSiblingElement("Camera");
+			stream.clear();
 		}
-		else
-		{
-			child = element->FirstChildElement("Gaze");
-			stream << child->GetText() << std::endl;
-			Vector3 forward;
-			stream >> forward.x >> forward.y >> forward.z;
-			camera->SetForwardVector(forward);
-
-			child = element->FirstChildElement("NearPlane");
-			stream << child->GetText() << std::endl;
-			Vector4 nearPlane;
-			stream >> nearPlane.x >> nearPlane.y >> nearPlane.z >> nearPlane.w;
-			camera->SetNearPlane(nearPlane);
-		}
-
-		child = element->FirstChildElement("Up");
-		stream << child->GetText() << std::endl;
-		Vector3 up;
-		stream >> up.x >> up.y >> up.z;
-		camera->SetUpVector(up);
-
-		camera->Init();
-		engine->GetCameraManager()->AddCamera(camera);
-		element = element->NextSiblingElement("Camera");
-		stream.clear();
 	}
 
 	//Get Ambient Light

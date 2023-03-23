@@ -388,6 +388,9 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 					assimpMaterial->Get(AI_MATKEY_TWOSIDED, isTwoSided);
 					material->SetShadingModel(isTwoSided ? MaterialShadingModel::TwoSided : MaterialShadingModel::Default);
 
+					float blendFunction = 0.f;
+					assimpMaterial->Get(AI_MATKEY_BLEND_FUNC, blendFunction);
+
 					aiString name;
 					assimpMaterial->Get(AI_MATKEY_NAME, name);
 					material->SetName(name.C_Str());
