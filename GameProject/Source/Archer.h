@@ -2,6 +2,7 @@
 
 #include "Goknar/ObjectBase.h"
 
+class Camera;
 class SkeletalMesh;
 class SkeletalMeshComponent;
 
@@ -25,5 +26,7 @@ public:
 private:
 	SkeletalMesh* skeletalMesh;
 	SkeletalMeshComponent* skeletalMeshComponent;
+
+	Camera* followCamera;
 };
 
