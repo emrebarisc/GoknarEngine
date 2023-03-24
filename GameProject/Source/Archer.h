@@ -6,6 +6,8 @@ class Camera;
 class SkeletalMesh;
 class SkeletalMeshComponent;
 
+class ArcherMovementComponent;
+
 class Archer : public ObjectBase
 {
 public:
@@ -28,5 +30,7 @@ private:
 	SkeletalMeshComponent* skeletalMeshComponent;
 
 	Camera* followCamera;
+
+	ArcherMovementComponent* movementComponent;
 };
 

@@ -14,6 +14,8 @@
 #include "Model/SkeletalMesh.h"
 #include "Model/SkeletalMeshInstance.h"
 
+#include "Components/ArcherMovementComponent.h"
+
 Archer::Archer() : ObjectBase()
 {
 	SetTickable(true);
@@ -25,12 +27,15 @@ Archer::Archer() : ObjectBase()
 	dynamic_cast<SkeletalMeshInstance*>(skeletalMeshComponent->GetMeshInstance())->PlayAnimation("Armature|Idle");
 
 	followCamera = new Camera(Vector3::ZeroVector, Vector3(1.f, 0.f, -1.f).GetNormalized(), Vector3(1.f, 0.f, 1.f).GetNormalized());
+
+	movementComponent = new ArcherMovementComponent(this);
 }
 
 void Archer::BeginGame()
 {
 	followCamera->Init();
 	engine->GetCameraManager()->AddCamera(followCamera);
+	engine->GetCameraManager()->SetActiveCamera(followCamera);
 }
 
 void Archer::Tick(float deltaTime)

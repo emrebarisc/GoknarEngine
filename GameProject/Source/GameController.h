@@ -22,23 +22,16 @@ public:
 	}
 
 private:
-	void IncreaseCurrentBoneIndex();
-	void DecreaseCurrentBoneIndex();
-
-	void ToggleFullscreen();
-
-	void ToggleNormalTexture();
-
-	void SetAnimation();
-	void IncreaseAnimationIndex();
-	void DecreaseAnimationIndex();
+	void MoveForward();
+	void StopMovingForward();
+	void MoveBackward();
+	void StopMovingBackward();
+	void MoveLeft();
+	void StopMovingLeft();
+	void MoveRight();
+	void StopMovingRight();
 
 	Archer* archer;
-
-	int currentBoneIndex;
-	int animationIndex;
-
-	unsigned int useNormalTexture : 1;
 };
 
 #endif
