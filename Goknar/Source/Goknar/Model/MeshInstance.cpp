@@ -2,7 +2,7 @@
 
 #include "MeshInstance.h"
 
-#include "Goknar/Components/Component.h"
+#include "Goknar/Components/RenderComponent.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Material.h"
 #include "Goknar/Model/MeshUnit.h"

@@ -6,7 +6,7 @@
 #include "SpriteMesh.h"
 #include "Goknar/TimeDependentObject.h"
 
-class Component;
+class RenderComponent;
 class Material;
 
 class AnimatedSpriteAnimation

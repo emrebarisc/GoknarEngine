@@ -8,7 +8,7 @@ class GOKNAR_API DynamicMeshInstance : public MeshInstance
 {
 public:
 	DynamicMeshInstance() = delete;
-	DynamicMeshInstance(Component* parentComponent);
+	DynamicMeshInstance(RenderComponent* parentComponent);
 
 	virtual ~DynamicMeshInstance() {}
 

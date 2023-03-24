@@ -5,7 +5,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Renderer/Renderer.h"
 
-StaticMeshInstance::StaticMeshInstance(Component* parentComponent) : MeshInstance(parentComponent)
+StaticMeshInstance::StaticMeshInstance(RenderComponent* parentComponent) : MeshInstance(parentComponent)
 {
 
 }

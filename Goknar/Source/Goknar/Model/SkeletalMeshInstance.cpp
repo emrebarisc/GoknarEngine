@@ -9,7 +9,7 @@
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 
-SkeletalMeshInstance::SkeletalMeshInstance(Component* parentComponent) :
+SkeletalMeshInstance::SkeletalMeshInstance(RenderComponent* parentComponent) :
 	MeshInstance(parentComponent)
 {
 }

@@ -17,7 +17,7 @@ class GOKNAR_API SkeletalMeshInstance : public MeshInstance
 {
 public:
 	SkeletalMeshInstance() = delete;
-	SkeletalMeshInstance(Component* parentComponent);
+	SkeletalMeshInstance(RenderComponent* parentComponent);
 	virtual ~SkeletalMeshInstance() {}
 	virtual void Render() override;
 

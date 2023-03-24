@@ -7,7 +7,7 @@ class GOKNAR_API StaticMeshInstance : public MeshInstance
 {
 public:
 	StaticMeshInstance() = delete;
-	StaticMeshInstance(Component* parentComponent);
+	StaticMeshInstance(RenderComponent* parentComponent);
 
 	virtual ~StaticMeshInstance() {}
 

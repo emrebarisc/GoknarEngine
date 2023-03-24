@@ -7,7 +7,7 @@ class GOKNAR_API SpriteMeshInstance : public DynamicMeshInstance
 {
 public:
 	SpriteMeshInstance() = delete;
-	SpriteMeshInstance(Component* parentComponent);
+	SpriteMeshInstance(RenderComponent* parentComponent);
 private:
 };
 

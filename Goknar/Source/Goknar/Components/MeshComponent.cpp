@@ -7,7 +7,7 @@
 #include "Goknar/ObjectBase.h"
 
 MeshComponent::MeshComponent(ObjectBase* parent, MeshInstance* meshInstance) :
-	Component(parent),
+	RenderComponent(parent),
 	meshInstance_(meshInstance)
 {
 	WorldTransformationMatrixIsUpdated(parent->GetWorldTransformationMatrix());

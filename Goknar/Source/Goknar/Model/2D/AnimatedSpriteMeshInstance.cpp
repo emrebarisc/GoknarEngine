@@ -6,7 +6,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Renderer/Renderer.h"
 
-AnimatedSpriteMeshInstance::AnimatedSpriteMeshInstance(Component* parentComponent) : 
+AnimatedSpriteMeshInstance::AnimatedSpriteMeshInstance(RenderComponent* parentComponent) : 
 	DynamicMeshInstance(parentComponent),
 	animatedspriteMesh_(nullptr)
 {

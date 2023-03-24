@@ -4,7 +4,7 @@
 #include "Goknar/Core.h"
 #include "Goknar/Math/Matrix.h"
 
-class Component;
+class RenderComponent;
 class Material;
 class MeshUnit;
 
@@ -13,7 +13,7 @@ class GOKNAR_API MeshInstance
 public:
 	MeshInstance() = delete;
 
-	MeshInstance(Component* parentComponent) :
+	MeshInstance(RenderComponent* parentComponent) :
 		relativeTransformationMatrix_(Matrix::IdentityMatrix),
 		worldTransformationMatrix_(Matrix::IdentityMatrix),
 		parentComponent_(parentComponent),
@@ -86,7 +86,7 @@ private:
 	Matrix relativeTransformationMatrix_;
 	Matrix worldTransformationMatrix_;
 
-	Component* parentComponent_;
+	RenderComponent* parentComponent_;
 
 	int componentId_;
 

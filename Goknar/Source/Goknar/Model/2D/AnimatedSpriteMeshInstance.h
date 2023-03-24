@@ -9,7 +9,7 @@ class GOKNAR_API AnimatedSpriteMeshInstance : public DynamicMeshInstance
 {
 public:
 	AnimatedSpriteMeshInstance() = delete;
-	AnimatedSpriteMeshInstance(Component* parentComponent);
+	AnimatedSpriteMeshInstance(RenderComponent* parentComponent);
 
 	virtual ~AnimatedSpriteMeshInstance() {}
 

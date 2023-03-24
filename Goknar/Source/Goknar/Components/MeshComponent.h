@@ -1,7 +1,7 @@
 #ifndef __MESHCOMPONENT_H__
 #define __MESHCOMPONENT_H__
 
-#include "Component.h"
+#include "RenderComponent.h"
 
 #include "Goknar/Core.h"
 #include "Goknar/Model/MeshInstance.h"
@@ -9,7 +9,7 @@
 class MeshUnit;
 class ObjectBase;
 
-class GOKNAR_API MeshComponent : public Component
+class GOKNAR_API MeshComponent : public RenderComponent
 {
 public:
 	MeshComponent() = delete;
@@ -36,7 +36,7 @@ protected:
 	MeshComponent(ObjectBase* parent, MeshInstance* meshInstance);
 	inline void UpdateRelativeTransformationMatrix() override
 	{
-		Component::UpdateRelativeTransformationMatrix();
+		RenderComponent::UpdateRelativeTransformationMatrix();
 
 		meshInstance_->SetRelativeTransformationMatrix(relativeTransformationMatrix_);
 	}

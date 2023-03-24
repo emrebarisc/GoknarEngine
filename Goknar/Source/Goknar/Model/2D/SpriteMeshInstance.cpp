@@ -2,7 +2,7 @@
 
 #include "SpriteMeshInstance.h"
 
-SpriteMeshInstance::SpriteMeshInstance(Component* parentComponent) : DynamicMeshInstance(parentComponent)
+SpriteMeshInstance::SpriteMeshInstance(RenderComponent* parentComponent) : DynamicMeshInstance(parentComponent)
 {
 
 }

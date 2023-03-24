@@ -8,7 +8,7 @@
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Scene.h"
 
-DynamicMeshInstance::DynamicMeshInstance(Component* parentComponent) : 
+DynamicMeshInstance::DynamicMeshInstance(RenderComponent* parentComponent) : 
 	MeshInstance(parentComponent)
 {
 
