@@ -19,25 +19,8 @@ enum class GOKNAR_API CameraType : unsigned char
 class GOKNAR_API Camera
 {
 public:
-	Camera() : 
-		viewingMatrix_(Matrix::IdentityMatrix),
-		position_(Vector3::ZeroVector),
-		forwardVector_(Vector3::ForwardVector),
-		leftVector_(Vector3::LeftVector),
-		upVector_(Vector3::UpVector),
-		nearPlane_(Vector4(-0.5f, 0.5f, -0.28125f, 0.28125f)),
-		nearDistance_(0.01f),
-		farDistance_(1000.f),
-		imageWidth_(1600),
-		imageHeight_(900),
-		projection_(CameraProjection::Perspective),
-		cameraType_(CameraType::Scene)
-	{
-		Update();
-	}
-
+	Camera();
 	Camera(const Vector3& position, const Vector3& forward, const Vector3& up);
-
 	Camera(const Camera* rhs) : Camera()
 	{
 		if (rhs != this)
@@ -239,23 +222,24 @@ protected:
 private:
 	void LookAt();
 
-	Matrix viewingMatrix_;
+	Matrix viewingMatrix_ { Matrix::IdentityMatrix };
 	Matrix projectionMatrix_;
 
 	// Left Right Bottom Top
-	Vector4 nearPlane_;
+	Vector4 nearPlane_{ Vector4(-0.5f, 0.5f, -0.28125f, 0.28125f) };
 
-	Vector3 position_;
-	Vector3 forwardVector_;
-	Vector3 upVector_;
-	Vector3 leftVector_;
+	Vector3 position_{ Vector3::ZeroVector };
+	Vector3 forwardVector_{ Vector3::ForwardVector };
+	Vector3 upVector_{ Vector3::UpVector };
+	Vector3 leftVector_{ Vector3::LeftVector };
 
-	float nearDistance_;
-	float farDistance_;
-	int imageWidth_, imageHeight_;
+	float nearDistance_{ 0.01f };
+	float farDistance_{ 1000.f };
+	int imageWidth_{ 1600 };
+	int imageHeight_{ 900 };
 
-	CameraProjection projection_;
-	CameraType cameraType_;
+	CameraProjection projection_{ CameraProjection::Perspective };
+	CameraType cameraType_{ CameraType::Scene };
 };
 
 #endif

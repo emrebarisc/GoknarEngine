@@ -1,6 +1,8 @@
 #include "pch.h"
 
 #include "Camera.h"
+#include "Engine.h"
+#include "Managers/CameraManager.h"
 #include "Math/GoknarMath.h"
 
 #ifdef GOKNAR_PLATFORM_WINDOWS
@@ -8,6 +10,13 @@
 #elif defined(GOKNAR_PLATFORM_UNIX)
 #include <GL/gl.h>
 #endif
+
+Camera::Camera()
+{
+	engine->GetCameraManager()->AddCamera(this);
+
+	Update();
+}
 
 Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) : 
 	Camera()

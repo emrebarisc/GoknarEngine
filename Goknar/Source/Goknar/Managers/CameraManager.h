@@ -15,15 +15,9 @@ public:
 
 	~CameraManager();
 
-	void AddCamera(Camera* camera)
-	{
-		cameras_.push_back(camera);
+	void Init();
 
-		if(cameras_.size() == 1)
-		{
-			activeCamera_ = camera;
-		}
-	}
+	void AddCamera(Camera* camera);
 
 	void SetActiveCamera(Camera* camera);
 
