@@ -7,10 +7,10 @@ class SkeletalAnimation;
 
 struct SkeletalMeshAnimation
 {
-	std::string name = "";
-	const SkeletalAnimation* skeletalAnimation = nullptr;
-	float animationTime = 0.f;
-	float elapsedTimeInSeconds = 0.f;
+	std::string name{ "" };
+	const SkeletalAnimation* skeletalAnimation{ nullptr };
+	float animationTime{ 0.f };
+	float elapsedTimeInSeconds{ 0.f };
 };
 
 class GOKNAR_API SkeletalMeshInstance : public MeshInstance
