@@ -104,10 +104,10 @@ EditorGroundGrid::EditorGroundGrid()
 	groundGridMeshMaterial->SetShader(groundGridMeshShader);
 
 	StaticMesh* groundGridMesh = new StaticMesh();
-	groundGridMesh->AddVertexData(VertexData(Vector3(-1.f, 1.f, 0.f), Vector3(0.f, 0.f, 1.f)));
-	groundGridMesh->AddVertexData(VertexData(Vector3(1.f, 1.f, 0.f), Vector3(0.f, 0.f, 1.f)));
-	groundGridMesh->AddVertexData(VertexData(Vector3(-1.f, -1.f, 0.f), Vector3(0.f, 0.f, 1.f)));
-	groundGridMesh->AddVertexData(VertexData(Vector3(1.f, -1.f, 0.f), Vector3(0.f, 0.f, 1.f)));
+	groundGridMesh->AddVertexData(VertexData(Vector3(-1.f, 1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
+	groundGridMesh->AddVertexData(VertexData(Vector3(1.f, 1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
+	groundGridMesh->AddVertexData(VertexData(Vector3(-1.f, -1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
+	groundGridMesh->AddVertexData(VertexData(Vector3(1.f, -1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
 	groundGridMesh->AddFace(Face(1, 0, 2));
 	groundGridMesh->AddFace(Face(1, 2, 3));
 	groundGridMesh->SetMaterial(groundGridMeshMaterial);
@@ -130,7 +130,7 @@ void EditorGroundGrid::BeginGame()
 	SetWorldPosition(Vector3::ZeroVector);
 	SetWorldScaling(Vector3(1000.f, 1000.f, 1.f));
 
-	SetIsActive(false);
+	SetIsActive(true);
 }
 
 void EditorGroundGrid::Init()

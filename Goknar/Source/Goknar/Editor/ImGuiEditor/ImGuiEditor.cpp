@@ -17,7 +17,7 @@ ImGuiEditor::ImGuiEditor() :
 	Editor(),
 	imguiContext_(nullptr),
 	showAbout_(false),
-	showLog_(true)
+	showLog_(false)
 {
 }
 
