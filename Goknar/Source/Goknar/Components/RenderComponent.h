@@ -19,11 +19,6 @@ public:
 
 	virtual void Destroy() = 0;
 
-	const ObjectBase* GetParent() const
-	{
-		return parent_;
-	}
-
 	void SetPivotPoint(const Vector3& pivotPoint);
 	const Vector3& GetPivotPoint() const
 	{
@@ -68,18 +63,13 @@ public:
 		return Vector3(relativeTransformationMatrix_[2], relativeTransformationMatrix_[6], relativeTransformationMatrix_[10]);
 	}
 	
-	virtual void SetIsRendered(bool isRendered) = 0;
+	virtual void SetIsActive(bool isRendered) = 0;
 	
-	bool GetIsRendered() const
-	{
-		return isRendered_;
-	}
-
-	virtual void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) = 0;
+	virtual void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override = 0;
 
 protected:
 	Matrix relativeTransformationMatrix_;
-	inline virtual void UpdateRelativeTransformationMatrix()
+	inline virtual void UpdateRelativeTransformationMatrix() 
 	{
 		// Since OpenGL uses column-major matriced and Goknar does not
 		// all matrix multiplications are done in reverse order
@@ -109,14 +99,12 @@ protected:
 												0.f, 0.f, 0.f, 1.f);
 	}
 
-	bool isRendered_;
+	bool isActive;
 private:
 	Vector3 pivotPoint_;
 
 	Vector3 relativePosition_;
 	Vector3 relativeRotation_;
 	Vector3 relativeScaling_;
-
-	ObjectBase* parent_;
 };
 #endif

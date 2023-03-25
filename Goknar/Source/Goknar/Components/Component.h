@@ -3,8 +3,7 @@
 
 #include "Goknar/Core.h"
 #include "Goknar/Math/Matrix.h"
-
-class ObjectBase;
+#include "Goknar/ObjectBase.h"
 
 class GOKNAR_API Component
 {
@@ -16,15 +15,39 @@ public:
 
 	}
 
-	virtual void Destroy() = 0;
+	virtual void BeginGame() {}
+	virtual void TickComponent(float deltaTime) {}
 
-	const ObjectBase* GetParent() const
+	bool GetIsTickable() const
+	{
+		return isTickable_;
+	}
+
+	void SetIsTickable(bool isTickable);
+
+	virtual void Destroy();
+
+	ObjectBase* GetParent() const
 	{
 		return parent_;
 	}
 
+	virtual void SetIsActive(bool isActive)
+	{
+		isActive_ = isActive;
+	}
+
+	bool GetIsActive() const
+	{
+		return isActive_;
+	}
+
+	virtual void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) {}
 protected:
 private:
 	ObjectBase* parent_;
+
+	bool isActive_;
+	bool isTickable_;
 };
 #endif

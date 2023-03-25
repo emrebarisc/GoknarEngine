@@ -1,39 +1,32 @@
 #include "pch.h"
 
-#include "RenderComponent.h"
-#include "Goknar/ObjectBase.h"
+#include "Component.h"
+#include "Engine.h"
 
-RenderComponent::RenderComponent(ObjectBase* parent) :
+Component::Component(ObjectBase* parent) :
 	parent_(parent),
-	relativeTransformationMatrix_(Matrix::IdentityMatrix),
-	relativePosition_(Vector3::ZeroVector),
-	relativeRotation_(Vector3::ZeroVector),
-	relativeScaling_(Vector3(1.f)),
-	pivotPoint_(Vector3::ZeroVector)
+	isActive_(true),
+	isTickable_(false)
 {
 	parent->AddComponent(this);
+	engine->RegisterComponent(this);
 }
 
-void RenderComponent::SetPivotPoint(const Vector3& pivotPoint)
+void Component::Destroy()
 {
-	pivotPoint_ = pivotPoint;
-	UpdateRelativeTransformationMatrix();
+	delete this;
 }
 
-void RenderComponent::SetRelativePosition(const Vector3& position)
+void Component::SetIsTickable(bool isTickable)
 {
-	relativePosition_ = position;
-	UpdateRelativeTransformationMatrix();
+	isTickable_ = isTickable;
+	if (isTickable_)
+	{
+		engine->AddToTickableComponents(this);
+	}
+	else
+	{
+		engine->RemoveFromTickableComponents(this);
+	}
 }
 
-void RenderComponent::SetRelativeRotation(const Vector3& rotation)
-{
-	relativeRotation_ = rotation;
-	UpdateRelativeTransformationMatrix();
-}
-
-void RenderComponent::SetRelativeScaling(const Vector3& scaling)
-{
-	relativeScaling_ = scaling;
-	UpdateRelativeTransformationMatrix();
-}

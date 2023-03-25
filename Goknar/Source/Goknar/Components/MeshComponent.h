@@ -26,7 +26,7 @@ public:
 
 	void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override;
 
-	void SetIsRendered(bool isRendered);
+	void SetIsActive(bool isRendered);
 
 	MeshInstance* GetMeshInstance() const
 	{

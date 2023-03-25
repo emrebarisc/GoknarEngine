@@ -4,14 +4,13 @@
 #include "Goknar/ObjectBase.h"
 
 RenderComponent::RenderComponent(ObjectBase* parent) :
-	parent_(parent),
+	Component(parent),
 	relativeTransformationMatrix_(Matrix::IdentityMatrix),
 	relativePosition_(Vector3::ZeroVector),
 	relativeRotation_(Vector3::ZeroVector),
 	relativeScaling_(Vector3(1.f)),
 	pivotPoint_(Vector3::ZeroVector)
 {
-	parent->AddComponent(this);
 }
 
 void RenderComponent::SetPivotPoint(const Vector3& pivotPoint)
