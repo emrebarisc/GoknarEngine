@@ -8,6 +8,7 @@
 class TimeDependentObject;
 class Application;
 class CameraManager;
+class Component;
 class Controller;
 class Editor;
 class InputManager;
@@ -89,6 +90,12 @@ public:
 	void RemoveObject(ObjectBase* object);
 	void AddToTickableObjects(ObjectBase* object);
 	void RemoveFromTickableObjects(ObjectBase* object);
+
+	void RegisterComponent(Component* component);
+	void RemoveComponent(Component* component);
+	void AddToTickableComponents(Component* component);
+	void RemoveFromTickableComponents(Component* component);
+
 	void RegisterTimeDependentObject(TimeDependentObject* animatedMesh2D);
 
 	void SetApplication(Application* application);
@@ -123,6 +130,10 @@ private:
 	
 	std::vector<ObjectBase *> registeredObjects_;
 	std::vector<ObjectBase *> tickableObjects_;
+
+	std::vector<Component*> registeredComponents_;
+	std::vector<Component*> tickableComponents_;
+
 	std::vector<TimeDependentObject*> timeDependentObjects_;
 
 	float deltaTime_;

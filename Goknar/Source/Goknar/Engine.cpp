@@ -5,6 +5,7 @@
 
 #include "Application.h"
 #include "Managers/CameraManager.h"
+#include "Components/Component.h"
 #include "Controller.h"
 #include "Editor/ImGuiEditor/ImGuiEditor.h"
 #include "Managers/InputManager.h"
@@ -107,6 +108,12 @@ void Engine::Init() const
 	GOKNAR_CORE_INFO("Resource Manager Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
+	cameraManager_->Init();
+	currentTimePoint = std::chrono::steady_clock::now();
+	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
+	GOKNAR_CORE_INFO("Camera Manager Initialization: {} s.", elapsedTime);
+	lastFrameTimePoint = currentTimePoint;
+
 	// TODO: CHECK IF NECESSARY!
 	objectManager_->Init();
 	currentTimePoint = std::chrono::steady_clock::now();
@@ -187,25 +194,46 @@ void Engine::BeginGame()
 	{
 		object->BeginGame();
 	}
+
+	for (Component* component : registeredComponents_)
+	{
+		component->BeginGame();
+	}
+
+	controller_->BeginGame();
 }
 
 void Engine::Tick(float deltaTime)
 {
 	for (ObjectBase* object : tickableObjects_)
 	{
-		object->Tick(deltaTime);
+		if (object->GetIsActive())
+		{
+			object->Tick(deltaTime);
+		}
+	}
+
+	for (Component* component : tickableComponents_)
+	{
+		if (component->GetIsActive())
+		{
+			component->TickComponent(deltaTime);
+		}
 	}
 
 	for (TimeDependentObject* object : timeDependentObjects_)
 	{
-		object->Tick(deltaTime);
+		if (object->GetIsActive())
+		{
+			object->Tick(deltaTime);
+		}
 	}
 }
 
 void Engine::DestroyObject(ObjectBase* object)
 {
 	RemoveObject(object);
-	if (object->GetTickable())
+	if (object->GetIsTickable())
 	{
 		engine->RemoveFromTickableObjects(object);
 	}
@@ -250,6 +278,44 @@ void Engine::RemoveFromTickableObjects(ObjectBase* object)
 		if (tickableObjects_[tickableObjectIndex] == object)
 		{
 			tickableObjects_.erase(tickableObjects_.begin() + tickableObjectIndex);
+			return;
+		}
+	}
+}
+
+void Engine::RegisterComponent(Component* component)
+{
+	registeredComponents_.push_back(component);
+}
+
+void Engine::RemoveComponent(Component* component)
+{
+	size_t registeredComponentsSize = registeredComponents_.size();
+
+	for (size_t registeredComponentIndex = 0; registeredComponentIndex < registeredComponentsSize; registeredComponentIndex++)
+	{
+		if (registeredComponents_[registeredComponentIndex] == component)
+		{
+			registeredComponents_.erase(registeredComponents_.begin() + registeredComponentIndex);
+			return;
+		}
+	}
+}
+
+void Engine::AddToTickableComponents(Component* component)
+{
+	tickableComponents_.push_back(component);
+}
+
+void Engine::RemoveFromTickableComponents(Component* component)
+{
+	size_t tickableComponentsSize = tickableComponents_.size();
+
+	for (size_t tickableComponentIndex = 0; tickableComponentIndex < tickableComponentsSize; tickableComponentIndex++)
+	{
+		if (tickableComponents_[tickableComponentIndex] == component)
+		{
+			tickableComponents_.erase(tickableComponents_.begin() + tickableComponentIndex);
 			return;
 		}
 	}
