@@ -28,7 +28,6 @@ void DirectionalLight::Init()
 		shadowMapRenderCamera_->SetProjection(CameraProjection::Orthographic);
 		shadowMapRenderCamera_->SetCameraType(CameraType::Shadow);
 		shadowMapRenderCamera_->SetFarDistance(100);
-		shadowMapRenderCamera_->Init();
 	}
 }
 
