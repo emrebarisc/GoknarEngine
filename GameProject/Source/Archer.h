@@ -6,6 +6,7 @@ class Camera;
 class SkeletalMesh;
 class SkeletalMeshComponent;
 
+class ArcherGameController;
 class ArcherMovementComponent;
 
 class Archer : public ObjectBase
@@ -17,20 +18,36 @@ public:
 
 	SkeletalMesh* GetSkeletalMesh() const
 	{
-		return skeletalMesh;
+		return skeletalMesh_;
 	}
 
 	SkeletalMeshComponent* GetSkeletalMeshComponent() const
 	{
-		return skeletalMeshComponent;
+		return skeletalMeshComponent_;
+	}
+
+	ArcherMovementComponent* GetMovementComponent() const
+	{
+		return movementComponent_;
+	}
+
+	ArcherGameController* GetController() const
+	{
+		return controller_;
+	}
+
+	Camera* GetThirdPersonCamera() const
+	{
+		return thirdPersonCamera_;
 	}
 
 private:
-	SkeletalMesh* skeletalMesh;
-	SkeletalMeshComponent* skeletalMeshComponent;
+	SkeletalMesh* skeletalMesh_;
+	SkeletalMeshComponent* skeletalMeshComponent_;
 
-	Camera* followCamera;
+	Camera* thirdPersonCamera_;
 
-	ArcherMovementComponent* movementComponent;
+	ArcherGameController* controller_;
+	ArcherMovementComponent* movementComponent_;
 };
 

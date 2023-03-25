@@ -14,31 +14,35 @@
 #include "Model/SkeletalMesh.h"
 #include "Model/SkeletalMeshInstance.h"
 
+#include "ArcherGameController.h"
 #include "Components/ArcherMovementComponent.h"
 
-Archer::Archer() : ObjectBase()
+Archer::Archer() : 
+	ObjectBase()
 {
-	SetTickable(true);
+	SetIsTickable(true);
 
-	skeletalMesh = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Akai.fbx");
-	skeletalMeshComponent = new SkeletalMeshComponent(this);
-	skeletalMeshComponent->SetMesh(skeletalMesh);
-	skeletalMeshComponent->SetRelativePosition(Vector3::ZeroVector);
-	dynamic_cast<SkeletalMeshInstance*>(skeletalMeshComponent->GetMeshInstance())->PlayAnimation("Armature|Idle");
+	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Akai.fbx");
+	skeletalMeshComponent_ = new SkeletalMeshComponent(this);
+	skeletalMeshComponent_->SetMesh(skeletalMesh_);
+	skeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
+	skeletalMeshComponent_->SetRelativeRotation(Vector3(-90.f, 0.f, 0.f));
+	skeletalMeshComponent_->SetRelativeScaling(Vector3(0.0125f));
 
-	followCamera = new Camera(Vector3::ZeroVector, Vector3(1.f, 0.f, -1.f).GetNormalized(), Vector3(1.f, 0.f, 1.f).GetNormalized());
+	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3(1.f, 0.f, -0.5f).GetNormalized(), Vector3(1.f, 0.f, 0.5f).GetNormalized());
 
-	movementComponent = new ArcherMovementComponent(this);
+	movementComponent_ = new ArcherMovementComponent(this);
+
+	controller_ = new ArcherGameController(this);
+	controller_->SetArcher(this);
 }
 
 void Archer::BeginGame()
 {
-	followCamera->Init();
-	engine->GetCameraManager()->AddCamera(followCamera);
-	engine->GetCameraManager()->SetActiveCamera(followCamera);
+	GOKNAR_INFO("Archer::BeginPlay()");
 }
 
 void Archer::Tick(float deltaTime)
 {
-	followCamera->SetPosition(GetWorldPosition() + Vector3(-2.f, 0.f, 2.5f));
+	thirdPersonCamera_->SetPosition(GetWorldPosition() + thirdPersonCamera_->GetForwardVector() * -4.f + Vector3::UpVector * 2.f);
 }

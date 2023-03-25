@@ -3,7 +3,6 @@
 #include "Goknar/Scene.h"
 
 #include "Archer.h"
-#include "GameController.h"
 
 #include <chrono>
 
@@ -20,8 +19,7 @@ public:
 
 private:
 
-	Archer* archer;
-	GameController* gameController;
+	Archer* archer_;
 };
 
 Game::Game() : Application()
@@ -36,9 +34,7 @@ Game::Game() : Application()
 
 	lastFrameTimePoint = currentTimePoint;
 
-	archer = new Archer();
-	gameController = new GameController();
-	gameController->SetArcher(archer);
+	archer_ = new Archer();
 }
 
 void Game::Run()

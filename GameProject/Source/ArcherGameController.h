@@ -3,25 +3,32 @@
 
 #include "Goknar/Controller.h"
 
-class Archer;
+class Camera;
 
-class GameController : public Controller
+class Archer;
+class ArcherMovementComponent;
+
+class ArcherGameController : public Controller
 {
 public:
-	GameController();
-	~GameController()
+	ArcherGameController(Archer* archer_);
+	~ArcherGameController()
 	{
 
 	}
+
+	void BeginGame() override;
 
 	void SetupInputs() override;
 
 	void SetArcher(Archer* a)
 	{
-		archer = a;
+		archer_ = a;
 	}
 
 private:
+	void OnCursorMove(double x, double y);
+
 	void MoveForward();
 	void StopMovingForward();
 	void MoveBackward();
@@ -31,7 +38,10 @@ private:
 	void MoveRight();
 	void StopMovingRight();
 
-	Archer* archer;
+	Camera* thirdPersonCamera_;
+
+	Archer* archer_{ nullptr };
+	ArcherMovementComponent* archerMovementComponent_{ nullptr };
 };
 
 #endif
