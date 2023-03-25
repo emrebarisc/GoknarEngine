@@ -23,7 +23,7 @@ EditorCameraController::EditorCameraController() :
 	isMovingCameraIn2D_(false),
 	activeCamera_(nullptr)
 {
-	SetTickable(false);
+	SetIsTickable(false);
 
 	movementSpeed_ = 50.f;
 	previousCursorPositionForRotating_ = Vector2(0.f, 0.f);
@@ -110,7 +110,7 @@ void EditorCameraController::Pitch(float value)
 void EditorCameraController::OnMouseRightClickPressed()
 {
 	double x, y;
-	InputManager::GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
+	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
 	previousCursorPositionForRotating_ = Vector2(x, y);
 	isRotatingTheCamera_ = true;
 }
@@ -118,7 +118,7 @@ void EditorCameraController::OnMouseRightClickPressed()
 void EditorCameraController::OnMouseMiddleClickPressed()
 {
 	double x, y;
-	InputManager::GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
+	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
 	previousCursorPositionFor2DMovement_ = Vector2(x, y);
 	isMovingCameraIn2D_ = true;
 }

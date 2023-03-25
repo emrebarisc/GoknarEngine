@@ -4,6 +4,8 @@
 #include "Goknar/Core.h"
 #include "Goknar/Math/Matrix.h"
 
+#include "Goknar/Log.h"
+
 enum class GOKNAR_API CameraProjection : unsigned char
 {
 	Orthographic,
@@ -79,7 +81,15 @@ public:
 
 	void SetForwardVector(const Vector3& forwardVector)
 	{
-		forwardVector_ = forwardVector;
+		GOKNAR_INFO("Distance: {}", Vector3::Distance(forwardVector_, forwardVector));
+		if (EPSILON < Vector3::Distance(forwardVector_, forwardVector))
+		{
+			forwardVector_ = forwardVector;
+			leftVector_ = forwardVector_.Cross(upVector_);
+			upVector_ = leftVector_.Cross(forwardVector_);
+
+			LookAt();
+		}
 	}
 
 	const Vector3& GetForwardVector() const
@@ -89,8 +99,14 @@ public:
 
 	void SetUpVector(const Vector3& upVector)
 	{
-		upVector_ = upVector;
-		Update();
+		if (EPSILON < Vector3::Distance(upVector_, upVector))
+		{
+			upVector_ = upVector;
+			forwardVector_ = upVector_.Cross(leftVector_);
+			leftVector_ = forwardVector_.Cross(upVector_);
+
+			LookAt();
+		}
 	}
 
 	const Vector3& GetUpVector() const
@@ -100,7 +116,14 @@ public:
 
 	void SetLeftVector(const Vector3& leftVector)
 	{
-		leftVector_ = leftVector;
+		if (EPSILON < Vector3::Distance(leftVector_, leftVector))
+		{
+			leftVector_ = leftVector;
+			forwardVector_ = upVector_.Cross(leftVector_);
+			upVector_ = leftVector_.Cross(forwardVector_);
+
+			LookAt();
+		}
 	}
 
 	const Vector3& GetLeftVector() const
@@ -222,8 +245,8 @@ protected:
 private:
 	void LookAt();
 
-	Matrix viewingMatrix_ { Matrix::IdentityMatrix };
-	Matrix projectionMatrix_;
+	Matrix viewingMatrix_{ Matrix::IdentityMatrix };
+	Matrix projectionMatrix_{ Matrix::IdentityMatrix };
 
 	// Left Right Bottom Top
 	Vector4 nearPlane_{ Vector4(-0.5f, 0.5f, -0.28125f, 0.28125f) };
@@ -233,7 +256,7 @@ private:
 	Vector3 upVector_{ Vector3::UpVector };
 	Vector3 leftVector_{ Vector3::LeftVector };
 
-	float nearDistance_{ 0.01f };
+	float nearDistance_{ 1.f };
 	float farDistance_{ 1000.f };
 	int imageWidth_{ 1600 };
 	int imageHeight_{ 900 };
