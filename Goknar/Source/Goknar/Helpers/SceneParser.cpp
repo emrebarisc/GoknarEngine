@@ -189,8 +189,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			stream >> up.x >> up.y >> up.z;
 			camera->SetUpVector(up);
 
-			camera->Init();
-			engine->GetCameraManager()->AddCamera(camera);
 			element = element->NextSiblingElement("Camera");
 			stream.clear();
 		}
