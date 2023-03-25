@@ -9,6 +9,8 @@ public:
 	Controller();
 	~Controller();
 
+	virtual void BeginGame() {}
+
 	virtual void SetupInputs() = 0;
 private:
 };
