@@ -31,10 +31,10 @@ public:
 
 	void Destroy();
 
-    void SetTickable(bool tickable);
-	bool GetTickable()
+    void SetIsTickable(bool tickable);
+	bool GetIsTickable()
 	{
-		return tickable_; 
+		return isTickable_; 
 	}
 
 	void SetWorldPosition(const Vector3& position);
@@ -81,11 +81,11 @@ public:
 		return Vector3(worldTransformationMatrix_[1], worldTransformationMatrix_[5], worldTransformationMatrix_[9]);
 	}
 
-	void SetIsRendered(bool isRendered);
+	void SetIsActive(bool isRendered);
 
-	bool GetIsRendered() const
+	bool GetIsActive() const
 	{
-		return isRendered_;
+		return isActive_;
 	}
 
 protected:
@@ -103,8 +103,8 @@ private:
 
 	int totalComponentCount_;
 
-    unsigned int tickable_ : 1;
-	unsigned int isRendered_ : 1;
+    unsigned int isTickable_ : 1;
+	unsigned int isActive_ : 1;
 };
 
 #endif

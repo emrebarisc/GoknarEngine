@@ -93,6 +93,10 @@
 			<Name>Chest</Name>
 			<Path>Meshes/SM_Chest.fbx</Path>
 		</StaticMesh>
+		<StaticMesh id = "3">
+			<Name>Plane</Name>
+			<Path>Meshes/SM_Plane.fbx</Path>
+		</StaticMesh>
 	</Meshes>
 
 	<Objects>
@@ -379,44 +383,32 @@
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
 			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldPosition>0.0 7.0 0.0</WorldPosition>
-			<WorldRotation>0.0 0.0 270.00000068324533</WorldRotation>
-			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject>
-
-		<StaticMeshObject id = "24">
-			<Mesh>0</Mesh>
-			<Name>Wall</Name>
-			<PivotPoint>0 0 0</PivotPoint>
-			<RelativePosition>0 0 0</RelativePosition>
-			<RelativeRotation>0 0 0</RelativeRotation>
-			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldPosition>0.0 -7.0 0.0</WorldPosition>
-			<WorldRotation>0.0 0.0 90.00000250447816</WorldRotation>
-			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject>
-
-		<StaticMeshObject id = "25">
-			<Mesh>0</Mesh>
-			<Name>Wall</Name>
-			<PivotPoint>0 0 0</PivotPoint>
-			<RelativePosition>0 0 0</RelativePosition>
-			<RelativeRotation>0 0 0</RelativeRotation>
-			<RelativeScaling>1 1 1</RelativeScaling>
 			<WorldPosition>-5.0 2.0 0.0</WorldPosition>
 			<WorldRotation>0.0 0.0 0.0</WorldRotation>
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
 		</StaticMeshObject>
 
-		<StaticMeshObject id = "26">
+		<StaticMeshObject id = "24">
 			<Mesh>2</Mesh>
 			<Name>Chest</Name>
 			<PivotPoint>0 0 0</PivotPoint>
 			<RelativePosition>0 0 0</RelativePosition>
 			<RelativeRotation>0 0 0</RelativeRotation>
 			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldPosition>0.0 6.5 0.0</WorldPosition>
-			<WorldRotation>0.0 -0.0 0.0</WorldRotation>
+			<WorldPosition>-4.0 6.0 0.0</WorldPosition>
+			<WorldRotation>0.0 -0.0 45.00000125223908</WorldRotation>
+			<WorldScaling>1.0 1.0 1.0</WorldScaling>
+		</StaticMeshObject>
+
+		<StaticMeshObject id = "25">
+			<Mesh>3</Mesh>
+			<Name>Plane</Name>
+			<PivotPoint>0 0 0</PivotPoint>
+			<RelativePosition>0 0 0</RelativePosition>
+			<RelativeRotation>0 0 0</RelativeRotation>
+			<RelativeScaling>1 1 1</RelativeScaling>
+			<WorldPosition>0.0 0.0 0.0</WorldPosition>
+			<WorldRotation>0.0 0.0 0.0</WorldRotation>
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
 		</StaticMeshObject>
 

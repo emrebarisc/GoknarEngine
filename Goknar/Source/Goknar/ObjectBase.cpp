@@ -8,13 +8,13 @@
 #include "Goknar/Scene.h"
 
 ObjectBase::ObjectBase() : 
-	tickable_(false),
+	isTickable_(false),
 	worldTransformationMatrix_(Matrix::IdentityMatrix),
 	worldPosition_(Vector3::ZeroVector),
 	worldRotation_(Vector3::ZeroVector),
 	worldScaling_(Vector3(1.f)),
 	totalComponentCount_(0),
-	isRendered_(true)
+	isActive_(true)
 {
 	engine->GetApplication()->GetMainScene()->AddObject(this);
 	engine->RegisterObject(this);
@@ -42,12 +42,16 @@ void ObjectBase::Destroy()
 	engine->GetApplication()->GetMainScene()->RemoveObject(this);
 }
 
-void ObjectBase::SetTickable(bool tickable)
+void ObjectBase::SetIsTickable(bool isTickable)
 {
-	tickable_ = tickable;
-	if (tickable_)
+	isTickable_ = isTickable;
+	if (isTickable_)
 	{
 		engine->AddToTickableObjects(this);
+	}
+	else
+	{
+		engine->RemoveFromTickableObjects(this);
 	}
 }
 
@@ -69,12 +73,12 @@ void ObjectBase::SetWorldScaling(const Vector3& scaling)
 	UpdateWorldTransformationMatrix();
 }
 
-void ObjectBase::SetIsRendered(bool isRendered)
+void ObjectBase::SetIsActive(bool isActive)
 {
-	isRendered_ = isRendered;
+	isActive_ = isActive;
 	for (int i = 0; i < components_.size(); i++)
 	{
-		components_[i]->SetIsRendered(isRendered);
+		components_[i]->SetIsActive(isActive);
 	}
 }
 

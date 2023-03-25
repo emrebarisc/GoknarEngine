@@ -16,11 +16,6 @@ public:
 	virtual void Init() {};
 	void Tick(float deltaSecond)
 	{
-		if (!isActive_)
-		{
-			return;
-		}
-
 		elapsedTime_ += deltaSecond;
 		if (timeToRefreshTimeVariables_ < elapsedTime_)
 		{
