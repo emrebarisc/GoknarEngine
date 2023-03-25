@@ -25,7 +25,7 @@ void InputManager::Init()
 	glfwSetCharCallback(window, InputManager::CharCallback);
 
 	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
-	glfwSetCursorPos(window, windowSize.x * 0.5, windowSize.y * 0.5);
+	SetCursorPosition(windowSize.x * 0.5, windowSize.y * 0.5, window);
 }
 
 void InputManager::KeyboardCallback(GLFWwindow *window, int key, int scanCode, int action, int mod)
@@ -127,4 +127,26 @@ void InputManager::CharCallback(GLFWwindow * window, unsigned int codePoint)
 	{
 		charDelegate(codePoint);
 	}
+}
+
+void InputManager::SetIsCursorVisible(bool isCursorVisible)
+{
+	if (isCursorVisible)
+	{
+		glfwSetInputMode(engine->GetWindowManager()->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+	else
+	{
+		glfwSetInputMode(engine->GetWindowManager()->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+	}
+}
+
+void InputManager::SetCursorPosition(float x, float y, GLFWwindow* window)
+{
+	if (window == nullptr)
+	{
+		window = engine->GetWindowManager()->GetWindow();
+	}
+
+	glfwSetCursorPos(window, x, y);
 }

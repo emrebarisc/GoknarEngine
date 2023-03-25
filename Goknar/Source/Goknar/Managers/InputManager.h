@@ -254,7 +254,10 @@ public:
 		charDelegates_.push_back(charDelegate);
 	}
 
-	static void GetCursorPosition(GLFWwindow* window, double& x, double& y)
+	void SetIsCursorVisible(bool isCursorVisible);
+
+	void SetCursorPosition(float x, float y, GLFWwindow* window = nullptr);
+	void GetCursorPosition(GLFWwindow* window, double& x, double& y)
 	{
 		glfwGetCursorPos(window, &x, &y);
 	}

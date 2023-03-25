@@ -206,7 +206,7 @@ void ImGuiEditor::ShowMainMenu()
 		{
 			if (ImGui::MenuItem("Toggle Grid"))
 			{
-				editorGroundGrid_->SetIsRendered(!editorGroundGrid_->GetIsRendered());
+				editorGroundGrid_->SetIsActive(!editorGroundGrid_->GetIsActive());
 			}
 			if (ImGui::MenuItem(showLog_ ? MAIN_MENU_ACTIVEABLE_ITEMS::VIEW_LOG_ACTIVE : MAIN_MENU_ACTIVEABLE_ITEMS::VIEW_LOG_PASSIVE))
 			{
