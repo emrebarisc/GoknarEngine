@@ -138,6 +138,11 @@ struct GOKNAR_API Vector2
 		return out << "[" << val.x << ", " << val.y << "]";
 	}
 
+	inline std::string ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + "]";
+	}
+
 	inline void Clamp(float min, float max)
 	{
 		x = mathClamp(x, min, max);
@@ -173,6 +178,11 @@ struct GOKNAR_API Vector2i
 	inline friend Vector2 operator*(const Vector2i vector2i, float multiplier)
 	{
 		return Vector2(vector2i.x * multiplier, vector2i.y * multiplier);
+	}
+
+	inline std::string ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + "]";
 	}
 
 	int x, y;
@@ -361,6 +371,11 @@ struct GOKNAR_API Vector3
 		return out;
 	}
 
+	inline std::string ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + "]";
+	}
+
 	inline void Clamp(int min, int max)
 	{
 		x = mathClamp(x, min, max);
@@ -394,10 +409,14 @@ struct GOKNAR_API Vector3
 struct GOKNAR_API Vector3i
 {
 	Vector3i();
-
 	Vector3i(const Vector3& rhs);
 
-  int x, y, z;
+	inline std::string ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + "]";
+	}
+
+	int x, y, z;
 };
 
 struct GOKNAR_API Vector4
@@ -419,6 +438,11 @@ struct GOKNAR_API Vector4
 	inline friend std::ostream& operator<<(std::ostream& out, const Vector4& val)
 	{
 		return out << "[" << val.x << ", " << val.y << ", " << val.z << ", " << val.w << "]";
+	}
+
+	inline std::string ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + ", " + std::to_string(w) + "]";
 	}
 
 	static const Vector4 ZeroVector;
