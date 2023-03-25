@@ -109,6 +109,17 @@ Vector3 Vector3::GetOrthonormalBasis() const
 	return secondCrossed.GetNormalized();
 }
 
+Vector3 Vector3::GetRotation()
+{
+	Vector3 rotation = Vector3::ZeroVector;
+
+	rotation.x = 0;
+	rotation.y = atan2(z, sqrt(x * x + y * y)) * (180.f / PI);
+	rotation.z = -atan2(y, x) * (180.f / PI);
+
+	return rotation;
+}
+
 Vector3 Vector3::Translate(const Vector3& translation)
 {
 	Matrix translateMatrix = Matrix::IdentityMatrix;

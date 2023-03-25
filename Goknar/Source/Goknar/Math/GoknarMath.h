@@ -170,6 +170,11 @@ struct GOKNAR_API Vector2i
 		return Vector2i(x + rhs.x, y + rhs.y);
 	}
 
+	inline friend Vector2 operator*(const Vector2i vector2i, float multiplier)
+	{
+		return Vector2(vector2i.x * multiplier, vector2i.y * multiplier);
+	}
+
 	int x, y;
 };
 
@@ -191,6 +196,16 @@ struct GOKNAR_API Vector3
 	inline float Length() const
 	{
 		return sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2));
+	}
+
+	static inline float Distance(const Vector3& vec1, const Vector3& vec2)
+	{
+		return (vec2 - vec1).Length();
+	}
+
+	inline float Distance(const Vector3& rhs) const
+	{
+		return (*this - rhs).Length();
 	}
 
 	static inline Vector3 Cross(const Vector3& v1, const Vector3& v2)
@@ -357,6 +372,8 @@ struct GOKNAR_API Vector3
 	void ConvertRadianToDegree();
 
 	Vector3 GetOrthonormalBasis() const;
+
+	Vector3 GetRotation();
 
 	/*
 	*	Transformations
