@@ -26,10 +26,10 @@ Archer::Archer() :
 	skeletalMeshComponent_ = new SkeletalMeshComponent(this);
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
 	skeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
-	skeletalMeshComponent_->SetRelativeRotation(Vector3(-90.f, 0.f, 0.f));
+	skeletalMeshComponent_->SetRelativeRotation(Vector3(-90.f, -90.f, 0.f));
 	skeletalMeshComponent_->SetRelativeScaling(Vector3(0.0125f));
 
-	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3(1.f, 0.f, -0.5f).GetNormalized(), Vector3(1.f, 0.f, 0.5f).GetNormalized());
+	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3(1.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f).GetNormalized());
 
 	movementComponent_ = new ArcherMovementComponent(this);
 

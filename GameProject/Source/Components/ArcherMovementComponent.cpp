@@ -26,7 +26,6 @@ void ArcherMovementComponent::BeginGame()
 {
 	Component::BeginGame();
 
-	dynamic_cast<SkeletalMeshInstance*>(ownerArcher_->GetSkeletalMeshComponent()->GetMeshInstance())->PlayAnimation("Armature|Idle");
 }
 
 void ArcherMovementComponent::TickComponent(float deltaTime)
@@ -46,6 +45,12 @@ void ArcherMovementComponent::TickComponent(float deltaTime)
 		ownerArcher_->SetWorldPosition(
 			ownerArcher_->GetWorldPosition() + 
 			(normalizedMovementVector.x * cameraForwardVector2D - normalizedMovementVector.y * cameraLeftVector2D) * movementSpeed_ * deltaTime);
-		ownerArcher_->SetWorldRotation(movementVector_.GetRotation());
+		ownerArcher_->SetWorldRotation(cameraForwardVector2D.GetRotation());
+
+		dynamic_cast<SkeletalMeshInstance*>(ownerArcher_->GetSkeletalMeshComponent()->GetMeshInstance())->PlayAnimation("Armature|StandingRunForward");
+	}
+	else
+	{
+		dynamic_cast<SkeletalMeshInstance*>(ownerArcher_->GetSkeletalMeshComponent()->GetMeshInstance())->PlayAnimation("Armature|Idle");
 	}
 }

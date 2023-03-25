@@ -48,8 +48,14 @@ void ArcherGameController::OnCursorMove(double x, double y)
 	Vector2 currentCursorPosition{(float)x, (float)y};
 
 	Vector2 cursorMovementVector = (currentCursorPosition - windowCenter) / 1000.f;
-	thirdPersonCamera_->RotateAbout(Vector3::UpVector, cursorMovementVector.x);
-	thirdPersonCamera_->Pitch(cursorMovementVector.y);
+
+	thirdPersonCamera_->RotateAbout(Vector3::UpVector, -cursorMovementVector.x);
+
+	if ((thirdPersonCamera_->GetForwardVector().z < 0.5f && 0.f < cursorMovementVector.y) ||
+		(-0.5f < thirdPersonCamera_->GetForwardVector().z && cursorMovementVector.y < 0.f))
+	{
+		thirdPersonCamera_->Pitch(cursorMovementVector.y);
+	}
 
 	engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
 }
