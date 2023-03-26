@@ -8,8 +8,8 @@
 class GOKNAR_API Component
 {
 public:
-	Component() = delete;
-	Component(ObjectBase* parent);
+	Component(Component* parent);
+	Component(ObjectBase* parentObjectBase);
 	virtual ~Component()
 	{
 
@@ -72,9 +72,21 @@ public:
 
 	virtual void Destroy();
 
-	ObjectBase* GetParent() const
+	void SetParent(ObjectBase* objectBase);
+	void SetParent(Component* component);
+	Component* GetParent() const
 	{
 		return parent_;
+	}
+
+	void SetOwner(ObjectBase* owner)
+	{
+		owner_ = owner;
+	}
+
+	ObjectBase* GetOwner() const
+	{
+		return owner_;
 	}
 
 	virtual void SetIsActive(bool isActive)
@@ -126,7 +138,8 @@ private:
 	Vector3 relativeRotation_{ Vector3::ZeroVector };
 	Vector3 relativeScaling_{ Vector3(1.f) };
 
-	ObjectBase* parent_{ nullptr };
+	ObjectBase* owner_{ nullptr };
+	Component* parent_{ nullptr };
 
 	bool isActive_{ true };
 	bool isTickable_{ false };

@@ -33,7 +33,7 @@ public:
 		return meshInstance_;
 	}
 protected:
-	MeshComponent(ObjectBase* parent, MeshInstance* meshInstance);
+	MeshComponent(Component* parent, MeshInstance* meshInstance);
 	inline void UpdateRelativeTransformationMatrix() override
 	{
 		RenderComponent::UpdateRelativeTransformationMatrix();

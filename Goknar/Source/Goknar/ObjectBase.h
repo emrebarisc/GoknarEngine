@@ -31,6 +31,13 @@ public:
 
 	void Destroy();
 
+	Component* GetRootComponent() const
+	{
+		return rootComponent_;
+	}
+
+	void SetRootComponent(Component* rootComponent);
+
     void SetIsTickable(bool tickable);
 	bool GetIsTickable()
 	{
@@ -60,12 +67,6 @@ public:
 		return worldTransformationMatrix_;
 	}
 
-	void AddComponent(Component* component)
-	{
-		components_.push_back(component);
-		totalComponentCount_++;
-	}
-
 	Vector3 GetForwardVector()
 	{
 		return Vector3(worldTransformationMatrix_[0], worldTransformationMatrix_[4], worldTransformationMatrix_[8]);
@@ -88,14 +89,20 @@ public:
 		return isActive_;
 	}
 
+	template<class T>
+	T* AddSubComponent();
+
 protected:
 
 private:
+	void AddComponent(Component* component);
+
     inline void UpdateWorldTransformationMatrix();
 
 	Matrix worldTransformationMatrix_;
 
 	std::vector<Component*> components_;
+	Component* rootComponent_{ nullptr };
 
     Vector3 worldPosition_;
     Vector3 worldRotation_;
@@ -106,5 +113,14 @@ private:
     unsigned int isTickable_ : 1;
 	unsigned int isActive_ : 1;
 };
+
+template<class T>
+T* ObjectBase::AddSubComponent()
+{
+	T* subComponent = new T(rootComponent_);
+	AddComponent(subComponent);
+
+	return subComponent;
+}
 
 #endif

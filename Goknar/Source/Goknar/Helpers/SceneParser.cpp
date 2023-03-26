@@ -746,7 +746,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 		while (element)
 		{
 			object = new ObjectBase();
-			StaticMeshComponent* staticMeshComponent = new StaticMeshComponent(object);
+			StaticMeshComponent* staticMeshComponent = object->AddSubComponent<StaticMeshComponent>();
 
 			child = element->FirstChildElement("Mesh");
 			if (child)
@@ -841,7 +841,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 		while (element)
 		{
 			object = new ObjectBase();
-			SkeletalMeshComponent* skeletalMeshComponent = new SkeletalMeshComponent(object);
+			SkeletalMeshComponent* skeletalMeshComponent = object->AddSubComponent<SkeletalMeshComponent>();
 
 			child = element->FirstChildElement("PivotPoint");
 			if (child)
@@ -937,7 +937,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 		while (element)
 		{
 			object = new ObjectBase();
-			DynamicMeshComponent* dynamicMeshComponent = new DynamicMeshComponent(object);
+			DynamicMeshComponent* dynamicMeshComponent = object->AddSubComponent<DynamicMeshComponent>();
 
 			child = element->FirstChildElement("PivotPoint");
 			if (child)

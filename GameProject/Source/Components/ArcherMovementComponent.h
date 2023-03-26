@@ -10,7 +10,7 @@ class SkeletalMeshComponent;
 class ArcherMovementComponent : public Component
 {
 public:
-	ArcherMovementComponent(ObjectBase* parent);
+	ArcherMovementComponent(Component* parent);
 
 	virtual void BeginGame() override;
 	virtual void TickComponent(float deltaTime) override;
@@ -18,6 +18,11 @@ public:
 	void AddMovementVector(const Vector3& movement)
 	{
 		movementVector_ += movement;
+	}
+
+	void SetOwnerArcher(Archer* ownerArcher)
+	{
+		ownerArcher_ = ownerArcher;
 	}
 
 protected:

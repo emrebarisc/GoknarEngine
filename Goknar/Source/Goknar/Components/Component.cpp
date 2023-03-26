@@ -2,17 +2,32 @@
 
 #include "Component.h"
 #include "Engine.h"
+#include "ObjectBase.h"
 
-Component::Component(ObjectBase* parent) :
+Component::Component(Component* parent) :
 	parent_(parent)
 {
-	parent->AddComponent(this);
 	engine->RegisterComponent(this);
+}
+
+Component::Component(ObjectBase* parentObjectBase) :
+	Component(parentObjectBase->GetRootComponent())
+{
 }
 
 void Component::Destroy()
 {
 	delete this;
+}
+
+void Component::SetParent(ObjectBase* objectBase)
+{
+	parent_ = objectBase->GetRootComponent();
+}
+
+void Component::SetParent(Component* component)
+{
+	parent_ = component;
 }
 
 void Component::SetIsTickable(bool isTickable)

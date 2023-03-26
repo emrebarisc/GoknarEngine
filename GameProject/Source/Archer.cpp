@@ -25,7 +25,7 @@ Archer::Archer() :
 	SetIsTickable(true);
 
 	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Akai.fbx");
-	skeletalMeshComponent_ = new SkeletalMeshComponent(this);
+	skeletalMeshComponent_ = AddSubComponent<SkeletalMeshComponent>();
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
 	skeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
 	skeletalMeshComponent_->SetRelativeRotation(Vector3(-90.f, -90.f, 0.f));
@@ -33,10 +33,10 @@ Archer::Archer() :
 
 	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3(1.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f).GetNormalized());
 
-	movementComponent_ = new ArcherMovementComponent(this);
+	movementComponent_ = AddSubComponent<ArcherMovementComponent>();
+	movementComponent_->SetOwnerArcher(this);
 
 	controller_ = new ArcherGameController(this);
-	controller_->SetArcher(this);
 }
 
 void Archer::BeginGame()

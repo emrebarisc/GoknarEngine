@@ -14,12 +14,7 @@ public:
 	MeshInstance() = delete;
 
 	MeshInstance(RenderComponent* parentComponent) :
-		relativeTransformationMatrix_(Matrix::IdentityMatrix),
-		worldTransformationMatrix_(Matrix::IdentityMatrix),
-		parentComponent_(parentComponent),
-		mesh_(nullptr),
-		componentId_(lastComponentId_++),
-		isRendered_(true)
+		parentComponent_(parentComponent)
 	{
 	}
 
@@ -80,19 +75,19 @@ protected:
 	virtual void AddMeshInstanceToRenderer() = 0;
 	virtual void RemoveMeshInstanceFromRenderer() = 0;
 
-	MeshUnit* mesh_;
+	MeshUnit* mesh_{ nullptr };
 
 private:
-	Matrix relativeTransformationMatrix_;
-	Matrix worldTransformationMatrix_;
+	Matrix relativeTransformationMatrix_{ Matrix::IdentityMatrix };
+	Matrix worldTransformationMatrix_{ Matrix::IdentityMatrix };
 
-	RenderComponent* parentComponent_;
+	RenderComponent* parentComponent_{ nullptr };
 
-	int componentId_;
+	int componentId_{ lastComponentId_++ };
 
 	static int lastComponentId_;
 
-	bool isRendered_;
+	bool isRendered_{ true };
 };
 
 #endif

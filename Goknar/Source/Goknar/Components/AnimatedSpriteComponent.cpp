@@ -7,7 +7,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Log.h"
 
-AnimatedSpriteComponent::AnimatedSpriteComponent(ObjectBase* parent) : 
+AnimatedSpriteComponent::AnimatedSpriteComponent(Component* parent) :
 	MeshComponent(parent, new DynamicMeshInstance(this)),
 	animatedSpriteMesh_(nullptr)
 {

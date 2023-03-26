@@ -7,17 +7,10 @@
 
 #include "Archer.h"
 
-ArcherMovementComponent::ArcherMovementComponent(ObjectBase* parent) :
+ArcherMovementComponent::ArcherMovementComponent(Component* parent) :
 	Component(parent)
 {
 	SetIsTickable(true);
-
-	ownerArcher_ = dynamic_cast<Archer*>(parent);
-	GOKNAR_ASSERT(ownerArcher_);
-
-	archerSkeletalMeshComponent_ = ownerArcher_->GetSkeletalMeshComponent();
-	thirdPersonCamera_ = ownerArcher_->GetThirdPersonCamera();
-
 	movementVector_ = Vector3::ZeroVector;
 	movementSpeed_ = 10.f;
 }
@@ -26,6 +19,10 @@ void ArcherMovementComponent::BeginGame()
 {
 	Component::BeginGame();
 
+	ownerArcher_ = dynamic_cast<Archer*>(GetOwner());
+	GOKNAR_ASSERT(ownerArcher_);
+	archerSkeletalMeshComponent_ = ownerArcher_->GetSkeletalMeshComponent();
+	thirdPersonCamera_ = ownerArcher_->GetThirdPersonCamera();
 }
 
 void ArcherMovementComponent::TickComponent(float deltaTime)

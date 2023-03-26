@@ -13,7 +13,7 @@ class GOKNAR_API SpriteComponent : public MeshComponent
 {
 public:
 	SpriteComponent() = delete;
-	SpriteComponent(ObjectBase* parent);
+	SpriteComponent(Component* parent);
 	virtual ~SpriteComponent();
 
 	void SetMesh(MeshUnit* sprite) override;

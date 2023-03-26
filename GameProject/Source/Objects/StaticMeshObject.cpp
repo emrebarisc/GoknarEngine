@@ -4,5 +4,5 @@
 
 StaticMeshObject::StaticMeshObject() : ObjectBase()
 {
-	staticMeshComponent = new StaticMeshComponent(this);
+	staticMeshComponent = AddSubComponent<StaticMeshComponent>();
 }

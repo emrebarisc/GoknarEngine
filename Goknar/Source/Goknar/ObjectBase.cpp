@@ -42,6 +42,21 @@ void ObjectBase::Destroy()
 	engine->GetApplication()->GetMainScene()->RemoveObject(this);
 }
 
+void ObjectBase::SetRootComponent(Component* newRootComponent)
+{
+	std::vector<Component *>::iterator componentIterator = components_.begin();
+	for (; componentIterator != components_.end(); ++componentIterator)
+	{
+		Component* component = *componentIterator;
+		if (component->GetParent() == rootComponent_)
+		{
+			component->SetParent(newRootComponent);
+		}
+	}
+
+	rootComponent_ = newRootComponent;
+}
+
 void ObjectBase::SetIsTickable(bool isTickable)
 {
 	isTickable_ = isTickable;
@@ -80,6 +95,19 @@ void ObjectBase::SetIsActive(bool isActive)
 	{
 		components_[i]->SetIsActive(isActive);
 	}
+}
+
+void ObjectBase::AddComponent(Component* component)
+{
+	if (totalComponentCount_ == 0)
+	{
+		rootComponent_ = component;
+	}
+
+	component->SetOwner(this);
+	component->WorldTransformationMatrixIsUpdated(worldTransformationMatrix_);
+	components_.push_back(component);
+	totalComponentCount_++;
 }
 
 void ObjectBase::UpdateWorldTransformationMatrix()

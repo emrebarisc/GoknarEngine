@@ -6,7 +6,7 @@
 #include "Goknar/Model/StaticMeshInstance.h"
 #include "Goknar/Log.h"
 
-StaticMeshComponent::StaticMeshComponent(ObjectBase* parent) : 
+StaticMeshComponent::StaticMeshComponent(Component* parent) :
 	MeshComponent(parent, new StaticMeshInstance(this)),
 	staticMesh_(nullptr)
 {

@@ -9,7 +9,7 @@ class GOKNAR_API SkeletalMeshComponent : public MeshComponent
 {
 public:
 	SkeletalMeshComponent() = delete;
-	SkeletalMeshComponent(ObjectBase* parent);
+	SkeletalMeshComponent(Component* parent);
 	virtual ~SkeletalMeshComponent();
 	
 	void SetMesh(MeshUnit* mesh) override;

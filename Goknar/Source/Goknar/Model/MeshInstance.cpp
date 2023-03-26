@@ -12,14 +12,6 @@ int MeshInstance::lastComponentId_ = 0;
 
 void MeshInstance::Render()
 {
-	//Matrix relativeTransformationMatrix = relativeTransformationMatrix_;
-
-	//RenderComponent* parent = parentComponent_;
-	//while (parent)
-	//{
-	//	parent = parent->GetParent();
-	//}
-
 	mesh_->GetMaterial()->Render(worldTransformationMatrix_, relativeTransformationMatrix_);
 }
 

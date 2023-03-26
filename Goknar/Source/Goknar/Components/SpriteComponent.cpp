@@ -7,7 +7,7 @@
 #include "Goknar/Model/2D/SpriteMesh.h"
 #include "Goknar/Log.h"
 
-SpriteComponent::SpriteComponent(ObjectBase* parent) : 
+SpriteComponent::SpriteComponent(Component* parent) :
 	MeshComponent(parent, new DynamicMeshInstance(this))
 {
 }

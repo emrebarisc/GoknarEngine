@@ -126,7 +126,7 @@ EditorGroundGrid::EditorGroundGrid()
 	groundGridMesh->SetMaterial(groundGridMeshMaterial);
 	groundGridMesh->Init();
 
-	gridMeshComponent_ = new StaticMeshComponent(this);
+	gridMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 	gridMeshComponent_->SetMesh(groundGridMesh);
 }
 

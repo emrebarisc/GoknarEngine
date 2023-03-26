@@ -9,7 +9,7 @@ class GOKNAR_API DynamicMeshComponent : public MeshComponent
 {
 public:
 	DynamicMeshComponent() = delete;
-	DynamicMeshComponent(ObjectBase* parent);
+	DynamicMeshComponent(Component* parent);
 	virtual ~DynamicMeshComponent();
 
 	void SetMesh(MeshUnit* mesh) override;
