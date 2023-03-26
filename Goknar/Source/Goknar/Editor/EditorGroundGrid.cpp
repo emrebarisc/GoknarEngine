@@ -54,34 +54,47 @@ vec4 oneTenthGridColor = vec4(0.125f, 0.125f, 0.125f, 1.f);
 vec4 axisColorX = vec4(0.588235294f, 0.196078431f, 0.196078431f, 1.f);
 vec4 axisColorY = vec4(0.196078431f, 0.588235294f, 0.196078431f, 1.f);
 
-float maxGridDistance = 250.f;
+#define MAX_DISTANCE 100
 
 void main()
 {
+	float thickness = 5.f;
+
+	float distanceFromViewPosition = length(viewPosition - fragmentPosition);
+
+	float distanceMultiplier = clamp(distanceFromViewPosition / MAX_DISTANCE, 0.025f, 1.f);
+
+	thickness *= 5.f * distanceMultiplier;
+
 	float absoluteDifferenceX = abs(fragmentPosition.x - round(fragmentPosition.x));
 	float absoluteDifferenceY = abs(fragmentPosition.y - round(fragmentPosition.y));
 
-	float oneThirdValueX = absoluteDifferenceX / 0.2f;
+	float oneThirdValueX = absoluteDifferenceX / 0.1f;
 	float oneThirdValueXRound = round(oneThirdValueX);
 
-	float oneThirdValueY = absoluteDifferenceY / 0.2f;
+	float oneThirdValueY = absoluteDifferenceY / 0.1f;
 	float oneThirdValueYRound = round(oneThirdValueY);
 
-	if (abs(fragmentPosition.x) < 0.01f)
-	{
-		fragmentColor = axisColorX;
-	}
-	else if (abs(fragmentPosition.y) < 0.01f)
+	if (abs(fragmentPosition.x) < (0.01f * thickness))
 	{
 		fragmentColor = axisColorY;
 	}
-	else if(absoluteDifferenceX < 0.005f || absoluteDifferenceY < 0.005f)
+	else if (abs(fragmentPosition.y) < (0.01f * thickness))
+	{
+		fragmentColor = axisColorX;
+	}
+	else if(MAX_DISTANCE < distanceFromViewPosition)
+	{
+		discard;
+	}
+	else if(absoluteDifferenceX < (0.01f * thickness) || absoluteDifferenceY <  (0.01f * thickness))
 	{
 		//vec3 wo = viewPosition - fragmentPosition;
 		fragmentColor = oneGridColor;
 	}
-	else if (abs(oneThirdValueX - oneThirdValueXRound) < 0.01f || 
-			 abs(oneThirdValueY - oneThirdValueYRound) < 0.01f)
+	else if (distanceFromViewPosition < (MAX_DISTANCE * 0.5f) &&
+			(abs(oneThirdValueX - oneThirdValueXRound) < (0.05f * thickness) || 
+			 abs(oneThirdValueY - oneThirdValueYRound) < (0.05f * thickness)))
 	{
 		fragmentColor = oneTenthGridColor;
 	}
