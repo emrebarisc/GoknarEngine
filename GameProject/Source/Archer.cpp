@@ -16,6 +16,8 @@
 
 #include "ArcherGameController.h"
 #include "Components/ArcherMovementComponent.h"
+#include "Objects/Arrow.h"
+#include "Objects/Bow.h"
 
 Archer::Archer() : 
 	ObjectBase()
@@ -45,4 +47,17 @@ void Archer::BeginGame()
 void Archer::Tick(float deltaTime)
 {
 	thirdPersonCamera_->SetPosition(GetWorldPosition() + thirdPersonCamera_->GetForwardVector() * -4.f + Vector3::UpVector * 2.f);
+
+	// Arrow test
+	//static float timer = 0.f;
+
+	//if (1.f < timer)
+	//{
+	//	timer -= 1.f;
+
+	//	Arrow* arrow = new Arrow();
+	//	arrow->SetWorldPosition(GetWorldPosition());
+	//	arrow->SetWorldRotation(GetForwardVector().GetRotation());
+	//}
+	//timer += deltaTime;
 }

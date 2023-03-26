@@ -16,6 +16,7 @@ set(GAME_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/")
 set(SUBDIRS
     ${SOURCE_DIR_NAME}
     ${SOURCE_DIR_NAME}/Components
+    ${SOURCE_DIR_NAME}/Objects
 )
 set(GAME_SOURCE)
 

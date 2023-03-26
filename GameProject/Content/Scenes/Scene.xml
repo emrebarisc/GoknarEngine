@@ -97,6 +97,14 @@
 			<Name>Plane</Name>
 			<Path>Meshes/SM_Plane.fbx</Path>
 		</StaticMesh>
+		<StaticMesh id = "4">
+			<Name>Arrow</Name>
+			<Path>Meshes/SM_Arrow.fbx</Path>
+		</StaticMesh>
+		<StaticMesh id = "5">
+			<Name>Bow</Name>
+			<Path>Meshes/SM_Bow.fbx</Path>
+		</StaticMesh>
 	</Meshes>
 
 	<Objects>
