@@ -11,6 +11,7 @@ RenderComponent::RenderComponent(ObjectBase* parent) :
 	relativeScaling_(Vector3(1.f)),
 	pivotPoint_(Vector3::ZeroVector)
 {
+	UpdateRelativeTransformationMatrix();
 }
 
 void RenderComponent::SetPivotPoint(const Vector3& pivotPoint)
