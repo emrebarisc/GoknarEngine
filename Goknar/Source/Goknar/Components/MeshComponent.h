@@ -6,9 +6,14 @@
 #include "Goknar/Core.h"
 #include "Goknar/Model/MeshInstance.h"
 
+#include "Goknar/Engine.h"
+#include "Goknar/Model/MeshInstance.h"
+#include "Goknar/ObjectBase.h"
+
 class MeshUnit;
 class ObjectBase;
 
+template<class InstanceType>
 class GOKNAR_API MeshComponent : public RenderComponent
 {
 public:
@@ -17,7 +22,7 @@ public:
 
 	void Destroy() override;
 
-	virtual void SetMesh(MeshUnit* mesh) = 0;
+	virtual void SetMesh(InstanceType* mesh) = 0;
 
 	const Matrix& GetRelativeTransformationMatrix() const
 	{
@@ -28,12 +33,12 @@ public:
 
 	void SetIsActive(bool isRendered);
 
-	MeshInstance* GetMeshInstance() const
+	MeshInstance<InstanceType>* GetMeshInstance() const
 	{
 		return meshInstance_;
 	}
 protected:
-	MeshComponent(Component* parent, MeshInstance* meshInstance);
+	MeshComponent(Component* parent, MeshInstance<InstanceType>* meshInstance);
 	inline void UpdateRelativeTransformationMatrix() override
 	{
 		RenderComponent::UpdateRelativeTransformationMatrix();
@@ -41,7 +46,44 @@ protected:
 		meshInstance_->SetRelativeTransformationMatrix(relativeTransformationMatrix_);
 	}
 
-	MeshInstance* meshInstance_;
+	MeshInstance<InstanceType>* meshInstance_;
 private:
 };
+
+template<class InstanceType>
+MeshComponent<InstanceType>::MeshComponent(Component* parent, MeshInstance<InstanceType>* meshInstance) :
+	RenderComponent(parent),
+	meshInstance_(meshInstance)
+{
+}
+
+template<class InstanceType>
+MeshComponent<InstanceType>::~MeshComponent()
+{
+
+}
+
+template<class InstanceType>
+void MeshComponent<InstanceType>::Destroy()
+{
+	if (meshInstance_)
+	{
+		meshInstance_->Destroy();
+	}
+	delete this;
+}
+
+template<class InstanceType>
+void MeshComponent<InstanceType>::WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix)
+{
+	meshInstance_->SetWorldTransformationMatrix(worldTransformationMatrix);
+}
+
+template<class InstanceType>
+void MeshComponent<InstanceType>::SetIsActive(bool isActive)
+{
+	Component::SetIsActive(isActive);
+	meshInstance_->SetIsRendered(isActive);
+}
+
 #endif

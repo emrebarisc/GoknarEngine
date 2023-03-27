@@ -103,6 +103,10 @@ void ObjectBase::AddComponent(Component* component)
 	{
 		rootComponent_ = component;
 	}
+	else
+	{
+		component->SetParent(rootComponent_);
+	}
 
 	component->SetOwner(this);
 	component->WorldTransformationMatrixIsUpdated(worldTransformationMatrix_);

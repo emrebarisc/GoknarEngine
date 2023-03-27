@@ -754,7 +754,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				int meshIndex;
 				stream >> meshIndex;
-				staticMeshComponent->SetMesh(engine->GetResourceManager()->GetResourceContainer()->GetMesh(meshIndex));
+				staticMeshComponent->SetMesh(dynamic_cast<StaticMesh*>(engine->GetResourceManager()->GetResourceContainer()->GetMesh(meshIndex)));
 			}
 
 			child = element->FirstChildElement("PivotPoint");
@@ -889,7 +889,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				int meshIndex;
 				stream >> meshIndex;
-				skeletalMeshComponent->SetMesh(engine->GetResourceManager()->GetResourceContainer()->GetMesh(meshIndex));
+				skeletalMeshComponent->SetMesh(dynamic_cast<SkeletalMesh*>(engine->GetResourceManager()->GetResourceContainer()->GetMesh(meshIndex)));
 			}
 
 			child = element->FirstChildElement("WorldPosition");
@@ -985,7 +985,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				int meshIndex;
 				stream >> meshIndex;
-				dynamicMeshComponent->SetMesh(engine->GetResourceManager()->GetResourceContainer()->GetMesh(meshIndex));
+				dynamicMeshComponent->SetMesh(dynamic_cast<DynamicMesh*>(engine->GetResourceManager()->GetResourceContainer()->GetMesh(meshIndex)));
 			}
 
 			child = element->FirstChildElement("WorldPosition");

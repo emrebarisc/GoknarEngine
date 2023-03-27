@@ -5,22 +5,16 @@
 
 class DynamicMesh;
 
-class GOKNAR_API DynamicMeshComponent : public MeshComponent
+class GOKNAR_API DynamicMeshComponent : public MeshComponent<DynamicMesh>
 {
 public:
 	DynamicMeshComponent() = delete;
 	DynamicMeshComponent(Component* parent);
 	virtual ~DynamicMeshComponent();
 
-	void SetMesh(MeshUnit* mesh) override;
-
-	DynamicMesh* GetDynamicMesh()
-	{
-		return dynamicMesh_;
-	}
+	void SetMesh(DynamicMesh* mesh) override;
 
 protected:
 private:
-	DynamicMesh* dynamicMesh_;
 };
 #endif

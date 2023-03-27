@@ -6,26 +6,19 @@
 #include "Goknar/Core.h"
 
 class SpriteMesh;
-class MeshInstance;
 class ObjectBase;
 
-class GOKNAR_API SpriteComponent : public MeshComponent
+template<class T>
+class GOKNAR_API SpriteComponent : public MeshComponent<SpriteMesh>
 {
 public:
 	SpriteComponent() = delete;
 	SpriteComponent(Component* parent);
 	virtual ~SpriteComponent();
 
-	void SetMesh(MeshUnit* sprite) override;
-
-	SpriteMesh* GetSpriteMesh()
-	{
-		return spriteMesh_;
-	}
-
+	void SetMesh(SpriteMesh* sprite) override;
 protected:
 
 private:
-	SpriteMesh* spriteMesh_;
 };
 #endif

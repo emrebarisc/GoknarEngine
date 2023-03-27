@@ -5,22 +5,16 @@
 
 class StaticMesh;
 
-class GOKNAR_API StaticMeshComponent : public MeshComponent
+class GOKNAR_API StaticMeshComponent : public MeshComponent<StaticMesh>
 {
 public:
 	StaticMeshComponent() = delete;
 	StaticMeshComponent(Component* parent);
 	virtual ~StaticMeshComponent();
 	
-	void SetMesh(MeshUnit* mesh) override;
-
-	StaticMesh* GetStaticMesh()
-	{
-		return staticMesh_;
-	}
+	void SetMesh(StaticMesh* mesh) override;
 
 protected:
 private:
-	StaticMesh* staticMesh_;
 };
 #endif

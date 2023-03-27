@@ -3,6 +3,8 @@
 
 #include "Goknar/ObjectBase.h"
 
+class Material;
+class StaticMesh;
 class StaticMeshComponent;
 
 class EditorGroundGrid : public ObjectBase
@@ -18,6 +20,8 @@ public:
 protected:
 
 private:
+	Material* groundGridMeshMaterial_;
+	StaticMesh* groundGridMesh_;
 	StaticMeshComponent* gridMeshComponent_;
 };
 

@@ -1,15 +1,14 @@
 #include "pch.h"
 
-#include "Goknar/Model/DynamicMesh.h"
 #include "DynamicMeshComponent.h"
 
+#include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/DynamicMeshInstance.h"
 #include "Goknar/Log.h"
 #include "Goknar/Model/MeshInstance.h"
 
 DynamicMeshComponent::DynamicMeshComponent(Component* parent) :
-	MeshComponent(parent, new DynamicMeshInstance(this)),
-	dynamicMesh_(nullptr)
+	MeshComponent(parent, new DynamicMeshInstance(this))
 {}
 
 DynamicMeshComponent::~DynamicMeshComponent()
@@ -17,9 +16,7 @@ DynamicMeshComponent::~DynamicMeshComponent()
 
 }
 
-void DynamicMeshComponent::SetMesh(MeshUnit* mesh)
+void DynamicMeshComponent::SetMesh(DynamicMesh* mesh)
 {
-	dynamicMesh_ = dynamic_cast<DynamicMesh*>(mesh);
-	GOKNAR_ASSERT(dynamicMesh_, "DynamicMeshComponent::SetMesh(Mesh*) assigned mesh is not a DynamicMesh!");
 	meshInstance_->SetMesh(mesh);
 }

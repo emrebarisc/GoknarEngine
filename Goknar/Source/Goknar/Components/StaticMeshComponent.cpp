@@ -7,8 +7,7 @@
 #include "Goknar/Log.h"
 
 StaticMeshComponent::StaticMeshComponent(Component* parent) :
-	MeshComponent(parent, new StaticMeshInstance(this)),
-	staticMesh_(nullptr)
+	MeshComponent(parent, new StaticMeshInstance(this))
 {
 }
 
@@ -17,9 +16,7 @@ StaticMeshComponent::~StaticMeshComponent()
 
 }
 
-void StaticMeshComponent::SetMesh(MeshUnit* mesh)
+void StaticMeshComponent::SetMesh(StaticMesh* mesh)
 {
-	staticMesh_ = dynamic_cast<StaticMesh*>(mesh);
-	GOKNAR_ASSERT(staticMesh_, "StaticMeshComponent::SetMesh(Mesh*) assigned mesh is not a StaticMesh!");
 	meshInstance_->SetMesh(mesh);
 }

@@ -5,22 +5,15 @@
 
 class SkeletalMesh;
 
-class GOKNAR_API SkeletalMeshComponent : public MeshComponent
+class GOKNAR_API SkeletalMeshComponent : public MeshComponent<SkeletalMesh>
 {
 public:
 	SkeletalMeshComponent() = delete;
 	SkeletalMeshComponent(Component* parent);
 	virtual ~SkeletalMeshComponent();
 	
-	void SetMesh(MeshUnit* mesh) override;
-
-	SkeletalMesh* GetSkeletalMesh()
-	{
-		return skeletalMesh_;
-	}
-
+	void SetMesh(SkeletalMesh* mesh) override;
 protected:
 private:
-	SkeletalMesh* skeletalMesh_;
 };
 #endif

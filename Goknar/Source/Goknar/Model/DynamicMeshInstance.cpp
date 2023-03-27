@@ -8,7 +8,7 @@
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Scene.h"
 
-DynamicMeshInstance::DynamicMeshInstance(RenderComponent* parentComponent) : 
+DynamicMeshInstance::DynamicMeshInstance(RenderComponent* parentComponent) :
 	MeshInstance(parentComponent)
 {
 
@@ -22,7 +22,7 @@ void DynamicMeshInstance::Render()
 
 void DynamicMeshInstance::UpdateVertexDataAt(int index, const VertexData& newVertexData)
 {
-	engine->GetRenderer()->UpdateDynamicMeshVertex(static_cast<DynamicMesh*>(mesh_), index, newVertexData);
+	engine->GetRenderer()->UpdateDynamicMeshVertex(mesh_, index, newVertexData);
 }
 
 void DynamicMeshInstance::AddMeshInstanceToRenderer()

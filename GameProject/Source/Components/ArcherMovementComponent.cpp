@@ -23,6 +23,7 @@ void ArcherMovementComponent::BeginGame()
 	GOKNAR_ASSERT(ownerArcher_);
 	archerSkeletalMeshComponent_ = ownerArcher_->GetSkeletalMeshComponent();
 	thirdPersonCamera_ = ownerArcher_->GetThirdPersonCamera();
+	archerSkeletalMeshInstance_ = dynamic_cast<SkeletalMeshInstance*>(ownerArcher_->GetSkeletalMeshComponent()->GetMeshInstance());
 }
 
 void ArcherMovementComponent::TickComponent(float deltaTime)
@@ -44,10 +45,10 @@ void ArcherMovementComponent::TickComponent(float deltaTime)
 			(normalizedMovementVector.x * cameraForwardVector2D - normalizedMovementVector.y * cameraLeftVector2D) * movementSpeed_ * deltaTime);
 		ownerArcher_->SetWorldRotation(cameraForwardVector2D.GetRotation());
 
-		dynamic_cast<SkeletalMeshInstance*>(ownerArcher_->GetSkeletalMeshComponent()->GetMeshInstance())->PlayAnimation("Armature|StandingRunForward");
+		archerSkeletalMeshInstance_->PlayAnimation("Armature|StandingRunForward");
 	}
 	else
 	{
-		dynamic_cast<SkeletalMeshInstance*>(ownerArcher_->GetSkeletalMeshComponent()->GetMeshInstance())->PlayAnimation("Armature|Idle");
+		archerSkeletalMeshInstance_->PlayAnimation("Armature|Idle");
 	}
 }

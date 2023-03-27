@@ -3,6 +3,8 @@
 
 #include "StaticMeshInstance.h"
 
+#include "Model/SkeletalMesh.h"
+
 class SkeletalAnimation;
 
 struct SkeletalMeshAnimation
@@ -13,7 +15,7 @@ struct SkeletalMeshAnimation
 	float elapsedTimeInSeconds{ 0.f };
 };
 
-class GOKNAR_API SkeletalMeshInstance : public MeshInstance
+class GOKNAR_API SkeletalMeshInstance : public MeshInstance<SkeletalMesh>
 {
 public:
 	SkeletalMeshInstance() = delete;

@@ -112,30 +112,29 @@ EditorGroundGrid::EditorGroundGrid()
 	groundGridMeshShader->SetVertexShaderScript(vertexShader);
 	groundGridMeshShader->SetFragmentShaderScript(fragmentShader);
 
-	Material* groundGridMeshMaterial = new Material();
-	groundGridMeshMaterial->SetShadingModel(MaterialShadingModel::TwoSided);
-	groundGridMeshMaterial->SetShader(groundGridMeshShader);
+	groundGridMeshMaterial_ = new Material();
+	groundGridMeshMaterial_->SetShadingModel(MaterialShadingModel::TwoSided);
+	groundGridMeshMaterial_->SetShader(groundGridMeshShader);
 
-	StaticMesh* groundGridMesh = new StaticMesh();
-	groundGridMesh->AddVertexData(VertexData(Vector3(-1.f, 1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
-	groundGridMesh->AddVertexData(VertexData(Vector3(1.f, 1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
-	groundGridMesh->AddVertexData(VertexData(Vector3(-1.f, -1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
-	groundGridMesh->AddVertexData(VertexData(Vector3(1.f, -1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
-	groundGridMesh->AddFace(Face(1, 0, 2));
-	groundGridMesh->AddFace(Face(1, 2, 3));
-	groundGridMesh->SetMaterial(groundGridMeshMaterial);
-	groundGridMesh->Init();
+	groundGridMesh_ = new StaticMesh();
+	groundGridMesh_->AddVertexData(VertexData(Vector3(-1.f, 1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
+	groundGridMesh_->AddVertexData(VertexData(Vector3(1.f, 1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
+	groundGridMesh_->AddVertexData(VertexData(Vector3(-1.f, -1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
+	groundGridMesh_->AddVertexData(VertexData(Vector3(1.f, -1.f, 0.01f), Vector3(0.f, 0.f, 1.f)));
+	groundGridMesh_->AddFace(Face(1, 0, 2));
+	groundGridMesh_->AddFace(Face(1, 2, 3));
+	groundGridMesh_->SetMaterial(groundGridMeshMaterial_);
+	groundGridMesh_->Init();
 
 	gridMeshComponent_ = AddSubComponent<StaticMeshComponent>();
-	gridMeshComponent_->SetMesh(groundGridMesh);
+	gridMeshComponent_->SetMesh(groundGridMesh_);
 }
 
 EditorGroundGrid::~EditorGroundGrid()
 {
-	StaticMesh* groundGridMesh = gridMeshComponent_->GetStaticMesh();
-	delete groundGridMesh->GetMaterial()->GetShader();
-	delete groundGridMesh->GetMaterial();
-	delete groundGridMesh;
+	delete groundGridMeshMaterial_->GetShader();
+	delete groundGridMeshMaterial_;
+	delete groundGridMesh_;
 }
 
 void EditorGroundGrid::BeginGame()

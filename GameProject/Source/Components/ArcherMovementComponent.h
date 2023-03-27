@@ -6,6 +6,7 @@
 class Archer;
 class Camera;
 class SkeletalMeshComponent;
+class SkeletalMeshInstance;
 
 class ArcherMovementComponent : public Component
 {
@@ -28,11 +29,12 @@ public:
 protected:
 
 private:
-	Vector3 movementVector_;
+	Vector3 movementVector_{ Vector3::ForwardVector };
 
-	Archer* ownerArcher_;
-	Camera* thirdPersonCamera_;
-	SkeletalMeshComponent* archerSkeletalMeshComponent_;
+	Archer* ownerArcher_{ nullptr };
+	Camera* thirdPersonCamera_{ nullptr };
+	SkeletalMeshComponent* archerSkeletalMeshComponent_{ nullptr };
+	SkeletalMeshInstance* archerSkeletalMeshInstance_{ nullptr };
 
 	float movementSpeed_;
 };

@@ -7,8 +7,7 @@
 #include "Goknar/Log.h"
 
 SkeletalMeshComponent::SkeletalMeshComponent(Component* parent) :
-	MeshComponent(parent, new SkeletalMeshInstance(this)),
-	skeletalMesh_(nullptr)
+	MeshComponent(parent, new SkeletalMeshInstance(this))
 {
 }
 
@@ -17,9 +16,7 @@ SkeletalMeshComponent::~SkeletalMeshComponent()
 
 }
 
-void SkeletalMeshComponent::SetMesh(MeshUnit* mesh)
+void SkeletalMeshComponent::SetMesh(SkeletalMesh* mesh)
 {
-	skeletalMesh_ = dynamic_cast<SkeletalMesh*>(mesh);
-	GOKNAR_ASSERT(skeletalMesh_, "SkeletalMeshComponent::SetMesh(Mesh*) assigned mesh is not a SkeletalMesh!");
-	meshInstance_->SetMesh(skeletalMesh_);
+	meshInstance_->SetMesh(mesh);
 }

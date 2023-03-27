@@ -4,79 +4,86 @@
 #include "Goknar/Core.h"
 #include "Goknar/Math/Matrix.h"
 
-class RenderComponent;
-class Material;
-class MeshUnit;
+#include "Goknar/Components/RenderComponent.h"
+#include "Goknar/Engine.h"
+#include "Goknar/Material.h"
 
+#include "Goknar/Model/DynamicMesh.h"
+#include "Goknar/Model/StaticMesh.h"
+#include "Goknar/Model/SkeletalMesh.h"
+
+#include "Goknar/Renderer/Renderer.h"
+
+template<class MeshType>
 class GOKNAR_API MeshInstance
 {
 public:
 	MeshInstance() = delete;
 
-	MeshInstance(RenderComponent* parentComponent) :
+	inline MeshInstance(RenderComponent* parentComponent) :
 		parentComponent_(parentComponent)
 	{
 	}
 
-	virtual ~MeshInstance() {}
+	inline virtual ~MeshInstance() {}
 
-	int GetComponentId() const
+	inline int GetComponentId() const
 	{
 		return componentId_;
 	}
 
-	void SetComponentId(int componentId)
+	inline void SetComponentId(int componentId)
 	{
 		componentId_ = componentId;
 	}
 
-	virtual void SetMesh(MeshUnit* mesh);
+	inline virtual void SetMesh(MeshType* mesh);
 
-	MeshUnit* GetMesh() const
+	inline MeshType* GetMesh() const
 	{
 		return mesh_;
 	}
 
-	void SetRelativeTransformationMatrix(const Matrix& relativeTransformationMatrix)
+	inline void SetRelativeTransformationMatrix(const Matrix& relativeTransformationMatrix)
 	{
 		relativeTransformationMatrix_ = relativeTransformationMatrix;
 	}
 
-	const Matrix& GetRelativeTransformationMatrix() const
+	inline const Matrix& GetRelativeTransformationMatrix() const
 	{
 		return relativeTransformationMatrix_;
 	}
 
-	void SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix)
+	inline void SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix)
 	{
 		worldTransformationMatrix_ = worldTransformationMatrix;
 	}
 
-	const Matrix& GetWorldTransformationMatrix() const
+	inline const Matrix& GetWorldTransformationMatrix() const
 	{
 		return worldTransformationMatrix_;
 	}
 
-	virtual void PreRender();
-	virtual void Render();
+	inline virtual void PreRender();
+	inline virtual void Render();
 
-	void SetIsRendered(bool isRendered)
+	inline void SetIsRendered(bool isRendered)
 	{
 		isRendered_ = isRendered;
 	}
 
-	bool GetIsRendered() const
+	inline bool GetIsRendered() const
 	{
 		return isRendered_;
 	}
 
-	virtual void Destroy();
+	inline virtual void Destroy();
 
 protected:
 	virtual void AddMeshInstanceToRenderer() = 0;
 	virtual void RemoveMeshInstanceFromRenderer() = 0;
 
-	MeshUnit* mesh_{ nullptr };
+	MeshType* mesh_{ nullptr };
 
 private:
 	Matrix relativeTransformationMatrix_{ Matrix::IdentityMatrix };
@@ -90,5 +97,44 @@ private:
 
 	bool isRendered_{ true };
 };
+
+template<class MeshType>
+int MeshInstance<MeshType>::lastComponentId_ = 0;
+
+template<class MeshType>
+inline void MeshInstance<MeshType>::PreRender()
+{
+	mesh_->GetMaterial()->Use();
+}
+
+template<class MeshType>
+inline void MeshInstance<MeshType>::Render()
+{
+	//Matrix relativeTransformationMatrix = relativeTransformationMatrix_;
+
+	//// TODO: Optimize ////////
+	//Component* parent = parentComponent_;
+	//while (parent != nullptr)
+	//{
+	//	relativeTransformationMatrix *= parent->GetRelativeTransformationMatrix();
+	//	parent = parent->GetParent();
+	//}
+	////////////////////////////
+	mesh_->GetMaterial()->SetShaderVariables(worldTransformationMatrix_, relativeTransformationMatrix_);
+}
+
+template<class MeshType>
+inline void MeshInstance<MeshType>::SetMesh(MeshType* mesh)
+{
+	mesh_ = mesh;
+	AddMeshInstanceToRenderer();
+}
+
+template<class MeshType>
+inline void MeshInstance<MeshType>::Destroy()
+{
+	RemoveMeshInstanceFromRenderer();
+	delete this;
+}
 
 #endif

@@ -4,7 +4,6 @@
 #include <Goknar/ObjectBase.h>
 
 class Camera;
-class MeshComponent;
 
 class EditorCameraController : public ObjectBase
 {
