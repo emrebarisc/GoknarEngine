@@ -11,6 +11,8 @@ public:
 
 	virtual ~StaticMeshInstance() {}
 
+	virtual void Render() override;
+
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;
 protected:

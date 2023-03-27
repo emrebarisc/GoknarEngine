@@ -12,6 +12,8 @@ public:
 
 	virtual ~DynamicMeshInstance() {}
 
+	virtual void Render() override;
+
 	void UpdateVertexDataAt(int index, const VertexData& newVertexData);
 
 protected:

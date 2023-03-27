@@ -57,6 +57,7 @@ public:
 		return worldTransformationMatrix_;
 	}
 
+	virtual void PreRender();
 	virtual void Render();
 
 	void SetIsRendered(bool isRendered)

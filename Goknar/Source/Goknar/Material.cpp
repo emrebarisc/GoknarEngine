@@ -31,6 +31,17 @@ void Material::Init()
 
 void Material::Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const
 {
+	Use();
+	SetShaderVariables(worldTransformationMatrix, relativeTransformationMatrix);
+}
+
+void Material::Use() const
+{
+	shader_->Use();
+}
+
+void Material::SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const
+{
 	if (shadingModel_ == MaterialShadingModel::Default)
 	{
 		glEnable(GL_CULL_FACE);
@@ -40,7 +51,6 @@ void Material::Render(const Matrix& worldTransformationMatrix, const Matrix& rel
 		glDisable(GL_CULL_FACE);
 	}
 
-	shader_->Use();
 	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, ambientReflectance_);
 	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, diffuseReflectance_);
 	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);

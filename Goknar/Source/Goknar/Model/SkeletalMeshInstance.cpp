@@ -16,7 +16,7 @@ SkeletalMeshInstance::SkeletalMeshInstance(RenderComponent* parentComponent) :
 
 void SkeletalMeshInstance::Render()
 {
-	MeshInstance::Render();
+	PreRender();
 
 	if (skeletalMeshAnimation_.skeletalAnimation)
 	{
@@ -27,6 +27,8 @@ void SkeletalMeshInstance::Render()
 	std::vector<Matrix> boneTransformations;
 	/*TODO_Baris: TEMP*/dynamic_cast<SkeletalMesh*>(mesh_)/**/->GetBoneTransforms(boneTransformations, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime);
 	mesh_->GetMaterial()->GetShader()->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations);
+
+	MeshInstance::Render();
 }
 
 void SkeletalMeshInstance::PlayAnimation(const std::string& animationName)

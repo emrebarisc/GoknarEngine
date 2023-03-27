@@ -10,9 +10,24 @@
 
 int MeshInstance::lastComponentId_ = 0;
 
+void MeshInstance::PreRender()
+{
+	mesh_->GetMaterial()->Use();
+}
+
 void MeshInstance::Render()
 {
-	mesh_->GetMaterial()->Render(worldTransformationMatrix_, relativeTransformationMatrix_);
+	//Matrix relativeTransformationMatrix = relativeTransformationMatrix_;
+
+	//// TODO: Optimize ////////
+	//Component* parent = parentComponent_;
+	//while (parent != nullptr)
+	//{
+	//	relativeTransformationMatrix *= parent->GetRelativeTransformationMatrix();
+	//	parent = parent->GetParent();
+	//}
+	////////////////////////////
+	mesh_->GetMaterial()->SetShaderVariables(worldTransformationMatrix_, relativeTransformationMatrix_);
 }
 
 void MeshInstance::SetMesh(MeshUnit* mesh)

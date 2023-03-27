@@ -10,6 +10,12 @@ StaticMeshInstance::StaticMeshInstance(RenderComponent* parentComponent) : MeshI
 
 }
 
+void StaticMeshInstance::Render()
+{
+	PreRender();
+	MeshInstance::Render();
+}
+
 void StaticMeshInstance::AddMeshInstanceToRenderer()
 {
 	engine->GetRenderer()->AddStaticMeshInstance(this);

@@ -109,6 +109,8 @@ public:
 	}
 
 	void Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const;
+	void Use() const;
+	void SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const;
 
 protected:
 
