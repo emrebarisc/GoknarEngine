@@ -4,8 +4,9 @@
 #include "MeshComponent.h"
 
 class SkeletalMesh;
+class SkeletalMeshInstance;
 
-class GOKNAR_API SkeletalMeshComponent : public MeshComponent<SkeletalMesh>
+class GOKNAR_API SkeletalMeshComponent : public MeshComponent<SkeletalMesh, SkeletalMeshInstance>
 {
 public:
 	SkeletalMeshComponent() = delete;

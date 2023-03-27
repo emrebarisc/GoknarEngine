@@ -23,7 +23,7 @@ void ArcherMovementComponent::BeginGame()
 	GOKNAR_ASSERT(ownerArcher_);
 	archerSkeletalMeshComponent_ = ownerArcher_->GetSkeletalMeshComponent();
 	thirdPersonCamera_ = ownerArcher_->GetThirdPersonCamera();
-	archerSkeletalMeshInstance_ = dynamic_cast<SkeletalMeshInstance*>(ownerArcher_->GetSkeletalMeshComponent()->GetMeshInstance());
+	archerSkeletalMeshInstance_ = ownerArcher_->GetSkeletalMeshComponent()->GetMeshInstance();
 }
 
 void ArcherMovementComponent::TickComponent(float deltaTime)

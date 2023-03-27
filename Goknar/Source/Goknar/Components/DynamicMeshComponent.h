@@ -4,8 +4,9 @@
 #include "MeshComponent.h"
 
 class DynamicMesh;
+class DynamicMeshInstance;
 
-class GOKNAR_API DynamicMeshComponent : public MeshComponent<DynamicMesh>
+class GOKNAR_API DynamicMeshComponent : public MeshComponent<DynamicMesh, DynamicMeshInstance>
 {
 public:
 	DynamicMeshComponent() = delete;

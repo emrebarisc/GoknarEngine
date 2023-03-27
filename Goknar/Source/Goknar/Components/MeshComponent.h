@@ -5,6 +5,9 @@
 
 #include "Goknar/Core.h"
 #include "Goknar/Model/MeshInstance.h"
+#include "Goknar/Model/DynamicMeshInstance.h"
+#include "Goknar/Model/StaticMeshInstance.h"
+#include "Goknar/Model/SkeletalMeshInstance.h"
 
 #include "Goknar/Engine.h"
 #include "Goknar/Model/MeshInstance.h"
@@ -13,32 +16,33 @@
 class MeshUnit;
 class ObjectBase;
 
-template<class InstanceType>
+template<class MeshType, class MeshInstanceType>
 class GOKNAR_API MeshComponent : public RenderComponent
 {
 public:
 	MeshComponent() = delete;
-	virtual ~MeshComponent();
+	inline virtual ~MeshComponent();
 
-	void Destroy() override;
+	inline void Destroy() override;
 
-	virtual void SetMesh(InstanceType* mesh) = 0;
+	inline virtual void SetMesh(MeshType* mesh) = 0;
 
-	const Matrix& GetRelativeTransformationMatrix() const
+	inline const Matrix& GetRelativeTransformationMatrix() const
 	{
 		return relativeTransformationMatrix_;
 	}
 
-	void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override;
+	inline void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override;
 
-	void SetIsActive(bool isRendered);
+	inline void SetIsActive(bool isRendered);
 
-	MeshInstance<InstanceType>* GetMeshInstance() const
+	inline MeshInstanceType* GetMeshInstance() const
 	{
 		return meshInstance_;
 	}
 protected:
-	MeshComponent(Component* parent, MeshInstance<InstanceType>* meshInstance);
+	inline MeshComponent(Component* parent);
+
 	inline void UpdateRelativeTransformationMatrix() override
 	{
 		RenderComponent::UpdateRelativeTransformationMatrix();
@@ -46,25 +50,25 @@ protected:
 		meshInstance_->SetRelativeTransformationMatrix(relativeTransformationMatrix_);
 	}
 
-	MeshInstance<InstanceType>* meshInstance_;
+	MeshInstanceType* meshInstance_;
 private:
 };
 
-template<class InstanceType>
-MeshComponent<InstanceType>::MeshComponent(Component* parent, MeshInstance<InstanceType>* meshInstance) :
+template<class MeshType, class MeshInstanceType>
+MeshComponent<MeshType, MeshInstanceType>::MeshComponent(Component* parent) :
 	RenderComponent(parent),
-	meshInstance_(meshInstance)
+	meshInstance_(new MeshInstanceType(this))
 {
 }
 
-template<class InstanceType>
-MeshComponent<InstanceType>::~MeshComponent()
+template<class MeshType, class MeshInstanceType>
+MeshComponent<MeshType, MeshInstanceType>::~MeshComponent()
 {
 
 }
 
-template<class InstanceType>
-void MeshComponent<InstanceType>::Destroy()
+template<class MeshType, class MeshInstanceType>
+void MeshComponent<MeshType, MeshInstanceType>::Destroy()
 {
 	if (meshInstance_)
 	{
@@ -73,14 +77,14 @@ void MeshComponent<InstanceType>::Destroy()
 	delete this;
 }
 
-template<class InstanceType>
-void MeshComponent<InstanceType>::WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix)
+template<class MeshType, class MeshInstanceType>
+void MeshComponent<MeshType, MeshInstanceType>::WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix)
 {
 	meshInstance_->SetWorldTransformationMatrix(worldTransformationMatrix);
 }
 
-template<class InstanceType>
-void MeshComponent<InstanceType>::SetIsActive(bool isActive)
+template<class MeshType, class MeshInstanceType>
+void MeshComponent<MeshType, MeshInstanceType>::SetIsActive(bool isActive)
 {
 	Component::SetIsActive(isActive);
 	meshInstance_->SetIsRendered(isActive);

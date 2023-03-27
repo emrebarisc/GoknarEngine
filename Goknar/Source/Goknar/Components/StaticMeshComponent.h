@@ -4,8 +4,9 @@
 #include "MeshComponent.h"
 
 class StaticMesh;
+class StaticMeshInstance;
 
-class GOKNAR_API StaticMeshComponent : public MeshComponent<StaticMesh>
+class GOKNAR_API StaticMeshComponent : public MeshComponent<StaticMesh, StaticMeshInstance>
 {
 public:
 	StaticMeshComponent() = delete;
