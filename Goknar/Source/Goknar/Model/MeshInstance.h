@@ -44,26 +44,6 @@ public:
 		return mesh_;
 	}
 
-	inline void SetRelativeTransformationMatrix(const Matrix& relativeTransformationMatrix)
-	{
-		relativeTransformationMatrix_ = relativeTransformationMatrix;
-	}
-
-	inline const Matrix& GetRelativeTransformationMatrix() const
-	{
-		return relativeTransformationMatrix_;
-	}
-
-	inline void SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix)
-	{
-		worldTransformationMatrix_ = worldTransformationMatrix;
-	}
-
-	inline const Matrix& GetWorldTransformationMatrix() const
-	{
-		return worldTransformationMatrix_;
-	}
-
 	inline virtual void PreRender();
 	inline virtual void Render();
 
@@ -86,9 +66,6 @@ protected:
 	MeshType* mesh_{ nullptr };
 
 private:
-	Matrix relativeTransformationMatrix_{ Matrix::IdentityMatrix };
-	Matrix worldTransformationMatrix_{ Matrix::IdentityMatrix };
-
 	RenderComponent* parentComponent_{ nullptr };
 
 	int componentId_{ lastComponentId_++ };
@@ -110,17 +87,18 @@ inline void MeshInstance<MeshType>::PreRender()
 template<class MeshType>
 inline void MeshInstance<MeshType>::Render()
 {
-	//Matrix relativeTransformationMatrix = relativeTransformationMatrix_;
+	Matrix relativeTransformationMatrix = Matrix::IdentityMatrix;
 
-	//// TODO: Optimize ////////
-	//Component* parent = parentComponent_;
-	//while (parent != nullptr)
-	//{
-	//	relativeTransformationMatrix *= parent->GetRelativeTransformationMatrix();
-	//	parent = parent->GetParent();
-	//}
-	////////////////////////////
-	mesh_->GetMaterial()->SetShaderVariables(worldTransformationMatrix_, relativeTransformationMatrix_);
+	// TODO: Optimize ////////
+	Component* parent = parentComponent_;
+	while (parent != nullptr)
+	{
+		relativeTransformationMatrix *= parent->GetRelativeTransformationMatrix();
+		parent = parent->GetParent();
+	}
+	//////////////////////////
+	
+	mesh_->GetMaterial()->SetShaderVariables(parentComponent_->GetOwner()->GetWorldTransformationMatrix(), relativeTransformationMatrix);
 }
 
 template<class MeshType>

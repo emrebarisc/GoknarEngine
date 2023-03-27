@@ -98,8 +98,6 @@ public:
 	{
 		return isActive_;
 	}
-
-	virtual void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) {}
 protected:
 	Matrix relativeTransformationMatrix_{ Matrix::IdentityMatrix };
 	inline virtual void UpdateRelativeTransformationMatrix()

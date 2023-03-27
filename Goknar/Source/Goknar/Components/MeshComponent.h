@@ -32,8 +32,6 @@ public:
 		return relativeTransformationMatrix_;
 	}
 
-	inline void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override;
-
 	inline void SetIsActive(bool isRendered);
 
 	inline MeshInstanceType* GetMeshInstance() const
@@ -42,13 +40,6 @@ public:
 	}
 protected:
 	inline MeshComponent(Component* parent);
-
-	inline void UpdateRelativeTransformationMatrix() override
-	{
-		RenderComponent::UpdateRelativeTransformationMatrix();
-
-		meshInstance_->SetRelativeTransformationMatrix(relativeTransformationMatrix_);
-	}
 
 	MeshInstanceType* meshInstance_;
 private:
@@ -75,12 +66,6 @@ void MeshComponent<MeshType, MeshInstanceType>::Destroy()
 		meshInstance_->Destroy();
 	}
 	delete this;
-}
-
-template<class MeshType, class MeshInstanceType>
-void MeshComponent<MeshType, MeshInstanceType>::WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix)
-{
-	meshInstance_->SetWorldTransformationMatrix(worldTransformationMatrix);
 }
 
 template<class MeshType, class MeshInstanceType>

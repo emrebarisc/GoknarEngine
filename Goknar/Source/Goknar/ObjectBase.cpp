@@ -109,7 +109,6 @@ void ObjectBase::AddComponent(Component* component)
 	}
 
 	component->SetOwner(this);
-	component->WorldTransformationMatrixIsUpdated(worldTransformationMatrix_);
 	components_.push_back(component);
 	totalComponentCount_++;
 }
@@ -131,10 +130,4 @@ void ObjectBase::UpdateWorldTransformationMatrix()
 										 0.f, worldScaling_.y, 0.f, 0.f,
 										 0.f, 0.f, worldScaling_.z, 0.f,
 										 0.f, 0.f, 0.f, 1.f);
-
-
-	for (int componentIndex = 0; componentIndex < totalComponentCount_; componentIndex++)
-	{
-		components_[componentIndex]->WorldTransformationMatrixIsUpdated(worldTransformationMatrix_);
-	}
 }

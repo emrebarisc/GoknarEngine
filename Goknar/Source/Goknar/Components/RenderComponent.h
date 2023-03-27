@@ -19,8 +19,6 @@ public:
 
 	virtual void Destroy() = 0;
 	virtual void SetIsActive(bool isRendered) = 0;
-	virtual void WorldTransformationMatrixIsUpdated(const Matrix& worldTransformationMatrix) override = 0;
-
 protected:
 private:
 };
