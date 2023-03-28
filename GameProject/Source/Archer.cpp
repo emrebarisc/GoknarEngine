@@ -9,6 +9,7 @@
 #include "Scene.h"
 
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/SocketComponent.h"
 #include "Managers/CameraManager.h"
 #include "Managers/ResourceManager.h"
 #include "Model/SkeletalMesh.h"
@@ -31,6 +32,12 @@ Archer::Archer() :
 	skeletalMeshComponent_->SetRelativeRotation(Vector3(-90.f, -90.f, 0.f));
 	skeletalMeshComponent_->SetRelativeScaling(Vector3(0.0125f));
 
+	SkeletalMeshInstance* skeletalMeshInstance = skeletalMeshComponent_->GetMeshInstance();
+	SocketComponent* bowHandSocket = skeletalMeshInstance->AddSocketToBone("mixamorig:LeftHand");
+
+	Bow* bow = new Bow();
+	bow->AttachToSocket(bowHandSocket);
+
 	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3(1.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f).GetNormalized());
 
 	movementComponent_ = AddSubComponent<ArcherMovementComponent>();
@@ -46,7 +53,7 @@ void Archer::BeginGame()
 
 void Archer::Tick(float deltaTime)
 {
-	thirdPersonCamera_->SetPosition(GetWorldPosition() + thirdPersonCamera_->GetForwardVector() * -4.f + Vector3::UpVector * 2.f);
+	thirdPersonCamera_->SetPosition(GetWorldPosition() + Vector3(0.f, 0.f, 2.f) + thirdPersonCamera_->GetForwardVector() * -4.f * thirdPersonCameraDistance_);
 
 	// Arrow test
 	//static float timer = 0.f;

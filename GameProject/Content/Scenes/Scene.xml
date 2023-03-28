@@ -408,7 +408,7 @@
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
 		</StaticMeshObject> -->
 
-		<StaticMeshObject id = "25">
+<!-- 		<StaticMeshObject id = "25">
 			<Mesh>3</Mesh>
 			<Name>Plane</Name>
 			<PivotPoint>0 0 0</PivotPoint>
@@ -418,7 +418,7 @@
 			<WorldPosition>0.0 0.0 0.0</WorldPosition>
 			<WorldRotation>0.0 0.0 0.0</WorldRotation>
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject>
+		</StaticMeshObject> -->
 
 	</Objects>
 

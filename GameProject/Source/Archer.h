@@ -8,6 +8,7 @@ class SkeletalMeshComponent;
 
 class ArcherGameController;
 class ArcherMovementComponent;
+class Bow;
 
 class Archer : public ObjectBase
 {
@@ -41,13 +42,32 @@ public:
 		return thirdPersonCamera_;
 	}
 
+	void IncreaseThirdPersonCameraDistance()
+	{
+		if (thirdPersonCameraDistance_ < 5.f)
+		{
+			thirdPersonCameraDistance_ += 0.25f;
+		}
+	}
+	
+	void DecreaseThirdPersonCameraDistance()
+	{
+		if (0.25f < thirdPersonCameraDistance_)
+		{
+			thirdPersonCameraDistance_ -= 0.25f;
+		}
+	}
+
 private:
-	SkeletalMesh* skeletalMesh_;
-	SkeletalMeshComponent* skeletalMeshComponent_;
+	SkeletalMesh* skeletalMesh_{ nullptr };
+	SkeletalMeshComponent* skeletalMeshComponent_{ nullptr };
 
-	Camera* thirdPersonCamera_;
+	Camera* thirdPersonCamera_{ nullptr };
 
-	ArcherGameController* controller_;
-	ArcherMovementComponent* movementComponent_;
+	ArcherGameController* controller_{ nullptr };
+	ArcherMovementComponent* movementComponent_{ nullptr };
+	Bow* bow_{ nullptr };
+
+	float thirdPersonCameraDistance_{ 1.f };
 };
 

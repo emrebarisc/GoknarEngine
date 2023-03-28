@@ -28,6 +28,7 @@ public:
 
 private:
 	void OnCursorMove(double x, double y);
+	void OnScrollMove(double x, double y);
 
 	void MoveForward();
 	void StopMovingForward();

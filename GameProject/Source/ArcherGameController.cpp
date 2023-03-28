@@ -38,6 +38,8 @@ void ArcherGameController::SetupInputs()
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::MoveRight, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, std::bind(&ArcherGameController::StopMovingRight, this));
 
+	engine->GetInputManager()->AddScrollDelegate(std::bind(&ArcherGameController::OnScrollMove, this, std::placeholders::_1, std::placeholders::_2));
+
 	engine->GetInputManager()->AddCursorDelegate(std::bind(&ArcherGameController::OnCursorMove, this, std::placeholders::_1, std::placeholders::_2));
 }
 
@@ -58,6 +60,18 @@ void ArcherGameController::OnCursorMove(double x, double y)
 	}
 
 	engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
+}
+
+void ArcherGameController::OnScrollMove(double x, double y)
+{
+	if (0 < y)
+	{
+		archer_->DecreaseThirdPersonCameraDistance();
+	}
+	else if (y < 0)
+	{
+		archer_->IncreaseThirdPersonCameraDistance();
+	}
 }
 
 void ArcherGameController::MoveForward()
