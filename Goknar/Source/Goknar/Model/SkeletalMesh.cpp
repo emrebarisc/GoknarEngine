@@ -3,14 +3,10 @@
 #include "SkeletalMesh.h"
 
 #include "Goknar/Engine.h"
+#include "Goknar/Components/SocketComponent.h"
 
 SkeletalMesh::SkeletalMesh() :
-	StaticMesh(),
-	vertexBoneDataArray_(new VertexBoneDataArray()),
-	boneNameToIdMap_(new BoneNameToIdMap()),
-	armature_(new Armature()),
-	boneNameToIdMapSize_(0),
-	boneSize_(0)
+	StaticMesh()
 {
 }
 
@@ -40,13 +36,12 @@ void SkeletalMesh::Init()
 	engine->AddSkeletalMeshToRenderer(this);
 }
 
-void SkeletalMesh::GetBoneTransforms(std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time)
+void SkeletalMesh::GetBoneTransforms(std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap)
 {
-	transforms.resize(boneSize_, Matrix::IdentityMatrix);
-	SetupTransforms(armature_->root, Matrix::IdentityMatrix, transforms, skeletalAnimation, time);
+	SetupTransforms(armature_->root, Matrix::IdentityMatrix, transforms, skeletalAnimation, time, socketMap);
 }
 
-void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform, std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time)
+void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform, std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap)
 {
 	if (!bone)
 	{
@@ -68,10 +63,17 @@ void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform, st
 
 	Matrix globalTransformation = parentTransform * boneTransformation;
 
-	transforms[(*boneNameToIdMap_)[bone->name]] = /*armature_->globalInverseTransform * */globalTransformation * bone->offset;
+	Matrix transform = /*armature_->globalInverseTransform * */globalTransformation * bone->offset;
+
+	if (socketMap.find(bone->name) != socketMap.end())
+	{
+		socketMap[bone->name]->SetBoneTransformationMatrix(transform);
+	}
+
+	transforms[(*boneNameToIdMap_)[bone->name]] = transform;
 	unsigned int childrenSize = bone->children.size();
 	for (unsigned int childIndex = 0; childIndex < childrenSize; ++childIndex)
 	{
-		SetupTransforms(bone->children[childIndex], globalTransformation, transforms, skeletalAnimation, time);
+		SetupTransforms(bone->children[childIndex], globalTransformation, transforms, skeletalAnimation, time, socketMap);
 	}
 }

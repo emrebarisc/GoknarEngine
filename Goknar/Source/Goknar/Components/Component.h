@@ -8,8 +8,6 @@
 class GOKNAR_API Component
 {
 public:
-	Component(Component* parent);
-	Component(ObjectBase* parentObjectBase);
 	virtual ~Component()
 	{
 
@@ -42,7 +40,7 @@ public:
 		return relativeScaling_;
 	}
 
-	const Matrix& GetRelativeTransformationMatrix() const
+	virtual const Matrix& GetRelativeTransformationMatrix() const
 	{
 		return relativeTransformationMatrix_;
 	}
@@ -99,6 +97,9 @@ public:
 		return isActive_;
 	}
 protected:
+	Component(Component* parent);
+	Component(ObjectBase* parentObjectBase);
+
 	Matrix relativeTransformationMatrix_{ Matrix::IdentityMatrix };
 	inline virtual void UpdateRelativeTransformationMatrix()
 	{

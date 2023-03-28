@@ -9,6 +9,7 @@
 #include "Math/Matrix.h"
 
 class Component;
+class SocketComponent;
 
 /*
     Base object class
@@ -92,6 +93,19 @@ public:
 	template<class T>
 	T* AddSubComponent();
 
+	void AttachToSocket(SocketComponent* socketComponent);
+	void RemoveFromSocket(SocketComponent* socketComponent);
+
+	ObjectBase* GetParent() const
+	{
+		return parent_;
+	}
+
+	void SetParent(ObjectBase* parent)
+	{
+		parent_ = parent;
+	}
+
 protected:
 
 private:
@@ -107,6 +121,8 @@ private:
     Vector3 worldPosition_;
     Vector3 worldRotation_;
     Vector3 worldScaling_;
+
+	ObjectBase* parent_{ nullptr };
 
 	int totalComponentCount_;
 

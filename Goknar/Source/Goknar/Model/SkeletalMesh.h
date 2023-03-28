@@ -11,28 +11,27 @@
 #include "Goknar/Math/GoknarMath.h"
 #include "Goknar/Math/Quaternion.h"
 
+class SocketComponent;
+
 struct GOKNAR_API Bone
 {
-    Bone() : name(""), offset(Matrix::ZeroMatrix), transformation(Matrix::ZeroMatrix) {}
-    Bone(const std::string& n) : name(n), offset(Matrix::ZeroMatrix), transformation(Matrix::ZeroMatrix) {}
-    Bone(const std::string& n, const Matrix& o) : name(n), offset(o), transformation(Matrix::ZeroMatrix) {}
+    Bone(const std::string& n) : name(n) {}
+    Bone(const std::string& n, const Matrix& o) : name(n), offset(o) {}
     Bone(const std::string& n, const Matrix& o, const Matrix& t) : name(n), offset(o), transformation(t) {}
     Bone(const Bone& rhs) : offset(rhs.offset), transformation(rhs.transformation) {}
 
     std::string name;
 
-    Matrix offset;
-    Matrix transformation;
+    Matrix offset{ Matrix::IdentityMatrix };
+    Matrix transformation{ Matrix::IdentityMatrix };;
 
     std::vector<Bone*> children;
 };
 
 struct GOKNAR_API Armature
 {
-    Armature() : root(nullptr) {}
-
-    Bone* root;
-    Matrix globalInverseTransform;
+    Bone* root{ nullptr };
+    Matrix globalInverseTransform{ Matrix::IdentityMatrix };
 };
 
 // THIS CLASS IS DIRECTLY SENT TO THE GPU
@@ -43,9 +42,6 @@ struct GOKNAR_API Armature
 #define MAX_BONE_SIZE_PER_VERTEX 4
 struct GOKNAR_API VertexBoneData
 {
-    unsigned int boneIDs[MAX_BONE_SIZE_PER_VERTEX] = { 0 };
-    float weights[MAX_BONE_SIZE_PER_VERTEX] = { 0.f };
-
     void AddBoneData(unsigned int id, float weight)
     {
         int smallestIndex = -1;
@@ -73,17 +69,14 @@ struct GOKNAR_API VertexBoneData
 
         //GOKNAR_CORE_ASSERT(false, "Bone index size cannot be greater than " + std::to_string(MAX_BONE_SIZE_PER_VERTEX));
     }
+
+    unsigned int boneIDs[MAX_BONE_SIZE_PER_VERTEX] = { 0 };
+    float weights[MAX_BONE_SIZE_PER_VERTEX] = { 0.f };
 };
 
 struct GOKNAR_API AnimationVectorKey
 {
-    float time;
-    Vector3 value;
-
-    AnimationVectorKey() :
-        time(0.f),
-        value(Vector3::ZeroVector)
-    {}
+    AnimationVectorKey() {}
 
     AnimationVectorKey(double time, const Vector3& value) :
         time(time), 
@@ -108,17 +101,14 @@ struct GOKNAR_API AnimationVectorKey
     {
         return time > rhs.time;
     }
+
+    float time{ 0.f };
+    Vector3 value{ Vector3::ZeroVector };
 };
 
 struct GOKNAR_API AnimationQuaternionKey
 {
-    double time;
-    Quaternion value;
-
-    AnimationQuaternionKey() :
-        time(0.0),
-        value()
-    {}
+    AnimationQuaternionKey() {}
 
     AnimationQuaternionKey(double t, const Quaternion& v) :
         time(t), 
@@ -144,19 +134,13 @@ struct GOKNAR_API AnimationQuaternionKey
     {
         return time > rhs.time;
     }
+
+    double time{ 0.0 };
+    Quaternion value{ Quaternion::Identity };
 };
 
 struct GOKNAR_API SkeletalAnimationNode
 {
-    SkeletalAnimationNode() : 
-        rotationKeys(nullptr),
-        positionKeys(nullptr),
-        scalingKeys(nullptr),
-        rotationKeySize(0),
-        positionKeySize(0),
-        scalingKeySize(0)
-    {}
-
     ~SkeletalAnimationNode()
     {
         delete[] rotationKeys;
@@ -227,25 +211,17 @@ struct GOKNAR_API SkeletalAnimationNode
 
     std::string affectedBoneName;
 
-    AnimationQuaternionKey* rotationKeys;
-    AnimationVectorKey* positionKeys;
-    AnimationVectorKey* scalingKeys;
+    AnimationQuaternionKey* rotationKeys{ nullptr };
+    AnimationVectorKey* positionKeys{ nullptr };
+    AnimationVectorKey* scalingKeys{ nullptr };
 
-    int rotationKeySize;
-    int positionKeySize;
-    int scalingKeySize;
+    int rotationKeySize{ 0 };
+    int positionKeySize{ 0 };
+    int scalingKeySize{ 0 };
 };
 
 struct GOKNAR_API SkeletalAnimation
 {
-    SkeletalAnimation() :
-        animationNodes(nullptr),
-        name(""),
-        duration(0.f),
-        ticksPerSecond(0.f),
-        animationNodeSize(0)
-    {}
-
     ~SkeletalAnimation()
     {
         for (unsigned int animationNodeIndex = 0; animationNodeIndex < animationNodeSize; ++animationNodeIndex)
@@ -262,11 +238,11 @@ struct GOKNAR_API SkeletalAnimation
     }
 
     std::unordered_map<std::string, SkeletalAnimationNode*> affectedBoneNameToSkeletalAnimationNodeMap;
-    SkeletalAnimationNode** animationNodes;
-    std::string name;
-    float duration;
-    float ticksPerSecond;
-    unsigned int animationNodeSize;
+    SkeletalAnimationNode** animationNodes{ nullptr };
+    std::string name{ "" };
+    float duration{ 0.f };
+    float ticksPerSecond{ 0.f };
+    unsigned int animationNodeSize{ 0 };
 };
 
 typedef std::vector<VertexBoneData> VertexBoneDataArray;
@@ -343,7 +319,7 @@ public:
         return bones_[index];
     }
 
-    void GetBoneTransforms(std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time);
+    void GetBoneTransforms(std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap);
 
     void AddSkeletalAnimation(SkeletalAnimation* skeletalAnimation)
     {
@@ -365,19 +341,19 @@ public:
     }
 
 private:
-    void SetupTransforms(Bone* bone, const Matrix& parentTransform, std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time);
+    void SetupTransforms(Bone* bone, const Matrix& parentTransform, std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap);
 
-    VertexBoneDataArray* vertexBoneDataArray_;
-    BoneNameToIdMap* boneNameToIdMap_;
+    VertexBoneDataArray* vertexBoneDataArray_{ new VertexBoneDataArray() };
+    BoneNameToIdMap* boneNameToIdMap_{ new BoneNameToIdMap() };
 
     SkeletalAnimationVector skeletalAnimations_;
     NameToSkeletalAnimationMap nameToSkeletalAnimationMap_;
 
     std::vector<Bone*> bones_;
-    Armature* armature_;
+    Armature* armature_{ new Armature() };
 
-    unsigned int boneNameToIdMapSize_;
-    unsigned int boneSize_;
+    unsigned int boneNameToIdMapSize_{ 0 };
+    unsigned int boneSize_{ 0 };
 };
 
 #endif

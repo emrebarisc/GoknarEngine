@@ -7,11 +7,26 @@
 class SocketComponent : public Component
 {
 public:
+	SocketComponent(Component* parentComponent);
+
+	virtual const Matrix& GetRelativeTransformationMatrix() const override;
+
+	void SetBoneTransformationMatrix(const Matrix& boneTransformationMatrix)
+	{
+		boneTransformationMatrix_ = boneTransformationMatrix;
+		boneAndRelativeTransformationMatrix_ = relativeTransformationMatrix_ * boneTransformationMatrix_;
+	}
+
+	const Matrix& GetBoneTransformationMatrix()
+	{
+		return boneTransformationMatrix_;
+	}
 
 protected:
 
 private:
-
+	Matrix boneTransformationMatrix_{ Matrix::IdentityMatrix };
+	Matrix boneAndRelativeTransformationMatrix_{ Matrix::IdentityMatrix };
 };
 
 #endif

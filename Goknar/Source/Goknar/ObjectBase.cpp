@@ -4,6 +4,7 @@
 
 #include "Goknar/Application.h"
 #include "Goknar/Components/Component.h"
+#include "Goknar/Components/SocketComponent.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 
@@ -95,6 +96,30 @@ void ObjectBase::SetIsActive(bool isActive)
 	{
 		components_[i]->SetIsActive(isActive);
 	}
+}
+
+void ObjectBase::AttachToSocket(SocketComponent* socketComponent)
+{
+	if (rootComponent_)
+	{
+		rootComponent_->SetParent(socketComponent);
+	}
+	parent_ = socketComponent->GetOwner();
+}
+
+void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
+{
+	if (rootComponent_)
+	{
+		rootComponent_->SetParent(static_cast<Component*>(nullptr));
+	}
+
+	worldPosition_ = parent_->GetWorldPosition();
+	worldRotation_ = parent_->GetWorldRotation();
+	worldScaling_ = parent_->GetWorldScaling();
+	UpdateWorldTransformationMatrix();
+
+	parent_ = nullptr;
 }
 
 void ObjectBase::AddComponent(Component* component)

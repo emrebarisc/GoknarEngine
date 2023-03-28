@@ -65,8 +65,8 @@ protected:
 
 	MeshType* mesh_{ nullptr };
 
-private:
 	RenderComponent* parentComponent_{ nullptr };
+private:
 
 	int componentId_{ lastComponentId_++ };
 
@@ -88,17 +88,35 @@ template<class MeshType>
 inline void MeshInstance<MeshType>::Render()
 {
 	Matrix relativeTransformationMatrix = Matrix::IdentityMatrix;
+	Matrix worldTransformationMatrix = Matrix::IdentityMatrix;
 
 	// TODO: Optimize ////////
 	Component* parent = parentComponent_;
 	while (parent != nullptr)
 	{
-		relativeTransformationMatrix *= parent->GetRelativeTransformationMatrix();
+		relativeTransformationMatrix = parent->GetRelativeTransformationMatrix() * relativeTransformationMatrix;
 		parent = parent->GetParent();
 	}
 	//////////////////////////
 	
-	mesh_->GetMaterial()->SetShaderVariables(parentComponent_->GetOwner()->GetWorldTransformationMatrix(), relativeTransformationMatrix);
+	if (parentComponent_)
+	{
+		// Only read the upmost parent when owner objectbase is attached to another ObjectBase
+
+		ObjectBase* parentObject = parentComponent_->GetOwner();
+		while (parentObject->GetParent() != nullptr)
+		{
+			parentObject = parentObject->GetParent();
+		}
+
+		worldTransformationMatrix = parentObject->GetWorldTransformationMatrix();
+	}
+	else
+	{
+		GOKNAR_FATAL("NULL PARENT ON RENDERING MESH INSTANCE");
+	}
+
+	mesh_->GetMaterial()->SetShaderVariables(worldTransformationMatrix, relativeTransformationMatrix);
 }
 
 template<class MeshType>
