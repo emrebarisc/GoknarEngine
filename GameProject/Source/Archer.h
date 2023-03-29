@@ -9,6 +9,7 @@ class SkeletalMeshComponent;
 class ArcherGameController;
 class ArcherMovementComponent;
 class Bow;
+class SosketComponent;
 
 class Archer : public ObjectBase
 {
@@ -58,7 +59,8 @@ public:
 		}
 	}
 
-	void HandleBowEquipmentInput();
+	void HandleDropBowInput();
+	void HandleEquipBowInput();
 
 private:
 	void EquipBow(bool equip);
@@ -72,6 +74,7 @@ private:
 	ArcherGameController* controller_{ nullptr };
 	ArcherMovementComponent* movementComponent_{ nullptr };
 	Bow* bow_{ nullptr };
+	SocketComponent* leftHandSocket_{ nullptr };
 
 	float thirdPersonCameraDistance_{ 1.f };
 

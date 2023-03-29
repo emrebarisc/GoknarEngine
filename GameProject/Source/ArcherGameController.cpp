@@ -31,6 +31,8 @@ void ArcherGameController::SetupInputs()
 {
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::NUM_1, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::EquipBow, this));
 
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::G, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::DropBow, this));
+
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::MoveForward, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_RELEASE, std::bind(&ArcherGameController::StopMovingForward, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::MoveBackward, this));
@@ -76,9 +78,14 @@ void ArcherGameController::OnScrollMove(double x, double y)
 	}
 }
 
+void ArcherGameController::DropBow()
+{
+	archer_->HandleDropBowInput();
+}
+
 void ArcherGameController::EquipBow()
 {
-	archer_->HandleBowEquipmentInput();
+	archer_->HandleEquipBowInput();
 }
 
 void ArcherGameController::MoveForward()

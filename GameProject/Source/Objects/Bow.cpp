@@ -11,5 +11,4 @@ Bow::Bow() : StaticMeshObject()
 	staticMeshComponent->SetMesh(bowStaticMesh);
 
 	staticMeshComponent->SetRelativeRotation(Vector3(-90.f, -90.f, 0.f));
-	staticMeshComponent->SetRelativeScaling(Vector3(0.0125f));
 }

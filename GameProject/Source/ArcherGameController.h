@@ -30,6 +30,7 @@ private:
 	void OnCursorMove(double x, double y);
 	void OnScrollMove(double x, double y);
 
+	void DropBow();
 	void EquipBow();
 
 	void MoveForward();
