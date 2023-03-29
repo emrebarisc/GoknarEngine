@@ -114,12 +114,15 @@ void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
 		rootComponent_->SetParent(static_cast<Component*>(nullptr));
 	}
 
-	worldPosition_ = parent_->GetWorldPosition();
-	worldRotation_ = parent_->GetWorldRotation();
-	worldScaling_ = parent_->GetWorldScaling();
-	UpdateWorldTransformationMatrix();
+	if (parent_)
+	{
+		worldPosition_ = parent_->GetWorldPosition();
+		worldRotation_ = parent_->GetWorldRotation();
+		worldScaling_ = parent_->GetWorldScaling();
+		UpdateWorldTransformationMatrix();
 
-	parent_ = nullptr;
+		parent_ = nullptr;
+	}
 }
 
 void ObjectBase::AddComponent(Component* component)
