@@ -162,10 +162,8 @@ void WindowManager::SetVSync(bool isEnable)
 	glfwSwapInterval(isEnable ? 1 : 0);
 }
 
-void WindowManager::ToggleFullscreen()
+void WindowManager::HandleFullscreenState()
 {
-	isInFullscreen_ = !isInFullscreen_;
-
 	GLFWmonitor* monitor = nullptr;
 
 	int positionX = 0;
@@ -185,6 +183,12 @@ void WindowManager::ToggleFullscreen()
 	}
 
 	glfwSetWindowMonitor(mainWindow_, monitor, positionX, positionY, w, h, refreshRate);
+}
+
+void WindowManager::ToggleFullscreen()
+{
+	SetIsInFullscreen(!isInFullscreen_);
+	HandleFullscreenState();
 }
 
 void WindowManager::Update()

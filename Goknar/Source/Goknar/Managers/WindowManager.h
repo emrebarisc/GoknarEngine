@@ -35,6 +35,17 @@ public:
 	void SetOpenGLProfile(int profile1, int profile2);
 	void SetVSync(bool isEnable);
 
+	void SetIsInFullscreen(bool isInFullscreen)
+	{
+		isInFullscreen_ = isInFullscreen;
+	}
+
+	bool GetIsInFullscreen() const
+	{
+		return isInFullscreen_;
+	}
+
+	void HandleFullscreenState();
 	void ToggleFullscreen();
 
 	bool GetWindowShouldBeClosed();

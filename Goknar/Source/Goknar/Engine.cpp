@@ -30,7 +30,7 @@
 // OpenGL Libraries
 #include "GLFW/glfw3.h"
 
-#define GOKNAR_EDITOR true
+#define GOKNAR_EDITOR false
 
 GOKNAR_API Engine *engine;
 
