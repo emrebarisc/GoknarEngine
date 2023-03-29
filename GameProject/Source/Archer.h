@@ -59,6 +59,12 @@ public:
 		}
 	}
 
+	void Idle();
+	void RunForward();
+	void RunBackward();
+	void RunRight();
+	void RunLeft();
+
 	void HandleDropBowInput();
 	void HandleEquipBowInput();
 

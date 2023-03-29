@@ -40,15 +40,16 @@ void ArcherMovementComponent::TickComponent(float deltaTime)
 		Vector3 cameraLeftVector = thirdPersonCamera_->GetLeftVector();
 		Vector3 cameraLeftVector2D = Vector3(cameraLeftVector.x, cameraLeftVector.y, 0.f).GetNormalized();
 
-		ownerArcher_->SetWorldPosition(
-			ownerArcher_->GetWorldPosition() + 
-			(normalizedMovementVector.x * cameraForwardVector2D - normalizedMovementVector.y * cameraLeftVector2D) * movementSpeed_ * deltaTime);
-		ownerArcher_->SetWorldRotation(cameraForwardVector2D.GetRotation());
+		Vector3 movementVectorThisFrame = normalizedMovementVector.x * cameraForwardVector2D - normalizedMovementVector.y * cameraLeftVector2D;
 
-		archerSkeletalMeshInstance_->PlayAnimation("Armature|StandingRunForward");
+		ownerArcher_->SetWorldPosition(
+			ownerArcher_->GetWorldPosition() + movementVectorThisFrame * movementSpeed_ * deltaTime);
+		ownerArcher_->SetWorldRotation(movementVectorThisFrame.GetRotation());
+
+		ownerArcher_->RunForward();
 	}
 	else
 	{
-		archerSkeletalMeshInstance_->PlayAnimation("Armature|Idle");
+		ownerArcher_->Idle();
 	}
 }

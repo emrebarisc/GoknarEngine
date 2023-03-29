@@ -73,6 +73,28 @@ void Archer::Tick(float deltaTime)
 	//timer += deltaTime;
 }
 
+void Archer::Idle()
+{
+	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|Idle");
+}
+
+void Archer::RunForward()
+{
+	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|StandingRunForward");
+}
+
+void Archer::RunBackward()
+{
+}
+
+void Archer::RunRight()
+{
+}
+
+void Archer::RunLeft()
+{
+}
+
 void Archer::HandleDropBowInput()
 {
 	if (bow_)
