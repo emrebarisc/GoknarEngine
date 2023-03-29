@@ -3,6 +3,7 @@
 #include "Goknar/Scene.h"
 
 #include "Archer.h"
+#include "Goknar/Managers/WindowManager.h"
 
 #include <chrono>
 
@@ -35,6 +36,8 @@ Game::Game() : Application()
 	lastFrameTimePoint = currentTimePoint;
 
 	archer_ = new Archer();
+
+	engine->GetWindowManager()->SetIsInFullscreen(true);
 }
 
 void Game::Run()

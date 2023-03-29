@@ -43,6 +43,8 @@ Archer::Archer() :
 	bow_->SetIsActive(false);
 
 	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3(1.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f).GetNormalized());
+	thirdPersonCamera_->SetImageWidth(1920);
+	thirdPersonCamera_->SetImageHeight(1080);
 
 	movementComponent_ = AddSubComponent<ArcherMovementComponent>();
 	movementComponent_->SetOwnerArcher(this);
