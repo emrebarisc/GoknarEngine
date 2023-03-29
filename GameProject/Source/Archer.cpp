@@ -53,6 +53,8 @@ Archer::Archer() :
 void Archer::BeginGame()
 {
 	GOKNAR_INFO("Archer::BeginPlay()");
+
+	EquipBow(true);
 }
 
 void Archer::Tick(float deltaTime)
