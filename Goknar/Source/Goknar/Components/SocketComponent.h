@@ -14,7 +14,7 @@ public:
 	void SetBoneTransformationMatrix(const Matrix& boneTransformationMatrix)
 	{
 		boneTransformationMatrix_ = boneTransformationMatrix;
-		boneAndRelativeTransformationMatrix_ = relativeTransformationMatrix_ * boneTransformationMatrix_;
+		boneAndRelativeTransformationMatrix_ = boneTransformationMatrix_ * relativeTransformationMatrix_;
 	}
 
 	const Matrix& GetBoneTransformationMatrix()

@@ -67,7 +67,7 @@ void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform, st
 
 	if (socketMap.find(bone->name) != socketMap.end())
 	{
-		socketMap[bone->name]->SetBoneTransformationMatrix(transform);
+		socketMap[bone->name]->SetBoneTransformationMatrix(globalTransformation);
 	}
 
 	transforms[(*boneNameToIdMap_)[bone->name]] = transform;
