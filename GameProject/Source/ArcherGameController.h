@@ -30,6 +30,8 @@ private:
 	void OnCursorMove(double x, double y);
 	void OnScrollMove(double x, double y);
 
+	void EquipBow();
+
 	void MoveForward();
 	void StopMovingForward();
 	void MoveBackward();

@@ -58,7 +58,12 @@ public:
 		}
 	}
 
+	void HandleBowEquipmentInput();
+
 private:
+	void EquipBow(bool equip);
+	void EquipTorch(bool equip);
+
 	SkeletalMesh* skeletalMesh_{ nullptr };
 	SkeletalMeshComponent* skeletalMeshComponent_{ nullptr };
 
@@ -69,5 +74,8 @@ private:
 	Bow* bow_{ nullptr };
 
 	float thirdPersonCameraDistance_{ 1.f };
+
+	bool isBowEquiped_{ false };
+	bool isTorchEquiped_{ false };
 };
 

@@ -34,9 +34,12 @@ Archer::Archer() :
 
 	SkeletalMeshInstance* skeletalMeshInstance = skeletalMeshComponent_->GetMeshInstance();
 	SocketComponent* bowHandSocket = skeletalMeshInstance->AddSocketToBone("mixamorig:LeftHand");
+	bowHandSocket->SetRelativePosition(Vector3(0.f, 10.f, 1.f));
+	bowHandSocket->SetRelativeRotation(Vector3(10.f, 0.f, 0.f));
 
-	Bow* bow = new Bow();
-	bow->AttachToSocket(bowHandSocket);
+	bow_ = new Bow();
+	bow_->AttachToSocket(bowHandSocket);
+	bow_->SetIsActive(false);
 
 	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3(1.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f).GetNormalized());
 
@@ -67,4 +70,20 @@ void Archer::Tick(float deltaTime)
 	//	arrow->SetWorldRotation(GetForwardVector().GetRotation());
 	//}
 	//timer += deltaTime;
+}
+
+void Archer::HandleBowEquipmentInput()
+{
+	EquipBow(!isBowEquiped_);
+}
+
+void Archer::EquipBow(bool equip)
+{
+	bow_->SetIsActive(equip);
+	isBowEquiped_ = equip;
+}
+
+void Archer::EquipTorch(bool equip)
+{
+
 }
