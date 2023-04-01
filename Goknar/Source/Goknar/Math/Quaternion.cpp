@@ -117,6 +117,13 @@ inline Matrix3x3 Quaternion::GetMatrix() const
     );
 }
 
+Quaternion Quaternion::GetNormalized() const
+{
+    Quaternion q(*this);
+    q.Normalize();
+    return q;
+}
+
 inline Quaternion& Quaternion::Normalize()
 {
     const float magnitude = std::sqrt(x * x + y * y + z * z + w * w);
@@ -129,6 +136,13 @@ inline Quaternion& Quaternion::Normalize()
         w *= inverseMagnitude;
     }
     return *this;
+}
+
+Quaternion Quaternion::GetConjugate() const
+{
+    Quaternion q(*this);
+    q.Conjugate();
+    return q;
 }
 
 inline Quaternion& Quaternion::Conjugate()

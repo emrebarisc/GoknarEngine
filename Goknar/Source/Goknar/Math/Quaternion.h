@@ -4,6 +4,8 @@
 #include "Core.h"
 #include "MathDefines.h"
 
+#include <cmath>
+
 class Matrix;
 class Matrix3x3;
 class Vector3;
@@ -48,13 +50,52 @@ public:
 
     inline Quaternion operator*(const Matrix& scaleMatrix) const;
     inline Quaternion operator*(const Quaternion& other) const;
+    inline Quaternion operator*(const float scale);
     inline friend Quaternion operator*(const float scale, const Quaternion& quaternion);
     inline Quaternion& operator*=(const Matrix& scaleMatrix);
     inline Quaternion& operator*=(const float scale);
 
     bool Equals(const Quaternion& other, float tolerance = EPSILON) const;
 
+    /*
+    * NOT TESTED !
+    Quaternion Pow(float n)
+    {
+        return (Ln() * n).Exp();
+    }
+
+    Quaternion Exp()
+    {
+        Quaternion value(*this);
+
+        float r = std::sqrtf(value.x * value.x + value.y * value.y + value.z * value.z);
+        float et = std::expf(value.w);
+        float s = r >= 0.00001f ? et * std::sinf(r) / r : 0.f;
+
+        value.w = et * std::cosf(r);
+        value.x *= s;
+        value.y *= s;
+        value.z *= s;
+        return value;
+    }
+
+    Quaternion Ln()
+    {
+        Quaternion value(*this);
+        float r = std::sqrtf(value.x * value.x + value.y * value.y + value.z * value.z);
+        float t = r > 0.00001f ? std::atan2f(r, value.w) / r : 0.f;
+        value.w = 0.5f * std::logf(value.w * value.w + value.x * value.x + value.y * value.y + value.z * value.z);
+        value.x *= t;
+        value.y *= t;
+        value.z *= t;
+        return value;
+    }
+    */
+
+    Quaternion GetNormalized() const;
     Quaternion& Normalize();
+
+    Quaternion GetConjugate() const;
     Quaternion& Conjugate();
     Vector3 Rotate(const Vector3& value) const;
 
@@ -135,6 +176,11 @@ inline Quaternion Quaternion::operator*(const Quaternion& t) const
         w * t.x + x * t.w + y * t.z - z * t.y,
         w * t.y + y * t.w + z * t.x - x * t.z,
         w * t.z + z * t.w + x * t.y - y * t.x);
+}
+
+inline Quaternion Quaternion::operator*(const float scale)
+{
+    return Quaternion(x * scale, y * scale, z * scale, w * scale);
 }
 
 inline Quaternion& Quaternion::operator*=(const float scale)
