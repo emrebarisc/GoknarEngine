@@ -394,9 +394,9 @@ struct GOKNAR_API Vector3
 	*	Transformations
 	*/
 
-	Vector3 Translate(const Vector3& translation);
-	Vector3 Rotate(const Vector3& rotation);
-	Vector3 Scale(const Vector3& scale);
+	Vector3 Translate(const Vector3& translation, bool isPositionVector = true) const;
+	Vector3 Rotate(const Vector3& rotation, bool isPositionVector = true) const;
+	Vector3 Scale(const Vector3& scale, bool isPositionVector = true) const;
 
 	static const Vector3 ZeroVector;
 	static const Vector3 ForwardVector;

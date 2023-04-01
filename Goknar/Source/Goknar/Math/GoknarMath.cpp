@@ -120,7 +120,7 @@ Vector3 Vector3::GetRotation()
 	return rotation;
 }
 
-Vector3 Vector3::Translate(const Vector3& translation)
+Vector3 Vector3::Translate(const Vector3& translation, bool isPositionVector/* = true*/) const
 {
 	Matrix translateMatrix = Matrix::IdentityMatrix;
 
@@ -128,10 +128,10 @@ Vector3 Vector3::Translate(const Vector3& translation)
 	translateMatrix.m[7] = translation.y;
 	translateMatrix.m[11] = translation.z;
 
-	return Vector3(translateMatrix * Vector4(translation));
+	return Vector3(translateMatrix * Vector4(translation, isPositionVector ? 1.f : 0.f));
 }
 
-Vector3 Vector3::Rotate(const Vector3& rotation)
+Vector3 Vector3::Rotate(const Vector3& rotation, bool isPositionVector/* = true*/) const
 {
 	Vector3 result = *this;
 
@@ -144,7 +144,7 @@ Vector3 Vector3::Rotate(const Vector3& rotation)
 		rotateMatrix.m[6] = -sinTheta;
 		rotateMatrix.m[9] = sinTheta;
 		rotateMatrix.m[10] = cosTheta;
-		result = Vector3(rotateMatrix * Vector4(result));
+		result = Vector3(rotateMatrix * Vector4(result, isPositionVector ? 1.f : 0.f));
 	}
 	if (rotation.y != 0)
 	{
@@ -155,7 +155,7 @@ Vector3 Vector3::Rotate(const Vector3& rotation)
 		rotateMatrix.m[2] = sinTheta;
 		rotateMatrix.m[8] = -sinTheta;
 		rotateMatrix.m[10] = cosTheta;
-		result = Vector3(rotateMatrix * Vector4(result));
+		result = Vector3(rotateMatrix * Vector4(result, isPositionVector ? 1.f : 0.f));
 	}
 	if (rotation.z != 0)
 	{
@@ -166,13 +166,13 @@ Vector3 Vector3::Rotate(const Vector3& rotation)
 		rotateMatrix.m[1] = -sinTheta;
 		rotateMatrix.m[4] = sinTheta;
 		rotateMatrix.m[5] = cosTheta;
-		result = Vector3(rotateMatrix * Vector4(result));
+		result = Vector3(rotateMatrix * Vector4(result, isPositionVector ? 1.f : 0.f));
 	}
 
 	return result;
 }
 
-Vector3 Vector3::Scale(const Vector3& scale)
+Vector3 Vector3::Scale(const Vector3& scale, bool isPositionVector/* = true*/) const
 {
 	Matrix scaleMatrix = Matrix::IdentityMatrix;
 	scaleMatrix.m[0] = scale.x;
