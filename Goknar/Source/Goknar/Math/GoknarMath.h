@@ -470,35 +470,41 @@ public:
 	}
 
 	template<class T>
-	static T LinearInterpolation(const T& start, const T& end, float alpha)
+	static T Lerp(const T& start, const T& end, float alpha)
 	{
 		return start + alpha * (end - start);
 	}
 
 	template<class T>
-	static T InterpolationSphericalIn(const T& start, const T& end, float alpha)
+	static T SlerpIn(const T& start, const T& end, float alpha)
 	{
 		float const modifiedAlpha = -1.f * (std::sqrt(1.f - alpha * alpha) - 1.f);
-		return LinearInterpolation(start, end, modifiedAlpha);
+		return Lerp(start, end, modifiedAlpha);
 	}
 
 	template<class T>
-	static T InterpolationSphericalOut(const T& start, const T& end, float alpha)
+	static T SlerpOut(const T& start, const T& end, float alpha)
 	{
 		alpha -= 1.f;
 		float const modifiedAlpha = std::sqrt(1.f - alpha * alpha);
-		return LinearInterpolation(start, end, modifiedAlpha);
+		return Lerp(start, end, modifiedAlpha);
 	}
 
 	template<class T>
-	static T InterpolationSpherical(const T& start, const T& end, float alpha)
+	static T Slerp(const T& start, const T& end, float alpha)
 	{
-		return LinearInterpolation(start, end, (alpha < 0.5f) ?
-			InterpolationSphericalIn(0.f, 1.f, alpha * 2.f) * 0.5f :
-			InterpolationSphericalOut(0.f, 1.f, alpha * 2.f - 1.f) * 0.5f + 0.5f);
+		return Lerp(start, end, (alpha < 0.5f) ?
+			SlerpIn(0.f, 1.f, alpha * 2.f) * 0.5f :
+			SlerpOut(0.f, 1.f, alpha * 2.f - 1.f) * 0.5f + 0.5f);
 	}
 
-/*	static Quaternion InterpolationSpherical(const Quaternion& start, const Quaternion& end, float alpha)
+	template<class T>
+	T Pow(T value, float power)
+	{
+		return std::pow(value, power);
+	}
+
+	/*static Quaternion SphericalInterpolationQ(Quaternion start, Quaternion end, float alpha)
 	{
 		Quaternion result;
 
@@ -534,8 +540,8 @@ public:
 		result.w = coefficientP * start.w + inverseCoefficientP * end.w;
 
 		return result;
-	}
-*/
+	}*/
+
 };
 
 #endif

@@ -163,7 +163,7 @@ struct GOKNAR_API SkeletalAnimationNode
 
         float alpha = (time - scalingKeys[previousIndex].time) / (scalingKeys[nextIndex].time - scalingKeys[previousIndex].time);
         
-        return Matrix::GetScalingMatrix(GoknarMath::LinearInterpolation(scalingKeys[previousIndex].value, scalingKeys[nextIndex].value, alpha));
+        return Matrix::GetScalingMatrix(GoknarMath::Slerp(scalingKeys[previousIndex].value, scalingKeys[nextIndex].value, alpha));
     }
 
     Matrix GetInterpolatedPositionMatrix(float time)
@@ -181,7 +181,7 @@ struct GOKNAR_API SkeletalAnimationNode
 
         float alpha = (time - positionKeys[previousIndex].time) / (positionKeys[nextIndex].time - positionKeys[previousIndex].time);
 
-        return Matrix::GetPositionMatrix(GoknarMath::LinearInterpolation(positionKeys[previousIndex].value, positionKeys[nextIndex].value, alpha));
+        return Matrix::GetPositionMatrix(GoknarMath::Slerp(positionKeys[previousIndex].value, positionKeys[nextIndex].value, alpha));
     }
 
     Matrix GetInterpolatedRotationMatrix(float time)
@@ -201,7 +201,7 @@ struct GOKNAR_API SkeletalAnimationNode
 
         const Quaternion& startRotation = rotationKeys[previousIndex].value;
         const Quaternion& endRotation = rotationKeys[nextIndex].value;
-        Quaternion out = GoknarMath::InterpolationSpherical(startRotation, endRotation, alpha);
+        Quaternion out = GoknarMath::Slerp(startRotation, endRotation, alpha);
         out.Normalize();
 
         Matrix3x3 assimpMatrix = out.GetMatrix();
