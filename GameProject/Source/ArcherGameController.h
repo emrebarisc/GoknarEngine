@@ -30,6 +30,8 @@ private:
 	void OnCursorMove(double x, double y);
 	void OnScrollMove(double x, double y);
 
+	void ToggleFullscreen();
+
 	void DropBow();
 	void EquipBow();
 
@@ -42,7 +44,7 @@ private:
 	void MoveRight();
 	void StopMovingRight();
 
-	Camera* thirdPersonCamera_;
+	Camera* thirdPersonCamera_{ nullptr };
 
 	Archer* archer_{ nullptr };
 	ArcherMovementComponent* archerMovementComponent_{ nullptr };

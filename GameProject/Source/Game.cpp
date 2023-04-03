@@ -37,7 +37,7 @@ Game::Game() : Application()
 
 	archer_ = new Archer();
 
-	engine->GetWindowManager()->SetIsInFullscreen(true);
+	engine->GetWindowManager()->SetIsInFullscreen(false);
 }
 
 void Game::Run()

@@ -11,7 +11,13 @@ ArcherMovementComponent::ArcherMovementComponent(Component* parent) :
 	Component(parent)
 {
 	SetIsTickable(true);
-	movementVector_ = Vector3::ZeroVector;
+
+	movementVector_.Reset(Vector3::ZeroVector);
+	movementVector_.speed = 10.f;
+
+	movementRotation_.Reset(0.f);
+	movementRotation_.speed = 4.f;
+
 	movementSpeed_ = 10.f;
 }
 
@@ -30,9 +36,9 @@ void ArcherMovementComponent::TickComponent(float deltaTime)
 {
 	Component::TickComponent(deltaTime);
 	
-	if (EPSILON < movementVector_.Length())
+	if (EPSILON < movementVector_.current.Length())
 	{
-		Vector3 normalizedMovementVector = movementVector_.GetNormalized();
+		Vector3 normalizedMovementVector = movementVector_.current.GetNormalized();
 
 		Vector3 cameraForwardVector = thirdPersonCamera_->GetForwardVector();
 		Vector3 cameraForwardVector2D = Vector3(cameraForwardVector.x, cameraForwardVector.y, 0.f).GetNormalized();
@@ -42,14 +48,42 @@ void ArcherMovementComponent::TickComponent(float deltaTime)
 
 		Vector3 movementVectorThisFrame = normalizedMovementVector.x * cameraForwardVector2D - normalizedMovementVector.y * cameraLeftVector2D;
 
-		ownerArcher_->SetWorldPosition(
-			ownerArcher_->GetWorldPosition() + movementVectorThisFrame * movementSpeed_ * deltaTime);
-		ownerArcher_->SetWorldRotation(movementVectorThisFrame.GetRotation());
+		Vector3 lookAtVector = movementVectorThisFrame;
+		lookAtVector.Rotate(Vector3::UpVector * movementRotation_.current);
+
+		movementVectorThisFrame *= deltaTime;
+		ownerArcher_->SetWorldPosition(ownerArcher_->GetWorldPosition() + movementVectorThisFrame * movementSpeed_);
+		ownerArcher_->SetWorldRotation(lookAtVector.GetRotation());
 
 		ownerArcher_->RunForward();
 	}
 	else
 	{
 		ownerArcher_->Idle();
+	}
+
+	movementVector_.Interpolate(deltaTime);
+	movementRotation_.Interpolate(deltaTime);
+}
+
+void ArcherMovementComponent::SetMovementVector(const Vector3& movementVector)
+{
+	movementVector_.UpdateDestination(movementVector);
+
+	if (EPSILON < movementVector.Length())
+	{
+		const float newDestinationAngle = std::atan2f(movementVector.y, movementVector.x);
+
+		float destinationAngle = newDestinationAngle - movementRotation_.current;
+		if (PI < destinationAngle)
+		{
+			destinationAngle -= 2.f * PI;
+		}
+		else if (destinationAngle <= -PI)
+		{
+			destinationAngle += 2.f * PI;
+		}
+
+		movementRotation_.UpdateDestination(destinationAngle);
 	}
 }

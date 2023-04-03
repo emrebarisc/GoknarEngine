@@ -3,6 +3,8 @@
 
 #include "Goknar/Components/Component.h"
 
+#include "InterpolatedValue.h"
+
 class Archer;
 class Camera;
 class SkeletalMeshComponent;
@@ -18,8 +20,10 @@ public:
 
 	void AddMovementVector(const Vector3& movement)
 	{
-		movementVector_ += movement;
+		SetMovementVector(movementVector_.destination + movement);
 	}
+
+	void SetMovementVector(const Vector3& movementVector);
 
 	void SetOwnerArcher(Archer* ownerArcher)
 	{
@@ -29,7 +33,8 @@ public:
 protected:
 
 private:
-	Vector3 movementVector_{ Vector3::ForwardVector };
+	InterpolatedValue<Vector3> movementVector_;
+	InterpolatedValue<float> movementRotation_;
 
 	Archer* ownerArcher_{ nullptr };
 	Camera* thirdPersonCamera_{ nullptr };

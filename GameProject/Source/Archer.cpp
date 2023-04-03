@@ -104,6 +104,7 @@ void Archer::HandleDropBowInput()
 	if (bow_)
 	{
 		bow_->RemoveFromSocket(leftHandSocket_);
+		bow_ = nullptr;
 	}
 }
 
@@ -114,8 +115,11 @@ void Archer::HandleEquipBowInput()
 
 void Archer::EquipBow(bool equip)
 {
-	bow_->SetIsActive(equip);
-	isBowEquiped_ = equip;
+	if (bow_)
+	{
+		bow_->SetIsActive(equip);
+		isBowEquiped_ = equip;
+	}
 }
 
 void Archer::EquipTorch(bool equip)
