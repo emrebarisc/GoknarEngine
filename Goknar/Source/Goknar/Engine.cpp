@@ -153,6 +153,21 @@ void Engine::Run()
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
+		// Initialize dynamically created object and components initialization /////
+
+		if (hasUninitializedObjects_)
+		{
+			InitObjects();
+		}
+
+		if (hasUninitializedComponents_)
+		{
+			InitComponents();
+		}
+
+		////////////////////////////////////////////////////////////////////////////
+
+
 		if (1.f < deltaTime_)
 		{
 			deltaTime_ = 1.f / 60.f;
@@ -190,17 +205,30 @@ void Engine::Run()
 
 void Engine::BeginGame()
 {
-	for (ObjectBase* object : registeredObjects_)
+	InitObjects();
+	InitComponents();
+
+	controller_->BeginGame();
+}
+
+void Engine::InitObjects()
+{
+	for (ObjectBase* object : objectsToBeInitialized_)
 	{
 		object->BeginGame();
 	}
+	objectsToBeInitialized_.clear();
+	hasUninitializedObjects_ = false;
+}
 
-	for (Component* component : registeredComponents_)
+void Engine::InitComponents()
+{
+	for (Component* component : componentsToBeInitialized_)
 	{
 		component->BeginGame();
 	}
-
-	controller_->BeginGame();
+	componentsToBeInitialized_.clear();
+	hasUninitializedComponents_ = false;
 }
 
 void Engine::Tick(float deltaTime)
@@ -242,6 +270,8 @@ void Engine::DestroyObject(ObjectBase* object)
 
 void Engine::RegisterObject(ObjectBase* object)
 {
+	hasUninitializedObjects_ = true;
+	objectsToBeInitialized_.push_back(object);
 	registeredObjects_.push_back(object);
 }
 
@@ -285,6 +315,8 @@ void Engine::RemoveFromTickableObjects(ObjectBase* object)
 
 void Engine::RegisterComponent(Component* component)
 {
+	hasUninitializedComponents_ = true;
+	componentsToBeInitialized_.push_back(component);
 	registeredComponents_.push_back(component);
 }
 

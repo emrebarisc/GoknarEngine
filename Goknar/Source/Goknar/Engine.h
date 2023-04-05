@@ -34,6 +34,8 @@ public:
 
 	void Init() const;
 	void BeginGame();
+	void InitObjects();
+	void InitComponents();
 	void Run();
 	void Tick(float deltaTime);
 
@@ -128,9 +130,11 @@ private:
 
 	Application *application_;
 	
-	std::vector<ObjectBase *> registeredObjects_;
-	std::vector<ObjectBase *> tickableObjects_;
+	std::vector<ObjectBase*> objectsToBeInitialized_;
+	std::vector<ObjectBase*> registeredObjects_;
+	std::vector<ObjectBase*> tickableObjects_;
 
+	std::vector<Component*> componentsToBeInitialized_;
 	std::vector<Component*> registeredComponents_;
 	std::vector<Component*> tickableComponents_;
 
@@ -138,6 +142,9 @@ private:
 
 	float deltaTime_;
 	float elapsedTime_;
+
+	bool hasUninitializedObjects_{ false };
+	bool hasUninitializedComponents_{ false };
 };
 
 #endif
