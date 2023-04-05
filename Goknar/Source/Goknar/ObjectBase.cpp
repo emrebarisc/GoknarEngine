@@ -8,14 +8,15 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 
-ObjectBase::ObjectBase() : 
-	isTickable_(false),
+ObjectBase::ObjectBase() :
 	worldTransformationMatrix_(Matrix::IdentityMatrix),
 	worldPosition_(Vector3::ZeroVector),
 	worldRotation_(Vector3::ZeroVector),
 	worldScaling_(Vector3(1.f)),
 	totalComponentCount_(0),
-	isActive_(true)
+	isTickable_(false),
+	isActive_(true),
+	isInitialized_(false)
 {
 	engine->GetApplication()->GetMainScene()->AddObject(this);
 	engine->RegisterObject(this);
@@ -29,6 +30,12 @@ ObjectBase::~ObjectBase()
 	}
 	components_.clear();
 	totalComponentCount_ = 0;
+}
+
+void ObjectBase::Init()
+{
+	isInitialized_ = true;
+	BeginGame();
 }
 
 void ObjectBase::Destroy()

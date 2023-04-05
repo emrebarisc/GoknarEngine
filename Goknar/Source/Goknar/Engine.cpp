@@ -215,7 +215,7 @@ void Engine::InitObjects()
 {
 	for (ObjectBase* object : objectsToBeInitialized_)
 	{
-		object->BeginGame();
+		object->Init();
 	}
 	objectsToBeInitialized_.clear();
 	hasUninitializedObjects_ = false;
@@ -225,7 +225,7 @@ void Engine::InitComponents()
 {
 	for (Component* component : componentsToBeInitialized_)
 	{
-		component->BeginGame();
+		component->Init();
 	}
 	componentsToBeInitialized_.clear();
 	hasUninitializedComponents_ = false;
@@ -235,7 +235,7 @@ void Engine::Tick(float deltaTime)
 {
 	for (ObjectBase* object : tickableObjects_)
 	{
-		if (object->GetIsActive())
+		if (object->GetIsInitialized() && object->GetIsActive())
 		{
 			object->Tick(deltaTime);
 		}
@@ -243,7 +243,7 @@ void Engine::Tick(float deltaTime)
 
 	for (Component* component : tickableComponents_)
 	{
-		if (component->GetIsActive())
+		if (component->GetIsInitialized() && component->GetIsActive())
 		{
 			component->TickComponent(deltaTime);
 		}

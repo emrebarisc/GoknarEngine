@@ -13,6 +13,7 @@ public:
 
 	}
 
+	virtual void Init();
 	virtual void BeginGame() {}
 	virtual void TickComponent(float deltaTime) {}
 
@@ -60,6 +61,10 @@ public:
 		return Vector3(relativeTransformationMatrix_[2], relativeTransformationMatrix_[6], relativeTransformationMatrix_[10]);
 	}
 
+	bool GetIsInitialized() const
+	{
+		return isInitialized_;
+	}
 
 	bool GetIsTickable() const
 	{
@@ -140,7 +145,8 @@ private:
 	ObjectBase* owner_{ nullptr };
 	Component* parent_{ nullptr };
 
-	bool isActive_{ true };
-	bool isTickable_{ false };
+	unsigned char isActive_ : 1;
+	unsigned char isTickable_ : 1;
+	unsigned char isInitialized_ : 1;
 };
 #endif

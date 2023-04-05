@@ -5,7 +5,10 @@
 #include "ObjectBase.h"
 
 Component::Component(Component* parent) :
-	parent_(parent)
+	parent_(parent), 
+	isActive_(true),
+	isTickable_(false),
+	isInitialized_(false)
 {
 	engine->RegisterComponent(this);
 }
@@ -41,6 +44,12 @@ void Component::SetIsTickable(bool isTickable)
 	{
 		engine->RemoveFromTickableComponents(this);
 	}
+}
+
+void Component::Init()
+{
+	isInitialized_ = true;
+	BeginGame();
 }
 
 void Component::SetPivotPoint(const Vector3& pivotPoint)

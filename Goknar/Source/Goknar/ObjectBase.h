@@ -20,6 +20,8 @@ public:
     ObjectBase();
 	virtual ~ObjectBase();
 
+	virtual void Init();
+
 	virtual void BeginGame()
 	{
 
@@ -40,9 +42,14 @@ public:
 	void SetRootComponent(Component* rootComponent);
 
     void SetIsTickable(bool tickable);
-	bool GetIsTickable()
+	bool GetIsTickable() const
 	{
 		return isTickable_; 
+	}
+
+	bool GetIsInitialized() const
+	{
+		return isInitialized_;
 	}
 
 	void SetWorldPosition(const Vector3& position);
@@ -68,17 +75,17 @@ public:
 		return worldTransformationMatrix_;
 	}
 
-	Vector3 GetForwardVector()
+	Vector3 GetForwardVector() const
 	{
 		return Vector3(worldTransformationMatrix_[0], worldTransformationMatrix_[4], worldTransformationMatrix_[8]);
 	}
 
-	Vector3 GetUpVector()
+	Vector3 GetUpVector() const
 	{
 		return Vector3(worldTransformationMatrix_[2], worldTransformationMatrix_[6], worldTransformationMatrix_[10]);
 	}
 
-	Vector3 GetLeftVector()
+	Vector3 GetLeftVector() const
 	{
 		return Vector3(worldTransformationMatrix_[1], worldTransformationMatrix_[5], worldTransformationMatrix_[9]);
 	}
@@ -128,6 +135,7 @@ private:
 
     unsigned int isTickable_ : 1;
 	unsigned int isActive_ : 1;
+	unsigned int isInitialized_ : 1;
 };
 
 template<class T>
