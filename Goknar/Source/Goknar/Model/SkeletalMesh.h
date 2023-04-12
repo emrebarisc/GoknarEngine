@@ -187,9 +187,9 @@ struct GOKNAR_API SkeletalAnimationNode
     Matrix GetInterpolatedRotationMatrix(float time)
     {
         int previousIndex = 0;
-        for (unsigned int positionIndex = 0; positionIndex < positionKeySize; ++positionIndex)
+        for (unsigned int positionIndex = 0; positionIndex < rotationKeySize; ++positionIndex)
         {
-            if (positionKeys[positionIndex].time < time)
+            if (rotationKeys[positionIndex].time < time)
             {
                 previousIndex = positionIndex;
             }
@@ -197,16 +197,14 @@ struct GOKNAR_API SkeletalAnimationNode
 
         int nextIndex = previousIndex + 1;
 
-        float alpha = (time - positionKeys[previousIndex].time) / (positionKeys[nextIndex].time - positionKeys[previousIndex].time);
+        float alpha = (time - rotationKeys[previousIndex].time) / (rotationKeys[nextIndex].time - rotationKeys[previousIndex].time);
 
         const Quaternion& startRotation = rotationKeys[previousIndex].value;
         const Quaternion& endRotation = rotationKeys[nextIndex].value;
         Quaternion out = GoknarMath::Slerp(startRotation, endRotation, alpha);
         out.Normalize();
 
-        Matrix3x3 assimpMatrix = out.GetMatrix3x3();
-
-        return Matrix(assimpMatrix);
+        return out.GetMatrix();
     }
 
     std::string affectedBoneName;
