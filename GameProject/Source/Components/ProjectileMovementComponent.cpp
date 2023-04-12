@@ -17,18 +17,22 @@ void ProjectileMovementComponent::BeginGame()
 {
 	Component::BeginGame();
 
-	GOKNAR_INFO("ProjectileMovementComponent::BeginGame");
-
 	velocity_ = GetOwner()->GetForwardVector();
+	GOKNAR_INFO("Velocity: {}", velocity_.ToString());
 }
 
 void ProjectileMovementComponent::TickComponent(float deltaTime)
 {
 	Component::TickComponent(deltaTime);
 
+	static float dt = 0.f;
+
 	ObjectBase* owner = GetOwner();
 
 	velocity_ -= Vector3(0.f, 0.f, 9.8f * deltaTime * deltaTime);
-
 	owner->SetWorldPosition(owner->GetWorldPosition() + (velocity_ * movementSpeed_) * deltaTime);
+
+	owner->SetWorldRotation(velocity_.GetNormalized().GetRotationNormalized());
+
+	dt += deltaTime;
 }

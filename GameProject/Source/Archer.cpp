@@ -29,22 +29,22 @@ Archer::Archer() :
 	skeletalMeshComponent_ = AddSubComponent<SkeletalMeshComponent>();
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
 	skeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
-	skeletalMeshComponent_->SetRelativeRotation(Vector3(-90.f, -90.f, 0.f));
-	skeletalMeshComponent_->SetRelativeScaling(Vector3(0.0125f));
+	skeletalMeshComponent_->SetRelativeScaling(Vector3{ 0.0125f });
+	skeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEular(Vector3{ 90.f, 0.f, 90.f }));
 
 	SkeletalMeshInstance* skeletalMeshInstance = skeletalMeshComponent_->GetMeshInstance();
 	leftHandSocket_ = skeletalMeshInstance->AddSocketToBone("mixamorig:LeftHand");
-	leftHandSocket_->SetRelativePosition(Vector3(0.f, 10.f, 1.f));
-	leftHandSocket_->SetRelativeRotation(Vector3(10.f, 0.f, 0.f));
-	leftHandSocket_->SetRelativeScaling(Vector3(80.f));
+	leftHandSocket_->SetRelativePosition(Vector3{ 0.f, 10.f, 1.5f });
+	leftHandSocket_->SetRelativeRotation(Quaternion::FromEular(Vector3{ 90.f, 90.f, 180.f }));
+	leftHandSocket_->SetRelativeScaling(Vector3{ 80.f });
 
 	bow_ = new Bow();
 	bow_->AttachToSocket(leftHandSocket_);
 	bow_->SetIsActive(false);
 
-	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3(1.f, 0.f, 0.f), Vector3(0.f, 0.f, 1.f).GetNormalized());
-	thirdPersonCamera_->SetImageWidth(1920);
-	thirdPersonCamera_->SetImageHeight(1080);
+	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3{ 1.f, 0.f, 0.f }, Vector3{ 0.f, 0.f, 1.f }.GetNormalized());
+	thirdPersonCamera_->SetImageWidth(1600);
+	thirdPersonCamera_->SetImageHeight(900);
 
 	movementComponent_ = AddSubComponent<ArcherMovementComponent>();
 	movementComponent_->SetOwnerArcher(this);
@@ -64,17 +64,22 @@ void Archer::Tick(float deltaTime)
 	thirdPersonCamera_->SetPosition(GetWorldPosition() + Vector3(0.f, 0.f, 2.f) + thirdPersonCamera_->GetForwardVector() * -4.f * thirdPersonCameraDistance_);
 
 	// Arrow test
-	//static float timer = 0.f;
+	static float timer = 0.f;
 
-	//if (1.f < timer)
-	//{
-	//	timer -= 1.f;
+	if (1.f < timer)
+	{
+		timer -= 1.f;
 
-	//	Arrow* arrow = new Arrow();
-	//	arrow->SetWorldPosition(GetWorldPosition());
-	//	arrow->SetWorldRotation(GetForwardVector().GetRotation());
-	//}
-	//timer += deltaTime;
+		Arrow* arrow = new Arrow();
+		arrow->SetWorldPosition(GetWorldPosition() + Vector3(0.f, 0.f, 1.75f));
+
+		Vector3 arrowRotationVector = (4.f * GetForwardVector() + GetUpVector()).GetNormalized();
+		//GOKNAR_INFO("Archer forward vector: {}", GetForwardVector().ToString());
+		//GOKNAR_INFO("Archer up vector: {}", GetUpVector().ToString());
+		//GOKNAR_INFO("Arrow forward vector: {}", arrowRotationVector.ToString());
+		arrow->SetWorldRotation((arrowRotationVector).GetRotationNormalized());
+	}
+	timer += deltaTime;
 }
 
 void Archer::Idle()

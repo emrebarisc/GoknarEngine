@@ -20,7 +20,7 @@ protected:
 
 private:
 	Vector3 velocity_{ Vector3::ZeroVector };
-	float movementSpeed_{ 50.f };
+	float movementSpeed_{ 40.f };
 };
 
 

@@ -49,14 +49,13 @@ void ArcherMovementComponent::TickComponent(float deltaTime)
 
 		Vector3 movementVectorThisFrame = normalizedMovementVector.x * cameraForwardVector2D - normalizedMovementVector.y * cameraLeftVector2D;
 
-		Vector3 lookAtVector = movementVectorThisFrame;
-		lookAtVector.Rotate(Vector3::UpVector * movementRotation_.current, false);
-		//Matrix rotationMatrix = Matrix::GetRotationMatrixAboutAnAxis(Vector3::UpVector, movementRotation_.current);
-		//lookAtVector = rotationMatrix * Vector4(lookAtVector, 0.f);
+		Vector3 lookAtVector = movementVectorThisFrame.GetNormalized();
+		lookAtVector.RotateVector(Vector3::UpVector * movementRotation_.current);
 
 		movementVectorThisFrame *= deltaTime;
 		ownerArcher_->SetWorldPosition(ownerArcher_->GetWorldPosition() + movementVectorThisFrame * movementSpeed_);
-		ownerArcher_->SetWorldRotation(lookAtVector.GetRotation());
+
+		ownerArcher_->SetWorldRotation(lookAtVector.GetRotationNormalized());
 
 		ownerArcher_->RunForward();
 	}
