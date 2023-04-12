@@ -105,7 +105,7 @@ void main()
 }
 )";
 
-EditorGroundGrid::EditorGroundGrid()
+EditorGroundGrid::EditorGroundGrid() : ObjectBase()
 {
 	Shader* groundGridMeshShader = new Shader();
 	groundGridMeshShader->SetShaderType(ShaderType::SelfContained);
@@ -141,10 +141,9 @@ void EditorGroundGrid::BeginGame()
 {
 	SetWorldPosition(Vector3::ZeroVector);
 	SetWorldScaling(Vector3(1000.f, 1000.f, 1.f));
-
-	SetIsActive(true);
 }
 
 void EditorGroundGrid::Init()
 {
+	ObjectBase::Init();
 }

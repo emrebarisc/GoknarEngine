@@ -22,5 +22,4 @@ void Editor::Init()
 {
 	editorCameraController_ = new EditorCameraController();
 	editorGroundGrid_ = new EditorGroundGrid();
-	editorGroundGrid_->Init();
 }

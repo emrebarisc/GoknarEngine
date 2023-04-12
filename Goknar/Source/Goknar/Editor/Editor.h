@@ -16,7 +16,7 @@ public:
 	virtual void Tick(float deltaTime) = 0;
 
 protected:
-	EditorCameraController* editorCameraController_;
-	EditorGroundGrid* editorGroundGrid_;
-	WindowManager* windowManager_;
+	EditorCameraController* editorCameraController_{ nullptr };
+	EditorGroundGrid* editorGroundGrid_{ nullptr };
+	WindowManager* windowManager_{ nullptr };
 };
