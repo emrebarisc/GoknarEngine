@@ -82,22 +82,14 @@ Quaternion::Quaternion(Vector3 axis, float angle)
     w = cosAngle;
 }
 
-Quaternion::Quaternion(const Vector3& normalized)
+Quaternion Quaternion::FromEular(const Vector3& degrees)
 {
-    x = normalized.x;
-    y = normalized.y;
-    z = normalized.z;
+    return Quaternion(degrees.y * PI / 180.f, degrees.z * PI / 180.f, degrees.x * PI / 180.f);
+}
 
-    const float t = 1.f - (x * x) - (y * y) - (z * z);
-
-    if (t < 0.f)
-    {
-        w = 0.f;
-    }
-    else
-    {
-        w = std::sqrt(t);
-    }
+Quaternion Quaternion::FromEularRadians(const Vector3& radians)
+{
+    return Quaternion(radians.y, radians.z, radians.x);
 }
 
 inline bool Quaternion::Equals(const Quaternion& other, float tolerance) const
@@ -108,7 +100,17 @@ inline bool Quaternion::Equals(const Quaternion& other, float tolerance) const
             std::abs(w - other.w) <= tolerance;
 }
 
-inline Matrix3x3 Quaternion::GetMatrix() const
+inline Matrix Quaternion::GetMatrix() const
+{
+    return Matrix(
+        1.f - 2.f * (y * y + z * z), 2.f * (x * y - z * w), 2.f * (x * z + y * w), 0.f,
+        2.f * (x * y + z * w), 1.f - 2.f * (x * x + z * z), 2.f * (y * z - x * w), 0.f,
+        2.f * (x * z - y * w), 2.f * (y * z + x * w), 1.f - 2.f * (x * x + y * y), 0.f,
+        0.f, 0.f, 0.f, 1.f
+    );
+}
+
+inline Matrix3x3 Quaternion::GetMatrix3x3() const
 {
     return Matrix3x3(
         1.f - 2.f * (y * y + z * z), 2.f * (x * y - z * w), 2.f * (x * z + y * w),

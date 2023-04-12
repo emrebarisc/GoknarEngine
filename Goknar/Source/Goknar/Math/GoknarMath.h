@@ -388,14 +388,16 @@ struct GOKNAR_API Vector3
 
 	Vector3 GetOrthonormalBasis() const;
 
-	Vector3 GetRotation();
+	Quaternion GetRotation();
+	Quaternion GetRotationNormalized();
 
 	/*
 	*	Transformations
 	*/
 
 	Vector3 Translate(const Vector3& translation, bool isPositionVector = true) const;
-	Vector3 Rotate(const Vector3& rotation, bool isPositionVector = true) const;
+	Vector3 RotatePoint(const Vector3& rotation) const;
+	Vector3 RotateVector(const Vector3& rotation) const;
 	Vector3 Scale(const Vector3& scale, bool isPositionVector = true) const;
 
 	static const Vector3 ZeroVector;
@@ -404,6 +406,9 @@ struct GOKNAR_API Vector3
 	static const Vector3 UpVector;
 
 	float x, y, z;
+
+private:
+	Vector3 Rotate(const Vector3& rotation, bool isPositionVector) const;
 };
 
 struct GOKNAR_API Vector3i
@@ -446,6 +451,7 @@ struct GOKNAR_API Vector4
 	}
 
 	static const Vector4 ZeroVector;
+
 	float x, y, z, w;
 };
 

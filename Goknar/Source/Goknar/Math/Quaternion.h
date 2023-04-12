@@ -32,9 +32,12 @@ public:
     Quaternion(const Matrix3x3& rotationMatrix);
     Quaternion(float pitch/*rotation y*/, float yaw/*rotation z*/, float roll/*rotation x*/);
     Quaternion(Vector3 axis, float angle);
-    Quaternion(const Vector3& normalized);
 
-    inline Matrix3x3 GetMatrix() const;
+    static Quaternion FromEular(const Vector3& degrees);
+    static Quaternion FromEularRadians(const Vector3& radians);
+
+    inline Matrix GetMatrix() const;
+    inline Matrix3x3 GetMatrix3x3() const;
 
     inline bool operator==(const Quaternion& other) const;
     inline bool operator!=(const Quaternion& other) const;

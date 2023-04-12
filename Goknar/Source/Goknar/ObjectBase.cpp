@@ -6,19 +6,19 @@
 #include "Goknar/Components/Component.h"
 #include "Goknar/Components/SocketComponent.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Log.h"
 #include "Goknar/Scene.h"
 
 ObjectBase::ObjectBase() :
 	worldTransformationMatrix_(Matrix::IdentityMatrix),
 	worldPosition_(Vector3::ZeroVector),
-	worldRotation_(Vector3::ZeroVector),
+	worldRotation_(Quaternion::Identity),
 	worldScaling_(Vector3(1.f)),
 	totalComponentCount_(0),
 	isTickable_(false),
 	isActive_(true),
 	isInitialized_(false)
 {
-	engine->GetApplication()->GetMainScene()->AddObject(this);
 	engine->RegisterObject(this);
 }
 
@@ -34,8 +34,15 @@ ObjectBase::~ObjectBase()
 
 void ObjectBase::Init()
 {
-	isInitialized_ = true;
+	if (isInitialized_)
+	{
+		GOKNAR_CORE_ERROR("ObjectBase::Init called more than once!");
+		return;
+	}
+
+	engine->GetApplication()->GetMainScene()->AddObject(this);
 	BeginGame();
+	isInitialized_ = true;
 }
 
 void ObjectBase::Destroy()
@@ -84,7 +91,7 @@ void ObjectBase::SetWorldPosition(const Vector3& position)
 	UpdateWorldTransformationMatrix();
 }
 
-void ObjectBase::SetWorldRotation(const Vector3& rotation)
+void ObjectBase::SetWorldRotation(const Quaternion& rotation)
 {
 	worldRotation_ = rotation;
 	UpdateWorldTransformationMatrix();
@@ -157,9 +164,10 @@ void ObjectBase::UpdateWorldTransformationMatrix()
 										0.f, 0.f, 1.f, worldPosition_.z,
 										0.f, 0.f, 0.f, 1.f);
 
-	Vector3 worldRotationInRadians = worldRotation_;
-	worldRotationInRadians.ConvertDegreeToRadian();
-	worldTransformationMatrix_ *= Matrix::GetRotationMatrix(worldRotationInRadians);
+	//Vector3 worldRotationInRadians = worldRotation_;
+	//worldRotationInRadians.ConvertDegreeToRadian();
+	//worldTransformationMatrix_ *= Matrix::GetRotationMatrix(worldRotationInRadians);
+	worldTransformationMatrix_ *= worldRotation_.GetMatrix();
 
 	worldTransformationMatrix_ *= Matrix(worldScaling_.x, 0.f, 0.f, 0.f,
 										 0.f, worldScaling_.y, 0.f, 0.f,

@@ -29,8 +29,8 @@ public:
 		return relativePosition_;
 	}
 
-	void SetRelativeRotation(const Vector3& rotation);
-	const Vector3& GetRelativeRotation() const
+	void SetRelativeRotation(const Quaternion& rotation);
+	const Quaternion& GetRelativeRotation() const
 	{
 		return relativeRotation_;
 	}
@@ -121,9 +121,10 @@ protected:
 			0.f, 0.f, 1.f, relativePosition_.z,
 			0.f, 0.f, 0.f, 1.f);
 
-		Vector3 relativeRotationInRadians = relativeRotation_;
-		relativeRotationInRadians.ConvertDegreeToRadian();
-		relativeTransformationMatrix_ *= Matrix::GetRotationMatrix(relativeRotationInRadians);
+		//Vector3 relativeRotationInRadians = relativeRotation_;
+		//relativeRotationInRadians.ConvertDegreeToRadian();
+		//relativeTransformationMatrix_ *= Matrix::GetRotationMatrix(relativeRotationInRadians);
+		relativeTransformationMatrix_ *= relativeRotation_.GetMatrix();
 
 		relativeTransformationMatrix_ *= Matrix(relativeScaling_.x, 0.f, 0.f, 0.f,
 			0.f, relativeScaling_.y, 0.f, 0.f,
@@ -138,8 +139,8 @@ protected:
 private:
 	Vector3 pivotPoint_{ Vector3::ZeroVector };
 
+	Quaternion relativeRotation_{ Quaternion::Identity };
 	Vector3 relativePosition_{ Vector3::ZeroVector };
-	Vector3 relativeRotation_{ Vector3::ZeroVector };
 	Vector3 relativeScaling_{ Vector3(1.f) };
 
 	ObjectBase* owner_{ nullptr };

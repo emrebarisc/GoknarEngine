@@ -75,7 +75,7 @@ void Camera::MoveRight(float value)
 
 void Camera::Yaw(float value)
 {
-	forwardVector_ = forwardVector_.Rotate(upVector_ * value);
+	forwardVector_ = forwardVector_.RotateVector(upVector_ * value);
 	leftVector_ = forwardVector_.Cross(upVector_);
 
 	LookAt();
@@ -83,7 +83,7 @@ void Camera::Yaw(float value)
 
 void Camera::Pitch(float value)
 {
-	forwardVector_ = forwardVector_.Rotate(leftVector_ * value);
+	forwardVector_ = forwardVector_.RotateVector(leftVector_ * value);
 	upVector_ = leftVector_.Cross(forwardVector_);
 
 	LookAt();
@@ -91,7 +91,7 @@ void Camera::Pitch(float value)
 
 void Camera::Roll(float value)
 {
-	leftVector_ = leftVector_.Rotate(forwardVector_ * value);
+	leftVector_ = leftVector_.RotateVector(forwardVector_ * value);
 	upVector_ = leftVector_.Cross(forwardVector_);
 
 	LookAt();

@@ -204,7 +204,7 @@ struct GOKNAR_API SkeletalAnimationNode
         Quaternion out = GoknarMath::Slerp(startRotation, endRotation, alpha);
         out.Normalize();
 
-        Matrix3x3 assimpMatrix = out.GetMatrix();
+        Matrix3x3 assimpMatrix = out.GetMatrix3x3();
 
         return Matrix(assimpMatrix);
     }

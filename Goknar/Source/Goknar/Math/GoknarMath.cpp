@@ -109,15 +109,14 @@ Vector3 Vector3::GetOrthonormalBasis() const
 	return secondCrossed.GetNormalized();
 }
 
-Vector3 Vector3::GetRotation()
+Quaternion Vector3::GetRotation()
 {
-	Vector3 rotation = Vector3::ZeroVector;
+	return Quaternion(-atan2(z, sqrt(x * x + y * y)) * TO_RADIAN, atan2(y, x) * TO_RADIAN, 0.f);
+}
 
-	rotation.x = 0;
-	rotation.y = atan2(z, sqrt(x * x + y * y)) * (180.f / PI);
-	rotation.z = -atan2(y, x) * (180.f / PI);
-
-	return rotation;
+Quaternion Vector3::GetRotationNormalized()
+{
+	return Quaternion(-atan2(z, sqrt(x * x + y * y)),  atan2(y, x), 0.f);
 }
 
 Vector3 Vector3::Translate(const Vector3& translation, bool isPositionVector/* = true*/) const
@@ -170,6 +169,16 @@ Vector3 Vector3::Rotate(const Vector3& rotation, bool isPositionVector/* = true*
 	}
 
 	return result;
+}
+
+Vector3 Vector3::RotatePoint(const Vector3& rotation) const
+{
+	return Rotate(rotation, true);
+}
+
+Vector3 Vector3::RotateVector(const Vector3& rotation) const
+{
+	return Rotate(rotation, false);
 }
 
 Vector3 Vector3::Scale(const Vector3& scale, bool isPositionVector/* = true*/) const

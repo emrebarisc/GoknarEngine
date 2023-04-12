@@ -58,8 +58,8 @@ public:
 		return worldPosition_;
 	}
 
-	void SetWorldRotation(const Vector3& rotation);
-	const Vector3& GetWorldRotation() const
+	void SetWorldRotation(const Quaternion& rotation);
+	const Quaternion& GetWorldRotation() const
 	{
 		return worldRotation_;
 	}
@@ -77,17 +77,17 @@ public:
 
 	Vector3 GetForwardVector() const
 	{
-		return Vector3(worldTransformationMatrix_[0], worldTransformationMatrix_[4], worldTransformationMatrix_[8]);
+		return Vector3(worldTransformationMatrix_[0], worldTransformationMatrix_[4], worldTransformationMatrix_[8]).GetNormalized();
 	}
 
 	Vector3 GetUpVector() const
 	{
-		return Vector3(worldTransformationMatrix_[2], worldTransformationMatrix_[6], worldTransformationMatrix_[10]);
+		return Vector3(worldTransformationMatrix_[2], worldTransformationMatrix_[6], worldTransformationMatrix_[10]).GetNormalized();
 	}
 
 	Vector3 GetLeftVector() const
 	{
-		return Vector3(worldTransformationMatrix_[1], worldTransformationMatrix_[5], worldTransformationMatrix_[9]);
+		return Vector3(worldTransformationMatrix_[1], worldTransformationMatrix_[5], worldTransformationMatrix_[9]).GetNormalized();
 	}
 
 	void SetIsActive(bool isRendered);
@@ -125,8 +125,8 @@ private:
 	std::vector<Component*> components_;
 	Component* rootComponent_{ nullptr };
 
+	Quaternion worldRotation_;
     Vector3 worldPosition_;
-    Vector3 worldRotation_;
     Vector3 worldScaling_;
 
 	ObjectBase* parent_{ nullptr };

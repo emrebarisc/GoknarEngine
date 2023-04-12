@@ -64,7 +64,7 @@ void Component::SetRelativePosition(const Vector3& position)
 	UpdateRelativeTransformationMatrix();
 }
 
-void Component::SetRelativeRotation(const Vector3& rotation)
+void Component::SetRelativeRotation(const Quaternion& rotation)
 {
 	relativeRotation_ = rotation;
 	UpdateRelativeTransformationMatrix();
