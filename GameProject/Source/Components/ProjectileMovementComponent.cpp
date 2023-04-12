@@ -18,7 +18,6 @@ void ProjectileMovementComponent::BeginGame()
 	Component::BeginGame();
 
 	velocity_ = GetOwner()->GetForwardVector();
-	GOKNAR_INFO("Velocity: {}", velocity_.ToString());
 }
 
 void ProjectileMovementComponent::TickComponent(float deltaTime)

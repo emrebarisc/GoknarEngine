@@ -18,6 +18,4 @@ Arrow::Arrow() : StaticMeshObject()
 void Arrow::BeginGame()
 {
 	ObjectBase::BeginGame();
-
-	GOKNAR_INFO("Arrow::BeginGame");
 }
