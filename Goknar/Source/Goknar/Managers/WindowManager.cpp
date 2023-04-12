@@ -60,7 +60,7 @@ void WindowManager::Init()
 		glfwSetWindowSizeCallback(mainWindow_, WindowSizeCallback);
 
 		glfwSetInputMode(mainWindow_, GLFW_STICKY_KEYS, GL_TRUE);
-		SetVSync(true);
+		SetVSync(false);
 		glfwMakeContextCurrent(mainWindow_);
 
 		const int gladResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
