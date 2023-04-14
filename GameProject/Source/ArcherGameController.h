@@ -34,6 +34,8 @@ private:
 
 	void DropBow();
 	void EquipBow();
+	void DrawBow();
+	void LooseBow();
 
 	void MoveForward();
 	void StopMovingForward();

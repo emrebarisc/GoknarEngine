@@ -29,8 +29,10 @@ void ArcherGameController::BeginGame()
 
 void ArcherGameController::SetupInputs()
 {
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::NUM_1, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::EquipBow, this));
+	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::DrawBow, this));
+	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_RELEASE, std::bind(&ArcherGameController::LooseBow, this));
 
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::NUM_1, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::EquipBow, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::G, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::DropBow, this));
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::MoveForward, this));
@@ -93,6 +95,16 @@ void ArcherGameController::DropBow()
 void ArcherGameController::EquipBow()
 {
 	archer_->HandleEquipBowInput();
+}
+
+void ArcherGameController::DrawBow()
+{
+	archer_->HandleDrawBowInput();
+}
+
+void ArcherGameController::LooseBow()
+{
+	archer_->HandleLooseBowInput();
 }
 
 void ArcherGameController::MoveForward()

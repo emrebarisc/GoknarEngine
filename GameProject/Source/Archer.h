@@ -67,6 +67,8 @@ public:
 
 	void HandleDropBowInput();
 	void HandleEquipBowInput();
+	void HandleDrawBowInput();
+	void HandleLooseBowInput();
 
 private:
 	void EquipBow(bool equip);
@@ -86,5 +88,7 @@ private:
 
 	bool isBowEquiped_{ false };
 	bool isTorchEquiped_{ false };
+
+	bool isAiming_{ false };
 };
 

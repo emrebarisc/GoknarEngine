@@ -14,8 +14,13 @@
 	</Cameras> -->
 
 	<Lights>
-		<AmbientLight>100 100 100</AmbientLight>
-		<PointLight id = "0">
+		<AmbientLight>150 150 150</AmbientLight>
+		<DirectionalLight>
+			<Direction>0.57735 0.57735 -0.57735</Direction>
+			<Color>1.0 0.99 0.83</Color>
+			<Intensity>0.75</Intensity>
+		</DirectionalLight>
+		<!--<PointLight id = "0">
 			<Position>2.0 6.75 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
@@ -74,7 +79,7 @@
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-		</PointLight>
+		</PointLight>-->
 	</Lights>
 
 	<Materials>
@@ -108,7 +113,7 @@
 	</Meshes>
 
 	<Objects>
-		<StaticMeshObject id = "0">
+		<!--<StaticMeshObject id = "0">
 			<Mesh>0</Mesh>
 			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
@@ -382,9 +387,9 @@
 			<WorldPosition>-5.0 2.0 0.0</WorldPosition>
 			<WorldRotation>0.0 0.0 0.0</WorldRotation>
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject>
+		</StaticMeshObject>-->
 
-		<StaticMeshObject id = "24">
+		<!--<StaticMeshObject id = "24">
 			<Mesh>2</Mesh>
 			<Name>Chest</Name>
 			<PivotPoint>0 0 0</PivotPoint>
@@ -394,7 +399,7 @@
 			<WorldPosition>-4.0 6.0 0.0</WorldPosition>
 			<WorldRotation>0.0 -0.0 45.00000125223908</WorldRotation>
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject>
+		</StaticMeshObject>-->
 
 <!-- 		<StaticMeshObject id = "22">
 			<Mesh>1</Mesh>

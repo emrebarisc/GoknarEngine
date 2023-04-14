@@ -66,29 +66,39 @@ void Archer::Tick(float deltaTime)
 	// Arrow test
 	static float timer = 0.f;
 
-	if (1.f < timer)
-	{
-		timer -= 1.f;
+	//if (1.f < timer)
+	//{
+	//	timer -= 1.f;
 
-		Arrow* arrow = new Arrow();
-		arrow->SetWorldPosition(GetWorldPosition() + Vector3(0.f, 0.f, 1.75f));
+	//	Arrow* arrow = new Arrow();
+	//	arrow->SetWorldPosition(GetWorldPosition() + Vector3(0.f, 0.f, 1.75f));
 
-		Vector3 arrowRotationVector = (4.f * GetForwardVector() + GetUpVector()).GetNormalized();
-		//GOKNAR_INFO("Archer forward vector: {}", GetForwardVector().ToString());
-		//GOKNAR_INFO("Archer up vector: {}", GetUpVector().ToString());
-		//GOKNAR_INFO("Arrow forward vector: {}", arrowRotationVector.ToString());
-		arrow->SetWorldRotation((arrowRotationVector).GetRotationNormalized());
-	}
-	timer += deltaTime;
+	//	Vector3 arrowRotationVector = (4.f * GetForwardVector() + GetUpVector()).GetNormalized();
+	//	//GOKNAR_INFO("Archer forward vector: {}", GetForwardVector().ToString());
+	//	//GOKNAR_INFO("Archer up vector: {}", GetUpVector().ToString());
+	//	//GOKNAR_INFO("Arrow forward vector: {}", arrowRotationVector.ToString());
+	//	arrow->SetWorldRotation((arrowRotationVector).GetRotationNormalized());
+	//}
+	//timer += deltaTime;
 }
 
 void Archer::Idle()
 {
+	if (isAiming_)
+	{
+		return;
+	}
+
 	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|Idle");
 }
 
 void Archer::RunForward()
 {
+	if (isAiming_)
+	{
+		return;
+	}
+
 	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|StandingRunForward");
 }
 
@@ -116,6 +126,29 @@ void Archer::HandleDropBowInput()
 void Archer::HandleEquipBowInput()
 {
 	EquipBow(!isBowEquiped_);
+}
+
+void Archer::HandleDrawBowInput()
+{
+	if (bow_ && isBowEquiped_ && !isAiming_)
+	{
+		isAiming_ = true;
+		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|StandingAimIdle");
+	}
+}
+
+void Archer::HandleLooseBowInput()
+{
+	if (bow_ && isBowEquiped_ && isAiming_)
+	{
+		isAiming_ = false;
+		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|StandingAimRecoil");
+
+		Arrow* arrow = new Arrow();
+		arrow->SetWorldPosition(GetWorldPosition() + GetForwardVector() + Vector3(0.f, 0.f, 1.75f));
+		Vector3 arrowRotationVector = (4.f * GetForwardVector() + GetUpVector()).GetNormalized();
+		arrow->SetWorldRotation((arrowRotationVector).GetRotationNormalized());
+	}
 }
 
 void Archer::EquipBow(bool equip)
