@@ -30,8 +30,32 @@ void SkeletalMeshInstance::Render()
 
 	if (skeletalMeshAnimation_.skeletalAnimation)
 	{
-		skeletalMeshAnimation_.elapsedTimeInSeconds += engine->GetDeltaTime();
-		skeletalMeshAnimation_.animationTime = fmod(skeletalMeshAnimation_.skeletalAnimation->ticksPerSecond * skeletalMeshAnimation_.elapsedTimeInSeconds, skeletalMeshAnimation_.skeletalAnimation->duration);
+		const float newElapsedTimeInSeconds = engine->GetElapsedTime() - skeletalMeshAnimation_.initialTimeInSeconds;
+		const float newKeyframeIndex = skeletalMeshAnimation_.skeletalAnimation->ticksPerSecond * newElapsedTimeInSeconds;
+
+		const float floorQuotient = std::floor(newKeyframeIndex / skeletalMeshAnimation_.skeletalAnimation->duration);
+		const float normalizedNewKeyframeIndex = newKeyframeIndex - (floorQuotient * skeletalMeshAnimation_.skeletalAnimation->duration);
+
+		const bool isAnimationLoopedThisFrame = normalizedNewKeyframeIndex < skeletalMeshAnimation_.animationTime;
+
+		if (!isAnimationLoopedThisFrame ||
+			(isAnimationLoopedThisFrame && !skeletalMeshAnimation_.playOnce))
+		{
+			skeletalMeshAnimation_.elapsedTimeInSeconds = newElapsedTimeInSeconds;
+			skeletalMeshAnimation_.animationTime = normalizedNewKeyframeIndex;
+
+			if (isAnimationLoopedThisFrame && skeletalMeshAnimation_.animationDoneCallback != nullptr)
+			{
+				skeletalMeshAnimation_.animationDoneCallback();
+			}
+		}
+		else
+		{
+			if (skeletalMeshAnimation_.animationDoneCallback != nullptr)
+			{
+				skeletalMeshAnimation_.animationDoneCallback();
+			}
+		}
 	}
 
 	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
@@ -47,7 +71,7 @@ void SkeletalMeshInstance::SetMesh(SkeletalMesh* skeletalMesh)
 	boneTransformations_.resize(skeletalMesh->GetBoneSize(), Matrix::IdentityMatrix);
 }
 
-void SkeletalMeshInstance::PlayAnimation(const std::string& animationName)
+void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, bool playAnimationOnce, const std::function<void()>& callback)
 {
 	if (!skeletalMeshAnimation_.skeletalAnimation || 
 		skeletalMeshAnimation_.skeletalAnimation && skeletalMeshAnimation_.skeletalAnimation->name != animationName)
@@ -60,6 +84,10 @@ void SkeletalMeshInstance::PlayAnimation(const std::string& animationName)
 		}
 		skeletalMeshAnimation_.animationTime = 0.f;
 		skeletalMeshAnimation_.elapsedTimeInSeconds = 0.f;
+		skeletalMeshAnimation_.initialTimeInSeconds = engine->GetElapsedTime();
+
+		skeletalMeshAnimation_.animationDoneCallback = callback;
+		skeletalMeshAnimation_.playOnce = playAnimationOnce;
 	}
 }
 

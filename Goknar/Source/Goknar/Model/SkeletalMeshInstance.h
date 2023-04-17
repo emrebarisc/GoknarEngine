@@ -14,8 +14,11 @@ struct SkeletalMeshAnimation
 {
 	std::string name{ "" };
 	const SkeletalAnimation* skeletalAnimation{ nullptr };
+	std::function<void()> animationDoneCallback;
 	float animationTime{ 0.f };
 	float elapsedTimeInSeconds{ 0.f };
+	float initialTimeInSeconds{ 0.f };
+	bool playOnce{ false };
 };
 
 class GOKNAR_API SkeletalMeshInstance : public MeshInstance<SkeletalMesh>
@@ -28,7 +31,7 @@ public:
 
 	virtual void SetMesh(SkeletalMesh* skeletalMesh) override;
 
-	void PlayAnimation(const std::string& animationName);
+	void PlayAnimation(const std::string& animationName, bool playAnimationOnce = false, const std::function<void()>& callback = {});
 
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;
