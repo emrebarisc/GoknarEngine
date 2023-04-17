@@ -74,6 +74,8 @@ private:
 	void EquipBow(bool equip);
 	void EquipTorch(bool equip);
 
+	void Shoot() const;
+
 	SkeletalMesh* skeletalMesh_{ nullptr };
 	SkeletalMeshComponent* skeletalMeshComponent_{ nullptr };
 
@@ -89,6 +91,9 @@ private:
 	bool isBowEquiped_{ false };
 	bool isTorchEquiped_{ false };
 
+	bool canShoot_{ false };
 	bool isAiming_{ false };
+	bool isLoosing_{ false };
+	bool isAnimationBusy_{ false };
 };
 

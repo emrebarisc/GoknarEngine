@@ -56,7 +56,7 @@ void Archer::BeginGame()
 {
 	GOKNAR_INFO("Archer::BeginPlay()");
 
-	EquipBow(true);
+	//EquipBow(true);
 }
 
 void Archer::Tick(float deltaTime)
@@ -84,22 +84,29 @@ void Archer::Tick(float deltaTime)
 
 void Archer::Idle()
 {
-	if (isAiming_)
+	if (isAnimationBusy_ || canShoot_)
 	{
 		return;
 	}
 
-	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|Idle");
+	if (isBowEquiped_)
+	{
+		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingIdle");
+	}
+	else
+	{
+		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Idle");
+	}
 }
 
 void Archer::RunForward()
 {
-	if (isAiming_)
+	if (isAnimationBusy_ || canShoot_)
 	{
 		return;
 	}
 
-	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|StandingRunForward");
+	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingRunForward");
 }
 
 void Archer::RunBackward()
@@ -133,7 +140,17 @@ void Archer::HandleDrawBowInput()
 	if (bow_ && isBowEquiped_ && !isAiming_)
 	{
 		isAiming_ = true;
-		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|StandingAimIdle");
+		isAnimationBusy_ = true;
+		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDrawArrow.001", true,
+			[&]()
+			{
+				if (isAiming_)
+				{
+					isAnimationBusy_ = false;
+					canShoot_ = true;
+					skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimIdle");
+				}
+			});
 	}
 }
 
@@ -142,12 +159,30 @@ void Archer::HandleLooseBowInput()
 	if (bow_ && isBowEquiped_ && isAiming_)
 	{
 		isAiming_ = false;
-		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|StandingAimRecoil");
+		isLoosing_ = true;
+		if (canShoot_)
+		{
+			isAnimationBusy_ = true;
+			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimRecoil", true,
+				[&]()
+				{
+					isAnimationBusy_ = false;
+					isLoosing_ = false;
+					Idle();
+				});
 
-		Arrow* arrow = new Arrow();
-		arrow->SetWorldPosition(GetWorldPosition() + GetForwardVector() + Vector3(0.f, 0.f, 1.75f));
-		Vector3 arrowRotationVector = (4.f * GetForwardVector() + GetUpVector()).GetNormalized();
-		arrow->SetWorldRotation((arrowRotationVector).GetRotationNormalized());
+			canShoot_ = false;
+			Shoot();
+		}
+		else
+		{
+			isAnimationBusy_ = false;
+			Idle();
+		}
+	}
+	else if (!isAiming_)
+	{
+		Idle();
 	}
 }
 
@@ -155,12 +190,43 @@ void Archer::EquipBow(bool equip)
 {
 	if (bow_)
 	{
-		bow_->SetIsActive(equip);
-		isBowEquiped_ = equip;
+		if (equip)
+		{
+			bow_->SetIsActive(true);
+			isBowEquiped_ = true;
+			isAnimationBusy_ = true;
+			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingEquipBow", true,
+				[&]()
+				{
+					isAnimationBusy_ = false;
+					Idle();
+				});
+		}
+		else
+		{
+			isAnimationBusy_ = true;
+			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDisarmBow", true,
+				[&]()
+				{
+					isAnimationBusy_ = false;
+					bow_->SetIsActive(false);
+					isBowEquiped_ = false;
+					Idle();
+				});
+		}
+
 	}
 }
 
 void Archer::EquipTorch(bool equip)
 {
 
+}
+
+void Archer::Shoot() const
+{
+	Arrow* arrow = new Arrow();
+	arrow->SetWorldPosition(GetWorldPosition() + GetForwardVector() + Vector3(0.f, 0.f, 1.75f));
+	Vector3 arrowRotationVector = (4.f * GetForwardVector() + GetUpVector()).GetNormalized();
+	arrow->SetWorldRotation((arrowRotationVector).GetRotationNormalized());
 }
