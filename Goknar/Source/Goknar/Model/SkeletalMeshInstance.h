@@ -10,15 +10,32 @@
 class SkeletalAnimation;
 class SocketComponent;
 
+struct PlayLoopData
+{
+	bool playOnce{ false };
+	std::function<void()> callback;
+};
+
+struct KeyframeData
+{
+	void AddCallbackToKeyframe(int keyframe, const std::function<void()>& callback)
+	{
+		keyframeCallbackMap.insert({ keyframe, callback });
+	}
+
+	std::unordered_map<int, std::function<void()>> keyframeCallbackMap;
+};
+
 struct SkeletalMeshAnimation
 {
 	std::string name{ "" };
+	PlayLoopData playLoopData;
+	KeyframeData keyframeData;
 	const SkeletalAnimation* skeletalAnimation{ nullptr };
-	std::function<void()> animationDoneCallback;
 	float animationTime{ 0.f };
 	float elapsedTimeInSeconds{ 0.f };
 	float initialTimeInSeconds{ 0.f };
-	bool playOnce{ false };
+	int currentKeyframe{ 0 };
 };
 
 class GOKNAR_API SkeletalMeshInstance : public MeshInstance<SkeletalMesh>
@@ -31,7 +48,7 @@ public:
 
 	virtual void SetMesh(SkeletalMesh* skeletalMesh) override;
 
-	void PlayAnimation(const std::string& animationName, bool playAnimationOnce = false, const std::function<void()>& callback = {});
+	void PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData = { false, {} }, const KeyframeData& keyframeData = {});
 
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;

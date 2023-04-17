@@ -34,12 +34,7 @@
 
 GOKNAR_API Engine *engine;
 
-Engine::Engine() :
-	deltaTime_(0.f),
-	elapsedTime_(0.f),
-	application_(nullptr),
-	editor_(nullptr),
-	controller_(nullptr)
+Engine::Engine()
 {
 	engine = this;
 
@@ -167,20 +162,22 @@ void Engine::Run()
 
 		////////////////////////////////////////////////////////////////////////////
 
-
-		if (1.f < deltaTime_)
+		if (0.25f < deltaTime_)
 		{
-			deltaTime_ = 1.f / 60.f;
+			deltaTime_ = 0.25f;
 			continue;
 		}
 
 		{
+			static int frameCount = 0;
 			static float oneSecondCounter = 0.f;
 			oneSecondCounter += deltaTime_;
+			++frameCount;
 			if (1.f < oneSecondCounter)
 			{
-				windowManager_->SetWindowTitle((std::string("FPS: ") + std::to_string(int(1 / deltaTime_))).c_str());
+				windowManager_->SetWindowTitle((std::string("FPS: ") + std::to_string(frameCount)).c_str());
 				oneSecondCounter -= 1.f;
+				frameCount = 0;
 			}
 		}
 

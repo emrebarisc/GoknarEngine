@@ -124,11 +124,11 @@ private:
 	ObjectManager* objectManager_;
 	Renderer* renderer_;
 	WindowManager* windowManager_;
-	Editor* editor_;
+	Editor* editor_{ nullptr };
 	CameraManager* cameraManager_;
-	Controller* controller_;
+	Controller* controller_{ nullptr };
 
-	Application *application_;
+	Application* application_{ nullptr };
 	
 	std::vector<ObjectBase*> objectsToBeInitialized_;
 	std::vector<ObjectBase*> registeredObjects_;
@@ -140,8 +140,8 @@ private:
 
 	std::vector<TimeDependentObject*> timeDependentObjects_;
 
-	float deltaTime_;
-	float elapsedTime_;
+	float deltaTime_{ 0.f };
+	float elapsedTime_{ 0.f };
 
 	bool hasUninitializedObjects_{ false };
 	bool hasUninitializedComponents_{ false };
