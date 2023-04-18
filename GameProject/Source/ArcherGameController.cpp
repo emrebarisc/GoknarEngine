@@ -44,7 +44,8 @@ void ArcherGameController::SetupInputs()
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::MoveRight, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, std::bind(&ArcherGameController::StopMovingRight, this));
 
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleFullscreen, this));
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F5, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleFullscreen, this));
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::E, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleChest, this));
 
 	engine->GetInputManager()->AddScrollDelegate(std::bind(&ArcherGameController::OnScrollMove, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -85,6 +86,10 @@ void ArcherGameController::OnScrollMove(double x, double y)
 void ArcherGameController::ToggleFullscreen()
 {
 	engine->GetWindowManager()->ToggleFullscreen();
+}
+
+void ArcherGameController::ToggleChest()
+{
 }
 
 void ArcherGameController::DropBow()

@@ -110,6 +110,10 @@
 			<Name>Bow</Name>
 			<Path>Meshes/SM_Bow.fbx</Path>
 		</StaticMesh>
+		<SkeletalMesh id = "6">
+			<Name>Bow</Name>
+			<Path>Meshes/SkeletalMesh_EpicChest.fbx</Path>
+		</SkeletalMesh>
 	</Meshes>
 
 	<Objects>
@@ -425,6 +429,18 @@
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
 		</StaticMeshObject> -->
 
+
+		<SkeletalMeshObject id = "26">
+			<Mesh>6</Mesh>
+			<Name>Wall</Name>
+			<PivotPoint>0 0 0</PivotPoint>
+			<RelativePosition>0 0 0</RelativePosition>
+			<RelativeRotation>0 0 0</RelativeRotation>
+			<RelativeScaling>1.0 1.0 1.0</RelativeScaling>
+			<WorldPosition>5.0 0.0 0.0</WorldPosition>
+			<WorldRotation>90.0 0.0 0.0</WorldRotation>
+			<WorldScaling>0.025 0.025 0.025</WorldScaling>
+		</SkeletalMeshObject>
 	</Objects>
 
 </Scene>

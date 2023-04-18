@@ -8,6 +8,7 @@ class SkeletalMeshComponent;
 
 class ArcherGameController;
 class ArcherMovementComponent;
+class Arrow;
 class Bow;
 class SosketComponent;
 
@@ -83,8 +84,10 @@ private:
 
 	ArcherGameController* controller_{ nullptr };
 	ArcherMovementComponent* movementComponent_{ nullptr };
+	Arrow* loadedArrow_{ nullptr };
 	Bow* bow_{ nullptr };
 	SocketComponent* leftHandSocket_{ nullptr };
+	SocketComponent* rightHandSocket_{ nullptr };
 
 	float thirdPersonCameraDistance_{ 1.f };
 

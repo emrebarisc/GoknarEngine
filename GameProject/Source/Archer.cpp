@@ -10,6 +10,7 @@
 
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SocketComponent.h"
+#include "Components/ProjectileMovementComponent.h"
 #include "Managers/CameraManager.h"
 #include "Managers/ResourceManager.h"
 #include "Model/SkeletalMesh.h"
@@ -38,6 +39,11 @@ Archer::Archer() :
 	leftHandSocket_->SetRelativeRotation(Quaternion::FromEular(Vector3{ 90.f, 90.f, 180.f }));
 	leftHandSocket_->SetRelativeScaling(Vector3{ 80.f });
 
+	rightHandSocket_ = skeletalMeshInstance->AddSocketToBone("mixamorig:RightHand");
+	rightHandSocket_->SetRelativePosition(Vector3{ 0.f, 10.f, 0.f });
+	rightHandSocket_->SetRelativeRotation(Quaternion::FromEular(Vector3{ 0.f, -30.f, 160.f }));
+	rightHandSocket_->SetRelativeScaling(Vector3{ 80.f });
+
 	bow_ = new Bow();
 	bow_->AttachToSocket(leftHandSocket_);
 	bow_->SetIsActive(false);
@@ -56,7 +62,7 @@ void Archer::BeginGame()
 {
 	GOKNAR_INFO("Archer::BeginPlay()");
 
-	//EquipBow(true);
+	EquipBow(true);
 }
 
 void Archer::Tick(float deltaTime)
@@ -123,6 +129,23 @@ void Archer::HandleDrawBowInput()
 	{
 		isAiming_ = true;
 		isAnimationBusy_ = true;
+
+		KeyframeData keyframeData;
+		keyframeData.AddCallbackToKeyframe(8,
+			[&]()
+			{
+				loadedArrow_ = new Arrow();
+				loadedArrow_->AttachToSocket(rightHandSocket_);
+				//loadedArrow_->SetWorldPosition(GetWorldPosition() + GetForwardVector() + Vector3(0.f, 0.f, 1.75f));
+				//Vector3 arrowRotationVector = (4.f * GetForwardVector() + GetUpVector()).GetNormalized();
+				//loadedArrow_->SetWorldRotation((arrowRotationVector).GetRotationNormalized());
+			});
+
+		keyframeData.AddCallbackToKeyframe(20,
+			[&]()
+			{
+			});
+
 		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDrawArrow.001",
 			PlayLoopData{
 				true,
@@ -135,7 +158,7 @@ void Archer::HandleDrawBowInput()
 						skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimIdle");
 					}
 				} 
-			});
+			}, keyframeData);
 	}
 }
 
@@ -148,6 +171,7 @@ void Archer::HandleLooseBowInput()
 		if (canShoot_)
 		{
 			isAnimationBusy_ = true;
+
 			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimRecoil",
 				PlayLoopData{
 					true,
@@ -234,8 +258,9 @@ void Archer::EquipTorch(bool equip)
 
 void Archer::Shoot() const
 {
-	Arrow* arrow = new Arrow();
-	arrow->SetWorldPosition(GetWorldPosition() + GetForwardVector() + Vector3(0.f, 0.f, 1.75f));
-	Vector3 arrowRotationVector = (4.f * GetForwardVector() + GetUpVector()).GetNormalized();
-	arrow->SetWorldRotation((arrowRotationVector).GetRotationNormalized());
+	if (loadedArrow_)
+	{
+		loadedArrow_->RemoveFromSocket(rightHandSocket_);
+		loadedArrow_->GetMovementComponent()->SetIsActive(true);
+	}
 }

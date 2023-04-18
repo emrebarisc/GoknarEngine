@@ -2,12 +2,20 @@
 
 #include "StaticMeshObject.h"
 
-class GOKNAR_API Bow : public StaticMeshObject
+class SkeletalMeshComponent;
+
+class GOKNAR_API Bow : public ObjectBase//StaticMeshObject
 {
 public:
 	Bow();
 
+	SkeletalMeshComponent* GetSkeletalMesh()
+	{
+		return skeletalMeshComponent_;
+	}
+
 protected:
 
 private:
+	SkeletalMeshComponent* skeletalMeshComponent_;
 };

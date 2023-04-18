@@ -24,7 +24,10 @@ void ProjectileMovementComponent::TickComponent(float deltaTime)
 {
 	Component::TickComponent(deltaTime);
 
-	static float dt = 0.f;
+	if (!isActive_)
+	{
+		return;
+	}
 
 	ObjectBase* owner = GetOwner();
 
@@ -32,6 +35,4 @@ void ProjectileMovementComponent::TickComponent(float deltaTime)
 	owner->SetWorldPosition(owner->GetWorldPosition() + (velocity_ * movementSpeed_) * deltaTime);
 
 	owner->SetWorldRotation(velocity_.GetNormalized().GetRotationNormalized());
-
-	dt += deltaTime;
 }

@@ -11,6 +11,11 @@ public:
 
 	virtual void BeginGame() override;
 
+	ProjectileMovementComponent* GetMovementComponent() const
+	{
+		return movementComponent_;
+	}
+
 protected:
 
 private:

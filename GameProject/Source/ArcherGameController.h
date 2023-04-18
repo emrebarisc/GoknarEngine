@@ -32,6 +32,8 @@ private:
 
 	void ToggleFullscreen();
 
+	void ToggleChest();
+
 	void DropBow();
 	void EquipBow();
 	void DrawBow();
