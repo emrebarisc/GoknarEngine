@@ -123,6 +123,12 @@ void ObjectBase::AttachToSocket(SocketComponent* socketComponent)
 
 void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
 {
+	SocketComponent* rootSocket = dynamic_cast<SocketComponent*>(rootComponent_->GetParent());
+	if (!rootSocket || rootSocket != socketComponent)
+	{
+		return;
+	}
+
 	if (rootComponent_)
 	{
 		rootComponent_->SetParent(static_cast<Component*>(nullptr));
