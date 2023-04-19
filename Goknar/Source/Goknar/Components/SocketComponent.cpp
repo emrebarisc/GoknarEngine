@@ -2,7 +2,16 @@
 
 void SocketComponent::UpdateComponentToWorldTransformationMatrix()
 {
-	Component::UpdateComponentToWorldTransformationMatrix();
+	if (parent_)
+	{
+		componentToWorldTransformationMatrix_ = parent_->GetComponentToWorldTransformationMatrix();
+	}
+	else
+	{
+		componentToWorldTransformationMatrix_ = owner_->GetWorldTransformationMatrix();
+	}
+
+	componentToWorldTransformationMatrix_ = componentToWorldTransformationMatrix_ * GetRelativeTransformationMatrix();
 
 	worldPosition_ = Vector3(componentToWorldTransformationMatrix_[3], componentToWorldTransformationMatrix_[7], componentToWorldTransformationMatrix_[11]);
 
@@ -18,4 +27,6 @@ void SocketComponent::UpdateComponentToWorldTransformationMatrix()
 	);
 
 	worldRotation_ = Quaternion(unscaledComponentToWorldTransformationMatrix3x3);
+
+	UpdateChildrenComponentToWorldTransformations();
 }
