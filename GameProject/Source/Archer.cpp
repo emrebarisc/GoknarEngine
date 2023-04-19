@@ -111,10 +111,13 @@ void Archer::RunLeft()
 
 void Archer::HandleDropBowInput()
 {
-	if (bow_)
+	if (bow_ && !isAiming_)
 	{
 		bow_->RemoveFromSocket(leftHandSocket_);
 		bow_ = nullptr;
+
+		isBowEquiped_ = false;
+		Idle();
 	}
 }
 
@@ -189,6 +192,12 @@ void Archer::HandleLooseBowInput()
 		else
 		{
 			isAnimationBusy_ = false;
+
+			if (loadedArrow_)
+			{
+				loadedArrow_->Destroy();
+				loadedArrow_ = nullptr;
+			}
 			Idle();
 		}
 	}

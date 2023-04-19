@@ -16,23 +16,19 @@ ProjectileMovementComponent::ProjectileMovementComponent(Component* parent) :
 void ProjectileMovementComponent::BeginGame()
 {
 	Component::BeginGame();
-
-	velocity_ = GetOwner()->GetForwardVector();
 }
 
 void ProjectileMovementComponent::TickComponent(float deltaTime)
 {
 	Component::TickComponent(deltaTime);
 
-	if (!isActive_)
-	{
-		return;
-	}
+	GOKNAR_INFO("Arrow forward vector: {}", GetOwner()->GetForwardVector().ToString());
 
-	ObjectBase* owner = GetOwner();
+	//ObjectBase* owner = GetOwner();
 
-	velocity_ -= Vector3(0.f, 0.f, 9.8f * deltaTime * deltaTime);
-	owner->SetWorldPosition(owner->GetWorldPosition() + (velocity_ * movementSpeed_) * deltaTime);
+	//Vector3 movementVector = GetOwner()->GetRootComponent()->GetForwardVector();// -Vector3(0.f, 0.f, 0.098f * deltaTime * deltaTime);
+	//movementVector *= movementSpeed_;
 
-	owner->SetWorldRotation(velocity_.GetNormalized().GetRotationNormalized());
+	//owner->SetWorldPosition(owner->GetWorldPosition() + movementVector * deltaTime);
+	//owner->SetWorldRotation(movementVector.GetNormalized().GetRotationNormalized());
 }

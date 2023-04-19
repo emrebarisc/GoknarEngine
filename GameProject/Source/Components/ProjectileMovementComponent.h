@@ -16,23 +16,10 @@ public:
 
 	virtual void BeginGame() override;
 	virtual void TickComponent(float deltaTime) override;
-
-	void SetIsActive(bool isActive)
-	{
-		isActive_ = isActive;
-	}
-
-	bool GetIsActive() const
-	{
-		return isActive_;
-	}
-
 protected:
 
 private:
-	Vector3 velocity_{ Vector3::ZeroVector };
-	float movementSpeed_{ 40.f };
-	bool isActive_{ false };
+	float movementSpeed_{ 1.f };
 };
 
 

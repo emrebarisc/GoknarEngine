@@ -13,6 +13,7 @@ Arrow::Arrow() : StaticMeshObject()
 	staticMeshComponent->SetMesh(arrowStaticMesh);
 
 	movementComponent_ = AddSubComponent<ProjectileMovementComponent>();
+	movementComponent_->SetIsActive(false);
 }
 
 void Arrow::BeginGame()
