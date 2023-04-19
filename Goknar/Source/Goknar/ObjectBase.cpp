@@ -10,10 +10,6 @@
 #include "Goknar/Scene.h"
 
 ObjectBase::ObjectBase() :
-	worldTransformationMatrix_(Matrix::IdentityMatrix),
-	worldPosition_(Vector3::ZeroVector),
-	worldRotation_(Quaternion::Identity),
-	worldScaling_(Vector3(1.f)),
 	totalComponentCount_(0),
 	isTickable_(false),
 	isActive_(true),
@@ -131,18 +127,16 @@ void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
 
 	if (rootComponent_)
 	{
+		socketComponent->RemoveChild(rootComponent_);
 		rootComponent_->SetParent(static_cast<Component*>(nullptr));
 	}
 
-	if (parent_)
-	{
-		worldPosition_ = parent_->GetWorldPosition();
-		worldRotation_ = parent_->GetWorldRotation();
-		worldScaling_ = parent_->GetWorldScaling();
-		UpdateWorldTransformationMatrix();
+	worldPosition_ = socketComponent->GetWorldPosition();
+	worldRotation_ = socketComponent->GetWorldRotation();
+	worldScaling_ = socketComponent->GetWorldScaling();
+	UpdateWorldTransformationMatrix();
 
-		parent_ = nullptr;
-	}
+	parent_ = nullptr;
 }
 
 void ObjectBase::AddComponent(Component* component)
@@ -179,4 +173,14 @@ void ObjectBase::UpdateWorldTransformationMatrix()
 										 0.f, worldScaling_.y, 0.f, 0.f,
 										 0.f, 0.f, worldScaling_.z, 0.f,
 										 0.f, 0.f, 0.f, 1.f);
+
+	Component* socketParent = rootComponent_->GetParent();
+	if (socketParent)
+	{
+		socketParent->UpdateComponentToWorldTransformationMatrix();
+	}
+	else
+	{
+		rootComponent_->UpdateComponentToWorldTransformationMatrix();
+	}
 }

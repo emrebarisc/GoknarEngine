@@ -26,21 +26,36 @@ public:
 	}
 
 	void SetRelativePosition(const Vector3& position);
-	const Vector3& GetRelativePosition() const
+	virtual const Vector3& GetRelativePosition() const
 	{
 		return relativePosition_;
 	}
 
 	void SetRelativeRotation(const Quaternion& rotation);
-	const Quaternion& GetRelativeRotation() const
+	virtual const Quaternion& GetRelativeRotation() const
 	{
 		return relativeRotation_;
 	}
 
 	void SetRelativeScaling(const Vector3& scaling);
-	const Vector3& GetRelativeScaling() const
+	virtual const Vector3& GetRelativeScaling() const
 	{
 		return relativeScaling_;
+	}
+
+	virtual const Vector3& GetWorldPosition() const
+	{
+		return worldPosition_;
+	}
+
+	virtual const Quaternion& GetWorldRotation() const
+	{
+		return worldRotation_;
+	}
+
+	virtual const Vector3& GetWorldScaling() const
+	{
+		return worldScaling_;
 	}
 
 	virtual const Matrix& GetRelativeTransformationMatrix() const
@@ -109,11 +124,16 @@ public:
 	{
 		return isActive_;
 	}
+
+	const Matrix& GetComponentToWorldTransformationMatrix() const
+	{
+		return componentToWorldTransformationMatrix_;
+	}
+
 protected:
 	Component(Component* parent);
 	Component(ObjectBase* parentObjectBase);
 
-	Matrix relativeTransformationMatrix_{ Matrix::IdentityMatrix };
 	inline virtual void UpdateRelativeTransformationMatrix()
 	{
 		// Since OpenGL uses column-major matriced and Goknar does not
@@ -143,13 +163,62 @@ protected:
 			0.f, 1.f, 0.f, -pivotPoint_.y,
 			0.f, 0.f, 1.f, -pivotPoint_.z,
 			0.f, 0.f, 0.f, 1.f);
+
+		UpdateComponentToWorldTransformationMatrix();
 	}
-private:
+
+	inline virtual void UpdateComponentToWorldTransformationMatrix()
+	{
+		if (parent_)
+		{
+			componentToWorldTransformationMatrix_ = parent_->GetComponentToWorldTransformationMatrix();
+
+			worldPosition_ = parent_->GetWorldPosition();
+			worldRotation_ = parent_->GetWorldRotation();
+			worldScaling_ = parent_->GetWorldScaling();
+		}
+		else
+		{
+			componentToWorldTransformationMatrix_ = owner_->GetWorldTransformationMatrix();
+
+			worldPosition_ = owner_->GetWorldPosition();
+			worldRotation_ = owner_->GetWorldRotation();
+			worldScaling_ = owner_->GetWorldScaling();
+		}
+
+		worldPosition_ = worldPosition_ + GetRelativePosition();
+		worldRotation_ = worldRotation_ * GetRelativeRotation();
+		worldScaling_ = worldScaling_ * GetRelativeScaling();
+
+		componentToWorldTransformationMatrix_ = componentToWorldTransformationMatrix_ * GetRelativeTransformationMatrix();
+
+		UpdateChildrenComponentToWorldTransformations();
+	}
+
+	inline void UpdateChildrenComponentToWorldTransformations()
+	{
+		std::vector<Component*>::iterator childrenIterator = children_.begin();
+		for (; childrenIterator != children_.end(); ++childrenIterator)
+		{
+			(*childrenIterator)->UpdateComponentToWorldTransformationMatrix();
+		}
+	}
+
+	Matrix relativeTransformationMatrix_{ Matrix::IdentityMatrix };
+	Matrix componentToWorldTransformationMatrix_{ Matrix::IdentityMatrix };
+
 	Vector3 pivotPoint_{ Vector3::ZeroVector };
 
 	Quaternion relativeRotation_{ Quaternion::Identity };
 	Vector3 relativePosition_{ Vector3::ZeroVector };
 	Vector3 relativeScaling_{ Vector3(1.f) };
+
+	// Component to world transformation values
+	Quaternion worldRotation_{ Quaternion::Identity };
+	Vector3 worldPosition_{ Vector3::ZeroVector };
+	Vector3 worldScaling_{ Vector3(1.f) };
+
+	std::vector<Component*> children_;
 
 	ObjectBase* owner_{ nullptr };
 	Component* parent_{ nullptr };
@@ -157,5 +226,6 @@ private:
 	unsigned char isActive_ : 1;
 	unsigned char isTickable_ : 1;
 	unsigned char isInitialized_ : 1;
+private:
 };
 #endif

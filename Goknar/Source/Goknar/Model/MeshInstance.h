@@ -87,6 +87,7 @@ inline void MeshInstance<MeshType>::PreRender()
 template<class MeshType>
 inline void MeshInstance<MeshType>::Render()
 {
+	/*
 	Matrix relativeTransformationMatrix = Matrix::IdentityMatrix;
 	Matrix worldTransformationMatrix = Matrix::IdentityMatrix;
 
@@ -115,8 +116,10 @@ inline void MeshInstance<MeshType>::Render()
 	{
 		GOKNAR_FATAL("NULL PARENT ON RENDERING MESH INSTANCE");
 	}
-
 	mesh_->GetMaterial()->SetShaderVariables(worldTransformationMatrix, relativeTransformationMatrix);
+	*/
+
+	mesh_->GetMaterial()->SetShaderVariables(parentComponent_->GetComponentToWorldTransformationMatrix(), Matrix::IdentityMatrix);// worldTransformationMatrix, relativeTransformationMatrix);
 }
 
 template<class MeshType>

@@ -14,6 +14,46 @@ Quaternion::Quaternion(const Vector4& v) :
     w(v.w)
 {}
 
+Quaternion::Quaternion(const Matrix& rotationMatrix)
+{
+    float t = rotationMatrix[0] + rotationMatrix[5] + rotationMatrix[10];
+
+    if (t > 0.f)
+    {
+        float s = std::sqrt(1.f + t) * 2.f;
+        x = (rotationMatrix[9] - rotationMatrix[6]) / s;
+        y = (rotationMatrix[2] - rotationMatrix[8]) / s;
+        z = (rotationMatrix[4] - rotationMatrix[1]) / s;
+        w = static_cast<float>(0.25) * s;
+    }
+    else if (rotationMatrix[0] > rotationMatrix[5] && rotationMatrix[0] > rotationMatrix[10])
+    {
+
+        float s = std::sqrt(1.f + rotationMatrix[0] - rotationMatrix[5] - rotationMatrix[10]) * 2.f;
+        x = 0.25f * s;
+        y = (rotationMatrix[4] + rotationMatrix[1]) / s;
+        z = (rotationMatrix[2] + rotationMatrix[8]) / s;
+        w = (rotationMatrix[9] - rotationMatrix[6]) / s;
+    }
+    else if (rotationMatrix[5] > rotationMatrix[10])
+    {
+
+        float s = std::sqrt(1.f + rotationMatrix[5] - rotationMatrix[0] - rotationMatrix[10]) * 2.f;
+        x = (rotationMatrix[4] + rotationMatrix[1]) / s;
+        y = 0.25f * s;
+        z = (rotationMatrix[9] + rotationMatrix[6]) / s;
+        w = (rotationMatrix[2] - rotationMatrix[8]) / s;
+    }
+    else
+    {
+        float s = std::sqrt(1.f + rotationMatrix[10] - rotationMatrix[0] - rotationMatrix[5]) * 2.f;
+        x = (rotationMatrix[2] + rotationMatrix[8]) / s;
+        y = (rotationMatrix[9] + rotationMatrix[6]) / s;
+        z = 0.25f * s;
+        w = (rotationMatrix[4] - rotationMatrix[1]) / s;
+    }
+}
+
 Quaternion::Quaternion(const Matrix3x3& rotationMatrix)
 {
     float t = rotationMatrix[0] + rotationMatrix[4] + rotationMatrix[8];

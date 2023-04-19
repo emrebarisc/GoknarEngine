@@ -187,29 +187,21 @@ Matrix Matrix::GetTranspose() const
     return out;
 }
 
-Matrix Matrix::GetUpper3x3() const
+Matrix3x3 Matrix::GetUpper3x3() const
 {
-    Matrix out;
+    Matrix3x3 out;
 
     out.m[0] = m[0];
     out.m[1] = m[1];
     out.m[2] = m[2];
-    out.m[3] = 0.f;
 
-    out.m[4] = m[4];
-    out.m[5] = m[5];
-    out.m[6] = m[6];
-    out.m[7] = 0.f;
+    out.m[3] = m[4];
+    out.m[4] = m[5];
+    out.m[5] = m[6];
 
-    out.m[8] = m[8];
-    out.m[9] = m[9];
-    out.m[10] = m[10];
-    out.m[11] = 0.f;
-
-    out.m[12] = m[12];
-    out.m[13] = m[13];
-    out.m[14] = m[14];
-    out.m[15] = 0.f;
+    out.m[6] = m[8];
+    out.m[7] = m[9];
+    out.m[8] = m[10];
 
     return out;
 }

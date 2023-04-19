@@ -148,7 +148,7 @@ struct GOKNAR_API SkeletalAnimationNode
         delete[] scalingKeys;
     }
 
-    Matrix GetInterpolatedScalingMatrix(float time)
+    void GetInterpolatedScaling(Vector3& out, float time)
     {
         int previousIndex = 0;
         for (unsigned int scalingIndex = 0; scalingIndex < scalingKeySize; ++scalingIndex)
@@ -162,11 +162,18 @@ struct GOKNAR_API SkeletalAnimationNode
         int nextIndex = previousIndex + 1;
 
         float alpha = (time - scalingKeys[previousIndex].time) / (scalingKeys[nextIndex].time - scalingKeys[previousIndex].time);
-        
-        return Matrix::GetScalingMatrix(GoknarMath::Slerp(scalingKeys[previousIndex].value, scalingKeys[nextIndex].value, alpha));
+
+        out = GoknarMath::Slerp(scalingKeys[previousIndex].value, scalingKeys[nextIndex].value, alpha);
     }
 
-    Matrix GetInterpolatedPositionMatrix(float time)
+    void GetInterpolatedScalingMatrix(Matrix& out, float time)
+    {
+        Vector3 scaling;
+        GetInterpolatedScaling(scaling, time);
+        out = Matrix::GetScalingMatrix(scaling);
+    }
+
+    void GetInterpolatedPosition(Vector3& out, float time)
     {
         int previousIndex = 0;
         for (unsigned int positionIndex = 0; positionIndex < positionKeySize; ++positionIndex)
@@ -181,10 +188,17 @@ struct GOKNAR_API SkeletalAnimationNode
 
         float alpha = (time - positionKeys[previousIndex].time) / (positionKeys[nextIndex].time - positionKeys[previousIndex].time);
 
-        return Matrix::GetPositionMatrix(GoknarMath::Slerp(positionKeys[previousIndex].value, positionKeys[nextIndex].value, alpha));
+        out = GoknarMath::Slerp(positionKeys[previousIndex].value, positionKeys[nextIndex].value, alpha);
     }
 
-    Matrix GetInterpolatedRotationMatrix(float time)
+    void GetInterpolatedPositionMatrix(Matrix& out, float time)
+    {
+        Vector3 position;
+        GetInterpolatedPosition(position, time);
+        out = Matrix::GetPositionMatrix(position);
+    }
+
+    void GetInterpolatedRotation(Quaternion& out, float time)
     {
         int previousIndex = 0;
         for (unsigned int positionIndex = 0; positionIndex < rotationKeySize; ++positionIndex)
@@ -201,10 +215,15 @@ struct GOKNAR_API SkeletalAnimationNode
 
         const Quaternion& startRotation = rotationKeys[previousIndex].value;
         const Quaternion& endRotation = rotationKeys[nextIndex].value;
-        Quaternion out = GoknarMath::Slerp(startRotation, endRotation, alpha);
+        out = GoknarMath::Slerp(startRotation, endRotation, alpha);
         out.Normalize();
+    }
 
-        return out.GetMatrix();
+    void GetInterpolatedRotationMatrix(Matrix& out, float time)
+    {
+        Quaternion rotation;
+        GetInterpolatedRotation(rotation, time);
+        out = rotation.GetMatrix();
     }
 
     std::string affectedBoneName;

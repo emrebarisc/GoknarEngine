@@ -507,6 +507,11 @@ public:
                         0.f, 0.f, 0.f, 1.f);
     }
 
+    inline static Matrix GetTransformationMatrix(const Quaternion& rotation, const Vector3& position, const Vector3& scaling)
+    {
+        return GetPositionMatrix(position) * rotation.GetMatrix() * GetScalingMatrix(scaling);
+    }
+
 	inline static Matrix GetRotationMatrixAboutAnAxis(Vector3 axis, float angle)
 	{
 		float cosAngle = cos(angle);
@@ -660,7 +665,7 @@ public:
 
     Matrix GetInverse() const;
     Matrix GetTranspose() const;
-    Matrix GetUpper3x3() const;
+    Matrix3x3 GetUpper3x3() const;
 
     static const Matrix ZeroMatrix;
     static const Matrix IdentityMatrix;

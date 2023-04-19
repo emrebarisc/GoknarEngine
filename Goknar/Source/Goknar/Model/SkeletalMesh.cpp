@@ -48,6 +48,10 @@ void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform, st
 		return;
 	}
 
+	Vector3 interpolatedPosition = Vector3::ZeroVector;
+	Vector3 interpolatedScaling = Vector3(1.f);
+	Quaternion interpolatedRotation = Quaternion::Identity;
+
 	Matrix boneTransformation = bone->transformation;
 	if (skeletalAnimation)
 	{
@@ -55,9 +59,13 @@ void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform, st
 
 		if (skeletalAnimationNode)
 		{
-			boneTransformation = skeletalAnimationNode->GetInterpolatedPositionMatrix(time);
-			boneTransformation *= skeletalAnimationNode->GetInterpolatedRotationMatrix(time);
-			boneTransformation *= skeletalAnimationNode->GetInterpolatedScalingMatrix(time);
+			skeletalAnimationNode->GetInterpolatedPosition(interpolatedPosition, time);
+			skeletalAnimationNode->GetInterpolatedRotation(interpolatedRotation, time);
+			skeletalAnimationNode->GetInterpolatedScaling(interpolatedScaling, time);
+
+			boneTransformation = Matrix::GetPositionMatrix(interpolatedPosition);
+			boneTransformation *= interpolatedRotation.GetMatrix();
+			boneTransformation *= Matrix::GetScalingMatrix(interpolatedScaling);
 		}
 	}
 

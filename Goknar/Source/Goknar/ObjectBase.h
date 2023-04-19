@@ -120,14 +120,14 @@ private:
 
     inline void UpdateWorldTransformationMatrix();
 
-	Matrix worldTransformationMatrix_;
+	Matrix worldTransformationMatrix_{ Matrix::IdentityMatrix };
 
 	std::vector<Component*> components_;
 	Component* rootComponent_{ nullptr };
 
-	Quaternion worldRotation_;
-    Vector3 worldPosition_;
-    Vector3 worldScaling_;
+	Quaternion worldRotation_{ Quaternion::Identity };
+	Vector3 worldPosition_{ Vector3::ZeroVector };
+	Vector3 worldScaling_{ Vector3(1.f) };
 
 	ObjectBase* parent_{ nullptr };
 

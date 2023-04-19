@@ -29,8 +29,11 @@ public:
     {}
 
     Quaternion(const Vector4& v);
+
+    Quaternion(const Matrix& rotationMatrix);
     Quaternion(const Matrix3x3& rotationMatrix);
     Quaternion(float pitch/*rotation y*/, float yaw/*rotation z*/, float roll/*rotation x*/);
+
     Quaternion(Vector3 axis, float angle);
 
     static Quaternion FromEular(const Vector3& degrees);
