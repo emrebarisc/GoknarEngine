@@ -157,22 +157,7 @@ void ObjectBase::AddComponent(Component* component)
 
 void ObjectBase::UpdateWorldTransformationMatrix()
 {
-	// Since OpenGL uses column-major matriced and Goknar does not
-	// all matrix multiplications are done in reverse order
-	worldTransformationMatrix_ = Matrix(1.f, 0.f, 0.f, worldPosition_.x,
-										0.f, 1.f, 0.f, worldPosition_.y,
-										0.f, 0.f, 1.f, worldPosition_.z,
-										0.f, 0.f, 0.f, 1.f);
-
-	//Vector3 worldRotationInRadians = worldRotation_;
-	//worldRotationInRadians.ConvertDegreeToRadian();
-	//worldTransformationMatrix_ *= Matrix::GetRotationMatrix(worldRotationInRadians);
-	worldTransformationMatrix_ *= worldRotation_.GetMatrix();
-
-	worldTransformationMatrix_ *= Matrix(worldScaling_.x, 0.f, 0.f, 0.f,
-										 0.f, worldScaling_.y, 0.f, 0.f,
-										 0.f, 0.f, worldScaling_.z, 0.f,
-										 0.f, 0.f, 0.f, 1.f);
+	worldTransformationMatrix_ = Matrix::GetTransformationMatrix(worldRotation_, worldPosition_, worldScaling_);
 
 	Component* socketParent = rootComponent_->GetParent();
 	if (socketParent)

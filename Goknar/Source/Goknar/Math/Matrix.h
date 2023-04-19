@@ -509,6 +509,8 @@ public:
 
     inline static Matrix GetTransformationMatrix(const Quaternion& rotation, const Vector3& position, const Vector3& scaling)
     {
+        // Since OpenGL uses column-major matriced and Goknar does not
+        // all matrix multiplications are done in reverse order
         return GetPositionMatrix(position) * rotation.GetMatrix() * GetScalingMatrix(scaling);
     }
 
