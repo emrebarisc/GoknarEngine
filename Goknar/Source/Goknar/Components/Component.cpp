@@ -20,17 +20,38 @@ Component::Component(ObjectBase* parentObjectBase) :
 
 void Component::Destroy()
 {
-	delete this;
+	engine->DestroyComponent(this);
 }
 
 void Component::SetParent(ObjectBase* objectBase)
 {
 	parent_ = objectBase->GetRootComponent();
+	if (parent_)
+	{
+		parent_->children_.push_back(this);
+	}
 }
 
 void Component::SetParent(Component* component)
 {
 	parent_ = component;
+	if (parent_)
+	{
+		parent_->children_.push_back(this);
+	}
+}
+
+void Component::RemoveChild(Component* child)
+{
+	std::vector<Component*>::iterator childrenIterator = children_.begin();
+	for (; childrenIterator != children_.end(); ++childrenIterator)
+	{
+		if ((*childrenIterator) == child)
+		{
+			children_.erase(childrenIterator);
+			break;
+		}
+	}
 }
 
 void Component::SetIsTickable(bool isTickable)

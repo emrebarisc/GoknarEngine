@@ -17,11 +17,6 @@ SkeletalMeshInstance::SkeletalMeshInstance(RenderComponent* parentComponent) :
 
 SkeletalMeshInstance::~SkeletalMeshInstance()
 {
-	std::unordered_map<std::string, SocketComponent*>::iterator socketComponentIterator = sockets_.begin();
-	for (; socketComponentIterator != sockets_.end(); ++socketComponentIterator)
-	{
-		delete socketComponentIterator->second;
-	}
 }
 
 void SkeletalMeshInstance::Render()

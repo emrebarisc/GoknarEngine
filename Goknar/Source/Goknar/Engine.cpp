@@ -62,6 +62,9 @@ Engine::~Engine()
 #if GOKNAR_EDITOR
 	delete editor_;
 #endif
+
+	DestroyAllObjectsAndComponents();
+
 	delete objectManager_;
 	delete resourceManager_;
 	delete inputManager_;
@@ -260,9 +263,36 @@ void Engine::DestroyObject(ObjectBase* object)
 	RemoveObject(object);
 	if (object->GetIsTickable())
 	{
-		engine->RemoveFromTickableObjects(object);
+		RemoveFromTickableObjects(object);
 	}
+
+	RemoveFromObjectToBeInitialized(object);
+
 	delete object;
+}
+
+void Engine::DestroyAllObjectsAndComponents()
+{
+	std::vector<Component*>::iterator registeredComponentsIterator = registeredComponents_.begin();
+	for (; registeredComponentsIterator != registeredComponents_.end(); ++registeredComponentsIterator)
+	{
+		delete *registeredComponentsIterator;
+	}
+	registeredComponents_.clear();
+	tickableComponents_.clear();
+	componentsToBeInitialized_.clear();
+
+	std::vector<ObjectBase*>::iterator registeredObjectsIterator = registeredObjects_.begin();
+	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
+	{
+		delete *registeredObjectsIterator;
+	}
+
+	registeredObjects_.clear();
+	tickableObjects_.clear();
+	objectsToBeInitialized_.clear();
+
+	application_->GetMainScene()->ClearObjects();
 }
 
 void Engine::RegisterObject(ObjectBase* object)
@@ -310,11 +340,36 @@ void Engine::RemoveFromTickableObjects(ObjectBase* object)
 	}
 }
 
+void Engine::RemoveFromObjectToBeInitialized(ObjectBase* object)
+{
+	std::vector<ObjectBase*>::iterator objectsToBeInitializedIterator = objectsToBeInitialized_.begin();
+	for (; objectsToBeInitializedIterator != objectsToBeInitialized_.end(); ++objectsToBeInitializedIterator)
+	{
+		if (*objectsToBeInitializedIterator == object)
+		{
+			objectsToBeInitialized_.erase(objectsToBeInitializedIterator);
+			return;
+		}
+	}
+}
+
 void Engine::RegisterComponent(Component* component)
 {
 	hasUninitializedComponents_ = true;
 	componentsToBeInitialized_.push_back(component);
 	registeredComponents_.push_back(component);
+}
+
+void Engine::DestroyComponent(Component* component)
+{
+	RemoveComponent(component);
+	if (component->GetIsTickable())
+	{
+		RemoveFromTickableComponents(component);
+	}
+	RemoveFromComponentsToBeInitialized(component);
+
+	delete component;
 }
 
 void Engine::RemoveComponent(Component* component)
@@ -345,6 +400,19 @@ void Engine::RemoveFromTickableComponents(Component* component)
 		if (tickableComponents_[tickableComponentIndex] == component)
 		{
 			tickableComponents_.erase(tickableComponents_.begin() + tickableComponentIndex);
+			return;
+		}
+	}
+}
+
+void Engine::RemoveFromComponentsToBeInitialized(Component* component)
+{
+	std::vector<Component*>::iterator componentsToBeInitializedIterator = componentsToBeInitialized_.begin();
+	for (; componentsToBeInitializedIterator != componentsToBeInitialized_.end(); ++componentsToBeInitializedIterator)
+	{
+		if (*componentsToBeInitializedIterator == component)
+		{
+			componentsToBeInitialized_.erase(componentsToBeInitializedIterator);
 			return;
 		}
 	}

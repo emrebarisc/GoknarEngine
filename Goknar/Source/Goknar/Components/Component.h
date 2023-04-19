@@ -7,6 +7,8 @@
 
 class GOKNAR_API Component
 {
+	friend ObjectBase;
+
 public:
 	virtual ~Component()
 	{
@@ -80,6 +82,12 @@ public:
 	Component* GetParent() const
 	{
 		return parent_;
+	}
+
+	void RemoveChild(Component* child);
+	const std::vector<Component*>& GetChildren()
+	{
+		return children_;
 	}
 
 	void SetOwner(ObjectBase* owner)

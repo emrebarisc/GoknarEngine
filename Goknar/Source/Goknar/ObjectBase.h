@@ -31,7 +31,7 @@ public:
     {
 
     }
-
+	
 	void Destroy();
 
 	Component* GetRootComponent() const

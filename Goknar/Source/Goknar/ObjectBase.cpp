@@ -24,12 +24,6 @@ ObjectBase::ObjectBase() :
 
 ObjectBase::~ObjectBase()
 {
-	for (size_t componentIndex = 0; componentIndex < totalComponentCount_; componentIndex++)
-	{
-		delete components_[componentIndex];
-	}
-	components_.clear();
-	totalComponentCount_ = 0;
 }
 
 void ObjectBase::Init()
@@ -47,11 +41,17 @@ void ObjectBase::Init()
 
 void ObjectBase::Destroy()
 {
+	// Detach from the socket component if any
+	SocketComponent* attachedSocketComponent = dynamic_cast<SocketComponent*>(rootComponent_->GetParent());
+	if (attachedSocketComponent)
+	{
+		attachedSocketComponent->RemoveChild(rootComponent_);
+	}
+
 	int componentSize = components_.size();
 	for (int componentIndex = 0; componentIndex < componentSize; componentIndex++)
 	{
 		components_[componentIndex]->Destroy();
-		components_.erase(components_.begin() + componentIndex);
 	}
 	engine->DestroyObject(this);
 	engine->GetApplication()->GetMainScene()->RemoveObject(this);

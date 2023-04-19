@@ -65,7 +65,8 @@ void MeshComponent<MeshType, MeshInstanceType>::Destroy()
 	{
 		meshInstance_->Destroy();
 	}
-	delete this;
+
+	Component::Destroy();
 }
 
 template<class MeshType, class MeshInstanceType>

@@ -92,11 +92,14 @@ public:
 	void RemoveObject(ObjectBase* object);
 	void AddToTickableObjects(ObjectBase* object);
 	void RemoveFromTickableObjects(ObjectBase* object);
+	void RemoveFromObjectToBeInitialized(ObjectBase* object);
+	void DestroyAllObjectsAndComponents();
 
 	void RegisterComponent(Component* component);
 	void RemoveComponent(Component* component);
 	void AddToTickableComponents(Component* component);
 	void RemoveFromTickableComponents(Component* component);
+	void RemoveFromComponentsToBeInitialized(Component* component);
 
 	void RegisterTimeDependentObject(TimeDependentObject* animatedMesh2D);
 
@@ -115,6 +118,7 @@ public:
 	}
 
 	void DestroyObject(ObjectBase* object);
+	void DestroyComponent(Component* component);
 
 	void Exit();
 

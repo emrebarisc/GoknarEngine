@@ -77,18 +77,22 @@ public:
 		objects_.push_back(object);
 	}
 
-	// TODO: Optimize!
 	void RemoveObject(ObjectBase* object)
 	{
-		size_t objectSize = objects_.size();
-		for (size_t objectIndex = 0; objectIndex < objectSize; objectIndex++)
+		std::vector<ObjectBase*>::iterator objectsIterator = objects_.begin();
+		for (; objectsIterator != objects_.end(); ++objectsIterator)
 		{
-			if (objects_[objectIndex] == object)
+			if (*objectsIterator == object)
 			{
-				objects_.erase(objects_.begin() + objectIndex);
+				objects_.erase(objectsIterator);
 				return;
 			}
 		}
+	}
+
+	void ClearObjects()
+	{
+		objects_.clear();
 	}
 
 	ObjectBase* GetStaticObject(int index)
