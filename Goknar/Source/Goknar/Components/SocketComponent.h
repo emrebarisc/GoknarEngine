@@ -12,6 +12,9 @@ public:
 	{
 	}
 
+
+	virtual void Destroy() override;
+
 	virtual const Matrix& GetRelativeTransformationMatrix() const override
 	{
 		return boneAndRelativeTransformationMatrix_;

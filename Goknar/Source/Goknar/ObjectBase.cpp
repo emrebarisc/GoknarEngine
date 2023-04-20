@@ -37,11 +37,20 @@ void ObjectBase::Init()
 
 void ObjectBase::Destroy()
 {
-	// Detach from the socket component if any
-	SocketComponent* attachedSocketComponent = dynamic_cast<SocketComponent*>(rootComponent_->GetParent());
-	if (attachedSocketComponent)
+	if (rootComponent_)
 	{
-		attachedSocketComponent->RemoveChild(rootComponent_);
+		// Detach from the socket component if any
+		SocketComponent* attachedSocketComponent = dynamic_cast<SocketComponent*>(rootComponent_->GetParent());
+		if (attachedSocketComponent)
+		{
+			attachedSocketComponent->RemoveChild(rootComponent_);
+		}
+	}
+
+	std::vector<ObjectBase*>::iterator childrenIterator = children_.begin();
+	for (; childrenIterator != children_.end(); ++childrenIterator)
+	{
+		(*childrenIterator)->Destroy();
 	}
 
 	int componentSize = components_.size();
@@ -114,19 +123,19 @@ void ObjectBase::AttachToSocket(SocketComponent* socketComponent)
 	{
 		rootComponent_->SetParent(socketComponent);
 	}
-	parent_ = socketComponent->GetOwner();
+	//SetParent(socketComponent->GetOwner());
 }
 
 void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
 {
-	SocketComponent* rootSocket = dynamic_cast<SocketComponent*>(rootComponent_->GetParent());
-	if (!rootSocket || rootSocket != socketComponent)
-	{
-		return;
-	}
-
 	if (rootComponent_)
 	{
+		SocketComponent* rootSocket = dynamic_cast<SocketComponent*>(rootComponent_->GetParent());
+		if (!rootSocket || rootSocket != socketComponent)
+		{
+			return;
+		}
+
 		socketComponent->RemoveChild(rootComponent_);
 		rootComponent_->SetParent(static_cast<Component*>(nullptr));
 	}
@@ -136,7 +145,42 @@ void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
 	worldScaling_ = socketComponent->GetWorldScaling();
 	UpdateWorldTransformationMatrix();
 
-	parent_ = nullptr;
+	SetParent(nullptr);
+}
+
+void ObjectBase::SetParent(ObjectBase* newParent, bool updateWorldTransformation/* = true*/)
+{
+	if (parent_)
+	{
+		parent_->RemoveChild(this);
+	}
+
+	if (newParent)
+	{
+		newParent->AddChild(this);
+	}
+	else if(parent_ && updateWorldTransformation)
+	{
+		worldPosition_ = parent_->GetWorldPosition();
+		worldRotation_ = parent_->GetWorldRotation();
+		worldScaling_ = parent_->GetWorldScaling();
+		SetWorldTransformationMatrix(parent_->GetWorldTransformationMatrix());
+	}
+
+	parent_ = newParent;
+}
+
+void ObjectBase::RemoveChild(ObjectBase* child)
+{
+	std::vector<ObjectBase*>::iterator childrenIterator = children_.begin();
+	for (; childrenIterator != children_.end(); ++childrenIterator)
+	{
+		if ((*childrenIterator) == child)
+		{
+			children_.erase(childrenIterator);
+			return;
+		}
+	}
 }
 
 void ObjectBase::AddComponent(Component* component)
@@ -155,17 +199,41 @@ void ObjectBase::AddComponent(Component* component)
 	totalComponentCount_++;
 }
 
+void ObjectBase::SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix)
+{
+	worldTransformationMatrix_ = worldTransformationMatrix;
+	UpdateChildrenTransformations();
+}
+
 void ObjectBase::UpdateWorldTransformationMatrix()
 {
 	worldTransformationMatrix_ = Matrix::GetTransformationMatrix(worldRotation_, worldPosition_, worldScaling_);
+	UpdateChildrenTransformations();
+}
 
-	Component* socketParent = rootComponent_->GetParent();
-	if (socketParent)
+void ObjectBase::UpdateChildrenTransformations()
+{
+	std::vector<ObjectBase*>::iterator childrenIterator = children_.begin();
+	for (; childrenIterator != children_.end(); ++childrenIterator)
 	{
-		socketParent->UpdateComponentToWorldTransformationMatrix();
+		ObjectBase* child = *childrenIterator;
+
+		child->worldPosition_ = GetWorldPosition();
+		child->worldRotation_ = GetWorldRotation();
+		child->worldScaling_ = GetWorldScaling();
+		child->SetWorldTransformationMatrix(worldTransformationMatrix_);
 	}
-	else
+
+	if (rootComponent_)
 	{
-		rootComponent_->UpdateComponentToWorldTransformationMatrix();
+		Component* socketParent = rootComponent_->GetParent();
+		if (socketParent)
+		{
+			socketParent->UpdateComponentToWorldTransformationMatrix();
+		}
+		else
+		{
+			rootComponent_->UpdateComponentToWorldTransformationMatrix();
+		}
 	}
 }

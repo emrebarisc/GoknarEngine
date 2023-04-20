@@ -1,5 +1,18 @@
 #include "SocketComponent.h"
 
+void SocketComponent::Destroy()
+{
+	std::vector<Component*>::iterator childrenIterator = children_.begin();
+	for (; childrenIterator != children_.end(); ++childrenIterator)
+	{
+		Component* child = *childrenIterator;
+
+		child->GetOwner()->RemoveFromSocket(this);
+	}
+
+	Component::Destroy();
+}
+
 void SocketComponent::UpdateComponentToWorldTransformationMatrix()
 {
 	if (parent_)

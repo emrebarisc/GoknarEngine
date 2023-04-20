@@ -32,6 +32,8 @@ private:
 
 	void ToggleFullscreen();
 
+	void DestroyArcher();
+
 	void ToggleChest();
 
 	void DropBow();

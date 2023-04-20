@@ -108,20 +108,26 @@ public:
 		return parent_;
 	}
 
-	void SetParent(ObjectBase* parent)
+	void SetParent(ObjectBase* parent, bool updateWorldTransformation = true);
+
+	void AddChild(ObjectBase* child)
 	{
-		parent_ = parent;
+		children_.push_back(child);
 	}
+	void RemoveChild(ObjectBase* child);
 
 protected:
 
 private:
 	void AddComponent(Component* component);
 
-    inline void UpdateWorldTransformationMatrix();
+	virtual void SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix);
+    virtual void UpdateWorldTransformationMatrix();
+	virtual void UpdateChildrenTransformations();
 
 	Matrix worldTransformationMatrix_{ Matrix::IdentityMatrix };
 
+	std::vector<ObjectBase*> children_;
 	std::vector<Component*> components_;
 	Component* rootComponent_{ nullptr };
 
