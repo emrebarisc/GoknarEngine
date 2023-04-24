@@ -168,8 +168,8 @@ void Engine::Run()
 		if (0.25f < deltaTime_)
 		{
 			deltaTime_ = 0.25f;
-			continue;
 		}
+		elapsedTime_ += deltaTime_;
 
 		{
 			static int frameCount = 0;
@@ -197,7 +197,6 @@ void Engine::Run()
 
 		currentTimePoint = std::chrono::steady_clock::now();
 		deltaTime_ = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-		elapsedTime_ += deltaTime_;
 
 		lastFrameTimePoint = currentTimePoint;
 	}
