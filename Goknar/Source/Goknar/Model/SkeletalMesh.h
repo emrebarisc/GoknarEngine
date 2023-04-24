@@ -163,7 +163,7 @@ struct GOKNAR_API SkeletalAnimationNode
 
         float alpha = (time - scalingKeys[previousIndex].time) / (scalingKeys[nextIndex].time - scalingKeys[previousIndex].time);
 
-        out = GoknarMath::Slerp(scalingKeys[previousIndex].value, scalingKeys[nextIndex].value, alpha);
+        out = GoknarMath::Lerp(scalingKeys[previousIndex].value, scalingKeys[nextIndex].value, alpha);
     }
 
     void GetInterpolatedScalingMatrix(Matrix& out, float time)
@@ -188,7 +188,7 @@ struct GOKNAR_API SkeletalAnimationNode
 
         float alpha = (time - positionKeys[previousIndex].time) / (positionKeys[nextIndex].time - positionKeys[previousIndex].time);
 
-        out = GoknarMath::Slerp(positionKeys[previousIndex].value, positionKeys[nextIndex].value, alpha);
+        out = GoknarMath::Lerp(positionKeys[previousIndex].value, positionKeys[nextIndex].value, alpha);
     }
 
     void GetInterpolatedPositionMatrix(Matrix& out, float time)
