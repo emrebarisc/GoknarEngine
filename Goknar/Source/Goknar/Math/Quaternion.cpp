@@ -143,56 +143,73 @@ inline bool Quaternion::Equals(const Quaternion& other, float tolerance) const
 inline Matrix Quaternion::GetMatrix() const
 {
     return Matrix(
-        1.f - 2.f * (y * y + z * z), 2.f * (x * y - z * w), 2.f * (x * z + y * w), 0.f,
-        2.f * (x * y + z * w), 1.f - 2.f * (x * x + z * z), 2.f * (y * z - x * w), 0.f,
-        2.f * (x * z - y * w), 2.f * (y * z + x * w), 1.f - 2.f * (x * x + y * y), 0.f,
-        0.f, 0.f, 0.f, 1.f
+        1.f - 2.f * (y * y + z * z),    2.f * (x * y - z * w),          2.f * (x * z + y * w),          0.f,
+        2.f * (x * y + z * w),          1.f - 2.f * (x * x + z * z),    2.f * (y * z - x * w),          0.f,
+        2.f * (x * z - y * w),          2.f * (y * z + x * w),          1.f - 2.f * (x * x + y * y),    0.f,
+        0.f,                            0.f,                            0.f,                            1.f
     );
 }
 
 inline Matrix3x3 Quaternion::GetMatrix3x3() const
 {
     return Matrix3x3(
-        1.f - 2.f * (y * y + z * z), 2.f * (x * y - z * w), 2.f * (x * z + y * w),
-        2.f * (x * y + z * w), 1.f - 2.f * (x * x + z * z), 2.f * (y * z - x * w),
-        2.f * (x * z - y * w), 2.f * (y * z + x * w), 1.f - 2.f * (x * x + y * y)
+        1.f - 2.f * (y * y + z * z),    2.f * (x * y - z * w),          2.f * (x * z + y * w),
+        2.f * (x * y + z * w),          1.f - 2.f * (x * x + z * z),    2.f * (y * z - x * w),
+        2.f * (x * z - y * w),          2.f * (y * z + x * w),          1.f - 2.f * (x * x + y * y)
     );
 }
 
-Quaternion Quaternion::GetNormalized() const
+Quaternion Quaternion::Pow(float n)
 {
-    Quaternion q(*this);
-    q.Normalize();
-    return q;
+    return (Ln() * n).Exp();
 }
 
-inline Quaternion& Quaternion::Normalize()
+Quaternion Quaternion::Exp()
 {
-    const float magnitude = std::sqrt(x * x + y * y + z * z + w * w);
-    if (magnitude)
-    {
-        const float inverseMagnitude = 1.f / magnitude;
-        x *= inverseMagnitude;
-        y *= inverseMagnitude;
-        z *= inverseMagnitude;
-        w *= inverseMagnitude;
-    }
-    return *this;
+    Vector3 v(x, y, z);
+    const float lengthV = v.Length();
+    const float sinLengthV = std::sinf(lengthV);
+    const float cosLengthV = std::cosf(lengthV);
+    v /= lengthV;
+    v *= sinLengthV;
+
+    const float expS = std::expf(w);
+    v *= expS;
+
+    return Quaternion(v.x, v.y, v.z, expS * cosLengthV);
+
+    //Quaternion value(*this);
+
+    //float r = std::sqrtf(value.x * value.x + value.y * value.y + value.z * value.z);
+    //float et = std::expf(value.w);
+    //float s = r >= 0.00001f ? et * std::sinf(r) / r : 0.f;
+
+    //value.w = et * std::cosf(r);
+    //value.x *= s;
+    //value.y *= s;
+    //value.z *= s;
+    //return value;
 }
 
-Quaternion Quaternion::GetConjugate() const
+Quaternion Quaternion::Ln()
 {
-    Quaternion q(*this);
-    q.Conjugate();
-    return q;
-}
+    const float length = Length();
+    const float s = std::logf(length);
+    const float arccosS = std::acosf(w / length);
+    Vector3 v(x, y, z);
+    v.Normalize();
+    v *= arccosS;
 
-inline Quaternion& Quaternion::Conjugate()
-{
-    x = -x;
-    y = -y;
-    z = -z;
-    return *this;
+    return Quaternion(v.x, v.y, v.z, s);
+
+    //Quaternion value(*this);
+    //float r = std::sqrtf(value.x * value.x + value.y * value.y + value.z * value.z);
+    //float t = r > 0.00001f ? std::atan2f(r, value.w) / r : 0.f;
+    //value.w = 0.5f * std::logf(value.w * value.w + value.x * value.x + value.y * value.y + value.z * value.z);
+    //value.x *= t;
+    //value.y *= t;
+    //value.z *= t;
+    //return value;
 }
 
 inline Vector3 Quaternion::Rotate(const Vector3& v) const
@@ -222,4 +239,39 @@ inline Quaternion Quaternion::operator*(const Matrix& scaleMatrix) const
 inline Quaternion& Quaternion::operator*=(const Matrix& scaleMatrix)
 {
     return (*this = scaleMatrix * (*this));
+}
+
+inline void Quaternion::Slerp(Quaternion& out, const Quaternion& start, const Quaternion& end, float alpha)
+{
+    float cosom = start.x * end.x + start.y * end.y + start.z * end.z + start.w * end.w;
+
+    Quaternion correctedEnd = end;
+    if (cosom < 0.f)
+    {
+        cosom = -cosom;
+        correctedEnd.x = -correctedEnd.x;
+        correctedEnd.y = -correctedEnd.y;
+        correctedEnd.z = -correctedEnd.z;
+        correctedEnd.w = -correctedEnd.w;
+    }
+
+    float sclp, sclq;
+    if ((1.0f - cosom) > EPSILON)
+    {
+        float omega, sinom;
+        omega = std::acos(cosom);
+        sinom = std::sin(omega);
+        sclp = std::sin((1.0f - alpha) * omega) / sinom;
+        sclq = std::sin(alpha * omega) / sinom;
+    }
+    else
+    {
+        sclp = 1.0f - alpha;
+        sclq = alpha;
+    }
+
+    out.x = sclp * start.x + sclq * correctedEnd.x;
+    out.y = sclp * start.y + sclq * correctedEnd.y;
+    out.z = sclp * start.z + sclq * correctedEnd.z;
+    out.w = sclp * start.w + sclq * correctedEnd.w;
 }

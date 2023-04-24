@@ -11,6 +11,9 @@ class Matrix3x3;
 class Vector3;
 class Vector4;
 
+//  References: 
+//      https://users.aalto.fi/~ssarkka/pub/quat.pdf
+
 class GOKNAR_API Quaternion
 {
 public:
@@ -61,48 +64,28 @@ public:
     inline Quaternion& operator*=(const Matrix& scaleMatrix);
     inline Quaternion& operator*=(const float scale);
 
+    static void Slerp(Quaternion& out, const Quaternion& start, const Quaternion& end, float alpha);
+
     bool Equals(const Quaternion& other, float tolerance = EPSILON) const;
 
-    /*
-    * NOT TESTED !
-    Quaternion Pow(float n)
-    {
-        return (Ln() * n).Exp();
-    }
+    // NOT TESTED !
+    Quaternion Pow(float n);
+    // NOT TESTED !
+    Quaternion Exp();
+    // NOT TESTED !
+    Quaternion Ln();
 
-    Quaternion Exp()
-    {
-        Quaternion value(*this);
+    inline float Length() const;
 
-        float r = std::sqrtf(value.x * value.x + value.y * value.y + value.z * value.z);
-        float et = std::expf(value.w);
-        float s = r >= 0.00001f ? et * std::sinf(r) / r : 0.f;
+    inline Quaternion GetNormalized() const;
+    inline Quaternion& Normalize();
 
-        value.w = et * std::cosf(r);
-        value.x *= s;
-        value.y *= s;
-        value.z *= s;
-        return value;
-    }
+    inline Quaternion GetConjugate() const;
+    inline Quaternion& Conjugate();
 
-    Quaternion Ln()
-    {
-        Quaternion value(*this);
-        float r = std::sqrtf(value.x * value.x + value.y * value.y + value.z * value.z);
-        float t = r > 0.00001f ? std::atan2f(r, value.w) / r : 0.f;
-        value.w = 0.5f * std::logf(value.w * value.w + value.x * value.x + value.y * value.y + value.z * value.z);
-        value.x *= t;
-        value.y *= t;
-        value.z *= t;
-        return value;
-    }
-    */
+    inline Quaternion GetInverse() const;
+    inline Quaternion& Invert();
 
-    Quaternion GetNormalized() const;
-    Quaternion& Normalize();
-
-    Quaternion GetConjugate() const;
-    Quaternion& Conjugate();
     Vector3 Rotate(const Vector3& value) const;
 
     static const Quaternion Identity;
@@ -178,10 +161,10 @@ inline Quaternion operator*(const float scale, const Quaternion& quaternion)
 
 inline Quaternion Quaternion::operator*(const Quaternion& t) const
 {
-    return Quaternion(w * t.w - x * t.x - y * t.y - z * t.z,
-        w * t.x + x * t.w + y * t.z - z * t.y,
-        w * t.y + y * t.w + z * t.x - x * t.z,
-        w * t.z + z * t.w + x * t.y - y * t.x);
+    return Quaternion(  w * t.w - x * t.x - y * t.y - z * t.z,
+                        w * t.x + x * t.w + y * t.z - z * t.y,
+                        w * t.y + y * t.w + z * t.x - x * t.z,
+                        w * t.z + z * t.w + x * t.y - y * t.x);
 }
 
 inline Quaternion Quaternion::operator*(const float scale)
@@ -195,6 +178,67 @@ inline Quaternion& Quaternion::operator*=(const float scale)
     y *= scale;
     z *= scale;
     w *= scale;
+
+    return *this;
+}
+
+float Quaternion::Length() const
+{
+    return std::sqrt(x * x + y * y + z * z + w * w);
+}
+
+inline Quaternion Quaternion::GetNormalized() const
+{
+    Quaternion q(*this);
+    q.Normalize();
+    return q;
+}
+
+inline Quaternion& Quaternion::Normalize()
+{
+    const float magnitude = std::sqrt(x * x + y * y + z * z + w * w);
+    if (magnitude)
+    {
+        const float inverseMagnitude = 1.f / magnitude;
+        x *= inverseMagnitude;
+        y *= inverseMagnitude;
+        z *= inverseMagnitude;
+        w *= inverseMagnitude;
+    }
+    return *this;
+}
+
+inline Quaternion Quaternion::GetConjugate() const
+{
+    Quaternion q(*this);
+    q.Conjugate();
+    return q;
+}
+
+inline Quaternion& Quaternion::Conjugate()
+{
+    x = -x;
+    y = -y;
+    z = -z;
+    return *this;
+}
+
+inline Quaternion Quaternion::GetInverse() const
+{
+    Quaternion q(*this);
+    q.Invert();
+    return q;
+}
+
+inline Quaternion& Quaternion::Invert()
+{
+    const float length = Length();
+    const float squareLength = length * length;
+
+    x = -x / squareLength;
+    y = -y / squareLength;
+    z = -z / squareLength;
+    w = w / squareLength;
 
     return *this;
 }

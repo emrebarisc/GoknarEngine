@@ -201,22 +201,18 @@ struct GOKNAR_API SkeletalAnimationNode
     void GetInterpolatedRotation(Quaternion& out, float time)
     {
         int previousIndex = 0;
-        for (unsigned int positionIndex = 0; positionIndex < rotationKeySize; ++positionIndex)
+        for (unsigned int rotationIndex = 0; rotationIndex < (rotationKeySize - 1); ++rotationIndex)
         {
-            if (rotationKeys[positionIndex].time < time)
+            if (rotationKeys[rotationIndex].time < time)
             {
-                previousIndex = positionIndex;
+                previousIndex = rotationIndex;
             }
         }
 
         int nextIndex = previousIndex + 1;
 
         float alpha = (time - rotationKeys[previousIndex].time) / (rotationKeys[nextIndex].time - rotationKeys[previousIndex].time);
-
-        const Quaternion& startRotation = rotationKeys[previousIndex].value;
-        const Quaternion& endRotation = rotationKeys[nextIndex].value;
-        out = GoknarMath::Slerp(startRotation, endRotation, alpha);
-        out.Normalize();
+        Quaternion::Slerp(out, rotationKeys[previousIndex].value, rotationKeys[nextIndex].value, alpha);
     }
 
     void GetInterpolatedRotationMatrix(Matrix& out, float time)
