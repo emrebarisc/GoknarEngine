@@ -119,11 +119,12 @@ void ObjectBase::SetIsActive(bool isActive)
 
 void ObjectBase::AttachToSocket(SocketComponent* socketComponent)
 {
+	SetParent(nullptr);
+
 	if (rootComponent_)
 	{
 		rootComponent_->SetParent(socketComponent);
 	}
-	//SetParent(socketComponent->GetOwner());
 }
 
 void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
@@ -139,13 +140,12 @@ void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
 		socketComponent->RemoveChild(rootComponent_);
 		rootComponent_->SetParent(static_cast<Component*>(nullptr));
 
-		worldPosition_ = socketComponent->GetWorldPosition();
-		worldRotation_ = socketComponent->GetWorldRotation();
-		worldScaling_ = socketComponent->GetWorldScaling();
-		worldTransformationMatrix_ = socketComponent->GetComponentToWorldTransformationMatrix();
+		worldPosition_ = rootComponent_->GetWorldPosition();
+		worldRotation_ = rootComponent_->GetWorldRotation();
+		worldScaling_ = rootComponent_->GetWorldScaling();
+		
+		worldTransformationMatrix_ = rootComponent_->GetComponentToWorldTransformationMatrix();
 		UpdateChildrenTransformations();
-
-		SetParent(nullptr);
 	}
 }
 
