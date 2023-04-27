@@ -144,6 +144,9 @@ private:
 
 	std::vector<TimeDependentObject*> timeDependentObjects_;
 
+	int objectsToBeInitializedSize_{ 0 };
+	int componentsToBeInitializedSize_{ 0 };
+
 	float deltaTime_{ 0.f };
 	float elapsedTime_{ 0.f };
 

@@ -215,22 +215,30 @@ void Engine::BeginGame()
 
 void Engine::InitObjects()
 {
-	for (ObjectBase* object : objectsToBeInitialized_)
+	// Looping over vector via member size optimizes size() call and
+	// Protects objectsToBeInitialized_ modification in mid air
+	// For example creating new object on BeginGame() function
+	for (int objectIndex = 0; objectIndex < objectsToBeInitializedSize_; ++objectIndex)
 	{
-		object->Init();
+		objectsToBeInitialized_[objectIndex]->Init();
 	}
 	objectsToBeInitialized_.clear();
 	hasUninitializedObjects_ = false;
+	objectsToBeInitializedSize_ = 0;
 }
 
 void Engine::InitComponents()
 {
-	for (Component* component : componentsToBeInitialized_)
+	// Looping over vector via member size optimizes size() call and
+	// Protects componentsToBeInitialized_ modification in mid air
+	// For example creating new components on BeginGame() function
+	for (int componentIndex = 0; componentIndex < componentsToBeInitializedSize_; ++componentIndex)
 	{
-		component->Init();
+		componentsToBeInitialized_[componentIndex]->Init();
 	}
 	componentsToBeInitialized_.clear();
 	hasUninitializedComponents_ = false;
+	componentsToBeInitializedSize_ = 0;
 }
 
 void Engine::Tick(float deltaTime)
@@ -302,6 +310,7 @@ void Engine::RegisterObject(ObjectBase* object)
 	hasUninitializedObjects_ = true;
 	objectsToBeInitialized_.push_back(object);
 	registeredObjects_.push_back(object);
+	objectsToBeInitializedSize_++;
 }
 
 void Engine::RemoveObject(ObjectBase* object)
@@ -360,6 +369,7 @@ void Engine::RegisterComponent(Component* component)
 	hasUninitializedComponents_ = true;
 	componentsToBeInitialized_.push_back(component);
 	registeredComponents_.push_back(component);
+	componentsToBeInitializedSize_++;
 }
 
 void Engine::DestroyComponent(Component* component)
