@@ -63,9 +63,7 @@ void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform, st
 			skeletalAnimationNode->GetInterpolatedRotation(interpolatedRotation, time);
 			skeletalAnimationNode->GetInterpolatedScaling(interpolatedScaling, time);
 
-			boneTransformation = Matrix::GetPositionMatrix(interpolatedPosition);
-			boneTransformation *= interpolatedRotation.GetMatrix();
-			boneTransformation *= Matrix::GetScalingMatrix(interpolatedScaling);
+			boneTransformation = Matrix::GetTransformationMatrix(interpolatedRotation, interpolatedPosition, interpolatedScaling);
 		}
 	}
 

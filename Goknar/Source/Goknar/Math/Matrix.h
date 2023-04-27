@@ -235,6 +235,8 @@ public:
                             0.f, 0.f, 1.f);
     }
 
+    Matrix3x3 GetTranspose() const;
+
     void operator=(const Matrix3x3& rhs)
     {
         if (this != &rhs)
@@ -325,9 +327,14 @@ public:
 
     inline friend std::ostream& operator<<(std::ostream& out, const Matrix3x3& matrix3x3)
     {
-        return out  << matrix3x3.m[0] << ", " << matrix3x3.m[1] << ", " << matrix3x3.m[2] << ", " << std::endl
-                    << matrix3x3.m[3] << ", " << matrix3x3.m[4] << ", " << matrix3x3.m[5] << ", " << std::endl
-                    << matrix3x3.m[6] << ", " << matrix3x3.m[7] << ", " << matrix3x3.m[8] << std::endl;
+        return out  << matrix3x3.ToString();
+    }
+
+    inline std::string ToString() const
+    {
+        return std::to_string(m[0]) + ", " + std::to_string(m[1]) + ", " + std::to_string(m[2]) + "\n" 
+             + std::to_string(m[3]) + ", " + std::to_string(m[4]) + ", " + std::to_string(m[5]) + "\n" 
+             + std::to_string(m[6]) + ", " + std::to_string(m[7]) + ", " + std::to_string(m[8]) + "\n";
     }
 
     static const Matrix3x3 ZeroMatrix;
@@ -654,10 +661,15 @@ public:
 
     inline friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
     {
-        return out << matrix.m[0] << ", " << matrix.m[1] << ", " << matrix.m[2] << ", " << matrix.m[3] << std::endl
-                   << matrix.m[4] << ", " << matrix.m[5] << ", " << matrix.m[6] << ", " << matrix.m[7] << std::endl
-                   << matrix.m[8] << ", " << matrix.m[9] << ", " << matrix.m[10] << ", " << matrix.m[11] << std::endl
-                   << matrix.m[12] << ", " << matrix.m[13] << ", " << matrix.m[14] << ", " << matrix.m[15] << std::endl;
+        return out << matrix.ToString();
+    }
+
+    inline std::string ToString() const
+    {
+        return std::to_string(m[0]) + ", " + std::to_string(m[1]) + ", " + std::to_string(m[2]) + std::to_string(m[3]) + "\n"
+             + std::to_string(m[4]) + ", " + std::to_string(m[5]) + ", " + std::to_string(m[6]) + std::to_string(m[7]) + "\n"
+             + std::to_string(m[8]) + ", " + std::to_string(m[9]) + ", " + std::to_string(m[10]) + std::to_string(m[11]) + "\n"
+             + std::to_string(m[12]) + ", " + std::to_string(m[13]) + ", " + std::to_string(m[14]) + std::to_string(m[15]) + "\n";
     }
 
     Matrix GetInverse() const;

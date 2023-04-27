@@ -25,6 +25,25 @@ Matrix2x2 Matrix2x2::GetInverse() const
     return oneOverDet * lhs;
 }
 
+Matrix3x3 Matrix3x3::GetTranspose() const
+{
+    Matrix3x3 out;
+
+    out.m[0] = m[0];
+    out.m[1] = m[3];
+    out.m[2] = m[6];
+
+    out.m[3] = m[1];
+    out.m[4] = m[4];
+    out.m[5] = m[7];
+
+    out.m[6] = m[2];
+    out.m[7] = m[5];
+    out.m[8] = m[8];
+
+    return out;
+}
+
 Matrix Matrix::GetInverse() const
 {
     Matrix out;

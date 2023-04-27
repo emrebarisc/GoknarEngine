@@ -64,7 +64,7 @@ Quaternion::Quaternion(const Matrix3x3& rotationMatrix)
         x = (rotationMatrix[7] - rotationMatrix[5]) / s;
         y = (rotationMatrix[2] - rotationMatrix[6]) / s;
         z = (rotationMatrix[3] - rotationMatrix[1]) / s;
-        w = static_cast<float>(0.25) * s;
+        w = 0.25f * s;
     }
     else if (rotationMatrix[0] > rotationMatrix[4] && rotationMatrix[0] > rotationMatrix[8])
     {
@@ -104,10 +104,6 @@ Quaternion::Quaternion(float roll, float pitch, float yaw)
     const float cosRoll(std::cosf(roll * 0.5f));
     const float cosPitchCosYaw(cosPitch * cosYaw);
     const float sinPitchSinYaw(sinPitch * sinYaw);
-    //x = cosRoll * sinPitchSinYaw - sinRoll * cosPitchCosYaw;
-    //y = -cosRoll * sinPitch * cosYaw - sinRoll * cosPitch * sinYaw;
-    //z = cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw;
-    //w = cosRoll * cosPitchCosYaw + sinRoll * sinPitchSinYaw;
     x = sinRoll * cosPitchCosYaw - cosRoll * sinPitchSinYaw;
     y = cosRoll * sinPitch * cosYaw + sinRoll * cosPitch * sinYaw;
     z = cosRoll * cosPitch * sinYaw - sinRoll * sinPitch * cosYaw;

@@ -189,9 +189,9 @@ protected:
 			worldScaling_ = owner_->GetWorldScaling();
 		}
 
-		worldPosition_ = worldPosition_ + GetRelativePosition();
-		worldRotation_ = worldRotation_ * GetRelativeRotation();
-		worldScaling_ = worldScaling_ * GetRelativeScaling();
+		worldPosition_ += GetRelativePosition();
+		worldRotation_ *= GetRelativeRotation();
+		worldScaling_ *= GetRelativeScaling();
 
 		componentToWorldTransformationMatrix_ = componentToWorldTransformationMatrix_ * GetRelativeTransformationMatrix();
 
