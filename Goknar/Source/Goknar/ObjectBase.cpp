@@ -138,36 +138,42 @@ void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
 
 		socketComponent->RemoveChild(rootComponent_);
 		rootComponent_->SetParent(static_cast<Component*>(nullptr));
+
+		worldPosition_ = socketComponent->GetWorldPosition();
+		worldRotation_ = socketComponent->GetWorldRotation();
+		worldScaling_ = socketComponent->GetWorldScaling();
+		worldTransformationMatrix_ = socketComponent->GetComponentToWorldTransformationMatrix();
+		UpdateChildrenTransformations();
+
+		SetParent(nullptr);
 	}
-
-	worldPosition_ = socketComponent->GetWorldPosition();
-	worldRotation_ = socketComponent->GetWorldRotation();
-	worldScaling_ = socketComponent->GetWorldScaling();
-	UpdateWorldTransformationMatrix();
-
-	SetParent(nullptr);
 }
 
-void ObjectBase::SetParent(ObjectBase* newParent, bool updateWorldTransformation/* = true*/)
+void ObjectBase::SetParent(ObjectBase* newParent, bool resetTransformation/* = false*/, bool updateWorldTransformation/* = true*/)
 {
 	if (parent_)
 	{
 		parent_->RemoveChild(this);
 	}
 
+	parent_ = newParent;
+
 	if (newParent)
 	{
 		newParent->AddChild(this);
-	}
-	else if(parent_ && updateWorldTransformation)
-	{
-		worldPosition_ = parent_->GetWorldPosition();
-		worldRotation_ = parent_->GetWorldRotation();
-		worldScaling_ = parent_->GetWorldScaling();
-		SetWorldTransformationMatrix(parent_->GetWorldTransformationMatrix());
-	}
 
-	parent_ = newParent;
+		if (updateWorldTransformation)
+		{
+			if (resetTransformation)
+			{
+				worldPosition_ = Vector3::ZeroVector;
+				worldRotation_ = Quaternion::Identity;
+				worldScaling_ = Vector3{ 1.f };
+			}
+
+			UpdateWorldTransformationMatrix();
+		}
+	}
 }
 
 void ObjectBase::RemoveChild(ObjectBase* child)
@@ -207,7 +213,16 @@ void ObjectBase::SetWorldTransformationMatrix(const Matrix& worldTransformationM
 
 void ObjectBase::UpdateWorldTransformationMatrix()
 {
-	worldTransformationMatrix_ = Matrix::GetTransformationMatrix(worldRotation_, worldPosition_, worldScaling_);
+	if (parent_)
+	{
+		worldTransformationMatrix_ = parent_->GetWorldTransformationMatrix();
+		worldTransformationMatrix_ *= Matrix::GetTransformationMatrix(worldRotation_, worldPosition_, worldScaling_);
+	}
+	else
+	{
+		worldTransformationMatrix_ = Matrix::GetTransformationMatrix(worldRotation_, worldPosition_, worldScaling_);
+	}
+
 	UpdateChildrenTransformations();
 }
 
@@ -217,11 +232,7 @@ void ObjectBase::UpdateChildrenTransformations()
 	for (; childrenIterator != children_.end(); ++childrenIterator)
 	{
 		ObjectBase* child = *childrenIterator;
-
-		child->worldPosition_ = GetWorldPosition();
-		child->worldRotation_ = GetWorldRotation();
-		child->worldScaling_ = GetWorldScaling();
-		child->SetWorldTransformationMatrix(worldTransformationMatrix_);
+		child->UpdateWorldTransformationMatrix();
 	}
 
 	if (rootComponent_)

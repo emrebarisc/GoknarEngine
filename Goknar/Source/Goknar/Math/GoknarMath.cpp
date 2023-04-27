@@ -116,7 +116,7 @@ Quaternion Vector3::GetRotation()
 
 Quaternion Vector3::GetRotationNormalized()
 {
-	return Quaternion(-atan2(z, sqrt(x * x + y * y)),  atan2(y, x), 0.f);
+	return Quaternion(0.f, -atan2(z, sqrt(x * x + y * y)),  atan2(y, x));
 }
 
 Vector3 Vector3::Translate(const Vector3& translation, bool isPositionVector/* = true*/) const

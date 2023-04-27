@@ -11,8 +11,9 @@ class Matrix3x3;
 class Vector3;
 class Vector4;
 
-//  References: 
+//  References:
 //      https://users.aalto.fi/~ssarkka/pub/quat.pdf
+//      https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 
 class GOKNAR_API Quaternion
 {
@@ -35,12 +36,15 @@ public:
 
     Quaternion(const Matrix& rotationMatrix);
     Quaternion(const Matrix3x3& rotationMatrix);
-    Quaternion(float pitch/*rotation y*/, float yaw/*rotation z*/, float roll/*rotation x*/);
+    Quaternion(float roll/*rotation x*/, float pitch/*rotation y*/, float yaw/*rotation z*/);
 
     Quaternion(Vector3 axis, float angle);
 
-    static Quaternion FromEular(const Vector3& degrees);
-    static Quaternion FromEularRadians(const Vector3& radians);
+    static Quaternion FromEuler(const Vector3& degrees);
+    static Quaternion FromEulerRadians(const Vector3& radians);
+
+    Vector3 ToEuler() const;
+    Vector3 ToEulerRadians() const;
 
     inline Matrix GetMatrix() const;
     inline Matrix3x3 GetMatrix3x3() const;
@@ -61,6 +65,7 @@ public:
     inline Quaternion operator*(const Quaternion& other) const;
     inline Quaternion operator*(const float scale);
     inline friend Quaternion operator*(const float scale, const Quaternion& quaternion);
+    inline Quaternion& operator*=(const Quaternion& other);
     inline Quaternion& operator*=(const Matrix& scaleMatrix);
     inline Quaternion& operator*=(const float scale);
 
@@ -68,11 +73,11 @@ public:
 
     bool Equals(const Quaternion& other, float tolerance = EPSILON) const;
 
-    // NOT TESTED !
+    // TODO: TEST !
     Quaternion Pow(float n);
-    // NOT TESTED !
+    // TODO: TEST !
     Quaternion Exp();
-    // NOT TESTED !
+    // TODO: TEST !
     Quaternion Ln();
 
     inline float Length() const;
@@ -87,6 +92,11 @@ public:
     inline Quaternion& Invert();
 
     Vector3 Rotate(const Vector3& value) const;
+
+    inline std::string ToString() const
+    {
+        return std::to_string(w) + ", < " + std::to_string(x) + "i, " + std::to_string(y) + "j, " + std::to_string(z) + "k >";
+    }
 
     static const Quaternion Identity;
 
@@ -159,12 +169,22 @@ inline Quaternion operator*(const float scale, const Quaternion& quaternion)
     return Quaternion(quaternion.x * scale, quaternion.y * scale, quaternion.z * scale, quaternion.w * scale);
 }
 
-inline Quaternion Quaternion::operator*(const Quaternion& t) const
+inline Quaternion Quaternion::operator*(const Quaternion& other) const
 {
-    return Quaternion(  w * t.w - x * t.x - y * t.y - z * t.z,
-                        w * t.x + x * t.w + y * t.z - z * t.y,
-                        w * t.y + y * t.w + z * t.x - x * t.z,
-                        w * t.z + z * t.w + x * t.y - y * t.x);
+    return Quaternion(  x * other.w + w * other.x - z * other.y + y * other.z,
+                        y * other.w + z * other.x + w * other.y - x * other.z,
+                        z * other.w - y * other.x + x * other.y + w * other.z,
+                        w * other.w - x * other.x - y * other.y - z * other.z);
+}
+
+inline Quaternion& Quaternion::operator*=(const Quaternion& other)
+{
+    x = x * other.w + w * other.x - z * other.y + y * other.z;
+    y = y * other.w + z * other.x + w * other.y - x * other.z;
+    z = z * other.w - y * other.x + x * other.y + w * other.z;
+    w = w * other.w - x * other.x - y * other.y - z * other.z;
+
+    return *this;
 }
 
 inline Quaternion Quaternion::operator*(const float scale)
@@ -184,7 +204,7 @@ inline Quaternion& Quaternion::operator*=(const float scale)
 
 float Quaternion::Length() const
 {
-    return std::sqrt(x * x + y * y + z * z + w * w);
+    return std::sqrtf(x * x + y * y + z * z + w * w);
 }
 
 inline Quaternion Quaternion::GetNormalized() const
@@ -196,7 +216,7 @@ inline Quaternion Quaternion::GetNormalized() const
 
 inline Quaternion& Quaternion::Normalize()
 {
-    const float magnitude = std::sqrt(x * x + y * y + z * z + w * w);
+    const float magnitude = std::sqrtf(x * x + y * y + z * z + w * w);
     if (magnitude)
     {
         const float inverseMagnitude = 1.f / magnitude;

@@ -65,17 +65,20 @@ public:
 
 	Vector3 GetForwardVector()
 	{
-		return Vector3(relativeTransformationMatrix_[0], relativeTransformationMatrix_[4], relativeTransformationMatrix_[8]);
+		const Matrix& relativeTransformationMatrix = GetRelativeTransformationMatrix();
+		return Vector3(relativeTransformationMatrix[0], relativeTransformationMatrix[4], relativeTransformationMatrix[8]).GetNormalized();
 	}
 
 	Vector3 GetLeftVector()
 	{
-		return Vector3(relativeTransformationMatrix_[1], relativeTransformationMatrix_[5], relativeTransformationMatrix_[9]);
+		const Matrix& relativeTransformationMatrix = GetRelativeTransformationMatrix();
+		return Vector3(relativeTransformationMatrix[1], relativeTransformationMatrix[5], relativeTransformationMatrix[9]).GetNormalized();
 	}
 
 	Vector3 GetUpVector()
 	{
-		return Vector3(relativeTransformationMatrix_[2], relativeTransformationMatrix_[6], relativeTransformationMatrix_[10]);
+		const Matrix& relativeTransformationMatrix = GetRelativeTransformationMatrix();
+		return Vector3(relativeTransformationMatrix[2], relativeTransformationMatrix[6], relativeTransformationMatrix[10]).GetNormalized();
 	}
 
 	bool GetIsInitialized() const

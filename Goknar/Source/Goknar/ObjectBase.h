@@ -108,7 +108,7 @@ public:
 		return parent_;
 	}
 
-	void SetParent(ObjectBase* parent, bool updateWorldTransformation = true);
+	void SetParent(ObjectBase* parent, bool resetChildTransformation = false, bool updateWorldTransformation = true);
 
 	void AddChild(ObjectBase* child)
 	{

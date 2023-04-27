@@ -207,7 +207,10 @@ void Engine::BeginGame()
 	InitObjects();
 	InitComponents();
 
-	controller_->BeginGame();
+	if (controller_)
+	{
+		controller_->BeginGame();
+	}
 }
 
 void Engine::InitObjects()

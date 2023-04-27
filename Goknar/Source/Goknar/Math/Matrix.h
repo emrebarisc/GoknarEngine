@@ -649,12 +649,7 @@ public:
 
     bool operator==(const Matrix &rhs)
     {
-        for(unsigned int i = 0; i < 16; i++)
-        {
-            if(m[i] != rhs.m[i]) return false;
-        }
-
-        return true;
+        return Equals(rhs);
     }
 
     inline friend std::ostream& operator<<(std::ostream& out, const Matrix& matrix)
@@ -668,6 +663,27 @@ public:
     Matrix GetInverse() const;
     Matrix GetTranspose() const;
     Matrix3x3 GetUpper3x3() const;
+
+    inline bool Equals(const Matrix& other, float tolerance = EPSILON) const
+    {
+        return
+            std::abs(m[0] - other.m[0]) <= tolerance &&
+            std::abs(m[1] - other.m[1]) <= tolerance &&
+            std::abs(m[2] - other.m[2]) <= tolerance &&
+            std::abs(m[3] - other.m[3]) <= tolerance &&
+            std::abs(m[4] - other.m[4]) <= tolerance &&
+            std::abs(m[5] - other.m[5]) <= tolerance &&
+            std::abs(m[6] - other.m[6]) <= tolerance &&
+            std::abs(m[7] - other.m[7]) <= tolerance &&
+            std::abs(m[8] - other.m[8]) <= tolerance &&
+            std::abs(m[9] - other.m[9]) <= tolerance &&
+            std::abs(m[10] - other.m[10]) <= tolerance &&
+            std::abs(m[11] - other.m[11]) <= tolerance &&
+            std::abs(m[12] - other.m[12]) <= tolerance &&
+            std::abs(m[13] - other.m[13]) <= tolerance &&
+            std::abs(m[14] - other.m[14]) <= tolerance &&
+            std::abs(m[15] - other.m[15]) <= tolerance;
+    }
 
     static const Matrix ZeroMatrix;
     static const Matrix IdentityMatrix;

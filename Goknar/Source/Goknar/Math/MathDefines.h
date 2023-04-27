@@ -7,12 +7,13 @@
 #define ONE_OVER_PI 0.31830988618f
 #define NATURAL_LOGARITHM 2.71828182845f
 
-#define TO_RADIAN 180.f / PI
-#define TO_DEGREE PI / 180.f
+#define TO_RADIAN PI / 180.f
+#define TO_DEGREE 180.f / PI
 
 #define RADIAN_TO_DEGREE(radian) (radian * TO_DEGREE)
 #define DEGREE_TO_RADIAN(degree) (degree * TO_RADIAN)
 
+#define SMALLER_EPSILON 0.000001f
 #define EPSILON 0.001f
 #define INTERSECTION_TEST_EPSILON 0.001f
 #define SHADOW_EPSILON 0.001f

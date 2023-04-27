@@ -24,7 +24,7 @@ void SocketComponent::UpdateComponentToWorldTransformationMatrix()
 		componentToWorldTransformationMatrix_ = owner_->GetWorldTransformationMatrix();
 	}
 
-	componentToWorldTransformationMatrix_ = componentToWorldTransformationMatrix_ * GetRelativeTransformationMatrix();
+	componentToWorldTransformationMatrix_ = componentToWorldTransformationMatrix_ * boneAndRelativeTransformationMatrix_;
 
 	worldPosition_ = Vector3(componentToWorldTransformationMatrix_[3], componentToWorldTransformationMatrix_[7], componentToWorldTransformationMatrix_[11]);
 
