@@ -11,6 +11,8 @@ public:
 
 	virtual void BeginGame() override;
 
+	void Shoot();
+
 	ProjectileMovementComponent* GetMovementComponent() const
 	{
 		return movementComponent_;

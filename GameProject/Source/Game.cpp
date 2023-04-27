@@ -3,6 +3,7 @@
 #include "Goknar/Scene.h"
 
 #include "Archer.h"
+#include "Objects/AxisObject.h"
 #include "Goknar/Managers/WindowManager.h"
 
 #include <chrono>
@@ -19,7 +20,7 @@ public:
 	void Run() override;
 
 private:
-
+	AxisObject* axisObject_;
 	Archer* archer_;
 };
 
@@ -36,6 +37,9 @@ Game::Game() : Application()
 	lastFrameTimePoint = currentTimePoint;
 
 	archer_ = new Archer();
+
+	axisObject_ = new AxisObject();
+	axisObject_->SetParent(archer_, false, false);
 
 	engine->GetWindowManager()->SetIsInFullscreen(false);
 }

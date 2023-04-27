@@ -14,12 +14,14 @@ class ProjectileMovementComponent : public Component
 public:
 	ProjectileMovementComponent(Component* parent);
 
+	void Shoot();
+
+protected:
 	virtual void BeginGame() override;
 	virtual void TickComponent(float deltaTime) override;
-protected:
 
 private:
-	float movementSpeed_{ 1.f };
+	float movementSpeed_{ 4.f };
 };
 
 

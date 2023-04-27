@@ -6,6 +6,7 @@
 #include "Goknar/Components/StaticMeshComponent.h"
 
 #include "Components/ProjectileMovementComponent.h"
+#include "Objects/AxisObject.h"
 
 Arrow::Arrow() : StaticMeshObject()
 {
@@ -19,4 +20,14 @@ Arrow::Arrow() : StaticMeshObject()
 void Arrow::BeginGame()
 {
 	ObjectBase::BeginGame();
+}
+
+void Arrow::Shoot()
+{
+	AxisObject* axisObject = new AxisObject();
+	axisObject->SetParent(this, false);
+
+	GOKNAR_INFO("Arrow forward vector: {} Angle: {} Euler: {}", GetForwardVector().ToString(), GetWorldRotation().ToString(), GetWorldRotation().ToEuler().ToString());
+
+	movementComponent_->Shoot();
 }

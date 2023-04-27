@@ -31,17 +31,17 @@ Archer::Archer() :
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
 	skeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
 	skeletalMeshComponent_->SetRelativeScaling(Vector3{ 0.0125f });
-	skeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEular(Vector3{ 90.f, 0.f, 90.f }));
+	skeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEuler(Vector3{ 90.f, 0.f, 90.f }));
 
 	SkeletalMeshInstance* skeletalMeshInstance = skeletalMeshComponent_->GetMeshInstance();
 	leftHandSocket_ = skeletalMeshInstance->AddSocketToBone("mixamorig:LeftHand");
 	leftHandSocket_->SetRelativePosition(Vector3{ 0.f, 10.f, 1.5f });
-	leftHandSocket_->SetRelativeRotation(Quaternion::FromEular(Vector3{ 90.f, 90.f, 180.f }));
+	leftHandSocket_->SetRelativeRotation(Quaternion::FromEuler(Vector3{ 90.f, 90.f, 180.f }));
 	leftHandSocket_->SetRelativeScaling(Vector3{ 80.f });
 
 	rightHandSocket_ = skeletalMeshInstance->AddSocketToBone("mixamorig:RightHand");
 	rightHandSocket_->SetRelativePosition(Vector3{ 0.f, 10.f, 0.f });
-	rightHandSocket_->SetRelativeRotation(Quaternion::FromEular(Vector3{ 0.f, -30.f, 160.f }));
+	rightHandSocket_->SetRelativeRotation(Quaternion::FromEuler(Vector3{ 0.f, -30.f, 160.f }));
 	rightHandSocket_->SetRelativeScaling(Vector3{ 80.f });
 
 	bow_ = new Bow();
@@ -114,6 +114,7 @@ void Archer::HandleDropBowInput()
 	if (bow_ && !isAiming_)
 	{
 		bow_->RemoveFromSocket(leftHandSocket_);
+		GOKNAR_INFO("Bow forward vector: {}", bow_->GetForwardVector().ToString());
 		bow_ = nullptr;
 
 		isBowEquiped_ = false;
@@ -265,11 +266,12 @@ void Archer::EquipTorch(bool equip)
 
 }
 
-void Archer::Shoot() const
+void Archer::Shoot()
 {
 	if (loadedArrow_)
 	{
 		loadedArrow_->RemoveFromSocket(rightHandSocket_);
-		loadedArrow_->GetMovementComponent()->SetIsActive(true);
+		loadedArrow_->Shoot();
+		loadedArrow_ = nullptr;
 	}
 }

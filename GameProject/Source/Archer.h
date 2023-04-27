@@ -75,7 +75,7 @@ private:
 	void EquipBow(bool equip);
 	void EquipTorch(bool equip);
 
-	void Shoot() const;
+	void Shoot();
 
 	SkeletalMesh* skeletalMesh_{ nullptr };
 	SkeletalMeshComponent* skeletalMeshComponent_{ nullptr };

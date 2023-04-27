@@ -13,6 +13,11 @@ ProjectileMovementComponent::ProjectileMovementComponent(Component* parent) :
 	SetIsTickable(true);
 }
 
+void ProjectileMovementComponent::Shoot()
+{
+	SetIsActive(true);
+}
+
 void ProjectileMovementComponent::BeginGame()
 {
 	Component::BeginGame();
@@ -22,11 +27,9 @@ void ProjectileMovementComponent::TickComponent(float deltaTime)
 {
 	Component::TickComponent(deltaTime);
 
-	GOKNAR_INFO("Arrow forward vector: {}", GetOwner()->GetForwardVector().ToString());
-
 	//ObjectBase* owner = GetOwner();
 
-	//Vector3 movementVector = GetOwner()->GetRootComponent()->GetForwardVector();// -Vector3(0.f, 0.f, 0.098f * deltaTime * deltaTime);
+	//Vector3 movementVector = owner->GetForwardVector();// -Vector3(0.f, 0.f, 0.098f * deltaTime * deltaTime);
 	//movementVector *= movementSpeed_;
 
 	//owner->SetWorldPosition(owner->GetWorldPosition() + movementVector * deltaTime);
