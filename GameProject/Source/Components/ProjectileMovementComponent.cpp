@@ -15,6 +15,7 @@ ProjectileMovementComponent::ProjectileMovementComponent(Component* parent) :
 
 void ProjectileMovementComponent::Shoot()
 {
+	velocity_ = GetOwner()->GetForwardVector();
 	SetIsActive(true);
 }
 
@@ -27,11 +28,9 @@ void ProjectileMovementComponent::TickComponent(float deltaTime)
 {
 	Component::TickComponent(deltaTime);
 
-	//ObjectBase* owner = GetOwner();
+	ObjectBase* owner = GetOwner();
 
-	//Vector3 movementVector = owner->GetForwardVector();// -Vector3(0.f, 0.f, 0.098f * deltaTime * deltaTime);
-	//movementVector *= movementSpeed_;
-
-	//owner->SetWorldPosition(owner->GetWorldPosition() + movementVector * deltaTime);
+	velocity_ -= Vector3(0.f, 0.f, 9.8f * deltaTime * deltaTime);
+	owner->SetWorldPosition(owner->GetWorldPosition() + (velocity_ * movementSpeed_) * deltaTime);
 	//owner->SetWorldRotation(movementVector.GetNormalized().GetRotationNormalized());
 }

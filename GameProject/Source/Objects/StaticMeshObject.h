@@ -11,6 +11,6 @@ public:
 	StaticMeshObject();
 
 protected:
-	StaticMeshComponent* staticMeshComponent;
+	StaticMeshComponent* staticMeshComponent_;
 private:
 };

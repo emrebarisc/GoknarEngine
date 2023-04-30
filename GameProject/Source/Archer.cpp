@@ -42,7 +42,7 @@ Archer::Archer() :
 
 	rightHandSocket_ = skeletalMeshInstance->AddSocketToBone("mixamorig:RightHand");
 	rightHandSocket_->SetRelativePosition(Vector3{ 0.f, 10.f, 0.f });
-	rightHandSocket_->SetRelativeRotation(Quaternion::FromEuler(Vector3{ 0.f, -30.f, 160.f }));
+	rightHandSocket_->SetRelativeRotation(Quaternion::FromEuler(Vector3{ 0.f, -13.5f, 90.f }));
 	rightHandSocket_->SetRelativeScaling(Vector3{ 80.f });
 
 	bow_ = new Bow();
@@ -59,24 +59,23 @@ Archer::Archer() :
 	controller_ = new ArcherGameController(this);
 }
 
+void AddAxisToAllBones(SkeletalMeshInstance* skeletalMeshInstance, Bone* bone)
+{
+	AxisObject* axisObject = new AxisObject();
+	SocketComponent* socket = skeletalMeshInstance->AddSocketToBone(bone->name);
+	axisObject->AttachToSocket(socket);
+
+	for (auto child : bone->children)
+	{
+		AddAxisToAllBones(skeletalMeshInstance, child);
+	}
+}
+
 void Archer::BeginGame()
 {
 	GOKNAR_INFO("Archer::BeginPlay()");
 
 	EquipBow(true);
-
-	//AxisObject* axisObject1 = new AxisObject();
-	//Quaternion rot1 = Quaternion::FromEuler(Vector3{ 0.f, 0.f, 45.f });
-	//axisObject1->SetWorldRotation(rot1);
-
-	//AxisObject* axisObject2 = new AxisObject();
-	//Quaternion rot2 = Quaternion::FromEuler(Vector3{ 0.f, 0.f, -45.f });
-	//axisObject2->SetWorldRotation(rot2);
-	//axisObject2->SetWorldPosition(Vector3{ 1.f, 0.f, 0.f });
-
-	//AxisObject* axisObject3 = new AxisObject();
-	//axisObject3->SetWorldRotation(rot1 * rot2);
-	//axisObject3->SetWorldPosition(Vector3{ 2.f, 0.f, 0.f });
 }
 
 void Archer::Tick(float deltaTime)

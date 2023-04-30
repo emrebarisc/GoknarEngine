@@ -10,8 +10,8 @@
 Bow::Bow() : ObjectBase()//StaticMeshObject()
 {
 	//StaticMesh* bowStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Bow.fbx");
-	//staticMeshComponent->SetMesh(bowStaticMesh);
-	//staticMeshComponent->SetRelativeRotation(Quaternion::FromEuler(Vector3(-90.f, -90.f, 0.f)));
+	//staticMeshComponent_->SetMesh(bowStaticMesh);
+	//staticMeshComponent_->SetRelativeRotation(Quaternion::FromEuler(Vector3(-90.f, -90.f, 0.f)));
 
 	skeletalMeshComponent_ = AddSubComponent<SkeletalMeshComponent>();
 	SkeletalMesh* bowSkeletalMesh = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Bow.fbx");

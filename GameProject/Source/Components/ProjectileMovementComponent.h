@@ -21,7 +21,8 @@ protected:
 	virtual void TickComponent(float deltaTime) override;
 
 private:
-	float movementSpeed_{ 4.f };
+	Vector3 velocity_{ Vector3::ZeroVector };
+	float movementSpeed_{ 20.f };
 };
 
 

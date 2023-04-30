@@ -11,7 +11,7 @@
 Arrow::Arrow() : StaticMeshObject()
 {
 	StaticMesh* arrowStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Arrow.fbx");
-	staticMeshComponent->SetMesh(arrowStaticMesh);
+	staticMeshComponent_->SetMesh(arrowStaticMesh);
 
 	movementComponent_ = AddSubComponent<ProjectileMovementComponent>();
 	movementComponent_->SetIsActive(false);
@@ -27,7 +27,5 @@ void Arrow::BeginGame()
 
 void Arrow::Shoot()
 {
-	GOKNAR_INFO("Arrow forward vector: {} Angle: {} Euler: {}", GetForwardVector().ToString(), GetWorldRotation().ToString(), GetWorldRotation().ToEuler().ToString());
-
 	movementComponent_->Shoot();
 }

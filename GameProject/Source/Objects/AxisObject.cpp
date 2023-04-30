@@ -7,10 +7,10 @@
 
 AxisObject::AxisObject() : ObjectBase()
 {
-	staticMeshComponent = AddSubComponent<StaticMeshComponent>();
+	staticMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 
 	StaticMesh* axisStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Axis.fbx");
-	staticMeshComponent->SetMesh(axisStaticMesh);
+	staticMeshComponent_->SetMesh(axisStaticMesh);
 
 	SetWorldPosition(Vector3::ZeroVector);
 	SetWorldScaling(Vector3{ 0.1f });
