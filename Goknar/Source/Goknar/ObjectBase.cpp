@@ -116,6 +116,12 @@ void ObjectBase::SetWorldScaling(const Vector3& scaling, bool updateWorldTransfo
 void ObjectBase::SetIsActive(bool isActive)
 {
 	isActive_ = isActive;
+
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->SetIsActive(isActive);
+	}
+
 	for (int i = 0; i < components_.size(); i++)
 	{
 		components_[i]->SetIsActive(isActive);

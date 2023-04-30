@@ -52,6 +52,8 @@ public:
 		}
 	}
 
+	virtual void SetIsActive(bool isActive) override;
+
 protected:
 	virtual void UpdateComponentToWorldTransformationMatrix();
 	virtual void UpdateChildrenComponentToWorldTransformations();

@@ -13,6 +13,17 @@ void SocketComponent::Destroy()
 	Component::Destroy();
 }
 
+void SocketComponent::SetIsActive(bool isActive)
+{
+	Component::SetIsActive(isActive);
+
+	std::vector<ObjectBase*>::iterator attachedObjectsIterator = attachedObjects_.begin();
+	for (; attachedObjectsIterator != attachedObjects_.end(); ++attachedObjectsIterator)
+	{
+		(*attachedObjectsIterator)->SetIsActive(isActive);
+	}
+}
+
 void SocketComponent::UpdateComponentToWorldTransformationMatrix()
 {
 	if (parent_)
