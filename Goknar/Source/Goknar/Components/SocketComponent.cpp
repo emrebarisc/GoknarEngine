@@ -46,6 +46,8 @@ void SocketComponent::UpdateComponentToWorldTransformationMatrix()
 
 void SocketComponent::UpdateChildrenComponentToWorldTransformations()
 {
+	Component::UpdateChildrenComponentToWorldTransformations();
+
 	std::vector<ObjectBase*>::iterator attachedObjectsIterator = attachedObjects_.begin();
 	for (; attachedObjectsIterator != attachedObjects_.end(); ++attachedObjectsIterator)
 	{
@@ -55,6 +57,4 @@ void SocketComponent::UpdateChildrenComponentToWorldTransformations()
 		attachedObject->SetWorldPosition(worldPosition_, false);
 		attachedObject->SetWorldScaling(worldScaling_, true);
 	}
-
-	Component::UpdateChildrenComponentToWorldTransformations();
 }

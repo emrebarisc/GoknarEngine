@@ -136,6 +136,7 @@ private:
 	Vector3 worldScaling_{ Vector3(1.f) };
 
 	ObjectBase* parent_{ nullptr };
+	SocketComponent* parentSocket_{ nullptr };
 
 	int totalComponentCount_;
 

@@ -37,14 +37,10 @@ void ObjectBase::Init()
 
 void ObjectBase::Destroy()
 {
-	if (rootComponent_)
+	// Detach from the socket component if any
+	if (parentSocket_)
 	{
-		// Detach from the socket component if any
-		SocketComponent* attachedSocketComponent = dynamic_cast<SocketComponent*>(rootComponent_->GetParent());
-		if (attachedSocketComponent)
-		{
-			attachedSocketComponent->RemoveChild(rootComponent_);
-		}
+		parentSocket_->RemoveObject(this);
 	}
 
 	std::vector<ObjectBase*>::iterator childrenIterator = children_.begin();
@@ -130,11 +126,13 @@ void ObjectBase::AttachToSocket(SocketComponent* socketComponent)
 {
 	SetParent(nullptr);
 
+	parentSocket_ = socketComponent;
 	socketComponent->Attach(this);
 }
 
 void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
 {
+	parentSocket_ = nullptr;
 	socketComponent->RemoveObject(this);
 }
 
@@ -226,14 +224,6 @@ void ObjectBase::UpdateChildrenTransformations()
 
 	if (rootComponent_)
 	{
-		Component* socketParent = rootComponent_->GetParent();
-		if (socketParent)
-		{
-			socketParent->UpdateComponentToWorldTransformationMatrix();
-		}
-		else
-		{
-			rootComponent_->UpdateComponentToWorldTransformationMatrix();
-		}
+		rootComponent_->UpdateComponentToWorldTransformationMatrix();
 	}
 }
