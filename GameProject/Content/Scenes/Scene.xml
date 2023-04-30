@@ -1,7 +1,7 @@
 <Scene>
 	<BackgroundColor>50 50 50</BackgroundColor>
-<!-- 	<Cameras>
-		<Camera id = "0">
+ 	<Cameras>
+		<!--<Camera id = "0">
 			<Position>0.0 0.0 1.75</Position>
 			<Gaze>0.0 1.0000001192092896 0.0</Gaze>
 			<Up>0.0 0.0 1.0000001192092896</Up>
@@ -10,8 +10,8 @@
 			<ImageResolution>1600 900</ImageResolution>
 			<NumSamples>1</NumSamples>
 			<ImageName></ImageName>
-		</Camera>
-	</Cameras> -->
+		</Camera>-->
+	</Cameras> 
 
 	<Lights>
 		<AmbientLight>150 150 150</AmbientLight>
@@ -111,8 +111,12 @@
 			<Path>Meshes/SM_Bow.fbx</Path>
 		</StaticMesh>
 		<SkeletalMesh id = "6">
-			<Name>Bow</Name>
+			<Name>EpicChest</Name>
 			<Path>Meshes/SkeletalMesh_EpicChest.fbx</Path>
+		</SkeletalMesh>
+		<SkeletalMesh id = "7">
+			<Name>Axis</Name>
+			<Path>Meshes/SM_Axis.fbx</Path>
 		</SkeletalMesh>
 	</Meshes>
 
@@ -391,9 +395,9 @@
 			<WorldPosition>-5.0 2.0 0.0</WorldPosition>
 			<WorldRotation>0.0 0.0 0.0</WorldRotation>
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject>-->
-
-		<!--<StaticMeshObject id = "24">
+		</StaticMeshObject>
+		
+		<StaticMeshObject id = "24">
 			<Mesh>2</Mesh>
 			<Name>Chest</Name>
 			<PivotPoint>0 0 0</PivotPoint>
@@ -403,9 +407,9 @@
 			<WorldPosition>-4.0 6.0 0.0</WorldPosition>
 			<WorldRotation>0.0 -0.0 45.00000125223908</WorldRotation>
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject>-->
-
-<!-- 		<StaticMeshObject id = "22">
+		</StaticMeshObject>
+		
+		<StaticMeshObject id = "22">
 			<Mesh>1</Mesh>
 			<Name>FloorAndCeil</Name>
 			<PivotPoint>0 0 0</PivotPoint>
@@ -415,9 +419,9 @@
 			<WorldPosition>0.0 0.0 0.0</WorldPosition>
 			<WorldRotation>0.0 0.0 0.0</WorldRotation>
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject> -->
-
-<!-- 		<StaticMeshObject id = "25">
+		</StaticMeshObject> 
+		
+ 		<StaticMeshObject id = "25">
 			<Mesh>3</Mesh>
 			<Name>Plane</Name>
 			<PivotPoint>0 0 0</PivotPoint>
@@ -427,9 +431,8 @@
 			<WorldPosition>0.0 0.0 0.0</WorldPosition>
 			<WorldRotation>0.0 0.0 0.0</WorldRotation>
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject> -->
-
-
+		</StaticMeshObject>
+		
 		<SkeletalMeshObject id = "26">
 			<Mesh>6</Mesh>
 			<Name>Wall</Name>
@@ -440,7 +443,7 @@
 			<WorldPosition>5.0 0.0 0.0</WorldPosition>
 			<WorldRotation>90.0 0.0 0.0</WorldRotation>
 			<WorldScaling>0.025 0.025 0.025</WorldScaling>
-		</SkeletalMeshObject>
+		</SkeletalMeshObject>-->
 	</Objects>
 
 </Scene>
