@@ -12,6 +12,7 @@ public:
 
 protected:
 	virtual void BeginGame() override;
+	virtual void Tick(float deltaTime) override;
 
 	StaticMeshComponent* staticMeshComponent;
 private:

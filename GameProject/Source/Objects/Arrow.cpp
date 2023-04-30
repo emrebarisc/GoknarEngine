@@ -15,6 +15,9 @@ Arrow::Arrow() : StaticMeshObject()
 
 	movementComponent_ = AddSubComponent<ProjectileMovementComponent>();
 	movementComponent_->SetIsActive(false);
+
+	AxisObject* axisObject = new AxisObject();
+	axisObject->SetParent(this);
 }
 
 void Arrow::BeginGame()
@@ -24,9 +27,6 @@ void Arrow::BeginGame()
 
 void Arrow::Shoot()
 {
-	AxisObject* axisObject = new AxisObject();
-	axisObject->SetParent(this, false);
-
 	GOKNAR_INFO("Arrow forward vector: {} Angle: {} Euler: {}", GetForwardVector().ToString(), GetWorldRotation().ToString(), GetWorldRotation().ToEuler().ToString());
 
 	movementComponent_->Shoot();

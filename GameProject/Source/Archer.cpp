@@ -19,6 +19,7 @@
 #include "ArcherGameController.h"
 #include "Components/ArcherMovementComponent.h"
 #include "Objects/Arrow.h"
+#include "Objects/AxisObject.h"
 #include "Objects/Bow.h"
 
 Archer::Archer() : 
@@ -63,6 +64,19 @@ void Archer::BeginGame()
 	GOKNAR_INFO("Archer::BeginPlay()");
 
 	EquipBow(true);
+
+	//AxisObject* axisObject1 = new AxisObject();
+	//Quaternion rot1 = Quaternion::FromEuler(Vector3{ 0.f, 0.f, 45.f });
+	//axisObject1->SetWorldRotation(rot1);
+
+	//AxisObject* axisObject2 = new AxisObject();
+	//Quaternion rot2 = Quaternion::FromEuler(Vector3{ 0.f, 0.f, -45.f });
+	//axisObject2->SetWorldRotation(rot2);
+	//axisObject2->SetWorldPosition(Vector3{ 1.f, 0.f, 0.f });
+
+	//AxisObject* axisObject3 = new AxisObject();
+	//axisObject3->SetWorldRotation(rot1 * rot2);
+	//axisObject3->SetWorldPosition(Vector3{ 2.f, 0.f, 0.f });
 }
 
 void Archer::Tick(float deltaTime)
@@ -140,9 +154,6 @@ void Archer::HandleDrawBowInput()
 			{
 				loadedArrow_ = new Arrow();
 				loadedArrow_->AttachToSocket(rightHandSocket_);
-				//loadedArrow_->SetWorldPosition(GetWorldPosition() + GetForwardVector() + Vector3(0.f, 0.f, 1.75f));
-				//Vector3 arrowRotationVector = (4.f * GetForwardVector() + GetUpVector()).GetNormalized();
-				//loadedArrow_->SetWorldRotation((arrowRotationVector).GetRotationNormalized());
 			});
 
 		keyframeData.AddCallbackToKeyframe(20,

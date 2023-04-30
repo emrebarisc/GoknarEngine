@@ -56,3 +56,8 @@ void AxisObject::BeginGame()
 	//	}
 	//}
 }
+
+void AxisObject::Tick(float deltaTime)
+{
+
+}
