@@ -52,7 +52,7 @@ Renderer::Renderer() :
 	totalDynamicMeshCount_(0),
 	shadowManager_(nullptr),
 	isRenderingOnlyDepth_(false),
-	removeStaticDataFromMemoryAfterTransferingToGPU(true)
+	removeStaticDataFromMemoryAfterTransferingToGPU_(true)
 {
 }
 
@@ -191,7 +191,7 @@ void Renderer::SetStaticBufferData()
 		baseVertex += staticMesh->GetVertexCount();
 		vertexStartingIndex += staticMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
 
-		if (removeStaticDataFromMemoryAfterTransferingToGPU)
+		if (removeStaticDataFromMemoryAfterTransferingToGPU_)
 		{
 			staticMesh->ClearDataFromMemory();
 		}
@@ -259,7 +259,7 @@ void Renderer::SetSkeletalBufferData()
 		baseVertex += skeletalMesh->GetVertexCount();
 		vertexStartingIndex += skeletalMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
 
-		if (removeStaticDataFromMemoryAfterTransferingToGPU)
+		if (removeStaticDataFromMemoryAfterTransferingToGPU_)
 		{
 			skeletalMesh->ClearDataFromMemory();
 		}

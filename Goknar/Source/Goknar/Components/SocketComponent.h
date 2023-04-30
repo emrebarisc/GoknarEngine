@@ -4,6 +4,8 @@
 #include "Core.h"
 #include "Component.h"
 
+class ObjectBase;
+
 class SocketComponent : public Component
 {
 public:
@@ -32,10 +34,31 @@ public:
 		return boneTransformationMatrix_;
 	}
 
+	void Attach(ObjectBase* object)
+	{
+		attachedObjects_.push_back(object);
+	}
+
+	void RemoveObject(ObjectBase* object)
+	{
+		std::vector<ObjectBase*>::iterator attachedObjectsIterator = attachedObjects_.begin();
+		for (; attachedObjectsIterator != attachedObjects_.end(); ++attachedObjectsIterator)
+		{
+			if ((*attachedObjectsIterator) == object)
+			{
+				attachedObjects_.erase(attachedObjectsIterator);
+				break;
+			}
+		}
+	}
+
 protected:
 	virtual void UpdateComponentToWorldTransformationMatrix();
+	virtual void UpdateChildrenComponentToWorldTransformations();
 
 private:
+	std::vector<ObjectBase*> attachedObjects_;
+
 	Matrix boneTransformationMatrix_{ Matrix::IdentityMatrix };
 	Matrix boneAndRelativeTransformationMatrix_{ Matrix::IdentityMatrix };
 };

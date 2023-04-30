@@ -90,22 +90,31 @@ void ObjectBase::SetIsTickable(bool isTickable)
 	}
 }
 
-void ObjectBase::SetWorldPosition(const Vector3& position)
+void ObjectBase::SetWorldPosition(const Vector3& position, bool updateWorldTransformationMatrix/* = true*/)
 {
 	worldPosition_ = position;
-	UpdateWorldTransformationMatrix();
+	if (updateWorldTransformationMatrix)
+	{
+		UpdateWorldTransformationMatrix();
+	}
 }
 
-void ObjectBase::SetWorldRotation(const Quaternion& rotation)
+void ObjectBase::SetWorldRotation(const Quaternion& rotation, bool updateWorldTransformationMatrix/* = true*/)
 {
 	worldRotation_ = rotation;
-	UpdateWorldTransformationMatrix();
+	if (updateWorldTransformationMatrix)
+	{
+		UpdateWorldTransformationMatrix();
+	}
 }
 
-void ObjectBase::SetWorldScaling(const Vector3& scaling)
+void ObjectBase::SetWorldScaling(const Vector3& scaling, bool updateWorldTransformationMatrix/* = true*/)
 {
 	worldScaling_ = scaling;
-	UpdateWorldTransformationMatrix();
+	if (updateWorldTransformationMatrix)
+	{
+		UpdateWorldTransformationMatrix();
+	}
 }
 
 void ObjectBase::SetIsActive(bool isActive)
@@ -121,32 +130,12 @@ void ObjectBase::AttachToSocket(SocketComponent* socketComponent)
 {
 	SetParent(nullptr);
 
-	if (rootComponent_)
-	{
-		rootComponent_->SetParent(socketComponent);
-	}
+	socketComponent->Attach(this);
 }
 
 void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
 {
-	if (rootComponent_)
-	{
-		SocketComponent* rootSocket = dynamic_cast<SocketComponent*>(rootComponent_->GetParent());
-		if (!rootSocket || rootSocket != socketComponent)
-		{
-			return;
-		}
-
-		socketComponent->RemoveChild(rootComponent_);
-		rootComponent_->SetParent(static_cast<Component*>(nullptr));
-
-		worldPosition_ = rootComponent_->GetWorldPosition();
-		worldRotation_ = rootComponent_->GetWorldRotation();
-		worldScaling_ = rootComponent_->GetWorldScaling();
-		
-		worldTransformationMatrix_ = rootComponent_->GetComponentToWorldTransformationMatrix();
-		UpdateChildrenTransformations();
-	}
+	socketComponent->RemoveObject(this);
 }
 
 void ObjectBase::SetParent(ObjectBase* newParent, bool resetTransformation/* = false*/, bool updateWorldTransformation/* = true*/)

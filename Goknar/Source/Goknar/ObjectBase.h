@@ -52,19 +52,19 @@ public:
 		return isInitialized_;
 	}
 
-	void SetWorldPosition(const Vector3& position);
+	void SetWorldPosition(const Vector3& position, bool updateWorldTransformationMatrix = true);
 	const Vector3& GetWorldPosition() const
 	{
 		return worldPosition_;
 	}
 
-	void SetWorldRotation(const Quaternion& rotation);
+	void SetWorldRotation(const Quaternion& rotation, bool updateWorldTransformationMatrix = true);
 	const Quaternion& GetWorldRotation() const
 	{
 		return worldRotation_;
 	}
 
-	void SetWorldScaling(const Vector3& scaling);
+	void SetWorldScaling(const Vector3& scaling, bool updateWorldTransformationMatrix = true);
 	const Vector3& GetWorldScaling() const
 	{
 		return worldScaling_;

@@ -116,7 +116,7 @@ private:
 	GEuint dynamicIndexBufferId_;
 
 	unsigned char isRenderingOnlyDepth_ : 1;
-	unsigned char removeStaticDataFromMemoryAfterTransferingToGPU : 1;
+	unsigned char removeStaticDataFromMemoryAfterTransferingToGPU_ : 1;
 };
 
 #endif
