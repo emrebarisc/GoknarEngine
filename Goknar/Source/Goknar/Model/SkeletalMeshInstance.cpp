@@ -2,6 +2,9 @@
 
 #include "SkeletalMeshInstance.h"
 
+#include <algorithm>
+#include <execution>
+
 #include "Goknar/Engine.h"
 #include "Goknar/Material.h"
 #include "Goknar/Components/SocketComponent.h"
@@ -64,6 +67,24 @@ void SkeletalMeshInstance::Render()
 	}
 
 	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
+	
+	std::for_each
+	(
+		std::execution::par,
+		std::begin(boneIdToAttachedMatrixPointerMap_),
+		std::end(boneIdToAttachedMatrixPointerMap_),
+		[&](const std::pair<int, const Matrix*>& pair)
+		{
+			const Matrix* matrix = pair.second;
+
+			if (matrix)
+			{
+				boneTransformations_[pair.first] = parentComponent_->GetComponentToWorldTransformationMatrix().GetInverse() * *matrix;
+			}
+		}
+	);
+
+
 	mesh_->GetMaterial()->GetShader()->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
 
 	MeshInstance::Render();
@@ -93,6 +114,19 @@ void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, const
 
 		skeletalMeshAnimation_.playLoopData = playLoopData;
 		skeletalMeshAnimation_.keyframeData = keyframeData;
+	}
+}
+
+void SkeletalMeshInstance::AttachBoneToMatrixPointer(const std::string& boneName, const Matrix* matrix)
+{
+	const int boneId = GetMesh()->GetBoneId(boneName);
+	if (matrix)
+	{
+		boneIdToAttachedMatrixPointerMap_[boneId] = matrix;
+	}
+	else
+	{
+		boneIdToAttachedMatrixPointerMap_.erase(boneIdToAttachedMatrixPointerMap_.find(boneId));
 	}
 }
 

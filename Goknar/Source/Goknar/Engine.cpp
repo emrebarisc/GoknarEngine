@@ -169,6 +169,9 @@ void Engine::Run()
 		{
 			deltaTime_ = 0.25f;
 		}
+
+		deltaTime_ *= timeScale_;
+
 		elapsedTime_ += deltaTime_;
 
 		{

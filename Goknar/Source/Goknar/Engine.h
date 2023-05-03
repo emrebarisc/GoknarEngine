@@ -107,6 +107,16 @@ public:
 
 	void SetShaderEngineVariables(Shader* shader);
 
+	void SetTimeScale(float timeScale)
+	{
+		timeScale_ = timeScale;
+	}
+
+	float GetTimeScale() const
+	{
+		return timeScale_;
+	}
+
 	float GetDeltaTime() const
 	{
 		return deltaTime_;
@@ -147,6 +157,7 @@ private:
 	int objectsToBeInitializedSize_{ 0 };
 	int componentsToBeInitializedSize_{ 0 };
 
+	float timeScale_{ 1.f };
 	float deltaTime_{ 0.f };
 	float elapsedTime_{ 0.f };
 

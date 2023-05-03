@@ -10,13 +10,13 @@
 class SkeletalAnimation;
 class SocketComponent;
 
-struct PlayLoopData
+struct GOKNAR_API PlayLoopData
 {
 	bool playOnce{ false };
 	std::function<void()> callback;
 };
 
-struct KeyframeData
+struct GOKNAR_API KeyframeData
 {
 	void AddCallbackToKeyframe(int keyframe, const std::function<void()>& callback)
 	{
@@ -26,7 +26,7 @@ struct KeyframeData
 	std::unordered_map<int, std::function<void()>> keyframeCallbackMap;
 };
 
-struct SkeletalMeshAnimation
+struct GOKNAR_API SkeletalMeshAnimation
 {
 	std::string name{ "" };
 	PlayLoopData playLoopData;
@@ -50,6 +50,8 @@ public:
 
 	void PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData = { false, {} }, const KeyframeData& keyframeData = {});
 
+	void AttachBoneToMatrixPointer(const std::string& boneName, const Matrix* matrix);
+
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;
 
@@ -62,6 +64,7 @@ private:
 
 	std::vector<Matrix> boneTransformations_;
 	std::unordered_map<std::string, SocketComponent*> sockets_;
+	std::unordered_map<int, const Matrix*> boneIdToAttachedMatrixPointerMap_;
 };
 
 #endif
