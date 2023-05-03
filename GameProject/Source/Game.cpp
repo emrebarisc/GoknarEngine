@@ -3,6 +3,8 @@
 #include "Goknar/Scene.h"
 
 #include "Archer.h"
+#include "Goknar/Camera.h"
+#include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Managers/WindowManager.h"
 
 #include <chrono>
@@ -37,6 +39,7 @@ Game::Game() : Application()
 	archer_ = new Archer();
 
 	engine->GetWindowManager()->SetIsInFullscreen(false);
+	//engine->SetTimeScale(0.1f);
 }
 
 void Game::Run()

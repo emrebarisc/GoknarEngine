@@ -88,6 +88,7 @@ private:
 	Bow* bow_{ nullptr };
 	SocketComponent* leftHandSocket_{ nullptr };
 	SocketComponent* rightHandSocket_{ nullptr };
+	SocketComponent* bowStringSocket_{ nullptr };
 
 	float thirdPersonCameraDistance_{ 1.f };
 

@@ -45,6 +45,10 @@ Archer::Archer() :
 	rightHandSocket_->SetRelativeRotation(Quaternion::FromEuler(Vector3{ 0.f, -13.5f, 90.f }));
 	rightHandSocket_->SetRelativeScaling(Vector3{ 80.f });
 
+	bowStringSocket_ = skeletalMeshInstance->AddSocketToBone("mixamorig:RightHandMiddle3");
+	bowStringSocket_->SetRelativeScaling(Vector3{ 80.f });
+	bowStringSocket_->SetRelativePosition(Vector3{ 14.f, 0.f, 0.f });
+
 	bow_ = new Bow();
 	bow_->AttachToSocket(leftHandSocket_);
 	bow_->SetIsActive(false);
@@ -148,16 +152,17 @@ void Archer::HandleDrawBowInput()
 		isAnimationBusy_ = true;
 
 		KeyframeData keyframeData;
-		keyframeData.AddCallbackToKeyframe(8,
+		keyframeData.AddCallbackToKeyframe(9,
 			[&]()
 			{
 				loadedArrow_ = new Arrow();
 				loadedArrow_->AttachToSocket(rightHandSocket_);
 			});
 
-		keyframeData.AddCallbackToKeyframe(20,
+		keyframeData.AddCallbackToKeyframe(18,
 			[&]()
 			{
+				bow_->GetSkeletalMesh()->GetMeshInstance()->AttachBoneToMatrixPointer("BowString", &bowStringSocket_->GetComponentToWorldTransformationMatrix());
 			});
 
 		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDrawArrow.001",
@@ -186,6 +191,14 @@ void Archer::HandleLooseBowInput()
 		{
 			isAnimationBusy_ = true;
 
+			KeyframeData keyframeData;
+			keyframeData.AddCallbackToKeyframe(5,
+				[&]()
+				{
+					Shoot();
+					bow_->GetSkeletalMesh()->GetMeshInstance()->AttachBoneToMatrixPointer("BowString", nullptr);
+				});
+
 			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimRecoil",
 				PlayLoopData{
 					true,
@@ -195,10 +208,9 @@ void Archer::HandleLooseBowInput()
 						isLoosing_ = false;
 						Idle();
 					}
-				});
+				}, keyframeData);
 
 			canShoot_ = false;
-			Shoot();
 		}
 		else
 		{
@@ -209,6 +221,7 @@ void Archer::HandleLooseBowInput()
 				loadedArrow_->Destroy();
 				loadedArrow_ = nullptr;
 			}
+			bow_->GetSkeletalMesh()->GetMeshInstance()->AttachBoneToMatrixPointer("BowString", nullptr);
 			Idle();
 		}
 	}

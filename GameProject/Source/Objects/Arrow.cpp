@@ -16,8 +16,8 @@ Arrow::Arrow() : StaticMeshObject()
 	movementComponent_ = AddSubComponent<ProjectileMovementComponent>();
 	movementComponent_->SetIsActive(false);
 
-	AxisObject* axisObject = new AxisObject();
-	axisObject->SetParent(this);
+	//AxisObject* axisObject = new AxisObject();
+	//axisObject->SetParent(this);
 }
 
 void Arrow::BeginGame()
