@@ -46,12 +46,12 @@ void PhysicsObjectForceRegistry::Clear()
     registrations_.clear();
 }
 
-GravityForceGenerator::GravityForceGenerator(const Vector3& gravity) :
+PhysicsObjectGravityForceGenerator::PhysicsObjectGravityForceGenerator(const Vector3& gravity) :
     gravity_(gravity)
 {
 }
 
-void GravityForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
+void PhysicsObjectGravityForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
 {
     if (!physicsObject->HasFiniteMass())
     {
@@ -61,7 +61,7 @@ void GravityForceGenerator::UpdateForce(PhysicsObject* physicsObject, float dura
     physicsObject->AddForce(gravity_ * physicsObject->GetMass());
 }
 
-void DragForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
+void PhysicsObjectDragForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
 {
     Vector3 force;
     physicsObject->GetVelocity(&force);
@@ -76,7 +76,7 @@ void DragForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duratio
     physicsObject->AddForce(force);
 }
 
-void SpringForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
+void PhysicsObjectSpringForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
 {
     // Calculate the vector of the spring
     Vector3 force = physicsObject->GetWorldPosition();
@@ -93,7 +93,7 @@ void SpringForceGenerator::UpdateForce(PhysicsObject* physicsObject, float durat
     physicsObject->AddForce(force);
 }
 
-void BuoyancyForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
+void PhysicsObjectBuoyancyForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
 {
     // Calculate the submersion depth
     float depth = physicsObject->GetWorldPosition().y;
@@ -115,7 +115,7 @@ void BuoyancyForceGenerator::UpdateForce(PhysicsObject* physicsObject, float dur
     physicsObject->AddForce(force);
 }
 
-void BungeeForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
+void PhysicsObjectBungeeForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
 {
     // Calculate the vector of the spring
     Vector3 force = physicsObject->GetWorldPosition();
@@ -134,7 +134,7 @@ void BungeeForceGenerator::UpdateForce(PhysicsObject* physicsObject, float durat
     physicsObject->AddForce(force);
 }
 
-void FakeSpringForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
+void PhysicsObjectFakeSpringForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
 {
     // Check that we do not have infInite mass
     if (!physicsObject->HasFiniteMass()) return;
@@ -162,14 +162,14 @@ void FakeSpringForceGenerator::UpdateForce(PhysicsObject* physicsObject, float d
     physicsObject->AddForce(accel * physicsObject->GetMass());
 }
 
-void AnchoredSpringForceGenerator::Init(Vector3* anchor, float springConstant, float restLength)
+void PhysicsObjectAnchoredSpringForceGenerator::Init(Vector3* anchor, float springConstant, float restLength)
 {
     anchor_ = anchor;
     springConstant_ = springConstant;
     restLength_ = restLength;
 }
 
-void AnchoredBungeeForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
+void PhysicsObjectAnchoredBungeeForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
 {
     // Calculate the vector of the spring
     Vector3 force = physicsObject->GetWorldPosition();
@@ -188,7 +188,7 @@ void AnchoredBungeeForceGenerator::UpdateForce(PhysicsObject* physicsObject, flo
     physicsObject->AddForce(force);
 }
 
-void AnchoredSpringForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
+void PhysicsObjectAnchoredSpringForceGenerator::UpdateForce(PhysicsObject* physicsObject, float duration)
 {
     // Calculate the vector of the spring
     Vector3 force = physicsObject->GetWorldPosition();

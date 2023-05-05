@@ -23,12 +23,12 @@ public:
  * A force generator that applies a gravitational force. One instance
  * can be used for multiple physicsObjects.
  */
-class GravityForceGenerator : public PhysicsObjectForceGenerator
+class PhysicsObjectGravityForceGenerator : public PhysicsObjectForceGenerator
 {
 public:
 
     /** Creates the generator with the given acceleration. */
-    GravityForceGenerator(const Vector3& gravity);
+    PhysicsObjectGravityForceGenerator(const Vector3& gravity);
 
     /** Applies the gravitational force to the given physicsObject. */
     virtual void UpdateForce(PhysicsObject* physicsObject, float duration);
@@ -42,11 +42,11 @@ private:
  * A force generator that applies a drag force. One instance
  * can be used for multiple physicsObjects.
  */
-class DragForceGenerator : public PhysicsObjectForceGenerator
+class PhysicsObjectDragForceGenerator : public PhysicsObjectForceGenerator
 {
 public:
     /** Creates the generator with the given coefficients. */
-    DragForceGenerator(float k1, float k2) : k1_(k1), k2(k2) {}
+    PhysicsObjectDragForceGenerator(float k1, float k2) : k1_(k1), k2(k2) {}
 
     /** Applies the drag force to the given physicsObject. */
     virtual void UpdateForce(PhysicsObject* physicsObject, float duration);
@@ -63,13 +63,13 @@ private:
  * A force generator that applies a Spring force, where
  * one end is attached to a fixed point in space.
  */
-class AnchoredSpringForceGenerator : public PhysicsObjectForceGenerator
+class PhysicsObjectAnchoredSpringForceGenerator : public PhysicsObjectForceGenerator
 {
 public:
-    AnchoredSpringForceGenerator() {}
+    PhysicsObjectAnchoredSpringForceGenerator() {}
 
     /** Creates a new spring with the given parameters. */
-    AnchoredSpringForceGenerator(Vector3* anchor, float springConstant, float restLength) :
+    PhysicsObjectAnchoredSpringForceGenerator(Vector3* anchor, float springConstant, float restLength) :
         anchor_(anchor),
         springConstant_(springConstant),
         restLength_(restLength)
@@ -102,7 +102,7 @@ protected:
 * A force generator that applies a bungee force, where
 * one end is attached to a fixed point in space.
 */
-class AnchoredBungeeForceGenerator : public AnchoredSpringForceGenerator
+class PhysicsObjectAnchoredBungeeForceGenerator : public PhysicsObjectAnchoredSpringForceGenerator
 {
 public:
     /** Applies the spring force to the given physicsObject. */
@@ -113,11 +113,11 @@ public:
  * A force generator that fakes a stiff spring force, and where
  * one end is attached to a fixed point in space.
  */
-class FakeSpringForceGenerator : public PhysicsObjectForceGenerator
+class PhysicsObjectFakeSpringForceGenerator : public PhysicsObjectForceGenerator
 {
 public:
     /** Creates a new spring with the given parameters. */
-    FakeSpringForceGenerator(Vector3* anchor, float springConstant, float damping) :
+    PhysicsObjectFakeSpringForceGenerator(Vector3* anchor, float springConstant, float damping) :
         anchor_(anchor),
         springConstant_(springConstant),
         damping_(damping)
@@ -140,11 +140,11 @@ private:
 /**
  * A force generator that applies a Spring force.
  */
-class SpringForceGenerator : public PhysicsObjectForceGenerator
+class PhysicsObjectSpringForceGenerator : public PhysicsObjectForceGenerator
 {
 public:
     /** Creates a new spring with the given parameters. */
-    SpringForceGenerator(PhysicsObject* other, float springConstant, float restLength) :
+    PhysicsObjectSpringForceGenerator(PhysicsObject* other, float springConstant, float restLength) :
         other_(other),
         springConstant_(springConstant),
         restLength_(restLength) 
@@ -168,11 +168,11 @@ private:
  * A force generator that applies a spring force only
  * when extended.
  */
-class BungeeForceGenerator : public PhysicsObjectForceGenerator
+class PhysicsObjectBungeeForceGenerator : public PhysicsObjectForceGenerator
 {
 public:
     /** Creates a new bungee with the given parameters. */
-    BungeeForceGenerator(PhysicsObject* other, float springConstant, float restLength) :
+    PhysicsObjectBungeeForceGenerator(PhysicsObject* other, float springConstant, float restLength) :
         other_(other),
         springConstant_(springConstant),
         restLength_(restLength)
@@ -200,11 +200,11 @@ private:
  * A force generator that applies a buoyancy force for a plane of
  * liquid parrallel to XZ plane.
  */
-class BuoyancyForceGenerator : public PhysicsObjectForceGenerator
+class PhysicsObjectBuoyancyForceGenerator : public PhysicsObjectForceGenerator
 {
 public:
     /** Creates a new buoyancy force with the given parameters. */
-    BuoyancyForceGenerator(float maxDepth, float volume, float waterHeight, float liquidDensity = 1000.0f) :
+    PhysicsObjectBuoyancyForceGenerator(float maxDepth, float volume, float waterHeight, float liquidDensity = 1000.0f) :
         maxDepth_(maxDepth),
         volume_(volume),
         waterHeight_(waterHeight),

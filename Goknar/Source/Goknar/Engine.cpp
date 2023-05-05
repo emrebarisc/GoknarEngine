@@ -47,7 +47,7 @@ Engine::Engine()
 	resourceManager_ = new ResourceManager();
 	objectManager_ = new ObjectManager();
 	renderer_ = new Renderer();
-	physicsWorld_ = new PhysicsWorld(8);
+	physicsWorld_ = new PhysicsWorld();
 #if GOKNAR_EDITOR
 	editor_ = new ImGuiEditor();
 #endif
