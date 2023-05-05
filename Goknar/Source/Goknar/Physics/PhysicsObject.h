@@ -59,12 +59,15 @@ protected:
 	virtual void Tick(float deltaTime) override;
     void PhysicsTick(float deltaTime);
 
+    Vector3 velocity_{ Vector3::ZeroVector };
+    Vector3 forceAccum_{ Vector3::ZeroVector };
+    Vector3 acceleration_{ Vector3::ZeroVector };
+
     // Mass is in kg
-    float inverseMass_;
-    float damping_;
-    Vector3 velocity_;
-    Vector3 forceAccum_;
-    Vector3 acceleration_;
+    float inverseMass_{ 1.f };
+    float damping_{ 0.99f };
+
+    float remainingPhysicsTickDeltaTime_{ 0.f };
 };
 
 #endif

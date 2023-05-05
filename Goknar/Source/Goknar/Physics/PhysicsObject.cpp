@@ -4,9 +4,18 @@
 
 #include "Goknar/Physics/PhysicsObject.h"
 
+#define PHYSICS_TICKS_PER_SECOND 30
+#define PHYSICS_TICK_DELTA_TIME 1.f / PHYSICS_TICKS_PER_SECOND
+
 void PhysicsObject::Tick(float deltaTime)
 {
-    PhysicsTick(deltaTime);
+    remainingPhysicsTickDeltaTime_ += deltaTime;
+    while (PHYSICS_TICK_DELTA_TIME <= remainingPhysicsTickDeltaTime_)
+    {
+        PhysicsTick(PHYSICS_TICK_DELTA_TIME);
+
+        remainingPhysicsTickDeltaTime_ -= PHYSICS_TICK_DELTA_TIME;
+    }
 }
 
 void PhysicsObject::PhysicsTick(float deltaTime)
