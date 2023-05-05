@@ -1,0 +1,65 @@
+<Scene>
+  <BackgroundColor>10 10 10</BackgroundColor>
+
+  <Cameras>
+    <Camera id = "0">
+      <Position>-12.0 -12.0 17.5</Position>
+      <Gaze>0.4999999701976776 0.5 -0.7071068286895752</Gaze>
+      <Up>0.5 0.5 0.7071068286895752</Up>
+      <NearPlane>-0.5 0.5 -0.28125 0.28125</NearPlane>
+      <NearDistance>1</NearDistance>
+      <ImageResolution>1600 900</ImageResolution>
+    </Camera>
+  </Cameras>
+
+  <Lights>
+    <AmbientLight>100 100 100</AmbientLight>
+  </Lights>
+
+  <Shaders>
+  </Shaders>
+
+  <Textures>
+  </Textures>
+
+  <Materials>
+  </Materials>
+
+  <Meshes>
+    <StaticMesh id = "0">
+      <Name>StaticMesh_BigFloor</Name>
+      <Path>Meshes/StaticMesh_BigFloor.fbx</Path>
+    </StaticMesh>
+    <StaticMesh id = "1">
+      <Name>SM_Cube</Name>
+      <Path>Meshes/SM_Cube.fbx</Path>
+    </StaticMesh>
+  </Meshes>
+
+  <Objects>
+    <StaticMeshObject id = "1">
+      <Name>Floor</Name>
+      <PivotPoint>0 0 0</PivotPoint>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0.0 0.0 0.0</WorldPosition>
+      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+      <Mesh>0</Mesh>
+    </StaticMeshObject>
+    <StaticMeshObject id = "1">
+      <Name>Floor</Name>
+      <PivotPoint>0 0 0</PivotPoint>
+      <RelativePosition>0 0 0</RelativePosition>
+      <RelativeRotation>0 0 0</RelativeRotation>
+      <RelativeScaling>1 1 1</RelativeScaling>
+      <WorldPosition>0.0 0.0 0.0</WorldPosition>
+      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+      <WorldScaling>0.0 0.0 0.0</WorldScaling>
+      <Mesh>1</Mesh>
+    </StaticMeshObject>
+  </Objects>
+
+
+</Scene>

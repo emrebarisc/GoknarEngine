@@ -1,0 +1,20 @@
+<Scene>
+  <BackgroundColor>25 40 75</BackgroundColor>
+
+  <Cameras>
+    <Camera id = "0">
+      <Projection>Orthographic</Projection>
+      <Position>72 -150 290</Position>
+      <Gaze>0 0 -1</Gaze>
+      <Up>0 1 0</Up>
+      <NearPlane>-0.22360 0.22360 -0.44721 0.44721</NearPlane>
+      <NearDistance>1</NearDistance>
+      <ImageResolution>300 600</ImageResolution>
+    </Camera>
+  </Cameras>
+
+  <Lights>
+    <AmbientLight>0 0 0</AmbientLight>
+  </Lights>
+  
+</Scene>
