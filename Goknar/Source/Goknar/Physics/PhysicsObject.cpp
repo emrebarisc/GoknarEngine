@@ -2,20 +2,13 @@
 
 #include "Goknar/Log.h"
 
+#include "Goknar/Engine.h"
 #include "Goknar/Physics/PhysicsObject.h"
+#include "Goknar/Physics/PhysicsWorld.h"
 
-#define PHYSICS_TICKS_PER_SECOND 30
-#define PHYSICS_TICK_DELTA_TIME 1.f / PHYSICS_TICKS_PER_SECOND
-
-void PhysicsObject::Tick(float deltaTime)
+PhysicsObject::PhysicsObject() : ObjectBase()
 {
-    remainingPhysicsTickDeltaTime_ += deltaTime;
-    while (PHYSICS_TICK_DELTA_TIME <= remainingPhysicsTickDeltaTime_)
-    {
-        PhysicsTick(PHYSICS_TICK_DELTA_TIME);
-
-        remainingPhysicsTickDeltaTime_ -= PHYSICS_TICK_DELTA_TIME;
-    }
+    engine->GetPhysicsWorld()->AddPhysicsObject(this);
 }
 
 void PhysicsObject::PhysicsTick(float deltaTime)
@@ -40,13 +33,7 @@ void PhysicsObject::PhysicsTick(float deltaTime)
     // Impose drag.
     velocity_ *= std::powf(damping_, deltaTime);
 
-    // Clear the forces.
     ClearAccumulator();
-}
-
-PhysicsObject::PhysicsObject() : ObjectBase()
-{
-    SetIsTickable(true);
 }
 
 void PhysicsObject::SetMass(const float mass)

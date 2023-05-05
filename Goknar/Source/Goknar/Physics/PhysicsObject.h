@@ -5,6 +5,7 @@
 
 class GOKNAR_API PhysicsObject : public ObjectBase
 {   
+    friend class PhysicsWorld;
 public:
     PhysicsObject();
 
@@ -56,7 +57,6 @@ public:
     void AddForce(const Vector3 &force);
 
 protected:
-	virtual void Tick(float deltaTime) override;
     void PhysicsTick(float deltaTime);
 
     Vector3 velocity_{ Vector3::ZeroVector };

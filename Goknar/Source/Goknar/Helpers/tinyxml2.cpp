@@ -2103,7 +2103,7 @@ namespace tinyxml2
 	// (x86_64-w64-mingw32 target) then the check is redundant and gcc and clang emit
 	// -Wtype-limits warning. This piece makes the compiler select code with a check when a check
 	// is useful and code with no check when a check is redundant depending on how size_t and unsigned long
-	// types sizes relate to each other.
+	// types sizes relate to each other_.
 	template
 		<bool = (sizeof(unsigned long) >= sizeof(size_t))>
 		struct LongFitsIntoSizeTMinusOne {
