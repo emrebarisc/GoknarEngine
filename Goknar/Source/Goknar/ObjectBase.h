@@ -116,8 +116,6 @@ public:
 	}
 	void RemoveChild(ObjectBase* child);
 
-protected:
-
 private:
 	void AddComponent(Component* component);
 
@@ -127,13 +125,15 @@ private:
 
 	Matrix worldTransformationMatrix_{ Matrix::IdentityMatrix };
 
-	std::vector<ObjectBase*> children_;
-	std::vector<Component*> components_;
-	Component* rootComponent_{ nullptr };
-
+protected:
 	Quaternion worldRotation_{ Quaternion::Identity };
 	Vector3 worldPosition_{ Vector3::ZeroVector };
 	Vector3 worldScaling_{ Vector3(1.f) };
+
+private:
+	std::vector<ObjectBase*> children_;
+	std::vector<Component*> components_;
+	Component* rootComponent_{ nullptr };
 
 	ObjectBase* parent_{ nullptr };
 	SocketComponent* parentSocket_{ nullptr };
