@@ -67,7 +67,7 @@ public:
     void AddForce(const Vector3 &force);
 
 protected:
-    void PhysicsTick(float deltaTime);
+    virtual void PhysicsTick(float deltaTime);
 
     Vector3 velocity_{ Vector3::ZeroVector };
     Vector3 forceAccum_{ Vector3::ZeroVector };
