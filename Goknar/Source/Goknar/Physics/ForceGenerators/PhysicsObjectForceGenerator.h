@@ -46,7 +46,7 @@ class PhysicsObjectDragForceGenerator : public PhysicsObjectForceGenerator
 {
 public:
     /** Creates the generator with the given coefficients. */
-    PhysicsObjectDragForceGenerator(float k1, float k2) : k1_(k1), k2(k2) {}
+    PhysicsObjectDragForceGenerator(float k1, float k2) : k1_(k1), k2_(k2) {}
 
     /** Applies the drag force to the given physicsObject. */
     virtual void UpdateForce(PhysicsObject* physicsObject, float duration);
@@ -56,7 +56,7 @@ private:
     float k1_;
 
     /** Holds the velocity squared drag coeffificent. */
-    float k2;
+    float k2_;
 };
 
 /**
@@ -66,8 +66,6 @@ private:
 class PhysicsObjectAnchoredSpringForceGenerator : public PhysicsObjectForceGenerator
 {
 public:
-    PhysicsObjectAnchoredSpringForceGenerator() {}
-
     /** Creates a new spring with the given parameters. */
     PhysicsObjectAnchoredSpringForceGenerator(Vector3* anchor, float springConstant, float restLength) :
         anchor_(anchor),
@@ -104,37 +102,14 @@ protected:
 */
 class PhysicsObjectAnchoredBungeeForceGenerator : public PhysicsObjectAnchoredSpringForceGenerator
 {
-public:
-    /** Applies the spring force to the given physicsObject. */
-    virtual void UpdateForce(PhysicsObject *physicsObject, float duration);
-};
-
-/**
- * A force generator that fakes a stiff spring force, and where
- * one end is attached to a fixed point in space.
- */
-class PhysicsObjectFakeSpringForceGenerator : public PhysicsObjectForceGenerator
-{
-public:
+public:   
     /** Creates a new spring with the given parameters. */
-    PhysicsObjectFakeSpringForceGenerator(Vector3* anchor, float springConstant, float damping) :
-        anchor_(anchor),
-        springConstant_(springConstant),
-        damping_(damping)
+    PhysicsObjectAnchoredBungeeForceGenerator(Vector3* anchor, float springConstant, float restLength) :
+        PhysicsObjectAnchoredSpringForceGenerator(anchor, springConstant, restLength)
     {}
 
     /** Applies the spring force to the given physicsObject. */
-    virtual void UpdateForce(PhysicsObject* physicsObject, float duration);
-
-private:
-    /** The location of the anchored end of the spring. */
-    Vector3* anchor_;
-
-    /** Holds the sprint constant. */
-    float springConstant_;
-
-    /** Holds the damping on the oscillation of the spring. */
-    float damping_;
+    virtual void UpdateForce(PhysicsObject *physicsObject, float duration);
 };
 
 /**
@@ -245,6 +220,8 @@ private:
 class PhysicsObjectForceRegistry
 {
 public:
+    ~PhysicsObjectForceRegistry();
+
     /**
      * Registers the given force generator to apply to the
      * given physicsObject.

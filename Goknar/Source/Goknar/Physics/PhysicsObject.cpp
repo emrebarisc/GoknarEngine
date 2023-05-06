@@ -20,6 +20,11 @@ void PhysicsObject::PhysicsTick(float deltaTime)
 
     GOKNAR_CORE_ASSERT(0.f < deltaTime);
 
+    if (isGravityEnabled_ && HasFiniteMass())
+    {
+        AddForce(DEFAULT_GRAVITATIONAL_FORCE * GetMass());
+    }
+
     // Update linear position.
     SetWorldPosition(worldPosition_ + velocity_ * deltaTime);
 

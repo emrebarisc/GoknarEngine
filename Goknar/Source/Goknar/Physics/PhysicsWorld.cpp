@@ -2,10 +2,17 @@
 
 #include "Goknar/Physics/PhysicsWorld.h"
 
+#include "Goknar/Physics/ForceGenerators/PhysicsObjectForceGenerator.h"
 #include "Goknar/Physics/PhysicsObject.h"
 
 PhysicsWorld::PhysicsWorld(unsigned char maxContacts, unsigned char iterations)
 {
+    physicsObjectForceRegistry_ = new PhysicsObjectForceRegistry();
+}
+
+PhysicsWorld::~PhysicsWorld()
+{
+    delete physicsObjectForceRegistry_;
 }
 
 void PhysicsWorld::PhysicsTick(float deltaTime)
@@ -13,6 +20,8 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
     remainingPhysicsTickDeltaTime_ += deltaTime;
     while (PHYSICS_TICK_DELTA_TIME <= remainingPhysicsTickDeltaTime_)
     {
+        physicsObjectForceRegistry_->UpdateForces(PHYSICS_TICK_DELTA_TIME);
+
         PhysicsObjects::iterator physicsObjectsIterator = physicsObjects_.begin();
         while (physicsObjectsIterator != physicsObjects_.end())
         {

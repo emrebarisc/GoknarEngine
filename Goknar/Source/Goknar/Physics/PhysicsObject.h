@@ -53,6 +53,16 @@ public:
         return acceleration_;
     }
 
+    bool GetIsGravityEnabled() const
+    {
+        return isGravityEnabled_;
+    }
+
+    void SetIsGravityEnabled(bool isGravityEnabled)
+    {
+        isGravityEnabled_ = isGravityEnabled;
+    }
+
     void ClearAccumulator();
     void AddForce(const Vector3 &force);
 
@@ -68,6 +78,8 @@ protected:
     float damping_{ 0.99f };
 
     float remainingPhysicsTickDeltaTime_{ 0.f };
+
+    bool isGravityEnabled_{ true };
 };
 
 #endif
