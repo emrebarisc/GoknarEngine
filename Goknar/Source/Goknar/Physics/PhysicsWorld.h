@@ -36,8 +36,14 @@ public:
         return physicsObjectForceRegistry_;
     }
 
+    ForceRegistry* GetForceRegistry() const
+    {
+        return forceRegistry_;
+    }
+
 protected:
     PhysicsObjectForceRegistry* physicsObjectForceRegistry_;
+    ForceRegistry* forceRegistry_;
 
     typedef std::vector<PhysicsObject*> PhysicsObjects;
     PhysicsObjects physicsObjects_;

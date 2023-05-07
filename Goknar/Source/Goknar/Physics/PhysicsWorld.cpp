@@ -2,6 +2,7 @@
 
 #include "Goknar/Physics/PhysicsWorld.h"
 
+#include "Goknar/Physics/ForceGenerators/ForceGenerator.h"
 #include "Goknar/Physics/ForceGenerators/PhysicsObjectForceGenerator.h"
 #include "Goknar/Physics/PhysicsObject.h"
 #include "Goknar/Physics/RigidBody.h"
@@ -9,11 +10,13 @@
 PhysicsWorld::PhysicsWorld(unsigned char maxContacts, unsigned char iterations)
 {
     physicsObjectForceRegistry_ = new PhysicsObjectForceRegistry();
+    forceRegistry_ = new ForceRegistry();
 }
 
 PhysicsWorld::~PhysicsWorld()
 {
     delete physicsObjectForceRegistry_;
+    delete forceRegistry_;
 }
 
 void PhysicsWorld::PhysicsTick(float deltaTime)
@@ -21,8 +24,7 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
     remainingPhysicsTickDeltaTime_ += deltaTime;
     while (PHYSICS_TICK_DELTA_TIME <= remainingPhysicsTickDeltaTime_)
     {
-        physicsObjectForceRegistry_->UpdateForces(PHYSICS_TICK_DELTA_TIME);
-
+        forceRegistry_->UpdateForces(PHYSICS_TICK_DELTA_TIME);
         PhysicsObjects::iterator physicsObjectsIterator = physicsObjects_.begin();
         while (physicsObjectsIterator != physicsObjects_.end())
         {
@@ -31,6 +33,7 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
             ++physicsObjectsIterator;
         }
 
+        physicsObjectForceRegistry_->UpdateForces(PHYSICS_TICK_DELTA_TIME);
         RigidBodies::iterator rigidBodyIterator = rigidBodies_.begin();
         while (rigidBodyIterator != rigidBodies_.end())
         {

@@ -10,7 +10,6 @@ PhysicsObjectForceGenerator::PhysicsObjectForceGenerator()
 
 PhysicsObjectForceRegistry::~PhysicsObjectForceRegistry()
 {
-
     Registry::iterator registrationIterator = registrations_.begin();
     while (registrationIterator != registrations_.end())
     {

@@ -14,6 +14,8 @@ class GOKNAR_API RigidBody : public ObjectBase
 public:
     RigidBody();
 
+    virtual void Init() override;
+
     void SetMass(const float mass);
     float GetMass() const;
 
@@ -205,6 +207,13 @@ public:
         canSleep_ = canSleep;
     }
 
+    bool GetIsPhysicsEnabled() const
+    {
+        return isPhysicsEnabled_;
+    }
+
+    void SetIsPhysicsEnabled(bool isPhysicsEnabled);
+
     void ClearAccumulators();
 
     void AddForce(const Vector3& force);
@@ -301,6 +310,8 @@ protected:
      * always awake.
      */
     bool canSleep_{ true };
+
+    bool isPhysicsEnabled_{ true };
 };
 
 #endif

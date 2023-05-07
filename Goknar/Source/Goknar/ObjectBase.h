@@ -116,6 +116,11 @@ public:
 	}
 	void RemoveChild(ObjectBase* child);
 
+	Vector3 GetRelativePositionInWorldSpace(const Vector3& relativePosition);
+	Vector3 GetWorldPositionInRelativeSpace(const Vector3& positionInWorldSpace);
+	Vector3 GetRelativeDirectionInWorldSpace(const Vector3& relativeDirection);
+	Vector3 GetWorldDirectionInRelativeSpace(const Vector3& directionInWorldSpace);
+
 protected:
 	void AddComponent(Component* component);
 

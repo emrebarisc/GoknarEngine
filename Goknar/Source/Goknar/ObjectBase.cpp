@@ -182,6 +182,26 @@ void ObjectBase::RemoveChild(ObjectBase* child)
 	}
 }
 
+Vector3 ObjectBase::GetRelativePositionInWorldSpace(const Vector3& relativePosition)
+{
+	return worldTransformationMatrix_ * Vector4(relativePosition, 1.f);
+}
+
+Vector3 ObjectBase::GetWorldPositionInRelativeSpace(const Vector3& positionInWorldSpace)
+{
+	return worldTransformationMatrix_.GetInverse() * Vector4(positionInWorldSpace, 1.f);
+}
+
+Vector3 ObjectBase::GetRelativeDirectionInWorldSpace(const Vector3& relativeDirection)
+{
+	return worldTransformationMatrix_ * Vector4(relativeDirection, 0.f);
+}
+
+Vector3 ObjectBase::GetWorldDirectionInRelativeSpace(const Vector3& directionInWorldSpace)
+{
+	return worldTransformationMatrix_.GetInverse() * Vector4(directionInWorldSpace, 0.f);
+}
+
 void ObjectBase::AddComponent(Component* component)
 {
 	if (totalComponentCount_ == 0)

@@ -84,7 +84,31 @@ static inline void _transformInertiaTensor(
 
 RigidBody::RigidBody()
 {
-    engine->GetPhysicsWorld()->AddRigidBody(this);
+}
+
+void RigidBody::Init()
+{
+    if (isPhysicsEnabled_)
+    {
+        engine->GetPhysicsWorld()->AddRigidBody(this);
+    }
+}
+
+void RigidBody::SetIsPhysicsEnabled(bool isPhysicsEnabled)
+{
+    if (isPhysicsEnabled_ != isPhysicsEnabled)
+    {
+        if (isPhysicsEnabled)
+        {
+            engine->GetPhysicsWorld()->AddRigidBody(this);
+        }
+        else
+        {
+            engine->GetPhysicsWorld()->RemoveRigidBody(this);
+        }
+
+        isPhysicsEnabled_ = isPhysicsEnabled;
+    }
 }
 
 void RigidBody::PhysicsTick(float deltaTime)

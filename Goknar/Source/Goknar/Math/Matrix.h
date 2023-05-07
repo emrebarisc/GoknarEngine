@@ -191,6 +191,11 @@ public:
 
     }
 
+    inline static Matrix3x3 Lerp(const Matrix3x3& matrix1, const Matrix3x3& matrix2, float alpha)
+    {
+        return (matrix1 * (1.f - alpha)) + (matrix2 * alpha);
+    }
+
     inline static Matrix3x3 GetRotationMatrixAroundXAxis(float xAngle)
     {
         const float cosTheta = cos(xAngle);
@@ -250,6 +255,25 @@ public:
         }
     }
 
+    Matrix3x3 operator+(const Matrix3x3& other)
+    {
+        Matrix3x3 result(*this);
+
+        result.m[0] += other.m[0];
+        result.m[1] += other.m[1];
+        result.m[2] += other.m[2];
+
+        result.m[3] += other.m[3];
+        result.m[4] += other.m[4];
+        result.m[5] += other.m[5];
+
+        result.m[6] += other.m[6];
+        result.m[7] += other.m[7];
+        result.m[8] += other.m[8];
+
+        return result;
+    }
+
     Matrix3x3 operator-()
     {
         Matrix3x3 result(*this);
@@ -269,6 +293,17 @@ public:
         out.x = m[0] * rhs.x + m[1] * rhs.y + m[2] * rhs.z;
         out.y = m[3] * rhs.x + m[4] * rhs.y + m[5] * rhs.z;
         out.z = m[6] * rhs.x + m[7] * rhs.y + m[8] * rhs.z;
+
+        return out;
+    }
+
+    Matrix3x3 operator*(float value) const
+    {
+        Matrix3x3 out(
+            m[0] * value, m[1] * value, m[2] * value,
+            m[3] * value, m[4] * value, m[5] * value,
+            m[6] * value, m[7] * value, m[8] * value
+        );
 
         return out;
     }
@@ -557,6 +592,16 @@ public:
 
 		return result;
 	}
+
+    Matrix operator*(float value) const
+    {
+        return Matrix(
+            m[0] * value, m[1] * value, m[2] * value, m[3] * value,
+            m[4] * value, m[5] * value, m[6] * value, m[7] * value,
+            m[8] * value, m[9] * value, m[10] * value, m[11] * value,
+            m[12] * value, m[13] * value, m[14] * value, m[15] * value
+            );
+    }
 
     Vector4 operator*(const Vector4& rhs) const
     {
