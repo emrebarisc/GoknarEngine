@@ -13,78 +13,112 @@ RigidBodyManager::RigidBodyManager()
 
 void RigidBodyManager::BeginGame()
 {
-	// {
-	// 	RigidBodyObject* gravityRigidBodyObject = new RigidBodyObject();
-	// 	gravityRigidBodyObject->SetIsGravityEnabled(false);
-	// 	gravityRigidBodyObject->SetWorldPosition(Vector3{ 0.f, 16.f, 10.f });
-	// 	RigidBodyGravityForceGenerator* gravityForceGenerator = new RigidBodyGravityForceGenerator(DEFAULT_GRAVITATIONAL_FORCE);
-	// 	engine->GetPhysicsWorld()->GetRigidBodyForceRegistry()->Add(gravityRigidBodyObject, gravityForceGenerator);
-	// }
+	{
+		RigidBodyObject* gravityObject = new RigidBodyObject();
+		gravityObject->SetIsGravityEnabled(false);
+		gravityObject->SetWorldPosition(Vector3{ 0.f, 16.f, 10.f });
+		Gravity* gravityForceGenerator = new Gravity(DEFAULT_GRAVITATIONAL_FORCE);
+		engine->GetPhysicsWorld()->GetForceRegistry()->Add(gravityObject, gravityForceGenerator);
+	}
 
-	// {
-	// 	RigidBodyObject* dragRigidBodyObject = new RigidBodyObject();
-	// 	dragRigidBodyObject->SetIsGravityEnabled(true);
-	// 	dragRigidBodyObject->SetWorldPosition(Vector3{ 0.f, 20.f, 10.f });
-	// 	RigidBodyDragForceGenerator* dragForceGenerator = new RigidBodyDragForceGenerator(4.f, 8.f);
-	// 	engine->GetPhysicsWorld()->GetRigidBodyForceRegistry()->Add(dragRigidBodyObject, dragForceGenerator);
-	// }
+	{
+		RigidBodyObject* dragObject = new RigidBodyObject();
+		dragObject->SetIsGravityEnabled(true);
+		dragObject->SetWorldPosition(Vector3{ 0.f, 20.f, 10.f });
+		DragForceGenerator* dragForceGenerator = new DragForceGenerator(4.f, 8.f);
+		engine->GetPhysicsWorld()->GetForceRegistry()->Add(dragObject, dragForceGenerator);
+	}
 
-	// {
-	// 	RigidBodyObject* anchoredSpringRigidBodyObject = new RigidBodyObject();
-	// 	anchoredSpringRigidBodyObject->SetIsGravityEnabled(true);
-	// 	anchoredSpringRigidBodyObject->SetWorldPosition(Vector3{ 0.f, 24.f, 10.f });
-	// 	anchoredSpringRigidBodyObject->SetDamping(0.9f);
+	{
+		RigidBodyObject* anchoredSpringObject = new RigidBodyObject();
+		anchoredSpringObject->SetIsGravityEnabled(true);
+		anchoredSpringObject->SetWorldPosition(Vector3{ 0.f, 24.f, 10.f });
+		anchoredSpringObject->SetDamping(0.9f, 0.9f);
 
-	// 	anchoredSpringAnchor_ = Vector3(0.f, 24.f, 10.f);
-	// 	RigidBodyAnchoredSpringForceGenerator* anchoredSpringForceGenerator = new RigidBodyAnchoredSpringForceGenerator(&anchoredSpringAnchor_, 1.f, 2.f);
-	// 	engine->GetPhysicsWorld()->GetRigidBodyForceRegistry()->Add(anchoredSpringRigidBodyObject, anchoredSpringForceGenerator);
-	// }
+		anchoredSpringAnchor_ = Vector3(0.f, 24.f, 10.f);
+		AnchoredSpringForceGenerator* anchoredSpringForceGenerator = new AnchoredSpringForceGenerator(&anchoredSpringAnchor_, Vector3::ZeroVector, 1.f, 2.f);
+		engine->GetPhysicsWorld()->GetForceRegistry()->Add(anchoredSpringObject, anchoredSpringForceGenerator);
+	}
 
-	// {
-	// 	RigidBodyObject* anchoredBungeeRigidBodyObject = new RigidBodyObject();
-	// 	anchoredBungeeRigidBodyObject->SetIsGravityEnabled(true);
-	// 	anchoredBungeeRigidBodyObject->SetWorldPosition(Vector3{ 0.f, 28.f, 10.f });
-	// 	anchoredBungeeRigidBodyObject->SetDamping(0.9f);
+	{
+		RigidBodyObject* anchoredSpringObject = new RigidBodyObject();
+		anchoredSpringObject->SetIsGravityEnabled(true);
+		anchoredSpringObject->SetWorldPosition(Vector3{ 0.f, 28.f, 10.f });
+		anchoredSpringObject->SetDamping(0.9f, 0.9f);
 
-	// 	anchoredBungeeAnchor_ = Vector3(0.f, 28.f, 8.f);
-	// 	RigidBodyAnchoredBungeeForceGenerator* anchoredBungeeForceGenerator = new RigidBodyAnchoredBungeeForceGenerator(&anchoredBungeeAnchor_, 1.f, 2.f);
-	// 	engine->GetPhysicsWorld()->GetRigidBodyForceRegistry()->Add(anchoredBungeeRigidBodyObject, anchoredBungeeForceGenerator);
-	// }
+		anchoredSpringWithRelativePositionAnchor_ = Vector3(0.f, 28.f, 10.f);
+		AnchoredSpringForceGenerator* anchoredSpringForceGenerator = new AnchoredSpringForceGenerator(&anchoredSpringWithRelativePositionAnchor_, Vector3{ 1.f, 1.f, 1.f}, 1.f, 2.f);
+		engine->GetPhysicsWorld()->GetForceRegistry()->Add(anchoredSpringObject, anchoredSpringForceGenerator);
+	}
 
-	// {
-	// 	RigidBodyObject* springRigidBodyObject1 = new RigidBodyObject();
-	// 	springRigidBodyObject1->SetIsGravityEnabled(false);
-	// 	springRigidBodyObject1->SetWorldPosition(Vector3{ 0.f, 32.f, 10.f });
+	{
+		RigidBodyObject* anchoredBungeeObject = new RigidBodyObject();
+		anchoredBungeeObject->SetIsGravityEnabled(true);
+		anchoredBungeeObject->SetWorldPosition(Vector3{ 0.f, 32.f, 10.f });
+		anchoredBungeeObject->SetDamping(0.9f, 0.9f);
 
-	// 	RigidBodyObject* springRigidBodyObject2 = new RigidBodyObject();
-	// 	springRigidBodyObject2->SetWorldPosition(Vector3{ 0.f, 32.f, 0.f });
+		anchoredBungeeAnchor_ = Vector3(0.f, 32.f, 8.f);
+		AnchoredBungeeForceGenerator* anchoredBungeeForceGenerator = new AnchoredBungeeForceGenerator(&anchoredBungeeAnchor_, Vector3{ 0.5f, 0.5f, 0.5f }, 1.f, 2.f);
+		engine->GetPhysicsWorld()->GetForceRegistry()->Add(anchoredBungeeObject, anchoredBungeeForceGenerator);
+	}
 
-	// 	RigidBodySpringForceGenerator* springForceGenerator = new RigidBodySpringForceGenerator(springRigidBodyObject1, 1.f, 2.f);
-	// 	engine->GetPhysicsWorld()->GetRigidBodyForceRegistry()->Add(springRigidBodyObject2, springForceGenerator);
-	// }
+	{
+		RigidBodyObject* springObject1 = new RigidBodyObject();
+		springObject1->SetIsGravityEnabled(false);
+		springObject1->SetWorldPosition(Vector3{ 0.f, 36.f, 10.f });
 
-	// {
-	// 	RigidBodyObject* bungeeRigidBodyObject1 = new RigidBodyObject();
-	// 	bungeeRigidBodyObject1->SetIsGravityEnabled(false);
-	// 	bungeeRigidBodyObject1->SetWorldPosition(Vector3{ 0.f, 36.f, 10.f });
+		RigidBodyObject* springObject2 = new RigidBodyObject();
+		springObject2->SetWorldPosition(Vector3{ 0.f, 36.f, 0.f });
 
-	// 	RigidBodyObject* bungeeRigidBodyObject2 = new RigidBodyObject();
-	// 	bungeeRigidBodyObject2->SetWorldPosition(Vector3{ 0.f, 36.f, 8.f });
-	// 	bungeeRigidBodyObject2->SetDamping(0.9f);
+		Spring* springForceGenerator = new Spring(Vector3::ZeroVector, springObject1, Vector3::ZeroVector, 1.f, 2.f);
+		engine->GetPhysicsWorld()->GetForceRegistry()->Add(springObject2, springForceGenerator);
+	}
 
-	// 	RigidBodyBungeeForceGenerator* bungeeForceGenerator = new RigidBodyBungeeForceGenerator(bungeeRigidBodyObject1, 1.f, 5.f);
-	// 	engine->GetPhysicsWorld()->GetRigidBodyForceRegistry()->Add(bungeeRigidBodyObject2, bungeeForceGenerator);
-	// }
+	{
+		RigidBodyObject* bungeeObject1 = new RigidBodyObject();
+		bungeeObject1->SetIsGravityEnabled(false);
+		bungeeObject1->SetWorldPosition(Vector3{ 0.f, 40.f, 10.f });
 
-	// {
-	// 	RigidBodyObject* bouyancyRigidBodyObject = new RigidBodyObject();
-	// 	//bouyancyRigidBodyObject->SetIsGravityEnabled(false);
-	// 	bouyancyRigidBodyObject->SetWorldPosition(Vector3{ 0.f, 40.f, 2.f });
-	// 	bouyancyRigidBodyObject->SetMass(2500.f);
+		RigidBodyObject* bungeeObject2 = new RigidBodyObject();
+		bungeeObject2->SetWorldPosition(Vector3{ 0.f, 40.f, 8.f });
+		bungeeObject2->SetDamping(0.9f, 0.9f);
 
-	// 	RigidBodyBuoyancyForceGenerator* buoyancyForceGenerator = new RigidBodyBuoyancyForceGenerator(0.5f, 100.f, 0.f, 500.f);
-	// 	engine->GetPhysicsWorld()->GetRigidBodyForceRegistry()->Add(bouyancyRigidBodyObject, buoyancyForceGenerator);
-	// }
+		BungeeForceGenerator* bungeeForceGenerator = new BungeeForceGenerator(bungeeObject1, 1.f, 5.f);
+		engine->GetPhysicsWorld()->GetForceRegistry()->Add(bungeeObject2, bungeeForceGenerator);
+	}
+
+	{
+		RigidBodyObject* bouyancyObject = new RigidBodyObject();
+		bouyancyObject->SetWorldPosition(Vector3{ 0.f, 44.f, 2.f });
+		bouyancyObject->SetMass(100.f);
+
+		Buoyancy* buoyancyForceGenerator = new Buoyancy(0.5f, 100.f, 0.f, 1000.f);
+		engine->GetPhysicsWorld()->GetForceRegistry()->Add(bouyancyObject, buoyancyForceGenerator);
+	}
+
+	{
+		RigidBodyObject* aeroObject = new RigidBodyObject();
+		aeroObject->SetIsGravityEnabled(false);
+		aeroObject->SetWorldPosition(Vector3{ 0.f, 48.f, 0.f });
+		aeroObject->SetMass(100.f);
+
+		windSpeed_ = Vector3{ 10.f, 0.f, 0.f };
+
+		Aero* aeroForceGenerator = new Aero(Quaternion::Identity.GetMatrix3x3(), Vector3{ 0.f, 48.f, 0.f }, &windSpeed_);
+		engine->GetPhysicsWorld()->GetForceRegistry()->Add(aeroObject, aeroForceGenerator);
+	}
+
+	{
+		RigidBodyObject* aeroControlObject = new RigidBodyObject();
+		aeroControlObject->SetIsGravityEnabled(false);
+		aeroControlObject->SetWorldPosition(Vector3{ 0.f, 52.f, 0.f });
+		aeroControlObject->SetMass(100.f);
+
+		windSpeed_ = Vector3{ 100.f, 0.f, 0.f };
+
+		aeroControlForceGenerator = new AeroControl(Quaternion::Identity.GetMatrix3x3(), Quaternion(TWO_PI, 0.f, 0.f).GetMatrix3x3(), Quaternion(0.f, TWO_PI, 0.f).GetMatrix3x3(), Vector3{ 0.f, 52.f, 0.f }, &windSpeed_);
+		engine->GetPhysicsWorld()->GetForceRegistry()->Add(aeroControlObject, aeroControlForceGenerator);
+	}
 }
 
 void RigidBodyManager::Tick(float deltaTime)
@@ -135,6 +169,8 @@ void RigidBodyManager::Tick(float deltaTime)
 
 		countdown = 1.f;
 	}
+
+	aeroControlForceGenerator->SetControl(countdown);
 
 	countdown -= deltaTime;
 }
