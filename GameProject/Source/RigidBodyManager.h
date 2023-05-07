@@ -2,10 +2,10 @@
 
 #include "Goknar/ObjectBase.h"
 
-class PhysicsObjectManager : public ObjectBase
+class RigidBodyManager : public ObjectBase
 {
 public:
-	PhysicsObjectManager();
+	RigidBodyManager();
 
 private:
 	virtual void BeginGame() override;

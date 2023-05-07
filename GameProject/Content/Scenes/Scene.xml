@@ -30,6 +30,10 @@
 			<Name>Ball</Name>
 			<Path>Meshes/SM_Ball.fbx</Path>
 		</StaticMesh>
+		<StaticMesh id = "1">
+			<Name>Box</Name>
+			<Path>Meshes/SM_Box.fbx</Path>
+		</StaticMesh>
 	</Meshes>
 
 	<Objects>

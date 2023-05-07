@@ -7,6 +7,7 @@
 #include "Goknar/Managers/WindowManager.h"
 
 #include "PhysicsObjectManager.h"
+#include "RigidBodyManager.h"
 
 #include <chrono>
 
@@ -23,6 +24,7 @@ public:
 
 private:
 	PhysicsObjectManager* physicsObjectManager_;
+	RigidBodyManager* rigidBodyManager_;
 };
 
 Game::Game() : Application()
@@ -37,7 +39,8 @@ Game::Game() : Application()
 
 	lastFrameTimePoint = currentTimePoint;
 
-	physicsObjectManager_ = new PhysicsObjectManager();
+	//physicsObjectManager_ = new PhysicsObjectManager();
+	rigidBodyManager_ = new RigidBodyManager();
 
 	engine->GetWindowManager()->SetIsInFullscreen(false);
 	//engine->SetTimeScale(0.1f);
