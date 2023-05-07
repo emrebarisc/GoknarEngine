@@ -116,16 +116,15 @@ public:
 	}
 	void RemoveChild(ObjectBase* child);
 
-private:
+protected:
 	void AddComponent(Component* component);
 
 	virtual void SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix);
-    virtual void UpdateWorldTransformationMatrix();
+	virtual void UpdateWorldTransformationMatrix();
 	virtual void UpdateChildrenTransformations();
 
 	Matrix worldTransformationMatrix_{ Matrix::IdentityMatrix };
 
-protected:
 	Quaternion worldRotation_{ Quaternion::Identity };
 	Vector3 worldPosition_{ Vector3::ZeroVector };
 	Vector3 worldScaling_{ Vector3(1.f) };

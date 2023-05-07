@@ -9,6 +9,8 @@
 
 class GOKNAR_API RigidBody : public ObjectBase
 {   
+    friend class PhysicsWorld;
+
 public:
     RigidBody();
 
@@ -237,7 +239,7 @@ protected:
      *
      * @see inverseMass
      */
-    Matrix3x3 inverseInertiaTensor_;
+    Matrix3x3 inverseInertiaTensor_{ Matrix3x3::IdentityMatrix };
 
     /**
      * Holds the inverse inertia tensor of the body in world
@@ -246,7 +248,7 @@ protected:
      *
      * @see inverseInertiaTensor
      */
-    Matrix3x3 inverseInertiaTensorWorld_;
+    Matrix3x3 inverseInertiaTensorWorld_{ Matrix3x3::IdentityMatrix };
 
     Vector3 eulerRotation_{ Vector3::ZeroVector };
 
@@ -291,14 +293,14 @@ protected:
      * by the integration functions or affected by collisions
      * with the world.
      */
-    bool isAwake_;
+    bool isAwake_{ true };
 
     /**
      * Some bodies may never be allowed to fall asleep.
      * User controlled bodies, for example, should be
      * always awake.
      */
-    bool canSleep_;
+    bool canSleep_{ true };
 };
 
 #endif

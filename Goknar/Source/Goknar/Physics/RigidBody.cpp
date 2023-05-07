@@ -2,7 +2,9 @@
 
 #include "Goknar/Physics/RigidBody.h"
 
+#include "Goknar/Engine.h"
 #include "Goknar/Log.h"
+#include "Goknar/Physics/PhysicsWorld.h"
 
 /**
  * Internal function that checks the validity of an inverse inertia tensor.
@@ -80,15 +82,19 @@ static inline void _transformInertiaTensor(
         t62 * rotmat[10];
 }
 
-
 RigidBody::RigidBody()
 {
-	
+    engine->GetPhysicsWorld()->AddRigidBody(this);
 }
 
 void RigidBody::PhysicsTick(float deltaTime)
 {
     if (!isAwake_) return;
+
+    if (isGravityEnabled_ && HasFiniteMass())
+    {
+        AddForce(DEFAULT_GRAVITATIONAL_FORCE * GetMass());
+    }
 
     // Calculate linear acceleration from force inputs.
     lastFrameAcceleration_ = acceleration_;
@@ -164,10 +170,12 @@ void RigidBody::SetMass(const float mass)
 
 float RigidBody::GetMass() const
 {
-    if (inverseMass_ == 0) {
-        return MAX_FLOAT;
+    if (inverseMass_ == 0)
+    {
+        return FLT_MAX;
     }
-    else {
+    else
+    {
         return 1.f / inverseMass_;
     }
 }

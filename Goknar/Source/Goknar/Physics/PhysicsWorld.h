@@ -3,6 +3,9 @@
 
 #include "Core.h"
 
+class RigidBody;
+class ForceRegistry;
+
 class PhysicsObject;
 class PhysicsObjectForceRegistry;
 
@@ -25,6 +28,9 @@ public:
     void AddPhysicsObject(PhysicsObject* physicsObject);
     void RemovePhysicsObject(PhysicsObject* physicsObject);
 
+    void AddRigidBody(RigidBody* rigidBody);
+    void RemoveRigidBody(RigidBody* rigidBody);
+
     PhysicsObjectForceRegistry* GetPhysicsObjectForceRegistry() const
     {
         return physicsObjectForceRegistry_;
@@ -35,6 +41,9 @@ protected:
 
     typedef std::vector<PhysicsObject*> PhysicsObjects;
     PhysicsObjects physicsObjects_;
+
+    typedef std::vector<RigidBody*> RigidBodies;
+    RigidBodies rigidBodies_;
 
 private:
     float remainingPhysicsTickDeltaTime_{ 0.f };

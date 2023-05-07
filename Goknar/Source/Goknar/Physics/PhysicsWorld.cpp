@@ -4,6 +4,7 @@
 
 #include "Goknar/Physics/ForceGenerators/PhysicsObjectForceGenerator.h"
 #include "Goknar/Physics/PhysicsObject.h"
+#include "Goknar/Physics/RigidBody.h"
 
 PhysicsWorld::PhysicsWorld(unsigned char maxContacts, unsigned char iterations)
 {
@@ -30,6 +31,14 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
             ++physicsObjectsIterator;
         }
 
+        RigidBodies::iterator rigidBodyIterator = rigidBodies_.begin();
+        while (rigidBodyIterator != rigidBodies_.end())
+        {
+            (*rigidBodyIterator)->PhysicsTick(PHYSICS_TICK_DELTA_TIME);
+
+            ++rigidBodyIterator;
+        }
+
         remainingPhysicsTickDeltaTime_ -= PHYSICS_TICK_DELTA_TIME;
     }
 }
@@ -51,5 +60,25 @@ void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)
         }
 
         ++physicsObjectsIterator;
+    }
+}
+
+void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
+{
+    rigidBodies_.push_back(rigidBody);
+}
+
+void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
+{
+    RigidBodies::iterator rigidBodyIterator = rigidBodies_.begin();
+    while (rigidBodyIterator != rigidBodies_.end())
+    {
+        if (*rigidBodyIterator == rigidBody)
+        {
+            rigidBodies_.erase(rigidBodyIterator);
+            break;
+        }
+
+        ++rigidBodyIterator;
     }
 }

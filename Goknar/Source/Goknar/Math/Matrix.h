@@ -235,6 +235,8 @@ public:
                             0.f, 0.f, 1.f);
     }
 
+    void GetInverse(Matrix3x3& inverse) const;
+    Matrix3x3 GetInverse() const;
     Matrix3x3 GetTranspose() const;
 
     void operator=(const Matrix3x3& rhs)
