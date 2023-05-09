@@ -244,6 +244,30 @@ public:
     Matrix3x3 GetInverse() const;
     Matrix3x3 GetTranspose() const;
 
+    inline Vector3 Matrix3x3::MultiplyTransposeBy(const Vector3& vector) const
+    {
+        return Vector3( vector.x * m[0] + vector.y * m[3] + vector.z * m[6],
+                        vector.x * m[1] + vector.y * m[4] + vector.z * m[7],
+                        vector.x * m[2] + vector.y * m[5] + vector.z * m[8]);
+    }
+
+    /**
+     * Sets the matrix to be a skew symmetric matrix based on
+     * the given vector. The skew symmetric matrix is the equivalent
+     * of the vector product. So if a,b are vectors. a x b = A_s b
+     * where A_s is the skew symmetric form of a.
+     */
+    void SetSkewSymmetric(const Vector3& vector)
+    {
+        m[0] = m[4] = m[8] = 0;
+        m[1] = -vector.z;
+        m[2] = vector.y;
+        m[3] = vector.z;
+        m[5] = -vector.x;
+        m[6] = -vector.y;
+        m[7] = vector.x;
+    }
+
     void operator=(const Matrix3x3& rhs)
     {
         if (this != &rhs)
@@ -360,6 +384,21 @@ public:
         }
 
         return true;
+    }
+
+    void operator+=(const Matrix3x3& rhs)
+    {
+        m[0] += rhs.m[0];
+        m[1] += rhs.m[1];
+        m[2] += rhs.m[2];
+
+        m[3] += rhs.m[3];
+        m[4] += rhs.m[4];
+        m[5] += rhs.m[5];
+
+        m[6] += rhs.m[6];
+        m[7] += rhs.m[7];
+        m[8] += rhs.m[8];
     }
 
     inline friend std::ostream& operator<<(std::ostream& out, const Matrix3x3& matrix3x3)

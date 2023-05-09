@@ -3,6 +3,10 @@
 
 #include "Core.h"
 
+#include "Contacts/Contacts.h"
+#include "Contacts/ContactResolver.h"
+
+class ContactGenerator;
 class RigidBody;
 class ForceRegistry;
 
@@ -52,7 +56,25 @@ protected:
     RigidBodies rigidBodies_;
 
 private:
+    struct BodyRegistration
+    {
+        RigidBody* body;
+        BodyRegistration* next;
+    };
+
+    struct ContactGenRegistration
+    {
+        ContactGenerator* gen;
+        ContactGenRegistration* next;
+    };
+
+    BodyRegistration* firstBody_;
+
+    ContactResolver contactResolver_;
+
     float remainingPhysicsTickDeltaTime_{ 0.f };
+
+    bool calculateIterations_;
 };
 
 #endif

@@ -2,12 +2,14 @@
 
 #include "Goknar/Physics/PhysicsWorld.h"
 
+#include "Goknar/Math/Matrix.h"
 #include "Goknar/Physics/ForceGenerators/ForceGenerator.h"
 #include "Goknar/Physics/ForceGenerators/PhysicsObjectForceGenerator.h"
 #include "Goknar/Physics/PhysicsObject.h"
 #include "Goknar/Physics/RigidBody.h"
 
-PhysicsWorld::PhysicsWorld(unsigned char maxContacts, unsigned char iterations)
+PhysicsWorld::PhysicsWorld(unsigned char maxContacts, unsigned char iterations) :
+    contactResolver_(iterations)
 {
     physicsObjectForceRegistry_ = new PhysicsObjectForceRegistry();
     forceRegistry_ = new ForceRegistry();

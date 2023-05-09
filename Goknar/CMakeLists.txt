@@ -32,6 +32,7 @@ set(SUBDIRS
 	${SOURCE_DIR_NAME}/Goknar/Model
 	#${SOURCE_DIR_NAME}/Goknar/Model/2D
 	${SOURCE_DIR_NAME}/Goknar/Physics
+	${SOURCE_DIR_NAME}/Goknar/Physics/Contacts
 	${SOURCE_DIR_NAME}/Goknar/Physics/ForceGenerators
 	${SOURCE_DIR_NAME}/Goknar/Renderer
 	${SOURCE_DIR_NAME}/Goknar/Renderer/MaterialEditor

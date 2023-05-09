@@ -222,6 +222,11 @@ public:
 
     void AddTorque(const Vector3& torque);
 
+    void AddVelocity(const Vector3& velocityAddition)
+    {
+        velocity_ += velocityAddition;
+    }
+
     /**
      * Calculates internal data from state data. This should be called
      * after the body's state is altered directly (it is called

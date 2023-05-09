@@ -170,7 +170,8 @@ void RigidBodyManager::Tick(float deltaTime)
 		countdown = 1.f;
 	}
 
-	aeroControlForceGenerator->SetControl(countdown);
+	float oneTenThousandOfElapsedTime = engine->GetElapsedTime() * 0.0001f;
+	aeroControlForceGenerator->SetControl(oneTenThousandOfElapsedTime - std::floor(oneTenThousandOfElapsedTime));
 
 	countdown -= deltaTime;
 }
