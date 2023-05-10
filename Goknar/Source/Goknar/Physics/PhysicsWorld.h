@@ -24,7 +24,7 @@ class PhysicsObjectForceRegistry;
 class GOKNAR_API PhysicsWorld
 {   
 public:
-    PhysicsWorld(unsigned char maxContacts = PHYSICS_DEFAULT_MAX_CONTACTS, unsigned char iterations = PHYSICS_DEFAULT_ITEARATIONS);
+    PhysicsWorld(unsigned int maxContacts = PHYSICS_DEFAULT_MAX_CONTACTS, unsigned char iterations = PHYSICS_DEFAULT_ITEARATIONS);
     ~PhysicsWorld();
 
     void PhysicsTick(float deltaTime);
@@ -34,6 +34,8 @@ public:
 
     void AddRigidBody(RigidBody* rigidBody);
     void RemoveRigidBody(RigidBody* rigidBody);
+
+    unsigned int GenerateContacts();
 
     PhysicsObjectForceRegistry* GetPhysicsObjectForceRegistry() const
     {
@@ -69,10 +71,16 @@ private:
     };
 
     BodyRegistration* firstBody_;
+    
+    ContactGenRegistration* firstContactGen_;
+
+    PhysicsContact* contacts_;
 
     ContactResolver contactResolver_;
 
     float remainingPhysicsTickDeltaTime_{ 0.f };
+
+    unsigned int maxContacts_{ PHYSICS_DEFAULT_MAX_CONTACTS };
 
     bool calculateIterations_;
 };

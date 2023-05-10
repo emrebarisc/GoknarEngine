@@ -3,16 +3,23 @@
 #include "Goknar/Physics/PhysicsWorld.h"
 
 #include "Goknar/Math/Matrix.h"
+#include "Goknar/Physics/Contacts/ContactGenerator.h"
 #include "Goknar/Physics/ForceGenerators/ForceGenerator.h"
 #include "Goknar/Physics/ForceGenerators/PhysicsObjectForceGenerator.h"
 #include "Goknar/Physics/PhysicsObject.h"
 #include "Goknar/Physics/RigidBody.h"
 
-PhysicsWorld::PhysicsWorld(unsigned char maxContacts, unsigned char iterations) :
-    contactResolver_(iterations)
+PhysicsWorld::PhysicsWorld(unsigned int maxContacts, unsigned char iterations) :
+    contactResolver_(iterations),
+    firstBody_(nullptr),
+    firstContactGen_(nullptr),
+    maxContacts_(maxContacts)
 {
     physicsObjectForceRegistry_ = new PhysicsObjectForceRegistry();
     forceRegistry_ = new ForceRegistry();
+
+    contacts_ = new PhysicsContact[maxContacts];
+    calculateIterations_ = (iterations == 0);
 }
 
 PhysicsWorld::~PhysicsWorld()
@@ -43,6 +50,17 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
 
             ++rigidBodyIterator;
         }
+
+
+        // Generate contacts
+        unsigned int usedContacts = GenerateContacts();
+
+        // And process them
+        if (calculateIterations_)
+        {
+            contactResolver_.SetIterations(usedContacts * 4);
+        }
+        contactResolver_.ResolveContacts(contacts_, usedContacts, deltaTime);
 
         remainingPhysicsTickDeltaTime_ -= PHYSICS_TICK_DELTA_TIME;
     }
@@ -86,4 +104,27 @@ void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 
         ++rigidBodyIterator;
     }
+}
+
+unsigned int PhysicsWorld::GenerateContacts()
+{
+    unsigned int limit = maxContacts_;
+    PhysicsContact* nextContact = contacts_;
+
+    ContactGenRegistration* reg = firstContactGen_;
+    while (reg)
+    {
+        unsigned used = reg->gen->AddContact(nextContact, limit);
+        limit -= used;
+        nextContact += used;
+
+        // We've run out of contacts to fill. This means we're missing
+        // contacts.
+        if (limit <= 0) break;
+
+        reg = reg->next;
+    }
+
+    // Return the number of contacts used.
+    return maxContacts_ - limit;
 }
