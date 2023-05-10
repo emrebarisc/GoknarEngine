@@ -11,10 +11,9 @@ class RigidBody;
 
 class GOKNAR_API PhysicsContact
 {
+    friend class CollisionDetector;
     friend class ContactResolver;
 public:
-
-protected:
     /**
      * Calculates internal data from state data. This is called before
      * the resolution algorithm tries to do any resolution. It should
@@ -89,7 +88,6 @@ protected:
      */
     Vector3 CalculateFrictionImpulse(Matrix3x3* inverseInertiaTensor);
 
-private:
     /**
         * Sets the data that doesn't normally depend on the position
         * of the contact (i.e. the bodies, and their material properties).
@@ -100,60 +98,60 @@ private:
         * Holds the bodies that are involved in the contact. The
         * second of these can be NULL, for contacts with the scenery.
         */
-    RigidBody* body_[2];
+    RigidBody* body[2];
 
     /**
         * A transform matrix that converts co-ordinates in the contact's
         * frame of reference to world co-ordinates. The columns of this
         * matrix form an orthonormal set of vectors.
         */
-    Matrix3x3 contactToWorld_;
+    Matrix3x3 contactToWorld;
 
     /**
         * Holds the world space position of the contact point relative to
         * centre of each body. This is set when the calculateInternals
         * function is run.
         */
-    Vector3 relativeContactPosition_[2];
+    Vector3 relativeContactPosition[2];
 
     /**
         * Holds the closing velocity at the point of contact. This is set
         * when the calculateInternals function is run.
         */
-    Vector3 contactVelocity_;
+    Vector3 contactVelocity;
 
     /**
         * Holds the position of the contact in world coordinates.
         */
-    Vector3 contactPoint_;
+    Vector3 contactPoint;
 
     /**
         * Holds the direction of the contact in world coordinates.
         */
-    Vector3 contactNormal_;
+    Vector3 contactNormal;
 
     /**
         * Holds the lateral friction coefficient at the contact.
         */
-    float friction_;
+    float friction;
 
     /**
         * Holds the normal restitution coefficient at the contact.
         */
-    float restitution_;
+    float restitution;
 
     /**
         * Holds the depth of penetration at the contact point. If both
         * bodies are specified then the contact point should be midway
         * between the inter-penetrating points.
         */
-    float penetration_;
+    float penetration;
 
     /**
         * Holds the required change in velocity for this contact to be
         * resolved.
         */
-    float desiredDeltaVelocity_;
+    float desiredDeltaVelocity;
 
 };
 

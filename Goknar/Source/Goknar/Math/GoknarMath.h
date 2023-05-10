@@ -25,6 +25,13 @@ struct Vector4;
 
 class Matrix;
 
+enum class GOKNAR_API Axis : unsigned int
+{
+	X = 0,
+	Y,
+	Z
+};
+
 struct GOKNAR_API Vector2
 {
 	Vector2();
@@ -203,6 +210,11 @@ struct GOKNAR_API Vector3
 
 	Vector3(const Vector4& rhs);
 
+	inline float SquareLength() const
+	{
+		return std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2);
+	}
+
 	inline float Length() const
 	{
 		return sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2));
@@ -237,7 +249,7 @@ struct GOKNAR_API Vector3
 		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 	}
 
-	inline float Dot(const Vector3& rhs)
+	inline float Dot(const Vector3& rhs) const
 	{
 		return x * rhs.x + y * rhs.y + z * rhs.z;
 	}
@@ -361,6 +373,20 @@ struct GOKNAR_API Vector3
 		x /= val;
 		y /= val;
 		z /= val;
+	}
+
+	inline float& operator[](unsigned i)
+	{
+		if (i == 0) return x;
+		if (i == 1) return y;
+		return z;
+	}
+
+	inline float operator[](unsigned i) const
+	{
+		if (i == 0) return x;
+		if (i == 1) return y;
+		return z;
 	}
 
 	inline bool operator==(const Vector3& val) const

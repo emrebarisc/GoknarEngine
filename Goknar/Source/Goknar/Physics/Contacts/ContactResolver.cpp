@@ -63,9 +63,9 @@ void ContactResolver::AdjustVelocities(PhysicsContact* contactArray, unsigned in
         unsigned index = numContacts;
         for (unsigned i = 0; i < numContacts; i++)
         {
-            if (max < contactArray[i].desiredDeltaVelocity_)
+            if (max < contactArray[i].desiredDeltaVelocity)
             {
-                max = contactArray[i].desiredDeltaVelocity_;
+                max = contactArray[i].desiredDeltaVelocity;
                 index = i;
             }
         }
@@ -83,19 +83,19 @@ void ContactResolver::AdjustVelocities(PhysicsContact* contactArray, unsigned in
         for (unsigned i = 0; i < numContacts; i++)
         {
             // Check each body in the contact
-            for (unsigned b = 0; b < 2; b++) if (contactArray[i].body_[b])
+            for (unsigned b = 0; b < 2; b++) if (contactArray[i].body[b])
             {
                 // Check for a match with each body in the newly
                 // resolved contact
                 for (unsigned d = 0; d < 2; d++)
                 {
-                    if (contactArray[i].body_[b] == contactArray[index].body_[d])
+                    if (contactArray[i].body[b] == contactArray[index].body[d])
                     {
-                        deltaVel = velocityChange[d] + rotationChange[d].Cross(contactArray[i].relativeContactPosition_[b]);
+                        deltaVel = velocityChange[d] + rotationChange[d].Cross(contactArray[i].relativeContactPosition[b]);
 
                         // The sign of the change is negative if we're dealing
                         // with the second body in a contact.
-                        contactArray[i].contactVelocity_ += contactArray[i].contactToWorld_.MultiplyTransposeBy(deltaVel) * (b ? -1 : 1);
+                        contactArray[i].contactVelocity += contactArray[i].contactToWorld.MultiplyTransposeBy(deltaVel) * (b ? -1 : 1);
                         contactArray[i].CalculateDesiredDeltaVelocity(duration);
                     }
                 }
@@ -121,9 +121,9 @@ void ContactResolver::AdjustPositions(PhysicsContact* contacts, unsigned int num
         index = numContacts;
         for (i = 0; i < numContacts; i++)
         {
-            if (max < contacts[i].penetration_)
+            if (max < contacts[i].penetration)
             {
-                max = contacts[i].penetration_;
+                max = contacts[i].penetration;
                 index = i;
             }
         }
@@ -140,21 +140,21 @@ void ContactResolver::AdjustPositions(PhysicsContact* contacts, unsigned int num
         for (i = 0; i < numContacts; i++)
         {
             // Check each body in the contact
-            for (unsigned b = 0; b < 2; b++) if (contacts[i].body_[b])
+            for (unsigned b = 0; b < 2; b++) if (contacts[i].body[b])
             {
                 // Check for a match with each body in the newly
                 // resolved contact
                 for (unsigned d = 0; d < 2; d++)
                 {
-                    if (contacts[i].body_[b] == contacts[index].body_[d])
+                    if (contacts[i].body[b] == contacts[index].body[d])
                     {
-                        deltaPosition = linearChange[d] + angularChange[d].Cross(contacts[i].relativeContactPosition_[b]);
+                        deltaPosition = linearChange[d] + angularChange[d].Cross(contacts[i].relativeContactPosition[b]);
 
                         // The sign of the change is positive if we're
                         // dealing with the second body in a contact
                         // and negative otherwise (because we're
                         // subtracting the resolution)..
-                        contacts[i].penetration_ += deltaPosition.Dot(contacts[i].contactNormal_) * (b ? 1 : -1);
+                        contacts[i].penetration += deltaPosition.Dot(contacts[i].contactNormal) * (b ? 1 : -1);
                     }
                 }
             }

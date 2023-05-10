@@ -77,17 +77,17 @@ public:
 
 	Vector3 GetForwardVector() const
 	{
-		return Vector3(worldTransformationMatrix_[0], worldTransformationMatrix_[4], worldTransformationMatrix_[8]).GetNormalized();
-	}
-
-	Vector3 GetUpVector() const
-	{
-		return Vector3(worldTransformationMatrix_[2], worldTransformationMatrix_[6], worldTransformationMatrix_[10]).GetNormalized();
+		return worldTransformationMatrix_.GetForwardVector().GetNormalized();
 	}
 
 	Vector3 GetLeftVector() const
 	{
-		return Vector3(worldTransformationMatrix_[1], worldTransformationMatrix_[5], worldTransformationMatrix_[9]).GetNormalized();
+		return worldTransformationMatrix_.GetLeftVector().GetNormalized();
+	}
+
+	Vector3 GetUpVector() const
+	{
+		return worldTransformationMatrix_.GetUpVector().GetNormalized();
 	}
 
 	void SetIsActive(bool isRendered);

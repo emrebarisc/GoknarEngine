@@ -3,7 +3,7 @@
 
 #include "Core.h"
 
-#include "Contacts/Contacts.h"
+#include "Contacts/PhysicsContact.h"
 #include "Contacts/ContactResolver.h"
 
 class ContactGenerator;

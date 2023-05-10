@@ -244,7 +244,7 @@ public:
     Matrix3x3 GetInverse() const;
     Matrix3x3 GetTranspose() const;
 
-    inline Vector3 Matrix3x3::MultiplyTransposeBy(const Vector3& vector) const
+    inline Vector3 MultiplyTransposeBy(const Vector3& vector) const
     {
         return Vector3( vector.x * m[0] + vector.y * m[3] + vector.z * m[6],
                         vector.x * m[1] + vector.y * m[4] + vector.z * m[7],
@@ -259,7 +259,7 @@ public:
      */
     void SetSkewSymmetric(const Vector3& vector)
     {
-        m[0] = m[4] = m[8] = 0;
+        m[0] = m[4] = m[8] = 0.f;
         m[1] = -vector.z;
         m[2] = vector.y;
         m[3] = vector.z;
@@ -519,6 +519,40 @@ public:
 
     }
 
+    Vector3 GetAxisVector(Axis axis) const
+    {
+        switch (axis)
+        {
+        case Axis::X:
+            return GetForwardVector();
+            break;
+        case Axis::Y:
+            return GetLeftVector();
+            break;
+        case Axis::Z:
+            return GetUpVector();
+            break;
+        default:
+            break;
+        }
+        return Vector3::ZeroVector;
+    }
+
+    Vector3 GetForwardVector() const
+    {
+        return Vector3(m[0], m[4], m[8]);
+    }
+
+    Vector3 GetLeftVector() const
+    {
+        return Vector3(m[1], m[5], m[9]);
+    }
+
+    Vector3 GetUpVector() const
+    {
+        return Vector3(m[2], m[6], m[10]);
+    }
+
 	inline static Matrix GetRotationMatrix(const Vector3& rotation)
 	{
         //Matrix result(Matrix::IdentityMatrix);
@@ -569,7 +603,7 @@ public:
         const float sinGamma = sin(rotation.z);
 
 		return Matrix(cosBeta * cosGamma,                                   cosBeta * sinGamma, -sinBeta,                                               0.f,
-                      sinAlpha * sinBeta* cosGamma - cosAlpha * sinGamma,   sinAlpha * sinBeta * sinGamma + cosAlpha * cosGamma, sinAlpha * cosBeta,    0.f,
+                      sinAlpha * sinBeta * cosGamma - cosAlpha * sinGamma,  sinAlpha * sinBeta * sinGamma + cosAlpha * cosGamma, sinAlpha * cosBeta,    0.f,
                       cosAlpha * sinBeta * cosGamma + sinAlpha * sinGamma,  cosAlpha * sinBeta * sinGamma - sinAlpha * cosGamma, cosAlpha * cosBeta,    0.f,
                       0.f,                                                  0.f,                                                 0.f,                   1.f);
 	}
@@ -608,6 +642,51 @@ public:
 					  axis.z * axis.x * oneMinusCosAngle - axis.y * sinAngle,		axis.z * axis.y * oneMinusCosAngle + axis.x * sinAngle,		cosAngle + axis.z * axis.z * oneMinusCosAngle,				0.f,
 					  0.f,															0.f,														0.f,														1.f);
 	}
+
+    inline Vector4 MultiplyTransposeBy(const Vector4& vector) const
+    {
+        return Vector4( vector.x * m[0] + vector.y * m[3] + vector.z * m[6]+ vector.z * m[10],
+                        vector.x * m[1] + vector.y * m[4] + vector.z * m[7] + vector.z * m[11],
+                        vector.x * m[2] + vector.y * m[5] + vector.z * m[8] + vector.z * m[12],
+                        vector.x * m[3] + vector.y * m[6] + vector.z * m[9] + vector.z * m[13]);
+    }
+
+
+    /**
+     * From Cyclone Physics
+     * 
+     * Transform the given vector by the transformational inverse
+     * of this matrix.
+     *
+     * @note This function relies on the fact that the inverse of
+     * a pure rotation matrix is its transpose. It separates the
+     * translational and rotation components, transposes the
+     * rotation, and multiplies out. If the matrix is not a
+     * scale and shear free transform matrix, then this function
+     * will not give correct results.
+     *
+     * @param vector The vector to transform.
+     */
+    inline Vector3 MultiplyTransposeByInverse(const Vector3& vector) const
+    {
+        Vector3 tmp = vector;
+        tmp.x -= m[3];
+        tmp.y -= m[7];
+        tmp.z -= m[11];
+        return Vector3(
+            tmp.x * m[0] +
+            tmp.y * m[4] +
+            tmp.z * m[8],
+
+            tmp.x * m[1] +
+            tmp.y * m[5] +
+            tmp.z * m[9],
+
+            tmp.x * m[2] +
+            tmp.y * m[6] +
+            tmp.z * m[10]
+        );
+    }
 
     void operator=(const Matrix& rhs)
     {
