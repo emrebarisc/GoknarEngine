@@ -402,10 +402,8 @@ void PhysicsContact::ApplyPositionChange(Vector3 linearChange[2], Vector3 angula
         // The linear and angular movements required are in proportion to
         // the two inverse inertias.
         float sign = (i == 0) ? 1 : -1;
-        angularMove[i] =
-            sign * penetration * (angularInertia[i] / totalInertia);
-        linearMove[i] =
-            sign * penetration * (linearInertia[i] / totalInertia);
+        angularMove[i] = sign * penetration * (angularInertia[i] / totalInertia);
+        linearMove[i] = sign * penetration * (linearInertia[i] / totalInertia);
 
         // To avoid angular projections that are too great (when mass is large
         // but inertia tensor is small) limit the angular move.

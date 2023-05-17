@@ -24,6 +24,8 @@ PhysicsWorld::PhysicsWorld(unsigned int maxContacts, unsigned char iterations) :
 
 PhysicsWorld::~PhysicsWorld()
 {
+    delete[] contacts_;
+
     delete physicsObjectForceRegistry_;
     delete forceRegistry_;
 }

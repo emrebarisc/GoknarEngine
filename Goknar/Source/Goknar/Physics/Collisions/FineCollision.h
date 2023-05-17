@@ -224,5 +224,4 @@ public:
     static unsigned int BoxAndSphere(const CollisionBox& box, const CollisionSphere& sphere, CollisionData* data);
 };
 
-
 #endif
