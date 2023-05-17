@@ -54,6 +54,7 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
         }
 
 
+
         // Generate contacts
         unsigned int usedContacts = GenerateContacts();
 

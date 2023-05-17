@@ -76,7 +76,7 @@ public:
         return  (0 < velocityIterations_) &&
                 (0 < positionIterations_) &&
                 (0.f <= positionEpsilon_) &&
-                (0.f <= positionEpsilon_);
+                (0.f <= velocityEpsilon_);
     }
 
     void SetIterations(unsigned int velocityIterations, unsigned int positionIterations)
