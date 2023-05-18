@@ -14,15 +14,13 @@ RigidBodyManager::RigidBodyManager()
 	SetIsTickable(true);
 }
 
-int id = 0;
-
 void RigidBodyManager::BeginGame()
 {
 	for(int i = 0; i < 125; ++i)
 	{
 		RigidBodyObject* gravityObject = new RigidBodyObject();
-		gravityObject->SetMass(2.f);
-		gravityObject->SetWorldPosition(Vector3{ 20.f + (std::floorf((i / 5) % 5) - 2.5f) * 2.f, (std::floorf(i % 5) - 2.5f) * 2.f, std::floorf(i / 25) * 2.f });
+		gravityObject->SetMass(2000.f);
+		gravityObject->SetWorldPosition(Vector3{ 25.f + (std::floorf((i / 5) % 5) - 2.5f) * 2.f, (std::floorf(i % 5) - 2.5f) * 2.f, std::floorf(i / 25) * 2.f });
 		gravityObject->SetIsGravityEnabled(false);
 		gravityObject->SetWorldScaling(Vector3{ 1.f, 1.f, 1.f });
 
@@ -151,7 +149,7 @@ void RigidBodyManager::Tick(float deltaTime)
 		pistol->SetWorldScaling(Vector3{0.25f, 0.25f, 0.25f});
 		pistol->SetWorldPosition(Vector3{0.f, 0.f, 5.f});
 		pistol->SetIsGravityEnabled(false);
-		pistol->SetMass(2.0f);
+		pistol->SetMass(2000.f);
 		pistol->SetVelocity(35.f, 0.f, 0.f);
 		pistol->SetAcceleration(0.f, 0.f, -1.0f);
 		pistol->SetDamping(0.99f, 0.99f);
