@@ -9,6 +9,5 @@ class RigidBodyObject : public RigidBody
 public:
 	RigidBodyObject();
 
-private:
 	StaticMeshComponent* staticMeshComponent_;
 };
