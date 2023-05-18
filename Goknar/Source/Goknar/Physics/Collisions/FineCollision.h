@@ -29,10 +29,7 @@ public:
      * This is a convenience function to allow access to the
      * axis vectors in the transform for this primitive.
      */
-    Vector3 GetAxis(unsigned int index) const
-    {
-        return transform_.GetAxisVector(index == 0 ? Axis::X : (index == 1 ? Axis::Y : Axis::Z));
-    }
+    Vector3 GetAxis(unsigned int index) const;
 
     /**
      * Returns the resultant transform of the primitive, calculated from
@@ -40,10 +37,7 @@ public:
      * (orientation + position) of the rigid body to which it is
      * attached.
      */
-    const Matrix& GetTransform() const
-    {
-        return transform_;
-    }
+    const Matrix& GetTransform() const;
 
     /**
      * The rigid body that is represented by this primitive.
@@ -54,14 +48,6 @@ public:
      * The offset of this primitive from the given rigid body.
      */
     Matrix offset;
-
-protected:
-    /**
-     * The resultant transform of the primitive. This is
-     * calculated by combining the offset of the primitive
-     * with the transform of the rigid body.
-     */
-    Matrix transform_;
 };
 
 /**

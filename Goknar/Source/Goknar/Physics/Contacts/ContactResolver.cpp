@@ -140,21 +140,24 @@ void ContactResolver::AdjustPositions(PhysicsContact* contacts, unsigned int num
         for (i = 0; i < numContacts; i++)
         {
             // Check each body in the contact
-            for (unsigned b = 0; b < 2; b++) if (contacts[i].body[b])
+            for (unsigned b = 0; b < 2; b++)
             {
-                // Check for a match with each body in the newly
-                // resolved contact
-                for (unsigned d = 0; d < 2; d++)
+                if (contacts[i].body[b])
                 {
-                    if (contacts[i].body[b] == contacts[index].body[d])
+                    // Check for a match with each body in the newly
+                    // resolved contact
+                    for (unsigned d = 0; d < 2; d++)
                     {
-                        deltaPosition = linearChange[d] + angularChange[d].Cross(contacts[i].relativeContactPosition[b]);
+                        if (contacts[i].body[b] == contacts[index].body[d])
+                        {
+                            deltaPosition = linearChange[d] + angularChange[d].Cross(contacts[i].relativeContactPosition[b]);
 
-                        // The sign of the change is positive if we're
-                        // dealing with the second body in a contact
-                        // and negative otherwise (because we're
-                        // subtracting the resolution)..
-                        contacts[i].penetration += deltaPosition.Dot(contacts[i].contactNormal) * (b ? 1 : -1);
+                            // The sign of the change is positive if we're
+                            // dealing with the second body in a contact
+                            // and negative otherwise (because we're
+                            // subtracting the resolution)..
+                            contacts[i].penetration += deltaPosition.Dot(contacts[i].contactNormal) * (b ? 1 : -1);
+                        }
                     }
                 }
             }

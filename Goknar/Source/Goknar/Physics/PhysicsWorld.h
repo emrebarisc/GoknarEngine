@@ -6,6 +6,8 @@
 #include "Contacts/PhysicsContact.h"
 #include "Contacts/ContactResolver.h"
 
+#include "Collisions/FineCollision.h"
+
 class ContactGenerator;
 class RigidBody;
 class ForceRegistry;
@@ -15,8 +17,8 @@ class PhysicsObjectForceRegistry;
 
 #define PHYSICS_TICKS_PER_SECOND 30
 #define PHYSICS_TICK_DELTA_TIME 1.f / PHYSICS_TICKS_PER_SECOND
-#define PHYSICS_DEFAULT_MAX_CONTACTS 8
-#define PHYSICS_DEFAULT_ITEARATIONS 4
+#define PHYSICS_DEFAULT_MAX_CONTACTS 8192
+#define PHYSICS_DEFAULT_ITEARATIONS 8192
 
 #define DEFAULT_GRAVITATIONAL_FORCE_MAGNITUDE 9.81f
 #define DEFAULT_GRAVITATIONAL_FORCE Vector3::UpVector * -DEFAULT_GRAVITATIONAL_FORCE_MAGNITUDE
@@ -34,6 +36,8 @@ public:
 
     void AddRigidBody(RigidBody* rigidBody);
     void RemoveRigidBody(RigidBody* rigidBody);
+
+    void AddCollision(CollisionPrimitive* collision);
 
     unsigned int GenerateContacts();
 
@@ -75,6 +79,9 @@ private:
     ContactGenRegistration* firstContactGen_;
 
     PhysicsContact* contacts_;
+
+    CollisionData collisionData_;
+    std::vector<CollisionPrimitive*> collisions_;
 
     ContactResolver contactResolver_;
 

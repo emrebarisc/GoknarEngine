@@ -2,6 +2,7 @@
 
 #include "Goknar/Physics/PhysicsWorld.h"
 
+#include "Goknar/Log.h"
 #include "Goknar/Math/Matrix.h"
 #include "Goknar/Physics/Contacts/ContactGenerator.h"
 #include "Goknar/Physics/ForceGenerators/ForceGenerator.h"
@@ -19,7 +20,10 @@ PhysicsWorld::PhysicsWorld(unsigned int maxContacts, unsigned char iterations) :
     forceRegistry_ = new ForceRegistry();
 
     contacts_ = new PhysicsContact[maxContacts];
+
     calculateIterations_ = (iterations == 0);
+
+    collisionData_.contactArray = contacts_;
 }
 
 PhysicsWorld::~PhysicsWorld()
@@ -53,17 +57,58 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
             ++rigidBodyIterator;
         }
 
+        //for (auto collision : collisions_)
+        //{
+        //    collision->CalculateInternals();
+        //}
 
-
-        // Generate contacts
-        unsigned int usedContacts = GenerateContacts();
-
-        // And process them
-        if (calculateIterations_)
         {
-            contactResolver_.SetIterations(usedContacts * 4);
+            // Set up the collision data structure
+            collisionData_.Reset(maxContacts_);
+            collisionData_.friction = 0.9f;
+            collisionData_.restitution = 0.1f;
+            collisionData_.tolerance = 0.1f;
+
+            int collisionCount = collisions_.size();
+            for (int i = 0; i < collisionCount; ++i)
+            {
+                for (int j = i + 1; j < collisionCount; ++j)
+                {
+                    if (!collisionData_.HasMoreContacts()) break;
+                    if (CollisionDetector::BoxAndBox(*static_cast<CollisionBox*>(collisions_[i]), *static_cast<CollisionBox*>(collisions_[j]), &collisionData_))
+                    {
+                        //GOKNAR_INFO("COLLISION! {} - {}", i, j);
+                    }
+                }
+                if (!collisionData_.HasMoreContacts()) break;
+            }
         }
-        contactResolver_.ResolveContacts(contacts_, usedContacts, deltaTime);
+
+        if (0 < collisionData_.contactCount)
+        {
+            GOKNAR_WARN("count: {}", collisionData_.contactCount);
+            for (int collisionIndex = 0; collisionIndex < collisionData_.contactCount; ++collisionIndex)
+            {
+                if (1.f < collisionData_.contactArray[collisionIndex].contactVelocity.SquareLength())
+                {
+                    //GOKNAR_INFO("\tposition: {} normal: {}", collisionData_.contactArray[collisionIndex].contactPoint.ToString(), collisionData_.contactArray[collisionIndex].contactNormal.ToString());
+                }
+            }
+        }
+
+        // Resolve detected contacts
+        contactResolver_.SetIterations(collisionData_.contactCount * 4);
+        contactResolver_.ResolveContacts(collisionData_.contactArray, collisionData_.contactCount, PHYSICS_TICK_DELTA_TIME);
+
+        //// Generate contacts
+        //unsigned int usedContacts = GenerateContacts();
+
+        //// And process them
+        //if (calculateIterations_)
+        //{
+        //    contactResolver_.SetIterations(usedContacts * 4);
+        //}
+        //contactResolver_.ResolveContacts(contacts_, usedContacts, deltaTime);
 
         remainingPhysicsTickDeltaTime_ -= PHYSICS_TICK_DELTA_TIME;
     }
@@ -107,6 +152,11 @@ void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 
         ++rigidBodyIterator;
     }
+}
+
+void PhysicsWorld::AddCollision(CollisionPrimitive* collision)
+{
+    collisions_.push_back(collision);
 }
 
 unsigned int PhysicsWorld::GenerateContacts()

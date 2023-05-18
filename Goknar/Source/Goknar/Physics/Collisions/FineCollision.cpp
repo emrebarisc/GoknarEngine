@@ -18,7 +18,17 @@ void CollisionData::AddContacts(unsigned int count)
 
 void CollisionPrimitive::CalculateInternals()
 {
-    transform_ = body->GetWorldTransformationMatrix() * offset;
+}
+
+Vector3 CollisionPrimitive::GetAxis(unsigned int index) const
+{
+    return body->GetWorldTransformationMatrix().GetAxisVector(index);
+    //return transform_.GetAxisVector(index == 0 ? Axis::X : (index == 1 ? Axis::Y : Axis::Z));
+}
+
+const Matrix& CollisionPrimitive::GetTransform() const
+{
+    return body->GetWorldTransformationMatrix();
 }
 
 bool IntersectionTests::SphereAndHalfSpace(const CollisionSphere& sphere, const CollisionPlane& plane)
@@ -275,7 +285,7 @@ void FillPointFaceBoxBox(const CollisionBox& one, const CollisionBox& two, const
     Vector3 normal = one.GetAxis(best);
     if (0 < one.GetAxis(best).Dot(toCentre))
     {
-        normal = normal * -1.f;
+        normal *= -1.f;
     }
 
     // Work out which vertex of box two we're colliding with.
@@ -299,7 +309,7 @@ void FillPointFaceBoxBox(const CollisionBox& one, const CollisionBox& two, const
     // Create the contact data
     contact->contactNormal = normal;
     contact->penetration = pen;
-    contact->contactPoint = two.GetTransform() * vertex;
+    contact->contactPoint = two.GetTransform() * Vector4(vertex, 1.f);
     contact->SetBodyData(one.body, two.body, data->friction, data->restitution);
 }
 
@@ -358,7 +368,7 @@ static inline Vector3 ContactPoint(const Vector3& pOne, const Vector3& dOne, flo
 
 unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const CollisionBox& two, CollisionData* data)
 {
-    //if (!IntersectionTests::boxAndBox(one, two)) return 0;
+    //if (!IntersectionTests::BoxAndBox(one, two)) return 0;
 
     // Find the vector between the two centres
     Vector3 toCentre = two.GetAxis(3) - one.GetAxis(3);
@@ -393,7 +403,12 @@ unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const Collisi
     CHECK_OVERLAP(one.GetAxis(2).Cross(two.GetAxis(2)), 14);
 
     // Make sure we've got a result.
-    GOKNAR_ASSERT(best != 0xffffff);
+    //GOKNAR_ASSERT(best != 0xffffff);
+
+    if (best == 0xffffff)
+    {
+        return 0;
+    }
 
     // We now know there's a collision, and we know which
     // of the axes gave the smallest penetration. We now
@@ -403,6 +418,7 @@ unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const Collisi
     {
         // We've got a vertex of box two on a face of box one.
         FillPointFaceBoxBox(one, two, toCentre, data, best, pen);
+        data->contacts->SetBodyData(one.body, two.body, data->friction, data->restitution);
         data->AddContacts(1);
         return 1;
     }
@@ -413,6 +429,7 @@ unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const Collisi
         // one and two (and therefore also the vector between their
         // centres).
         FillPointFaceBoxBox(two, one, toCentre * -1.0f, data, best - 3, pen);
+        data->contacts->SetBodyData(one.body, two.body, data->friction, data->restitution);
         data->AddContacts(1);
         return 1;
     }
@@ -464,8 +481,8 @@ unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const Collisi
 
         // Move them into world coordinates (they are already oriented
         // correctly, since they have been derived from the axes).
-        ptOnOneEdge = one.transform_ * ptOnOneEdge;
-        ptOnTwoEdge = two.transform_ * ptOnTwoEdge;
+        ptOnOneEdge = one.body->GetWorldTransformationMatrix() * ptOnOneEdge;
+        ptOnTwoEdge = two.body->GetWorldTransformationMatrix() * ptOnTwoEdge;
 
         // So we have a point and a direction for the colliding edges.
         // We need to find out point of closest approach of the two
@@ -492,7 +509,7 @@ unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const Collisi
 unsigned int CollisionDetector::BoxAndPoint(const CollisionBox& box, const Vector3& point, CollisionData* data)
 {
     // Transform the point into box coordinates
-    Vector3 relPt = box.transform_.MultiplyTransposeByInverse(point);
+    Vector3 relPt = box.body->GetWorldTransformationMatrix().MultiplyTransposeByInverse(point);
 
     Vector3 normal;
 
@@ -547,7 +564,7 @@ unsigned int CollisionDetector::BoxAndSphere(const CollisionBox& box, const Coll
 {
     // Transform the centre of the sphere into box coordinates
     Vector3 centre = sphere.GetAxis(3);
-    Vector3 relCentre = box.transform_.MultiplyTransposeByInverse(centre);
+    Vector3 relCentre = box.body->GetWorldTransformationMatrix().MultiplyTransposeByInverse(centre);
 
     // Early out check to see if we can exclude the contact
     if (std::abs(relCentre.x) - sphere.radius > box.halfSize.x ||
@@ -581,7 +598,7 @@ unsigned int CollisionDetector::BoxAndSphere(const CollisionBox& box, const Coll
     if (dist > sphere.radius * sphere.radius) return 0;
 
     // Compile the contact
-    Vector3 closestPtWorld = box.transform_ * Vector4(closestPt, 1.f);
+    Vector3 closestPtWorld = box.body->GetWorldTransformationMatrix() * Vector4(closestPt, 1.f);
 
     PhysicsContact* contact = data->contacts;
     contact->contactNormal = (closestPtWorld - centre);
@@ -620,7 +637,7 @@ unsigned int CollisionDetector::BoxAndHalfSpace(const CollisionBox& box, const C
         // Calculate the position of each vertex
         Vector3 vertexPos(mults[i][0], mults[i][1], mults[i][2]);
         vertexPos *= box.halfSize;
-        vertexPos = box.transform_ * Vector4(vertexPos, 1.f);
+        vertexPos = box.body->GetWorldTransformationMatrix() * Vector4(vertexPos, 1.f);
 
         // Calculate the distance from the plane
         float vertexDistance = vertexPos.Dot(plane.direction);

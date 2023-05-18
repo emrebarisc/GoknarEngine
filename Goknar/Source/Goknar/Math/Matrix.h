@@ -519,6 +519,11 @@ public:
 
     }
 
+    Vector3 GetAxisVector(int i) const
+    {
+        return Vector3(m[i], m[i + 4], m[i + 8]);
+    }
+
     Vector3 GetAxisVector(Axis axis) const
     {
         switch (axis)
