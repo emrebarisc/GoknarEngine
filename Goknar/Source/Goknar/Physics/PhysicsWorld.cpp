@@ -6,8 +6,6 @@
 #include "Goknar/Math/Matrix.h"
 #include "Goknar/Physics/Contacts/ContactGenerator.h"
 #include "Goknar/Physics/ForceGenerators/ForceGenerator.h"
-#include "Goknar/Physics/ForceGenerators/PhysicsObjectForceGenerator.h"
-#include "Goknar/Physics/PhysicsObject.h"
 #include "Goknar/Physics/RigidBody.h"
 
 PhysicsWorld::PhysicsWorld(unsigned int maxContacts, unsigned char iterations) :
@@ -16,7 +14,6 @@ PhysicsWorld::PhysicsWorld(unsigned int maxContacts, unsigned char iterations) :
     firstContactGen_(nullptr),
     maxContacts_(maxContacts)
 {
-    physicsObjectForceRegistry_ = new PhysicsObjectForceRegistry();
     forceRegistry_ = new ForceRegistry();
 
     contacts_ = new PhysicsContact[maxContacts];
@@ -30,7 +27,6 @@ PhysicsWorld::~PhysicsWorld()
 {
     delete[] contacts_;
 
-    delete physicsObjectForceRegistry_;
     delete forceRegistry_;
 }
 
@@ -40,15 +36,7 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
     while (PHYSICS_TICK_DELTA_TIME <= remainingPhysicsTickDeltaTime_)
     {
         forceRegistry_->UpdateForces(PHYSICS_TICK_DELTA_TIME);
-        PhysicsObjects::iterator physicsObjectsIterator = physicsObjects_.begin();
-        while (physicsObjectsIterator != physicsObjects_.end())
-        {
-            (*physicsObjectsIterator)->PhysicsTick(PHYSICS_TICK_DELTA_TIME);
 
-            ++physicsObjectsIterator;
-        }
-
-        physicsObjectForceRegistry_->UpdateForces(PHYSICS_TICK_DELTA_TIME);
         RigidBodies::iterator rigidBodyIterator = rigidBodies_.begin();
         while (rigidBodyIterator != rigidBodies_.end())
         {
@@ -84,17 +72,18 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
             }
         }
 
-        if (0 < collisionData_.contactCount)
-        {
-            GOKNAR_WARN("count: {}", collisionData_.contactCount);
-            for (int collisionIndex = 0; collisionIndex < collisionData_.contactCount; ++collisionIndex)
-            {
-                if (1.f < collisionData_.contactArray[collisionIndex].contactVelocity.SquareLength())
-                {
-                    //GOKNAR_INFO("\tposition: {} normal: {}", collisionData_.contactArray[collisionIndex].contactPoint.ToString(), collisionData_.contactArray[collisionIndex].contactNormal.ToString());
-                }
-            }
-        }
+        //if (0 < collisionData_.contactCount)
+        //{
+        //    GOKNAR_WARN("count: {}", collisionData_.contactCount);
+        //    for (int collisionIndex = 0; collisionIndex < collisionData_.contactCount; ++collisionIndex)
+        //    {
+        //        if (0.f < collisionData_.contactArray[collisionIndex].contactVelocity.SquareLength())
+        //        {
+        //            GOKNAR_INFO("\velocity: {}", collisionData_.contactArray[collisionIndex].contactVelocity.ToString());
+        //            GOKNAR_INFO("\tposition: {} normal: {}", collisionData_.contactArray[collisionIndex].contactPoint.ToString(), collisionData_.contactArray[collisionIndex].contactNormal.ToString());
+        //        }
+        //    }
+        //}
 
         // Resolve detected contacts
         contactResolver_.SetIterations(collisionData_.contactCount * 4);
@@ -111,26 +100,6 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
         //contactResolver_.ResolveContacts(contacts_, usedContacts, deltaTime);
 
         remainingPhysicsTickDeltaTime_ -= PHYSICS_TICK_DELTA_TIME;
-    }
-}
-
-void PhysicsWorld::AddPhysicsObject(PhysicsObject* physicsObject)
-{
-    physicsObjects_.push_back(physicsObject);
-}
-
-void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)
-{
-    PhysicsObjects::iterator physicsObjectsIterator = physicsObjects_.begin();
-    while (physicsObjectsIterator != physicsObjects_.end())
-    {
-        if (*physicsObjectsIterator == physicsObject)
-        {
-            physicsObjects_.erase(physicsObjectsIterator);
-            break;
-        }
-
-        ++physicsObjectsIterator;
     }
 }
 
