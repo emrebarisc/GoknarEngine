@@ -258,7 +258,7 @@ static inline bool TryAxis(const CollisionBox& one, const CollisionBox& two, Vec
 
     float penetration = PenetrationOnAxis(one, two, axis, toCentre);
 
-    if (penetration < 0)
+    if (penetration < 0.f)
     {
         return false;
     }
@@ -371,7 +371,7 @@ unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const Collisi
     //if (!IntersectionTests::BoxAndBox(one, two)) return 0;
 
     // Find the vector between the two centres
-    Vector3 toCentre = two.GetAxis(3) - one.GetAxis(3);
+    Vector3 toCentre = two.body->GetWorldPosition() - one.body->GetWorldPosition();
 
     // We start assuming there is no contact
     float pen = FLT_MAX;
@@ -403,7 +403,7 @@ unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const Collisi
     CHECK_OVERLAP(one.GetAxis(2).Cross(two.GetAxis(2)), 14);
 
     // Make sure we've got a result.
-    //GOKNAR_ASSERT(best != 0xffffff);
+    GOKNAR_ASSERT(best != 0xffffff);
 
     if (best == 0xffffff)
     {

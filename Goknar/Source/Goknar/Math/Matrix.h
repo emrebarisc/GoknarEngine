@@ -4,6 +4,7 @@
 #include "Goknar/Core.h"
 
 #include "Math/GoknarMath.h"
+#include "Math/Quaternion.h"
 
 /*
     dataArray IS NOT TESTED!!!
@@ -556,6 +557,29 @@ public:
     Vector3 GetUpVector() const
     {
         return Vector3(m[2], m[6], m[10]);
+    }
+
+    inline bool ContainsNanOrInf() const
+    {
+        return GoknarMath::IsNanOrInf(m[0]) ||
+               GoknarMath::IsNanOrInf(m[1]) ||
+               GoknarMath::IsNanOrInf(m[2]) ||
+               GoknarMath::IsNanOrInf(m[3]) ||
+
+               GoknarMath::IsNanOrInf(m[4]) ||
+               GoknarMath::IsNanOrInf(m[5]) ||
+               GoknarMath::IsNanOrInf(m[6]) ||
+               GoknarMath::IsNanOrInf(m[7]) ||
+
+               GoknarMath::IsNanOrInf(m[8]) ||
+               GoknarMath::IsNanOrInf(m[9]) ||
+               GoknarMath::IsNanOrInf(m[10]) ||
+               GoknarMath::IsNanOrInf(m[11]) ||
+
+               GoknarMath::IsNanOrInf(m[12]) ||
+               GoknarMath::IsNanOrInf(m[13]) ||
+               GoknarMath::IsNanOrInf(m[14]) ||
+               GoknarMath::IsNanOrInf(m[15]);
     }
 
 	inline static Matrix GetRotationMatrix(const Vector3& rotation)

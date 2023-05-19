@@ -241,6 +241,10 @@ void PhysicsContact::ApplyVelocityChange(Vector3 velocityChange[2], Vector3 rota
         rotationChange[1] = inverseInertiaTensor[1] * impulsiveTorque;
         velocityChange[1] = Vector3::ZeroVector;
         velocityChange[1] += impulse * -body[1]->GetInverseMass();
+        if (velocityChange[1].ContainsNanOrInf())
+        {
+            return;
+        }
 
         // And apply them.
         body[1]->AddVelocity(velocityChange[1]);
@@ -345,9 +349,8 @@ inline Vector3 PhysicsContact::CalculateFrictionImpulse(Matrix3x3* inverseInerti
     impulseContact = impulseMatrix * velKill;
 
     // Check for exceeding friction
-    float planarImpulse = std::sqrtf(impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z
-    );
-    if (planarImpulse > impulseContact.x * friction)
+    float planarImpulse = std::sqrtf(impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z);
+    if (impulseContact.x * friction < planarImpulse)
     {
         // We need to use dynamic friction
         impulseContact.y /= planarImpulse;
@@ -357,6 +360,10 @@ inline Vector3 PhysicsContact::CalculateFrictionImpulse(Matrix3x3* inverseInerti
         impulseContact.x = desiredDeltaVelocity / impulseContact.x;
         impulseContact.y *= friction * impulseContact.x;
         impulseContact.z *= friction * impulseContact.x;
+    }
+    if (impulseContact.ContainsNanOrInf())
+    {
+        return Vector3::ZeroVector;
     }
     return impulseContact;
 }

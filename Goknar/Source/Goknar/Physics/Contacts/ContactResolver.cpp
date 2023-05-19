@@ -95,7 +95,7 @@ void ContactResolver::AdjustVelocities(PhysicsContact* contactArray, unsigned in
 
                         // The sign of the change is negative if we're dealing
                         // with the second body in a contact.
-                        contactArray[i].contactVelocity += contactArray[i].contactToWorld.MultiplyTransposeBy(deltaVel) * (b ? -1 : 1);
+                        contactArray[i].contactVelocity += contactArray[i].contactToWorld.MultiplyTransposeBy(deltaVel) * (b ? -1.f : 1.f);
                         contactArray[i].CalculateDesiredDeltaVelocity(duration);
                     }
                 }
