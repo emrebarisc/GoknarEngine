@@ -4,7 +4,7 @@
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Managers/ResourceManager.h"
 
-Ball::Ball() : RigidBody()
+Object::Object() : PhysicsObject()
 {
 	staticMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 	StaticMesh* staticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Ball.fbx");
