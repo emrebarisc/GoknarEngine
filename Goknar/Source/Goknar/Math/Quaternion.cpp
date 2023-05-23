@@ -135,6 +135,17 @@ Quaternion Quaternion::FromEulerRadians(const Vector3& radians)
     );
 }
 
+void Quaternion::AddScaledVector(const Vector3& vector, float scale)
+{
+    Quaternion newQ(vector.x * scale, vector.y * scale, vector.z * scale, 0.f);
+    *this *= newQ;
+
+    x += newQ.x * 0.5f;
+    y += newQ.y * 0.5f;
+    z += newQ.z * 0.5f;
+    w += newQ.w * 0.5f;
+}
+
 inline bool Quaternion::Equals(const Quaternion& other, float tolerance) const
 {
     return  std::abs(x - other.x) <= tolerance &&

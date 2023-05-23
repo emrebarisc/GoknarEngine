@@ -43,6 +43,8 @@ public:
     static Quaternion FromEuler(const Vector3& degrees);
     static Quaternion FromEulerRadians(const Vector3& radians);
 
+    void AddScaledVector(const Vector3& vector, float scale);
+
     Vector3 ToEuler() const;
     Vector3 ToEulerRadians() const;
 

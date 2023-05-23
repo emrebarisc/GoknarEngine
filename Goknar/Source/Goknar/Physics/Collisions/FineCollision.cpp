@@ -371,7 +371,7 @@ unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const Collisi
     //if (!IntersectionTests::BoxAndBox(one, two)) return 0;
 
     // Find the vector between the two centres
-    Vector3 toCentre = two.GetAxis(3) - one.GetAxis(3);
+    Vector3 toCentre = two.body->GetWorldPosition() - one.body->GetWorldPosition();
 
     // We start assuming there is no contact
     float pen = FLT_MAX;
@@ -403,12 +403,7 @@ unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const Collisi
     CHECK_OVERLAP(one.GetAxis(2).Cross(two.GetAxis(2)), 14);
 
     // Make sure we've got a result.
-    //GOKNAR_ASSERT(best != 0xffffff);
-
-    if (best == 0xffffff)
-    {
-        return 0;
-    }
+    GOKNAR_ASSERT(best != 0xffffff);
 
     // We now know there's a collision, and we know which
     // of the axes gave the smallest penetration. We now

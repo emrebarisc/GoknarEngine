@@ -110,6 +110,28 @@ public:
         isGravityEnabled_ = isGravityEnabled;
     }
 
+    void SetInertiaTensorCoeffs(float ix, float iy, float iz, float ixy = 0.f, float ixz = 0.f, float iyz = 0.f)
+    {
+        Matrix3x3 inertiaTensor;
+
+        inertiaTensor.m[0] = ix;
+        inertiaTensor.m[1] = inertiaTensor.m[3] = -ixy;
+        inertiaTensor.m[2] = inertiaTensor.m[6] = -ixz;
+        inertiaTensor.m[4] = iy;
+        inertiaTensor.m[5] = inertiaTensor.m[7] = -iyz;
+        inertiaTensor.m[8] = iz;
+
+        SetInertiaTensor(inertiaTensor);
+    }
+
+    void SetBlockInertiaTensor(const Vector3& halfSizes, float mass)
+    {
+        Vector3 squares = halfSizes * halfSizes;
+        SetInertiaTensorCoeffs( 0.3f * mass * (squares.y + squares.z),
+                                0.3f * mass * (squares.x + squares.z),
+                                0.3f * mass * (squares.x + squares.y));
+    }
+
     /**
      * Sets the intertia tensor for the rigid body.
      *

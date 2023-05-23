@@ -268,6 +268,11 @@ public:
         m[7] = vector.x;
     }
 
+    Vector3 GetAxisVector(int i) const
+    {
+        return Vector3(m[i], m[i + 3], m[i + 6]);
+    }
+
     void operator=(const Matrix3x3& rhs)
     {
         if (this != &rhs)

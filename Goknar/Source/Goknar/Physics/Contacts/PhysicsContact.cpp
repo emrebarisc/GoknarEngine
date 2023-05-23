@@ -244,7 +244,7 @@ void PhysicsContact::ApplyVelocityChange(Vector3 velocityChange[2], Vector3 rota
 
         // And apply them.
         body[1]->AddVelocity(velocityChange[1]);
-        body[1]->SetWorldRotation(body[0]->GetWorldRotation() + Quaternion::FromEuler(rotationChange[1]));
+        body[1]->SetWorldRotation(body[1]->GetWorldRotation() + Quaternion::FromEuler(rotationChange[1]));
     }
 }
 
@@ -413,7 +413,7 @@ void PhysicsContact::ApplyPositionChange(Vector3 linearChange[2], Vector3 angula
             // To avoid angular projections that are too great (when mass is large
             // but inertia tensor is small) limit the angular move.
             Vector3 projection = relativeContactPosition[i];
-            projection += (contactNormal, -relativeContactPosition[i].Dot(contactNormal));
+            projection += contactNormal * -relativeContactPosition[i].Dot(contactNormal);
 
             // Use the small angle approximation for the sine of the angle (i.e.
             // the magnitude would be sine(angularLimit) * projection.magnitude
@@ -465,7 +465,7 @@ void PhysicsContact::ApplyPositionChange(Vector3 linearChange[2], Vector3 angula
 
             // And the change in orientation
             Quaternion q = body[i]->GetWorldRotation();
-            q += Quaternion::FromEuler(angularChange[i]);
+            q.AddScaledVector(angularChange[i], 1.f);
             body[i]->SetWorldRotation(q);
 
             // We need to calculate the derived data for any body that is

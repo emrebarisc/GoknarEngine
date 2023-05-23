@@ -8,6 +8,8 @@
 #include "Goknar/Physics/ForceGenerators/ForceGenerator.h"
 #include "Goknar/Physics/RigidBody.h"
 
+CollisionPlane plane;
+
 PhysicsWorld::PhysicsWorld(unsigned int maxContacts, unsigned char iterations) :
     contactResolver_(iterations),
     firstBody_(nullptr),
@@ -21,14 +23,28 @@ PhysicsWorld::PhysicsWorld(unsigned int maxContacts, unsigned char iterations) :
     calculateIterations_ = (iterations == 0);
 
     collisionData_.contactArray = contacts_;
+    collisionData_.friction = 0.9f;
+    collisionData_.restitution = 0.1f;
+    collisionData_.tolerance = 0.1f;
+
+    plane.direction = Vector3(0, 0, 1);
+    plane.offset = 0;
 }
 
 PhysicsWorld::~PhysicsWorld()
 {
     delete[] contacts_;
-
     delete forceRegistry_;
+
+    std::vector<CollisionPrimitive*>::iterator collisionPrimitiveIterator = collisions_.begin();
+    while (collisionPrimitiveIterator != collisions_.end())
+    {
+        delete (*collisionPrimitiveIterator);
+
+        ++collisionPrimitiveIterator;
+    }
 }
+
 
 void PhysicsWorld::PhysicsTick(float deltaTime)
 {
@@ -53,17 +69,15 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
         {
             // Set up the collision data structure
             collisionData_.Reset(maxContacts_);
-            collisionData_.friction = 0.9f;
-            collisionData_.restitution = 0.1f;
-            collisionData_.tolerance = 0.1f;
 
             int collisionCount = collisions_.size();
             for (int i = 0; i < collisionCount; ++i)
             {
+                //CollisionDetector::BoxAndHalfSpace(*static_cast<CollisionBox*>(collisions_[i]), plane, &collisionData_);
                 for (int j = i + 1; j < collisionCount; ++j)
                 {
                     if (!collisionData_.HasMoreContacts()) break;
-                    if (CollisionDetector::BoxAndBox(*static_cast<CollisionBox*>(collisions_[i]), *static_cast<CollisionBox*>(collisions_[j]), &collisionData_))
+                    if (0 < CollisionDetector::BoxAndBox(*static_cast<CollisionBox*>(collisions_[i]), *static_cast<CollisionBox*>(collisions_[j]), &collisionData_))
                     {
                         //GOKNAR_INFO("COLLISION! {} - {}", i, j);
                     }
@@ -85,9 +99,18 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
         //    }
         //}
 
+        static unsigned int collisionCount = collisionData_.contactCount;
+
+        if (collisionCount != collisionData_.contactCount)
+        {
+            GOKNAR_INFO("Collision count is changed!");
+        }
+
         // Resolve detected contacts
-        contactResolver_.SetIterations(collisionData_.contactCount * 4);
+        contactResolver_.SetIterations(1);// collisionData_.contactCount * 4);
         contactResolver_.ResolveContacts(collisionData_.contactArray, collisionData_.contactCount, PHYSICS_TICK_DELTA_TIME);
+
+        collisionCount = collisionData_.contactCount;
 
         //// Generate contacts
         //unsigned int usedContacts = GenerateContacts();
