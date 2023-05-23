@@ -220,6 +220,11 @@ void ObjectBase::AddComponent(Component* component)
 
 void ObjectBase::SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix)
 {
+	if (worldTransformationMatrix.ContainsNanOrInf())
+	{
+		GOKNAR_FATAL("NAN OR INF VALUE ON TRANSFORMATION MATRIX");
+	}
+
 	worldTransformationMatrix_ = worldTransformationMatrix;
 	UpdateChildrenTransformations();
 }

@@ -6,10 +6,10 @@
 
 #include <cmath>
 
+#include "Math/GoknarMath.h"
+
 class Matrix;
 class Matrix3x3;
-class Vector3;
-class Vector4;
 
 //  References:
 //      https://users.aalto.fi/~ssarkka/pub/quat.pdf
@@ -40,6 +40,14 @@ public:
 
     Quaternion(Vector3 axis, float angle);
 
+    inline bool ContainsNanOrInf() const
+    {
+        return  GoknarMath::IsNanOrInf(x) ||
+                GoknarMath::IsNanOrInf(y) ||
+                GoknarMath::IsNanOrInf(z) ||
+                GoknarMath::IsNanOrInf(w);
+    }
+
     static Quaternion FromEuler(const Vector3& degrees);
     static Quaternion FromEulerRadians(const Vector3& radians);
 
@@ -55,7 +63,7 @@ public:
     inline bool operator!=(const Quaternion& other) const;
 
     inline Quaternion operator+(const Quaternion& other) const;
-    inline Quaternion operator+=(const Quaternion& other);
+    inline Quaternion& operator+=(const Quaternion& other);
 
     inline Quaternion operator-(const Quaternion& other) const;
     inline Quaternion operator-=(const Quaternion& other);
@@ -123,7 +131,7 @@ inline Quaternion Quaternion::operator+(const Quaternion& other) const
     return Quaternion(x + other.x, y + other.y, z + other.z, w + other.w);
 }
 
-inline Quaternion Quaternion::operator+=(const Quaternion& other)
+inline Quaternion& Quaternion::operator+=(const Quaternion& other)
 {
     this->x += other.x;
     this->y += other.y;
@@ -219,7 +227,7 @@ inline Quaternion Quaternion::GetNormalized() const
 inline Quaternion& Quaternion::Normalize()
 {
     const float magnitude = std::sqrtf(x * x + y * y + z * z + w * w);
-    if (magnitude)
+    if (0.f < magnitude)
     {
         const float inverseMagnitude = 1.f / magnitude;
         x *= inverseMagnitude;

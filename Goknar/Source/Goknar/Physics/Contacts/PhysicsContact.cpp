@@ -115,6 +115,10 @@ Vector3 PhysicsContact::CalculateLocalVelocity(unsigned int bodyIndex, float dur
 
     // Turn the velocity into contact-coordinates.
     Vector3 contactVelocity = contactToWorld.MultiplyTransposeBy(velocity);
+    if (contactVelocity.ContainsNanOrInf())
+    {
+        return Vector3::ZeroVector;
+    }
 
     // Calculate the ammount of velocity that is due to forces without reactions.
     Vector3 accVelocity = thisBody->GetLastFrameAcceleration() * duration;
@@ -125,6 +129,10 @@ Vector3 PhysicsContact::CalculateLocalVelocity(unsigned int bodyIndex, float dur
     // We ignore any component of acceleration in the contact normal
     // direction, we are only interested in planar acceleration
     accVelocity.x = 0;
+    if (accVelocity.ContainsNanOrInf())
+    {
+        return Vector3::ZeroVector;
+    }
 
     // Add the planar velocities - if there's enough friction they will
     // be removed during velocity resolution
@@ -186,9 +194,17 @@ void PhysicsContact::CalculateInternals(float duration)
 
     // Find the relative velocity of the bodies at the contact point.
     contactVelocity = CalculateLocalVelocity(0, duration);
+    if (contactVelocity.ContainsNanOrInf())
+    {
+        return;
+    }
     if (body[1])
     {
         contactVelocity -= CalculateLocalVelocity(1, duration);
+        if (contactVelocity.ContainsNanOrInf())
+        {
+            return;
+        }
     }
 
     // Calculate the desired change in velocity for resolution
@@ -241,6 +257,10 @@ void PhysicsContact::ApplyVelocityChange(Vector3 velocityChange[2], Vector3 rota
         rotationChange[1] = inverseInertiaTensor[1] * impulsiveTorque;
         velocityChange[1] = Vector3::ZeroVector;
         velocityChange[1] += impulse * -body[1]->GetInverseMass();
+        if (velocityChange[1].ContainsNanOrInf())
+        {
+            return;
+        }
 
         // And apply them.
         body[1]->AddVelocity(velocityChange[1]);
@@ -289,6 +309,10 @@ inline Vector3 PhysicsContact::CalculateFrictionlessImpulse(Matrix3x3* inverseIn
 
 inline Vector3 PhysicsContact::CalculateFrictionImpulse(Matrix3x3* inverseInertiaTensor)
 {
+    if (contactVelocity.ContainsNanOrInf())
+    {
+        return Vector3::ZeroVector;
+    }
     Vector3 impulseContact;
     float inverseMass = body[0]->GetInverseMass();
 
@@ -345,9 +369,8 @@ inline Vector3 PhysicsContact::CalculateFrictionImpulse(Matrix3x3* inverseInerti
     impulseContact = impulseMatrix * velKill;
 
     // Check for exceeding friction
-    float planarImpulse = std::sqrtf(impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z
-    );
-    if (planarImpulse > impulseContact.x * friction)
+    float planarImpulse = std::sqrtf(impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z);
+    if (impulseContact.x * friction < planarImpulse)
     {
         // We need to use dynamic friction
         impulseContact.y /= planarImpulse;
@@ -357,6 +380,10 @@ inline Vector3 PhysicsContact::CalculateFrictionImpulse(Matrix3x3* inverseInerti
         impulseContact.x = desiredDeltaVelocity / impulseContact.x;
         impulseContact.y *= friction * impulseContact.x;
         impulseContact.z *= friction * impulseContact.x;
+    }
+    if (impulseContact.ContainsNanOrInf())
+    {
+        return Vector3::ZeroVector;
     }
     return impulseContact;
 }
