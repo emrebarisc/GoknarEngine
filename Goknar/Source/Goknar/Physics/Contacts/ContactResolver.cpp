@@ -11,7 +11,7 @@ ContactResolver::ContactResolver(unsigned int iterations, float velocityEpsilon,
 
 ContactResolver::ContactResolver(unsigned int velocityIterations, unsigned int positionIterations, float velocityEpsilon, float positionEpsilon)
 {
-    SetIterations(velocityIterations);
+    SetIterations(velocityIterations, positionIterations);
     SetEpsilon(velocityEpsilon, positionEpsilon);
 }
 
@@ -38,18 +38,18 @@ void ContactResolver::ResolveContacts(PhysicsContact* contactArray, unsigned int
     AdjustVelocities(contactArray, numContacts, duration);
 }
 
-void ContactResolver::PrepareContacts(PhysicsContact* contactArray, unsigned int numContacts, float duration)
+void ContactResolver::PrepareContacts(PhysicsContact* contacts, unsigned int numContacts, float duration)
 {
     // Generate contact velocity and axis information.
-    PhysicsContact* lastContact = contactArray + numContacts;
-    for (PhysicsContact* contact = contactArray; contact < lastContact; contact++)
+    PhysicsContact* lastContact = contacts + numContacts;
+    for (PhysicsContact* contact = contacts; contact < lastContact; contact++)
     {
         // Calculate the internal contact data (inertia, basis, etc).
         contact->CalculateInternals(duration);
     }
 }
 
-void ContactResolver::AdjustVelocities(PhysicsContact* contactArray, unsigned int numContacts, float duration)
+void ContactResolver::AdjustVelocities(PhysicsContact* contacts, unsigned int numContacts, float duration)
 {
     Vector3 velocityChange[2], rotationChange[2];
     Vector3 deltaVel;
@@ -63,47 +63,53 @@ void ContactResolver::AdjustVelocities(PhysicsContact* contactArray, unsigned in
         unsigned index = numContacts;
         for (unsigned i = 0; i < numContacts; i++)
         {
-            if (max < contactArray[i].desiredDeltaVelocity)
+            if (max < contacts[i].desiredDeltaVelocity)
             {
-                max = contactArray[i].desiredDeltaVelocity;
+                max = contacts[i].desiredDeltaVelocity;
                 index = i;
             }
         }
-        if (index == numContacts) break;
+        if (index == numContacts)
+        {
+            break;
+        }
 
         // Match the awake state at the contact
-        contactArray[index].MatchAwakeState();
+        contacts[index].MatchAwakeState();
 
         // Do the resolution on the contact that came out top.
-        contactArray[index].ApplyVelocityChange(velocityChange, rotationChange);
+        contacts[index].ApplyVelocityChange(velocityChange, rotationChange);
 
         // With the change in velocity of the two bodies, the update of
         // contact velocities means that some of the relative closing
         // velocities need recomputing.
-        for (unsigned i = 0; i < numContacts; i++)
+        for (unsigned int i = 0; i < numContacts; i++)
         {
             // Check each body in the contact
-            for (unsigned b = 0; b < 2; b++) if (contactArray[i].body[b])
+            for (unsigned int b = 0; b < 2; b++)
             {
-                // Check for a match with each body in the newly
-                // resolved contact
-                for (unsigned d = 0; d < 2; d++)
+                if (contacts[i].body[b])
                 {
-                    if (contactArray[i].body[b] == contactArray[index].body[d])
+                    // Check for a match with each body in the newly
+                    // resolved contact
+                    for (unsigned int d = 0; d < 2; d++)
                     {
-                        deltaVel = velocityChange[d] + rotationChange[d].Cross(contactArray[i].relativeContactPosition[b]);
-
-                        // The sign of the change is negative if we're dealing
-                        // with the second body in a contact.
-                        Vector3 contactVelocityAddition = contactArray[i].contactToWorld.MultiplyTransposeBy(deltaVel) * (b ? -1.f : 1.f);
-
-                        if (contactVelocityAddition.ContainsNanOrInf())
+                        if (contacts[i].body[b] == contacts[index].body[d])
                         {
-                            continue;
-                        }
+                            deltaVel = velocityChange[d] + rotationChange[d].Cross(contacts[i].relativeContactPosition[b]);
 
-                        contactArray[i].contactVelocity += contactVelocityAddition;
-                        contactArray[i].CalculateDesiredDeltaVelocity(duration);
+                            // The sign of the change is negative if we're dealing
+                            // with the second body in a contact.
+                            Vector3 contactVelocityAddition = contacts[i].contactToWorld.MultiplyTransposeBy(deltaVel) * (b ? -1.f : 1.f);
+
+                            if (contactVelocityAddition.ContainsNanOrInf())
+                            {
+                                continue;
+                            }
+
+                            contacts[i].contactVelocity += contactVelocityAddition;
+                            contacts[i].CalculateDesiredDeltaVelocity(duration);
+                        }
                     }
                 }
             }
@@ -114,7 +120,7 @@ void ContactResolver::AdjustVelocities(PhysicsContact* contactArray, unsigned in
 
 void ContactResolver::AdjustPositions(PhysicsContact* contacts, unsigned int numContacts, float duration)
 {
-    unsigned i, index;
+    unsigned int i, index;
     Vector3 linearChange[2], angularChange[2];
     float max;
     Vector3 deltaPosition;
@@ -134,7 +140,11 @@ void ContactResolver::AdjustPositions(PhysicsContact* contacts, unsigned int num
                 index = i;
             }
         }
-        if (index == numContacts) break;
+
+        if (index == numContacts)
+        {
+            break;
+        }
 
         // Match the awake state at the contact
         contacts[index].MatchAwakeState();

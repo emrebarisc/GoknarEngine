@@ -5,18 +5,21 @@
 #include "Log.h"
 #include "Physics/RigidBody.h"
 
-void PhysicsContact::SetBodyData(RigidBody* one, RigidBody* two, float friction, float restitution)
+void PhysicsContact::SetBodyData(RigidBody* one, RigidBody* two, float f, float r)
 {
     body[0] = one;
     body[1] = two;
-    this->friction = friction;
-    this->restitution = restitution;
+    friction = f;
+    restitution = r;
 }
 
 void PhysicsContact::MatchAwakeState()
 {
     // Collisions with the world never cause a body to wake up.
-    if (!body[1]) return;
+    if (!body[1])
+    {
+        return;
+    }
 
     bool body0awake = body[0]->GetIsAwake();
     bool body1awake = body[1]->GetIsAwake();
@@ -63,7 +66,7 @@ inline void PhysicsContact::CalculateContactBasis()
     Vector3 contactTangent[2];
 
     // Check whether the Z-axis is nearer to the X or Y axis
-    if (std::abs(contactNormal.x) > std::abs(contactNormal.y))
+    if (std::abs(contactNormal.y) < std::abs(contactNormal.x))
     {
         // Scaling factor to ensure the results are normalised
         const float s = 1.0f / std::sqrtf(contactNormal.z * contactNormal.z + contactNormal.x * contactNormal.x);
@@ -96,9 +99,9 @@ inline void PhysicsContact::CalculateContactBasis()
 
     // Make a matrix from the three vectors.
     contactToWorld = Matrix3x3(
-        contactNormal.x, contactNormal.y, contactNormal.z, 
-        contactTangent[0].x, contactTangent[0].y, contactTangent[0].z, 
-        contactTangent[1].x, contactTangent[1].y, contactTangent[1].z);
+        contactNormal.x, contactTangent[0].x, contactTangent[1].x, 
+        contactNormal.y, contactTangent[0].y, contactTangent[1].y,
+        contactNormal.z, contactTangent[0].z, contactTangent[1].z);
 }
 
 void PhysicsContact::ApplyImpulse(const Vector3& impulse, RigidBody* body, Vector3* velocityChange, Vector3* rotationChange)
@@ -330,7 +333,7 @@ inline Vector3 PhysicsContact::CalculateFrictionImpulse(Matrix3x3* inverseInerti
     Matrix3x3 deltaVelWorld = impulseToTorque;
     deltaVelWorld *= inverseInertiaTensor[0];
     deltaVelWorld *= impulseToTorque;
-    deltaVelWorld *= -1;
+    deltaVelWorld *= -1.f;
 
     // Check if we need to add body two's data
     if (body[1])
@@ -342,7 +345,7 @@ inline Vector3 PhysicsContact::CalculateFrictionImpulse(Matrix3x3* inverseInerti
         Matrix3x3 deltaVelWorld2 = impulseToTorque;
         deltaVelWorld2 *= inverseInertiaTensor[1];
         deltaVelWorld2 *= impulseToTorque;
-        deltaVelWorld2 *= -1;
+        deltaVelWorld2 *= -1.f;
 
         // Add to the total delta velocity.
         deltaVelWorld += deltaVelWorld2;
@@ -386,7 +389,7 @@ inline Vector3 PhysicsContact::CalculateFrictionImpulse(Matrix3x3* inverseInerti
     }
     if (impulseContact.ContainsNanOrInf())
     {
-        return Vector3::ZeroVector;
+            return Vector3::ZeroVector;
     }
     return impulseContact;
 }
@@ -436,7 +439,7 @@ void PhysicsContact::ApplyPositionChange(Vector3 linearChange[2], Vector3 angula
         {
             // The linear and angular movements required are in proportion to
             // the two inverse inertias.
-            float sign = (i == 0) ? 1 : -1;
+            float sign = (i == 0) ? 1.f : -1.f;
             angularMove[i] = sign * penetration * (angularInertia[i] / totalInertia);
             linearMove[i] = sign * penetration * (linearInertia[i] / totalInertia);
 
@@ -456,7 +459,7 @@ void PhysicsContact::ApplyPositionChange(Vector3 linearChange[2], Vector3 angula
                 angularMove[i] = -maxMagnitude;
                 linearMove[i] = totalMove - angularMove[i];
             }
-            else if (angularMove[i] > maxMagnitude)
+            else if (maxMagnitude < angularMove[i])
             {
                 float totalMove = angularMove[i] + linearMove[i];
                 angularMove[i] = maxMagnitude;
@@ -466,7 +469,7 @@ void PhysicsContact::ApplyPositionChange(Vector3 linearChange[2], Vector3 angula
             // We have the linear amount of movement required by turning
             // the rigid body (in angularMove[i]). We now need to
             // calculate the desired rotation to achieve that.
-            if (angularMove[i] == 0)
+            if (angularMove[i] == 0.f)
             {
                 // Easy case - no angular movement means no rotation.
                 angularChange[i] = Vector3::ZeroVector;
@@ -489,23 +492,26 @@ void PhysicsContact::ApplyPositionChange(Vector3 linearChange[2], Vector3 angula
 
             // Now we can start to apply the values we've calculated.
             // Apply the linear movement
-            Vector3 pos = body[i]->GetWorldPosition();
-            pos += contactNormal * linearMove[i];
-            body[i]->SetWorldPosition(pos);
-
-            // And the change in orientation
-            Quaternion q = body[i]->GetWorldRotation();
-            q.AddScaledVector(angularChange[i], 1.f);
-            body[i]->SetWorldRotation(q);
-
-            // We need to calculate the derived data for any body that is
-            // asleep, so that the changes are reflected in the object's
-            // data. Otherwise the resolution will not change the position
-            // of the object, and the next collision detection round will
-            // have the same penetration.
-            if (!body[i]->GetIsAwake())
+            if (!body[i]->GetIsKinematic())
             {
-                body[i]->CalculateDerivedData();
+                Vector3 pos = body[i]->GetWorldPosition();
+                pos += contactNormal * linearMove[i];
+                body[i]->SetWorldPosition(pos);
+
+                // And the change in orientation
+                Quaternion q = body[i]->GetWorldRotation();
+                q.AddScaledVector(angularChange[i], 1.f);
+                body[i]->SetWorldRotation(q);
+
+                // We need to calculate the derived data for any body that is
+                // asleep, so that the changes are reflected in the object's
+                // data. Otherwise the resolution will not change the position
+                // of the object, and the next collision detection round will
+                // have the same penetration.
+                if (!body[i]->GetIsAwake())
+                {
+                    body[i]->CalculateDerivedData();
+                }
             }
         }
     }

@@ -8,9 +8,7 @@
 #include "Goknar/Physics/ForceGenerators/ForceGenerator.h"
 #include "Goknar/Physics/RigidBody.h"
 
-CollisionPlane plane;
-
-PhysicsWorld::PhysicsWorld(unsigned int maxContacts, unsigned char iterations) :
+PhysicsWorld::PhysicsWorld(unsigned int maxContacts, unsigned int iterations) :
     contactResolver_(iterations),
     firstBody_(nullptr),
     firstContactGen_(nullptr),
@@ -26,9 +24,6 @@ PhysicsWorld::PhysicsWorld(unsigned int maxContacts, unsigned char iterations) :
     collisionData_.friction = 0.9f;
     collisionData_.restitution = 0.1f;
     collisionData_.tolerance = 0.1f;
-
-    plane.direction = Vector3(0, 0, 1);
-    plane.offset = 0;
 }
 
 PhysicsWorld::~PhysicsWorld()
@@ -45,7 +40,7 @@ PhysicsWorld::~PhysicsWorld()
     }
 }
 
-
+CollisionPlane plane;
 void PhysicsWorld::PhysicsTick(float deltaTime)
 {
     remainingPhysicsTickDeltaTime_ += deltaTime;
@@ -73,7 +68,9 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
             int collisionCount = collisions_.size();
             for (int i = 0; i < collisionCount; ++i)
             {
-                //CollisionDetector::BoxAndHalfSpace(*static_cast<CollisionBox*>(collisions_[i]), plane, &collisionData_);
+                plane.direction = Vector3(0, 0, 1);
+                plane.offset = 0;
+                CollisionDetector::BoxAndHalfSpace(*static_cast<CollisionBox*>(collisions_[i]), plane, &collisionData_);
                 for (int j = i + 1; j < collisionCount; ++j)
                 {
                     if (!collisionData_.HasMoreContacts()) break;
@@ -107,7 +104,10 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
         }
 
         // Resolve detected contacts
-        contactResolver_.SetIterations(1);// collisionData_.contactCount * 4);
+        if (calculateIterations_)
+        {
+            contactResolver_.SetIterations(collisionData_.contactCount * 4);
+        }
         contactResolver_.ResolveContacts(collisionData_.contactArray, collisionData_.contactCount, PHYSICS_TICK_DELTA_TIME);
 
         collisionCount = collisionData_.contactCount;

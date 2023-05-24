@@ -15,7 +15,7 @@ class ForceRegistry;
 #define PHYSICS_TICKS_PER_SECOND 30
 #define PHYSICS_TICK_DELTA_TIME 1.f / PHYSICS_TICKS_PER_SECOND
 #define PHYSICS_DEFAULT_MAX_CONTACTS 8192
-#define PHYSICS_DEFAULT_ITEARATIONS 8192
+#define PHYSICS_DEFAULT_ITEARATIONS 0
 
 #define DEFAULT_GRAVITATIONAL_FORCE_MAGNITUDE 9.81f
 #define DEFAULT_GRAVITATIONAL_FORCE Vector3::UpVector * -DEFAULT_GRAVITATIONAL_FORCE_MAGNITUDE
@@ -23,7 +23,7 @@ class ForceRegistry;
 class GOKNAR_API PhysicsWorld
 {   
 public:
-    PhysicsWorld(unsigned int maxContacts = PHYSICS_DEFAULT_MAX_CONTACTS, unsigned char iterations = PHYSICS_DEFAULT_ITEARATIONS);
+    PhysicsWorld(unsigned int maxContacts = PHYSICS_DEFAULT_MAX_CONTACTS, unsigned int iterations = PHYSICS_DEFAULT_ITEARATIONS);
     ~PhysicsWorld();
 
     void PhysicsTick(float deltaTime);

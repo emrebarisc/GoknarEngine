@@ -35,8 +35,7 @@ void Matrix3x3::GetInverse(Matrix3x3& inverse) const
     float t14 = m[2] * m[6];
 
     // Calculate the determinant
-    float t16 = (t4 * m[8] - t6 * m[7] - t8 * m[8] +
-        t10 * m[7] + t12 * m[5] - t14 * m[4]);
+    float t16 = (t4 * m[8] - t6 * m[7] - t8 * m[8] + t10 * m[7] + t12 * m[5] - t14 * m[4]);
 
     // Make sure the determinant is non-zero.
     if (t16 == 0.0f)

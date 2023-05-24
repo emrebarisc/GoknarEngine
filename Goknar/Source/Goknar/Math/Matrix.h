@@ -318,7 +318,7 @@ public:
 
     Vector3 operator*(const Vector3& rhs) const
     {
-        Vector3 out(0.f);
+        Vector3 out;
 
         out.x = m[0] * rhs.x + m[1] * rhs.y + m[2] * rhs.z;
         out.y = m[3] * rhs.x + m[4] * rhs.y + m[5] * rhs.z;

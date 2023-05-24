@@ -404,6 +404,14 @@ unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const Collisi
 
     // Make sure we've got a result.
     GOKNAR_ASSERT(best != 0xffffff);
+<<<<<<< HEAD
+=======
+
+    if (best == 0xffffff)
+    {
+        return 0;
+    }
+>>>>>>> 32305bd914660c7dd1488daba7ea20b1bbf0d5aa
 
     // We now know there's a collision, and we know which
     // of the axes gave the smallest penetration. We now
