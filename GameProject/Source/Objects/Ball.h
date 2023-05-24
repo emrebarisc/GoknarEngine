@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Goknar/Physics/PhysicsObject.h"
+#include "Goknar/Physics/RigidBody.h"
 
 class StaticMeshComponent;
 
-class Object : public PhysicsObject
+class Ball : public RigidBody
 {
 public:
-	Object();
+	Ball();
 
 private:
 	StaticMeshComponent* staticMeshComponent_;
