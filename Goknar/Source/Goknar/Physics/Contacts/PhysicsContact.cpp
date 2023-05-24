@@ -246,11 +246,14 @@ void PhysicsContact::ApplyVelocityChange(Vector3 velocityChange[2], Vector3 rota
     velocityChange[0] = Vector3::ZeroVector;
     velocityChange[0] += impulse * body[0]->GetInverseMass();
 
-    // Apply the changes
-    body[0]->AddVelocity(velocityChange[0]);
-    body[0]->SetWorldRotation(body[0]->GetWorldRotation() + Quaternion::FromEuler(rotationChange[0]));
+    if (!body[0]->GetIsKinematic())
+    {
+        // Apply the changes
+        body[0]->AddVelocity(velocityChange[0]);
+        body[0]->SetWorldRotation(body[0]->GetWorldRotation() + Quaternion::FromEulerDegrees(rotationChange[0]));
+    }
 
-    if (body[1])
+    if (body[1] && !body[1]->GetIsKinematic())
     {
         // Work out body one's linear and angular changes
         Vector3 impulsiveTorque = impulse.Cross(relativeContactPosition[1]);
