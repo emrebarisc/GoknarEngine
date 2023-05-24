@@ -110,7 +110,7 @@ Vector3 PhysicsContact::CalculateLocalVelocity(unsigned int bodyIndex, float dur
     RigidBody* thisBody = body[bodyIndex];
 
     // Work out the velocity of the contact point.
-    Vector3 velocity = thisBody->GetWorldRotation().ToEuler().Cross(relativeContactPosition[bodyIndex]);
+    Vector3 velocity = thisBody->GetWorldRotation().ToEulerRadians().Cross(relativeContactPosition[bodyIndex]);
     velocity += thisBody->GetVelocity();
 
     // Turn the velocity into contact-coordinates.
@@ -264,7 +264,7 @@ void PhysicsContact::ApplyVelocityChange(Vector3 velocityChange[2], Vector3 rota
 
         // And apply them.
         body[1]->AddVelocity(velocityChange[1]);
-        body[1]->SetWorldRotation(body[1]->GetWorldRotation() + Quaternion::FromEuler(rotationChange[1]));
+        body[1]->SetWorldRotation(body[1]->GetWorldRotation() + Quaternion::FromEulerDegrees(rotationChange[1]));
     }
 }
 

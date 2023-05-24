@@ -15,6 +15,7 @@ class Matrix3x3;
 //      https://users.aalto.fi/~ssarkka/pub/quat.pdf
 //      https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 
+// x, y, z are complex components and w is real component
 class GOKNAR_API Quaternion
 {
 public:
@@ -48,12 +49,12 @@ public:
                 GoknarMath::IsNanOrInf(w);
     }
 
-    static Quaternion FromEuler(const Vector3& degrees);
+    static Quaternion FromEulerDegrees(const Vector3& degrees);
     static Quaternion FromEulerRadians(const Vector3& radians);
 
     void AddScaledVector(const Vector3& vector, float scale);
 
-    Vector3 ToEuler() const;
+    Vector3 ToEulerDegrees() const;
     Vector3 ToEulerRadians() const;
 
     inline Matrix GetMatrix() const;
