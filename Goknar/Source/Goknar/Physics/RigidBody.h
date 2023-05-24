@@ -214,10 +214,8 @@ public:
     {
         return isAwake_;
     }
-    void SetIsAwake(const bool isAwake = true)
-    {
-        isAwake_ = isAwake_;
-    }
+
+    void SetIsAwake(const bool isAwake = true);
 
     bool GetCanSleep() const
     {
@@ -235,6 +233,16 @@ public:
     }
 
     void SetIsPhysicsEnabled(bool isPhysicsEnabled);
+
+    void SetIsKinematic(bool isKinematic)
+    {
+        isKinematic_ = isKinematic;
+    }
+
+    bool GetIsKinematic() const
+    {
+        return isKinematic_;
+    }
 
     void ClearAccumulators();
 
@@ -339,6 +347,8 @@ protected:
     bool canSleep_{ true };
 
     bool isPhysicsEnabled_{ true };
+
+    bool isKinematic_{ false };
 };
 
 #endif

@@ -92,6 +92,32 @@ void RigidBody::Init()
     {
         engine->GetPhysicsWorld()->AddRigidBody(this);
     }
+
+    if (isKinematic_)
+    {
+        SetBlockInertiaTensor(GetWorldScaling() * 0.5f, GetMass());
+    }
+    else
+    {
+        float coeff = GetMass();
+        SetInertiaTensorCoeffs(coeff, coeff, coeff);
+    }
+}
+
+void RigidBody::SetIsAwake(const bool isAwake)
+{
+    if (isAwake)
+    {
+        isAwake_ = true;
+
+        // Add a bit of motion to avoid it falling asleep immediately.
+        motion_ = RIGID_BODY_SLEEP_EPSILON * 2.0f;
+    }
+    else
+    {
+        isAwake_ = false;
+        velocity_ = Vector3::ZeroVector;
+    }
 }
 
 void RigidBody::SetIsPhysicsEnabled(bool isPhysicsEnabled)
@@ -225,7 +251,7 @@ void RigidBody::ClearAccumulators()
 void RigidBody::AddForce(const Vector3& force)
 {
     forceAccum_ += force;
-    isAwake_ = true;
+    SetIsAwake(true);
 }
 
 void RigidBody::AddForceAtBodyPoint(const Vector3& force, const Vector3& point)
