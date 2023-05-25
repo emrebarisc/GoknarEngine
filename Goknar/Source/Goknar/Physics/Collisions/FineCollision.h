@@ -6,6 +6,9 @@
 #include "Math/GoknarMath.h"
 #include "Math/Matrix.h"
 
+class CollisionBox;
+class CollisionSphere;
+
 class CollisionDetector;
 class IntersectionTests;
 class RigidBody;
@@ -20,6 +23,9 @@ class GOKNAR_API CollisionPrimitive
     friend class CollisionDetector;
 
 public:
+
+    ~CollisionPrimitive() {}
+
     /**
      * Calculates the internals for the primitive.
      */
@@ -38,6 +44,9 @@ public:
      * attached.
      */
     const Matrix& GetTransform() const;
+
+    virtual bool DetectCollision(CollisionBox* other) { return false; }
+    virtual bool DetectCollision(CollisionSphere* other) { return false; }
 
     /**
      * The rigid body that is represented by this primitive.

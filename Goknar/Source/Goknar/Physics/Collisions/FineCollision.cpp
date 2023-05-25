@@ -476,8 +476,8 @@ unsigned int CollisionDetector::BoxAndBox(const CollisionBox& one, const Collisi
 
         // Move them into world coordinates (they are already oriented
         // correctly, since they have been derived from the axes).
-        ptOnOneEdge = one.body->GetWorldTransformationMatrix() * ptOnOneEdge;
-        ptOnTwoEdge = two.body->GetWorldTransformationMatrix() * ptOnTwoEdge;
+        ptOnOneEdge = one.body->GetWorldTransformationMatrix() * Vector4(ptOnOneEdge, 1.f);
+        ptOnTwoEdge = two.body->GetWorldTransformationMatrix() * Vector4(ptOnTwoEdge, 1.f);
 
         // So we have a point and a direction for the colliding edges.
         // We need to find out point of closest approach of the two
@@ -558,8 +558,8 @@ unsigned int CollisionDetector::BoxAndPoint(const CollisionBox& box, const Vecto
 unsigned int CollisionDetector::BoxAndSphere(const CollisionBox& box, const CollisionSphere& sphere, CollisionData* data)
 {
     // Transform the centre of the sphere into box coordinates
-    Vector3 centre = sphere.GetAxis(3);
-    Vector3 relCentre = box.body->GetWorldTransformationMatrix().MultiplyTransposeByInverse(centre);
+    Vector3 centre = sphere.body->GetWorldPosition();
+    Vector3 relCentre = box.body->GetRelativePositionInWorldSpace(centre);// GetWorldTransformationMatrix().MultiplyTransposeByInverse(centre);
 
     // Early out check to see if we can exclude the contact
     if (std::abs(relCentre.x) - sphere.radius > box.halfSize.x ||

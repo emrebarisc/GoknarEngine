@@ -48,14 +48,6 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
     {
         forceRegistry_->UpdateForces(PHYSICS_TICK_DELTA_TIME);
 
-        RigidBodies::iterator rigidBodyIterator = rigidBodies_.begin();
-        while (rigidBodyIterator != rigidBodies_.end())
-        {
-            (*rigidBodyIterator)->PhysicsTick(PHYSICS_TICK_DELTA_TIME);
-
-            ++rigidBodyIterator;
-        }
-
         //for (auto collision : collisions_)
         //{
         //    collision->CalculateInternals();
@@ -70,17 +62,53 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
             {
                 plane.direction = Vector3(0, 0, 1);
                 plane.offset = 0;
-                CollisionDetector::BoxAndHalfSpace(*static_cast<CollisionBox*>(collisions_[i]), plane, &collisionData_);
+                //if (CollisionDetector::BoxAndHalfSpace(*static_cast<CollisionBox*>(collisions_[i]), plane, &collisionData_))
+                //{
+                //    GOKNAR_INFO("COLLISION!");
+                //}
+
+                CollisionPrimitive* primitiveOne = collisions_[i];
+                CollisionBox* collisionBoxOne = dynamic_cast<CollisionBox*>(primitiveOne);
+                CollisionSphere* collisionSphereOne = dynamic_cast<CollisionSphere*>(primitiveOne);
+
                 for (int j = i + 1; j < collisionCount; ++j)
                 {
-                    if (!collisionData_.HasMoreContacts()) break;
-                    if (0 < CollisionDetector::BoxAndBox(*static_cast<CollisionBox*>(collisions_[i]), *static_cast<CollisionBox*>(collisions_[j]), &collisionData_))
+                    if (!collisionData_.HasMoreContacts())
                     {
-                        //GOKNAR_INFO("COLLISION! {} - {}", i, j);
+                        break;
+                    }
+
+                    CollisionPrimitive* primitiveTwo = collisions_[j];
+                    CollisionBox* collisionBoxTwo = dynamic_cast<CollisionBox*>(primitiveTwo);
+                    CollisionSphere* collisionSphereTwo = dynamic_cast<CollisionSphere*>(primitiveTwo);
+
+                    if (collisionBoxOne && collisionBoxTwo)
+                    {
+                        CollisionDetector::BoxAndBox(*collisionBoxOne, *collisionBoxTwo, &collisionData_);
+                    }
+                    else if (collisionBoxOne && collisionSphereTwo)
+                    {
+                        CollisionDetector::BoxAndSphere(*collisionBoxOne, *collisionSphereTwo, &collisionData_);
+                    }
+                    else if (collisionBoxTwo && collisionSphereOne)
+                    {
+                        CollisionDetector::BoxAndSphere(*collisionBoxTwo, *collisionSphereOne, &collisionData_);
+                    }
+                    else if (collisionSphereOne && collisionSphereTwo)
+                    {
+                        CollisionDetector::SphereAndSphere(*collisionSphereOne, *collisionSphereTwo, &collisionData_);
                     }
                 }
                 if (!collisionData_.HasMoreContacts()) break;
             }
+        }
+
+        RigidBodies::iterator rigidBodyIterator = rigidBodies_.begin();
+        while (rigidBodyIterator != rigidBodies_.end())
+        {
+            (*rigidBodyIterator)->PhysicsTick(PHYSICS_TICK_DELTA_TIME);
+
+            ++rigidBodyIterator;
         }
 
         //if (0 < collisionData_.contactCount)

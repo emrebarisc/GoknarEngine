@@ -722,6 +722,41 @@ public:
         );
     }
 
+    /**
+     * From Cyclone Physics
+     * 
+     * Transform the given direction vector by the
+     * transformational inverse of this matrix.
+     *
+     * @note This function relies on the fact that the inverse of
+     * a pure rotation matrix is its transpose. It separates the
+     * translational and rotation components, transposes the
+     * rotation, and multiplies out. If the matrix is not a
+     * scale and shear free transform matrix, then this function
+     * will not give correct results.
+     *
+     * @note When a direction is converted between frames of
+     * reference, there is no translation required.
+     *
+     * @param vector The vector to transform.
+     */
+    Vector3 MultiplyTransposeByInverseDirection(const Vector3& vector) const
+    {
+        return Vector3(
+            vector.x * m[0] +
+            vector.y * m[4] +
+            vector.z * m[8],
+
+            vector.x * m[1] +
+            vector.y * m[5] +
+            vector.z * m[9],
+
+            vector.x * m[2] +
+            vector.y * m[6] +
+            vector.z * m[10]
+        );
+    }
+
     void operator=(const Matrix& rhs)
     {
         if(this != &rhs)

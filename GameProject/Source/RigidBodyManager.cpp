@@ -9,6 +9,7 @@
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Material.h"
 
+#include "Objects/Ball.h"
 #include "Objects/RigidBodyObject.h"
 
 #include "Components/StaticMeshComponent.h"
@@ -22,29 +23,29 @@ int id = 0;
 
 void RigidBodyManager::BeginGame()
 {
-	//RigidBodyObject* gravityObject = new RigidBodyObject();
-	//gravityObject->SetWorldPosition(Vector3{ 0.f, 0.f, 0.f });
-	//gravityObject->SetIsGravityEnabled(false);
+	RigidBodyObject* gravityObject = new RigidBodyObject();
+	gravityObject->SetWorldPosition(Vector3{ 0.f, 0.f, 0.f });
+	gravityObject->SetIsGravityEnabled(false);
 
-	//Vector3 halfSize = Vector3(100, 100, 1);
-	//float mass = halfSize.x * halfSize.y * halfSize.z * 88888888.0f;
+	Vector3 halfSize = Vector3(100, 100, 1);
+	float mass = halfSize.x * halfSize.y * halfSize.z * 8.0f;
 
-	//gravityObject->SetWorldScaling(halfSize);
-	//gravityObject->SetMass(mass);
+	gravityObject->SetWorldScaling(halfSize);
+	gravityObject->SetMass(mass);
 
-	//gravityObject->SetLinearDamping(0.95f);
-	//gravityObject->SetAngularDamping(0.8f);
-	//gravityObject->ClearAccumulators();
+	gravityObject->SetLinearDamping(0.95f);
+	gravityObject->SetAngularDamping(0.8f);
+	gravityObject->ClearAccumulators();
 
-	//gravityObject->SetCanSleep(false);
-	//gravityObject->SetIsAwake();
-	////gravityObject->SetIsKinematic(true);
+	gravityObject->SetCanSleep(false);
+	gravityObject->SetIsAwake();
+	gravityObject->SetIsKinematic(true);
 
-	//CollisionBox* collisionBox = new CollisionBox();
-	//collisionBox->body = gravityObject;
-	//collisionBox->halfSize = gravityObject->GetWorldScaling();
+	CollisionBox* collisionBox = new CollisionBox();
+	collisionBox->body = gravityObject;
+	collisionBox->halfSize = halfSize;
 
-	//engine->GetPhysicsWorld()->AddCollision(collisionBox);
+	engine->GetPhysicsWorld()->AddCollision(collisionBox);
 
 	/*for(int i = 0; i < 25; ++i)
 	{
@@ -74,7 +75,6 @@ void RigidBodyManager::BeginGame()
 
 		engine->GetPhysicsWorld()->AddCollision(collisionBox);
 	}*/
-
 	/*
 	{
 		RigidBodyObject* gravityObject = new RigidBodyObject();
@@ -191,21 +191,26 @@ void RigidBodyManager::Tick(float deltaTime)
 
 	if (countdown < 0.f)
 	{
-		for (int i = -2; i <= 2; ++i)
+		//for (int i = -2; i <= 2; ++i)
+		int i = 0;
 		{
-			RigidBodyObject* pistol = new RigidBodyObject();
+			Ball* pistol = new Ball();
 			pistol->SetWorldScaling(Vector3{ 1.f, 1.f, 1.f });
 			pistol->SetWorldPosition(Vector3{ std::floorf((i / 2) % 2) * 50.f, std::floorf(i % 2) * 50.f, 20.f });
 			pistol->SetIsGravityEnabled(true);
-			pistol->SetMass(200.0f);
+			pistol->SetMass(2.0f);
 			//pistol->SetVelocity(35.f, 0.f, 0.f);
 			pistol->SetDamping(0.99f, 0.8f);
 
-			CollisionBox* collisionBox = new CollisionBox();
-			collisionBox->body = pistol;
-			collisionBox->halfSize = pistol->GetWorldScaling() * 0.5f;
+			CollisionSphere* collisionSphere = new CollisionSphere();
+			collisionSphere->body = pistol;
+			collisionSphere->radius = 1.f;
+			engine->GetPhysicsWorld()->AddCollision(collisionSphere);
 
-			engine->GetPhysicsWorld()->AddCollision(collisionBox);
+			//CollisionBox* collisionBox = new CollisionBox();
+			//collisionBox->body = pistol;
+			//collisionBox->halfSize = pistol->GetWorldScaling() * 0.5f;
+			//engine->GetPhysicsWorld()->AddCollision(collisionBox);
 		}
 
 /*
