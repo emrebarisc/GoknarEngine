@@ -559,8 +559,8 @@ unsigned int CollisionDetector::BoxAndSphere(const CollisionBox& box, const Coll
 {
     // Transform the centre of the sphere into box coordinates
     Vector3 centre = sphere.body->GetWorldPosition();
-    Vector3 relCentre = box.body->GetRelativePositionInWorldSpace(centre);// GetWorldTransformationMatrix().MultiplyTransposeByInverse(centre);
-
+    Vector3 relCentre = box.body->GetWorldPositionInRelativeSpace(centre);
+   
     // Early out check to see if we can exclude the contact
     if (std::abs(relCentre.x) - sphere.radius > box.halfSize.x ||
         std::abs(relCentre.y) - sphere.radius > box.halfSize.y ||
@@ -569,23 +569,47 @@ unsigned int CollisionDetector::BoxAndSphere(const CollisionBox& box, const Coll
         return 0;
     }
 
-    Vector3 closestPt(0, 0, 0);
-    float dist;
+    Vector3 closestPt = Vector3::ZeroVector;
 
     // Clamp each coordinate to the box.
-    dist = relCentre.x;
-    if (dist > box.halfSize.x) dist = box.halfSize.x;
-    if (dist < -box.halfSize.x) dist = -box.halfSize.x;
+    float dist = relCentre.x;
+    if (dist > box.halfSize.x)
+    {
+        dist = box.halfSize.x;
+    }
+
+    if (dist < -box.halfSize.x)
+    {
+        dist = -box.halfSize.x;
+    }
+
     closestPt.x = dist;
 
     dist = relCentre.y;
-    if (dist > box.halfSize.y) dist = box.halfSize.y;
-    if (dist < -box.halfSize.y) dist = -box.halfSize.y;
+    if (dist > box.halfSize.y)
+    {
+        dist = box.halfSize.y;
+    }
+
+    if (dist < -box.halfSize.y)
+    {
+        dist = -box.halfSize.y;
+    }
+
     closestPt.y = dist;
 
     dist = relCentre.z;
-    if (dist > box.halfSize.z) dist = box.halfSize.z;
-    if (dist < -box.halfSize.z) dist = -box.halfSize.z;
+
+    if (dist > box.halfSize.z)
+    {
+        dist = box.halfSize.z;
+    }
+
+    if (dist < -box.halfSize.z)
+    {
+        dist = -box.halfSize.z;
+    }
+
     closestPt.z = dist;
 
     // Check we're in contact
@@ -593,11 +617,10 @@ unsigned int CollisionDetector::BoxAndSphere(const CollisionBox& box, const Coll
     if (dist > sphere.radius * sphere.radius) return 0;
 
     // Compile the contact
-    Vector3 closestPtWorld = box.body->GetWorldTransformationMatrix() * Vector4(closestPt, 1.f);
+    Vector3 closestPtWorld = box.body->GetRelativePositionInWorldSpace(closestPt);// GetWorldTransformationMatrix()* Vector4(, 1.f);
 
     PhysicsContact* contact = data->contacts;
-    contact->contactNormal = (closestPtWorld - centre);
-    contact->contactNormal.Normalize();
+    contact->contactNormal = (closestPtWorld - centre).GetNormalized();
     contact->contactPoint = closestPtWorld;
     contact->penetration = sphere.radius - std::sqrtf(dist);
     contact->SetBodyData(box.body, sphere.body, data->friction, data->restitution);

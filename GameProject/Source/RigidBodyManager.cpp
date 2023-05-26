@@ -23,26 +23,27 @@ int id = 0;
 
 void RigidBodyManager::BeginGame()
 {
-	RigidBodyObject* gravityObject = new RigidBodyObject();
-	gravityObject->SetWorldPosition(Vector3{ 0.f, 0.f, 0.f });
-	gravityObject->SetIsGravityEnabled(false);
+	RigidBodyObject* platform = new RigidBodyObject();
+	platform->SetWorldPosition(Vector3{ 0.f, 0.f, -2.f });
+	platform->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 45.f, 0.f, 0.f }));
+	platform->SetIsGravityEnabled(false);
 
 	Vector3 halfSize = Vector3(100, 100, 1);
 	float mass = halfSize.x * halfSize.y * halfSize.z * 8.0f;
 
-	gravityObject->SetWorldScaling(halfSize);
-	gravityObject->SetMass(mass);
+	platform->SetWorldScaling(halfSize);
+	platform->SetMass(mass);
 
-	gravityObject->SetLinearDamping(0.95f);
-	gravityObject->SetAngularDamping(0.8f);
-	gravityObject->ClearAccumulators();
+	platform->SetLinearDamping(0.95f);
+	platform->SetAngularDamping(0.8f);
+	platform->ClearAccumulators();
 
-	gravityObject->SetCanSleep(false);
-	gravityObject->SetIsAwake();
-	gravityObject->SetIsKinematic(true);
+	platform->SetCanSleep(false);
+	platform->SetIsAwake();
+	platform->SetIsKinematic(true);
 
 	CollisionBox* collisionBox = new CollisionBox();
-	collisionBox->body = gravityObject;
+	collisionBox->body = platform;
 	collisionBox->halfSize = halfSize;
 
 	engine->GetPhysicsWorld()->AddCollision(collisionBox);
@@ -196,10 +197,10 @@ void RigidBodyManager::Tick(float deltaTime)
 		{
 			Ball* pistol = new Ball();
 			pistol->SetWorldScaling(Vector3{ 1.f, 1.f, 1.f });
-			pistol->SetWorldPosition(Vector3{ std::floorf((i / 2) % 2) * 50.f, std::floorf(i % 2) * 50.f, 20.f });
+			pistol->SetWorldPosition(Vector3{ std::floorf((i / 2) % 2) * 50.f, std::floorf(i % 2) * 50.f, 10.f });
 			pistol->SetIsGravityEnabled(true);
 			pistol->SetMass(2.0f);
-			//pistol->SetVelocity(35.f, 0.f, 0.f);
+			//pistol->AddForce(Vector3{ 0.f, 0.f, 50.f });
 			pistol->SetDamping(0.99f, 0.8f);
 
 			CollisionSphere* collisionSphere = new CollisionSphere();
@@ -255,7 +256,7 @@ void RigidBodyManager::Tick(float deltaTime)
 		box->AddTorque(Vector3{ 0.f, 0.f, 40000.f });
 */
 
-		countdown = 5.f;
+		countdown = 1.f;
 	}
 
 	//float oneTenThousandOfElapsedTime = engine->GetElapsedTime() * 0.0001f;
