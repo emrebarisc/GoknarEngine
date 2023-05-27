@@ -17,7 +17,7 @@
 		<AmbientLight>150 150 150</AmbientLight>
 		<DirectionalLight>
 			<Direction>0.57735 0.57735 -0.57735</Direction>
-			<Color>1.0 0.99 0.83</Color>
+			<Color>1.0 1.0 1.0</Color>
 			<Intensity>0.75</Intensity>
 		</DirectionalLight>
 	</Lights>

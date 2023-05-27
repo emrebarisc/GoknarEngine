@@ -65,6 +65,7 @@ public:
 
     inline Quaternion operator+(const Quaternion& other) const;
     inline Quaternion& operator+=(const Quaternion& other);
+    inline Quaternion& operator+=(const Vector3& other);
 
     inline Quaternion operator-(const Quaternion& other) const;
     inline Quaternion operator-=(const Quaternion& other);
@@ -138,6 +139,18 @@ inline Quaternion& Quaternion::operator+=(const Quaternion& other)
     this->y += other.y;
     this->z += other.z;
     this->w += other.w;
+
+    return *this;
+}
+
+inline Quaternion& Quaternion::operator+=(const Vector3& other)
+{
+    Quaternion q(other.x, other.y, other.z, 0.f);
+    q *= *this;
+    x += q.x * 0.5f;
+    y += q.y * 0.5f;
+    z += q.z * 0.5f;
+    w += q.w * 0.5f;
 
     return *this;
 }

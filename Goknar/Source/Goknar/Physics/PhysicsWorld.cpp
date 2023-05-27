@@ -126,10 +126,10 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
 
         static unsigned int collisionCount = collisionData_.contactCount;
 
-        if (collisionCount != collisionData_.contactCount)
-        {
-            GOKNAR_INFO("Collision count is changed!");
-        }
+        //if (collisionCount != collisionData_.contactCount)
+        //{
+        //    GOKNAR_INFO("Collision count is changed!");
+        //}
 
         // Resolve detected contacts
         if (calculateIterations_)

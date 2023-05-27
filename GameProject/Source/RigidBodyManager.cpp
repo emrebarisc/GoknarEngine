@@ -246,15 +246,15 @@ void RigidBodyManager::Tick(float deltaTime)
 		laser->SetVelocity(100.f, 0.f, 0.f);
 		laser->SetAcceleration(0.f, 0.f, 0.f);
 		laser->SetDamping(0.99f, 0.99f);
+*/
 
 		RigidBodyObject* box = new RigidBodyObject();
 		box->SetWorldPosition(Vector3{ 0.f, -4.f, 0.f });
 		box->SetIsGravityEnabled(true);
 		box->SetMass(1.f);
 		box->SetDamping(0.99f, 0.99f);
-		box->AddForceAtPoint(Vector3{ 4000.f, 0.f, 2000.f }, Vector3{ -0.5f, -4.f, -0.5f });
+		box->AddForceAtBodyPoint(Vector3{ 3000.f, 0.f, 1500.f }, Vector3{ -0.5f, -4.f, -0.5f });
 		box->AddTorque(Vector3{ 0.f, 0.f, 40000.f });
-*/
 
 		countdown = 1.f;
 	}
