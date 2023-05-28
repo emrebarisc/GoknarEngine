@@ -64,6 +64,12 @@ void RigidBody::Init()
     }
 }
 
+void RigidBody::SetWorldRotation(const Quaternion& rotation, bool updateWorldTransformationMatrix)
+{
+    objectBaseWorldRotation_ = rotation;
+    ObjectBase::SetWorldRotation((objectBaseWorldRotation_ * physicsWorldRotation_).GetNormalized(), updateWorldTransformationMatrix);
+}
+
 void RigidBody::SetIsAwake(const bool isAwake)
 {
     if (isAwake)
@@ -99,7 +105,10 @@ void RigidBody::SetIsPhysicsEnabled(bool isPhysicsEnabled)
 
 void RigidBody::PhysicsTick(float deltaTime)
 {
-    if (!isAwake_) return;
+    if (!isAwake_)
+    {
+        return;
+    }
 
     if (isGravityEnabled_ && HasFiniteMass())
     {
@@ -129,7 +138,8 @@ void RigidBody::PhysicsTick(float deltaTime)
     worldPosition_ += velocity_ * deltaTime;
 
     // Update angular position.
-    worldRotation_ += eulerRotation_ * deltaTime;
+    //worldRotation_ += eulerRotation_ * deltaTime;
+    physicsWorldRotation_ = Quaternion::FromEulerRadians(eulerRotation_) * deltaTime;
 
     // Normalise the orientation, and update the matrices with the new
     // position and orientation
@@ -161,13 +171,9 @@ void RigidBody::PhysicsTick(float deltaTime)
 void RigidBody::CalculateDerivedData()
 {
     // Normalize rotation and update world transformation matrix
-    SetWorldRotation(worldRotation_.Normalize());
+    SetWorldRotation(objectBaseWorldRotation_);
 
-    _transformInertiaTensor(
-        inverseInertiaTensorWorld_,
-        worldRotation_,
-        inverseInertiaTensor_,
-        worldTransformationMatrix_);
+    _transformInertiaTensor(inverseInertiaTensorWorld_, worldRotation_, inverseInertiaTensor_, worldTransformationMatrix_);
 }
 
 void RigidBody::SetMass(const float mass)

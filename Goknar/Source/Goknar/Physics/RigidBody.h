@@ -16,6 +16,8 @@ public:
 
     virtual void Init() override;
 
+    virtual void SetWorldRotation(const Quaternion& rotation, bool updateWorldTransformationMatrix = true) override;
+
     void SetMass(const float mass);
     float GetMass() const;
 
@@ -293,6 +295,9 @@ protected:
      * @see inverseInertiaTensor
      */
     Matrix3x3 inverseInertiaTensorWorld_{ Matrix3x3::IdentityMatrix };
+
+    Quaternion objectBaseWorldRotation_{ Quaternion::Identity };
+    Quaternion physicsWorldRotation_{ Quaternion::Identity };
 
     Vector3 eulerRotation_{ Vector3::ZeroVector };
 

@@ -144,28 +144,28 @@ struct GOKNAR_API CollisionData
      * can be incremented each time a contact is detected, while
      * this pointer points to the first contact found.
      */
-    PhysicsContact* contactArray;
+    PhysicsContact* contactArray{ nullptr };
 
     /** Holds the contact array to write into. */
-    PhysicsContact* contacts;
+    PhysicsContact* contacts{ nullptr };
 
     /** Holds the maximum number of contacts the array can take. */
-    int contactsLeft;
+    int contactsLeft{ 0 };
 
     /** Holds the number of contacts found so far. */
-    unsigned int contactCount;
+    unsigned int contactCount{ 0 };
 
     /** Holds the friction value to write into any collisions. */
-    float friction;
+    float friction{ 0.f };
 
     /** Holds the restitution value to write into any collisions. */
-    float restitution;
+    float restitution{ 0.f };
 
     /**
      * Holds the collision tolerance, even uncolliding objects this
      * close should have collisions generated.
      */
-    float tolerance;
+    float tolerance{ 0.f };
 
     /**
      * Checks if there are more contacts available in the contact

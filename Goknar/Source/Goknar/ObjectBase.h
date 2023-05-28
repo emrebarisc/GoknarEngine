@@ -58,7 +58,7 @@ public:
 		return worldPosition_;
 	}
 
-	void SetWorldRotation(const Quaternion& rotation, bool updateWorldTransformationMatrix = true);
+	virtual void SetWorldRotation(const Quaternion& rotation, bool updateWorldTransformationMatrix = true);
 	const Quaternion& GetWorldRotation() const
 	{
 		return worldRotation_;
