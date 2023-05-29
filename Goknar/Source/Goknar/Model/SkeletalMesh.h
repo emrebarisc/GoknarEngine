@@ -6,8 +6,9 @@
 #include <vector>
 
 #include "StaticMesh.h"
+
 #include "Goknar/Core.h"
-#include "Goknar/Log.h"
+#include "Goknar/GoknarAssert.h"
 #include "Goknar/Math/GoknarMath.h"
 #include "Goknar/Math/Quaternion.h"
 

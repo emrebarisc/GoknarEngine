@@ -3,6 +3,8 @@
 
 #include "Core.h"
 
+#include "PhysicsConstants.h"
+
 #include "Contacts/PhysicsContact.h"
 #include "Contacts/ContactResolver.h"
 
@@ -11,15 +13,6 @@
 class ContactGenerator;
 class RigidBody;
 class ForceRegistry;
-
-#define PHYSICS_TICKS_PER_SECOND 120
-#define PHYSICS_TICK_DELTA_TIME 1.f / PHYSICS_TICKS_PER_SECOND
-#define PHYSICS_DEFAULT_MAX_CONTACTS 8192
-#define PHYSICS_DEFAULT_ITEARATIONS 0
-
-#define DEFAULT_GRAVITATIONAL_FORCE_MAGNITUDE 9.81f
-#define DEFAULT_GRAVITATIONAL_FORCE Vector3::UpVector * -DEFAULT_GRAVITATIONAL_FORCE_MAGNITUDE
-
 class GOKNAR_API PhysicsWorld
 {   
 public:

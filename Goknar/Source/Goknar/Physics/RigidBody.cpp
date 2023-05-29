@@ -3,7 +3,7 @@
 #include "Goknar/Physics/RigidBody.h"
 
 #include "Goknar/Engine.h"
-#include "Goknar/Log.h"
+#include "Goknar/GoknarAssert.h"
 #include "Goknar/Physics/PhysicsWorld.h"
 
 /**
@@ -42,7 +42,7 @@ static inline void _transformInertiaTensor(Matrix3x3& iitWorld, const Quaternion
     iitWorld.m[8] = t52 * rotmat[8] + t57 * rotmat[9] + t62 * rotmat[10];
 }
 
-RigidBody::RigidBody()
+RigidBody::RigidBody() : ObjectBase()
 {
 }
 

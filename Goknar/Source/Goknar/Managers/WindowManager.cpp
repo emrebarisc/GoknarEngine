@@ -3,10 +3,10 @@
 #include "WindowManager.h"
 
 #include "Goknar/Camera.h"
+#include "Goknar/GoknarAssert.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
-#include "InputManager.h"
-#include "Goknar/Log.h"
+#include "Goknar/Managers/InputManager.h"
 
 #include <iostream>
 

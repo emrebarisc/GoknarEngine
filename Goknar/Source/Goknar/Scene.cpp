@@ -2,22 +2,22 @@
 
 #include "Scene.h"
 
-#include "Engine.h"
-#include "Goknar/Log.h"
-#include "Material.h"
-#include "ObjectBase.h"
-#include "Helpers/SceneParser.h"
-#include "Renderer/Texture.h"
+#include "Goknar/Engine.h"
+#include "Goknar/GoknarAssert.h"
+#include "Goknar/Material.h"
+#include "Goknar/ObjectBase.h"
+#include "Goknar/Helpers/SceneParser.h"
+#include "Goknar/Renderer/Texture.h"
 
-#include "Model/DynamicMesh.h"
-#include "Model/StaticMesh.h"
-#include "Model/SkeletalMesh.h"
+#include "Goknar/Model/DynamicMesh.h"
+#include "Goknar/Model/StaticMesh.h"
+#include "Goknar/Model/SkeletalMesh.h"
 
-#include "Lights/DirectionalLight.h"
-#include "Lights/PointLight.h"
-#include "Lights/SpotLight.h"
+#include "Goknar/Lights/DirectionalLight.h"
+#include "Goknar/Lights/PointLight.h"
+#include "Goknar/Lights/SpotLight.h"
 
-#include "TimeDependentObject.h"
+#include "Goknar/TimeDependentObject.h"
 
 Scene::Scene()
 {

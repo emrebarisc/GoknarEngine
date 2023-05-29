@@ -2,8 +2,8 @@
 
 #include "PhysicsContact.h"
 
-#include "Log.h"
-#include "Physics/RigidBody.h"
+#include "Goknar/GoknarAssert.h"
+#include "Goknar/Physics/RigidBody.h"
 
 void PhysicsContact::SetBodyData(RigidBody* one, RigidBody* two, float f, float r)
 {
@@ -95,6 +95,12 @@ inline void PhysicsContact::CalculateContactBasis()
         contactTangent[1].x = contactNormal.y * contactTangent[0].z - contactNormal.z * contactTangent[0].y;
         contactTangent[1].y = -contactNormal.x * contactTangent[0].z;
         contactTangent[1].z = contactNormal.x * contactTangent[0].y;
+    }
+
+    if (9999.f < contactTangent[0].x || 9999.f < contactTangent[0].y || 9999.f < contactTangent[0].z || 9999.f < contactTangent[1].x || 9999.f < contactTangent[1].y || 9999.f < contactTangent[1].z ||
+        GoknarMath::IsNanOrInf(contactTangent[0].x) || GoknarMath::IsNanOrInf(contactTangent[0].y) || GoknarMath::IsNanOrInf(contactTangent[0].z) || GoknarMath::IsNanOrInf(contactTangent[1].x) || GoknarMath::IsNanOrInf(contactTangent[1].y) || GoknarMath::IsNanOrInf(contactTangent[1].z))
+    {
+        GOKNAR_INFO("Shit");
     }
 
     // Make a matrix from the three vectors.

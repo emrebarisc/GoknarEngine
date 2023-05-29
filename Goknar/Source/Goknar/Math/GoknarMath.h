@@ -2,7 +2,8 @@
 #define __MATH_H__
 
 #include "Goknar/Core.h"
-#include "MathDefines.h"
+#include "Goknar/GoknarAssert.h"
+#include "Goknar/Math/MathDefines.h"
 
 #include <iostream>
 
@@ -74,6 +75,12 @@ public:
 		return Lerp(start, end, (alpha < 0.5f) ?
 			SlerpIn(0.f, 1.f, alpha * 2.f) * 0.5f :
 			SlerpOut(0.f, 1.f, alpha * 2.f - 1.f) * 0.5f + 0.5f);
+	}
+
+	template<class T>
+	static T Clamp(T value, T min, T max)
+	{
+		return value < min ? min : (max < value ? max : value);
 	}
 
 	template<class T>
@@ -336,6 +343,7 @@ struct GOKNAR_API Vector3
 			return *this / this->Length();
 		}
 
+		GOKNAR_CHECK(false, "Division By Zero");
 		return *this;
 	}
 

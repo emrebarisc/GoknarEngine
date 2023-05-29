@@ -53,6 +53,14 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
         //    collision->CalculateInternals();
         //}
 
+        RigidBodies::iterator rigidBodyIterator = rigidBodies_.begin();
+        while (rigidBodyIterator != rigidBodies_.end())
+        {
+            (*rigidBodyIterator)->PhysicsTick(PHYSICS_TICK_DELTA_TIME);
+
+            ++rigidBodyIterator;
+        }
+
         {
             // Set up the collision data structure
             collisionData_.Reset(maxContacts_);
@@ -101,14 +109,6 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
                 }
                 if (!collisionData_.HasMoreContacts()) break;
             }
-        }
-
-        RigidBodies::iterator rigidBodyIterator = rigidBodies_.begin();
-        while (rigidBodyIterator != rigidBodies_.end())
-        {
-            (*rigidBodyIterator)->PhysicsTick(PHYSICS_TICK_DELTA_TIME);
-
-            ++rigidBodyIterator;
         }
 
         //if (0 < collisionData_.contactCount)
