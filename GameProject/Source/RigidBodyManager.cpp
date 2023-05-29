@@ -24,11 +24,11 @@ int id = 0;
 void RigidBodyManager::BeginGame()
 {
 	RigidBodyObject* platform = new RigidBodyObject();
-	platform->SetWorldPosition(Vector3{ 0.f, 0.f, -2.f });
-	platform->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 45.f, 0.f, 0.f }));
+	platform->SetWorldPosition(Vector3{ 0.f, 0.f, -10.f });
+	platform->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 10.f, 0.f, 0.f }));
 	platform->SetIsGravityEnabled(false);
 
-	Vector3 halfSize = Vector3(100, 100, 1);
+	Vector3 halfSize = Vector3(100, 100, 10);
 	float mass = halfSize.x * halfSize.y * halfSize.z * 8.0f;
 
 	platform->SetWorldScaling(halfSize);
@@ -47,7 +47,6 @@ void RigidBodyManager::BeginGame()
 	collisionBox->halfSize = halfSize;
 
 	engine->GetPhysicsWorld()->AddCollision(collisionBox);
-
 	/*for(int i = 0; i < 25; ++i)
 	{
 		RigidBodyObject* gravityObject = new RigidBodyObject();
@@ -188,7 +187,7 @@ void RigidBodyManager::BeginGame()
 
 void RigidBodyManager::Tick(float deltaTime)
 {
-	static float countdown = 5.f;
+	static float countdown = 1.f;
 
 	if (countdown < 0.f)
 	{
@@ -246,7 +245,6 @@ void RigidBodyManager::Tick(float deltaTime)
 		laser->SetVelocity(100.f, 0.f, 0.f);
 		laser->SetAcceleration(0.f, 0.f, 0.f);
 		laser->SetDamping(0.99f, 0.99f);
-*/
 
 		RigidBodyObject* box = new RigidBodyObject();
 		box->SetWorldPosition(Vector3{ 0.f, -4.f, 0.f });
@@ -255,6 +253,7 @@ void RigidBodyManager::Tick(float deltaTime)
 		box->SetDamping(0.99f, 0.99f);
 		box->AddForceAtBodyPoint(Vector3{ 3000.f, 0.f, 1500.f }, Vector3{ -0.5f, -4.f, -0.5f });
 		box->AddTorque(Vector3{ 0.f, 0.f, 40000.f });
+*/
 
 		countdown = 1.f;
 	}
