@@ -2,9 +2,10 @@
 
 #include "FineCollision.h"
 
-#include "Log.h"
-#include "Physics/RigidBody.h"
-#include "Physics/Contacts/PhysicsContact.h"
+#include "Goknar/GoknarAssert.h"
+#include "Goknar/Physics/PhysicsConstants.h"
+#include "Goknar/Physics/RigidBody.h"
+#include "Goknar/Physics/Contacts/PhysicsContact.h"
 
 void CollisionData::AddContacts(unsigned int count)
 {
@@ -558,71 +559,42 @@ unsigned int CollisionDetector::BoxAndPoint(const CollisionBox& box, const Vecto
 unsigned int CollisionDetector::BoxAndSphere(const CollisionBox& box, const CollisionSphere& sphere, CollisionData* data)
 {
     // Transform the centre of the sphere into box coordinates
-    Vector3 centre = sphere.body->GetWorldPosition();
-    Vector3 relCentre = box.body->GetWorldPositionInRelativeSpace(centre);
-   
+    Vector3 sphereWorldPosition = sphere.body->GetWorldPosition();
+    Vector3 relativeSphereWorldPosition = box.body->GetWorldRotation().GetInverse().GetMatrix() * Vector4(sphereWorldPosition - box.body->GetWorldPosition(), 1.f);
+
     // Early out check to see if we can exclude the contact
-    if (std::abs(relCentre.x) - sphere.radius > box.halfSize.x ||
-        std::abs(relCentre.y) - sphere.radius > box.halfSize.y ||
-        std::abs(relCentre.z) - sphere.radius > box.halfSize.z)
+    if (std::abs(relativeSphereWorldPosition.x) - sphere.radius > box.halfSize.x ||
+        std::abs(relativeSphereWorldPosition.y) - sphere.radius > box.halfSize.y ||
+        std::abs(relativeSphereWorldPosition.z) - sphere.radius > box.halfSize.z)
     {
         return 0;
     }
 
-    Vector3 closestPt = Vector3::ZeroVector;
-
-    // Clamp each coordinate to the box.
-    float dist = relCentre.x;
-    if (dist > box.halfSize.x)
-    {
-        dist = box.halfSize.x;
-    }
-
-    if (dist < -box.halfSize.x)
-    {
-        dist = -box.halfSize.x;
-    }
-
-    closestPt.x = dist;
-
-    dist = relCentre.y;
-    if (dist > box.halfSize.y)
-    {
-        dist = box.halfSize.y;
-    }
-
-    if (dist < -box.halfSize.y)
-    {
-        dist = -box.halfSize.y;
-    }
-
-    closestPt.y = dist;
-
-    dist = relCentre.z;
-
-    if (dist > box.halfSize.z)
-    {
-        dist = box.halfSize.z;
-    }
-
-    if (dist < -box.halfSize.z)
-    {
-        dist = -box.halfSize.z;
-    }
-
-    closestPt.z = dist;
+    Vector3 relativeContactPosition = Vector3::ZeroVector;
+    relativeContactPosition.x = GoknarMath::Clamp(relativeSphereWorldPosition.x, -box.halfSize.x, box.halfSize.x);
+    relativeContactPosition.y = GoknarMath::Clamp(relativeSphereWorldPosition.y, -box.halfSize.y, box.halfSize.y);
+    relativeContactPosition.z = GoknarMath::Clamp(relativeSphereWorldPosition.z, -box.halfSize.z, box.halfSize.z);
 
     // Check we're in contact
-    dist = (closestPt - relCentre).SquareLength();
-    if (dist > sphere.radius * sphere.radius) return 0;
+    float squareDistance = (relativeContactPosition - relativeSphereWorldPosition).SquareLength();
+    if (sphere.radius * sphere.radius < squareDistance)
+    {
+        return 0;
+    }
 
     // Compile the contact
-    Vector3 closestPtWorld = box.body->GetRelativePositionInWorldSpace(closestPt);// GetWorldTransformationMatrix()* Vector4(, 1.f);
+    Vector3 contactPosition = box.body->GetWorldPosition() + box.body->GetWorldRotation().GetMatrix() * Vector4(relativeContactPosition, 1.f);
 
     PhysicsContact* contact = data->contacts;
-    contact->contactNormal = (closestPtWorld - centre).GetNormalized();
-    contact->contactPoint = closestPtWorld;
-    contact->penetration = sphere.radius - std::sqrtf(dist);
+    contact->contactNormal = (contactPosition - sphereWorldPosition).GetNormalized();
+
+    if (contact->contactNormal.SquareLength() < 0.01f)
+    {
+        GOKNAR_FATAL("Normal is not correct");
+    }
+
+    contact->contactPoint = contactPosition;
+    contact->penetration = sphere.radius - std::sqrtf(squareDistance);
     contact->SetBodyData(box.body, sphere.body, data->friction, data->restitution);
 
     data->AddContacts(1);
