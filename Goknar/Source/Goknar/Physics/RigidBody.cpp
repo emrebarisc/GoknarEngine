@@ -112,7 +112,7 @@ void RigidBody::PhysicsTick(float deltaTime)
 
     if (isGravityEnabled_ && HasFiniteMass())
     {
-        AddForce(DEFAULT_GRAVITATIONAL_FORCE * GetMass());
+        AddForce(DEFAULT_GRAVITATIONAL_ACCELERATION * GetMass());
     }
 
     // Calculate linear acceleration from force inputs.

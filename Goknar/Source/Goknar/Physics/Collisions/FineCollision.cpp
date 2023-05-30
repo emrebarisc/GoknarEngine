@@ -575,6 +575,34 @@ unsigned int CollisionDetector::BoxAndSphere(const CollisionBox& box, const Coll
     relativeContactPosition.y = GoknarMath::Clamp(relativeSphereWorldPosition.y, -box.halfSize.y, box.halfSize.y);
     relativeContactPosition.z = GoknarMath::Clamp(relativeSphereWorldPosition.z, -box.halfSize.z, box.halfSize.z);
 
+    // If the sphere is inside the box, reference the closest box face
+    if ((relativeContactPosition - relativeSphereWorldPosition).SquareLength() < PHYSICS_COLLISION_EPSILON)
+    {
+        bool isSphereInsideTheBoxOnX = -box.halfSize.x < relativeContactPosition.x || relativeContactPosition.x < box.halfSize.x;
+        bool isSphereInsideTheBoxOnY = -box.halfSize.y < relativeContactPosition.y || relativeContactPosition.y < box.halfSize.y;
+        bool isSphereInsideTheBoxOnZ = -box.halfSize.z < relativeContactPosition.z || relativeContactPosition.z < box.halfSize.z;
+
+        if (isSphereInsideTheBoxOnX && isSphereInsideTheBoxOnY && isSphereInsideTheBoxOnZ)
+        {
+            float xDistanceToFace = GoknarMath::Abs(relativeContactPosition.x < 0.f ? relativeContactPosition.x + box.halfSize.x : relativeContactPosition.x - box.halfSize.x);
+            float yDistanceToFace = GoknarMath::Abs(relativeContactPosition.y < 0.f ? relativeContactPosition.y + box.halfSize.y : relativeContactPosition.y - box.halfSize.y);
+            float zDistanceToFace = GoknarMath::Abs(relativeContactPosition.z < 0.f ? relativeContactPosition.z + box.halfSize.z : relativeContactPosition.z - box.halfSize.z);
+
+            if (xDistanceToFace < yDistanceToFace && xDistanceToFace < zDistanceToFace)
+            {
+                relativeContactPosition.x = relativeContactPosition.x < 0.f ? -box.halfSize.x : box.halfSize.x;
+            }
+            else if (yDistanceToFace < xDistanceToFace && yDistanceToFace < zDistanceToFace)
+            {
+                relativeContactPosition.y = relativeContactPosition.y < 0.f ? -box.halfSize.y : box.halfSize.y;
+            }
+            else
+            {
+                relativeContactPosition.z = relativeContactPosition.z < 0.f ? -box.halfSize.z : box.halfSize.z;
+            }
+        }
+    }
+
     // Check we're in contact
     float squareDistance = (relativeContactPosition - relativeSphereWorldPosition).SquareLength();
     if (sphere.radius * sphere.radius < squareDistance)
@@ -584,15 +612,10 @@ unsigned int CollisionDetector::BoxAndSphere(const CollisionBox& box, const Coll
 
     // Compile the contact
     Vector3 contactPosition = box.body->GetWorldPosition() + box.body->GetWorldRotation().GetMatrix() * Vector4(relativeContactPosition, 1.f);
+    Vector3 normal = contactPosition - sphereWorldPosition;
 
     PhysicsContact* contact = data->contacts;
-    contact->contactNormal = (contactPosition - sphereWorldPosition).GetNormalized();
-
-    if (contact->contactNormal.SquareLength() < 0.01f)
-    {
-        GOKNAR_FATAL("Normal is not correct");
-    }
-
+    contact->contactNormal = normal;
     contact->contactPoint = contactPosition;
     contact->penetration = sphere.radius - std::sqrtf(squareDistance);
     contact->SetBodyData(box.body, sphere.body, data->friction, data->restitution);

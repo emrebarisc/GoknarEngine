@@ -49,20 +49,20 @@ public:
 	}
 
 	template<class T>
-	static T Lerp(const T& start, const T& end, float alpha)
+	static inline T Lerp(const T& start, const T& end, float alpha)
 	{
 		return start + alpha * (end - start);
 	}
 
 	template<class T>
-	static T SlerpIn(const T& start, const T& end, float alpha)
+	static inline T SlerpIn(const T& start, const T& end, float alpha)
 	{
 		float const modifiedAlpha = -1.f * (std::sqrt(1.f - alpha * alpha) - 1.f);
 		return Lerp(start, end, modifiedAlpha);
 	}
 
 	template<class T>
-	static T SlerpOut(const T& start, const T& end, float alpha)
+	static inline T SlerpOut(const T& start, const T& end, float alpha)
 	{
 		alpha -= 1.f;
 		float const modifiedAlpha = std::sqrt(1.f - alpha * alpha);
@@ -70,7 +70,7 @@ public:
 	}
 
 	template<class T>
-	static T Slerp(const T& start, const T& end, float alpha)
+	static inline T Slerp(const T& start, const T& end, float alpha)
 	{
 		return Lerp(start, end, (alpha < 0.5f) ?
 			SlerpIn(0.f, 1.f, alpha * 2.f) * 0.5f :
@@ -78,13 +78,31 @@ public:
 	}
 
 	template<class T>
-	static T Clamp(T value, T min, T max)
+	static inline T Abs(T value)
+	{
+		return value < (T)0 ? -value : value;
+	}
+
+	template<class T>
+	static inline T Clamp(T value, T min, T max)
 	{
 		return value < min ? min : (max < value ? max : value);
 	}
 
 	template<class T>
-	T Pow(T value, float power)
+	static inline T Min(T value1, T value2)
+	{
+		return value1 < value2 ? value1 : value2;
+	}
+
+	template<class T>
+	static inline T Max(T value1, T value2)
+	{
+		return value1 < value2 ? value2 : value1;
+	}
+
+	template<class T>
+	static inline T Pow(T value, float power)
 	{
 		return std::pow(value, power);
 	}
