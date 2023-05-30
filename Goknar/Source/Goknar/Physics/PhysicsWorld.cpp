@@ -75,6 +75,7 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
                 //    GOKNAR_INFO("COLLISION!");
                 //}
 
+                // Temprorary collision detection system
                 CollisionPrimitive* primitiveOne = collisions_[i];
                 CollisionBox* collisionBoxOne = dynamic_cast<CollisionBox*>(primitiveOne);
                 CollisionSphere* collisionSphereOne = dynamic_cast<CollisionSphere*>(primitiveOne);
@@ -86,6 +87,7 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
                         break;
                     }
 
+                    // Temprorary collision detection system
                     CollisionPrimitive* primitiveTwo = collisions_[j];
                     CollisionBox* collisionBoxTwo = dynamic_cast<CollisionBox*>(primitiveTwo);
                     CollisionSphere* collisionSphereTwo = dynamic_cast<CollisionSphere*>(primitiveTwo);
