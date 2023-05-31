@@ -97,8 +97,18 @@ inline void PhysicsContact::CalculateContactBasis()
         contactTangent[1].z = contactNormal.x * contactTangent[0].y;
     }
 
-    if (9999.f < contactTangent[0].x || 9999.f < contactTangent[0].y || 9999.f < contactTangent[0].z || 9999.f < contactTangent[1].x || 9999.f < contactTangent[1].y || 9999.f < contactTangent[1].z ||
-        GoknarMath::IsNanOrInf(contactTangent[0].x) || GoknarMath::IsNanOrInf(contactTangent[0].y) || GoknarMath::IsNanOrInf(contactTangent[0].z) || GoknarMath::IsNanOrInf(contactTangent[1].x) || GoknarMath::IsNanOrInf(contactTangent[1].y) || GoknarMath::IsNanOrInf(contactTangent[1].z))
+    if (9999.f < contactTangent[0].x || 
+        9999.f < contactTangent[0].y || 
+        9999.f < contactTangent[0].z || 
+        9999.f < contactTangent[1].x || 
+        9999.f < contactTangent[1].y || 
+        9999.f < contactTangent[1].z ||
+        GoknarMath::IsNanOrInf(contactTangent[0].x) || 
+        GoknarMath::IsNanOrInf(contactTangent[0].y) || 
+        GoknarMath::IsNanOrInf(contactTangent[0].z) || 
+        GoknarMath::IsNanOrInf(contactTangent[1].x) || 
+        GoknarMath::IsNanOrInf(contactTangent[1].y) || 
+        GoknarMath::IsNanOrInf(contactTangent[1].z))
     {
         GOKNAR_INFO("Shit");
     }
@@ -159,12 +169,12 @@ void PhysicsContact::CalculateDesiredDeltaVelocity(float duration)
     // Calculate the acceleration induced velocity accumulated this frame
     float velocityFromAcc = 0.f;
 
-    if (body[0]->GetIsAwake())
+    if (body[0]->GetIsAwake() && !body[0]->GetIsKinematic())
     {
         velocityFromAcc += (body[0]->GetLastFrameAcceleration() * duration).Dot(contactNormal);
     }
 
-    if (body[1] && body[1]->GetIsAwake())
+    if (body[1] && body[1]->GetIsAwake() && !body[1]->GetIsKinematic())
     {
         velocityFromAcc -=  (body[1]->GetLastFrameAcceleration() * duration).Dot(contactNormal);
     }

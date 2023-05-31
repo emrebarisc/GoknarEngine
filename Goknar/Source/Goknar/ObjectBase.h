@@ -75,6 +75,11 @@ public:
 		return worldTransformationMatrix_;
 	}
 
+	const Matrix& GetWorldTransformationMatrixWithoutScaling() const
+	{
+		return worldTransformationMatrixWithoutScaling_;
+	}
+
 	Vector3 GetForwardVector() const
 	{
 		return worldTransformationMatrix_.GetForwardVector().GetNormalized();
@@ -129,6 +134,7 @@ protected:
 	virtual void UpdateChildrenTransformations();
 
 	Matrix worldTransformationMatrix_{ Matrix::IdentityMatrix };
+	Matrix worldTransformationMatrixWithoutScaling_{ Matrix::IdentityMatrix };
 
 	Quaternion worldRotation_{ Quaternion::Identity };
 	Vector3 worldPosition_{ Vector3::ZeroVector };

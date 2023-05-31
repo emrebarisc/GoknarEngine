@@ -23,7 +23,7 @@ void CollisionPrimitive::CalculateInternals()
 
 Vector3 CollisionPrimitive::GetAxis(unsigned int index) const
 {
-    return body->GetWorldTransformationMatrix().GetAxisVector(index);
+    return body->GetWorldTransformationMatrixWithoutScaling().GetAxisVector(index);
     //return transform_.GetAxisVector(index == 0 ? Axis::X : (index == 1 ? Axis::Y : Axis::Z));
 }
 

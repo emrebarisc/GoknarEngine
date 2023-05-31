@@ -233,12 +233,16 @@ void ObjectBase::UpdateWorldTransformationMatrix()
 {
 	if (parent_)
 	{
-		worldTransformationMatrix_ = parent_->GetWorldTransformationMatrix();
-		worldTransformationMatrix_ *= Matrix::GetTransformationMatrix(worldRotation_, worldPosition_, worldScaling_);
+		worldTransformationMatrixWithoutScaling_ = parent_->worldTransformationMatrixWithoutScaling_;
+		worldTransformationMatrixWithoutScaling_ *= Matrix::GetPositionMatrix(worldPosition_) * worldRotation_.GetMatrix();
+
+		worldTransformationMatrix_ *= worldTransformationMatrixWithoutScaling_ * Matrix::GetScalingMatrix(parent_->worldScaling_ * worldScaling_);
 	}
 	else
 	{
-		worldTransformationMatrix_ = Matrix::GetTransformationMatrix(worldRotation_, worldPosition_, worldScaling_);
+		worldTransformationMatrixWithoutScaling_ = Matrix::GetPositionMatrix(worldPosition_) * worldRotation_.GetMatrix();
+
+		worldTransformationMatrix_ = worldTransformationMatrixWithoutScaling_ * Matrix::GetScalingMatrix(worldScaling_);
 	}
 
 	UpdateChildrenTransformations();
