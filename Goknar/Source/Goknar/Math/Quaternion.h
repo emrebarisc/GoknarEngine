@@ -52,7 +52,7 @@ public:
     static Quaternion FromEulerDegrees(const Vector3& degrees);
     static Quaternion FromEulerRadians(const Vector3& radians);
 
-    void AddScaledVector(const Vector3& vector, float scale);
+    void AddVector(const Vector3& vector);
 
     Vector3 ToEulerDegrees() const;
     Vector3 ToEulerRadians() const;
@@ -64,6 +64,7 @@ public:
     inline bool operator!=(const Quaternion& other) const;
 
     inline Quaternion operator+(const Quaternion& other) const;
+    inline Quaternion operator+(const Vector3& other) const;
     inline Quaternion& operator+=(const Quaternion& other);
     inline Quaternion& operator+=(const Vector3& other);
 
@@ -133,6 +134,13 @@ inline Quaternion Quaternion::operator+(const Quaternion& other) const
     return Quaternion(x + other.x, y + other.y, z + other.z, w + other.w);
 }
 
+inline Quaternion Quaternion::operator+(const Vector3& other) const
+{
+    Quaternion q;
+    q.AddVector(other);
+    return q;
+}
+
 inline Quaternion& Quaternion::operator+=(const Quaternion& other)
 {
     this->x += other.x;
@@ -145,13 +153,7 @@ inline Quaternion& Quaternion::operator+=(const Quaternion& other)
 
 inline Quaternion& Quaternion::operator+=(const Vector3& other)
 {
-    Quaternion q(other.x, other.y, other.z, 0.f);
-    q *= *this;
-    x += q.x * 0.5f;
-    y += q.y * 0.5f;
-    z += q.z * 0.5f;
-    w += q.w * 0.5f;
-
+    AddVector(other);
     return *this;
 }
 

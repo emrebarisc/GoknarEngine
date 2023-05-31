@@ -135,10 +135,10 @@ Quaternion Quaternion::FromEulerRadians(const Vector3& radians)
     );
 }
 
-void Quaternion::AddScaledVector(const Vector3& vector, float scale)
+void Quaternion::AddVector(const Vector3& vector)
 {
-    Quaternion newQ(vector.x * scale, vector.y * scale, vector.z * scale, 0.f);
-    *this *= newQ;
+    Quaternion newQ(vector.x, vector.y, vector.z, 0.f);
+    newQ *= *this;
 
     x += newQ.x * 0.5f;
     y += newQ.y * 0.5f;

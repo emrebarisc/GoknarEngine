@@ -506,7 +506,7 @@ void PhysicsContact::ApplyPositionChange(Vector3 linearChange[2], Vector3 angula
 
                 // And the change in orientation
                 Quaternion q = body[i]->GetWorldRotation();
-                q.AddScaledVector(angularChange[i], 1.f);
+                q += angularChange[i];
                 body[i]->SetWorldRotation(q);
 
                 // We need to calculate the derived data for any body that is
