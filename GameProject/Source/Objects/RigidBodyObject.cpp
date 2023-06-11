@@ -6,7 +6,8 @@
 
 RigidBodyObject::RigidBodyObject() : RigidBody()
 {
-	staticMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 	StaticMesh* staticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Box.fbx");
+
+	staticMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 	staticMeshComponent_->SetMesh(staticMesh);
 }

@@ -24,12 +24,11 @@ void CollisionPrimitive::CalculateInternals()
 Vector3 CollisionPrimitive::GetAxis(unsigned int index) const
 {
     return body->GetWorldTransformationMatrixWithoutScaling().GetAxisVector(index);
-    //return transform_.GetAxisVector(index == 0 ? Axis::X : (index == 1 ? Axis::Y : Axis::Z));
 }
 
 const Matrix& CollisionPrimitive::GetTransform() const
 {
-    return body->GetWorldTransformationMatrix();
+    return body->GetWorldTransformationMatrixWithoutScaling();
 }
 
 bool IntersectionTests::SphereAndHalfSpace(const CollisionSphere& sphere, const CollisionPlane& plane)
@@ -105,8 +104,7 @@ bool IntersectionTests::BoxAndBox(const CollisionBox& one, const CollisionBox& t
         TEST_OVERLAP(one.GetAxis(1).Cross(two.GetAxis(2))) &&
         TEST_OVERLAP(one.GetAxis(2).Cross(two.GetAxis(0))) &&
         TEST_OVERLAP(one.GetAxis(2).Cross(two.GetAxis(1))) &&
-        TEST_OVERLAP(one.GetAxis(2).Cross(two.GetAxis(2)))
-        );
+        TEST_OVERLAP(one.GetAxis(2).Cross(two.GetAxis(2))));
 }
 #undef TEST_OVERLAP
 

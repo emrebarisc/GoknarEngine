@@ -25,11 +25,11 @@ void RigidBodyManager::BeginGame()
 {
 	RigidBodyObject* platform = new RigidBodyObject();
 	platform->SetWorldPosition(Vector3{ 0.f, 0.f, -10.f });
-	platform->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 10.f, 0.f, 0.f }));
+	// /*A Wonderful bug: */ platform->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 10.f, 0.f, 30.f }));
 	platform->SetIsGravityEnabled(false);
 
 	Vector3 halfSize = Vector3(100, 100, 10);
-	float mass = halfSize.x * halfSize.y * halfSize.z * 8.0f;
+	float mass = halfSize.x * halfSize.y * halfSize.z * 8.f;
 
 	platform->SetWorldScaling(halfSize);
 	platform->SetMass(mass);
@@ -192,26 +192,41 @@ void RigidBodyManager::Tick(float deltaTime)
 	if (countdown < 0.f)
 	{
 		//for (int i = -2; i <= 2; ++i)
-		int i = 0;
-		{
-			Ball* pistol = new Ball();
-			pistol->SetWorldScaling(Vector3{ 1.f, 1.f, 1.f });
-			pistol->SetWorldPosition(Vector3{ std::floorf((i / 2) % 2) * 50.f, std::floorf(i % 2) * 50.f, 10.f });
-			pistol->SetIsGravityEnabled(true);
-			pistol->SetMass(2.0f);
-			//pistol->AddForce(Vector3{ 0.f, 0.f, 50.f });
-			pistol->SetDamping(0.99f, 0.8f);
+		//int i = 0;
+		//{
+		//	Ball* pistol = new Ball();
+		//	pistol->SetWorldScaling(Vector3{ 1.f, 1.f, 1.f });
+		//	pistol->SetWorldPosition(Vector3{ std::floorf((i / 2) % 2) * 50.f, std::floorf(i % 2) * 50.f, 10.f });
+		//	pistol->SetIsGravityEnabled(true);
+		//	pistol->SetMass(2.0f);
+		//	//pistol->AddForce(Vector3{ 0.f, 0.f, 50.f });
+		//	pistol->SetDamping(0.99f, 0.8f);
 
-			CollisionSphere* collisionSphere = new CollisionSphere();
-			collisionSphere->body = pistol;
-			collisionSphere->radius = 1.f;
-			engine->GetPhysicsWorld()->AddCollision(collisionSphere);
+		//	CollisionSphere* collisionSphere = new CollisionSphere();
+		//	collisionSphere->body = pistol;
+		//	collisionSphere->radius = 1.f;
+		//	engine->GetPhysicsWorld()->AddCollision(collisionSphere);
 
-			//CollisionBox* collisionBox = new CollisionBox();
-			//collisionBox->body = pistol;
-			//collisionBox->halfSize = pistol->GetWorldScaling() * 0.5f;
-			//engine->GetPhysicsWorld()->AddCollision(collisionBox);
-		}
+		//	//CollisionBox* collisionBox = new CollisionBox();
+		//	//collisionBox->body = pistol;
+		//	//collisionBox->halfSize = pistol->GetWorldScaling() * 0.5f;
+		//	//engine->GetPhysicsWorld()->AddCollision(collisionBox);
+		//}
+
+		//{
+		//	RigidBodyObject* box = new RigidBodyObject();
+		//	box->SetWorldScaling(Vector3{ 1.f, 1.f, 1.f });
+		//	box->SetWorldPosition(Vector3{ 0.f, 0.f, 10.f });
+		//	box->SetIsGravityEnabled(true);
+		//	box->SetMass(2.0f);
+		//	//box->AddForce(Vector3{ 0.f, 0.f, 50.f });
+		//	box->SetDamping(0.99f, 0.8f);
+
+		//	CollisionBox* collisionBox = new CollisionBox();
+		//	collisionBox->body = box;
+		//	collisionBox->halfSize = box->GetWorldScaling();
+		//	engine->GetPhysicsWorld()->AddCollision(collisionBox);
+		//}
 
 /*
 		RigidBodyObject* pistol = new RigidBodyObject();
@@ -245,17 +260,17 @@ void RigidBodyManager::Tick(float deltaTime)
 		laser->SetVelocity(100.f, 0.f, 0.f);
 		laser->SetAcceleration(0.f, 0.f, 0.f);
 		laser->SetDamping(0.99f, 0.99f);
+*/
 
 		RigidBodyObject* box = new RigidBodyObject();
-		box->SetWorldPosition(Vector3{ 0.f, -4.f, 0.f });
+		box->SetWorldPosition(Vector3{ -4.f, 0.f, 0.f });
 		box->SetIsGravityEnabled(true);
 		box->SetMass(1.f);
 		box->SetDamping(0.99f, 0.99f);
 		box->AddForceAtBodyPoint(Vector3{ 3000.f, 0.f, 1500.f }, Vector3{ -0.5f, -4.f, -0.5f });
-		box->AddTorque(Vector3{ 0.f, 0.f, 40000.f });
-*/
+		//box->AddTorque(Vector3{ 0.f, 0.f, 400.f });
 
-		countdown = 1.f;
+		countdown = 0.5f;
 	}
 
 	//float oneTenThousandOfElapsedTime = engine->GetElapsedTime() * 0.0001f;

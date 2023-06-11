@@ -2,8 +2,8 @@
 	<BackgroundColor>50 50 50</BackgroundColor>
  	<Cameras>
 		<Camera id = "0">
-			<Position>0.0 0.0 1.75</Position>
-			<Gaze>0.0 1.0000001192092896 0.0</Gaze>
+			<Position>-10.0 0.0 2.0</Position>
+			<Gaze>1.0000001192092896 0.0 0.0</Gaze>
 			<Up>0.0 0.0 1.0000001192092896</Up>
 			<NearPlane>-0.5 0.5 -0.28125 0.28125</NearPlane>
 			<NearDistance>1</NearDistance>

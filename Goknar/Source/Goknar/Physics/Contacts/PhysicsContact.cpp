@@ -269,7 +269,7 @@ void PhysicsContact::ApplyVelocityChange(Vector3 velocityChange[2], Vector3 rota
     {
         // Apply the changes
         body[0]->AddVelocity(velocityChange[0]);
-        body[0]->SetWorldRotation(body[0]->GetWorldRotation() + Quaternion::FromEulerDegrees(rotationChange[0]));
+        body[0]->SetWorldRotation(body[0]->GetWorldRotation() * Quaternion::FromEulerRadians(rotationChange[0]));
     }
 
     if (body[1] && !body[1]->GetIsKinematic())
@@ -286,7 +286,7 @@ void PhysicsContact::ApplyVelocityChange(Vector3 velocityChange[2], Vector3 rota
 
         // And apply them.
         body[1]->AddVelocity(velocityChange[1]);
-        body[1]->SetWorldRotation(body[1]->GetWorldRotation() + Quaternion::FromEulerDegrees(rotationChange[1]));
+        body[1]->SetWorldRotation(body[1]->GetWorldRotation() * Quaternion::FromEulerRadians(rotationChange[1]));
     }
 }
 
@@ -335,7 +335,6 @@ inline Vector3 PhysicsContact::CalculateFrictionImpulse(Matrix3x3* inverseInerti
     {
         return Vector3::ZeroVector;
     }
-    Vector3 impulseContact;
     float inverseMass = body[0]->GetInverseMass();
 
     // The equivalent of a cross product in matrices is multiplication
@@ -388,7 +387,7 @@ inline Vector3 PhysicsContact::CalculateFrictionImpulse(Matrix3x3* inverseInerti
     Vector3 velKill(desiredDeltaVelocity, -contactVelocity.y, -contactVelocity.z);
 
     // Find the impulse to kill target velocities
-    impulseContact = impulseMatrix * velKill;
+    Vector3 impulseContact = impulseMatrix * velKill;
 
     // Check for exceeding friction
     float planarImpulse = std::sqrtf(impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z);
@@ -499,7 +498,7 @@ void PhysicsContact::ApplyPositionChange(Vector3 linearChange[2], Vector3 angula
                 body[i]->GetInverseInertiaTensorWorld(&inverseInertiaTensor);
 
                 // Work out the direction we'd need to rotate to achieve that
-                angularChange[i] = inverseInertiaTensor * targetAngularDirection * (angularMove[i] / angularInertia[i]);
+                angularChange[i] = inverseInertiaTensor * targetAngularDirection * angularMove[i] / angularInertia[i];
             }
 
             // Velocity change is easier - it is just the linear movement
@@ -516,7 +515,7 @@ void PhysicsContact::ApplyPositionChange(Vector3 linearChange[2], Vector3 angula
 
                 // And the change in orientation
                 Quaternion q = body[i]->GetWorldRotation();
-                q += angularChange[i];
+                q *= Quaternion::FromEulerRadians(angularChange[i]);
                 body[i]->SetWorldRotation(q);
 
                 // We need to calculate the derived data for any body that is

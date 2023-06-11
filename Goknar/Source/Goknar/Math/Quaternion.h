@@ -64,9 +64,7 @@ public:
     inline bool operator!=(const Quaternion& other) const;
 
     inline Quaternion operator+(const Quaternion& other) const;
-    inline Quaternion operator+(const Vector3& other) const;
     inline Quaternion& operator+=(const Quaternion& other);
-    inline Quaternion& operator+=(const Vector3& other);
 
     inline Quaternion operator-(const Quaternion& other) const;
     inline Quaternion operator-=(const Quaternion& other);
@@ -134,13 +132,6 @@ inline Quaternion Quaternion::operator+(const Quaternion& other) const
     return Quaternion(x + other.x, y + other.y, z + other.z, w + other.w);
 }
 
-inline Quaternion Quaternion::operator+(const Vector3& other) const
-{
-    Quaternion q;
-    q.AddVector(other);
-    return q;
-}
-
 inline Quaternion& Quaternion::operator+=(const Quaternion& other)
 {
     this->x += other.x;
@@ -148,12 +139,6 @@ inline Quaternion& Quaternion::operator+=(const Quaternion& other)
     this->z += other.z;
     this->w += other.w;
 
-    return *this;
-}
-
-inline Quaternion& Quaternion::operator+=(const Vector3& other)
-{
-    AddVector(other);
     return *this;
 }
 
