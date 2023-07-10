@@ -140,8 +140,8 @@ void RigidBody::PhysicsTick(float deltaTime)
     worldPosition_ += velocity_ * deltaTime;
 
     // Update angular position.
-    //worldRotation_ += eulerRotation_ * deltaTime;
-    physicsWorldRotation_.AddVector(eulerRotation_ * deltaTime);
+    worldRotation_ += Quaternion::FromEulerDegrees(eulerRotation_) * deltaTime;
+    //worldRotation_.AddVector(eulerRotation_ * deltaTime);
 
     // Normalise the orientation, and update the matrices with the new
     // position and orientation
@@ -176,9 +176,9 @@ void RigidBody::CalculateDerivedData()
     //SetWorldRotation(objectBaseWorldRotation_);
     //_transformInertiaTensor(inverseInertiaTensorWorld_, worldRotation_, inverseInertiaTensor_, worldTransformationMatrix_);
 
-    physicsWorldRotation_.Normalize();
-    ObjectBase::SetWorldRotation(physicsWorldRotation_);
-    _transformInertiaTensor(inverseInertiaTensorWorld_, physicsWorldRotation_, inverseInertiaTensor_, worldTransformationMatrix_);
+    worldRotation_.Normalize();
+    ObjectBase::SetWorldRotation(worldRotation_);
+    _transformInertiaTensor(inverseInertiaTensorWorld_, worldRotation_, inverseInertiaTensor_, worldTransformationMatrix_);
 }
 
 void RigidBody::SetMass(const float mass)
