@@ -263,12 +263,21 @@ void RigidBodyManager::Tick(float deltaTime)
 */
 
 		RigidBodyObject* box = new RigidBodyObject();
-		box->SetWorldPosition(Vector3{ -4.f, 0.f, 0.f });
+		box->SetWorldPosition(Vector3{ 0.f, 0.f, 0.f });
 		box->SetIsGravityEnabled(true);
 		box->SetMass(1.f);
 		box->SetDamping(0.99f, 0.99f);
 		box->AddForceAtBodyPoint(Vector3{ 3000.f, 0.f, 1500.f }, Vector3{ -0.5f, -4.f, -0.5f });
 		//box->AddTorque(Vector3{ 0.f, 0.f, 400.f });
+
+		RigidBodyObject* box2 = new RigidBodyObject();
+		box2->SetWorldPosition(Vector3{ -4.f, -4.f, 0.f });
+		box2->SetWorldRotation(Quaternion::FromEulerDegrees({ 45.f, 45.f, 45.f }));
+		box2->SetIsGravityEnabled(true);
+		box2->SetMass(1.f);
+		box2->SetDamping(0.99f, 0.99f);
+		box2->AddForceAtBodyPoint(Vector3{ 3000.f, 0.f, 1500.f }, Vector3{ -0.5f, -4.f, -0.5f });
+		//box2->AddTorque(Vector3{ 0.f, 0.f, 400.f });
 
 		countdown = 0.5f;
 	}
