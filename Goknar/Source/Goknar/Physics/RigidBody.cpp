@@ -141,7 +141,6 @@ void RigidBody::PhysicsTick(float deltaTime)
 
     // Update angular position.
     worldRotation_ += Quaternion::FromEulerDegrees(eulerRotation_) * deltaTime;
-    //worldRotation_.AddVector(eulerRotation_ * deltaTime);
 
     // Normalise the orientation, and update the matrices with the new
     // position and orientation
