@@ -23,6 +23,8 @@ class DynamicMesh;
 class StaticMesh;
 class SkeletalMesh;
 
+class PhysicsWorld;
+
 // Global Engine variable
 GOKNAR_API extern class Engine *engine;
 
@@ -87,6 +89,11 @@ public:
 	{
 		return resourceManager_;
 	}
+
+	PhysicsWorld* GetPhysicsWorld() const
+	{
+		return physicsWorld_;
+	}
 	
 	void RegisterObject(ObjectBase *object);
 	void RemoveObject(ObjectBase* object);
@@ -141,6 +148,7 @@ private:
 	Editor* editor_{ nullptr };
 	CameraManager* cameraManager_;
 	Controller* controller_{ nullptr };
+	PhysicsWorld* physicsWorld_{ nullptr };
 
 	Application* application_{ nullptr };
 	

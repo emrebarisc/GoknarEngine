@@ -8,13 +8,13 @@
 #include "Goknar/Camera.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
+#include "Goknar/GoknarAssert.h"
 #include "Goknar/Material.h"
 #include "Goknar/Model/MeshUnit.h"
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/Managers/InputManager.h"
 #include "Goknar/Managers/WindowManager.h"
 
-#include "Goknar/Log.h"
 
 
 EditorCameraController::EditorCameraController() : 

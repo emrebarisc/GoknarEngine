@@ -783,7 +783,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 relativeRotation;
 				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-				staticMeshComponent->SetRelativeRotation(Quaternion::FromEuler(relativeRotation));
+				staticMeshComponent->SetRelativeRotation(Quaternion::FromEulerDegrees(relativeRotation));
 			}
 			stream.clear();
 
@@ -813,7 +813,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 worldRotation;
 				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-				object->SetWorldRotation(Quaternion::FromEuler(worldRotation));
+				object->SetWorldRotation(Quaternion::FromEulerDegrees(worldRotation));
 			}
 			stream.clear();
 
@@ -869,7 +869,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 relativeRotation;
 				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-				skeletalMeshComponent->SetRelativeRotation(Quaternion::FromEuler(relativeRotation));
+				skeletalMeshComponent->SetRelativeRotation(Quaternion::FromEulerDegrees(relativeRotation));
 			}
 			stream.clear();
 
@@ -908,7 +908,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 worldRotation;
 				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-				object->SetWorldRotation(Quaternion::FromEuler(worldRotation));
+				object->SetWorldRotation(Quaternion::FromEulerDegrees(worldRotation));
 			}
 			stream.clear();
 
@@ -965,7 +965,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 relativeRotation;
 				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-				dynamicMeshComponent->SetRelativeRotation(Quaternion::FromEuler(relativeRotation));
+				dynamicMeshComponent->SetRelativeRotation(Quaternion::FromEulerDegrees(relativeRotation));
 			}
 			stream.clear();
 
@@ -1004,7 +1004,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 worldRotation;
 				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-				object->SetWorldRotation(Quaternion::FromEuler(worldRotation));
+				object->SetWorldRotation(Quaternion::FromEulerDegrees(worldRotation));
 			}
 			stream.clear();
 

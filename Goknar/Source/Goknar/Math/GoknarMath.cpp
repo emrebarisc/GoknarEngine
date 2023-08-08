@@ -249,3 +249,18 @@ void GoknarMath::LookAt(Matrix& viewingMatrix, const Vector3& position, const Ve
 		left.z, up.z, forward.z, 0.f,
 		-left.x * position.x - left.y * position.y - left.z * position.z, -up.x * position.x - up.y * position.y - up.z * position.z, -forward.x * position.x - forward.y * position.y - forward.z * position.z, 1.f);
 }
+
+inline float GoknarMath::Determinant(const Vector3& a, const Vector3& b, const Vector3& c)
+{
+	return a.x * ((b.y * c.z) - (c.y * b.z))
+		+ a.y * ((c.x * b.z) - (b.x * c.z))
+		+ a.z * ((b.x * c.y) - (c.x * b.y));
+}
+
+inline float GoknarMath::Determinant(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& d)
+{
+	return	  a.x * Determinant(Vector3(b.y, b.z, b.w), Vector3(c.y, c.z, c.w), Vector3(d.y, d.z, d.w))
+		- a.y * Determinant(Vector3(b.x, b.z, b.w), Vector3(c.x, c.z, c.w), Vector3(d.x, d.z, d.w))
+		+ a.z * Determinant(Vector3(b.x, b.y, b.w), Vector3(c.x, c.y, c.w), Vector3(d.x, d.y, d.w))
+		- a.w * Determinant(Vector3(b.x, b.y, b.z), Vector3(c.x, c.y, c.z), Vector3(d.x, d.y, d.z));
+}

@@ -2,9 +2,8 @@
 #define __MATH_H__
 
 #include "Goknar/Core.h"
-#include "MathDefines.h"
-
-#include "Quaternion.h"
+#include "Goknar/GoknarAssert.h"
+#include "Goknar/Math/MathDefines.h"
 
 #include <iostream>
 
@@ -23,7 +22,91 @@ struct Vector3;
 struct Vector3i;
 struct Vector4;
 
+class Quaternion;
+
 class Matrix;
+
+enum class GOKNAR_API Axis : unsigned int
+{
+	X = 0,
+	Y,
+	Z
+};
+
+
+class GOKNAR_API GoknarMath
+{
+public:
+	static void LookAt(Matrix& viewingMatrix, const Vector3& position, const Vector3& target, const Vector3& upVector);
+
+	static inline float Determinant(const Vector3& a, const Vector3& b, const Vector3& c);
+	static inline float Determinant(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& d);
+
+	template<typename T>
+	static inline bool IsNanOrInf(T value)
+	{
+		return std::isnan(value) || std::isinf(value);
+	}
+
+	template<class T>
+	static inline T Lerp(const T& start, const T& end, float alpha)
+	{
+		return start + alpha * (end - start);
+	}
+
+	template<class T>
+	static inline T SlerpIn(const T& start, const T& end, float alpha)
+	{
+		float const modifiedAlpha = -1.f * (std::sqrt(1.f - alpha * alpha) - 1.f);
+		return Lerp(start, end, modifiedAlpha);
+	}
+
+	template<class T>
+	static inline T SlerpOut(const T& start, const T& end, float alpha)
+	{
+		alpha -= 1.f;
+		float const modifiedAlpha = std::sqrt(1.f - alpha * alpha);
+		return Lerp(start, end, modifiedAlpha);
+	}
+
+	template<class T>
+	static inline T Slerp(const T& start, const T& end, float alpha)
+	{
+		return Lerp(start, end, (alpha < 0.5f) ?
+			SlerpIn(0.f, 1.f, alpha * 2.f) * 0.5f :
+			SlerpOut(0.f, 1.f, alpha * 2.f - 1.f) * 0.5f + 0.5f);
+	}
+
+	template<class T>
+	static inline T Abs(T value)
+	{
+		return value < (T)0 ? -value : value;
+	}
+
+	template<class T>
+	static inline T Clamp(T value, T min, T max)
+	{
+		return value < min ? min : (max < value ? max : value);
+	}
+
+	template<class T>
+	static inline T Min(T value1, T value2)
+	{
+		return value1 < value2 ? value1 : value2;
+	}
+
+	template<class T>
+	static inline T Max(T value1, T value2)
+	{
+		return value1 < value2 ? value2 : value1;
+	}
+
+	template<class T>
+	static inline T Pow(T value, float power)
+	{
+		return std::pow(value, power);
+	}
+};
 
 struct GOKNAR_API Vector2
 {
@@ -203,6 +286,18 @@ struct GOKNAR_API Vector3
 
 	Vector3(const Vector4& rhs);
 
+	inline bool ContainsNanOrInf() const
+	{
+		return	GoknarMath::IsNanOrInf(x) ||
+				GoknarMath::IsNanOrInf(y) ||
+				GoknarMath::IsNanOrInf(z);
+	}
+
+	inline float SquareLength() const
+	{
+		return std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2);
+	}
+
 	inline float Length() const
 	{
 		return sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2));
@@ -237,7 +332,7 @@ struct GOKNAR_API Vector3
 		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 	}
 
-	inline float Dot(const Vector3& rhs)
+	inline float Dot(const Vector3& rhs) const
 	{
 		return x * rhs.x + y * rhs.y + z * rhs.z;
 	}
@@ -266,6 +361,7 @@ struct GOKNAR_API Vector3
 			return *this / this->Length();
 		}
 
+		GOKNAR_CHECK(false, "Division By Zero");
 		return *this;
 	}
 
@@ -361,6 +457,20 @@ struct GOKNAR_API Vector3
 		x /= val;
 		y /= val;
 		z /= val;
+	}
+
+	inline float& operator[](unsigned i)
+	{
+		if (i == 0) return x;
+		if (i == 1) return y;
+		return z;
+	}
+
+	inline float operator[](unsigned i) const
+	{
+		if (i == 0) return x;
+		if (i == 1) return y;
+		return z;
 	}
 
 	inline bool operator==(const Vector3& val) const
@@ -461,101 +571,6 @@ struct GOKNAR_API Vector4
 	static const Vector4 ZeroVector;
 
 	float x, y, z, w;
-};
-
-class GOKNAR_API GoknarMath
-{
-public:
-	static void LookAt(Matrix &viewingMatrix, const Vector3& position, const Vector3& target, const Vector3& upVector);
-
-	static inline float Determinant(const Vector3& a, const Vector3& b, const Vector3& c)
-	{
-		return a.x * ((b.y * c.z) - (c.y * b.z))
-			 + a.y * ((c.x * b.z) - (b.x * c.z))
-			 + a.z * ((b.x * c.y) - (c.x * b.y));
-	}
-
-	static inline float Determinant(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& d)
-	{
-		return	  a.x * Determinant(Vector3(b.y, b.z, b.w), Vector3(c.y, c.z, c.w), Vector3(d.y, d.z, d.w))
-				- a.y * Determinant(Vector3(b.x, b.z, b.w), Vector3(c.x, c.z, c.w), Vector3(d.x, d.z, d.w))
-				+ a.z * Determinant(Vector3(b.x, b.y, b.w), Vector3(c.x, c.y, c.w), Vector3(d.x, d.y, d.w))
-				- a.w * Determinant(Vector3(b.x, b.y, b.z), Vector3(c.x, c.y, c.z), Vector3(d.x, d.y, d.z));
-	}
-
-	template<class T>
-	static T Lerp(const T& start, const T& end, float alpha)
-	{
-		return start + alpha * (end - start);
-	}
-
-	template<class T>
-	static T SlerpIn(const T& start, const T& end, float alpha)
-	{
-		float const modifiedAlpha = -1.f * (std::sqrt(1.f - alpha * alpha) - 1.f);
-		return Lerp(start, end, modifiedAlpha);
-	}
-
-	template<class T>
-	static T SlerpOut(const T& start, const T& end, float alpha)
-	{
-		alpha -= 1.f;
-		float const modifiedAlpha = std::sqrt(1.f - alpha * alpha);
-		return Lerp(start, end, modifiedAlpha);
-	}
-
-	template<class T>
-	static T Slerp(const T& start, const T& end, float alpha)
-	{
-		return Lerp(start, end, (alpha < 0.5f) ?
-			SlerpIn(0.f, 1.f, alpha * 2.f) * 0.5f :
-			SlerpOut(0.f, 1.f, alpha * 2.f - 1.f) * 0.5f + 0.5f);
-	}
-
-	template<class T>
-	T Pow(T value, float power)
-	{
-		return std::pow(value, power);
-	}
-
-	/*static Quaternion SphericalInterpolationQ(Quaternion start, Quaternion end, float alpha)
-	{
-		Quaternion result;
-
-		float cosTheta = start.x * end.x + start.y * end.y + start.z * end.z + start.w * end.w;
-
-		if (cosTheta < 0.f)
-		{
-			cosTheta = -cosTheta;
-			end.x = -end.x;
-			end.y = -end.y;
-			end.z = -end.z;
-			end.w = -end.w;
-		}
-
-		float coefficientP, inverseCoefficientP;
-
-		if (EPSILON < (1.f - cosTheta))
-		{
-			float omega = std::acos(cosTheta);
-			float sinOmega = std::sin(omega);
-			coefficientP = std::sin((1.f - alpha) * omega) / sinOmega;
-			inverseCoefficientP = std::sin(alpha * omega) / sinOmega;
-		}
-		else
-		{
-			coefficientP = 1.f - alpha;
-			inverseCoefficientP = alpha;
-		}
-
-		result.x = coefficientP * start.x + inverseCoefficientP * end.x;
-		result.y = coefficientP * start.y + inverseCoefficientP * end.y;
-		result.z = coefficientP * start.z + inverseCoefficientP * end.z;
-		result.w = coefficientP * start.w + inverseCoefficientP * end.w;
-
-		return result;
-	}*/
-
 };
 
 #endif

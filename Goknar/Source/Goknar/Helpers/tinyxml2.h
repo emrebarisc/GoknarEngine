@@ -440,7 +440,7 @@ namespace tinyxml2
 	/**
 		Implements the interface to the "Visitor pattern" (see the Accept() method.)
 		If you call the Accept() method, it requires being passed a XMLVisitor
-		class to handle callbacks. For nodes that contain other nodes (Document, Element)
+		class to handle callbacks. For nodes that contain other_ nodes (Document, Element)
 		you will get called with a VisitEnter/VisitExit pair. Nodes that are always leafs
 		are simply called with Visit().
 
@@ -871,7 +871,7 @@ namespace tinyxml2
 
 			This is essentially a SAX interface for TinyXML-2. (Note however it doesn't re-parse
 			the XML for the callbacks, so the performance of TinyXML-2 is unchanged by using this
-			interface versus any other.)
+			interface versus any other_.)
 
 			The interface has been based on ideas from:
 
@@ -1206,7 +1206,7 @@ namespace tinyxml2
 
 
 	/** The element is a container class. It has a value, the element name,
-		and can contain other elements, text, comments, and unknowns.
+		and can contain other_ elements, text, comments, and unknowns.
 		Elements also contain an arbitrary number of attributes.
 	*/
 	class TINYXML2_LIB XMLElement : public XMLNode

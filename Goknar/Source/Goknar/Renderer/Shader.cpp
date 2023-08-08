@@ -5,15 +5,14 @@
 #include "ShaderBuilder.h"
 
 #include "Goknar/Camera.h"
+#include "Goknar/GoknarAssert.h"
 #include "Goknar/Contents/Image.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
 #include "Goknar/IO/IOManager.h"
-#include "Goknar/Log.h"
 #include "Goknar/Math/Matrix.h"
 #include "Goknar/Renderer/Renderer.h"
-#include "Goknar/Renderer/Shader.h"
-#include "Texture.h"
+#include "Goknar/Renderer/Texture.h"
 
 #include <string>
 

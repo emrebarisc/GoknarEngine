@@ -182,6 +182,26 @@ void ObjectBase::RemoveChild(ObjectBase* child)
 	}
 }
 
+Vector3 ObjectBase::GetRelativePositionInWorldSpace(const Vector3& relativePosition)
+{
+	return worldTransformationMatrix_ * Vector4(relativePosition, 1.f);
+}
+
+Vector3 ObjectBase::GetWorldPositionInRelativeSpace(const Vector3& positionInWorldSpace)
+{
+	return worldTransformationMatrix_.GetInverse() * Vector4(positionInWorldSpace, 1.f);
+}
+
+Vector3 ObjectBase::GetRelativeDirectionInWorldSpace(const Vector3& relativeDirection)
+{
+	return worldTransformationMatrix_ * Vector4(relativeDirection, 0.f);
+}
+
+Vector3 ObjectBase::GetWorldDirectionInRelativeSpace(const Vector3& directionInWorldSpace)
+{
+	return worldTransformationMatrix_.GetInverse() * Vector4(directionInWorldSpace, 0.f);
+}
+
 void ObjectBase::AddComponent(Component* component)
 {
 	if (totalComponentCount_ == 0)
@@ -200,6 +220,11 @@ void ObjectBase::AddComponent(Component* component)
 
 void ObjectBase::SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix)
 {
+	if (worldTransformationMatrix.ContainsNanOrInf())
+	{
+		GOKNAR_FATAL("NAN OR INF VALUE ON TRANSFORMATION MATRIX");
+	}
+
 	worldTransformationMatrix_ = worldTransformationMatrix;
 	UpdateChildrenTransformations();
 }
@@ -208,12 +233,19 @@ void ObjectBase::UpdateWorldTransformationMatrix()
 {
 	if (parent_)
 	{
+		Matrix thisObjectWorldTransformationMatrixWithoutScaling = Matrix::GetPositionMatrix(worldPosition_) * worldRotation_.GetMatrix();
+
+		worldTransformationMatrixWithoutScaling_ = parent_->worldTransformationMatrixWithoutScaling_;
+		worldTransformationMatrixWithoutScaling_ *= thisObjectWorldTransformationMatrixWithoutScaling;
+
 		worldTransformationMatrix_ = parent_->GetWorldTransformationMatrix();
-		worldTransformationMatrix_ *= Matrix::GetTransformationMatrix(worldRotation_, worldPosition_, worldScaling_);
+		worldTransformationMatrix_ *= thisObjectWorldTransformationMatrixWithoutScaling * Matrix::GetScalingMatrix(worldScaling_);
 	}
 	else
 	{
-		worldTransformationMatrix_ = Matrix::GetTransformationMatrix(worldRotation_, worldPosition_, worldScaling_);
+		worldTransformationMatrixWithoutScaling_ = Matrix::GetPositionMatrix(worldPosition_) * worldRotation_.GetMatrix();
+
+		worldTransformationMatrix_ = worldTransformationMatrixWithoutScaling_ * Matrix::GetScalingMatrix(worldScaling_);
 	}
 
 	UpdateChildrenTransformations();

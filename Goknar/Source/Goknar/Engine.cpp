@@ -13,6 +13,7 @@
 #include "ObjectBase.h"
 #include "Managers/ObjectIDManager.h"
 #include "Managers/ObjectManager.h"
+#include "Physics/PhysicsWorld.h"
 #include "Managers/ResourceManager.h"
 #include "Renderer/Renderer.h"
 #include "Scene.h"
@@ -46,6 +47,7 @@ Engine::Engine()
 	resourceManager_ = new ResourceManager();
 	objectManager_ = new ObjectManager();
 	renderer_ = new Renderer();
+	physicsWorld_ = new PhysicsWorld();
 #if GOKNAR_EDITOR
 	editor_ = new ImGuiEditor();
 #endif
@@ -57,6 +59,7 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+	delete physicsWorld_;
 	delete renderer_;
 	delete cameraManager_;
 #if GOKNAR_EDITOR
@@ -186,6 +189,8 @@ void Engine::Run()
 				frameCount = 0;
 			}
 		}
+
+		physicsWorld_->PhysicsTick(deltaTime_);
 
 		application_->Run();
 		Tick(deltaTime_);

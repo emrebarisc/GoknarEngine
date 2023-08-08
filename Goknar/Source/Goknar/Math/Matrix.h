@@ -4,6 +4,7 @@
 #include "Goknar/Core.h"
 
 #include "Math/GoknarMath.h"
+#include "Math/Quaternion.h"
 
 /*
     dataArray IS NOT TESTED!!!
@@ -191,6 +192,11 @@ public:
 
     }
 
+    inline static Matrix3x3 Lerp(const Matrix3x3& matrix1, const Matrix3x3& matrix2, float alpha)
+    {
+        return (matrix1 * (1.f - alpha)) + (matrix2 * alpha);
+    }
+
     inline static Matrix3x3 GetRotationMatrixAroundXAxis(float xAngle)
     {
         const float cosTheta = cos(xAngle);
@@ -235,7 +241,38 @@ public:
                             0.f, 0.f, 1.f);
     }
 
+    void GetInverse(Matrix3x3& inverse) const;
+    Matrix3x3 GetInverse() const;
     Matrix3x3 GetTranspose() const;
+
+    inline Vector3 MultiplyTransposeBy(const Vector3& vector) const
+    {
+        return Vector3( vector.x * m[0] + vector.y * m[3] + vector.z * m[6],
+                        vector.x * m[1] + vector.y * m[4] + vector.z * m[7],
+                        vector.x * m[2] + vector.y * m[5] + vector.z * m[8]);
+    }
+
+    /**
+     * Sets the matrix to be a skew symmetric matrix based on
+     * the given vector. The skew symmetric matrix is the equivalent
+     * of the vector product. So if a,b are vectors. a x b = A_s b
+     * where A_s is the skew symmetric form of a.
+     */
+    void SetSkewSymmetric(const Vector3& vector)
+    {
+        m[0] = m[4] = m[8] = 0.f;
+        m[1] = -vector.z;
+        m[2] = vector.y;
+        m[3] = vector.z;
+        m[5] = -vector.x;
+        m[6] = -vector.y;
+        m[7] = vector.x;
+    }
+
+    Vector3 GetAxisVector(int i) const
+    {
+        return Vector3(m[i], m[i + 3], m[i + 6]);
+    }
 
     void operator=(const Matrix3x3& rhs)
     {
@@ -246,6 +283,25 @@ public:
                 m[i] = rhs.m[i];
             }
         }
+    }
+
+    Matrix3x3 operator+(const Matrix3x3& other)
+    {
+        Matrix3x3 result(*this);
+
+        result.m[0] += other.m[0];
+        result.m[1] += other.m[1];
+        result.m[2] += other.m[2];
+
+        result.m[3] += other.m[3];
+        result.m[4] += other.m[4];
+        result.m[5] += other.m[5];
+
+        result.m[6] += other.m[6];
+        result.m[7] += other.m[7];
+        result.m[8] += other.m[8];
+
+        return result;
     }
 
     Matrix3x3 operator-()
@@ -262,11 +318,22 @@ public:
 
     Vector3 operator*(const Vector3& rhs) const
     {
-        Vector3 out(0.f);
+        Vector3 out;
 
         out.x = m[0] * rhs.x + m[1] * rhs.y + m[2] * rhs.z;
         out.y = m[3] * rhs.x + m[4] * rhs.y + m[5] * rhs.z;
         out.z = m[6] * rhs.x + m[7] * rhs.y + m[8] * rhs.z;
+
+        return out;
+    }
+
+    Matrix3x3 operator*(float value) const
+    {
+        Matrix3x3 out(
+            m[0] * value, m[1] * value, m[2] * value,
+            m[3] * value, m[4] * value, m[5] * value,
+            m[6] * value, m[7] * value, m[8] * value
+        );
 
         return out;
     }
@@ -323,6 +390,21 @@ public:
         }
 
         return true;
+    }
+
+    void operator+=(const Matrix3x3& rhs)
+    {
+        m[0] += rhs.m[0];
+        m[1] += rhs.m[1];
+        m[2] += rhs.m[2];
+
+        m[3] += rhs.m[3];
+        m[4] += rhs.m[4];
+        m[5] += rhs.m[5];
+
+        m[6] += rhs.m[6];
+        m[7] += rhs.m[7];
+        m[8] += rhs.m[8];
     }
 
     inline friend std::ostream& operator<<(std::ostream& out, const Matrix3x3& matrix3x3)
@@ -443,6 +525,68 @@ public:
 
     }
 
+    Vector3 GetAxisVector(int i) const
+    {
+        return Vector3(m[i], m[i + 4], m[i + 8]);
+    }
+
+    Vector3 GetAxisVector(Axis axis) const
+    {
+        switch (axis)
+        {
+        case Axis::X:
+            return GetForwardVector();
+            break;
+        case Axis::Y:
+            return GetLeftVector();
+            break;
+        case Axis::Z:
+            return GetUpVector();
+            break;
+        default:
+            break;
+        }
+        return Vector3::ZeroVector;
+    }
+
+    Vector3 GetForwardVector() const
+    {
+        return Vector3(m[0], m[4], m[8]);
+    }
+
+    Vector3 GetLeftVector() const
+    {
+        return Vector3(m[1], m[5], m[9]);
+    }
+
+    Vector3 GetUpVector() const
+    {
+        return Vector3(m[2], m[6], m[10]);
+    }
+
+    inline bool ContainsNanOrInf() const
+    {
+        return GoknarMath::IsNanOrInf(m[0]) ||
+               GoknarMath::IsNanOrInf(m[1]) ||
+               GoknarMath::IsNanOrInf(m[2]) ||
+               GoknarMath::IsNanOrInf(m[3]) ||
+
+               GoknarMath::IsNanOrInf(m[4]) ||
+               GoknarMath::IsNanOrInf(m[5]) ||
+               GoknarMath::IsNanOrInf(m[6]) ||
+               GoknarMath::IsNanOrInf(m[7]) ||
+
+               GoknarMath::IsNanOrInf(m[8]) ||
+               GoknarMath::IsNanOrInf(m[9]) ||
+               GoknarMath::IsNanOrInf(m[10]) ||
+               GoknarMath::IsNanOrInf(m[11]) ||
+
+               GoknarMath::IsNanOrInf(m[12]) ||
+               GoknarMath::IsNanOrInf(m[13]) ||
+               GoknarMath::IsNanOrInf(m[14]) ||
+               GoknarMath::IsNanOrInf(m[15]);
+    }
+
 	inline static Matrix GetRotationMatrix(const Vector3& rotation)
 	{
         //Matrix result(Matrix::IdentityMatrix);
@@ -493,7 +637,7 @@ public:
         const float sinGamma = sin(rotation.z);
 
 		return Matrix(cosBeta * cosGamma,                                   cosBeta * sinGamma, -sinBeta,                                               0.f,
-                      sinAlpha * sinBeta* cosGamma - cosAlpha * sinGamma,   sinAlpha * sinBeta * sinGamma + cosAlpha * cosGamma, sinAlpha * cosBeta,    0.f,
+                      sinAlpha * sinBeta * cosGamma - cosAlpha * sinGamma,  sinAlpha * sinBeta * sinGamma + cosAlpha * cosGamma, sinAlpha * cosBeta,    0.f,
                       cosAlpha * sinBeta * cosGamma + sinAlpha * sinGamma,  cosAlpha * sinBeta * sinGamma - sinAlpha * cosGamma, cosAlpha * cosBeta,    0.f,
                       0.f,                                                  0.f,                                                 0.f,                   1.f);
 	}
@@ -533,6 +677,86 @@ public:
 					  0.f,															0.f,														0.f,														1.f);
 	}
 
+    inline Vector4 MultiplyTransposeBy(const Vector4& vector) const
+    {
+        return Vector4( vector.x * m[0] + vector.y * m[3] + vector.z * m[6]+ vector.z * m[10],
+                        vector.x * m[1] + vector.y * m[4] + vector.z * m[7] + vector.z * m[11],
+                        vector.x * m[2] + vector.y * m[5] + vector.z * m[8] + vector.z * m[12],
+                        vector.x * m[3] + vector.y * m[6] + vector.z * m[9] + vector.z * m[13]);
+    }
+
+
+    /**
+     * From Cyclone Physics
+     * 
+     * Transform the given vector by the transformational inverse
+     * of this matrix.
+     *
+     * @note This function relies on the fact that the inverse of
+     * a pure rotation matrix is its transpose. It separates the
+     * translational and rotation components, transposes the
+     * rotation, and multiplies out. If the matrix is not a
+     * scale and shear free transform matrix, then this function
+     * will not give correct results.
+     *
+     * @param vector The vector to transform.
+     */
+    inline Vector3 MultiplyTransposeByInverse(const Vector3& vector) const
+    {
+        Vector3 tmp = vector;
+        tmp.x -= m[3];
+        tmp.y -= m[7];
+        tmp.z -= m[11];
+        return Vector3(
+            tmp.x * m[0] +
+            tmp.y * m[4] +
+            tmp.z * m[8],
+
+            tmp.x * m[1] +
+            tmp.y * m[5] +
+            tmp.z * m[9],
+
+            tmp.x * m[2] +
+            tmp.y * m[6] +
+            tmp.z * m[10]
+        );
+    }
+
+    /**
+     * From Cyclone Physics
+     * 
+     * Transform the given direction vector by the
+     * transformational inverse of this matrix.
+     *
+     * @note This function relies on the fact that the inverse of
+     * a pure rotation matrix is its transpose. It separates the
+     * translational and rotation components, transposes the
+     * rotation, and multiplies out. If the matrix is not a
+     * scale and shear free transform matrix, then this function
+     * will not give correct results.
+     *
+     * @note When a direction is converted between frames of
+     * reference, there is no translation required.
+     *
+     * @param vector The vector to transform.
+     */
+    Vector3 MultiplyTransposeByInverseDirection(const Vector3& vector) const
+    {
+        return Vector3(
+            vector.x * m[0] +
+            vector.y * m[4] +
+            vector.z * m[8],
+
+            vector.x * m[1] +
+            vector.y * m[5] +
+            vector.z * m[9],
+
+            vector.x * m[2] +
+            vector.y * m[6] +
+            vector.z * m[10]
+        );
+    }
+
     void operator=(const Matrix& rhs)
     {
         if(this != &rhs)
@@ -555,6 +779,16 @@ public:
 
 		return result;
 	}
+
+    Matrix operator*(float value) const
+    {
+        return Matrix(
+            m[0] * value, m[1] * value, m[2] * value, m[3] * value,
+            m[4] * value, m[5] * value, m[6] * value, m[7] * value,
+            m[8] * value, m[9] * value, m[10] * value, m[11] * value,
+            m[12] * value, m[13] * value, m[14] * value, m[15] * value
+            );
+    }
 
     Vector4 operator*(const Vector4& rhs) const
     {

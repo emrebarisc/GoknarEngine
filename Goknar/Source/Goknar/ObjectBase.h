@@ -58,7 +58,7 @@ public:
 		return worldPosition_;
 	}
 
-	void SetWorldRotation(const Quaternion& rotation, bool updateWorldTransformationMatrix = true);
+	virtual void SetWorldRotation(const Quaternion& rotation, bool updateWorldTransformationMatrix = true);
 	const Quaternion& GetWorldRotation() const
 	{
 		return worldRotation_;
@@ -75,19 +75,24 @@ public:
 		return worldTransformationMatrix_;
 	}
 
-	Vector3 GetForwardVector() const
+	const Matrix& GetWorldTransformationMatrixWithoutScaling() const
 	{
-		return Vector3(worldTransformationMatrix_[0], worldTransformationMatrix_[4], worldTransformationMatrix_[8]).GetNormalized();
+		return worldTransformationMatrixWithoutScaling_;
 	}
 
-	Vector3 GetUpVector() const
+	Vector3 GetForwardVector() const
 	{
-		return Vector3(worldTransformationMatrix_[2], worldTransformationMatrix_[6], worldTransformationMatrix_[10]).GetNormalized();
+		return worldTransformationMatrix_.GetForwardVector().GetNormalized();
 	}
 
 	Vector3 GetLeftVector() const
 	{
-		return Vector3(worldTransformationMatrix_[1], worldTransformationMatrix_[5], worldTransformationMatrix_[9]).GetNormalized();
+		return worldTransformationMatrix_.GetLeftVector().GetNormalized();
+	}
+
+	Vector3 GetUpVector() const
+	{
+		return worldTransformationMatrix_.GetUpVector().GetNormalized();
 	}
 
 	void SetIsActive(bool isRendered);
@@ -116,24 +121,29 @@ public:
 	}
 	void RemoveChild(ObjectBase* child);
 
-protected:
+	Vector3 GetRelativePositionInWorldSpace(const Vector3& relativePosition);
+	Vector3 GetWorldPositionInRelativeSpace(const Vector3& positionInWorldSpace);
+	Vector3 GetRelativeDirectionInWorldSpace(const Vector3& relativeDirection);
+	Vector3 GetWorldDirectionInRelativeSpace(const Vector3& directionInWorldSpace);
 
-private:
+protected:
 	void AddComponent(Component* component);
 
 	virtual void SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix);
-    virtual void UpdateWorldTransformationMatrix();
+	virtual void UpdateWorldTransformationMatrix();
 	virtual void UpdateChildrenTransformations();
 
 	Matrix worldTransformationMatrix_{ Matrix::IdentityMatrix };
-
-	std::vector<ObjectBase*> children_;
-	std::vector<Component*> components_;
-	Component* rootComponent_{ nullptr };
+	Matrix worldTransformationMatrixWithoutScaling_{ Matrix::IdentityMatrix };
 
 	Quaternion worldRotation_{ Quaternion::Identity };
 	Vector3 worldPosition_{ Vector3::ZeroVector };
 	Vector3 worldScaling_{ Vector3(1.f) };
+
+private:
+	std::vector<ObjectBase*> children_;
+	std::vector<Component*> components_;
+	Component* rootComponent_{ nullptr };
 
 	ObjectBase* parent_{ nullptr };
 	SocketComponent* parentSocket_{ nullptr };

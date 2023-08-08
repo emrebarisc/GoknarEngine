@@ -68,21 +68,37 @@ void SkeletalMeshInstance::Render()
 
 	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
 	
-	std::for_each
-	(
-		std::execution::par,
-		std::begin(boneIdToAttachedMatrixPointerMap_),
-		std::end(boneIdToAttachedMatrixPointerMap_),
-		[&](const std::pair<int, const Matrix*>& pair)
-		{
-			const Matrix* matrix = pair.second;
 
-			if (matrix)
-			{
-				boneTransformations_[pair.first] = parentComponent_->GetComponentToWorldTransformationMatrix().GetInverse() * *matrix;
-			}
+	// TODO: Implement a proper multi threading
+	// Following std::for_each parallelizing causes game crash
+	//std::for_each
+	//(
+	//	std::execution::par,
+	//	std::begin(boneIdToAttachedMatrixPointerMap_),
+	//	std::end(boneIdToAttachedMatrixPointerMap_),
+	//	[&](const std::pair<int, const Matrix*>& pair)
+	//	{
+	//		const Matrix* matrix = pair.second;
+
+	//		if (matrix)
+	//		{
+	//			boneTransformations_[pair.first] = parentComponent_->GetComponentToWorldTransformationMatrix().GetInverse() * *matrix;
+	//		}
+	//	}
+	//);
+
+	std::unordered_map<int, const Matrix*>::iterator boneIdToAttachedMatrixPointerMapIterator = boneIdToAttachedMatrixPointerMap_.begin();
+	while (boneIdToAttachedMatrixPointerMapIterator != boneIdToAttachedMatrixPointerMap_.end())
+	{
+		const Matrix* matrix = boneIdToAttachedMatrixPointerMapIterator->second;
+
+		if (matrix)
+		{
+			boneTransformations_[boneIdToAttachedMatrixPointerMapIterator->first] = parentComponent_->GetComponentToWorldTransformationMatrix().GetInverse() * *matrix;
 		}
-	);
+
+		++boneIdToAttachedMatrixPointerMapIterator;
+	}
 
 
 	mesh_->GetMaterial()->GetShader()->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);

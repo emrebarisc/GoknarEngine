@@ -5,11 +5,11 @@
 #include "Goknar/Application.h"
 #include "Goknar/Contents/Image.h"
 #include "Goknar/Engine.h"
+#include "Goknar/GoknarAssert.h"
 #include "Goknar/Material.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Model/StaticMesh.h"
-#include "Goknar/Log.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Renderer/Texture.h"
 

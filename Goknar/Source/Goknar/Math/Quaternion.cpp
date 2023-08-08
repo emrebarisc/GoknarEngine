@@ -121,7 +121,7 @@ Quaternion::Quaternion(Vector3 axis, float angle)
     w = std::cos(halfAngle);
 }
 
-Quaternion Quaternion::FromEuler(const Vector3& degrees)
+Quaternion Quaternion::FromEulerDegrees(const Vector3& degrees)
 {
     return FromEulerRadians(degrees * TO_RADIAN);
 }
@@ -135,6 +135,17 @@ Quaternion Quaternion::FromEulerRadians(const Vector3& radians)
     );
 }
 
+void Quaternion::AddVector(const Vector3& vector)
+{
+    Quaternion newQ(vector.x, vector.y, vector.z, 0.f);
+    newQ *= *this;
+
+    x += newQ.x * 0.5f;
+    y += newQ.y * 0.5f;
+    z += newQ.z * 0.5f;
+    w += newQ.w * 0.5f;
+}
+
 inline bool Quaternion::Equals(const Quaternion& other, float tolerance) const
 {
     return  std::abs(x - other.x) <= tolerance &&
@@ -143,7 +154,7 @@ inline bool Quaternion::Equals(const Quaternion& other, float tolerance) const
             std::abs(w - other.w) <= tolerance;
 }
 
-Vector3 Quaternion::ToEuler() const
+Vector3 Quaternion::ToEulerDegrees() const
 {
     return ToEulerRadians() * TO_DEGREE;
 }
