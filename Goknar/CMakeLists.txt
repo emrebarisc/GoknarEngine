@@ -69,7 +69,19 @@ add_subdirectory(thirdparty/TinyXML/)
 
 # Assimp
 SET(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT FALSE CACHE BOOL "Disable All Importers")
-SET(ASSIMP_BUILD_FBX_IMPORTER TRUE CACHE BOOL "Enable Fbx Importer")
+SET(ASSIMP_BUILD_FBX_IMPORTER TRUE CACHE BOOL "Enable FBX Importer")
+
+##########################################################################################
+#  We do not need these importers but there is a unresolved external symbol bug without  #
+#                          Can be solved in the future by Assimp                         #
+##########################################################################################
+if(UNIX)
+	SET(ASSIMP_BUILD_OBJ_IMPORTER TRUE CACHE BOOL "Enable OBJ Importer")
+	SET(ASSIMP_BUILD_SMD_IMPORTER TRUE CACHE BOOL "Enable SMD Importer")
+	SET(ASSIMP_BUILD_SIB_IMPORTER TRUE CACHE BOOL "Enable SIB Importer")
+endif()
+##########################################################################################
+
 SET(ASSIMP_NO_EXPORT ON CACHE BOOL "Disable All Exporters")
 add_subdirectory(thirdparty/assimp/)
 

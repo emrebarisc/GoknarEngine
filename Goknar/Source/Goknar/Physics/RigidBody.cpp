@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include <cfloat>
+
 #include "Goknar/Physics/RigidBody.h"
 
 #include "Goknar/Engine.h"
@@ -132,8 +134,8 @@ void RigidBody::PhysicsTick(float deltaTime)
     eulerRotation_ += angularAcceleration * deltaTime;
 
     // Impose drag.
-    velocity_ *= std::powf(linearDamping_, deltaTime);
-    eulerRotation_ *= std::powf(angularDamping_, deltaTime);
+    velocity_ *= powf(linearDamping_, deltaTime);
+    eulerRotation_ *= powf(angularDamping_, deltaTime);
 
     // Adjust positions
     // Update linear position.
@@ -155,7 +157,7 @@ void RigidBody::PhysicsTick(float deltaTime)
     {
         float currentMotion = velocity_.Dot(velocity_) + eulerRotation_.Dot(eulerRotation_);
 
-        float bias = std::powf(0.5f, deltaTime);
+        float bias = powf(0.5f, deltaTime);
         motion_ = bias * motion_ + (1.f - bias) * currentMotion;
 
         if (motion_ < RIGID_BODY_SLEEP_EPSILON)

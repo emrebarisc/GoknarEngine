@@ -96,12 +96,12 @@ Quaternion::Quaternion(const Matrix3x3& rotationMatrix)
 
 Quaternion::Quaternion(float roll, float pitch, float yaw)
 {
-    const float sinPitch(std::sinf(pitch * 0.5f));
-    const float cosPitch(std::cosf(pitch * 0.5f));
-    const float sinYaw(std::sinf(yaw * 0.5f));
-    const float cosYaw(std::cosf(yaw * 0.5f));
-    const float sinRoll(std::sinf(roll * 0.5f));
-    const float cosRoll(std::cosf(roll * 0.5f));
+    const float sinPitch(sinf(pitch * 0.5f));
+    const float cosPitch(cosf(pitch * 0.5f));
+    const float sinYaw(sinf(yaw * 0.5f));
+    const float cosYaw(cosf(yaw * 0.5f));
+    const float sinRoll(sinf(roll * 0.5f));
+    const float cosRoll(cosf(roll * 0.5f));
     const float cosPitchCosYaw(cosPitch * cosYaw);
     const float sinPitchSinYaw(sinPitch * sinYaw);
     x = sinRoll * cosPitchCosYaw - cosRoll * sinPitchSinYaw;
@@ -129,9 +129,9 @@ Quaternion Quaternion::FromEulerDegrees(const Vector3& degrees)
 Quaternion Quaternion::FromEulerRadians(const Vector3& radians)
 {
     return Quaternion(
-        std::fmodf(radians.x, TWO_PI),
-        std::fmodf(radians.y, TWO_PI),
-        std::fmodf(radians.z, TWO_PI)
+        fmodf(radians.x, TWO_PI),
+        fmodf(radians.y, TWO_PI),
+        fmodf(radians.z, TWO_PI)
     );
 }
 
@@ -146,7 +146,7 @@ void Quaternion::AddVector(const Vector3& vector)
     w += newQ.w * 0.5f;
 }
 
-inline bool Quaternion::Equals(const Quaternion& other, float tolerance) const
+bool Quaternion::Equals(const Quaternion& other, float tolerance) const
 {
     return  std::abs(x - other.x) <= tolerance &&
             std::abs(y - other.y) <= tolerance &&
@@ -166,22 +166,22 @@ Vector3 Quaternion::ToEulerRadians() const
     // Roll
     const float sinRCosP = 2.f * (w * x + y * z);
     const float cosRCosP = 1.f - 2.f * (x * x + y * y);
-    euler.x = std::atan2f(sinRCosP, cosRCosP);
+    euler.x = atan2f(sinRCosP, cosRCosP);
 
     // Pitch
-    const float sinP = std::sqrtf(1.f + 2.f * (w * y - x * z));
-    const float cosP = std::sqrtf(1.f - 2.f * (w * y - x * z));
-    euler.y = 2.f * std::atan2f(sinP, cosP) - HALF_PI;
+    const float sinP = sqrtf(1.f + 2.f * (w * y - x * z));
+    const float cosP = sqrtf(1.f - 2.f * (w * y - x * z));
+    euler.y = 2.f * atan2f(sinP, cosP) - HALF_PI;
 
     // Yaw
     float sinYCosP = 2.f * (w * z + x * y);
     float cosYCosP = 1.f - 2.f * (y * y + z * z);
-    euler.z = std::atan2f(sinYCosP, cosYCosP);
+    euler.z = atan2f(sinYCosP, cosYCosP);
 
     return euler;
 }
 
-inline Matrix Quaternion::GetMatrix() const
+Matrix Quaternion::GetMatrix() const
 {
     return Matrix(
         1.f - 2.f * (y * y + z * z),    2.f * (x * y - z * w),          2.f * (x * z + y * w),          0.f,
@@ -191,7 +191,7 @@ inline Matrix Quaternion::GetMatrix() const
     );
 }
 
-inline Matrix3x3 Quaternion::GetMatrix3x3() const
+Matrix3x3 Quaternion::GetMatrix3x3() const
 {
     return Matrix3x3(
         1.f - 2.f * (y * y + z * z),    2.f * (x * y - z * w),          2.f * (x * z + y * w),
@@ -209,11 +209,11 @@ Quaternion Quaternion::Exp()
 {
     Quaternion value(*this);
 
-    float r = std::sqrtf(value.x * value.x + value.y * value.y + value.z * value.z);
-    float et = std::expf(value.w);
-    float s = r >= 0.00001f ? et * std::sinf(r) / r : 0.f;
+    float r = sqrtf(value.x * value.x + value.y * value.y + value.z * value.z);
+    float et = expf(value.w);
+    float s = r >= 0.00001f ? et * sinf(r) / r : 0.f;
 
-    value.w = et * std::cosf(r);
+    value.w = et * cosf(r);
     value.x *= s;
     value.y *= s;
     value.z *= s;
@@ -223,16 +223,16 @@ Quaternion Quaternion::Exp()
 Quaternion Quaternion::Ln()
 {
     Quaternion value(*this);
-    float r = std::sqrtf(value.x * value.x + value.y * value.y + value.z * value.z);
-    float t = r > 0.00001f ? std::atan2f(r, value.w) / r : 0.f;
-    value.w = 0.5f * std::logf(value.w * value.w + value.x * value.x + value.y * value.y + value.z * value.z);
+    float r = sqrtf(value.x * value.x + value.y * value.y + value.z * value.z);
+    float t = r > 0.00001f ? atan2f(r, value.w) / r : 0.f;
+    value.w = 0.5f * logf(value.w * value.w + value.x * value.x + value.y * value.y + value.z * value.z);
     value.x *= t;
     value.y *= t;
     value.z *= t;
     return value;
 }
 
-inline Vector3 Quaternion::Rotate(const Vector3& v) const
+Vector3 Quaternion::Rotate(const Vector3& v) const
 {
     Quaternion q2(0.f, v.x, v.y, v.z);
     Quaternion q = *this;
@@ -251,17 +251,17 @@ Quaternion operator*(const Matrix& pMatrix, const Quaternion& quaternion)
     res.w = pMatrix[12] * quaternion.x + pMatrix[13] * quaternion.y + pMatrix[14] * quaternion.z + pMatrix[15] * quaternion.w;
     return res;
 }
-inline Quaternion Quaternion::operator*(const Matrix& scaleMatrix) const
+Quaternion Quaternion::operator*(const Matrix& scaleMatrix) const
 {
     return scaleMatrix * (*this);
 }
 
-inline Quaternion& Quaternion::operator*=(const Matrix& scaleMatrix)
+Quaternion& Quaternion::operator*=(const Matrix& scaleMatrix)
 {
     return (*this = scaleMatrix * (*this));
 }
 
-inline void Quaternion::Slerp(Quaternion& out, const Quaternion& start, const Quaternion& end, float alpha)
+void Quaternion::Slerp(Quaternion& out, const Quaternion& start, const Quaternion& end, float alpha)
 {
     float cosom = start.x * end.x + start.y * end.y + start.z * end.z + start.w * end.w;
 

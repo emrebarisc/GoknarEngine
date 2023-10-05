@@ -74,7 +74,7 @@ void ArcherMovementComponent::SetMovementVector(const Vector3& movementVector)
 
 	if (EPSILON < movementVector.Length())
 	{
-		const float newDestinationAngle = std::atan2f(movementVector.y, movementVector.x);
+		const float newDestinationAngle = atan2f(movementVector.y, movementVector.x);
 
 		float destinationAngle = newDestinationAngle - movementRotation_.current;
 		if (PI < destinationAngle)

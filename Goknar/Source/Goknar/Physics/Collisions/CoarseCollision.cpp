@@ -27,7 +27,7 @@ BoundingSphere::BoundingSphere(const BoundingSphere& one, const BoundingSphere& 
     // overlapping spheres
     else
     {
-        distance = std::sqrtf(distance);
+        distance = sqrtf(distance);
         radius_ = (distance + one.radius_ + two.radius_) * ((float)0.5);
 
         // The new center_ is based on one's center, moved towards

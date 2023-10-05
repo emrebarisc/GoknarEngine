@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include <cfloat>
+
 #include "FineCollision.h"
 
 #include "Goknar/GoknarAssert.h"
@@ -615,7 +617,7 @@ unsigned int CollisionDetector::BoxAndSphere(const CollisionBox& box, const Coll
     PhysicsContact* contact = data->contacts;
     contact->contactNormal = normal;
     contact->contactPoint = contactPosition;
-    contact->penetration = sphere.radius - std::sqrtf(squareDistance);
+    contact->penetration = sphere.radius - sqrtf(squareDistance);
     contact->SetBodyData(box.body, sphere.body, data->friction, data->restitution);
 
     data->AddContacts(1);

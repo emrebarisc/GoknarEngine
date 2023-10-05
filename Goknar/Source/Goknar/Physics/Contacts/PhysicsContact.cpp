@@ -69,7 +69,7 @@ inline void PhysicsContact::CalculateContactBasis()
     if (std::abs(contactNormal.y) < std::abs(contactNormal.x))
     {
         // Scaling factor to ensure the results are normalised
-        const float s = 1.0f / std::sqrtf(contactNormal.z * contactNormal.z + contactNormal.x * contactNormal.x);
+        const float s = 1.0f / sqrtf(contactNormal.z * contactNormal.z + contactNormal.x * contactNormal.x);
 
         // The new X-axis is at right angles to the world Y-axis
         contactTangent[0].x = contactNormal.z * s;
@@ -84,7 +84,7 @@ inline void PhysicsContact::CalculateContactBasis()
     else
     {
         // Scaling factor to ensure the results are normalised
-        const float s = 1.0f / std::sqrtf(contactNormal.z * contactNormal.z + contactNormal.y * contactNormal.y);
+        const float s = 1.0f / sqrtf(contactNormal.z * contactNormal.z + contactNormal.y * contactNormal.y);
 
         // The new X-axis is at right angles to the world X-axis
         contactTangent[0].x = 0;
@@ -390,7 +390,7 @@ inline Vector3 PhysicsContact::CalculateFrictionImpulse(Matrix3x3* inverseInerti
     Vector3 impulseContact = impulseMatrix * velKill;
 
     // Check for exceeding friction
-    float planarImpulse = std::sqrtf(impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z);
+    float planarImpulse = sqrtf(impulseContact.y * impulseContact.y + impulseContact.z * impulseContact.z);
     if (impulseContact.x * friction < planarImpulse)
     {
         // We need to use dynamic friction

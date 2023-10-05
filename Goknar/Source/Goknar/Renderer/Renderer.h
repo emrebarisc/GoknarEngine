@@ -10,14 +10,14 @@
 
 #include <vector>
 
-class GOKNAR_API DynamicMesh;
-class GOKNAR_API StaticMesh;
-class GOKNAR_API SkeletalMesh;
-class GOKNAR_API ShadowManager;
+class DynamicMesh;
+class StaticMesh;
+class SkeletalMesh;
+class ShadowManager;
 
-class GOKNAR_API DynamicMeshInstance;
-class GOKNAR_API StaticMeshInstance;
-class GOKNAR_API SkeletalMeshInstance;
+class DynamicMeshInstance;
+class StaticMeshInstance;
+class SkeletalMeshInstance;
 
 class GOKNAR_API Renderer
 {

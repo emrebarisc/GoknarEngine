@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "Managers/CameraManager.h"
 #include "Math/GoknarMath.h"
+#include "Math/Matrix.h"
 
 #ifdef GOKNAR_PLATFORM_WINDOWS
 #include <GL/GLU.h>

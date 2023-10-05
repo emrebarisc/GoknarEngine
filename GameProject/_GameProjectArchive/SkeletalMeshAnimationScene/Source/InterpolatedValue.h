@@ -133,8 +133,8 @@ struct RotatingInterpolatedValue : public InterpolatedValue<T>
 
 		InterpolatedValue::UpdateDestination(newDestination);
 
-		const float newDestinationAngle = std::atan2f(newDestination.y, newDestination.x);
-		const float currentAngle = std::atan2f(current.y, current.x);
+		const float newDestinationAngle = atan2f(newDestination.y, newDestination.x);
+		const float currentAngle = atan2f(current.y, current.x);
 
 		this->destinationAngle = newDestinationAngle - currentAngle; 
 		if(PI < this->destinationAngle)

@@ -57,8 +57,8 @@ public:
     Vector3 ToEulerDegrees() const;
     Vector3 ToEulerRadians() const;
 
-    inline Matrix GetMatrix() const;
-    inline Matrix3x3 GetMatrix3x3() const;
+    Matrix GetMatrix() const;
+    Matrix3x3 GetMatrix3x3() const;
 
     inline bool operator==(const Quaternion& other) const;
     inline bool operator!=(const Quaternion& other) const;
@@ -72,12 +72,13 @@ public:
     inline Quaternion operator/(const float scale) const;
     inline Quaternion operator/=(const float scale);
 
-    inline Quaternion operator*(const Matrix& scaleMatrix) const;
+    Quaternion operator*(const Matrix& scaleMatrix) const;
+    Quaternion& operator*=(const Matrix& scaleMatrix);
+    
     inline Quaternion operator*(const Quaternion& other) const;
     inline Quaternion operator*(const float scale);
     inline friend Quaternion operator*(const float scale, const Quaternion& quaternion);
     inline Quaternion& operator*=(const Quaternion& other);
-    inline Quaternion& operator*=(const Matrix& scaleMatrix);
     inline Quaternion& operator*=(const float scale);
 
     static void Slerp(Quaternion& out, const Quaternion& start, const Quaternion& end, float alpha);
@@ -215,7 +216,7 @@ inline Quaternion& Quaternion::operator*=(const float scale)
 
 float Quaternion::Length() const
 {
-    return std::sqrtf(x * x + y * y + z * z + w * w);
+    return sqrtf(x * x + y * y + z * z + w * w);
 }
 
 inline Quaternion Quaternion::GetNormalized() const
@@ -227,7 +228,7 @@ inline Quaternion Quaternion::GetNormalized() const
 
 inline Quaternion& Quaternion::Normalize()
 {
-    const float magnitude = std::sqrtf(x * x + y * y + z * z + w * w);
+    const float magnitude = sqrtf(x * x + y * y + z * z + w * w);
     if (0.f < magnitude)
     {
         const float inverseMagnitude = 1.f / magnitude;
