@@ -32,17 +32,17 @@ Archer::Archer() :
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
 	skeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
 	skeletalMeshComponent_->SetRelativeScaling(Vector3{ 0.0125f });
-	skeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEuler(Vector3{ 90.f, 0.f, 90.f }));
+	skeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
 
 	SkeletalMeshInstance* skeletalMeshInstance = skeletalMeshComponent_->GetMeshInstance();
 	leftHandSocket_ = skeletalMeshInstance->AddSocketToBone("mixamorig:LeftHand");
 	leftHandSocket_->SetRelativePosition(Vector3{ 0.f, 10.f, 1.5f });
-	leftHandSocket_->SetRelativeRotation(Quaternion::FromEuler(Vector3{ 90.f, 90.f, 180.f }));
+	leftHandSocket_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 90.f, 180.f }));
 	leftHandSocket_->SetRelativeScaling(Vector3{ 80.f });
 
 	rightHandSocket_ = skeletalMeshInstance->AddSocketToBone("mixamorig:RightHand");
 	rightHandSocket_->SetRelativePosition(Vector3{ 0.f, 10.f, 0.f });
-	rightHandSocket_->SetRelativeRotation(Quaternion::FromEuler(Vector3{ 0.f, -13.5f, 90.f }));
+	rightHandSocket_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 0.f, -13.5f, 90.f }));
 	rightHandSocket_->SetRelativeScaling(Vector3{ 80.f });
 
 	bowStringSocket_ = skeletalMeshInstance->AddSocketToBone("mixamorig:RightHandMiddle3");

@@ -2,11 +2,10 @@
 
 #include "Goknar/Scene.h"
 
+#include "Archer.h"
 #include "Goknar/Camera.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Managers/WindowManager.h"
-
-#include "RigidBodyManager.h"
 
 #include <chrono>
 
@@ -22,7 +21,7 @@ public:
 	void Run() override;
 
 private:
-	RigidBodyManager* rigidBodyManager_;
+	Archer* archer_;
 };
 
 Game::Game() : Application()
@@ -37,7 +36,7 @@ Game::Game() : Application()
 
 	lastFrameTimePoint = currentTimePoint;
 
-	rigidBodyManager_ = new RigidBodyManager();
+	archer_ = new Archer();
 
 	engine->GetWindowManager()->SetIsInFullscreen(false);
 	//engine->SetTimeScale(0.1f);
