@@ -8,26 +8,9 @@
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"
 
-Light::Light() :
-	id_(0),
-	position_(Vector3::ZeroVector),
-	color_(Vector3::ZeroVector),
-	intensity_(0.f),
-	name_(""),
-	shadowWidth_(1024),
-	shadowHeight_(1024),
-	shadowMapDepthFBO_(-1),
-	isShadowEnabled_(false),
-	mobility_(LightMobility::Static),
-	shadowMapTexture_(nullptr),
-	shadowMapRenderCamera_(nullptr)
-{
-}
-
 Light::~Light()
 {
 	delete shadowMapTexture_;
-	delete shadowMapRenderCamera_;
 
 	glDeleteFramebuffers(1, &shadowMapDepthFBO_);
 }
@@ -45,6 +28,9 @@ void Light::Init()
 {
 	if (isShadowEnabled_)
 	{
+		glGenFramebuffers(1, &shadowMapDepthFBO_);
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapDepthFBO_);
+
 		shadowMapTexture_ = new Texture();
 		shadowMapTexture_->SetWidth(shadowWidth_);
 		shadowMapTexture_->SetHeight(shadowHeight_);
@@ -56,11 +42,9 @@ void Light::Init()
 		shadowMapTexture_->SetTextureFormat(TextureFormat::DEPTH);
 		shadowMapTexture_->SetTextureType(TextureType::FLOAT);
 		shadowMapTexture_->SetTextureDataType(TextureDataType::DYNAMIC);
-
-		glGenFramebuffers(1, &shadowMapDepthFBO_);
 		shadowMapTexture_->Init();
 		shadowMapTexture_->Bind();
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapDepthFBO_);
+
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, (int)shadowMapTexture_->GetTextureTarget(), shadowMapTexture_->GetRendererTextureId(), 0);
 
 		switch (glCheckFramebufferStatus(GL_FRAMEBUFFER))
@@ -96,9 +80,9 @@ void Light::Init()
 			break;
 		}
 
-		shadowMapTexture_->Unbind();
-		//glDrawBuffer(GL_NONE);
+		glDrawBuffer(GL_NONE);
 		//glReadBuffer(GL_NONE);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		shadowMapTexture_->Unbind();
 	}
 }

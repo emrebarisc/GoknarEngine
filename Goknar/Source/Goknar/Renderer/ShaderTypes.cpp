@@ -32,6 +32,8 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* DIRECTIONAL_LIGHT = "DirectionalLight";
 		const char* POINT_LIGHT = "PointLight";
 		const char* SPOT_LIGHT = "SpotLight";
+
+		const char* SHADOW_CALCULATION_FUNCTION_NAME = "ShadowCalculation";
 	}
 
 	inline namespace LIGHT_KEYWORDS
@@ -85,7 +87,9 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace VERTEX_SHADER_OUTS
 	{
-		const char* FRAGMENT_POSITION = "fragmentPosition";
+		const char* FINAL_MODEL_MATRIX = "finalModelMatrix";
+		const char* FRAGMENT_POSITION_WORLD_SPACE = "fragmentPositionWorldSpace";
+		const char* FRAGMENT_POSITION_SCREEN_SPACE = "fragmentPositionScreenSpace";
 		const char* VERTEX_NORMAL = "vertexNormal";
 		const char* BONE_IDS = "outBoneIDs";
 		const char* WEIGHTS = "outWeights";

@@ -67,7 +67,7 @@ void SkeletalMeshInstance::Render()
 	}
 
 	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
-	
+
 
 	// TODO: Implement a proper multi threading
 	// Following std::for_each parallelizing causes game crash

@@ -110,9 +110,15 @@ private:
 	std::string GetStaticSpotLightText(const SpotLight* directionalLight, const std::string& lightVariableName) const;
 	std::string GetSpotLightColorSummationText(const std::string& lightVariableName);
 
+	// Shadows
+	std::string GetLightShadowUniforms(const std::string& lightName);
+	std::string GetShadowCalculator(const std::string& lightName);
+	std::string GetShadowCalculationFunction();
+
 	// Fragment shader variables
 	std::string uniforms_;
 	std::string lightUniforms_;
+	std::string fragmentShaderShadowCalculation_;
 	std::string fragmentShaderOutsideMain_;
 	std::string fragmentShaderInsideMain_;
 	std::string fragmentShaderVertexNormalText_;

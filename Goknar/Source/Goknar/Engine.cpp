@@ -31,7 +31,7 @@
 // OpenGL Libraries
 #include "GLFW/glfw3.h"
 
-#define GOKNAR_EDITOR true
+#define GOKNAR_EDITOR false
 
 GOKNAR_API Engine *engine;
 
@@ -97,6 +97,12 @@ void Engine::Init() const
 	GOKNAR_CORE_INFO("Input Manager Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
+	application_->Init();
+	currentTimePoint = std::chrono::steady_clock::now();
+	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
+	GOKNAR_CORE_INFO("Application Initialization: {} s.", elapsedTime);
+	lastFrameTimePoint = currentTimePoint;
+
 	ShaderBuilder::GetInstance()->Init();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
@@ -120,12 +126,6 @@ void Engine::Init() const
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Object Manager Initialization: {} s.", elapsedTime);
-	lastFrameTimePoint = currentTimePoint;
-
-	application_->Init();
-	currentTimePoint = std::chrono::steady_clock::now();
-	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Application Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	if (controller_)
@@ -195,7 +195,7 @@ void Engine::Run()
 		application_->Run();
 		Tick(deltaTime_);
 
-		//renderer_->GetShadowManager()->RenderShadowMaps();
+		renderer_->GetShadowManager()->RenderShadowMaps();
 		renderer_->Render();
 
 #if GOKNAR_EDITOR

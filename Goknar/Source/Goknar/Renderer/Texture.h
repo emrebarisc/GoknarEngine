@@ -113,7 +113,7 @@ public:
 	~Texture();
 
 	void Init();
-	void Bind(Shader* shader = nullptr) const;
+	void Bind(const Shader* shader = nullptr) const;
 	void Unbind();
 
 	bool LoadTextureImage();

@@ -32,7 +32,7 @@ void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
 		logMessage[maxLength] = '\0';
 		glDeleteShader(shaderId);
 
-		GOKNAR_CORE_ASSERT(false, "{}\n What went wrong: {}", logMessage, errorMessage);
+		GOKNAR_CORE_ASSERT(false, "{}\n What went wrong: {}", errorMessage, logMessage);
 
 		delete[] logMessage;
 	}
@@ -119,14 +119,14 @@ void Shader::Init()
 	glShaderSource(vertexShaderId, 1, &vertexSource, 0);
 	glCompileShader(vertexShaderId);
 	ExitOnShaderIsNotCompiled(vertexShaderId, (std::string("Vertex shader compilation error!(" + vertexShaderPath_ + ").")).c_str());
-	vertexShaderScript_.clear();
+	//vertexShaderScript_.clear();
 
 	const GEchar* fragmentSource = (const GEchar*)fragmentShaderScript_.c_str();
 	GEuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShaderId, 1, &fragmentSource, 0);
 	glCompileShader(fragmentShaderId);
 	ExitOnShaderIsNotCompiled(fragmentShaderId, (std::string("Fragment shader compilation error!(") + fragmentShaderPath_ + ").").c_str());
-	fragmentShaderScript_.clear();
+	//fragmentShaderScript_.clear();
 
 	programId_ = glCreateProgram();
 
@@ -145,7 +145,8 @@ void Shader::Init()
 		textures_[textureIndex]->Bind(this);
 	}
 
-	//engine->GetRenderer()->BindShadowTextures(this);
+	engine->GetRenderer()->BindShadowTextures(this);
+	ExitOnProgramError(programId_, "Shader error on binding texture!");
 
 	Unbind();
 
@@ -170,7 +171,8 @@ void Shader::Use() const
 
 void Shader::SetBool(const char* name, bool value)
 {
-	glUniform1i(glGetUniformLocation(programId_, name), (int)value);
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniform1i(uniformLocation, (int)value);
 }
 
 void Shader::SetInt(const char* name, int value) const
@@ -181,20 +183,24 @@ void Shader::SetInt(const char* name, int value) const
 
 void Shader::SetFloat(const char* name, float value) const
 {
-	glUniform1f(glGetUniformLocation(programId_, name), value);
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniform1f(uniformLocation, value);
 }
 
 void Shader::SetMatrix(const char* name, const Matrix& matrix) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(programId_, name), 1, GL_FALSE, &matrix.m[0]);
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix.m[0]);
 }
 
 void Shader::SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector)
 {
-	glUniformMatrix4fv(glGetUniformLocation(programId_, name), matrixVector.size(), GL_FALSE, &matrixVector[0].m[0]);
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniformMatrix4fv(uniformLocation, matrixVector.size(), GL_FALSE, &matrixVector[0].m[0]);
 }
 
 void Shader::SetVector3(const char* name, const Vector3& vector) const
 {
-	glUniform3fv(glGetUniformLocation(programId_, name), 1, &vector.x);
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniform3fv(uniformLocation, 1, &vector.x);
 }

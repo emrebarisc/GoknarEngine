@@ -152,7 +152,7 @@ void Texture::Init()
 	isInitialized_ = true;
 }
 
-void Texture::Bind(Shader* shader) const
+void Texture::Bind(const Shader* shader) const
 {
 	if (shader != nullptr)
 	{

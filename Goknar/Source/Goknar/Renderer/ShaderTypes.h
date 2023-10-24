@@ -31,6 +31,8 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* DIRECTIONAL_LIGHT;
 		extern const char* POINT_LIGHT;
 		extern const char* SPOT_LIGHT;
+
+		extern const char* SHADOW_CALCULATION_FUNCTION_NAME;
 	}
 
 	inline namespace LIGHT_KEYWORDS
@@ -84,7 +86,9 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace VERTEX_SHADER_OUTS
 	{
-		extern const char* FRAGMENT_POSITION;
+		extern const char* FINAL_MODEL_MATRIX;
+		extern const char* FRAGMENT_POSITION_WORLD_SPACE;
+		extern const char* FRAGMENT_POSITION_SCREEN_SPACE;
 		extern const char* VERTEX_NORMAL;
 		extern const char* BONE_IDS;
 		extern const char* WEIGHTS;

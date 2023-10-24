@@ -62,10 +62,12 @@ Renderer::~Renderer()
 
 	EXIT_ON_GL_ERROR("Renderer::~Renderer");
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	glDisableVertexAttribArray(3);
+	//glDisableVertexAttribArray(VERTEX_COLOR_LOCATION);
+	//glDisableVertexAttribArray(VERTEX_POSITION_LOCATION);
+	//glDisableVertexAttribArray(VERTEX_NORMAL_LOCATION);
+	//glDisableVertexAttribArray(VERTEX_UV_LOCATION);
+	//glDisableVertexAttribArray(BONE_ID_LOCATION);
+	//glDisableVertexAttribArray(BONE_WEIGHT_LOCATION);
 
 	glDeleteBuffers(1, &staticVertexBufferId_);
 	glDeleteBuffers(1, &skeletalVertexBufferId_);
@@ -335,10 +337,6 @@ void Renderer::Render()
 	}
 	else
 	{
-		// WORK IN PROGRESS
-
-		glDepthMask(GL_FALSE);
-		glClearColor(0.f, 0.f, 0.f, 1.f);
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
@@ -709,8 +707,11 @@ void Renderer::BindShadowTextures(Shader* shader)
 	for (size_t i = 0; i < staticDirectionalLightCount; i++)
 	{
 		DirectionalLight* directionalLight = staticDirectionalLights[i];
-		Texture* shadowTexture = directionalLight->GetShadowMapTexture();
-		shadowTexture->Bind(shader);
+		if (directionalLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = directionalLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
 	}
 }
 

@@ -17,7 +17,7 @@ enum class LightMobility : uint8_t
 class GOKNAR_API Light
 {
 public:
-	Light();
+	Light() = default;
 
 	virtual ~Light();
 
@@ -123,26 +123,25 @@ public:
 
 protected:
 
-	Vector3 position_;
-	Vector3 color_;
+	Vector3 position_{ Vector3::ZeroVector };
+	Vector3 color_{ Vector3::ZeroVector };
 
-	Texture* shadowMapTexture_;
-	Camera* shadowMapRenderCamera_;
+	Texture* shadowMapTexture_{ nullptr };
+	Camera* shadowMapRenderCamera_{ nullptr };
 
-	std::string name_;
+	std::string name_{ "" };
 
-	int id_;
+	int id_{ 0 };
 
-	int shadowWidth_;
-	int shadowHeight_;
+	int shadowWidth_{ 8196 };
+	int shadowHeight_{ 8196 };
 
-	float intensity_;
+	float intensity_{ 1.f };
 
-	GEuint shadowMapDepthFBO_;
-	bool isShadowEnabled_;
-
+	GEuint shadowMapDepthFBO_{ 0 };
+	bool isShadowEnabled_{ true };
 private:
-	LightMobility mobility_;
+	LightMobility mobility_{ LightMobility::Static };
 };
 
 #endif

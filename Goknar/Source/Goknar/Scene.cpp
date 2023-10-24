@@ -129,6 +129,16 @@ void Scene::Init()
 	{
 		texture->Init();
 	}
+
+	//for (Shader* shader : shaders_)
+	//{
+	//	shader->Init();
+	//}
+
+	//for (Material* material : materials_)
+	//{
+	//	material->Init();
+	//}
 }
 
 void Scene::ReadSceneData(const std::string& filePath)
