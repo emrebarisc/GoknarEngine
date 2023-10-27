@@ -422,7 +422,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 						if (image)
 						{
 							image->SetTextureUsage(TextureUsage::Diffuse);
-							material->GetShader()->AddTextureImage(image);
+							material->GetShader(RenderPassType::Main)->AddTextureImage(image);
 						}
 					}
 

@@ -25,8 +25,7 @@ public:
 
     void Init() override;
 
-	void RenderShadowMap() override;
-
+    void RenderShadowMap() override;
     void SetShaderUniforms(const Shader* shader) const;
 
     void SetRadius(float radius)

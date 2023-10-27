@@ -51,6 +51,10 @@ inline namespace SHADER_VARIABLE_NAMES
 
 		const char* IS_CASTING_SHADOW = "IsCastingShadow";
 		const char* SHADOW_MAP = "ShadowMap";
+
+		const char* SHADOW_MAP_FRAGMENT_SHADER_LIGHT_TYPE = "lightType";
+		const char* SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_POSITION = "pointLightPosition";
+		const char* SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_RADIUS = "pointLightRadius";
 	}
 
 	inline namespace SKELETAL_MESH

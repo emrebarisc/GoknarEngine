@@ -5,6 +5,7 @@
 #include "Goknar/Renderer/Types.h"
 
 class Camera;
+class Framebuffer;
 class Shader;
 class Texture;
 
@@ -105,12 +106,8 @@ public:
 		return shadowHeight_;
 	}
 
-	GEuint GetShadowMapFBO()
-	{
-		return shadowMapDepthFBO_;
-	}
-
 	virtual void RenderShadowMap() = 0;
+
 	Texture* GetShadowMapTexture()
 	{
 		return shadowMapTexture_;
@@ -121,13 +118,19 @@ public:
 		return shadowMapRenderCamera_;
 	}
 
+	Framebuffer* GetShadowMapFramebuffer()
+	{
+		return shadowMapFramebuffer_;
+	}
+
 protected:
 
 	Vector3 position_{ Vector3::ZeroVector };
 	Vector3 color_{ Vector3::ZeroVector };
 
-	Texture* shadowMapTexture_{ nullptr };
 	Camera* shadowMapRenderCamera_{ nullptr };
+	Framebuffer* shadowMapFramebuffer_{ nullptr };
+	Texture* shadowMapTexture_{ nullptr };
 
 	std::string name_{ "" };
 
@@ -138,7 +141,6 @@ protected:
 
 	float intensity_{ 1.f };
 
-	GEuint shadowMapDepthFBO_{ 0 };
 	bool isShadowEnabled_{ true };
 private:
 	LightMobility mobility_{ LightMobility::Static };

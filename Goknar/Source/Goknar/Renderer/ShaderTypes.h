@@ -49,6 +49,10 @@ inline namespace SHADER_VARIABLE_NAMES
 
 		extern const char* IS_CASTING_SHADOW;
 		extern const char* SHADOW_MAP;
+
+		extern const char* SHADOW_MAP_FRAGMENT_SHADER_LIGHT_TYPE;
+		extern const char* SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_POSITION;
+		extern const char* SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_RADIUS;
 	}
 
 	inline namespace SKELETAL_MESH

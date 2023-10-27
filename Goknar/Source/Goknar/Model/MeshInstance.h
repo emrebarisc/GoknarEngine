@@ -81,7 +81,7 @@ int MeshInstance<MeshType>::lastComponentId_ = 0;
 template<class MeshType>
 inline void MeshInstance<MeshType>::PreRender(RenderPassType renderPassType)
 {
-	mesh_->GetMaterial()->Use();
+	mesh_->GetMaterial()->Use(renderPassType);
 }
 
 template<class MeshType>
@@ -118,7 +118,7 @@ inline void MeshInstance<MeshType>::Render(RenderPassType renderPassType)
 	//}
 	
 	//mesh_->GetMaterial()->SetShaderVariables(worldTransformationMatrix, relativeTransformationMatrix);
-	mesh_->GetMaterial()->SetShaderVariables(parentComponent_->GetComponentToWorldTransformationMatrix(), Matrix::IdentityMatrix);// worldTransformationMatrix, relativeTransformationMatrix);
+	mesh_->GetMaterial()->SetShaderVariables(parentComponent_->GetComponentToWorldTransformationMatrix(), Matrix::IdentityMatrix, renderPassType);// worldTransformationMatrix, relativeTransformationMatrix);
 }
 
 template<class MeshType>

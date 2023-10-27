@@ -15,7 +15,6 @@ Material::Material() :
 	diffuseReflectance_(Vector3::ZeroVector), 
 	specularReflectance_(Vector3::ZeroVector),
 	phongExponent_(1.f),
-	shader_(nullptr),
 	blendModel_(MaterialBlendModel::Opaque),
 	shadingModel_(MaterialShadingModel::Default)
 {
@@ -23,40 +22,64 @@ Material::Material() :
 
 Material::~Material()
 {
+	delete renderPassTypeShaderMap_[RenderPassType::Main];
+	delete renderPassTypeShaderMap_[RenderPassType::GBuffer];
+	delete renderPassTypeShaderMap_[RenderPassType::Shadow];
 }
 
 void Material::Init()
 {
+	GOKNAR_CORE_ASSERT(renderPassTypeShaderMap_.find(RenderPassType::Main) != renderPassTypeShaderMap_.end());
+
+	Shader* mainShader = renderPassTypeShaderMap_[RenderPassType::Main];
+
+	Shader* shadowShader = new Shader();
+	shadowShader->SetVertexShaderScript(mainShader->GetVertexShaderScript());
+	shadowShader->SetFragmentShaderScript(ShaderBuilder::GetShaderPassFragmentShaderScript());
+	shadowShader->Init();
+	renderPassTypeShaderMap_[RenderPassType::Shadow] = shadowShader;
 }
 
-void Material::Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const
+void Material::Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType) const
 {
-	Use();
-	SetShaderVariables(worldTransformationMatrix, relativeTransformationMatrix);
+	Use(renderPassType);
+	SetShaderVariables(worldTransformationMatrix, relativeTransformationMatrix, renderPassType);
 }
 
-void Material::Use() const
+void Material::Use(RenderPassType renderPassType) const
 {
-	shader_->Use();
+	GOKNAR_CORE_ASSERT(renderPassTypeShaderMap_.find(renderPassType) != renderPassTypeShaderMap_.end());
+	
+	renderPassTypeShaderMap_.at(renderPassType)->Use();
 }
 
-void Material::SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const
+void Material::SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType) const
 {
-	if (shadingModel_ == MaterialShadingModel::Default)
+	GOKNAR_CORE_ASSERT(renderPassTypeShaderMap_.find(renderPassType) != renderPassTypeShaderMap_.end());
+
+	Shader* shader = renderPassTypeShaderMap_.at(renderPassType);
+
+	if (renderPassType == RenderPassType::Main)
 	{
-		glEnable(GL_CULL_FACE);
+		if (shadingModel_ == MaterialShadingModel::Default)
+		{
+			glEnable(GL_CULL_FACE);
+		}
+		else if (shadingModel_ == MaterialShadingModel::TwoSided)
+		{
+			glDisable(GL_CULL_FACE);
+		}
+
+		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, ambientReflectance_);
+		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, diffuseReflectance_);
+		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);
+		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, phongExponent_);
 	}
-	else if (shadingModel_ == MaterialShadingModel::TwoSided)
+	else if (renderPassType == RenderPassType::Shadow)
 	{
-		glDisable(GL_CULL_FACE);
+
 	}
 
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, ambientReflectance_);
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, diffuseReflectance_);
-	shader_->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);
-	shader_->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, phongExponent_);
-
-	shader_->SetMVP(worldTransformationMatrix, relativeTransformationMatrix);
-
-	engine->SetShaderEngineVariables(shader_);
+	shader->SetMVP(worldTransformationMatrix, relativeTransformationMatrix);
+	engine->SetShaderEngineVariables(shader);
 }

@@ -14,6 +14,7 @@
 #include "Goknar/Renderer/ShaderBuilder.h"
 
 #include "Goknar/Lights/DirectionalLight.h"
+#include "Goknar/Lights/PointLight.h"
 
 #include "Goknar/IO/IOManager.h"
 #include "Goknar/Renderer/Texture.h"
@@ -25,6 +26,7 @@ void ShadowManager::RenderShadowMaps()
 	CameraManager* cameraManager = engine->GetCameraManager();
 	Camera* mainCamera = engine->GetCameraManager()->GetActiveCamera();
 
+	EXIT_ON_GL_ERROR("ShadowManager::RenderShadowMaps 0 ");
 	// Only draw the depth buffer
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
@@ -40,6 +42,22 @@ void ShadowManager::RenderShadowMaps()
 
 		directionalLight->RenderShadowMap();
 	}
+
+	const std::vector<PointLight*> staticPointLights = mainScene->GetStaticPointLights();
+	size_t staticPointLightCount = staticPointLights.size();
+	for (size_t i = 0; i < staticPointLightCount; i++)
+	{
+		PointLight* pointLight = staticPointLights[i];
+		if (!pointLight->GetIsShadowEnabled())
+		{
+			continue;
+		}
+
+		pointLight->RenderShadowMap();
+	}
+
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	cameraManager->SetActiveCamera(mainCamera);
+
+	EXIT_ON_GL_ERROR("ShadowManager::RenderShadowMaps");
 }

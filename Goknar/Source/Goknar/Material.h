@@ -2,9 +2,11 @@
 #define __MATERIAL_H__
 
 #include <string>
+#include <unordered_map>
 
 #include "Goknar/Core.h"
 #include "Math/GoknarMath.h"
+#include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
 
 enum class MaterialBlendModel
@@ -88,14 +90,19 @@ public:
 		shadingModel_ = shadingModel;
 	}
 
-	inline Shader* GetShader() const
+	inline Shader* GetShader(RenderPassType renderPassType) const
 	{
-		return shader_;
+		if (renderPassTypeShaderMap_.find(renderPassType) == renderPassTypeShaderMap_.end())
+		{
+			return nullptr;
+		}
+
+		return renderPassTypeShaderMap_.at(renderPassType);
 	}
 
-	inline void SetShader(Shader* shader)
+	inline void SetShader(Shader* shader, RenderPassType renderPassType = RenderPassType::Main)
 	{
-		shader_ = shader;
+		renderPassTypeShaderMap_[renderPassType] = shader;
 	}
 
 	inline void SetName(const std::string& name)
@@ -108,9 +115,9 @@ public:
 		return name_;
 	}
 
-	void Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const;
-	void Use() const;
-	void SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const;
+	void Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Main) const;
+	void Use(RenderPassType renderPassType = RenderPassType::Main) const;
+	void SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Main) const;
 
 protected:
 
@@ -121,7 +128,7 @@ private:
 
 	std::string name_;
 
-	Shader* shader_;
+	std::unordered_map<RenderPassType, Shader*> renderPassTypeShaderMap_;
 
 	float phongExponent_;
 

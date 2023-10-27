@@ -10,7 +10,7 @@
 class Shader;
 class Image;
 
-enum class TextureTarget
+enum class TextureBindTarget
 {
 	TEXTURE_1D = GL_TEXTURE_1D,
 	TEXTURE_2D = GL_TEXTURE_2D,
@@ -23,6 +23,26 @@ enum class TextureTarget
 	TEXTURE_CUBE_MAP_ARRAY = GL_TEXTURE_CUBE_MAP_ARRAY,
 	TEXTURE_2D_MULTISAMPLE = GL_TEXTURE_2D_MULTISAMPLE,
 	TEXTURE_2D_MULTISAMPLE_ARRAY = GL_TEXTURE_2D_MULTISAMPLE_ARRAY
+};
+
+enum class TextureImageTarget
+{
+	TEXTURE_2D = GL_TEXTURE_2D,
+	PROXY_TEXTURE_2D = GL_PROXY_TEXTURE_2D,
+
+	TEXTURE_1D_ARRAY = GL_TEXTURE_1D_ARRAY,
+	PROXY_TEXTURE_1D_ARRAY = GL_PROXY_TEXTURE_1D_ARRAY,
+
+	TEXTURE_RECTANGLE = GL_TEXTURE_RECTANGLE,
+	PROXY_TEXTURE_CUBE_MAP = GL_PROXY_TEXTURE_CUBE_MAP,
+
+	TEXTURE_CUBE_MAP_POSITIVE_X = GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+	TEXTURE_CUBE_MAP_NEGATIVE_X = GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+	TEXTURE_CUBE_MAP_POSITIVE_Y = GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+	TEXTURE_CUBE_MAP_NEGATIVE_Y = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+	TEXTURE_CUBE_MAP_POSITIVE_Z = GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+	TEXTURE_CUBE_MAP_NEGATIVE_Z = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
+	PROXY_TEXTURE_RECTANGLE = GL_PROXY_TEXTURE_RECTANGLE,
 };
 
 enum class TextureWrapping
@@ -209,14 +229,24 @@ public:
 		name_ = name;
 	}
 
-	TextureTarget GetTextureTarget() const
+	TextureBindTarget GetTextureBindTarget() const
 	{
-		return textureTarget_;
+		return textureBindTarget_;
 	}
 
-	void SetTextureTarget(TextureTarget textureTarget)
+	void SetTextureBindTarget(TextureBindTarget textureTarget)
 	{
-		textureTarget_ = textureTarget;
+		textureBindTarget_ = textureTarget;
+	}
+
+	TextureImageTarget GetTextureImageTarget() const
+	{
+		return textureImageTarget_;
+	}
+
+	void SetTextureImageTarget(TextureImageTarget textureImageTarget)
+	{
+		textureImageTarget_ = textureImageTarget;
 	}
 
 	TextureWrapping GetTextureWrappingS() const
@@ -363,32 +393,33 @@ protected:
 
 private:
 	std::string name_;
-	std::string imagePath_;
-	const unsigned char* buffer_;
+	std::string imagePath_{ "" };
+	const unsigned char* buffer_{ nullptr };
 	GEuint rendererTextureId_;
 
-	TextureTarget textureTarget_;
-	TextureWrapping textureWrappingS_;
-	TextureWrapping textureWrappingT_;
-	TextureWrapping textureWrappingR_;
-	TextureMinFilter minFilter_;
-	TextureMagFilter magFilter_;
-	TextureFormat textureFormat_;
-	TextureInternalFormat textureInternalFormat_;
-	TextureType textureType_;
+	TextureBindTarget textureBindTarget_{ TextureBindTarget::TEXTURE_2D};
+	TextureImageTarget textureImageTarget_{ TextureImageTarget::TEXTURE_2D };
+	TextureWrapping textureWrappingS_{ TextureWrapping::REPEAT };
+	TextureWrapping textureWrappingT_{ TextureWrapping::REPEAT };
+	TextureWrapping textureWrappingR_{ TextureWrapping::REPEAT };
+	TextureMinFilter minFilter_{ TextureMinFilter::LINEAR };
+	TextureMagFilter magFilter_{ TextureMagFilter::LINEAR };
+	TextureFormat textureFormat_{ TextureFormat::RGB };
+	TextureInternalFormat textureInternalFormat_{ TextureInternalFormat::RGB };
+	TextureType textureType_{ TextureType::UNSIGNED_BYTE };
 	TextureCompareMode textureCompareMode_{ TextureCompareMode::None };
 	TextureCompareFunc textureCompareFunc_{ TextureCompareFunc::LEQUAL };
 
-	TextureDataType textureDataType_;
+	TextureDataType textureDataType_{ TextureDataType::STATIC };
 
-	TextureUsage textureUsage_;
+	TextureUsage textureUsage_{ TextureUsage::Diffuse };
 
 	int objectId_;
 	int width_;
 	int height_;
 	int channels_;
 
-	unsigned char isInitialized_ : 1;
+	bool isInitialized_{ false };
 };
 
 #endif
