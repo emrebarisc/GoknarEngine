@@ -125,10 +125,10 @@ void Camera::SetProjectionMatrix()
 	if (projection_ == CameraProjection::Perspective)
 	{
 		// Orthographic to perspective conversion matrix
-		Matrix o2p(nearDistance_, 0, 0, 0,
-			0, nearDistance_, 0, 0,
-			0, 0, farDistance_ + nearDistance_, farDistance_ * nearDistance_,
-			0, 0, -1, 0);
+		Matrix o2p( nearDistance_, 0.f, 0.f, 0.f,
+					0.f, nearDistance_, 0.f, 0.f,
+					0.f, 0.f, farDistance_ + nearDistance_, farDistance_ * nearDistance_,
+					0.f, 0.f, -1.f, 0.f);
 
 		projectionMatrix_ = projectionMatrix_ * o2p;
 	}
@@ -136,7 +136,7 @@ void Camera::SetProjectionMatrix()
 
 void Camera::LookAt()
 {
-	Vector3 lookAtPos = position_ + forwardVector_ * nearDistance_;
+	Vector3 lookAtPos = position_ + forwardVector_ * max(nearDistance_, 0.001f);
 
 	GoknarMath::LookAt(viewingMatrix_, 
 				 position_,

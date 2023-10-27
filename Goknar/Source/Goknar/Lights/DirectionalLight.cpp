@@ -31,8 +31,9 @@ void DirectionalLight::Init()
 		shadowMapRenderCamera_->SetCameraType(CameraType::Shadow);
 		shadowMapRenderCamera_->SetImageWidth(shadowWidth_);
 		shadowMapRenderCamera_->SetImageHeight(shadowHeight_);
-		shadowMapRenderCamera_->SetNearDistance(0.01f);
-		shadowMapRenderCamera_->SetFarDistance(1000.f);
+		shadowMapRenderCamera_->SetNearPlane(Vector4{ -20.f, 20.f, -20.f, 20.f });
+		shadowMapRenderCamera_->SetNearDistance(-50.f);
+		shadowMapRenderCamera_->SetFarDistance(50.f);
 	}
 }
 
@@ -47,6 +48,8 @@ void DirectionalLight::SetShaderUniforms(const Shader* shader) const
 	std::string isCastingShadowName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW;
 	shader->SetInt(isCastingShadowName.c_str(), isShadowEnabled_);
 
+	CameraManager* cameraManager = engine->GetCameraManager();
+
 	Matrix biasedViewMatrix = shadowMapRenderCamera_->GetViewingMatrix(); 
 	biasedViewMatrix *= shadowMapRenderCamera_->GetProjectionMatrix();
 	biasedViewMatrix *=
@@ -54,7 +57,7 @@ void DirectionalLight::SetShaderUniforms(const Shader* shader) const
 	{
 		0.5f, 0.f, 0.f, 0.f,
 		0.f, 0.5f, 0.f, 0.f,
-		0.f, 0.f, 0.5f - 0.000025f, 0.f,
+		0.f, 0.f, 0.5f - 0.0015f, 0.f,
 		0.5f, 0.5f, 0.5f, 1.f
 	};
 
@@ -67,10 +70,11 @@ void DirectionalLight::RenderShadowMap()
 	Camera* mainCamera = engine->GetCameraManager()->GetActiveCamera();
 
 	Camera* shadowMapRenderCamera = GetShadowMapRenderCamera();
+	Vector3 shadowCameraForwardVector = shadowMapRenderCamera->GetForwardVector();
 	Vector3 mainCameraForwardVector = mainCamera->GetForwardVector();
 	Vector3 mainCameraPosition = mainCamera->GetPosition();
-	Vector3 position{ mainCameraPosition.x, mainCameraPosition.y, 0.f };
-	shadowMapRenderCamera->SetPosition(position + 10.f * mainCameraForwardVector - 25.f * shadowMapRenderCamera->GetForwardVector());
+	Vector3 position{ mainCameraPosition.x, mainCameraPosition.y, mainCameraPosition.z };
+	shadowMapRenderCamera->SetPosition(position + 20.f * Vector3{ mainCameraForwardVector.x, mainCameraForwardVector.y, 0.f } - 20.f * Vector3{ shadowCameraForwardVector.x, shadowCameraForwardVector.y, 0.f });
 	//shadowMapRenderCamera->SetPosition(Vector3{ 20.f, 0.f, 0.f } - shadowMapRenderCamera->GetForwardVector() * 25.f);
 
 	cameraManager->SetActiveCamera(shadowMapRenderCamera);
