@@ -51,7 +51,6 @@ Renderer::Renderer() :
 	totalSkeletalMeshCount_(0),
 	totalDynamicMeshCount_(0),
 	shadowManager_(nullptr),
-	isRenderingOnlyDepth_(false),
 	removeStaticDataFromMemoryAfterTransferingToGPU_(true)
 {
 }
@@ -326,18 +325,31 @@ void Renderer::SetBufferData()
 	if (0 < totalDynamicMeshCount_) SetDynamicBufferData();
 }
 
-void Renderer::Render()
+void Renderer::Render(RenderPassType renderPassType)
 {
-	if (!isRenderingOnlyDepth_)
+	switch (renderPassType)
 	{
-		glDepthMask(GL_TRUE);
-		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
-		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
-	else
-	{
-		glClear(GL_DEPTH_BUFFER_BIT);
+		case RenderPassType::Main:
+		{
+			glDepthMask(GL_TRUE);
+			const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
+			glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			break;
+		}
+		case RenderPassType::Depth:
+		{
+			glEnable(GL_CULL_FACE);
+			glDisable(GL_CULL_FACE);
+			glClear(GL_DEPTH_BUFFER_BIT);
+			break;
+		}
+		case RenderPassType::None:
+		default:
+		{
+			GOKNAR_CORE_ASSERT(false, "Render function called without a correct pass type!");
+			return;
+		}
 	}
 
 	// Static MeshUnit Instances

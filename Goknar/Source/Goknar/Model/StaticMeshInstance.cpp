@@ -11,10 +11,10 @@ StaticMeshInstance::StaticMeshInstance(RenderComponent* parentComponent) :
 
 }
 
-void StaticMeshInstance::Render()
+void StaticMeshInstance::Render(RenderPassType renderPassType)
 {
-	PreRender();
-	MeshInstance::Render();
+	PreRender(renderPassType);
+	MeshInstance::Render(renderPassType);
 }
 
 void StaticMeshInstance::AddMeshInstanceToRenderer()

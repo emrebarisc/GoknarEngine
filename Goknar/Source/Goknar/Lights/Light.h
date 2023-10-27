@@ -133,8 +133,8 @@ protected:
 
 	int id_{ 0 };
 
-	int shadowWidth_{ 8196 };
-	int shadowHeight_{ 8196 };
+	int shadowWidth_{ 1024 * 2 };
+	int shadowHeight_{ 1024 * 2 };
 
 	float intensity_{ 1.f };
 

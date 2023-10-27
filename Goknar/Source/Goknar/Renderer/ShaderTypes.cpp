@@ -26,8 +26,12 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace LIGHT
 	{
-		const char* SHADOW_MAP_POSTFIX = "ShadowMap";
-		const char* VIEW_MATRIX_POSTFIX = "ViewMatrix";
+		const char* SHADOW_MAP_PREFIX = "shadowMap_";
+		const char* VIEW_MATRIX_PREFIX = "lightViewMatrix_";
+		const char* SHADOW_VALUE_PREFIX = "shadowValue_";
+
+		const char* LIGHT_COLOR = "lightColor";
+		const char* LIGHT_COLOR_PREFIX = "lightColor_";
 
 		const char* DIRECTIONAL_LIGHT = "DirectionalLight";
 		const char* POINT_LIGHT = "PointLight";
@@ -90,6 +94,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* FINAL_MODEL_MATRIX = "finalModelMatrix";
 		const char* FRAGMENT_POSITION_WORLD_SPACE = "fragmentPositionWorldSpace";
 		const char* FRAGMENT_POSITION_SCREEN_SPACE = "fragmentPositionScreenSpace";
+		const char* FRAGMENT_POSITION_LIGHT_SPACE_PREFIX = "fragmentPositionLightSpace_";
 		const char* VERTEX_NORMAL = "vertexNormal";
 		const char* BONE_IDS = "outBoneIDs";
 		const char* WEIGHTS = "outWeights";

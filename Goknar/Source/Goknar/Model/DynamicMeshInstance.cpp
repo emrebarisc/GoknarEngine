@@ -14,10 +14,10 @@ DynamicMeshInstance::DynamicMeshInstance(RenderComponent* parentComponent) :
 
 }
 
-void DynamicMeshInstance::Render()
+void DynamicMeshInstance::Render(RenderPassType renderPassType)
 {
-	PreRender();
-	MeshInstance::Render();
+	PreRender(renderPassType);
+	MeshInstance::Render(renderPassType);
 }
 
 void DynamicMeshInstance::UpdateVertexDataAt(int index, const VertexData& newVertexData)

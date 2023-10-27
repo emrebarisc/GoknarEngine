@@ -25,8 +25,11 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace LIGHT
 	{
-		extern const char* SHADOW_MAP_POSTFIX;
-		extern const char* VIEW_MATRIX_POSTFIX;
+		extern const char* SHADOW_MAP_PREFIX;
+		extern const char* VIEW_MATRIX_PREFIX;
+		extern const char* SHADOW_VALUE_PREFIX;
+		extern const char* LIGHT_COLOR;
+		extern const char* LIGHT_COLOR_PREFIX;
 
 		extern const char* DIRECTIONAL_LIGHT;
 		extern const char* POINT_LIGHT;
@@ -89,6 +92,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* FINAL_MODEL_MATRIX;
 		extern const char* FRAGMENT_POSITION_WORLD_SPACE;
 		extern const char* FRAGMENT_POSITION_SCREEN_SPACE;
+		extern const char* FRAGMENT_POSITION_LIGHT_SPACE_PREFIX;
 		extern const char* VERTEX_NORMAL;
 		extern const char* BONE_IDS;
 		extern const char* WEIGHTS;

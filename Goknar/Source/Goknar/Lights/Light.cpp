@@ -35,13 +35,16 @@ void Light::Init()
 		shadowMapTexture_->SetWidth(shadowWidth_);
 		shadowMapTexture_->SetHeight(shadowHeight_);
 		shadowMapTexture_->SetTextureTarget(TextureTarget::TEXTURE_2D);
-		shadowMapTexture_->SetTextureMinFilter(TextureMinFilter::NEAREST);
-		shadowMapTexture_->SetTextureMagFilter(TextureMagFilter::NEAREST);
+		shadowMapTexture_->SetTextureMinFilter(TextureMinFilter::LINEAR);
+		shadowMapTexture_->SetTextureMagFilter(TextureMagFilter::LINEAR);
 		shadowMapTexture_->SetTextureWrappingS(TextureWrapping::REPEAT);
 		shadowMapTexture_->SetTextureWrappingT(TextureWrapping::REPEAT);
 		shadowMapTexture_->SetTextureFormat(TextureFormat::DEPTH);
+		shadowMapTexture_->SetTextureInternalFormat(TextureInternalFormat::DEPTH_24);
 		shadowMapTexture_->SetTextureType(TextureType::FLOAT);
 		shadowMapTexture_->SetTextureDataType(TextureDataType::DYNAMIC);
+		shadowMapTexture_->SetTextureCompareMode(TextureCompareMode::CompareRefToTexture);
+		shadowMapTexture_->SetTextureCompareFunc(TextureCompareFunc::LEQUAL);
 		shadowMapTexture_->Init();
 		shadowMapTexture_->Bind();
 
@@ -81,7 +84,7 @@ void Light::Init()
 		}
 
 		glDrawBuffer(GL_NONE);
-		//glReadBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		shadowMapTexture_->Unbind();
 	}

@@ -44,8 +44,8 @@ public:
 		return mesh_;
 	}
 
-	inline virtual void PreRender();
-	inline virtual void Render();
+	inline virtual void PreRender(RenderPassType renderPassType = RenderPassType::Main);
+	inline virtual void Render(RenderPassType renderPassType = RenderPassType::Main);
 
 	inline void SetIsRendered(bool isRendered)
 	{
@@ -79,13 +79,13 @@ template<class MeshType>
 int MeshInstance<MeshType>::lastComponentId_ = 0;
 
 template<class MeshType>
-inline void MeshInstance<MeshType>::PreRender()
+inline void MeshInstance<MeshType>::PreRender(RenderPassType renderPassType)
 {
 	mesh_->GetMaterial()->Use();
 }
 
 template<class MeshType>
-inline void MeshInstance<MeshType>::Render()
+inline void MeshInstance<MeshType>::Render(RenderPassType renderPassType)
 {
 	//
 	//Matrix relativeTransformationMatrix = Matrix::IdentityMatrix;

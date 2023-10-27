@@ -29,6 +29,7 @@ Texture::Texture() :
 	minFilter_(TextureMinFilter::LINEAR),
 	magFilter_(TextureMagFilter::LINEAR),
 	textureFormat_(TextureFormat::RGB),
+	textureInternalFormat_(TextureInternalFormat::RGB),
 	textureType_(TextureType::UNSIGNED_BYTE),
 	textureDataType_(TextureDataType::STATIC),
 	textureUsage_(TextureUsage::Diffuse),
@@ -127,8 +128,14 @@ void Texture::Init()
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	glTexImage2D((int)textureTarget_, 0, (int)textureFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
-	glTexParameteri((int)textureTarget_, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glTexImage2D((int)textureTarget_, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
+	
+	glTexParameteri((int)textureTarget_, GL_TEXTURE_COMPARE_MODE, (int)textureCompareMode_);
+
+	if (textureCompareMode_ != TextureCompareMode::None)
+	{
+		glTexParameteri((int)textureTarget_, GL_TEXTURE_COMPARE_FUNC, (int)textureCompareFunc_);
+	}
 
 	glTexParameteri((int)textureTarget_, GL_TEXTURE_MIN_FILTER, (int)minFilter_);
 	glTexParameteri((int)textureTarget_, GL_TEXTURE_MAG_FILTER, (int)magFilter_);

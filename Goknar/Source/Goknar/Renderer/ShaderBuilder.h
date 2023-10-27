@@ -95,24 +95,24 @@ private:
 	// Point Light
 	std::string GetPointLightUniformTexts(const std::string& lightVariableName);
 	std::string GetPointLightColorFunctionText();
-	std::string GetStaticPointLightText(const PointLight* pointLight, const std::string& lightVariableName) const;
+	std::string GetStaticPointLightText(const PointLight* pointLight) const;
 	std::string GetPointLightColorSummationText(const std::string& lightVariableName);
 
 	// Directional Light
 	std::string GetDirectionalLightUniformTexts(const std::string& lightVariableName);
 	std::string GetDirectionalLightColorFunctionText();
-	std::string GetStaticDirectionalLightText(const DirectionalLight* directionalLight, const std::string& lightVariableName) const;
+	std::string GetStaticDirectionalLightText(const DirectionalLight* directionalLight) const;
 	std::string GetDirectionalLightColorSummationText(const std::string& lightVariableName);
 
 	// Spot Light
 	std::string GetSpotLightUniformTexts(const std::string& lightVariableName);
 	std::string GetSpotLightColorFunctionText();
-	std::string GetStaticSpotLightText(const SpotLight* directionalLight, const std::string& lightVariableName) const;
+	std::string GetStaticSpotLightText(const SpotLight* directionalLight) const;
 	std::string GetSpotLightColorSummationText(const std::string& lightVariableName);
 
 	// Shadows
-	std::string GetLightShadowUniforms(const std::string& lightName);
-	std::string GetShadowCalculator(const std::string& lightName);
+	std::string GetLightShadowUniforms();
+	std::string GetShadowCheck(const std::string& lightName);
 	std::string GetShadowCalculationFunction();
 
 	// Fragment shader variables
@@ -122,6 +122,8 @@ private:
 	std::string fragmentShaderOutsideMain_;
 	std::string fragmentShaderInsideMain_;
 	std::string fragmentShaderVertexNormalText_;
+
+	std::vector<std::string> lightSpaceFragmentPositionLightNames_;
 
 	std::string vertexShaderModelMatrixVariable_;
 

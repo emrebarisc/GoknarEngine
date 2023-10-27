@@ -20,9 +20,6 @@
 
 void ShadowManager::RenderShadowMaps()
 {
-	Renderer* renderer = engine->GetRenderer();
-	renderer->SetIsRenderingOnlyDepth(true);
-
 	Scene* mainScene = engine->GetApplication()->GetMainScene();
 
 	CameraManager* cameraManager = engine->GetCameraManager();
@@ -41,26 +38,8 @@ void ShadowManager::RenderShadowMaps()
 			continue;
 		}
 
-		Camera* shadowMapRenderCamera = directionalLight->GetShadowMapRenderCamera();
-		Vector3 mainCameraForwardVector = mainCamera->GetForwardVector();
-		Vector3 mainCameraPosition = mainCamera->GetPosition();
-		Vector3 position{ mainCameraPosition.x, mainCameraPosition.y, 0.f};
-		//shadowMapRenderCamera->SetPosition(position + 10.f * mainCameraForwardVector - 25.f * shadowMapRenderCamera->GetForwardVector());
-		shadowMapRenderCamera->SetPosition(Vector3{20.f, 0.f, 0.f} - shadowMapRenderCamera->GetForwardVector() * 25.f);
-
-		cameraManager->SetActiveCamera(shadowMapRenderCamera);
-		Texture* shadowMapTexture = directionalLight->GetShadowMapTexture();
-		glViewport(0, 0, shadowMapTexture->GetWidth(), shadowMapTexture->GetHeight());
-		glBindFramebuffer(GL_FRAMEBUFFER, directionalLight->GetShadowMapFBO());
-		renderer->Render();
-
-		// For outputing only!
-		//shadowMapTexture->ReadFromFramebuffer(directionalLight->GetShadowMapFBO());
-		//shadowMapTexture->Save(CONTENT_DIR + directionalLight->GetName() + "FrameBufferTexture.png");
-		
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		directionalLight->RenderShadowMap();
 	}
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	cameraManager->SetActiveCamera(mainCamera);
-	engine->GetRenderer()->SetIsRenderingOnlyDepth(false);
 }

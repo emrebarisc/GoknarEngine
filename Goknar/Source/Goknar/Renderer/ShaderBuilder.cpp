@@ -66,7 +66,7 @@ void main()
 			std::string fragmentShaderVariables = GetShaderVersionText();
 			fragmentShaderVariables += GetMaterialVariables(); 
 			fragmentShaderVariables += FS_GetVariableTexts();
-			fragmentShaderVariables += lightUniforms_;
+			fragmentShaderVariables += GetLightShadowUniforms();
 			for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
 			{
 				const Texture* texture = textures->at(textureIndex);
@@ -172,7 +172,7 @@ void ShaderBuilder::FS_BuildScene()
 
 	const Vector3& sceneAmbientLight = scene->GetAmbientLight();
 	fragmentShaderOutsideMain_ += "vec3 sceneAmbient = vec3(" + std::to_string(sceneAmbientLight.x / 255.f) + ", " + std::to_string(sceneAmbientLight.y / 255.f) + ", " + std::to_string(sceneAmbientLight.z / 255.f) + ");\n";
-	fragmentShaderInsideMain_ += "\tvec3 lightColor = sceneAmbient * ambientReflectance;\n";
+	fragmentShaderInsideMain_ += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + " = sceneAmbient * ambientReflectance;\n";
 
 	bool writeShadowCalculationFunction = false;
 
@@ -187,7 +187,7 @@ void ShaderBuilder::FS_BuildScene()
 			for (const PointLight* staticPointLight : staticPointLights)
 			{
 				std::string lightVariableName = staticPointLight->GetName();
-				fragmentShaderOutsideMain_ += GetStaticPointLightText(staticPointLight, lightVariableName);
+				fragmentShaderOutsideMain_ += GetStaticPointLightText(staticPointLight);
 				fragmentShaderInsideMain_ += GetPointLightColorSummationText(lightVariableName);
 			}
 
@@ -206,16 +206,18 @@ void ShaderBuilder::FS_BuildScene()
 			for (const DirectionalLight* staticDirectionalLight : staticDirectionalLights)
 			{
 				std::string lightVariableName = staticDirectionalLight->GetName();
+				fragmentShaderOutsideMain_ += GetStaticDirectionalLightText(staticDirectionalLight);
 
 				if (staticDirectionalLight->GetIsShadowEnabled())
 				{
 					writeShadowCalculationFunction = true;
-					lightUniforms_ += GetLightShadowUniforms(lightVariableName);
-					fragmentShaderShadowCalculation_ += GetShadowCalculator(lightVariableName);
+					lightSpaceFragmentPositionLightNames_.push_back(lightVariableName);
+					fragmentShaderInsideMain_ += GetShadowCheck(lightVariableName);
 				}
-				fragmentShaderOutsideMain_ += GetStaticDirectionalLightText(staticDirectionalLight, lightVariableName);
-
-				fragmentShaderInsideMain_ += GetDirectionalLightColorSummationText(lightVariableName);
+				else
+				{
+					fragmentShaderInsideMain_ += GetDirectionalLightColorSummationText(lightVariableName);
+				}
 			}
 
 			for (const DirectionalLight* dynamicDirectionalLight : dynamicDirectionalLights)
@@ -226,11 +228,13 @@ void ShaderBuilder::FS_BuildScene()
 				if (dynamicDirectionalLight->GetIsShadowEnabled())
 				{
 					writeShadowCalculationFunction = true;
-					lightUniforms_ += GetLightShadowUniforms(lightVariableName);
-					fragmentShaderShadowCalculation_ += GetShadowCalculator(lightVariableName);
+					lightSpaceFragmentPositionLightNames_.push_back(lightVariableName);
+					fragmentShaderInsideMain_ += GetShadowCheck(lightVariableName);
 				}
-
-				fragmentShaderInsideMain_ += GetDirectionalLightColorSummationText(lightVariableName);
+				else
+				{
+					fragmentShaderInsideMain_ += GetDirectionalLightColorSummationText(lightVariableName);
+				}
 			}
 
 			fragmentShaderOutsideMain_ += GetDirectionalLightColorFunctionText() + "\n";
@@ -245,7 +249,7 @@ void ShaderBuilder::FS_BuildScene()
 			for (const SpotLight* staticpotLight : staticSpotLights)
 			{
 				std::string lightVariableName = staticpotLight->GetName();
-				fragmentShaderOutsideMain_ += GetStaticSpotLightText(staticpotLight, lightVariableName);
+				fragmentShaderOutsideMain_ += GetStaticSpotLightText(staticpotLight);
 				fragmentShaderInsideMain_ += GetSpotLightColorSummationText(lightVariableName);
 			}
 
@@ -302,6 +306,11 @@ std::string ShaderBuilder::FS_GetVariableTexts()
 	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE;
 	variableTexts += ";\n";
 
+	for (const std::string& lightSpaceFragmentPositionLightName : lightSpaceFragmentPositionLightNames_)
+	{
+		variableTexts += std::string("in vec4 ") + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightSpaceFragmentPositionLightName + ";\n";
+	}
+
 	variableTexts += "in vec3 ";
 	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
 	variableTexts += ";\n";
@@ -340,10 +349,20 @@ std::string ShaderBuilder::VS_GetMain()
 	std::string vsMain = R"(
 	)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + vertexShaderModelMatrixVariable_ + R"(;
 	vec4 fragmentPosition4Channel = vec4(position, 1.f) * )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";" +
-R"(
+		R"(
 	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"( = fragmentPosition4Channel;
 	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE + R"( = projectionMatrix * viewMatrix * fragmentPosition4Channel;
-	gl_Position = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE + R"(;
+	)";
+
+	for (const std::string& lightSpaceFragmentPositionLightName : lightSpaceFragmentPositionLightNames_)
+	{
+		vsMain += std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightSpaceFragmentPositionLightName) + " = " 
+			+ SHADER_VARIABLE_NAMES::LIGHT::VIEW_MATRIX_PREFIX + lightSpaceFragmentPositionLightName + " * "
+			+ SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + "; \n";
+	}
+		
+	vsMain += R"(
+	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"(;
 )";
 
 	vsMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = vec2(" + SHADER_VARIABLE_NAMES::VERTEX::UV + ".x, 1.f - " + SHADER_VARIABLE_NAMES::VERTEX::UV + ".y); \n";
@@ -466,6 +485,11 @@ std::string ShaderBuilder::VS_GetUniforms()
 	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::PROJECTION_MATRIX;
 	variableTexts += ";\n";
 
+	for (const std::string& lightName : lightSpaceFragmentPositionLightNames_)
+	{
+		variableTexts += std::string("uniform mat4 ") + SHADER_VARIABLE_NAMES::LIGHT::VIEW_MATRIX_PREFIX + lightName + ";\n";
+	}
+
 	variableTexts += "uniform float ";
 	variableTexts += SHADER_VARIABLE_NAMES::TIMING::DELTA_TIME;
 	variableTexts += ";\n";
@@ -485,6 +509,11 @@ std::string ShaderBuilder::VS_GetUniforms()
 	variableTexts += "out vec4 ";
 	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE;
 	variableTexts += ";\n";
+
+	for (const std::string& lightName : lightSpaceFragmentPositionLightNames_)
+	{
+		variableTexts += std::string("out vec4 ") + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightName + ";\n";
+	}
 
 	variableTexts += "out vec3 ";
 	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
@@ -573,21 +602,23 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
 )";
 }
 
-std::string ShaderBuilder::GetStaticPointLightText(const PointLight* pointLight, const std::string& lightVariableName) const
+std::string ShaderBuilder::GetStaticPointLightText(const PointLight* pointLight) const
 {
 	const Vector3& lightPosition = pointLight->GetPosition();
 	const Vector3& lightColor = pointLight->GetColor();
 	float lightIntensity = pointLight->GetIntensity();
 	float radius = pointLight->GetRadius();
 
-	return "vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + " = vec3(" + std::to_string(lightPosition.x) + ", " + std::to_string(lightPosition.y) + ", " + std::to_string(lightPosition.z) + ");\n" +
-		   "vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + " = vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + ");\n" +
-		   "float " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + " = " + std::to_string(radius) + ";\n";
+	std::string lightName = pointLight->GetName();
+
+	return "vec3 " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + " = vec3(" + std::to_string(lightPosition.x) + ", " + std::to_string(lightPosition.y) + ", " + std::to_string(lightPosition.z) + ");\n" +
+		   "vec3 " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + " = vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + ");\n" +
+		   "float " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + " = " + std::to_string(radius) + ";\n";
 }
 
 std::string ShaderBuilder::GetPointLightColorSummationText(const std::string& lightVariableName)
 {
-	return "\tlightColor += CalculatePointLightColor(" +
+	return "\t" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + " += CalculatePointLightColor(" +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY +  ", " +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + ");\n";
@@ -635,19 +666,21 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 )";
 }
 
-std::string ShaderBuilder::GetStaticDirectionalLightText(const DirectionalLight* directionalLight, const std::string& lightVariableName) const
+std::string ShaderBuilder::GetStaticDirectionalLightText(const DirectionalLight* directionalLight) const
 {
 	const Vector3& lightDirection = directionalLight->GetDirection();
 	const Vector3& lightColor = directionalLight->GetColor();
 	float lightIntensity = directionalLight->GetIntensity();
 
-	return  "vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + " = vec3(" + std::to_string(lightDirection.x) + ", " + std::to_string(lightDirection.y) + ", " + std::to_string(lightDirection.z) + ");\n" +
-			"vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + " = vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + ");\n";
+	std::string lightName = directionalLight->GetName();
+
+	return  "vec3 " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + " = vec3(" + std::to_string(lightDirection.x) + ", " + std::to_string(lightDirection.y) + ", " + std::to_string(lightDirection.z) + ");\n" +
+			"vec3 " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + " = vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + ");\n";
 }
 
 std::string ShaderBuilder::GetDirectionalLightColorSummationText(const std::string& lightVariableName)
 {
-	return "\tlightColor += CalculateDirectionalLightColor(" +
+	return "\t" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + " += CalculateDirectionalLightColor(" +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ");\n";
 }
@@ -712,7 +745,7 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 )";
 }
 
-std::string ShaderBuilder::GetStaticSpotLightText(const SpotLight* spotLight, const std::string& lightVariableName) const
+std::string ShaderBuilder::GetStaticSpotLightText(const SpotLight* spotLight) const
 {
 	const Vector3& lightPosition = spotLight->GetPosition();
 	const Vector3& lightDirection = spotLight->GetDirection();
@@ -721,16 +754,18 @@ std::string ShaderBuilder::GetStaticSpotLightText(const SpotLight* spotLight, co
 	float coverageAngle = spotLight->GetCoverageAngle();
 	float falloffAngle = spotLight->GetFalloffAngle();
 
-	return  "vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + " = vec3(" + std::to_string(lightPosition.x) + ", " + std::to_string(lightPosition.y) + ", " + std::to_string(lightPosition.z) + ");\n"
-		  + "vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + " = vec3(" + std::to_string(lightDirection.x) + ", " + std::to_string(lightDirection.y) + ", " + std::to_string(lightDirection.z) + ");\n"
-		  + "vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + " = vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + ");\n"
-		  + "float " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::COVERAGE_ANGLE + " = " + std::to_string(coverageAngle) + ";\n"
-		  + "float " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::FALLOFF_ANGLE + " = " + std::to_string(falloffAngle) + ";\n";
+	std::string lightName = spotLight->GetName();
+
+	return  "vec3 " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + " = vec3(" + std::to_string(lightPosition.x) + ", " + std::to_string(lightPosition.y) + ", " + std::to_string(lightPosition.z) + ");\n"
+		  + "vec3 " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + " = vec3(" + std::to_string(lightDirection.x) + ", " + std::to_string(lightDirection.y) + ", " + std::to_string(lightDirection.z) + ");\n"
+		  + "vec3 " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + " = vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + ");\n"
+		  + "float " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::COVERAGE_ANGLE + " = " + std::to_string(coverageAngle) + ";\n"
+		  + "float " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::FALLOFF_ANGLE + " = " + std::to_string(falloffAngle) + ";\n";
 }
 
 std::string ShaderBuilder::GetSpotLightColorSummationText(const std::string& lightVariableName)
 {
-	return "\tlightColor += CalculateSpotLightColor(" +
+	return "\t" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + " += CalculateSpotLightColor(" +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " +
@@ -738,29 +773,37 @@ std::string ShaderBuilder::GetSpotLightColorSummationText(const std::string& lig
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::FALLOFF_ANGLE + ");\n";
 }
 
-std::string ShaderBuilder::GetLightShadowUniforms(const std::string& lightName)
+std::string ShaderBuilder::GetLightShadowUniforms()
 {
-	return
-		"uniform sampler2D " + lightName + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_MAP_POSTFIX + ";\n" +
-		"uniform mat4 " + lightName + SHADER_VARIABLE_NAMES::LIGHT::VIEW_MATRIX_POSTFIX + ";\n";
+	std::string uniforms = "\n//---------------------------------------- SHADOW MAPS ----------------------------------------\n";
+	for (const std::string& lightName : lightSpaceFragmentPositionLightNames_)
+	{
+		uniforms += std::string("uniform sampler2DShadow ") + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_MAP_PREFIX + lightName + ";\n";
+	}
+	uniforms += "//----------------------------------------------------------------------------------------------\n";
+	uniforms += "\n";
+
+	return uniforms;
 }
 
-std::string ShaderBuilder::GetShadowCalculator(const std::string& lightName)
+std::string ShaderBuilder::GetShadowCheck(const std::string& lightName)
 {
-
-	//texture()" + lightName + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_MAP_POSTFIX + R"(, fragmentPositionInLightSpace.xy).z < fragmentPositionInLightSpace.z)
-
 	return R"(
-	vec4 fragmentPositionInLightSpace = )" + std::string(lightName + SHADER_VARIABLE_NAMES::LIGHT::VIEW_MATRIX_POSTFIX) + " * " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
-	vec3 projCoords = fragmentPositionInLightSpace.xyz / fragmentPositionInLightSpace.w;
-	projCoords = projCoords * 0.5f + 0.5f;
-	float bias = max(0.000001f * (1.f - dot()" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(, )" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + R"()), 0.0000001f);
+	vec3 projCoords_)" + lightName + R"( = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX) + lightName + ".xyz / " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightName + R"(.w;
 
-	if(	0.f <= projCoords.x && projCoords.x <= 1.f && 
-		0.f <= projCoords.y && projCoords.y <= 1.f && 
-		texture()" + lightName + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_MAP_POSTFIX + R"(, projCoords.xy).x < projCoords.z - bias)
+	if(	0.f <= projCoords_)" + lightName + R"(.x && projCoords_)" + lightName + R"(.x <= 1.f &&
+		0.f <= projCoords_)" + lightName + R"(.y && projCoords_)" + lightName + R"(.y <= 1.f)
 	{
-		fragmentColor = vec3(0.f);//vec3(texture()" + lightName + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_MAP_POSTFIX + R"(, projCoords.xy).x);
+		float )" + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_VALUE_PREFIX + lightName + R"( = textureProj()" + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_MAP_PREFIX + lightName + ", " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightName + R"();
+		if(0.f < )" + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_VALUE_PREFIX + lightName + R"()
+		{
+			vec3 )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX) + lightName + " = CalculateDirectionalLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"(); 
+			)" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + R"( += )" + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_VALUE_PREFIX + lightName + " * " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX) + lightName + R"(;
+		}
+	}
+	else
+	{
+		)" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + R"( += )" + " CalculateDirectionalLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"();
 	}
 )";
 }

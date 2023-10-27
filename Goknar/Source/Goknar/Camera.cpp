@@ -109,6 +109,31 @@ void Camera::RotateAbout(const Vector3& axis, float angle)
 	LookAt();
 }
 
+void Camera::SetProjectionMatrix()
+{
+	float l = nearPlane_.x;
+	float r = nearPlane_.y;
+	float b = nearPlane_.z;
+	float t = nearPlane_.w;
+
+	// Set the projection matrix as it is orthographic
+	projectionMatrix_ = Matrix( 2.f / (r - l), 0.f, 0.f, -(r + l) / (r - l),
+								0.f, 2.f / (t - b), 0.f, -(t + b) / (t - b),
+								0.f, 0.f, -2.f / (farDistance_ - nearDistance_), -(farDistance_ + nearDistance_) / (farDistance_ - nearDistance_),
+								0.f, 0.f, 0.f, 1.f);
+
+	if (projection_ == CameraProjection::Perspective)
+	{
+		// Orthographic to perspective conversion matrix
+		Matrix o2p(nearDistance_, 0, 0, 0,
+			0, nearDistance_, 0, 0,
+			0, 0, farDistance_ + nearDistance_, farDistance_ * nearDistance_,
+			0, 0, -1, 0);
+
+		projectionMatrix_ = projectionMatrix_ * o2p;
+	}
+}
+
 void Camera::LookAt()
 {
 	Vector3 lookAtPos = position_ + forwardVector_ * nearDistance_;

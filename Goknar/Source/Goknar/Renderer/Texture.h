@@ -61,6 +61,20 @@ enum class TextureFormat
 	RGBA = GL_RGBA
 };
 
+enum class TextureInternalFormat
+{
+	DEPTH = GL_DEPTH_COMPONENT,
+	DEPTH_16 = GL_DEPTH_COMPONENT16,
+	DEPTH_24 = GL_DEPTH_COMPONENT24,
+	DEPTH_32 = GL_DEPTH_COMPONENT32,
+	DEPTH_32F = GL_DEPTH_COMPONENT32F,
+	DEPTH_STENCIL = GL_DEPTH_STENCIL,
+	RED = GL_RED,
+	RG = GL_RG,
+	RGB = GL_RGB,
+	RGBA = GL_RGBA
+};
+
 enum class TextureType
 {
 	UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
@@ -85,6 +99,24 @@ enum class TextureType
 	UNSIGNED_INT_2_10_10_10_REV = GL_UNSIGNED_INT_2_10_10_10_REV
 };
 
+enum class TextureCompareMode
+{
+	None = GL_NONE,
+	CompareRefToTexture = GL_COMPARE_REF_TO_TEXTURE
+};
+
+enum class TextureCompareFunc
+{
+	LEQUAL = GL_LEQUAL,
+	GEQUAL = GL_GEQUAL,
+	LESS = GL_LESS,
+	GREATER = GL_GREATER,
+	EQUAL = GL_EQUAL,
+	NOTEQUAL = GL_NOTEQUAL,
+	ALWAYS = GL_ALWAYS,
+	NEVER = GL_NEVER
+};
+
 enum class TextureDataType : unsigned char
 {
 	STATIC = 0,
@@ -102,6 +134,7 @@ enum class TextureUsage : unsigned char
 	Roughness,
 	Height
 };
+
 
 class GOKNAR_API Texture
 {
@@ -246,6 +279,16 @@ public:
 		textureFormat_ = textureFormat;
 	}
 
+	TextureInternalFormat GetTextureInternalFormat() const
+	{
+		return textureInternalFormat_;
+	}
+
+	void SetTextureInternalFormat(TextureInternalFormat textureInternalFormat)
+	{
+		textureInternalFormat_ = textureInternalFormat;
+	}
+
 	TextureDataType GetTextureDataType() const
 	{
 		return textureDataType_;
@@ -264,6 +307,26 @@ public:
 	void SetTextureType(TextureType textureType)
 	{
 		textureType_ = textureType;
+	}
+
+	TextureCompareMode GetTextureCompareMode() const
+	{
+		return textureCompareMode_;
+	}
+
+	void SetTextureCompareMode(TextureCompareMode textureCompareMode)
+	{
+		textureCompareMode_ = textureCompareMode;
+	}
+
+	TextureCompareFunc GetTextureCompareFunc() const
+	{
+		return textureCompareFunc_;
+	}
+
+	void SetTextureCompareFunc(TextureCompareFunc textureCompareFunc)
+	{
+		textureCompareFunc_ = textureCompareFunc;
 	}
 
 	TextureUsage GetTextureUsage() const
@@ -311,7 +374,10 @@ private:
 	TextureMinFilter minFilter_;
 	TextureMagFilter magFilter_;
 	TextureFormat textureFormat_;
+	TextureInternalFormat textureInternalFormat_;
 	TextureType textureType_;
+	TextureCompareMode textureCompareMode_{ TextureCompareMode::None };
+	TextureCompareFunc textureCompareFunc_{ TextureCompareFunc::LEQUAL };
 
 	TextureDataType textureDataType_;
 

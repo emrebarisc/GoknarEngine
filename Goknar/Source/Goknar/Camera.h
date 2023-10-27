@@ -135,7 +135,6 @@ public:
 	{
 		imageWidth_ = width;
 		UpdateNearPlane();
-		Update();
 	}
 
 	int GetImageWidth() const
@@ -147,7 +146,6 @@ public:
 	{
 		imageHeight_ = height;
 		UpdateNearPlane();
-		Update();
 	}
 
 	int GetImageHeight() const
@@ -168,6 +166,7 @@ public:
 	void SetNearDistance(float nearDistance)
 	{
 		nearDistance_ = nearDistance;
+		SetProjectionMatrix();
 	}
 
 	float GetNearDistance() const
@@ -178,11 +177,13 @@ public:
 	void SetFarDistance(float farDistance)
 	{
 		farDistance_ = farDistance;
+		SetProjectionMatrix();
 	}
 
 	void UpdateNearPlane()
 	{
 		nearPlane_ = Vector4(-0.5f, 0.5f, -(float)imageHeight_ / imageWidth_ * 0.5f, (float)imageHeight_ / imageWidth_ * 0.5f);
+		SetProjectionMatrix();
 	}
 
 	float GetFarDistance() const
@@ -190,30 +191,7 @@ public:
 		return farDistance_;
 	}
 
-	void SetProjectionMatrix()
-	{
-		float l = nearPlane_.x;
-		float r = nearPlane_.y;
-		float b = nearPlane_.z;
-		float t = nearPlane_.w;
-
-		// Set the projection matrix as it is orthographic
-		projectionMatrix_ = Matrix( 2.f / (r - l), 0.f, 0.f, -(r + l) / (r - l),
-									0.f, 2.f / (t - b), 0.f, -(t + b) / (t - b),
-									0.f, 0.f, -2.f / (farDistance_ - nearDistance_), -(farDistance_ + nearDistance_) / (farDistance_ - nearDistance_),
-									0.f, 0.f, 0.f, 1.f);
-
-		if (projection_ == CameraProjection::Perspective)
-		{
-			// Orthographic to perspective conversion matrix
-			Matrix o2p(nearDistance_, 0, 0, 0,
-						0, nearDistance_, 0, 0,
-						0, 0, farDistance_ + nearDistance_, farDistance_ * nearDistance_,
-						0, 0, -1, 0);
-
-			projectionMatrix_ = projectionMatrix_ * o2p;
-		}
-	}
+	void SetProjectionMatrix();
 
 	float* GetViewingMatrixPointer()
 	{
@@ -227,7 +205,11 @@ public:
 
 	void SetProjection(CameraProjection projection)
 	{
-		projection_ = projection;
+		if (projection_ != projection)
+		{
+			projection_ = projection;
+			SetProjectionMatrix();
+		}
 	}
 
 	CameraProjection GetProjection() const
