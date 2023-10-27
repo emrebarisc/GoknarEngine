@@ -53,6 +53,8 @@ public:
 		return isInstantiated_;
 	}
 
+	static std::string GetShaderPassFragmentShaderScript();
+
 protected:
 
 private:
@@ -85,7 +87,7 @@ private:
 	std::string FS_GetVariableTexts();
 
 	// Fragment shader builder getter functions
-	std::string GetShaderVersionText();
+	std::string GetShaderVersionText() const;
 	std::string GetMaterialVariables();
 	std::string GetMaterialDiffuseVariable();
 	std::string GetTextureDiffuseVariable();

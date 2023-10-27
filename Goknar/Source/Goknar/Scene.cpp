@@ -42,11 +42,6 @@ Scene::~Scene()
 		delete object;
 	}
 
-	for (auto object : shaders_)
-	{
-		delete object;
-	}
-
 	for (auto object : materials_)
 	{
 		delete object;

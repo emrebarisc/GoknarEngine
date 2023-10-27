@@ -5,6 +5,7 @@
 #include "Goknar/Camera.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Managers/CameraManager.h"
+#include "Goknar/Renderer/Framebuffer.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
@@ -19,11 +20,16 @@ DirectionalLight::DirectionalLight() : Light()
 
 void DirectionalLight::Init()
 {
-	Light::Init();
-
 	if (isShadowEnabled_)
 	{
+		shadowMapFramebuffer_ = new Framebuffer();
+
+		shadowMapTexture_ = new Texture();
+		shadowMapTexture_->SetTextureBindTarget(TextureBindTarget::TEXTURE_2D);
+		shadowMapTexture_->SetTextureImageTarget(TextureImageTarget::TEXTURE_2D);
 		shadowMapTexture_->SetName(LIGHT::SHADOW_MAP_PREFIX + name_);
+		shadowMapTexture_->SetTextureWrappingS(TextureWrapping::REPEAT);
+		shadowMapTexture_->SetTextureWrappingT(TextureWrapping::REPEAT);
 
 		Vector3 lightUpVector = Vector3::Cross(Vector3::Cross(direction_, Vector3::UpVector).GetNormalized(), direction_).GetNormalized();
 		shadowMapRenderCamera_ = new Camera(Vector3::ZeroVector, direction_, lightUpVector);
@@ -35,6 +41,8 @@ void DirectionalLight::Init()
 		shadowMapRenderCamera_->SetNearDistance(-50.f);
 		shadowMapRenderCamera_->SetFarDistance(50.f);
 	}
+
+	Light::Init();
 }
 
 void DirectionalLight::SetShaderUniforms(const Shader* shader) const
@@ -78,16 +86,17 @@ void DirectionalLight::RenderShadowMap()
 	//shadowMapRenderCamera->SetPosition(Vector3{ 20.f, 0.f, 0.f } - shadowMapRenderCamera->GetForwardVector() * 25.f);
 
 	cameraManager->SetActiveCamera(shadowMapRenderCamera);
-	Texture* shadowMapTexture = GetShadowMapTexture();
-	glViewport(0, 0, shadowMapTexture->GetWidth(), shadowMapTexture->GetHeight());
-	glBindFramebuffer(GL_FRAMEBUFFER, GetShadowMapFBO());
+	glViewport(0, 0, shadowMapTexture_->GetWidth(), shadowMapTexture_->GetHeight());
+	shadowMapFramebuffer_->Bind();
 
 	Renderer* renderer = engine->GetRenderer();
-	renderer->Render(RenderPassType::Depth);
+	renderer->Render(RenderPassType::Shadow);
 
 	// For outputing only!
-	//shadowMapTexture->ReadFromFramebuffer(directionalLight->GetShadowMapFBO());
-	//shadowMapTexture->Save(CONTENT_DIR + directionalLight->GetName() + "FrameBufferTexture.png");
+	//shadowMapTexture_->ReadFromFramebuffer(directionalLight->GetShadowMapFBO());
+	//shadowMapTexture_->Save(CONTENT_DIR + directionalLight->GetName() + "FrameBufferTexture.png");
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	shadowMapFramebuffer_->Unbind();
+
+	EXIT_ON_GL_ERROR("DirectionalLight::RenderShadowMap");
 }

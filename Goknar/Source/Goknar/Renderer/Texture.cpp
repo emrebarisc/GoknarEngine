@@ -15,25 +15,7 @@
 #include "Goknar/Log.h"
 #include "Goknar/Renderer/Shader.h"
 
-Texture::Texture() :
-	imagePath_(""),
-	buffer_(nullptr),
-	width_(0),
-	height_(0),
-	channels_(0),
-	rendererTextureId_(-1),
-	textureTarget_(TextureTarget::TEXTURE_2D),
-	textureWrappingS_(TextureWrapping::REPEAT),
-	textureWrappingT_(TextureWrapping::REPEAT),
-	textureWrappingR_(TextureWrapping::REPEAT),
-	minFilter_(TextureMinFilter::LINEAR),
-	magFilter_(TextureMagFilter::LINEAR),
-	textureFormat_(TextureFormat::RGB),
-	textureInternalFormat_(TextureInternalFormat::RGB),
-	textureType_(TextureType::UNSIGNED_BYTE),
-	textureDataType_(TextureDataType::STATIC),
-	textureUsage_(TextureUsage::Diffuse),
-	isInitialized_(false)
+Texture::Texture()
 {
 	objectId_ = ObjectIDManager::GetInstance()->GetAndIncreaseTextureID();
 	name_ = std::string("texture" + std::to_string(objectId_));
@@ -124,32 +106,40 @@ void Texture::Init()
 
 	glGenTextures(1, &rendererTextureId_);
 	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
-	glBindTexture((int)textureTarget_, rendererTextureId_);
+	glBindTexture((int)textureBindTarget_, rendererTextureId_);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-	glTexImage2D((int)textureTarget_, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
-	
-	glTexParameteri((int)textureTarget_, GL_TEXTURE_COMPARE_MODE, (int)textureCompareMode_);
+	glTexImage2D((int)textureImageTarget_, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
 
-	if (textureCompareMode_ != TextureCompareMode::None)
+	if (textureImageTarget_ == TextureImageTarget::TEXTURE_CUBE_MAP_POSITIVE_X)
 	{
-		glTexParameteri((int)textureTarget_, GL_TEXTURE_COMPARE_FUNC, (int)textureCompareFunc_);
+		for (int i = 1; i < 6; ++i)
+		{
+			glTexImage2D((int)textureImageTarget_ + i, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
+		}
 	}
 
-	glTexParameteri((int)textureTarget_, GL_TEXTURE_MIN_FILTER, (int)minFilter_);
-	glTexParameteri((int)textureTarget_, GL_TEXTURE_MAG_FILTER, (int)magFilter_);
+	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_COMPARE_MODE, (int)textureCompareMode_);
 
-	glTexParameteri((int)textureTarget_, GL_TEXTURE_WRAP_S, (int)textureWrappingS_);
-	glTexParameteri((int)textureTarget_, GL_TEXTURE_WRAP_T, (int)textureWrappingT_);
-	glTexParameteri((int)textureTarget_, GL_TEXTURE_WRAP_R, (int)textureWrappingR_);
+	if (textureCompareMode_ == TextureCompareMode::CompareRefToTexture)
+	{
+		glTexParameteri((int)textureBindTarget_, GL_TEXTURE_COMPARE_FUNC, (int)textureCompareFunc_);
+	}
+
+	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_MIN_FILTER, (int)minFilter_);
+	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_MAG_FILTER, (int)magFilter_);
+
+	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_WRAP_S, (int)textureWrappingS_);
+	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_WRAP_T, (int)textureWrappingT_);
+	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_WRAP_R, (int)textureWrappingR_);
 
 	if (textureFormat_ != TextureFormat::DEPTH && textureFormat_ != TextureFormat::DEPTH_STENCIL)
 	{
-		glGenerateMipmap((int)textureTarget_);
+		glGenerateMipmap((int)textureBindTarget_);
 	}
 	
-	glBindTexture((int)textureTarget_, 0);
+	glBindTexture((int)textureBindTarget_, 0);
 	
 	EXIT_ON_GL_ERROR("Texture::Init");
 
@@ -167,13 +157,13 @@ void Texture::Bind(const Shader* shader) const
 	}
 
 	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
-	glBindTexture((int)textureTarget_, rendererTextureId_);
+	glBindTexture((int)textureBindTarget_, rendererTextureId_);
 	EXIT_ON_GL_ERROR("Texture::Bind");
 }
 
 void Texture::Unbind()
 {
-	glBindTexture((int)textureTarget_, 0);
+	glBindTexture((int)textureBindTarget_, 0);
 }
 
 bool Texture::LoadTextureImage()

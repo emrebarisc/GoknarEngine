@@ -24,7 +24,7 @@ enum class RenderPassType : unsigned int
 	None = 0,
 	Main,
 	GBuffer,
-	Depth
+	Shadow
 };
 
 class GOKNAR_API Renderer

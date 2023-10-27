@@ -28,9 +28,19 @@ public:
 	Shader();
 	~Shader();
 
+	const std::string& GetVertexShaderScript() const
+	{
+		return vertexShaderScript_;
+	}
+
 	void SetVertexShaderScript(const std::string& vertexShaderScript)
 	{
 		vertexShaderScript_ = vertexShaderScript;
+	}
+
+	const std::string& GetFragmentShaderScript()
+	{
+		return fragmentShaderScript_;
 	}
 
 	void SetFragmentShaderScript(const std::string& fragmentShaderScript)

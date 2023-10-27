@@ -112,7 +112,7 @@ void SkeletalMeshInstance::Render(RenderPassType renderPassType)
 
 void SkeletalMeshInstance::SetRenderOperations(RenderPassType renderPassType)
 {
-	mesh_->GetMaterial()->GetShader()->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
+	mesh_->GetMaterial()->GetShader(renderPassType)->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
 	MeshInstance::Render(renderPassType);
 }
 

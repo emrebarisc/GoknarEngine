@@ -20,13 +20,13 @@
 			<Color>1.0 0.99 0.83</Color>
 			<Intensity>0.75</Intensity>
 		</DirectionalLight>
-		<!--<PointLight id = "0">
-			<Position>2.0 6.75 2.0</Position>
+		<PointLight id = "0">
+			<Position>20.0 0.0 4.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
-			<Radius>25.0</Radius>
+			<Radius>20.0</Radius>
 		</PointLight>
-		<PointLight id = "1">
+		<!--<PointLight id = "1">
 			<Position>-2.0 6.75 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>

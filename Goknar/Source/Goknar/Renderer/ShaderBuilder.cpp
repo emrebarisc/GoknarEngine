@@ -24,12 +24,12 @@ void ShaderBuilder::BuildShader(MeshUnit* mesh)
 	Material* material = mesh->GetMaterial();
 	if (material)
 	{
-		Shader* shader = material->GetShader();
+		Shader* shader = material->GetShader(RenderPassType::Main);
 		if (shader)
 		{
 			std::string vertexShader;
 			std::string fragmentShader;
-			const std::vector<const Texture*>* textures = material->GetShader()->GetTextures();
+			const std::vector<const Texture*>* textures = shader->GetTextures();
 			size_t textureSize = textures->size();
 
 			// Vertex Shader
@@ -134,6 +134,32 @@ void main()
 	}
 }
 
+std::string ShaderBuilder::GetShaderPassFragmentShaderScript()
+{
+	std::string shaderPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
+	shaderPassFragmentShader += R"(
+void main()
+{
+})";
+//	std::string shaderPassFragmentShader = GetShaderVersionText();
+//	shaderPassFragmentShader += "in vec4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + ";\n";
+//	shaderPassFragmentShader += "uniform vec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_POSITION) + ";\n";
+//	shaderPassFragmentShader += "uniform float " + std::string(SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_RADIUS) + ";\n";
+//	shaderPassFragmentShader += "// lightType = 0 for point lights, 1 for directional lights and 2 for spot lights\n";
+//	shaderPassFragmentShader += "uniform int " + std::string(SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_LIGHT_TYPE) + ";\n";
+//	shaderPassFragmentShader += R"(
+//void main()
+//{
+//	if()" + std::string(SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_LIGHT_TYPE) + R"( == 0)
+//	{
+//		float lightDistance = length()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(.xyz - )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_POSITION + R"();
+//		lightDistance /= )" + std::string(SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_RADIUS) + R"(;
+//		gl_FragDepth = lightDistance;
+//	}
+//})";
+	return shaderPassFragmentShader;
+}
+
 ShaderBuilder::ShaderBuilder() : 
 	isInstantiated_(false)
 {
@@ -158,7 +184,7 @@ void ShaderBuilder::Init()
 	isInstantiated_ = true;
 }
 
-std::string ShaderBuilder::GetShaderVersionText()
+std::string ShaderBuilder::GetShaderVersionText() const
 {
 	return "#version " + shaderVersion_ + "\n";
 }

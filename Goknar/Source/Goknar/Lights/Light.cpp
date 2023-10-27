@@ -4,6 +4,7 @@
 
 #include "Goknar/Camera.h"
 #include "Goknar/Log.h"
+#include "Goknar/Renderer/Framebuffer.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"
@@ -11,8 +12,7 @@
 Light::~Light()
 {
 	delete shadowMapTexture_;
-
-	glDeleteFramebuffers(1, &shadowMapDepthFBO_);
+	delete shadowMapFramebuffer_;
 }
 
 void Light::SetShaderUniforms(const Shader* shader) const
@@ -28,17 +28,19 @@ void Light::Init()
 {
 	if (isShadowEnabled_)
 	{
-		glGenFramebuffers(1, &shadowMapDepthFBO_);
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowMapDepthFBO_);
+		GOKNAR_CORE_ASSERT(shadowMapTexture_, "Shadow is enabled but shadow map texture is not created!");
+		GOKNAR_CORE_ASSERT(shadowMapFramebuffer_, "Shadow is enabled but shadow map framebuffer is not created!");
 
-		shadowMapTexture_ = new Texture();
+		shadowMapFramebuffer_->SetFramebufferBindTarget(FramebufferBindTarget::FRAMEBUFFER);
+		shadowMapFramebuffer_->SetFramebufferAttachment(FramebufferAttachment::DEPTH_ATTACHMENT);
+
+		shadowMapFramebuffer_->SetTextureTarget(shadowMapTexture_);
+		shadowMapFramebuffer_->Init();
+
 		shadowMapTexture_->SetWidth(shadowWidth_);
 		shadowMapTexture_->SetHeight(shadowHeight_);
-		shadowMapTexture_->SetTextureTarget(TextureTarget::TEXTURE_2D);
 		shadowMapTexture_->SetTextureMinFilter(TextureMinFilter::LINEAR);
 		shadowMapTexture_->SetTextureMagFilter(TextureMagFilter::LINEAR);
-		shadowMapTexture_->SetTextureWrappingS(TextureWrapping::REPEAT);
-		shadowMapTexture_->SetTextureWrappingT(TextureWrapping::REPEAT);
 		shadowMapTexture_->SetTextureFormat(TextureFormat::DEPTH);
 		shadowMapTexture_->SetTextureInternalFormat(TextureInternalFormat::DEPTH_24);
 		shadowMapTexture_->SetTextureType(TextureType::FLOAT);
@@ -48,44 +50,15 @@ void Light::Init()
 		shadowMapTexture_->Init();
 		shadowMapTexture_->Bind();
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, (int)shadowMapTexture_->GetTextureTarget(), shadowMapTexture_->GetRendererTextureId(), 0);
-
-		switch (glCheckFramebufferStatus(GL_FRAMEBUFFER))
-		{
-		case GL_FRAMEBUFFER_UNDEFINED:
-			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_UNDEFINED");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
-			break;
-		case GL_FRAMEBUFFER_UNSUPPORTED:
-			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_UNSUPPORTED");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-			GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");
-			break;
-		case GL_FRAMEBUFFER_COMPLETE:
-			GOKNAR_CORE_INFO("GL_FRAMEBUFFER_COMPLETE");
-			break;
-		default:
-			break;
-		}
+		shadowMapFramebuffer_->Bind();
+		shadowMapFramebuffer_->Attach();
 
 		glDrawBuffer(GL_NONE);
 		glReadBuffer(GL_NONE);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		shadowMapTexture_->Unbind();
+		shadowMapFramebuffer_->Unbind();
+
+		EXIT_ON_GL_ERROR("Light::Init");
 	}
 }

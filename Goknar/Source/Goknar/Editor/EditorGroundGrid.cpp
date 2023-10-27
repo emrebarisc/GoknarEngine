@@ -132,7 +132,6 @@ EditorGroundGrid::EditorGroundGrid() : ObjectBase()
 
 EditorGroundGrid::~EditorGroundGrid()
 {
-	delete groundGridMeshMaterial_->GetShader();
 	delete groundGridMeshMaterial_;
 	delete groundGridMesh_;
 }
