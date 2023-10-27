@@ -47,6 +47,11 @@ Scene::~Scene()
 		delete object;
 	}
 
+	for (auto object : shaders_)
+	{
+		delete object;
+	}
+
 	for (auto object : textures_)
 	{
 		delete object;

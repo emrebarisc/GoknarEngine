@@ -4,6 +4,9 @@
 
 #include "ShaderBuilder.h"
 
+#include "Goknar/Application.h"
+#include "Goknar/Engine.h"
+#include "Goknar/Scene.h"
 #include "Goknar/Camera.h"
 #include "Goknar/GoknarAssert.h"
 #include "Goknar/Contents/Image.h"
@@ -59,15 +62,15 @@ void ExitOnProgramError(GEuint programId, const char* errorMessage)
 	}
 }
 
-Shader::Shader() :
-	shaderType_(ShaderType::Scene),
-	programId_(0)
+Shader::Shader()
 {
+	engine->GetApplication()->GetMainScene()->AddShader(this);
 }
 
 Shader::~Shader()
 {
 	glDeleteProgram(programId_);
+	engine->GetApplication()->GetMainScene()->RemoveShader(this);
 }
 
 void Shader::SetMVP(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix/*, const Matrix& view, const Matrix& projection*/) const
@@ -88,11 +91,6 @@ void Shader::SetMVP(const Matrix& worldTransformationMatrix, const Matrix& relat
 
 void Shader::PreInit()
 {
-	std::vector<const Image*>::iterator imageIterator = textureImages_.begin();
-	for (; imageIterator != textureImages_.end(); ++imageIterator)
-	{
-		AddTexture((*imageIterator)->GetGeneratedTexture());
-	}
 }
 
 void Shader::Init()
@@ -119,14 +117,12 @@ void Shader::Init()
 	glShaderSource(vertexShaderId, 1, &vertexSource, 0);
 	glCompileShader(vertexShaderId);
 	ExitOnShaderIsNotCompiled(vertexShaderId, (std::string("Vertex shader compilation error!(" + vertexShaderPath_ + ").")).c_str());
-	//vertexShaderScript_.clear();
 
 	const GEchar* fragmentSource = (const GEchar*)fragmentShaderScript_.c_str();
 	GEuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShaderId, 1, &fragmentSource, 0);
 	glCompileShader(fragmentShaderId);
 	ExitOnShaderIsNotCompiled(fragmentShaderId, (std::string("Fragment shader compilation error!(") + fragmentShaderPath_ + ").").c_str());
-	//fragmentShaderScript_.clear();
 
 	programId_ = glCreateProgram();
 
@@ -152,6 +148,12 @@ void Shader::Init()
 
 	glDetachShader(programId_, vertexShaderId);
 	glDetachShader(programId_, fragmentShaderId);
+}
+
+void Shader::PostInit()
+{
+	vertexShaderScript_.clear();
+	fragmentShaderScript_.clear();
 }
 
 void Shader::Bind() const

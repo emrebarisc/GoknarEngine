@@ -5,6 +5,7 @@
 
 class DirectionalLight;
 class Engine;
+class Material;
 class MeshUnit;
 class PointLight;
 class SpotLight;
@@ -46,7 +47,7 @@ public:
 		shaderVersion_ = shaderVersion;
 	}
 
-	void BuildShader(MeshUnit* mesh);
+	void BuildShader(MeshUnit* mesh, Material* material);
 
 	bool GetIsInstatiated() const
 	{

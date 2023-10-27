@@ -395,16 +395,9 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 					assimpMaterial->Get(AI_MATKEY_NAME, name);
 					material->SetName(name.C_Str());
 
-					Shader* shader = nullptr;
-
 					aiString diffuseTexturePath;
 					if (assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &diffuseTexturePath, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
 					{
-						shader = new Shader();
-						gameScene->AddShader(shader);
-
-						material->SetShader(shader);
-
 						std::string imagePath = ContentDir;
 						std::string diffuseImagePathStdString = std::string(diffuseTexturePath.C_Str());
 						if (diffuseImagePathStdString.find(".fbm") != std::string::npos)
@@ -422,21 +415,13 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 						if (image)
 						{
 							image->SetTextureUsage(TextureUsage::Diffuse);
-							material->GetShader(RenderPassType::Main)->AddTextureImage(image);
+							material->AddTextureImage(image);
 						}
 					}
 
 					aiString normalTexturePath;
 					if (assimpMaterial->GetTexture(aiTextureType_NORMALS, 0, &normalTexturePath, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
 					{
-						if (!shader)
-						{
-							shader = new Shader();
-							gameScene->AddShader(shader);
-						}
-
-						material->SetShader(shader);
-
 						std::string normalImagePath = ContentDir;
 						std::string normalImagePathStdString = std::string(normalTexturePath.C_Str());
 						if (normalImagePathStdString.find(".fbm") != std::string::npos)
@@ -452,7 +437,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 						Image* image = engine->GetResourceManager()->GetContent<Image>(normalImagePath);
 						image->SetTextureUsage(TextureUsage::Normal);
-						shader->AddTextureImage(image);
+						material->AddTextureImage(image);
 					}
 
 					gameScene->AddMaterial(material);

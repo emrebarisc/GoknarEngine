@@ -9,6 +9,7 @@
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
+#include "Goknar/Contents/Image.h"
 
 Material::Material() : 
 	ambientReflectance_(Vector3::ZeroVector), 
@@ -27,17 +28,46 @@ Material::~Material()
 	delete renderPassTypeShaderMap_[RenderPassType::Shadow];
 }
 
-void Material::Init()
+void Material::Build(MeshUnit* meshUnit)
 {
-	GOKNAR_CORE_ASSERT(renderPassTypeShaderMap_.find(RenderPassType::Main) != renderPassTypeShaderMap_.end());
+	Shader* mainShader = new Shader();
+	std::vector<const Image*>::iterator imageIterator = textureImages_.begin();
+	for (; imageIterator != textureImages_.end(); ++imageIterator)
+	{
+		mainShader->AddTexture((*imageIterator)->GetGeneratedTexture());
+	}
 
-	Shader* mainShader = renderPassTypeShaderMap_[RenderPassType::Main];
+	renderPassTypeShaderMap_[RenderPassType::Main] = mainShader;
+	if (mainShader->GetShaderType() == ShaderType::Scene)
+	{
+		ShaderBuilder::GetInstance()->BuildShader(meshUnit, this);
+	}
+
+	const std::string& mainShaderVertexShaderScript = mainShader->GetVertexShaderScript();
 
 	Shader* shadowShader = new Shader();
-	shadowShader->SetVertexShaderScript(mainShader->GetVertexShaderScript());
+	shadowShader->SetVertexShaderScript(mainShaderVertexShaderScript);
 	shadowShader->SetFragmentShaderScript(ShaderBuilder::GetShaderPassFragmentShaderScript());
-	shadowShader->Init();
 	renderPassTypeShaderMap_[RenderPassType::Shadow] = shadowShader;
+
+}
+
+void Material::PreInit()
+{
+	renderPassTypeShaderMap_[RenderPassType::Main]->PreInit();
+	renderPassTypeShaderMap_[RenderPassType::Shadow]->PreInit();
+}
+
+void Material::Init()
+{
+	renderPassTypeShaderMap_[RenderPassType::Main]->Init();
+	renderPassTypeShaderMap_[RenderPassType::Shadow]->Init();
+}
+
+void Material::PostInit()
+{
+	renderPassTypeShaderMap_[RenderPassType::Main]->PostInit();
+	renderPassTypeShaderMap_[RenderPassType::Shadow]->PostInit();
 }
 
 void Material::Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType) const

@@ -9,6 +9,9 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
 
+class MeshUnit;
+class Image;
+
 enum class MaterialBlendModel
 {
 	Opaque = 0,
@@ -28,7 +31,11 @@ public:
 	Material();
 	~Material();
 
+	void Build(MeshUnit* meshUnit);
+
+	void PreInit();
 	void Init();
+	void PostInit();
 
 	const Vector3& GetAmbientReflectance() const
 	{
@@ -115,6 +122,16 @@ public:
 		return name_;
 	}
 
+	void AddTextureImage(const Image* image)
+	{
+		textureImages_.push_back(image);
+	}
+
+	const std::vector<const Image*>* GetTextureImages() const
+	{
+		return &textureImages_;
+	}
+
 	void Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Main) const;
 	void Use(RenderPassType renderPassType = RenderPassType::Main) const;
 	void SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Main) const;
@@ -122,6 +139,8 @@ public:
 protected:
 
 private:
+	std::vector<const Image*> textureImages_;
+
 	Vector3 ambientReflectance_;
 	Vector3 diffuseReflectance_;
 	Vector3 specularReflectance_;
