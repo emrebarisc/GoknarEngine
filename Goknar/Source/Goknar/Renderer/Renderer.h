@@ -24,7 +24,10 @@ enum class RenderPassType : unsigned int
 	None = 0,
 	Main,
 	GBuffer,
-	Shadow
+	Shadow,
+
+	// Needed for rendering point lights with geometry shaders
+	PointLightShadow
 };
 
 class GOKNAR_API Renderer

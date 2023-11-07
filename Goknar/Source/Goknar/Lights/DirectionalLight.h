@@ -1,6 +1,7 @@
 #ifndef __DIRECTIONALLIGHT_H__
 #define __DIRECTIONALLIGHT_H__
 
+#include "Math/Matrix.h"
 #include "Light.h"
 
 #include "Goknar/Managers/ObjectIDManager.h"
@@ -18,7 +19,8 @@ public:
 
 	void Init() override;
 
-	void SetShaderUniforms(const Shader* shader) const;
+	void SetShaderUniforms(const Shader* shader) override;
+	void SetShadowRenderPassShaderUniforms(const Shader* shader) override;
 
     Vector3 GetDirection() const
     {
@@ -33,6 +35,8 @@ public:
 	void RenderShadowMap() override;
 	
 private:
+	Matrix biasedShadowViewProjectionMatrix_{ Matrix::IdentityMatrix };
+
     Vector3 direction_;
     Vector3 radiance_;
 };

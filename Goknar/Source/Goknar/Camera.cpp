@@ -49,7 +49,7 @@ void Camera::Init()
 
 void Camera::Update()
 {
-	SetProjectionMatrix();
+	UpdateProjectionMatrix();
 	LookAt();
 }
 
@@ -109,7 +109,7 @@ void Camera::RotateAbout(const Vector3& axis, float angle)
 	LookAt();
 }
 
-void Camera::SetProjectionMatrix()
+void Camera::UpdateProjectionMatrix()
 {
 	float l = nearPlane_.x;
 	float r = nearPlane_.y;
@@ -132,14 +132,23 @@ void Camera::SetProjectionMatrix()
 
 		projectionMatrix_ = projectionMatrix_ * o2p;
 	}
+
+	UpdateViewProjectionMatrix();
+}
+
+void Camera::UpdateViewProjectionMatrix()
+{
+	viewProjectionMatrix_ = projectionMatrix_ * viewingMatrix_;
 }
 
 void Camera::LookAt()
 {
 	Vector3 lookAtPos = position_ + forwardVector_ * max(nearDistance_, 0.001f);
 
-	GoknarMath::LookAt(viewingMatrix_, 
-				 position_,
-				 lookAtPos,
-				 upVector_);
+	GoknarMath::LookAt(	viewingMatrix_, 
+						position_,
+						lookAtPos,
+						upVector_);
+
+	UpdateViewProjectionMatrix();
 }

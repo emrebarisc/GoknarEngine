@@ -26,7 +26,8 @@ public:
     void Init() override;
 
     void RenderShadowMap() override;
-    void SetShaderUniforms(const Shader* shader) const;
+    void SetShaderUniforms(const Shader* shader) override;
+    void SetShadowRenderPassShaderUniforms(const Shader* shader) override;
 
     void SetRadius(float radius)
     {
@@ -38,11 +39,15 @@ public:
         return radius_;
     }
 
+    virtual void SetPosition(const Vector3& position) override;
+
 protected:
 
 private:
+    void UpdateShadowViewProjectionMatrices();
 
-    float radius_;
+    std::vector<Matrix> viewMatrixVector_;
+    float radius_{ 100.f };
 };
 
 #endif

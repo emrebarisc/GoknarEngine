@@ -122,7 +122,7 @@ void Texture::Init()
 
 	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_COMPARE_MODE, (int)textureCompareMode_);
 
-	if (textureCompareMode_ == TextureCompareMode::CompareRefToTexture)
+	if (textureCompareMode_ == TextureCompareMode::COMPARE_REF_TO_TEXTURE)
 	{
 		glTexParameteri((int)textureBindTarget_, GL_TEXTURE_COMPARE_FUNC, (int)textureCompareFunc_);
 	}

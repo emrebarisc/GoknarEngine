@@ -121,8 +121,8 @@ enum class TextureType
 
 enum class TextureCompareMode
 {
-	None = GL_NONE,
-	CompareRefToTexture = GL_COMPARE_REF_TO_TEXTURE
+	NONE = GL_NONE,
+	COMPARE_REF_TO_TEXTURE = GL_COMPARE_REF_TO_TEXTURE
 };
 
 enum class TextureCompareFunc
@@ -407,7 +407,7 @@ private:
 	TextureFormat textureFormat_{ TextureFormat::RGB };
 	TextureInternalFormat textureInternalFormat_{ TextureInternalFormat::RGB };
 	TextureType textureType_{ TextureType::UNSIGNED_BYTE };
-	TextureCompareMode textureCompareMode_{ TextureCompareMode::None };
+	TextureCompareMode textureCompareMode_{ TextureCompareMode::NONE };
 	TextureCompareFunc textureCompareFunc_{ TextureCompareFunc::LEQUAL };
 
 	TextureDataType textureDataType_{ TextureDataType::STATIC };

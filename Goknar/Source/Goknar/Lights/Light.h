@@ -15,6 +15,10 @@ enum class LightMobility : uint8_t
 	Movable
 };
 
+#define POINT_LIGHT_TYPE_INT 0
+#define DIRECTIONAL_LIGHT_TYPE_INT 1
+#define SPOT_LIGHT_TYPE_INT 2
+
 class GOKNAR_API Light
 {
 public:
@@ -22,11 +26,9 @@ public:
 
 	virtual ~Light();
 
-	virtual void SetShaderUniforms(const Shader* shader) const;
-
 	virtual void Init();
 
-	void SetPosition(const Vector3& position)
+	virtual void SetPosition(const Vector3& position)
 	{
 		position_ = position;
 	}
@@ -106,8 +108,6 @@ public:
 		return shadowHeight_;
 	}
 
-	virtual void RenderShadowMap() = 0;
-
 	Texture* GetShadowMapTexture()
 	{
 		return shadowMapTexture_;
@@ -122,6 +122,11 @@ public:
 	{
 		return shadowMapFramebuffer_;
 	}
+
+	virtual void SetShaderUniforms(const Shader* shader);
+
+	virtual void RenderShadowMap() = 0;
+	virtual void SetShadowRenderPassShaderUniforms(const Shader* shader) = 0;
 
 protected:
 
@@ -141,7 +146,7 @@ protected:
 
 	float intensity_{ 1.f };
 
-	bool isShadowEnabled_{ true };
+	bool isShadowEnabled_{ false };
 private:
 	LightMobility mobility_{ LightMobility::Static };
 };

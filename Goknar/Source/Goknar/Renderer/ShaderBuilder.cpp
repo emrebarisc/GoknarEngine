@@ -25,41 +25,14 @@ void ShaderBuilder::BuildShader(MeshUnit* mesh, Material* material)
 	Shader* shader = material->GetShader(RenderPassType::Main);
 	if (shader)
 	{
-		std::string vertexShader;
+		std::string vertexShader = BuildVertexShader(mesh);
+		shader->SetVertexShaderScript(vertexShader);
+
+		// Fragment Shader
+
 		std::string fragmentShader;
 		const std::vector<const Texture*>* textures = shader->GetTextures();
 		size_t textureSize = textures->size();
-
-		// Vertex Shader
-		vertexShader = "// DefaultVertexShader";
-		vertexShader = GetShaderVersionText();
-		vertexShader += VS_GetMainLayouts();
-
-		SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(mesh);
-		if (skeletalMesh)
-		{
-			vertexShader += VS_GetSkeletalMeshLayouts();
-			vertexShaderModelMatrixVariable_ = std::string(SHADER_VARIABLE_NAMES::POSITIONING::BONE_TRANSFORMATION_MATRIX) + " * " + vertexShaderModelMatrixVariable_;
-			vertexShader += VS_GetSkeletalMeshVariables();
-			vertexShader += VS_GetSkeletalMeshUniforms(skeletalMesh->GetBoneSize());
-		}
-
-		vertexShader += VS_GetUniforms();
-		vertexShader += R"(
-void main()
-{
-)";
-		if (skeletalMesh)
-		{
-			vertexShader += VS_GetSkeletalMeshWeightCalculation();
-		}
-		vertexShader += VS_GetMain();
-		vertexShader += VS_GetVertexNormalText();
-		vertexShader += R"(
-}
-)";
-
-		// Fragment Shader
 
 		std::string fragmentShaderVariables = GetShaderVersionText();
 		fragmentShaderVariables += GetMaterialVariables();
@@ -124,37 +97,137 @@ void main()
 		IOManager::WriteFile((ContentDir + mesh->GetName() + "VertexShader.glsl").c_str(), vertexShader.c_str());
 		IOManager::WriteFile((ContentDir + mesh->GetName() + "FragmentShader.glsl").c_str(), fragmentShader.c_str());
 
-		shader->SetVertexShaderScript(vertexShader);
 		shader->SetFragmentShaderScript(fragmentShader);
 
 		ResetVariables();
 	}
 }
 
-std::string ShaderBuilder::GetShaderPassFragmentShaderScript()
+std::string ShaderBuilder::BuildVertexShader(MeshUnit* mesh)
 {
-	std::string shaderPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
-	shaderPassFragmentShader += R"(
+	// Vertex Shader
+	std::string vertexShader = "// Default Vertex Shader";
+	vertexShader = GetShaderVersionText();
+	vertexShader += VS_GetMainLayouts();
+
+	SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(mesh);
+	if (skeletalMesh)
+	{
+		vertexShader += VS_GetSkeletalMeshLayouts();
+		vertexShaderModelMatrixVariable_ = std::string(SHADER_VARIABLE_NAMES::POSITIONING::BONE_TRANSFORMATION_MATRIX) + " * " + vertexShaderModelMatrixVariable_;
+		vertexShader += VS_GetSkeletalMeshVariables();
+		vertexShader += VS_GetSkeletalMeshUniforms(skeletalMesh->GetBoneSize());
+	}
+
+	vertexShader += VS_GetUniforms();
+	vertexShader += VS_GetLightUniforms();
+	vertexShader += R"(
+void main()
+{
+)";
+	if (skeletalMesh)
+	{
+		vertexShader += VS_GetSkeletalMeshWeightCalculation();
+	}
+	vertexShader += VS_GetMain();
+	vertexShader += VS_GetVertexNormalText();
+	vertexShader += R"(
+}
+)";
+	ResetVariables();
+	return vertexShader;
+}
+
+std::string ShaderBuilder::BuildVertexShader_PointLightShadowPass(MeshUnit* mesh)
+{
+	// Vertex Shader
+	std::string vertexShader = "// PointLightShadowPass Vertex Shader";
+	vertexShader = GetShaderVersionText();
+	vertexShader += VS_GetMainLayouts();
+
+	SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(mesh);
+	if (skeletalMesh)
+	{
+		vertexShader += VS_GetSkeletalMeshLayouts();
+		vertexShaderModelMatrixVariable_ = std::string(SHADER_VARIABLE_NAMES::POSITIONING::BONE_TRANSFORMATION_MATRIX) + " * " + vertexShaderModelMatrixVariable_;
+		vertexShader += VS_GetSkeletalMeshVariables();
+		vertexShader += VS_GetSkeletalMeshUniforms(skeletalMesh->GetBoneSize());
+	}
+
+	vertexShader += VS_GetUniforms();
+	vertexShader += R"(
+void main()
+{
+)";
+	if (skeletalMesh)
+	{
+		vertexShader += VS_GetSkeletalMeshWeightCalculation();
+	}
+	vertexShader += VS_GetMain_PointLightShadowPass();
+	vertexShader += R"(
+}
+)";
+
+	ResetVariables();
+	return vertexShader;
+}
+
+std::string ShaderBuilder::GetFragmentShaderScript_ShadowPass()
+{
+	std::string shadowPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
+	shadowPassFragmentShader += R"(
 void main()
 {
 })";
-//	std::string shaderPassFragmentShader = GetShaderVersionText();
-//	shaderPassFragmentShader += "in vec4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + ";\n";
-//	shaderPassFragmentShader += "uniform vec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_POSITION) + ";\n";
-//	shaderPassFragmentShader += "uniform float " + std::string(SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_RADIUS) + ";\n";
-//	shaderPassFragmentShader += "// lightType = 0 for point lights, 1 for directional lights and 2 for spot lights\n";
-//	shaderPassFragmentShader += "uniform int " + std::string(SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_LIGHT_TYPE) + ";\n";
-//	shaderPassFragmentShader += R"(
-//void main()
-//{
-//	if()" + std::string(SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_LIGHT_TYPE) + R"( == 0)
-//	{
-//		float lightDistance = length()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(.xyz - )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_POSITION + R"();
-//		lightDistance /= )" + std::string(SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_RADIUS) + R"(;
-//		gl_FragDepth = lightDistance;
-//	}
-//})";
-	return shaderPassFragmentShader;
+	return shadowPassFragmentShader;
+}
+
+std::string ShaderBuilder::GetFragmentShaderScript_PointLightShadowPass()
+{
+	std::string shadowPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
+	shadowPassFragmentShader += R"(
+
+in vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
+
+uniform vec3 )" + SHADER_VARIABLE_NAMES::SHADOW::LIGHT_POSITION + R"(;
+uniform float )" + SHADER_VARIABLE_NAMES::SHADOW::LIGHT_RADIUS + R"(;
+
+void main()
+{
+	float lightDistance = length()" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"(.xyz - )" + SHADER_VARIABLE_NAMES::SHADOW::LIGHT_POSITION + R"();
+    lightDistance /= )" + SHADER_VARIABLE_NAMES::SHADOW::LIGHT_RADIUS + R"(;
+	gl_FragDepth = lightDistance;
+})";
+	return shadowPassFragmentShader;
+}
+
+std::string ShaderBuilder::GetGeometryShaderScript_PointLightShadowPass()
+{
+	std::string shadowPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
+	shadowPassFragmentShader += R"(
+layout (triangles) in;
+layout (triangle_strip, max_vertices=18) out;
+
+uniform mat4 )" + std::string(SHADER_VARIABLE_NAMES::SHADOW::POINT_LIGHT_VIEW_MATRICES_ARRAY) + R"([6];
+
+out vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
+
+void main()
+{
+	for(int face = 0; face < 6; ++face)
+	{
+		gl_Layer = face;
+		for(int i = 0; i < 3; ++i)
+		{
+			)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = gl_in[i].gl_Position;
+			gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " * " + SHADER_VARIABLE_NAMES::SHADOW::POINT_LIGHT_VIEW_MATRICES_ARRAY + R"([face];
+			EmitVertex();
+		}    
+		EndPrimitive();
+	}
+} 
+)";
+	return shadowPassFragmentShader;
 }
 
 ShaderBuilder::ShaderBuilder() : 
@@ -211,14 +284,16 @@ void ShaderBuilder::FS_BuildScene()
 			{
 				std::string lightVariableName = staticPointLight->GetName();
 				fragmentShaderOutsideMain_ += GetStaticPointLightText(staticPointLight);
-				fragmentShaderInsideMain_ += GetPointLightColorSummationText(lightVariableName);
+				fragmentShaderInsideMain_ += PointLight_GetShadowCheck(lightVariableName);
+				pointLightNamesLightSpaceFragmentPosition_.push_back(lightVariableName);
 			}
 
 			for (const PointLight* dynamicPointLight : dynamicPointLights)
 			{
 				std::string lightVariableName = dynamicPointLight->GetName();
 				lightUniforms_ += GetPointLightUniformTexts(lightVariableName);
-				fragmentShaderInsideMain_ += GetPointLightColorSummationText(lightVariableName);
+				fragmentShaderInsideMain_ += PointLight_GetShadowCheck(lightVariableName);
+				pointLightNamesLightSpaceFragmentPosition_.push_back(lightVariableName);
 			}
 		}
 
@@ -234,8 +309,8 @@ void ShaderBuilder::FS_BuildScene()
 				if (staticDirectionalLight->GetIsShadowEnabled())
 				{
 					writeShadowCalculationFunction = true;
-					lightSpaceFragmentPositionLightNames_.push_back(lightVariableName);
-					fragmentShaderInsideMain_ += GetShadowCheck(lightVariableName);
+					directionalLightNamesLightSpaceFragmentPosition_.push_back(lightVariableName);
+					fragmentShaderInsideMain_ += DirectionalLight_GetShadowCheck(lightVariableName);
 				}
 				else
 				{
@@ -251,8 +326,8 @@ void ShaderBuilder::FS_BuildScene()
 				if (dynamicDirectionalLight->GetIsShadowEnabled())
 				{
 					writeShadowCalculationFunction = true;
-					lightSpaceFragmentPositionLightNames_.push_back(lightVariableName);
-					fragmentShaderInsideMain_ += GetShadowCheck(lightVariableName);
+					directionalLightNamesLightSpaceFragmentPosition_.push_back(lightVariableName);
+					fragmentShaderInsideMain_ += DirectionalLight_GetShadowCheck(lightVariableName);
 				}
 				else
 				{
@@ -329,7 +404,7 @@ std::string ShaderBuilder::FS_GetVariableTexts()
 	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE;
 	variableTexts += ";\n";
 
-	for (const std::string& lightSpaceFragmentPositionLightName : lightSpaceFragmentPositionLightNames_)
+	for (const std::string& lightSpaceFragmentPositionLightName : directionalLightNamesLightSpaceFragmentPosition_)
 	{
 		variableTexts += std::string("in vec4 ") + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightSpaceFragmentPositionLightName + ";\n";
 	}
@@ -371,17 +446,15 @@ std::string ShaderBuilder::VS_GetMain()
 {
 	std::string vsMain = R"(
 	)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + vertexShaderModelMatrixVariable_ + R"(;
-	vec4 fragmentPosition4Channel = vec4(position, 1.f) * )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";" +
-		R"(
-	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"( = fragmentPosition4Channel;
-	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE + R"( = projectionMatrix * viewMatrix * fragmentPosition4Channel;
+	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"( = vec4(position, 1.f) * )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";" + R"(
+	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE + R"( = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + " * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX+ R"(;
 	)";
 
-	for (const std::string& lightSpaceFragmentPositionLightName : lightSpaceFragmentPositionLightNames_)
+	for (const std::string& lightSpaceFragmentPositionLightName : directionalLightNamesLightSpaceFragmentPosition_)
 	{
 		vsMain += std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightSpaceFragmentPositionLightName) + " = " 
-			+ SHADER_VARIABLE_NAMES::LIGHT::VIEW_MATRIX_PREFIX + lightSpaceFragmentPositionLightName + " * "
-			+ SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + "; \n";
+			+ SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + " * "
+			+ SHADER_VARIABLE_NAMES::SHADOW::VIEW_MATRIX_PREFIX + lightSpaceFragmentPositionLightName + "; \n";
 	}
 		
 	vsMain += R"(
@@ -389,6 +462,18 @@ std::string ShaderBuilder::VS_GetMain()
 )";
 
 	vsMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = vec2(" + SHADER_VARIABLE_NAMES::VERTEX::UV + ".x, 1.f - " + SHADER_VARIABLE_NAMES::VERTEX::UV + ".y); \n";
+
+	return vsMain;
+}
+
+std::string ShaderBuilder::VS_GetMain_PointLightShadowPass()
+{
+	std::string vsMain = R"(
+	)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + vertexShaderModelMatrixVariable_ + R"(;
+	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"( = vec4(position, 1.f) * )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";" + R"(
+
+	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
+)";
 
 	return vsMain;
 }
@@ -470,7 +555,7 @@ std::string ShaderBuilder::VS_GetSkeletalMeshWeightCalculation()
 	weightCalculation += "; ++boneIndex)\n";
 	weightCalculation += std::string("\t") + "{\n";
 	weightCalculation += std::string("\t\t") + SHADER_VARIABLE_NAMES::POSITIONING::BONE_TRANSFORMATION_MATRIX;
-	weightCalculation += "+= ";
+	weightCalculation += " += ";
 	weightCalculation += SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES;
 	weightCalculation += "[";
 	weightCalculation += SHADER_VARIABLE_NAMES::VERTEX::BONE_IDS;
@@ -486,67 +571,77 @@ std::string ShaderBuilder::VS_GetSkeletalMeshWeightCalculation()
 
 std::string ShaderBuilder::VS_GetUniforms()
 {
-	std::string variableTexts = "";
+	std::string uniforms = "";
 
-	variableTexts += "uniform mat4 ";
-	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX;
-	variableTexts += ";\n";
+	uniforms += "uniform mat4 ";
+	uniforms += SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX;
+	uniforms += ";\n";
 
-	variableTexts += "uniform mat4 ";
-	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX;
-	variableTexts += ";\n";
+	uniforms += "uniform mat4 ";
+	uniforms += SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX;
+	uniforms += ";\n";
 
-	variableTexts += "uniform mat4 ";
-	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX;
-	variableTexts += ";\n";
+	uniforms += "uniform mat4 ";
+	uniforms += SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX;
+	uniforms += ";\n";
 
-	variableTexts += "uniform mat4 ";
-	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::VIEW_MATRIX;
-	variableTexts += ";\n";
+	uniforms += "uniform mat4 ";
+	uniforms += SHADER_VARIABLE_NAMES::POSITIONING::VIEW_MATRIX;
+	uniforms += ";\n";
 
-	variableTexts += "uniform mat4 ";
-	variableTexts += SHADER_VARIABLE_NAMES::POSITIONING::PROJECTION_MATRIX;
-	variableTexts += ";\n";
+	uniforms += "uniform mat4 ";
+	uniforms += SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX;
+	uniforms += ";\n";
 
-	for (const std::string& lightName : lightSpaceFragmentPositionLightNames_)
+	uniforms += "uniform mat4 ";
+	uniforms += SHADER_VARIABLE_NAMES::POSITIONING::PROJECTION_MATRIX;
+	uniforms += ";\n";
+
+	for (const std::string& lightName : directionalLightNamesLightSpaceFragmentPosition_)
 	{
-		variableTexts += std::string("uniform mat4 ") + SHADER_VARIABLE_NAMES::LIGHT::VIEW_MATRIX_PREFIX + lightName + ";\n";
+		uniforms += std::string("uniform mat4 ") + SHADER_VARIABLE_NAMES::SHADOW::VIEW_MATRIX_PREFIX + lightName + ";\n";
 	}
 
-	variableTexts += "uniform float ";
-	variableTexts += SHADER_VARIABLE_NAMES::TIMING::DELTA_TIME;
-	variableTexts += ";\n";
+	uniforms += "uniform float ";
+	uniforms += SHADER_VARIABLE_NAMES::TIMING::DELTA_TIME;
+	uniforms += ";\n";
 
-	variableTexts += "uniform float ";
-	variableTexts += SHADER_VARIABLE_NAMES::TIMING::ELAPSED_TIME;
-	variableTexts += ";\n\n";
+	uniforms += "uniform float ";
+	uniforms += SHADER_VARIABLE_NAMES::TIMING::ELAPSED_TIME;
+	uniforms += ";\n\n";
 
-	variableTexts += "out mat4 ";
-	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX;
-	variableTexts += ";\n";
+	uniforms += "out mat4 ";
+	uniforms += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX;
+	uniforms += ";\n";
 
-	variableTexts += "out vec4 ";
-	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE;
-	variableTexts += ";\n";
+	uniforms += "out vec4 ";
+	uniforms += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE;
+	uniforms += ";\n";
 
-	variableTexts += "out vec4 ";
-	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE;
-	variableTexts += ";\n";
+	uniforms += "out vec4 ";
+	uniforms += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE;
+	uniforms += ";\n";
 
-	for (const std::string& lightName : lightSpaceFragmentPositionLightNames_)
+	uniforms += "out vec3 ";
+	uniforms += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
+	uniforms += ";\n";
+
+	uniforms += "out vec2 ";
+	uniforms += SHADER_VARIABLE_NAMES::TEXTURE::UV;
+	uniforms += ";\n";
+
+	return uniforms;
+}
+
+std::string ShaderBuilder::VS_GetLightUniforms()
+{
+	std::string uniforms = "";
+	for (const std::string& lightName : directionalLightNamesLightSpaceFragmentPosition_)
 	{
-		variableTexts += std::string("out vec4 ") + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightName + ";\n";
+		uniforms += std::string("out vec4 ") + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightName + ";\n";
 	}
 
-	variableTexts += "out vec3 ";
-	variableTexts += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
-	variableTexts += ";\n";
-
-	variableTexts += "out vec2 ";
-	variableTexts += SHADER_VARIABLE_NAMES::TEXTURE::UV;
-	variableTexts += ";\n";
-
-	return variableTexts;
+	return uniforms;
 }
 
 std::string ShaderBuilder::GetMaterialVariables()
@@ -631,12 +726,14 @@ std::string ShaderBuilder::GetStaticPointLightText(const PointLight* pointLight)
 	const Vector3& lightColor = pointLight->GetColor();
 	float lightIntensity = pointLight->GetIntensity();
 	float radius = pointLight->GetRadius();
+	bool isShadowEnabled = pointLight->GetIsShadowEnabled();
 
 	std::string lightName = pointLight->GetName();
 
 	return "vec3 " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + " = vec3(" + std::to_string(lightPosition.x) + ", " + std::to_string(lightPosition.y) + ", " + std::to_string(lightPosition.z) + ");\n" +
 		   "vec3 " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + " = vec3(" + std::to_string(lightColor.x * lightIntensity) + ", " + std::to_string(lightColor.y * lightIntensity) + ", " + std::to_string(lightColor.z * lightIntensity) + ");\n" +
-		   "float " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + " = " + std::to_string(radius) + ";\n";
+		   "float " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + " = " + std::to_string(radius) + ";\n" +
+		   "bool " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + " = " + (isShadowEnabled ? "true" : "false") + ";\n";
 }
 
 std::string ShaderBuilder::GetPointLightColorSummationText(const std::string& lightVariableName)
@@ -650,8 +747,7 @@ std::string ShaderBuilder::GetPointLightColorSummationText(const std::string& li
 std::string ShaderBuilder::GetDirectionalLightUniformTexts(const std::string& lightVariableName)
 {
 	return "uniform vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ";\n" +
-		   "uniform vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ";\n" +
-		   "uniform vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + ";\n\n";
+		   "uniform vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ";\n\n";
 }
 
 std::string ShaderBuilder::GetDirectionalLightColorFunctionText()
@@ -799,9 +895,14 @@ std::string ShaderBuilder::GetSpotLightColorSummationText(const std::string& lig
 std::string ShaderBuilder::GetLightShadowUniforms()
 {
 	std::string uniforms = "\n//---------------------------------------- SHADOW MAPS ----------------------------------------\n";
-	for (const std::string& lightName : lightSpaceFragmentPositionLightNames_)
+	for (const std::string& lightName : directionalLightNamesLightSpaceFragmentPosition_)
 	{
-		uniforms += std::string("uniform sampler2DShadow ") + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_MAP_PREFIX + lightName + ";\n";
+		uniforms += std::string("uniform sampler2DShadow ") + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_MAP_PREFIX + lightName + ";\n";
+	}
+
+	for (const std::string& lightName : pointLightNamesLightSpaceFragmentPosition_)
+	{
+		uniforms += std::string("uniform samplerCubeShadow ") + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_MAP_PREFIX + lightName + ";\n";
 	}
 	uniforms += "//----------------------------------------------------------------------------------------------\n";
 	uniforms += "\n";
@@ -809,7 +910,29 @@ std::string ShaderBuilder::GetLightShadowUniforms()
 	return uniforms;
 }
 
-std::string ShaderBuilder::GetShadowCheck(const std::string& lightName)
+std::string ShaderBuilder::PointLight_GetShadowCheck(const std::string& lightName)
+{
+	return R"(
+	if()" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"()
+	{
+		vec3 )" + std::string(SHADER_VARIABLE_NAMES::SHADOW::FRAGMENT_TO_LIGHT_VECTOR_PREFIX) + lightName + R"( = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + ".xyz + " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + " * 0.01f - " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + R"(;
+		float )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + R"( = texture()" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_MAP_PREFIX + lightName + ", vec4(" + SHADER_VARIABLE_NAMES::SHADOW::FRAGMENT_TO_LIGHT_VECTOR_PREFIX + lightName + R"(, 0.15f)).x;
+		)" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + R"( *= )" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + R"(;
+		if(length()" + std::string(SHADER_VARIABLE_NAMES::SHADOW::FRAGMENT_TO_LIGHT_VECTOR_PREFIX) + lightName + ") < " + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + R"()
+		{
+			vec3 )" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX + lightName + " = CalculatePointLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + R"();
+			)" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR + R"( += )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + " * " + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX + lightName + R"(;
+		}
+	}
+	else
+	{
+		vec3 )" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX + lightName + " = CalculatePointLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + R"();
+		)" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR + R"( += )" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX + lightName + R"(;
+	}
+)";
+}
+
+std::string ShaderBuilder::DirectionalLight_GetShadowCheck(const std::string& lightName)
 {
 	return R"(
 	vec3 projCoords_)" + lightName + R"( = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX) + lightName + ".xyz / " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightName + R"(.w;
@@ -817,11 +940,11 @@ std::string ShaderBuilder::GetShadowCheck(const std::string& lightName)
 	if(	0.f <= projCoords_)" + lightName + R"(.x && projCoords_)" + lightName + R"(.x <= 1.f &&
 		0.f <= projCoords_)" + lightName + R"(.y && projCoords_)" + lightName + R"(.y <= 1.f)
 	{
-		float )" + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_VALUE_PREFIX + lightName + R"( = textureProj()" + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_MAP_PREFIX + lightName + ", " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightName + R"();
-		if(0.f < )" + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_VALUE_PREFIX + lightName + R"()
+		float )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + R"( = textureProj()" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_MAP_PREFIX + lightName + ", " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightName + R"();
+		if(0.f < )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + R"()
 		{
 			vec3 )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX) + lightName + " = CalculateDirectionalLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"(); 
-			)" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + R"( += )" + SHADER_VARIABLE_NAMES::LIGHT::SHADOW_VALUE_PREFIX + lightName + " * " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX) + lightName + R"(;
+			)" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + R"( += )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + " * " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX) + lightName + R"(;
 		}
 	}
 	else

@@ -338,9 +338,8 @@ void Renderer::Render(RenderPassType renderPassType)
 			break;
 		}
 		case RenderPassType::Shadow:
+		case RenderPassType::PointLightShadow:
 		{
-			glEnable(GL_CULL_FACE);
-			glDisable(GL_CULL_FACE);
 			glClear(GL_DEPTH_BUFFER_BIT);
 			break;
 		}
@@ -722,6 +721,18 @@ void Renderer::BindShadowTextures(Shader* shader)
 		if (directionalLight->GetIsShadowEnabled())
 		{
 			Texture* shadowTexture = directionalLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
+	}
+
+	const std::vector<PointLight*>& staticPointLights = scene->GetStaticPointLights();
+	size_t staticPointLightCount = staticPointLights.size();
+	for (size_t i = 0; i < staticPointLightCount; i++)
+	{
+		PointLight* pointLight = staticPointLights[i];
+		if (pointLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = pointLight->GetShadowMapTexture();
 			shadowTexture->Bind(shader);
 		}
 	}

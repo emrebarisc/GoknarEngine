@@ -26,18 +26,12 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace LIGHT
 	{
-		const char* SHADOW_MAP_PREFIX = "shadowMap_";
-		const char* VIEW_MATRIX_PREFIX = "lightViewMatrix_";
-		const char* SHADOW_VALUE_PREFIX = "shadowValue_";
-
 		const char* LIGHT_COLOR = "lightColor";
 		const char* LIGHT_COLOR_PREFIX = "lightColor_";
 
 		const char* DIRECTIONAL_LIGHT = "DirectionalLight";
 		const char* POINT_LIGHT = "PointLight";
 		const char* SPOT_LIGHT = "SpotLight";
-
-		const char* SHADOW_CALCULATION_FUNCTION_NAME = "ShadowCalculation";
 	}
 
 	inline namespace LIGHT_KEYWORDS
@@ -50,11 +44,23 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* FALLOFF_ANGLE = "FalloffAngle";
 
 		const char* IS_CASTING_SHADOW = "IsCastingShadow";
-		const char* SHADOW_MAP = "ShadowMap";
+		const char* CALCULATE_LIGHT_ADDITION = "CalculateFullLightAddition";
+	}
 
-		const char* SHADOW_MAP_FRAGMENT_SHADER_LIGHT_TYPE = "lightType";
+	inline namespace SHADOW
+	{
+		const char* FRAGMENT_TO_LIGHT_VECTOR_PREFIX = "fragmentToLightVector_";
+		const char* SHADOW_MAP_PREFIX = "shadowMap_";
+		const char* VIEW_MATRIX_PREFIX = "lightViewMatrix_";
+		const char* SHADOW_VALUE_PREFIX = "shadowValue_";
+
+		const char* POINT_LIGHT_VIEW_MATRICES_ARRAY = "viewMatrices";
+
 		const char* SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_POSITION = "pointLightPosition";
 		const char* SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_RADIUS = "pointLightRadius";
+
+		const char* LIGHT_POSITION = "lightPosition";
+		const char* LIGHT_RADIUS = "lightRadius";
 	}
 
 	inline namespace SKELETAL_MESH
@@ -83,6 +89,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* MODEL_MATRIX = "modelMatrix";
 		const char* VIEW_MATRIX = "viewMatrix";
 		const char* PROJECTION_MATRIX = "projectionMatrix";
+		const char* VIEW_PROJECTION_MATRIX = "viewProjectionMatrix";
 		const char* TRANSFORMATION_MATRIX = "transformationMatrix";
 		const char* VIEW_POSITION = "viewPosition";
 	}

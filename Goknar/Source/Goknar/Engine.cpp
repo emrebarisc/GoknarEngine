@@ -467,6 +467,4 @@ void Engine::SetShaderEngineVariables(Shader* shader)
 {
 	shader->SetFloat(SHADER_VARIABLE_NAMES::TIMING::DELTA_TIME, deltaTime_);
 	shader->SetFloat(SHADER_VARIABLE_NAMES::TIMING::ELAPSED_TIME, elapsedTime_);
-
-	renderer_->SetLightUniforms(shader);
 }

@@ -25,17 +25,14 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace LIGHT
 	{
-		extern const char* SHADOW_MAP_PREFIX;
-		extern const char* VIEW_MATRIX_PREFIX;
-		extern const char* SHADOW_VALUE_PREFIX;
 		extern const char* LIGHT_COLOR;
 		extern const char* LIGHT_COLOR_PREFIX;
+
+		extern const char* IS_CASTING_SHADOW;
 
 		extern const char* DIRECTIONAL_LIGHT;
 		extern const char* POINT_LIGHT;
 		extern const char* SPOT_LIGHT;
-
-		extern const char* SHADOW_CALCULATION_FUNCTION_NAME;
 	}
 
 	inline namespace LIGHT_KEYWORDS
@@ -48,11 +45,24 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* FALLOFF_ANGLE;
 
 		extern const char* IS_CASTING_SHADOW;
-		extern const char* SHADOW_MAP;
+		extern const char* CALCULATE_LIGHT_ADDITION;
+	}
 
-		extern const char* SHADOW_MAP_FRAGMENT_SHADER_LIGHT_TYPE;
+	inline namespace SHADOW
+	{
+		extern const char* FRAGMENT_TO_LIGHT_VECTOR_PREFIX;
+		extern const char* SHADOW_MAP_PREFIX;
+		extern const char* VIEW_MATRIX_PREFIX;
+
+		extern const char* SHADOW_VALUE_PREFIX;
+
+		extern const char* POINT_LIGHT_VIEW_MATRICES_ARRAY;
+
 		extern const char* SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_POSITION;
 		extern const char* SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_RADIUS;
+
+		extern const char* LIGHT_POSITION;
+		extern const char* LIGHT_RADIUS;
 	}
 
 	inline namespace SKELETAL_MESH
@@ -80,6 +90,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* RELATIVE_TRANSFORMATION_MATRIX;
 		extern const char* MODEL_MATRIX;
 		extern const char* VIEW_MATRIX;
+		extern const char* VIEW_PROJECTION_MATRIX;
 		extern const char* PROJECTION_MATRIX;
 		extern const char* TRANSFORMATION_MATRIX;
 		extern const char* VIEW_POSITION;

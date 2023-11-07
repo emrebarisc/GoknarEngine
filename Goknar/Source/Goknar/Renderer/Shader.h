@@ -47,6 +47,16 @@ public:
 		fragmentShaderScript_ = fragmentShaderScript;
 	}
 
+	void SetGeometryShaderScript(const std::string& geometryShaderScript)
+	{
+		geometryShaderScript_ = geometryShaderScript;
+	}
+
+	const std::string& GetGeometryShaderScript()
+	{
+		return geometryShaderScript_;
+	}
+
 	void SetVertexShaderPath(const std::string& vertexShaderPath)
 	{
 		vertexShaderPath_ = ContentDir + vertexShaderPath;
@@ -55,6 +65,11 @@ public:
 	void SetFragmentShaderPath(const std::string& fragmentShaderPath)
 	{
 		fragmentShaderPath_ = ContentDir + fragmentShaderPath;
+	}
+
+	void SetGeometryShaderPath(const std::string& geometryShaderPath)
+	{
+		geometryShaderPath_ = ContentDir + geometryShaderPath;
 	}
 
 	ShaderType GetShaderType() const
@@ -94,11 +109,11 @@ public:
 
 	void Use() const;
 
-	void SetBool(const char* name, bool value);
+	void SetBool(const char* name, bool value) const;
 	void SetInt(const char* name, int value) const;
 	void SetFloat(const char* name, float value) const;
 	void SetMatrix(const char* name, const Matrix& matrix) const;
-	void SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector);
+	void SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector) const;
 	void SetVector3(const char* name, const Vector3& vector) const;
 
 protected:
@@ -108,9 +123,11 @@ private:
 
 	std::string vertexShaderPath_{ "" };
 	std::string fragmentShaderPath_{ "" };
+	std::string geometryShaderPath_{ "" };
 
 	std::string vertexShaderScript_{ "" };
 	std::string fragmentShaderScript_{ "" };
+	std::string geometryShaderScript_{ "" };
 
 	GEuint programId_{ 0 };
 

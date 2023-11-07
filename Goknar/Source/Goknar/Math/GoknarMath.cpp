@@ -244,10 +244,10 @@ void GoknarMath::LookAt(Matrix& viewingMatrix, const Vector3& position, const Ve
 
 	Vector3 up = forward.Cross(left);
 
-	viewingMatrix = Matrix(	left.x, up.x, forward.x, 0.f,
-							left.y, up.y, forward.y, 0.f,
-							left.z, up.z, forward.z, 0.f,
-							-left.x * position.x - left.y * position.y - left.z * position.z, -up.x * position.x - up.y * position.y - up.z * position.z, -forward.x * position.x - forward.y * position.y - forward.z * position.z, 1.f);
+	viewingMatrix = Matrix(	left.x,			left.y,				left.z,				-left.x * position.x - left.y * position.y - left.z * position.z,
+							up.x,			up.y,				up.z,				-up.x * position.x - up.y * position.y - up.z * position.z,
+							forward.x,		forward.y,			forward.z,			-forward.x * position.x - forward.y * position.y - forward.z * position.z,
+							0.f, 0.f, 0.f, 1.f);
 }
 
 inline float GoknarMath::Determinant(const Vector3& a, const Vector3& b, const Vector3& c)

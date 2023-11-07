@@ -40,6 +40,7 @@ void ShadowManager::RenderShadowMaps()
 			continue;
 		}
 
+		currentlyRenderingLight_ = directionalLight;
 		directionalLight->RenderShadowMap();
 	}
 
@@ -53,6 +54,7 @@ void ShadowManager::RenderShadowMaps()
 			continue;
 		}
 
+		currentlyRenderingLight_ = pointLight;
 		pointLight->RenderShadowMap();
 	}
 
@@ -60,4 +62,14 @@ void ShadowManager::RenderShadowMaps()
 	cameraManager->SetActiveCamera(mainCamera);
 
 	EXIT_ON_GL_ERROR("ShadowManager::RenderShadowMaps");
+}
+
+void ShadowManager::SetShadowRenderPassShaderUniforms(const Shader* shader) const
+{
+	if (!currentlyRenderingLight_)
+	{
+		return;
+	}
+
+	currentlyRenderingLight_->SetShadowRenderPassShaderUniforms(shader);
 }

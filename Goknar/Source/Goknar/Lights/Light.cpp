@@ -15,13 +15,11 @@ Light::~Light()
 	delete shadowMapFramebuffer_;
 }
 
-void Light::SetShaderUniforms(const Shader* shader) const
+void Light::SetShaderUniforms(const Shader* shader)
 {
-	std::string positionName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION;
-	shader->SetVector3(positionName.c_str(), position_);
-
-	std::string intensityName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY;
-	shader->SetVector3(intensityName.c_str(), color_ * intensity_);
+	shader->SetVector3((name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION).c_str(), position_);
+	shader->SetVector3((name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY).c_str(), color_ * intensity_);
+	shader->SetBool((name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW).c_str(), isShadowEnabled_);
 }
 
 void Light::Init()
@@ -39,14 +37,10 @@ void Light::Init()
 
 		shadowMapTexture_->SetWidth(shadowWidth_);
 		shadowMapTexture_->SetHeight(shadowHeight_);
-		shadowMapTexture_->SetTextureMinFilter(TextureMinFilter::LINEAR);
-		shadowMapTexture_->SetTextureMagFilter(TextureMagFilter::LINEAR);
 		shadowMapTexture_->SetTextureFormat(TextureFormat::DEPTH);
 		shadowMapTexture_->SetTextureInternalFormat(TextureInternalFormat::DEPTH_24);
 		shadowMapTexture_->SetTextureType(TextureType::FLOAT);
 		shadowMapTexture_->SetTextureDataType(TextureDataType::DYNAMIC);
-		shadowMapTexture_->SetTextureCompareMode(TextureCompareMode::CompareRefToTexture);
-		shadowMapTexture_->SetTextureCompareFunc(TextureCompareFunc::LEQUAL);
 		shadowMapTexture_->Init();
 		shadowMapTexture_->Bind();
 

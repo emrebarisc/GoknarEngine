@@ -6,10 +6,12 @@
 #include "Engine.h"
 #include "Scene.h"
 
+#include "Goknar/Contents/Image.h"
+#include "Goknar/Lights/ShadowManager/ShadowManager.h"
+#include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
-#include "Goknar/Contents/Image.h"
 
 Material::Material() : 
 	ambientReflectance_(Vector3::ZeroVector), 
@@ -26,6 +28,7 @@ Material::~Material()
 	delete renderPassTypeShaderMap_[RenderPassType::Main];
 	delete renderPassTypeShaderMap_[RenderPassType::GBuffer];
 	delete renderPassTypeShaderMap_[RenderPassType::Shadow];
+	delete renderPassTypeShaderMap_[RenderPassType::PointLightShadow];
 }
 
 void Material::Build(MeshUnit* meshUnit)
@@ -47,27 +50,35 @@ void Material::Build(MeshUnit* meshUnit)
 
 	Shader* shadowShader = new Shader();
 	shadowShader->SetVertexShaderScript(mainShaderVertexShaderScript);
-	shadowShader->SetFragmentShaderScript(ShaderBuilder::GetShaderPassFragmentShaderScript());
+	shadowShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_ShadowPass());
 	renderPassTypeShaderMap_[RenderPassType::Shadow] = shadowShader;
 
+	Shader* pointLightShadowShader = new Shader();
+	pointLightShadowShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_PointLightShadowPass(meshUnit));
+	pointLightShadowShader->SetGeometryShaderScript(ShaderBuilder::GetGeometryShaderScript_PointLightShadowPass());
+	pointLightShadowShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_PointLightShadowPass());
+	renderPassTypeShaderMap_[RenderPassType::PointLightShadow] = pointLightShadowShader;
 }
 
 void Material::PreInit()
 {
 	renderPassTypeShaderMap_[RenderPassType::Main]->PreInit();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->PreInit();
+	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->PreInit();
 }
 
 void Material::Init()
 {
 	renderPassTypeShaderMap_[RenderPassType::Main]->Init();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->Init();
+	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->Init();
 }
 
 void Material::PostInit()
 {
 	renderPassTypeShaderMap_[RenderPassType::Main]->PostInit();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->PostInit();
+	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->PostInit();
 }
 
 void Material::Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType) const
@@ -104,10 +115,12 @@ void Material::SetShaderVariables(const Matrix& worldTransformationMatrix, const
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, diffuseReflectance_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, phongExponent_);
-	}
-	else if (renderPassType == RenderPassType::Shadow)
-	{
 
+		engine->GetRenderer()->SetLightUniforms(shader);
+	}
+	else if (renderPassType == RenderPassType::Shadow || renderPassType == RenderPassType::PointLightShadow)
+	{
+		engine->GetRenderer()->GetShadowManager()->SetShadowRenderPassShaderUniforms(shader);
 	}
 
 	shader->SetMVP(worldTransformationMatrix, relativeTransformationMatrix);

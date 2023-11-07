@@ -34,7 +34,8 @@ public:
 
 	void Init() override;
 
-	void SetShaderUniforms(const Shader* shader) const;
+	void SetShaderUniforms(const Shader* shader) override;
+	void SetShadowRenderPassShaderUniforms(const Shader* shader) override;
 
 	const Vector3& GetDirection() const
 	{

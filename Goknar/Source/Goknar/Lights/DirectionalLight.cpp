@@ -25,11 +25,16 @@ void DirectionalLight::Init()
 		shadowMapFramebuffer_ = new Framebuffer();
 
 		shadowMapTexture_ = new Texture();
+		shadowMapTexture_->SetName(SHADER_VARIABLE_NAMES::SHADOW::SHADOW_MAP_PREFIX + name_);
 		shadowMapTexture_->SetTextureBindTarget(TextureBindTarget::TEXTURE_2D);
 		shadowMapTexture_->SetTextureImageTarget(TextureImageTarget::TEXTURE_2D);
-		shadowMapTexture_->SetName(LIGHT::SHADOW_MAP_PREFIX + name_);
-		shadowMapTexture_->SetTextureWrappingS(TextureWrapping::REPEAT);
-		shadowMapTexture_->SetTextureWrappingT(TextureWrapping::REPEAT);
+		shadowMapTexture_->SetTextureWrappingS(TextureWrapping::CLAMP_TO_EDGE);
+		shadowMapTexture_->SetTextureWrappingT(TextureWrapping::CLAMP_TO_EDGE);
+		shadowMapTexture_->SetTextureFormat(TextureFormat::DEPTH);
+		shadowMapTexture_->SetTextureMinFilter(TextureMinFilter::LINEAR);
+		shadowMapTexture_->SetTextureMagFilter(TextureMagFilter::LINEAR);
+		shadowMapTexture_->SetTextureCompareMode(TextureCompareMode::COMPARE_REF_TO_TEXTURE);
+		shadowMapTexture_->SetTextureCompareFunc(TextureCompareFunc::LEQUAL);
 
 		Vector3 lightUpVector = Vector3::Cross(Vector3::Cross(direction_, Vector3::UpVector).GetNormalized(), direction_).GetNormalized();
 		shadowMapRenderCamera_ = new Camera(Vector3::ZeroVector, direction_, lightUpVector);
@@ -45,31 +50,37 @@ void DirectionalLight::Init()
 	Light::Init();
 }
 
-void DirectionalLight::SetShaderUniforms(const Shader* shader) const
+void DirectionalLight::SetShaderUniforms(const Shader* shader)
 {
-	std::string directionName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION;
-	shader->SetVector3(directionName.c_str(), direction_);
-
-	std::string radianceName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY;
-	shader->SetVector3(radianceName.c_str(), color_ * intensity_);
-
-	std::string isCastingShadowName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW;
-	shader->SetInt(isCastingShadowName.c_str(), isShadowEnabled_);
-
-	CameraManager* cameraManager = engine->GetCameraManager();
-
-	Matrix biasedViewMatrix = shadowMapRenderCamera_->GetViewingMatrix(); 
-	biasedViewMatrix *= shadowMapRenderCamera_->GetProjectionMatrix();
-	biasedViewMatrix *=
-		Matrix
+	if (GetLightMobility() == LightMobility::Movable)
 	{
-		0.5f, 0.f, 0.f, 0.f,
-		0.f, 0.5f, 0.f, 0.f,
-		0.f, 0.f, 0.5f - 0.0015f, 0.f,
-		0.5f, 0.5f, 0.5f, 1.f
-	};
+		std::string directionName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION;
+		shader->SetVector3(directionName.c_str(), direction_);
 
-	shader->SetMatrix((SHADER_VARIABLE_NAMES::LIGHT::VIEW_MATRIX_PREFIX + name_).c_str(), biasedViewMatrix);
+		std::string radianceName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY;
+		shader->SetVector3(radianceName.c_str(), color_ * intensity_);
+
+		std::string isCastingShadowName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW;
+		shader->SetInt(isCastingShadowName.c_str(), isShadowEnabled_);
+	}
+
+	if (isShadowEnabled_)
+	{
+		biasedShadowViewProjectionMatrix_ =
+			Matrix
+		{
+			0.5f, 0.f, 0.f, 0.5f,
+			0.f, 0.5f, 0.f, 0.5f,
+			0.f, 0.f, 0.5f - 0.0015f, 0.5f,
+			0.f, 0.f, 0.f, 1.f
+		} * shadowMapRenderCamera_->GetViewProjectionMatrix();
+
+		shader->SetMatrix((SHADER_VARIABLE_NAMES::SHADOW::VIEW_MATRIX_PREFIX + name_).c_str(), biasedShadowViewProjectionMatrix_);
+	}
+}
+
+void DirectionalLight::SetShadowRenderPassShaderUniforms(const Shader* shader)
+{
 }
 
 void DirectionalLight::RenderShadowMap()
@@ -86,7 +97,6 @@ void DirectionalLight::RenderShadowMap()
 	//shadowMapRenderCamera->SetPosition(Vector3{ 20.f, 0.f, 0.f } - shadowMapRenderCamera->GetForwardVector() * 25.f);
 
 	cameraManager->SetActiveCamera(shadowMapRenderCamera);
-	glViewport(0, 0, shadowMapTexture_->GetWidth(), shadowMapTexture_->GetHeight());
 	shadowMapFramebuffer_->Bind();
 
 	Renderer* renderer = engine->GetRenderer();

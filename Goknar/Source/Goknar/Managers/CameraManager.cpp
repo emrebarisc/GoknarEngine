@@ -36,8 +36,5 @@ void CameraManager::AddCamera(Camera* camera)
 void CameraManager::SetActiveCamera(Camera* camera)
 {
 	activeCamera_ = camera;
-	if (activeCamera_->GetCameraType() == CameraType::Scene)
-	{
-		engine->GetWindowManager()->UpdateWindow();
-	}
+	engine->GetWindowManager()->UpdateWindow();
 }
