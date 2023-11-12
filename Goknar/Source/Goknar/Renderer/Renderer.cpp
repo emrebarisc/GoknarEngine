@@ -725,6 +725,18 @@ void Renderer::BindShadowTextures(Shader* shader)
 		}
 	}
 
+	const std::vector<DirectionalLight*>& dynamicDirectionalLights = scene->GetDynamicDirectionalLights();
+	size_t dynamicDirectionalLightCount = dynamicDirectionalLights.size();
+	for (size_t i = 0; i < dynamicDirectionalLightCount; i++)
+	{
+		DirectionalLight* directionalLight = dynamicDirectionalLights[i];
+		if (directionalLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = directionalLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
+	}
+
 	const std::vector<PointLight*>& staticPointLights = scene->GetStaticPointLights();
 	size_t staticPointLightCount = staticPointLights.size();
 	for (size_t i = 0; i < staticPointLightCount; i++)
@@ -733,6 +745,42 @@ void Renderer::BindShadowTextures(Shader* shader)
 		if (pointLight->GetIsShadowEnabled())
 		{
 			Texture* shadowTexture = pointLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
+	}
+
+	const std::vector<PointLight*>& dynamicPointLights = scene->GetDynamicPointLights();
+	size_t dynamicPointLightCount = dynamicPointLights.size();
+	for (size_t i = 0; i < dynamicPointLightCount; i++)
+	{
+		PointLight* pointLight = dynamicPointLights[i];
+		if (pointLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = pointLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
+	}
+
+	const std::vector<SpotLight*>& staticSpotLights = scene->GetStaticSpotLights();
+	size_t staticSpotLightCount = staticSpotLights.size();
+	for (size_t i = 0; i < staticSpotLightCount; i++)
+	{
+		SpotLight* spotLight = staticSpotLights[i];
+		if (spotLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = spotLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
+	}
+
+	const std::vector<SpotLight*>& dynamicSpotLights = scene->GetDynamicSpotLights();
+	size_t dynamicSpotLightCount = dynamicSpotLights.size();
+	for (size_t i = 0; i < dynamicSpotLightCount; i++)
+	{
+		SpotLight* spotLight = dynamicSpotLights[i];
+		if (spotLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = spotLight->GetShadowMapTexture();
 			shadowTexture->Bind(shader);
 		}
 	}

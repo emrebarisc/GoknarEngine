@@ -3,6 +3,8 @@
 #include "Goknar/Scene.h"
 
 #include "Archer.h"
+#include "Dancer.h"
+#include "LightController.h"
 #include "Goknar/Camera.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Managers/WindowManager.h"
@@ -22,6 +24,8 @@ public:
 
 private:
 	Archer* archer_;
+	Dancer* dancer_;
+	LightController* lightController_;
 };
 
 Game::Game() : Application()
@@ -37,6 +41,8 @@ Game::Game() : Application()
 	lastFrameTimePoint = currentTimePoint;
 
 	archer_ = new Archer();
+	dancer_ = new Dancer();
+	lightController_ = new LightController();
 
 	engine->GetWindowManager()->SetIsInFullscreen(false);
 	//engine->SetTimeScale(0.1f);

@@ -89,9 +89,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* WORLD_TRANSFORMATION_MATRIX;
 		extern const char* RELATIVE_TRANSFORMATION_MATRIX;
 		extern const char* MODEL_MATRIX;
-		extern const char* VIEW_MATRIX;
 		extern const char* VIEW_PROJECTION_MATRIX;
-		extern const char* PROJECTION_MATRIX;
 		extern const char* TRANSFORMATION_MATRIX;
 		extern const char* VIEW_POSITION;
 	}

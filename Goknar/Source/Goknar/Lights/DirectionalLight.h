@@ -1,8 +1,9 @@
 #ifndef __DIRECTIONALLIGHT_H__
 #define __DIRECTIONALLIGHT_H__
 
-#include "Math/Matrix.h"
 #include "Light.h"
+
+#include "Math/Matrix.h"
 
 #include "Goknar/Managers/ObjectIDManager.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
@@ -27,10 +28,9 @@ public:
         return direction_;
     }
 
-	void SetDirection(const Vector3& direction)
-	{
-		direction_ = direction.GetNormalized();
-	}
+	void SetDirection(const Vector3& direction);
+
+	virtual void SetIsShadowEnabled(bool isShadowEnabled) override;
 
 	void RenderShadowMap() override;
 	

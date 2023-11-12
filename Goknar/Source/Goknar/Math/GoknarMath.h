@@ -516,6 +516,8 @@ struct GOKNAR_API Vector3
 	Vector3 Translate(const Vector3& translation, bool isPositionVector = true) const;
 	Vector3 RotatePoint(const Vector3& rotation) const;
 	Vector3 RotateVector(const Vector3& rotation) const;
+	Vector3 RotatePointAroundAxis(const Vector3& axis, float angle);
+	Vector3 RotateVectorAroundAxis(const Vector3& axis, float angle);
 	Vector3 Scale(const Vector3& scale, bool isPositionVector = true) const;
 
 	static const Vector3 ZeroVector;

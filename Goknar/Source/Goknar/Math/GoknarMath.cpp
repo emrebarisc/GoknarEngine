@@ -90,17 +90,17 @@ void Vector3::ConvertRadianToDegree()
 Vector3 Vector3::GetOrthonormalBasis() const
 {
 	Vector3 maximizedValue = Vector3::ZeroVector;
-	if (x < y && x < z)
+	if (abs(x) <= abs(y) && abs(x) <= abs(z))
 	{
-		maximizedValue = Vector3(1.f, y, z);
+		maximizedValue = Vector3(x < 0 ? -1.f : 1.f, y, z);
 	}
-	else if (y < x && y < z)
+	else if (abs(y) <= abs(x) && abs(y) <= abs(z))
 	{
-		maximizedValue = Vector3(x, 1.f, z);
+		maximizedValue = Vector3(x, y < 0 ? -1.f : 1.f, z);
 	}
 	else
 	{
-		maximizedValue = Vector3(x, y, 1.f);
+		maximizedValue = Vector3(x, y, z < 0 ? -1.f : 1.f);
 	}
 
 	Vector3 firstCrossed = Vector3::Cross(maximizedValue, *this);
@@ -179,6 +179,22 @@ Vector3 Vector3::RotatePoint(const Vector3& rotation) const
 Vector3 Vector3::RotateVector(const Vector3& rotation) const
 {
 	return Rotate(rotation, false);
+}
+
+Vector3 Vector3::RotatePointAroundAxis(const Vector3& axis, float angle)
+{
+	Matrix rotationMatrix = Matrix::GetRotationMatrixAboutAnAxis(axis, angle);
+
+	Vector3 result = rotationMatrix * Vector4(*this, 1.f);
+	return result;
+}
+
+Vector3 Vector3::RotateVectorAroundAxis(const Vector3& axis, float angle)
+{
+	Matrix rotationMatrix = Matrix::GetRotationMatrixAboutAnAxis(axis, angle);
+
+	Vector3 result = rotationMatrix * Vector4(*this, 0.f);
+	return result;
 }
 
 Vector3 Vector3::Scale(const Vector3& scale, bool isPositionVector/* = true*/) const

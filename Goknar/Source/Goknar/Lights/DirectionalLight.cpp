@@ -36,7 +36,7 @@ void DirectionalLight::Init()
 		shadowMapTexture_->SetTextureCompareMode(TextureCompareMode::COMPARE_REF_TO_TEXTURE);
 		shadowMapTexture_->SetTextureCompareFunc(TextureCompareFunc::LEQUAL);
 
-		Vector3 lightUpVector = Vector3::Cross(Vector3::Cross(direction_, Vector3::UpVector).GetNormalized(), direction_).GetNormalized();
+		Vector3 lightUpVector = Vector3::Cross(Vector3::Cross(direction_, direction_.RotateVectorAroundAxis(direction_.GetOrthonormalBasis(), 1.5708f)).GetNormalized(), direction_).GetNormalized();
 		shadowMapRenderCamera_ = new Camera(Vector3::ZeroVector, direction_, lightUpVector);
 		shadowMapRenderCamera_->SetProjection(CameraProjection::Orthographic);
 		shadowMapRenderCamera_->SetCameraType(CameraType::Shadow);
@@ -52,7 +52,7 @@ void DirectionalLight::Init()
 
 void DirectionalLight::SetShaderUniforms(const Shader* shader)
 {
-	if (GetLightMobility() == LightMobility::Movable)
+	if (mobility_ == LightMobility::Dynamic)
 	{
 		std::string directionName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION;
 		shader->SetVector3(directionName.c_str(), direction_);
@@ -83,20 +83,39 @@ void DirectionalLight::SetShadowRenderPassShaderUniforms(const Shader* shader)
 {
 }
 
+void DirectionalLight::SetDirection(const Vector3& direction)
+{
+	direction_ = direction.GetNormalized();
+
+	if (isShadowEnabled_)
+	{
+		shadowMapRenderCamera_->SetForwardVector(direction);
+	}
+}
+
+void DirectionalLight::SetIsShadowEnabled(bool isShadowEnabled)
+{
+	Light::SetIsShadowEnabled(isShadowEnabled);
+	if (isShadowEnabled && shadowMapRenderCamera_)
+	{
+		shadowMapRenderCamera_->SetForwardVector(direction_);
+	}
+}
+
+
 void DirectionalLight::RenderShadowMap()
 {
 	CameraManager* cameraManager = engine->GetCameraManager();
-	Camera* mainCamera = engine->GetCameraManager()->GetActiveCamera();
+	Camera* mainCamera = cameraManager->GetActiveCamera();
 
-	Camera* shadowMapRenderCamera = GetShadowMapRenderCamera();
-	Vector3 shadowCameraForwardVector = shadowMapRenderCamera->GetForwardVector();
+	Vector3 shadowCameraForwardVector = shadowMapRenderCamera_->GetForwardVector();
 	Vector3 mainCameraForwardVector = mainCamera->GetForwardVector();
 	Vector3 mainCameraPosition = mainCamera->GetPosition();
 	Vector3 position{ mainCameraPosition.x, mainCameraPosition.y, mainCameraPosition.z };
-	shadowMapRenderCamera->SetPosition(position + 20.f * Vector3{ mainCameraForwardVector.x, mainCameraForwardVector.y, 0.f } - 20.f * Vector3{ shadowCameraForwardVector.x, shadowCameraForwardVector.y, 0.f });
-	//shadowMapRenderCamera->SetPosition(Vector3{ 20.f, 0.f, 0.f } - shadowMapRenderCamera->GetForwardVector() * 25.f);
+	shadowMapRenderCamera_->SetPosition(position + 20.f * Vector3{ mainCameraForwardVector.x, mainCameraForwardVector.y, 0.f } - 20.f * Vector3{ shadowCameraForwardVector.x, shadowCameraForwardVector.y, 0.f });
+	//shadowMapRenderCamera->SetPosition(Vector3{ 20.f, 0.f, 0.f } - shadowMapRenderCamera_->GetForwardVector() * 25.f);
 
-	cameraManager->SetActiveCamera(shadowMapRenderCamera);
+	cameraManager->SetActiveCamera(shadowMapRenderCamera_);
 	shadowMapFramebuffer_->Bind();
 
 	Renderer* renderer = engine->GetRenderer();

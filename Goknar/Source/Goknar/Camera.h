@@ -88,7 +88,7 @@ public:
 	{
 		if (EPSILON < Vector3::Distance(forwardVector_, forwardVector))
 		{
-			forwardVector_ = forwardVector;
+			forwardVector_ = forwardVector.GetNormalized();
 			leftVector_ = forwardVector_.Cross(upVector_);
 			upVector_ = leftVector_.Cross(forwardVector_);
 

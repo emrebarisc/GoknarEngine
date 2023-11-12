@@ -41,6 +41,8 @@ public:
 
     virtual void SetPosition(const Vector3& position) override;
 
+    virtual void SetIsShadowEnabled(bool isShadowEnabled) override;
+
 protected:
 
 private:

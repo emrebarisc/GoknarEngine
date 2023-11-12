@@ -49,6 +49,7 @@ public:
 
 	void BuildShader(MeshUnit* mesh, Material* material);
 	std::string BuildVertexShader(MeshUnit* mesh);
+	std::string BuildVertexShader_ShadowPass(MeshUnit* mesh);
 	std::string BuildVertexShader_PointLightShadowPass(MeshUnit* mesh);
 
 	bool GetIsInstatiated() const
@@ -82,6 +83,7 @@ private:
 	std::string VS_GetUniforms();
 	std::string VS_GetLightUniforms();
 	std::string VS_GetMain();
+	std::string VS_GetMain_ShadowPass();
 	std::string VS_GetMain_PointLightShadowPass();
 	std::string VS_GetVertexNormalText();
 
@@ -123,6 +125,7 @@ private:
 	std::string GetLightShadowUniforms();
 	std::string PointLight_GetShadowCheck(const std::string& lightName);
 	std::string DirectionalLight_GetShadowCheck(const std::string& lightName);
+	std::string SpotLight_GetShadowCheck(const std::string& lightName);
 	std::string GetShadowCalculationFunction();
 
 	// Fragment shader variables
@@ -133,8 +136,8 @@ private:
 	std::string fragmentShaderInsideMain_;
 	std::string fragmentShaderVertexNormalText_;
 
-	std::vector<std::string> pointLightNamesLightSpaceFragmentPosition_;
-	std::vector<std::string> directionalLightNamesLightSpaceFragmentPosition_;
+	std::vector<std::string> pointLightNamesForShaderSampler_;
+	std::vector<std::string> directionalAndSpotLightNamesForShadowCalculation_;
 
 	std::string vertexShaderModelMatrixVariable_;
 

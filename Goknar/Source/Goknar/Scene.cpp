@@ -210,7 +210,7 @@ void Scene::AddPointLight(PointLight* pointLight)
 	case LightMobility::Static:
 		staticPointLights_.push_back(pointLight);
 		break;
-	case LightMobility::Movable:
+	case LightMobility::Dynamic:
 		dynamicPointLights_.push_back(pointLight);
 		break;
 	}
@@ -224,7 +224,7 @@ void Scene::AddDirectionalLight(DirectionalLight* directionalLight)
 	case LightMobility::Static:
 		staticDirectionalLights_.push_back(directionalLight);
 		break;
-	case LightMobility::Movable:
+	case LightMobility::Dynamic:
 		dynamicDirectionalLights_.push_back(directionalLight);
 		break;
 	}
@@ -238,7 +238,7 @@ void Scene::AddSpotLight(SpotLight* spotLight)
 	case LightMobility::Static:
 		staticSpotLights_.push_back(spotLight);
 		break;
-	case LightMobility::Movable:
+	case LightMobility::Dynamic:
 		dynamicSpotLights_.push_back(spotLight);
 		break;
 	}

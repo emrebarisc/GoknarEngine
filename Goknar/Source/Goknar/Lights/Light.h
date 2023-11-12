@@ -12,7 +12,7 @@ class Texture;
 enum class LightMobility : uint8_t
 {
 	Static = 0,
-	Movable
+	Dynamic
 };
 
 #define POINT_LIGHT_TYPE_INT 0
@@ -93,7 +93,7 @@ public:
 		return isShadowEnabled_;
 	}
 
-	void SetIsShadowEnabled(bool isShadowEnabled)
+	virtual void SetIsShadowEnabled(bool isShadowEnabled)
 	{
 		isShadowEnabled_ = isShadowEnabled;
 	}
@@ -147,8 +147,9 @@ protected:
 	float intensity_{ 1.f };
 
 	bool isShadowEnabled_{ false };
-private:
+
 	LightMobility mobility_{ LightMobility::Static };
+private:
 };
 
 #endif

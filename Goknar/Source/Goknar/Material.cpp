@@ -49,7 +49,7 @@ void Material::Build(MeshUnit* meshUnit)
 	const std::string& mainShaderVertexShaderScript = mainShader->GetVertexShaderScript();
 
 	Shader* shadowShader = new Shader();
-	shadowShader->SetVertexShaderScript(mainShaderVertexShaderScript);
+	shadowShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_ShadowPass(meshUnit));
 	shadowShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_ShadowPass());
 	renderPassTypeShaderMap_[RenderPassType::Shadow] = shadowShader;
 

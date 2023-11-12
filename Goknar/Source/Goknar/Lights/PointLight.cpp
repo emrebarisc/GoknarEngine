@@ -70,7 +70,7 @@ void PointLight::SetShaderUniforms(const Shader* shader)
 {
 	Light::SetShaderUniforms(shader);
 
-	if (GetLightMobility() == LightMobility::Movable)
+	if (GetLightMobility() == LightMobility::Dynamic)
 	{
 		std::string radiusName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS;
 		shader->SetFloat(radiusName.c_str(), radius_);
@@ -92,6 +92,15 @@ void PointLight::SetPosition(const Vector3& position)
 	}
 
 	Light::SetPosition(position);
+}
+
+void PointLight::SetIsShadowEnabled(bool isShadowEnabled)
+{
+	Light::SetIsShadowEnabled(isShadowEnabled);
+	if (isShadowEnabled && shadowMapRenderCamera_)
+	{
+		shadowMapRenderCamera_->SetPosition(position_);
+	}
 }
 
 void PointLight::UpdateShadowViewProjectionMatrices()
