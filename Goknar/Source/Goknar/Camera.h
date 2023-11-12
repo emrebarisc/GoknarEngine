@@ -86,9 +86,10 @@ public:
 
 	void SetForwardVector(const Vector3& forwardVector)
 	{
-		if (EPSILON < Vector3::Distance(forwardVector_, forwardVector))
+		Vector3 normalizedForwardVector = forwardVector.GetNormalized();
+		if (EPSILON < Vector3::Distance(forwardVector_, normalizedForwardVector))
 		{
-			forwardVector_ = forwardVector.GetNormalized();
+			forwardVector_ = normalizedForwardVector;
 			leftVector_ = forwardVector_.Cross(upVector_);
 			upVector_ = leftVector_.Cross(forwardVector_);
 
