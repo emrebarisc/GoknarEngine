@@ -44,7 +44,7 @@ Game::Game() : Application()
 	dancer_ = new Dancer();
 	lightController_ = new LightController();
 
-	engine->GetWindowManager()->SetIsInFullscreen(false);
+	engine->GetWindowManager()->SetIsInFullscreen(true);
 	//engine->SetTimeScale(0.1f);
 }
 
