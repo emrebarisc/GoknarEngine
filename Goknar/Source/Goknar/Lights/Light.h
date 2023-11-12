@@ -103,9 +103,19 @@ public:
 		return shadowWidth_;
 	}
 
+	void SetShadowWidth(int shadowWidth)
+	{
+		shadowWidth_ = shadowWidth;
+	}
+
 	int GetShadowHeight()
 	{
 		return shadowHeight_;
+	}
+
+	void SetShadowHeight(int shadowHeight)
+	{
+		shadowHeight_ = shadowHeight;
 	}
 
 	Texture* GetShadowMapTexture()
@@ -141,8 +151,8 @@ protected:
 
 	int id_{ 0 };
 
-	int shadowWidth_{ 1024 * 2 };
-	int shadowHeight_{ 1024 * 2 };
+	int shadowWidth_{ 1024 };
+	int shadowHeight_{ 1024 };
 
 	float intensity_{ 1.f };
 

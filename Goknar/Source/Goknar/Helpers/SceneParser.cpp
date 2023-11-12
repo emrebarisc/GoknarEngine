@@ -241,6 +241,14 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 			}
 
+			bool shadowMapResolutionElementFound = false;
+			child = element->FirstChildElement("ShadowMapResolution");
+			if (child)
+			{
+				shadowMapResolutionElementFound = true;
+				stream << child->GetText() << std::endl;
+			}
+
 			Vector3 position;
 			stream >> position.x >> position.y >> position.z;
 			pointLight->SetPosition(position);
@@ -262,6 +270,15 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				bool isCastingShadow = false;
 				stream >> isCastingShadow;
 				pointLight->SetIsShadowEnabled(isCastingShadow);
+			}
+
+			if (shadowMapResolutionElementFound)
+			{
+				int x = 1024;
+				int y = 1024;
+				stream >> x >> y;
+				pointLight->SetShadowWidth(x);
+				pointLight->SetShadowHeight(y);
 			}
 
 			scene->AddPointLight(pointLight);
@@ -298,6 +315,14 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 			}
 
+			bool shadowMapResolutionElementFound = false;
+			child = element->FirstChildElement("ShadowMapResolution");
+			if (child)
+			{
+				shadowMapResolutionElementFound = true;
+				stream << child->GetText() << std::endl;
+			}
+
 			Vector3 direction;
 			stream >> direction.x >> direction.y >> direction.z;
 			direction.Normalize();
@@ -316,6 +341,15 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				bool isCastingShadow = false;
 				stream >> isCastingShadow;
 				directionalLight->SetIsShadowEnabled(isCastingShadow);
+			}
+
+			if (shadowMapResolutionElementFound)
+			{
+				int x = 1024;
+				int y = 1024;
+				stream >> x >> y;
+				directionalLight->SetShadowWidth(x);
+				directionalLight->SetShadowHeight(y);
 			}
 
 			scene->AddDirectionalLight(directionalLight);
@@ -361,6 +395,14 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 			}
 
+			bool shadowMapResolutionElementFound = false;
+			child = element->FirstChildElement("ShadowMapResolution");
+			if (child)
+			{
+				shadowMapResolutionElementFound = true;
+				stream << child->GetText() << std::endl;
+			}
+
 			Vector3 position;
 			stream >> position.x >> position.y >> position.z;
 			spotLight->SetPosition(position);
@@ -391,6 +433,15 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				bool isCastingShadow = false;
 				stream >> isCastingShadow;
 				spotLight->SetIsShadowEnabled(isCastingShadow);
+			}
+
+			if (shadowMapResolutionElementFound)
+			{
+				int x = 1024;
+				int y = 1024;
+				stream >> x >> y;
+				spotLight->SetShadowWidth(x);
+				spotLight->SetShadowHeight(y);
 			}
 
 			scene->AddSpotLight(spotLight);
