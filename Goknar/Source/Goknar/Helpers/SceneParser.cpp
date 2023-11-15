@@ -637,7 +637,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			while (child)
 			{
 				int textureId = std::stoi(child->Attribute("id"));
-				material->GetShader(RenderPassType::Main)->AddTexture(scene->GetTexture(textureId));
+				material->GetShader(RenderPassType::Forward)->AddTexture(scene->GetTexture(textureId));
 				child = child->NextSiblingElement("Texture");
 			}
 

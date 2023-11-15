@@ -21,10 +21,10 @@ class SkeletalMeshInstance;
 
 enum class RenderPassType : unsigned int
 {
-	None = 0,
-	Main,
-	GBuffer,
-	Shadow,
+	None = 0b00000000,
+	Forward = 0b00000001,
+	GBuffer = 0b00000010,
+	Shadow = 0b00000100,
 
 	// Needed for rendering point lights with geometry shaders
 	PointLightShadow
@@ -42,7 +42,7 @@ public:
 	void SetBufferData();
 	void Init();
 
-	void Render(RenderPassType renderPassType = RenderPassType::Main);
+	void Render(RenderPassType renderPassType = RenderPassType::Forward);
 
 	void AddStaticMeshToRenderer(StaticMesh* object);
 	void AddStaticMeshInstance(StaticMeshInstance* object);

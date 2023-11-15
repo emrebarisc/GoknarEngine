@@ -12,7 +12,7 @@ public:
 
 	virtual ~StaticMeshInstance() {}
 
-	virtual void Render(RenderPassType renderPassType = RenderPassType::Main) override;
+	virtual void Render(RenderPassType renderPassType = RenderPassType::Forward) override;
 
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;

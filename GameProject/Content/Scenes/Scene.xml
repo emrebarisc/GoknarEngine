@@ -102,14 +102,6 @@
 			<IsCastingShadow>1</IsCastingShadow>
 			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
-		<PointLight id = "10">
-			<Position>15.0 0. 2.0</Position>
-			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
-			<Intensity>10.0</Intensity>
-			<Radius>25.0</Radius>
-			<IsCastingShadow>1</IsCastingShadow>
-			<ShadowMapResolution>2048 2048</ShadowMapResolution>
-		</PointLight> 
 	</Lights>
 
 	<Materials>
@@ -456,61 +448,61 @@
 		</StaticMeshObject>
 
 
-<!--     <StaticMeshObject id = "3">
-      <Name>Floor</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>0.0 0.0 0.0</WorldPosition>
-      <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>100.0 100.0 1.0</WorldScaling>
-      <Mesh>1</Mesh>
-    </StaticMeshObject> -->
-    <StaticMeshObject id = "4">
-      <Name>Wall</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>20.0 5.0 0.0</WorldPosition>
-      <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>5</Mesh>
-    </StaticMeshObject>
-    <StaticMeshObject id = "5">
-      <Name>Wall</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>25.0 0.0 0.0</WorldPosition>
-      <WorldRotation>0.0 0.0 90.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>5</Mesh>
-    </StaticMeshObject>
-    <StaticMeshObject id = "6">
-      <Name>Cube</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>20.0 0.0 0.0</WorldPosition>
-      <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>6</Mesh>
-    </StaticMeshObject>
-    <StaticMeshObject id = "7">
-      <Name>Cylinder</Name>
-      <PivotPoint>0 0 0</PivotPoint>
-      <RelativePosition>0 0 0</RelativePosition>
-      <RelativeRotation>0 0 0</RelativeRotation>
-      <RelativeScaling>1 1 1</RelativeScaling>
-      <WorldPosition>20.0 0.0 5.0</WorldPosition>
-      <WorldRotation>0.0 0.0 0.0</WorldRotation>
-      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-      <Mesh>7</Mesh>
-    </StaticMeshObject>
+<!-- 	     <StaticMeshObject id = "3">
+	      <Name>Floor</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>0.0 0.0 0.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>100.0 100.0 1.0</WorldScaling>
+	      <Mesh>4</Mesh>
+	    </StaticMeshObject> -->
+	    <StaticMeshObject id = "4">
+	      <Name>Wall</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>20.0 5.0 0.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>5</Mesh>
+	    </StaticMeshObject>
+	    <StaticMeshObject id = "5">
+	      <Name>Wall</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>25.0 0.0 0.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 90.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>5</Mesh>
+	    </StaticMeshObject>
+	    <StaticMeshObject id = "6">
+	      <Name>Cube</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>20.0 0.0 0.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>6</Mesh>
+	    </StaticMeshObject>
+	    <StaticMeshObject id = "7">
+	      <Name>Cylinder</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>20.0 0.0 5.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>7</Mesh>
+	    </StaticMeshObject>
 	</Objects>
 
 </Scene>

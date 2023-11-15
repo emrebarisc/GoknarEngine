@@ -38,7 +38,7 @@ public:
 			imageHeight_ = rhs->imageHeight_;
 			projection_ = rhs->projection_;
 			projectionMatrix_ = rhs->projectionMatrix_;
-			viewingMatrix_ = rhs->viewingMatrix_;
+			viewMatrix_ = rhs->viewMatrix_;
 		}
 	}
 
@@ -58,9 +58,9 @@ public:
 	void Roll(float value);
 	void RotateAbout(const Vector3& axis, float angle);
 
-	inline const Matrix& GetViewingMatrix() const
+	inline const Matrix& GetViewMatrix() const
 	{
-		return viewingMatrix_;
+		return viewMatrix_;
 	}
 
 	inline const Matrix& GetProjectionMatrix() const
@@ -214,9 +214,9 @@ public:
 	void UpdateProjectionMatrix();
 	void UpdateViewProjectionMatrix();
 
-	float* GetViewingMatrixPointer()
+	float* GetViewMatrixPointer()
 	{
-		return &viewingMatrix_.m[0];
+		return &viewMatrix_.m[0];
 	}
 
 	float* GetProjectionMatrixPointer()
@@ -262,7 +262,7 @@ protected:
 private:
 	void LookAt();
 
-	Matrix viewingMatrix_{ Matrix::IdentityMatrix };
+	Matrix viewMatrix_{ Matrix::IdentityMatrix };
 	Matrix projectionMatrix_{ Matrix::IdentityMatrix };
 	Matrix viewProjectionMatrix_{ Matrix::IdentityMatrix };
 

@@ -1,10 +1,15 @@
 #include <Goknar.h>
 
 #include "Goknar/Scene.h"
+#include "Goknar/Model/StaticMesh.h"
+#include "Goknar/Material.h"
+#include "Goknar/Managers/ResourceManager.h"
 
 #include "Archer.h"
 #include "Dancer.h"
 #include "LightController.h"
+#include "Sun.h"
+#include "Fire.h"
 #include "Goknar/Camera.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Managers/WindowManager.h"
@@ -26,6 +31,8 @@ private:
 	Archer* archer_;
 	Dancer* dancer_;
 	LightController* lightController_;
+	Sun* sun_;
+	Fire* fire_;
 };
 
 Game::Game() : Application()
@@ -43,8 +50,16 @@ Game::Game() : Application()
 	archer_ = new Archer();
 	dancer_ = new Dancer();
 	lightController_ = new LightController();
+	sun_ = new Sun();
+	fire_ = new Fire();
 
-	engine->GetWindowManager()->SetIsInFullscreen(true);
+	MeshUnit* floorStaticMesh = engine->GetResourceManager()->GetContent<MeshUnit>("Meshes/SM_Floor.fbx");
+	if (floorStaticMesh)
+	{
+		floorStaticMesh->GetMaterial()->SetShadingModel(MaterialShadingModel::TwoSided);
+	}
+
+	engine->GetWindowManager()->SetIsInFullscreen(false);
 	//engine->SetTimeScale(0.1f);
 }
 

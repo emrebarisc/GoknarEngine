@@ -36,9 +36,9 @@ public:
 	
 private:
 	Matrix biasedShadowViewProjectionMatrix_{ Matrix::IdentityMatrix };
+	Matrix shadowBiasMatrix_{ Matrix::IdentityMatrix };
 
-    Vector3 direction_;
-    Vector3 radiance_;
+	Vector3 direction_{ Vector3::ForwardVector };
 };
 
 #endif

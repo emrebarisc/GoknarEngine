@@ -89,6 +89,12 @@ void Vector3::ConvertRadianToDegree()
 
 Vector3 Vector3::GetOrthonormalBasis() const
 {
+	if (this->SquareLength() < SMALLER_EPSILON)
+	{
+		// If this is < 0, 0, 0 > then return forward vector as orthonormal basis
+		return Vector3::ForwardVector;
+	}
+
 	Vector3 maximizedValue = Vector3::ZeroVector;
 	if (abs(x) <= abs(y) && abs(x) <= abs(z))
 	{
@@ -250,7 +256,7 @@ return Vector4(x * rhs.m[0] + y * rhs.m[4] + z * rhs.m[8] + w * rhs.m[12],
                 x * rhs.m[3] + y * rhs.m[7] + z * rhs.m[11] + w * rhs.m[15]);
 }
 
-void GoknarMath::LookAt(Matrix& viewingMatrix, const Vector3& position, const Vector3& target, const Vector3& upVector)
+void GoknarMath::LookAt(Matrix& viewMatrix, const Vector3& position, const Vector3& target, const Vector3& upVector)
 {   
 	Vector3 forward = position - target;
 	forward.Normalize();
@@ -260,7 +266,7 @@ void GoknarMath::LookAt(Matrix& viewingMatrix, const Vector3& position, const Ve
 
 	Vector3 up = forward.Cross(left);
 
-	viewingMatrix = Matrix(	left.x,			left.y,				left.z,				-left.x * position.x - left.y * position.y - left.z * position.z,
+	viewMatrix = Matrix(	left.x,			left.y,				left.z,				-left.x * position.x - left.y * position.y - left.z * position.z,
 							up.x,			up.y,				up.z,				-up.x * position.x - up.y * position.y - up.z * position.z,
 							forward.x,		forward.y,			forward.z,			-forward.x * position.x - forward.y * position.y - forward.z * position.z,
 							0.f, 0.f, 0.f, 1.f);

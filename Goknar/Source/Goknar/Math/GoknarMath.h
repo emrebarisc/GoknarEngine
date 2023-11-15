@@ -37,7 +37,7 @@ enum class GOKNAR_API Axis : unsigned int
 class GOKNAR_API GoknarMath
 {
 public:
-	static void LookAt(Matrix& viewingMatrix, const Vector3& position, const Vector3& target, const Vector3& upVector);
+	static void LookAt(Matrix& viewMatrix, const Vector3& position, const Vector3& target, const Vector3& upVector);
 
 	static inline float Determinant(const Vector3& a, const Vector3& b, const Vector3& c);
 	static inline float Determinant(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& d);
@@ -105,6 +105,37 @@ public:
 	static inline T Pow(T value, float power)
 	{
 		return std::pow(value, power);
+	}
+
+	template<class T>
+	static inline T Sqrt(T value)
+	{
+		return std::sqrt(value);
+	}
+
+	static inline float Floor(float value)
+	{
+		return std::floor(value);
+	}
+
+	static inline float Frac(float value)
+	{
+		return value - Floor(value);
+	}
+
+	static inline int Mod(int value, int mod)
+	{
+		return value % mod;
+	}
+
+	static inline float Mod(float value, float mod)
+	{
+		return std::fmod(value, mod);
+	}
+
+	static inline double Mod(double value, double mod)
+	{
+		return std::fmod(value, mod);
 	}
 };
 

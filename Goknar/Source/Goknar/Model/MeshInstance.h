@@ -44,8 +44,8 @@ public:
 		return mesh_;
 	}
 
-	inline virtual void PreRender(RenderPassType renderPassType = RenderPassType::Main);
-	inline virtual void Render(RenderPassType renderPassType = RenderPassType::Main);
+	inline virtual void PreRender(RenderPassType renderPassType = RenderPassType::Forward);
+	inline virtual void Render(RenderPassType renderPassType = RenderPassType::Forward);
 
 	inline void SetIsRendered(bool isRendered)
 	{

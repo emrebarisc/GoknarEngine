@@ -107,7 +107,7 @@ public:
 		return renderPassTypeShaderMap_.at(renderPassType);
 	}
 
-	inline void SetShader(Shader* shader, RenderPassType renderPassType = RenderPassType::Main)
+	inline void SetShader(Shader* shader, RenderPassType renderPassType = RenderPassType::Forward)
 	{
 		renderPassTypeShaderMap_[renderPassType] = shader;
 	}
@@ -132,9 +132,9 @@ public:
 		return &textureImages_;
 	}
 
-	void Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Main) const;
-	void Use(RenderPassType renderPassType = RenderPassType::Main) const;
-	void SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Main) const;
+	void Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Forward) const;
+	void Use(RenderPassType renderPassType = RenderPassType::Forward) const;
+	void SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Forward) const;
 
 protected:
 

@@ -329,7 +329,7 @@ void Renderer::Render(RenderPassType renderPassType)
 {
 	switch (renderPassType)
 	{
-		case RenderPassType::Main:
+		case RenderPassType::Forward:
 		{
 			glDepthMask(GL_TRUE);
 			const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();

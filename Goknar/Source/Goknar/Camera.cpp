@@ -138,14 +138,14 @@ void Camera::UpdateProjectionMatrix()
 
 void Camera::UpdateViewProjectionMatrix()
 {
-	viewProjectionMatrix_ = projectionMatrix_ * viewingMatrix_;
+	viewProjectionMatrix_ = projectionMatrix_ * viewMatrix_;
 }
 
 void Camera::LookAt()
 {
 	Vector3 lookAtPos = position_ + forwardVector_ * GoknarMath::Max(nearDistance_, 0.001f);
 
-	GoknarMath::LookAt(	viewingMatrix_, 
+	GoknarMath::LookAt(	viewMatrix_, 
 						position_,
 						lookAtPos,
 						upVector_);

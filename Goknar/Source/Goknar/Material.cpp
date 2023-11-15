@@ -25,7 +25,7 @@ Material::Material() :
 
 Material::~Material()
 {
-	delete renderPassTypeShaderMap_[RenderPassType::Main];
+	delete renderPassTypeShaderMap_[RenderPassType::Forward];
 	delete renderPassTypeShaderMap_[RenderPassType::GBuffer];
 	delete renderPassTypeShaderMap_[RenderPassType::Shadow];
 	delete renderPassTypeShaderMap_[RenderPassType::PointLightShadow];
@@ -40,7 +40,7 @@ void Material::Build(MeshUnit* meshUnit)
 		mainShader->AddTexture((*imageIterator)->GetGeneratedTexture());
 	}
 
-	renderPassTypeShaderMap_[RenderPassType::Main] = mainShader;
+	renderPassTypeShaderMap_[RenderPassType::Forward] = mainShader;
 	if (mainShader->GetShaderType() == ShaderType::Scene)
 	{
 		ShaderBuilder::GetInstance()->BuildShader(meshUnit, this);
@@ -62,21 +62,21 @@ void Material::Build(MeshUnit* meshUnit)
 
 void Material::PreInit()
 {
-	renderPassTypeShaderMap_[RenderPassType::Main]->PreInit();
+	renderPassTypeShaderMap_[RenderPassType::Forward]->PreInit();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->PreInit();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->PreInit();
 }
 
 void Material::Init()
 {
-	renderPassTypeShaderMap_[RenderPassType::Main]->Init();
+	renderPassTypeShaderMap_[RenderPassType::Forward]->Init();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->Init();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->Init();
 }
 
 void Material::PostInit()
 {
-	renderPassTypeShaderMap_[RenderPassType::Main]->PostInit();
+	renderPassTypeShaderMap_[RenderPassType::Forward]->PostInit();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->PostInit();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->PostInit();
 }
@@ -98,19 +98,19 @@ void Material::SetShaderVariables(const Matrix& worldTransformationMatrix, const
 {
 	GOKNAR_CORE_ASSERT(renderPassTypeShaderMap_.find(renderPassType) != renderPassTypeShaderMap_.end());
 
+	if (shadingModel_ == MaterialShadingModel::Default)
+	{
+		glEnable(GL_CULL_FACE);
+	}
+	else if (shadingModel_ == MaterialShadingModel::TwoSided)
+	{
+		glDisable(GL_CULL_FACE);
+	}
+
 	Shader* shader = renderPassTypeShaderMap_.at(renderPassType);
 
-	if (renderPassType == RenderPassType::Main)
+	if (renderPassType == RenderPassType::Forward)
 	{
-		if (shadingModel_ == MaterialShadingModel::Default)
-		{
-			glEnable(GL_CULL_FACE);
-		}
-		else if (shadingModel_ == MaterialShadingModel::TwoSided)
-		{
-			glDisable(GL_CULL_FACE);
-		}
-
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, ambientReflectance_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, diffuseReflectance_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);

@@ -58,7 +58,7 @@ void MeshUnit::Init()
 
 //if (material_)
 //{
-//	Shader* shader = material_->GetShader(RenderPassType::Main);
+//	Shader* shader = material_->GetShader(RenderPassType::Forward);
 //	if (!shader)
 //	{
 //		shader = new Shader();

@@ -22,7 +22,7 @@ void ShaderBuilder::BuildShader(MeshUnit* mesh, Material* material)
 	GOKNAR_CORE_ASSERT(mesh);
 	GOKNAR_CORE_ASSERT(material);
 
-	Shader* shader = material->GetShader(RenderPassType::Main);
+	Shader* shader = material->GetShader(RenderPassType::Forward);
 	if (shader)
 	{
 		std::string vertexShader = BuildVertexShader(mesh);
@@ -748,7 +748,8 @@ std::string ShaderBuilder::GetTextureDiffuseVariable()
 std::string ShaderBuilder::GetPointLightUniformTexts(const std::string& lightVariableName)
 {
 	return "uniform vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ";\n" + 
-		   "uniform vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ";\n";
+		   "uniform vec3 " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ";\n" + 
+		   "uniform float " + lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + ";\n";
 }
 
 std::string ShaderBuilder::GetPointLightColorFunctionText()
@@ -814,7 +815,7 @@ std::string ShaderBuilder::GetPointLightColorSummationText(const std::string& li
 {
 	return "\t" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + " += CalculatePointLightColor(" +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " +
-			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY +  ", " +
+			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + ");\n";
 }
 
@@ -1007,6 +1008,7 @@ std::string ShaderBuilder::DirectionalLight_GetShadowCheck(const std::string& li
 		0.f <= lightSpaceScreenCoordinate_)" + lightName + R"(.y && lightSpaceScreenCoordinate_)" + lightName + R"(.y <= 1.f)
 	{
 		float )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + R"( = textureProj()" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_MAP_PREFIX + lightName + ", " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_LIGHT_SPACE_PREFIX + lightName + R"();
+
 		if(0.f < )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + R"()
 		{
 			vec3 )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX) + lightName + " = CalculateDirectionalLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"(); 
