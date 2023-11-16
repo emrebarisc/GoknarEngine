@@ -38,7 +38,7 @@ public:
 			imageHeight_ = rhs->imageHeight_;
 			projection_ = rhs->projection_;
 			projectionMatrix_ = rhs->projectionMatrix_;
-			viewingMatrix_ = rhs->viewingMatrix_;
+			viewMatrix_ = rhs->viewMatrix_;
 		}
 	}
 
@@ -58,14 +58,19 @@ public:
 	void Roll(float value);
 	void RotateAbout(const Vector3& axis, float angle);
 
-	inline const Matrix& GetViewingMatrix() const
+	inline const Matrix& GetViewMatrix() const
 	{
-		return viewingMatrix_;
+		return viewMatrix_;
 	}
 
 	inline const Matrix& GetProjectionMatrix() const
 	{
 		return projectionMatrix_;
+	}
+
+	inline const Matrix& GetViewProjectionMatrix() const
+	{
+		return viewProjectionMatrix_;
 	}
 
 	void SetPosition(const Vector3& position)
@@ -81,10 +86,10 @@ public:
 
 	void SetForwardVector(const Vector3& forwardVector)
 	{
-		GOKNAR_INFO("Distance: {}", Vector3::Distance(forwardVector_, forwardVector));
-		if (EPSILON < Vector3::Distance(forwardVector_, forwardVector))
+		Vector3 normalizedForwardVector = forwardVector.GetNormalized();
+		if (EPSILON < Vector3::Distance(forwardVector_, normalizedForwardVector))
 		{
-			forwardVector_ = forwardVector;
+			forwardVector_ = normalizedForwardVector;
 			leftVector_ = forwardVector_.Cross(upVector_);
 			upVector_ = leftVector_.Cross(forwardVector_);
 
@@ -134,8 +139,7 @@ public:
 	void SetImageWidth(int width)
 	{
 		imageWidth_ = width;
-		nearPlane_ = Vector4(-0.5f, 0.5f, -(float)imageHeight_ / imageWidth_ * 0.5f, (float)imageHeight_ / imageWidth_ * 0.5f);
-		Update();
+		UpdateNearPlane();
 	}
 
 	int GetImageWidth() const
@@ -146,8 +150,7 @@ public:
 	void SetImageHeight(int height)
 	{
 		imageHeight_ = height;
-		nearPlane_ = Vector4(-0.5f, 0.5f, -(float)imageHeight_ / imageWidth_ * 0.5f, (float)imageHeight_ / imageWidth_ * 0.5f);
-		Update();
+		UpdateNearPlane();
 	}
 
 	int GetImageHeight() const
@@ -158,6 +161,7 @@ public:
 	void SetNearPlane(const Vector4& nearPlane)
 	{
 		nearPlane_ = nearPlane;
+		UpdateProjectionMatrix();
 	}
 
 	const Vector4& GetNearPlane() const
@@ -168,6 +172,7 @@ public:
 	void SetNearDistance(float nearDistance)
 	{
 		nearDistance_ = nearDistance;
+		UpdateProjectionMatrix();
 	}
 
 	float GetNearDistance() const
@@ -178,6 +183,27 @@ public:
 	void SetFarDistance(float farDistance)
 	{
 		farDistance_ = farDistance;
+		UpdateProjectionMatrix();
+	}
+
+	void UpdateNearPlane()
+	{
+		nearPlane_ = Vector4(-0.5f, 0.5f, -(float)imageHeight_ / imageWidth_ * 0.5f, (float)imageHeight_ / imageWidth_ * 0.5f);
+		UpdateProjectionMatrix();
+	}
+
+	void SetFOV(float fovInDegrees)
+	{
+		float resolutionProportion = (float)imageWidth_ / imageHeight_;
+
+		float halfOfFovY = fovInDegrees * 0.5f;
+		float top, bottom, left, right;
+		top = nearDistance_ * tan(DEGREE_TO_RADIAN(halfOfFovY));
+		bottom = -top;
+		left = bottom * resolutionProportion;
+		right = top * resolutionProportion;
+
+		SetNearPlane(Vector4(left, right, bottom, top));
 	}
 
 	float GetFarDistance() const
@@ -185,44 +211,26 @@ public:
 		return farDistance_;
 	}
 
-	void SetProjectionMatrix()
+	void UpdateProjectionMatrix();
+	void UpdateViewProjectionMatrix();
+
+	float* GetViewMatrixPointer()
 	{
-		float l = nearPlane_.x;
-		float r = nearPlane_.y;
-		float b = nearPlane_.z;
-		float t = nearPlane_.w;
-
-		// Set the projection matrix as it is orthographic
-		projectionMatrix_ = Matrix( 2 / (r - l), 0.f, 0.f, -(r + l) / (r - l),
-									0.f, 2 / (t - b), 0.f, -(t + b) / (t - b),
-									0.f, 0.f, -2 / (farDistance_ - nearDistance_), -(farDistance_ + nearDistance_) / (farDistance_ - nearDistance_),
-									0.f, 0.f, 0.f, 1.f);
-
-		if (projection_ == CameraProjection::Perspective)
-		{
-			// Orthographic to perspective conversion matrix
-			Matrix o2p(nearDistance_, 0, 0, 0,
-						0, nearDistance_, 0, 0,
-						0, 0, farDistance_ + nearDistance_, farDistance_ * nearDistance_,
-						0, 0, -1, 0);
-
-			projectionMatrix_ = projectionMatrix_ * o2p;
-		}
+		return &viewMatrix_.m[0];
 	}
 
-	float GetViewingMatrixPointer()
+	float* GetProjectionMatrixPointer()
 	{
-		return viewingMatrix_[0];
-	}
-
-	float GetProjectionMatrixPointer()
-	{
-		return projectionMatrix_[0];
+		return &projectionMatrix_.m[0];
 	}
 
 	void SetProjection(CameraProjection projection)
 	{
-		projection_ = projection;
+		if (projection_ != projection)
+		{
+			projection_ = projection;
+			UpdateProjectionMatrix();
+		}
 	}
 
 	CameraProjection GetProjection() const
@@ -240,13 +248,23 @@ public:
 		return cameraType_;
 	}
 
+	void SetVectors(Vector3 forward, Vector3 left, Vector3 up)
+	{
+		forwardVector_ = forward;
+		leftVector_ = left;
+		upVector_ = up;
+
+		LookAt();
+	}
+
 protected:
 
 private:
 	void LookAt();
 
-	Matrix viewingMatrix_{ Matrix::IdentityMatrix };
+	Matrix viewMatrix_{ Matrix::IdentityMatrix };
 	Matrix projectionMatrix_{ Matrix::IdentityMatrix };
+	Matrix viewProjectionMatrix_{ Matrix::IdentityMatrix };
 
 	// Left Right Bottom Top
 	Vector4 nearPlane_{ Vector4(-0.5f, 0.5f, -0.28125f, 0.28125f) };

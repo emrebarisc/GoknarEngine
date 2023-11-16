@@ -72,6 +72,13 @@ void WindowManager::Init()
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
+	bool enableDebugContext = false;
+#ifdef GOKNAR_PLATFORM_WINDOWS
+#if _DEBUG 
+	enableDebugContext = true;
+#endif
+#endif
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, enableDebugContext);
 
 	SetMSAA(MSAAValue_);
 

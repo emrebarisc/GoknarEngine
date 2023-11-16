@@ -44,8 +44,8 @@ public:
 		return mesh_;
 	}
 
-	inline virtual void PreRender();
-	inline virtual void Render();
+	inline virtual void PreRender(RenderPassType renderPassType = RenderPassType::Forward);
+	inline virtual void Render(RenderPassType renderPassType = RenderPassType::Forward);
 
 	inline void SetIsRendered(bool isRendered)
 	{
@@ -79,13 +79,13 @@ template<class MeshType>
 int MeshInstance<MeshType>::lastComponentId_ = 0;
 
 template<class MeshType>
-inline void MeshInstance<MeshType>::PreRender()
+inline void MeshInstance<MeshType>::PreRender(RenderPassType renderPassType)
 {
-	mesh_->GetMaterial()->Use();
+	mesh_->GetMaterial()->Use(renderPassType);
 }
 
 template<class MeshType>
-inline void MeshInstance<MeshType>::Render()
+inline void MeshInstance<MeshType>::Render(RenderPassType renderPassType)
 {
 	//
 	//Matrix relativeTransformationMatrix = Matrix::IdentityMatrix;
@@ -116,9 +116,9 @@ inline void MeshInstance<MeshType>::Render()
 	//{
 	//	GOKNAR_FATAL("NULL PARENT ON RENDERING MESH INSTANCE");
 	//}
-	//mesh_->GetMaterial()->SetShaderVariables(worldTransformationMatrix, relativeTransformationMatrix);
 	
-	mesh_->GetMaterial()->SetShaderVariables(parentComponent_->GetComponentToWorldTransformationMatrix(), Matrix::IdentityMatrix);// worldTransformationMatrix, relativeTransformationMatrix);
+	//mesh_->GetMaterial()->SetShaderVariables(worldTransformationMatrix, relativeTransformationMatrix);
+	mesh_->GetMaterial()->SetShaderVariables(parentComponent_->GetComponentToWorldTransformationMatrix(), Matrix::IdentityMatrix, renderPassType);// worldTransformationMatrix, relativeTransformationMatrix);
 }
 
 template<class MeshType>

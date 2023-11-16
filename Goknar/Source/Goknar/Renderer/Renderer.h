@@ -19,6 +19,17 @@ class DynamicMeshInstance;
 class StaticMeshInstance;
 class SkeletalMeshInstance;
 
+enum class RenderPassType : unsigned int
+{
+	None = 0b00000000,
+	Forward = 0b00000001,
+	GBuffer = 0b00000010,
+	Shadow = 0b00000100,
+
+	// Needed for rendering point lights with geometry shaders
+	PointLightShadow
+};
+
 class GOKNAR_API Renderer
 {
 public:
@@ -31,7 +42,7 @@ public:
 	void SetBufferData();
 	void Init();
 
-	void Render();
+	void Render(RenderPassType renderPassType = RenderPassType::Forward);
 
 	void AddStaticMeshToRenderer(StaticMesh* object);
 	void AddStaticMeshInstance(StaticMeshInstance* object);
@@ -50,16 +61,6 @@ public:
 	ShadowManager* GetShadowManager()
 	{
 		return shadowManager_;
-	}
-
-	void SetIsRenderingOnlyDepth(bool isRenderingOnlyDepth)
-	{
-		isRenderingOnlyDepth_ = isRenderingOnlyDepth;
-	}
-
-	bool GetIsRenderingOnlyDepth()
-	{
-		return isRenderingOnlyDepth_;
 	}
 
 	void BindShadowTextures(Shader* shader);
@@ -115,7 +116,6 @@ private:
 	GEuint dynamicVertexBufferId_;
 	GEuint dynamicIndexBufferId_;
 
-	unsigned char isRenderingOnlyDepth_ : 1;
 	unsigned char removeStaticDataFromMemoryAfterTransferingToGPU_ : 1;
 };
 

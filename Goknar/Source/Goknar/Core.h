@@ -45,7 +45,19 @@
 	const GLenum errorValue = glGetError(); \
 	if(errorValue != GL_NO_ERROR) \
 	{ \
-		GOKNAR_CORE_FATAL("{0}: Error Value: {1}\n", errorMessage, errorValue/*gluErrorString(errorValue));*/); \
+		std::string errorString = "NO_ERROR";\
+		switch (errorValue)\
+		{\
+		case GL_INVALID_ENUM:					errorString = "INVALID_ENUM"; break;\
+		case GL_INVALID_VALUE:					errorString = "INVALID_VALUE"; break;\
+		case GL_INVALID_OPERATION:				errorString = "INVALID_OPERATION"; break;\
+		case GL_STACK_OVERFLOW:					errorString = "STACK_OVERFLOW"; break;\
+		case GL_STACK_UNDERFLOW:				errorString = "STACK_UNDERFLOW"; break;\
+		case GL_OUT_OF_MEMORY:					errorString = "OUT_OF_MEMORY"; break;\
+		case GL_INVALID_FRAMEBUFFER_OPERATION:	errorString = "INVALID_FRAMEBUFFER_OPERATION"; break;\
+		default:								errorString = "UNKNOWN";\
+		}\
+		GOKNAR_CORE_FATAL("{0}: Error Value: {1}\n", errorMessage, errorString); \
 		DEBUG_BREAK(); \
 		exit(EXIT_FAILURE); \
 	} \

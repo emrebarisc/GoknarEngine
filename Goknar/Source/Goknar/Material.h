@@ -2,10 +2,15 @@
 #define __MATERIAL_H__
 
 #include <string>
+#include <unordered_map>
 
 #include "Goknar/Core.h"
 #include "Math/GoknarMath.h"
+#include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
+
+class MeshUnit;
+class Image;
 
 enum class MaterialBlendModel
 {
@@ -26,7 +31,11 @@ public:
 	Material();
 	~Material();
 
+	void Build(MeshUnit* meshUnit);
+
+	void PreInit();
 	void Init();
+	void PostInit();
 
 	const Vector3& GetAmbientReflectance() const
 	{
@@ -88,14 +97,19 @@ public:
 		shadingModel_ = shadingModel;
 	}
 
-	inline Shader* GetShader() const
+	inline Shader* GetShader(RenderPassType renderPassType) const
 	{
-		return shader_;
+		if (renderPassTypeShaderMap_.find(renderPassType) == renderPassTypeShaderMap_.end())
+		{
+			return nullptr;
+		}
+
+		return renderPassTypeShaderMap_.at(renderPassType);
 	}
 
-	inline void SetShader(Shader* shader)
+	inline void SetShader(Shader* shader, RenderPassType renderPassType = RenderPassType::Forward)
 	{
-		shader_ = shader;
+		renderPassTypeShaderMap_[renderPassType] = shader;
 	}
 
 	inline void SetName(const std::string& name)
@@ -108,20 +122,32 @@ public:
 		return name_;
 	}
 
-	void Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const;
-	void Use() const;
-	void SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const;
+	void AddTextureImage(const Image* image)
+	{
+		textureImages_.push_back(image);
+	}
+
+	const std::vector<const Image*>* GetTextureImages() const
+	{
+		return &textureImages_;
+	}
+
+	void Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Forward) const;
+	void Use(RenderPassType renderPassType = RenderPassType::Forward) const;
+	void SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Forward) const;
 
 protected:
 
 private:
+	std::vector<const Image*> textureImages_;
+
 	Vector3 ambientReflectance_;
 	Vector3 diffuseReflectance_;
 	Vector3 specularReflectance_;
 
 	std::string name_;
 
-	Shader* shader_;
+	std::unordered_map<RenderPassType, Shader*> renderPassTypeShaderMap_;
 
 	float phongExponent_;
 

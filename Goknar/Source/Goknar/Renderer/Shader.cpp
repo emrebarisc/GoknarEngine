@@ -4,6 +4,9 @@
 
 #include "ShaderBuilder.h"
 
+#include "Goknar/Application.h"
+#include "Goknar/Engine.h"
+#include "Goknar/Scene.h"
 #include "Goknar/Camera.h"
 #include "Goknar/GoknarAssert.h"
 #include "Goknar/Contents/Image.h"
@@ -32,7 +35,7 @@ void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
 		logMessage[maxLength] = '\0';
 		glDeleteShader(shaderId);
 
-		GOKNAR_CORE_ASSERT(false, "{}\n What went wrong: {}", logMessage, errorMessage);
+		GOKNAR_CORE_ASSERT(false, "{}\n What went wrong: {}", errorMessage, logMessage);
 
 		delete[] logMessage;
 	}
@@ -53,50 +56,42 @@ void ExitOnProgramError(GEuint programId, const char* errorMessage)
 		glDeleteProgram(programId);
 
 		GOKNAR_CORE_ERROR("{0}", logMessage);
-		GOKNAR_ASSERT(false, errorMessage);
+		GOKNAR_CORE_ASSERT(false, errorMessage);
 
 		delete[] logMessage;
 	}
 }
 
-Shader::Shader() :
-	shaderType_(ShaderType::Scene),
-	programId_(0)
+Shader::Shader()
 {
+	engine->GetApplication()->GetMainScene()->AddShader(this);
 }
 
 Shader::~Shader()
 {
 	glDeleteProgram(programId_);
+	engine->GetApplication()->GetMainScene()->RemoveShader(this);
 }
 
 void Shader::SetMVP(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix/*, const Matrix& view, const Matrix& projection*/) const
 {
+	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX, worldTransformationMatrix * relativeTransformationMatrix);
+
 	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 
-	/* TODO: DECIDE WHETHER WORLD AND RELATIVE TRANSFORMATION MATRICES SHOULD BE MULTIPLIED AND SENT TO THE GPU OR THEY SHOULD BE SENT SEPERATELY */
-	/* THIS MAY AFFECT PERFORMANCE ****************************************************************************************************************/
-	/**/SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX, worldTransformationMatrix * relativeTransformationMatrix);
-	/**/SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::WORLD_TRANSFORMATION_MATRIX, worldTransformationMatrix);
-	/**/SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::RELATIVE_TRANSFORMATION_MATRIX, relativeTransformationMatrix);
-	/**********************************************************************************************************************************************/
-	
-	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_MATRIX, activeCamera->GetViewingMatrix());
-	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::PROJECTION_MATRIX, activeCamera->GetProjectionMatrix());
+	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX, activeCamera->GetViewProjectionMatrix());
 	SetVector3(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION, activeCamera->GetPosition());
 }
 
 void Shader::PreInit()
 {
-	std::vector<const Image*>::iterator imageIterator = textureImages_.begin();
-	for (; imageIterator != textureImages_.end(); ++imageIterator)
-	{
-		AddTexture((*imageIterator)->GetGeneratedTexture());
-	}
 }
 
 void Shader::Init()
 {
+	programId_ = glCreateProgram();
+
+	// TODO: Change custom shader creation
 	if (shaderType_ == ShaderType::Dependent || shaderType_ == ShaderType::SelfContained)
 	{
 		GOKNAR_CORE_ASSERT(	(	(!vertexShaderPath_.empty() && !fragmentShaderPath_.empty()) ||
@@ -105,36 +100,51 @@ void Shader::Init()
 
 		if(!vertexShaderPath_.empty())
 		{
-			bool isVertexShaderFound = IOManager::ReadFile(vertexShaderPath_.c_str(), vertexShaderScript_);
+			IOManager::ReadFile(vertexShaderPath_.c_str(), vertexShaderScript_);
 		}
 
 		if(!fragmentShaderPath_.empty())
 		{
-			bool isFragmentShaderFound = IOManager::ReadFile(fragmentShaderPath_.c_str(), fragmentShaderScript_);
+			IOManager::ReadFile(fragmentShaderPath_.c_str(), fragmentShaderScript_);
+		}
+
+		if(!geometryShaderPath_.empty())
+		{
+			IOManager::ReadFile(geometryShaderPath_.c_str(), geometryShaderScript_);
 		}
 	}
+	//////////////////////////////////////
 
 	const GEchar* vertexSource = (const GEchar*)vertexShaderScript_.c_str();
 	GEuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShaderId, 1, &vertexSource, 0);
 	glCompileShader(vertexShaderId);
 	ExitOnShaderIsNotCompiled(vertexShaderId, (std::string("Vertex shader compilation error!(" + vertexShaderPath_ + ").")).c_str());
-	vertexShaderScript_.clear();
+	
+	glAttachShader(programId_, vertexShaderId);
 
 	const GEchar* fragmentSource = (const GEchar*)fragmentShaderScript_.c_str();
 	GEuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShaderId, 1, &fragmentSource, 0);
 	glCompileShader(fragmentShaderId);
 	ExitOnShaderIsNotCompiled(fragmentShaderId, (std::string("Fragment shader compilation error!(") + fragmentShaderPath_ + ").").c_str());
-	fragmentShaderScript_.clear();
 
-	programId_ = glCreateProgram();
-
-	glAttachShader(programId_, vertexShaderId);
 	glAttachShader(programId_, fragmentShaderId);
 
-	glLinkProgram(programId_);
+	GEuint geometryShaderId = 0;
+	bool containsGeometryShader = !geometryShaderScript_.empty();
+	if (containsGeometryShader)
+	{
+		const GEchar* geometrySource = (const GEchar*)geometryShaderScript_.c_str();
+		geometryShaderId = glCreateShader(GL_GEOMETRY_SHADER);
+		glShaderSource(geometryShaderId, 1, &geometrySource, 0);
+		glCompileShader(geometryShaderId);
+		ExitOnShaderIsNotCompiled(geometryShaderId, (std::string("Geometry shader compilation error!(") + geometryShaderPath_ + ").").c_str());
 
+		glAttachShader(programId_, geometryShaderId);
+	}
+
+	glLinkProgram(programId_);
 	ExitOnProgramError(programId_, "Shader program link error!");
 
 	Bind();
@@ -145,12 +155,23 @@ void Shader::Init()
 		textures_[textureIndex]->Bind(this);
 	}
 
-	//engine->GetRenderer()->BindShadowTextures(this);
+	engine->GetRenderer()->BindShadowTextures(this);
+	ExitOnProgramError(programId_, "Shader error on binding texture!");
 
 	Unbind();
 
 	glDetachShader(programId_, vertexShaderId);
 	glDetachShader(programId_, fragmentShaderId);
+	if (containsGeometryShader)
+	{
+		glDetachShader(programId_, geometryShaderId);
+	}
+}
+
+void Shader::PostInit()
+{
+	vertexShaderScript_.clear();
+	fragmentShaderScript_.clear();
 }
 
 void Shader::Bind() const
@@ -168,9 +189,10 @@ void Shader::Use() const
 	Bind();
 }
 
-void Shader::SetBool(const char* name, bool value)
+void Shader::SetBool(const char* name, bool value) const
 {
-	glUniform1i(glGetUniformLocation(programId_, name), (int)value);
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniform1i(uniformLocation, (int)value);
 }
 
 void Shader::SetInt(const char* name, int value) const
@@ -181,20 +203,24 @@ void Shader::SetInt(const char* name, int value) const
 
 void Shader::SetFloat(const char* name, float value) const
 {
-	glUniform1f(glGetUniformLocation(programId_, name), value);
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniform1f(uniformLocation, value);
 }
 
 void Shader::SetMatrix(const char* name, const Matrix& matrix) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(programId_, name), 1, GL_FALSE, &matrix.m[0]);
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix.m[0]);
 }
 
-void Shader::SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector)
+void Shader::SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(programId_, name), matrixVector.size(), GL_FALSE, &matrixVector[0].m[0]);
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniformMatrix4fv(uniformLocation, matrixVector.size(), GL_FALSE, &matrixVector[0].m[0]);
 }
 
 void Shader::SetVector3(const char* name, const Vector3& vector) const
 {
-	glUniform3fv(glGetUniformLocation(programId_, name), 1, &vector.x);
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniform3fv(uniformLocation, 1, &vector.x);
 }

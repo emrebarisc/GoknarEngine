@@ -1,85 +1,107 @@
 <Scene>
 	<BackgroundColor>50 50 50</BackgroundColor>
- 	<Cameras>
-		<!--<Camera id = "0">
+	<Cameras>
+<!-- 		<Camera id = "0">
 			<Position>0.0 0.0 1.75</Position>
-			<Gaze>0.0 1.0000001192092896 0.0</Gaze>
-			<Up>0.0 0.0 1.0000001192092896</Up>
+			<Gaze>0.0 0.9999999403953552 0.0</Gaze>
+			<Up>0.0 0.0 0.9999999403953552</Up>
 			<NearPlane>-0.5 0.5 -0.28125 0.28125</NearPlane>
 			<NearDistance>1</NearDistance>
 			<ImageResolution>1600 900</ImageResolution>
 			<NumSamples>1</NumSamples>
 			<ImageName></ImageName>
-		</Camera>-->
-	</Cameras> 
+		</Camera> -->
+	</Cameras>
 
 	<Lights>
-		<AmbientLight>150 150 150</AmbientLight>
-		<DirectionalLight>
+		<AmbientLight>50 50 50</AmbientLight>
+  		<DirectionalLight>
 			<Direction>0.57735 0.57735 -0.57735</Direction>
 			<Color>1.0 0.99 0.83</Color>
-			<Intensity>0.75</Intensity>
+			<Intensity>0.5</Intensity>
+			<IsCastingShadow>1</IsCastingShadow>
+			<ShadowMapResolution>4096 4096</ShadowMapResolution>
 		</DirectionalLight>
-		<!--<PointLight id = "0">
+		<PointLight id = "0">
 			<Position>2.0 6.75 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
+			<IsCastingShadow>1</IsCastingShadow>
+			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "1">
 			<Position>-2.0 6.75 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
+			<IsCastingShadow>1</IsCastingShadow>
+			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "2">
 			<Position>-4.75 4.0 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
+			<IsCastingShadow>1</IsCastingShadow>
+			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "3">
 			<Position>-4.75 0.0 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
+			<IsCastingShadow>1</IsCastingShadow>
+			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "4">
 			<Position>-4.75 -4.0 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
+			<IsCastingShadow>1</IsCastingShadow>
+			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "5">
 			<Position>4.75 4.0 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
+			<IsCastingShadow>1</IsCastingShadow>
+			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "6">
 			<Position>4.75 0.0 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
+			<IsCastingShadow>1</IsCastingShadow>
+			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "7">
 			<Position>4.75 -4.0 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
+			<IsCastingShadow>1</IsCastingShadow>
+			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "8">
 			<Position>2.0 -6.75 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
+			<IsCastingShadow>1</IsCastingShadow>
+			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "9">
 			<Position>-2.0 -6.75 2.0</Position>
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-		</PointLight>-->
+			<IsCastingShadow>1</IsCastingShadow>
+			<ShadowMapResolution>2048 2048</ShadowMapResolution>
+		</PointLight>
 	</Lights>
 
 	<Materials>
@@ -87,41 +109,41 @@
 
 	<Meshes>
 		<StaticMesh id = "0">
-			<Name>Wall</Name>
-			<Path>Meshes/SM_Wall.fbx</Path>
+			<Name>BuildingWall</Name>
+			<Path>Meshes/SM_BuildingWall.fbx</Path>
 		</StaticMesh>
 		<StaticMesh id = "1">
 			<Name>FloorAndCeil</Name>
 			<Path>Meshes/SM_FloorAndCeil.fbx</Path>
 		</StaticMesh>
 		<StaticMesh id = "2">
-			<Name>Chest</Name>
-			<Path>Meshes/SM_Chest.fbx</Path>
-		</StaticMesh>
-		<StaticMesh id = "3">
-			<Name>Plane</Name>
-			<Path>Meshes/SM_Plane.fbx</Path>
-		</StaticMesh>
-		<StaticMesh id = "4">
 			<Name>Arrow</Name>
 			<Path>Meshes/SM_Arrow.fbx</Path>
 		</StaticMesh>
-		<StaticMesh id = "5">
-			<Name>Bow</Name>
-			<Path>Meshes/SM_Bow.fbx</Path>
-		</StaticMesh>
-		<SkeletalMesh id = "6">
-			<Name>EpicChest</Name>
-			<Path>Meshes/SkeletalMesh_EpicChest.fbx</Path>
-		</SkeletalMesh>
+	    <StaticMesh id = "3">
+	      <Name>Floor</Name>
+	      <Path>Meshes/SM_Floor.fbx</Path>
+	    </StaticMesh>
+	    <StaticMesh id = "4">
+	      <Name>Wall</Name>
+	      <Path>Meshes/SM_Wall.fbx</Path>
+	    </StaticMesh>
+	    <StaticMesh id = "5">
+	      <Name>Cube</Name>
+	      <Path>Meshes/SM_Cube.fbx</Path>
+	    </StaticMesh>
+	    <StaticMesh id = "6">
+	      <Name>CylinderWithAHole</Name>
+	      <Path>Meshes/SM_CylinderWithAHole.fbx</Path>
+	    </StaticMesh>
 		<SkeletalMesh id = "7">
 			<Name>Axis</Name>
-			<Path>Meshes/SM_Axis.fbx</Path>
+			<Path>Meshes/SkeletalMesh_Bow.fbx</Path>
 		</SkeletalMesh>
 	</Meshes>
 
 	<Objects>
-		<!--<StaticMeshObject id = "0">
+		<StaticMeshObject id = "0">
 			<Mesh>0</Mesh>
 			<Name>Wall</Name>
 			<PivotPoint>0 0 0</PivotPoint>
@@ -385,6 +407,18 @@
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
 		</StaticMeshObject>
 
+		<StaticMeshObject id = "22">
+			<Mesh>1</Mesh>
+			<Name>FloorAndCeil</Name>
+			<PivotPoint>0 0 0</PivotPoint>
+			<RelativePosition>0 0 0</RelativePosition>
+			<RelativeRotation>0 0 0</RelativeRotation>
+			<RelativeScaling>1 1 1</RelativeScaling>
+			<WorldPosition>0.0 0.0 0.0</WorldPosition>
+			<WorldRotation>0.0 0.0 0.0</WorldRotation>
+			<WorldScaling>1.0 1.0 1.0</WorldScaling>
+		</StaticMeshObject>
+
 		<StaticMeshObject id = "23">
 			<Mesh>0</Mesh>
 			<Name>Wall</Name>
@@ -396,54 +430,62 @@
 			<WorldRotation>0.0 0.0 0.0</WorldRotation>
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
 		</StaticMeshObject>
-		
-		<StaticMeshObject id = "24">
-			<Mesh>2</Mesh>
-			<Name>Chest</Name>
-			<PivotPoint>0 0 0</PivotPoint>
-			<RelativePosition>0 0 0</RelativePosition>
-			<RelativeRotation>0 0 0</RelativeRotation>
-			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldPosition>-4.0 6.0 0.0</WorldPosition>
-			<WorldRotation>0.0 -0.0 45.00000125223908</WorldRotation>
-			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject>
-		
-		<StaticMeshObject id = "22">
-			<Mesh>1</Mesh>
-			<Name>FloorAndCeil</Name>
-			<PivotPoint>0 0 0</PivotPoint>
-			<RelativePosition>0 0 0</RelativePosition>
-			<RelativeRotation>0 0 0</RelativeRotation>
-			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldPosition>0.0 0.0 0.0</WorldPosition>
-			<WorldRotation>0.0 0.0 0.0</WorldRotation>
-			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject> 
-		
- 		<StaticMeshObject id = "25">
-			<Mesh>3</Mesh>
-			<Name>Plane</Name>
-			<PivotPoint>0 0 0</PivotPoint>
-			<RelativePosition>0 0 0</RelativePosition>
-			<RelativeRotation>0 0 0</RelativeRotation>
-			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldPosition>0.0 0.0 0.0</WorldPosition>
-			<WorldRotation>0.0 0.0 0.0</WorldRotation>
-			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject>
-		
-		<SkeletalMeshObject id = "26">
-			<Mesh>6</Mesh>
-			<Name>Wall</Name>
-			<PivotPoint>0 0 0</PivotPoint>
-			<RelativePosition>0 0 0</RelativePosition>
-			<RelativeRotation>0 0 0</RelativeRotation>
-			<RelativeScaling>1.0 1.0 1.0</RelativeScaling>
-			<WorldPosition>5.0 0.0 0.0</WorldPosition>
-			<WorldRotation>90.0 0.0 0.0</WorldRotation>
-			<WorldScaling>0.025 0.025 0.025</WorldScaling>
-		</SkeletalMeshObject>-->
+
+ 	     <StaticMeshObject id = "3">
+	      <Name>Floor</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>0.0 0.0 -0.05</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>100.0 100.0 1.0</WorldScaling>
+	      <Mesh>3</Mesh>
+	    </StaticMeshObject>
+	    <StaticMeshObject id = "4">
+	      <Name>Wall</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>20.0 5.0 0.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>4</Mesh>
+	    </StaticMeshObject>
+	    <StaticMeshObject id = "5">
+	      <Name>Wall</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>25.0 0.0 0.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 90.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>4</Mesh>
+	    </StaticMeshObject>
+	    <StaticMeshObject id = "6">
+	      <Name>Cube</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>20.0 0.0 0.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>5</Mesh>
+	    </StaticMeshObject>
+	    <StaticMeshObject id = "7">
+	      <Name>Cylinder</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>20.0 0.0 5.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>6</Mesh>
+	    </StaticMeshObject>
 	</Objects>
 
 </Scene>

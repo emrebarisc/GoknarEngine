@@ -1,31 +1,34 @@
 #ifndef __LIGHT_H__
 #define __LIGHT_H__
 
+#include "Goknar/Camera.h"
 #include "Goknar/Math/GoknarMath.h"
 #include "Goknar/Renderer/Types.h"
 
-class Camera;
+class Framebuffer;
 class Shader;
 class Texture;
 
 enum class LightMobility : uint8_t
 {
 	Static = 0,
-	Movable
+	Dynamic
 };
+
+#define POINT_LIGHT_TYPE_INT 0
+#define DIRECTIONAL_LIGHT_TYPE_INT 1
+#define SPOT_LIGHT_TYPE_INT 2
 
 class GOKNAR_API Light
 {
 public:
-	Light();
+	Light() = default;
 
 	virtual ~Light();
 
-	virtual void SetShaderUniforms(const Shader* shader) const;
-
 	virtual void Init();
 
-	void SetPosition(const Vector3& position)
+	virtual void SetPosition(const Vector3& position)
 	{
 		position_ = position;
 	}
@@ -90,7 +93,7 @@ public:
 		return isShadowEnabled_;
 	}
 
-	void SetIsShadowEnabled(bool isShadowEnabled)
+	virtual void SetIsShadowEnabled(bool isShadowEnabled)
 	{
 		isShadowEnabled_ = isShadowEnabled;
 	}
@@ -100,17 +103,21 @@ public:
 		return shadowWidth_;
 	}
 
+	void SetShadowWidth(int shadowWidth)
+	{
+		shadowWidth_ = shadowWidth;
+	}
+
 	int GetShadowHeight()
 	{
 		return shadowHeight_;
 	}
 
-	GEuint GetShadowMapFBO()
+	void SetShadowHeight(int shadowHeight)
 	{
-		return shadowMapDepthFBO_;
+		shadowHeight_ = shadowHeight;
 	}
 
-	virtual void RenderShadowMap() = 0;
 	Texture* GetShadowMapTexture()
 	{
 		return shadowMapTexture_;
@@ -121,28 +128,38 @@ public:
 		return shadowMapRenderCamera_;
 	}
 
+	Framebuffer* GetShadowMapFramebuffer()
+	{
+		return shadowMapFramebuffer_;
+	}
+
+	virtual void SetShaderUniforms(const Shader* shader);
+
+	virtual void RenderShadowMap() = 0;
+	virtual void SetShadowRenderPassShaderUniforms(const Shader* shader) = 0;
+
 protected:
 
-	Vector3 position_;
-	Vector3 color_;
+	Vector3 position_{ Vector3::ZeroVector };
+	Vector3 color_{ Vector3::ZeroVector };
 
-	Texture* shadowMapTexture_;
-	Camera* shadowMapRenderCamera_;
+	Camera* shadowMapRenderCamera_{ nullptr };
+	Framebuffer* shadowMapFramebuffer_{ nullptr };
+	Texture* shadowMapTexture_{ nullptr };
 
-	std::string name_;
+	std::string name_{ "" };
 
-	int id_;
+	int id_{ 0 };
 
-	int shadowWidth_;
-	int shadowHeight_;
+	int shadowWidth_{ 1024 };
+	int shadowHeight_{ 1024 };
 
-	float intensity_;
+	float intensity_{ 1.f };
 
-	GEuint shadowMapDepthFBO_;
-	bool isShadowEnabled_;
+	bool isShadowEnabled_{ false };
 
+	LightMobility mobility_{ LightMobility::Static };
 private:
-	LightMobility mobility_;
 };
 
 #endif

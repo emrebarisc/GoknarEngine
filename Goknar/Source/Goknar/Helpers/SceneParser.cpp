@@ -233,6 +233,22 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			child = element->FirstChildElement("Radius");
 			stream << child->GetText() << std::endl;
 
+			bool isCastingShadowElementFound = false;
+			child = element->FirstChildElement("IsCastingShadow");
+			if (child)
+			{
+				isCastingShadowElementFound = true;
+				stream << child->GetText() << std::endl;
+			}
+
+			bool shadowMapResolutionElementFound = false;
+			child = element->FirstChildElement("ShadowMapResolution");
+			if (child)
+			{
+				shadowMapResolutionElementFound = true;
+				stream << child->GetText() << std::endl;
+			}
+
 			Vector3 position;
 			stream >> position.x >> position.y >> position.z;
 			pointLight->SetPosition(position);
@@ -249,10 +265,27 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			stream >> radius;
 			pointLight->SetRadius(radius);
 
+			if (isCastingShadowElementFound)
+			{
+				bool isCastingShadow = false;
+				stream >> isCastingShadow;
+				pointLight->SetIsShadowEnabled(isCastingShadow);
+			}
+
+			if (shadowMapResolutionElementFound)
+			{
+				int x = 1024;
+				int y = 1024;
+				stream >> x >> y;
+				pointLight->SetShadowWidth(x);
+				pointLight->SetShadowHeight(y);
+			}
+
 			scene->AddPointLight(pointLight);
 			element = element->NextSiblingElement("PointLight");
+
+			stream.clear();
 		}
-		stream.clear();
 	}
 
 	//Get Directional Lights
@@ -274,6 +307,22 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			child = element->FirstChildElement("Intensity");
 			stream << child->GetText() << std::endl;
 
+			bool isCastingShadowElementFound = false;
+			child = element->FirstChildElement("IsCastingShadow");
+			if (child)
+			{
+				isCastingShadowElementFound = true;
+				stream << child->GetText() << std::endl;
+			}
+
+			bool shadowMapResolutionElementFound = false;
+			child = element->FirstChildElement("ShadowMapResolution");
+			if (child)
+			{
+				shadowMapResolutionElementFound = true;
+				stream << child->GetText() << std::endl;
+			}
+
 			Vector3 direction;
 			stream >> direction.x >> direction.y >> direction.z;
 			direction.Normalize();
@@ -287,10 +336,27 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			stream >> intensity;
 			directionalLight->SetIntensity(intensity);
 
+			if (isCastingShadowElementFound)
+			{
+				bool isCastingShadow = false;
+				stream >> isCastingShadow;
+				directionalLight->SetIsShadowEnabled(isCastingShadow);
+			}
+
+			if (shadowMapResolutionElementFound)
+			{
+				int x = 1024;
+				int y = 1024;
+				stream >> x >> y;
+				directionalLight->SetShadowWidth(x);
+				directionalLight->SetShadowHeight(y);
+			}
+
 			scene->AddDirectionalLight(directionalLight);
 			element = element->NextSiblingElement("DirectionalLight");
+
+			stream.clear();
 		}
-		stream.clear();
 	}
 
 	//Get Spot Lights
@@ -321,6 +387,22 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			child = element->FirstChildElement("FalloffAngle");
 			stream << child->GetText() << std::endl;
 
+			bool isCastingShadowElementFound = false;
+			child = element->FirstChildElement("IsCastingShadow");
+			if (child)
+			{
+				isCastingShadowElementFound = true;
+				stream << child->GetText() << std::endl;
+			}
+
+			bool shadowMapResolutionElementFound = false;
+			child = element->FirstChildElement("ShadowMapResolution");
+			if (child)
+			{
+				shadowMapResolutionElementFound = true;
+				stream << child->GetText() << std::endl;
+			}
+
 			Vector3 position;
 			stream >> position.x >> position.y >> position.z;
 			spotLight->SetPosition(position);
@@ -345,6 +427,22 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			float falloffAngle;
 			stream >> falloffAngle;
 			spotLight->SetFalloffAngle(falloffAngle);
+
+			if (isCastingShadowElementFound)
+			{
+				bool isCastingShadow = false;
+				stream >> isCastingShadow;
+				spotLight->SetIsShadowEnabled(isCastingShadow);
+			}
+
+			if (shadowMapResolutionElementFound)
+			{
+				int x = 1024;
+				int y = 1024;
+				stream >> x >> y;
+				spotLight->SetShadowWidth(x);
+				spotLight->SetShadowHeight(y);
+			}
 
 			scene->AddSpotLight(spotLight);
 			element = element->NextSiblingElement("SpotLight");
@@ -539,7 +637,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			while (child)
 			{
 				int textureId = std::stoi(child->Attribute("id"));
-				material->GetShader()->AddTexture(scene->GetTexture(textureId));
+				material->GetShader(RenderPassType::Forward)->AddTexture(scene->GetTexture(textureId));
 				child = child->NextSiblingElement("Texture");
 			}
 

@@ -42,12 +42,12 @@ Scene::~Scene()
 		delete object;
 	}
 
-	for (auto object : shaders_)
+	for (auto object : materials_)
 	{
 		delete object;
 	}
 
-	for (auto object : materials_)
+	for (auto object : shaders_)
 	{
 		delete object;
 	}
@@ -129,6 +129,16 @@ void Scene::Init()
 	{
 		texture->Init();
 	}
+
+	//for (Shader* shader : shaders_)
+	//{
+	//	shader->Init();
+	//}
+
+	//for (Material* material : materials_)
+	//{
+	//	material->Init();
+	//}
 }
 
 void Scene::ReadSceneData(const std::string& filePath)
@@ -200,7 +210,7 @@ void Scene::AddPointLight(PointLight* pointLight)
 	case LightMobility::Static:
 		staticPointLights_.push_back(pointLight);
 		break;
-	case LightMobility::Movable:
+	case LightMobility::Dynamic:
 		dynamicPointLights_.push_back(pointLight);
 		break;
 	}
@@ -214,7 +224,7 @@ void Scene::AddDirectionalLight(DirectionalLight* directionalLight)
 	case LightMobility::Static:
 		staticDirectionalLights_.push_back(directionalLight);
 		break;
-	case LightMobility::Movable:
+	case LightMobility::Dynamic:
 		dynamicDirectionalLights_.push_back(directionalLight);
 		break;
 	}
@@ -228,7 +238,7 @@ void Scene::AddSpotLight(SpotLight* spotLight)
 	case LightMobility::Static:
 		staticSpotLights_.push_back(spotLight);
 		break;
-	case LightMobility::Movable:
+	case LightMobility::Dynamic:
 		dynamicSpotLights_.push_back(spotLight);
 		break;
 	}

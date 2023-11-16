@@ -22,13 +22,20 @@ SkeletalMeshInstance::~SkeletalMeshInstance()
 {
 }
 
-void SkeletalMeshInstance::Render()
+void SkeletalMeshInstance::Render(RenderPassType renderPassType)
 {
-	PreRender();
+	PreRender(renderPassType);
 
 	if (skeletalMeshAnimation_.skeletalAnimation)
 	{
 		const float newElapsedTimeInSeconds = engine->GetElapsedTime() - skeletalMeshAnimation_.initialTimeInSeconds;
+
+		if (skeletalMeshAnimation_.elapsedTimeInSeconds == newElapsedTimeInSeconds)
+		{
+			SetRenderOperations(renderPassType);
+			return;
+		}
+
 		const float newKeyframeIndex = skeletalMeshAnimation_.skeletalAnimation->ticksPerSecond * newElapsedTimeInSeconds;
 
 		const float floorQuotient = std::floor(newKeyframeIndex / skeletalMeshAnimation_.skeletalAnimation->duration);
@@ -67,7 +74,7 @@ void SkeletalMeshInstance::Render()
 	}
 
 	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
-	
+
 
 	// TODO: Implement a proper multi threading
 	// Following std::for_each parallelizing causes game crash
@@ -100,10 +107,13 @@ void SkeletalMeshInstance::Render()
 		++boneIdToAttachedMatrixPointerMapIterator;
 	}
 
+	SetRenderOperations(renderPassType);
+}
 
-	mesh_->GetMaterial()->GetShader()->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
-
-	MeshInstance::Render();
+void SkeletalMeshInstance::SetRenderOperations(RenderPassType renderPassType)
+{
+	mesh_->GetMaterial()->GetShader(renderPassType)->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
+	MeshInstance::Render(renderPassType);
 }
 
 void SkeletalMeshInstance::SetMesh(SkeletalMesh* skeletalMesh)
@@ -136,13 +146,31 @@ void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, const
 void SkeletalMeshInstance::AttachBoneToMatrixPointer(const std::string& boneName, const Matrix* matrix)
 {
 	const int boneId = GetMesh()->GetBoneId(boneName);
+
 	if (matrix)
 	{
 		boneIdToAttachedMatrixPointerMap_[boneId] = matrix;
 	}
 	else
 	{
-		boneIdToAttachedMatrixPointerMap_.erase(boneIdToAttachedMatrixPointerMap_.find(boneId));
+		decltype(boneIdToAttachedMatrixPointerMap_)::iterator iterator = boneIdToAttachedMatrixPointerMap_.find(boneId);
+
+		if (iterator == boneIdToAttachedMatrixPointerMap_.end())
+		{
+			return;
+		}
+
+		boneIdToAttachedMatrixPointerMap_.erase(iterator);
+	}
+}
+
+void SkeletalMeshInstance::RemoveBoneToMatrixPointer(const std::string& boneName)
+{
+	const int boneId = GetMesh()->GetBoneId(boneName);
+	decltype(boneIdToAttachedMatrixPointerMap_)::iterator iterator = boneIdToAttachedMatrixPointerMap_.find(boneId);
+	if (iterator != boneIdToAttachedMatrixPointerMap_.end())
+	{
+		boneIdToAttachedMatrixPointerMap_.erase(iterator);
 	}
 }
 

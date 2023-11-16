@@ -10,7 +10,6 @@
 
 class Material;
 class Texture;
-class Image;
 
 enum class ShaderType
 {
@@ -28,14 +27,34 @@ public:
 	Shader();
 	~Shader();
 
+	const std::string& GetVertexShaderScript() const
+	{
+		return vertexShaderScript_;
+	}
+
 	void SetVertexShaderScript(const std::string& vertexShaderScript)
 	{
 		vertexShaderScript_ = vertexShaderScript;
 	}
 
+	const std::string& GetFragmentShaderScript()
+	{
+		return fragmentShaderScript_;
+	}
+
 	void SetFragmentShaderScript(const std::string& fragmentShaderScript)
 	{
 		fragmentShaderScript_ = fragmentShaderScript;
+	}
+
+	void SetGeometryShaderScript(const std::string& geometryShaderScript)
+	{
+		geometryShaderScript_ = geometryShaderScript;
+	}
+
+	const std::string& GetGeometryShaderScript()
+	{
+		return geometryShaderScript_;
 	}
 
 	void SetVertexShaderPath(const std::string& vertexShaderPath)
@@ -48,6 +67,11 @@ public:
 		fragmentShaderPath_ = ContentDir + fragmentShaderPath;
 	}
 
+	void SetGeometryShaderPath(const std::string& geometryShaderPath)
+	{
+		geometryShaderPath_ = ContentDir + geometryShaderPath;
+	}
+
 	ShaderType GetShaderType() const
 	{
 		return shaderType_;
@@ -56,16 +80,6 @@ public:
 	void SetShaderType(ShaderType shaderType)
 	{
 		shaderType_ = shaderType;
-	}
-
-	void AddTextureImage(const Image* image)
-	{
-		textureImages_.push_back(image);
-	}
-
-	const std::vector<const Image*>* GetTextureImages() const
-	{
-		return &textureImages_;
 	}
 
 	void AddTexture(const Texture* texture)
@@ -87,6 +101,7 @@ public:
 
 	void PreInit();
 	void Init();
+	void PostInit();
 
 	void Bind() const;
 
@@ -94,28 +109,29 @@ public:
 
 	void Use() const;
 
-	void SetBool(const char* name, bool value);
+	void SetBool(const char* name, bool value) const;
 	void SetInt(const char* name, int value) const;
 	void SetFloat(const char* name, float value) const;
 	void SetMatrix(const char* name, const Matrix& matrix) const;
-	void SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector);
+	void SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector) const;
 	void SetVector3(const char* name, const Vector3& vector) const;
 
 protected:
 
 private:
-	std::vector<const Image*> textureImages_;
 	std::vector<const Texture*> textures_;
 
-	std::string vertexShaderPath_;
-	std::string fragmentShaderPath_;
+	std::string vertexShaderPath_{ "" };
+	std::string fragmentShaderPath_{ "" };
+	std::string geometryShaderPath_{ "" };
 
-	std::string vertexShaderScript_;
-	std::string fragmentShaderScript_;
+	std::string vertexShaderScript_{ "" };
+	std::string fragmentShaderScript_{ "" };
+	std::string geometryShaderScript_{ "" };
 
-	GEuint programId_;
+	GEuint programId_{ 0 };
 
-	ShaderType shaderType_;
+	ShaderType shaderType_{ ShaderType::Scene };
 };
 
 #endif

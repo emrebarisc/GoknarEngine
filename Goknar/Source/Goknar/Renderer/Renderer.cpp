@@ -51,7 +51,6 @@ Renderer::Renderer() :
 	totalSkeletalMeshCount_(0),
 	totalDynamicMeshCount_(0),
 	shadowManager_(nullptr),
-	isRenderingOnlyDepth_(false),
 	removeStaticDataFromMemoryAfterTransferingToGPU_(true)
 {
 }
@@ -62,10 +61,12 @@ Renderer::~Renderer()
 
 	EXIT_ON_GL_ERROR("Renderer::~Renderer");
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	glDisableVertexAttribArray(3);
+	//glDisableVertexAttribArray(VERTEX_COLOR_LOCATION);
+	//glDisableVertexAttribArray(VERTEX_POSITION_LOCATION);
+	//glDisableVertexAttribArray(VERTEX_NORMAL_LOCATION);
+	//glDisableVertexAttribArray(VERTEX_UV_LOCATION);
+	//glDisableVertexAttribArray(BONE_ID_LOCATION);
+	//glDisableVertexAttribArray(BONE_WEIGHT_LOCATION);
 
 	glDeleteBuffers(1, &staticVertexBufferId_);
 	glDeleteBuffers(1, &skeletalVertexBufferId_);
@@ -324,22 +325,30 @@ void Renderer::SetBufferData()
 	if (0 < totalDynamicMeshCount_) SetDynamicBufferData();
 }
 
-void Renderer::Render()
+void Renderer::Render(RenderPassType renderPassType)
 {
-	if (!isRenderingOnlyDepth_)
+	switch (renderPassType)
 	{
-		glDepthMask(GL_TRUE);
-		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
-		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
-	else
-	{
-		// WORK IN PROGRESS
-
-		glDepthMask(GL_FALSE);
-		glClearColor(0.f, 0.f, 0.f, 1.f);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		case RenderPassType::Forward:
+		{
+			glDepthMask(GL_TRUE);
+			const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
+			glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			break;
+		}
+		case RenderPassType::Shadow:
+		case RenderPassType::PointLightShadow:
+		{
+			glClear(GL_DEPTH_BUFFER_BIT);
+			break;
+		}
+		case RenderPassType::None:
+		default:
+		{
+			GOKNAR_CORE_ASSERT(false, "Render function called without a correct pass type!");
+			return;
+		}
 	}
 
 	// Static MeshUnit Instances
@@ -353,7 +362,7 @@ void Renderer::Render()
 				if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
 
 				const MeshUnit* mesh = opaqueStaticMeshInstance->GetMesh();
-				opaqueStaticMeshInstance->Render();
+				opaqueStaticMeshInstance->Render(renderPassType);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -364,7 +373,7 @@ void Renderer::Render()
 				if (!maskedStaticMeshInstance->GetIsRendered()) continue;
 
 				const MeshUnit* mesh = maskedStaticMeshInstance->GetMesh();
-				maskedStaticMeshInstance->Render();
+				maskedStaticMeshInstance->Render(renderPassType);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -384,7 +393,7 @@ void Renderer::Render()
 
 				// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
 				const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(opaqueSkeletalMeshInstance->GetMesh());
-				opaqueSkeletalMeshInstance->Render();
+				opaqueSkeletalMeshInstance->Render(renderPassType);
 
 				int facePointCount = skeletalMesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
@@ -396,7 +405,7 @@ void Renderer::Render()
 
 				// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
 				const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(maskedSkeletalMeshInstance->GetMesh());
-				maskedSkeletalMeshInstance->Render();
+				maskedSkeletalMeshInstance->Render(renderPassType);
 
 				int facePointCount = skeletalMesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
@@ -415,7 +424,7 @@ void Renderer::Render()
 				if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
 
 				const MeshUnit* mesh = opaqueDynamicMeshInstance->GetMesh();
-				opaqueDynamicMeshInstance->Render();
+				opaqueDynamicMeshInstance->Render(renderPassType);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -426,7 +435,7 @@ void Renderer::Render()
 				if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
 
 				const MeshUnit* mesh = maskedDynamicMeshInstance->GetMesh();
-				maskedDynamicMeshInstance->Render();
+				maskedDynamicMeshInstance->Render(renderPassType);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -440,7 +449,7 @@ void Renderer::Render()
 	{
 		if (!translucentStaticMeshInstance->GetIsRendered()) continue;
 		const MeshUnit* mesh = translucentStaticMeshInstance->GetMesh();
-		translucentStaticMeshInstance->Render();
+		translucentStaticMeshInstance->Render(renderPassType);
 
 		int facePointCount = mesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -451,7 +460,7 @@ void Renderer::Render()
 		if (!translucentSkeletalMeshInstance->GetIsRendered()) continue;
 		// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
 		const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(translucentSkeletalMeshInstance->GetMesh());
-		translucentSkeletalMeshInstance->Render();
+		translucentSkeletalMeshInstance->Render(renderPassType);
 
 		int facePointCount = skeletalMesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
@@ -461,7 +470,7 @@ void Renderer::Render()
 	{
 		if (!translucentDynamicMeshInstance->GetIsRendered()) continue;
 		const MeshUnit* mesh = translucentDynamicMeshInstance->GetMesh();
-		translucentDynamicMeshInstance->Render();
+		translucentDynamicMeshInstance->Render(renderPassType);
 
 		int facePointCount = mesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
@@ -709,8 +718,71 @@ void Renderer::BindShadowTextures(Shader* shader)
 	for (size_t i = 0; i < staticDirectionalLightCount; i++)
 	{
 		DirectionalLight* directionalLight = staticDirectionalLights[i];
-		Texture* shadowTexture = directionalLight->GetShadowMapTexture();
-		shadowTexture->Bind(shader);
+		if (directionalLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = directionalLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
+	}
+
+	const std::vector<DirectionalLight*>& dynamicDirectionalLights = scene->GetDynamicDirectionalLights();
+	size_t dynamicDirectionalLightCount = dynamicDirectionalLights.size();
+	for (size_t i = 0; i < dynamicDirectionalLightCount; i++)
+	{
+		DirectionalLight* directionalLight = dynamicDirectionalLights[i];
+		if (directionalLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = directionalLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
+	}
+
+	const std::vector<PointLight*>& staticPointLights = scene->GetStaticPointLights();
+	size_t staticPointLightCount = staticPointLights.size();
+	for (size_t i = 0; i < staticPointLightCount; i++)
+	{
+		PointLight* pointLight = staticPointLights[i];
+		if (pointLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = pointLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
+	}
+
+	const std::vector<PointLight*>& dynamicPointLights = scene->GetDynamicPointLights();
+	size_t dynamicPointLightCount = dynamicPointLights.size();
+	for (size_t i = 0; i < dynamicPointLightCount; i++)
+	{
+		PointLight* pointLight = dynamicPointLights[i];
+		if (pointLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = pointLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
+	}
+
+	const std::vector<SpotLight*>& staticSpotLights = scene->GetStaticSpotLights();
+	size_t staticSpotLightCount = staticSpotLights.size();
+	for (size_t i = 0; i < staticSpotLightCount; i++)
+	{
+		SpotLight* spotLight = staticSpotLights[i];
+		if (spotLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = spotLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
+	}
+
+	const std::vector<SpotLight*>& dynamicSpotLights = scene->GetDynamicSpotLights();
+	size_t dynamicSpotLightCount = dynamicSpotLights.size();
+	for (size_t i = 0; i < dynamicSpotLightCount; i++)
+	{
+		SpotLight* spotLight = dynamicSpotLights[i];
+		if (spotLight->GetIsShadowEnabled())
+		{
+			Texture* shadowTexture = spotLight->GetShadowMapTexture();
+			shadowTexture->Bind(shader);
+		}
 	}
 }
 

@@ -44,13 +44,15 @@ public:
 	SkeletalMeshInstance() = delete;
 	SkeletalMeshInstance(RenderComponent* parentComponent);
 	virtual ~SkeletalMeshInstance();
-	virtual void Render() override;
-
+	virtual void Render(RenderPassType renderPassType = RenderPassType::Forward) override;
 	virtual void SetMesh(SkeletalMesh* skeletalMesh) override;
+
+	void SetRenderOperations(RenderPassType renderPassType = RenderPassType::Forward);
 
 	void PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData = { false, {} }, const KeyframeData& keyframeData = {});
 
 	void AttachBoneToMatrixPointer(const std::string& boneName, const Matrix* matrix);
+	void RemoveBoneToMatrixPointer(const std::string& boneName);
 
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;

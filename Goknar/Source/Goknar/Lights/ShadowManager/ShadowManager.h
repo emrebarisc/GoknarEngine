@@ -2,26 +2,23 @@
 #define __SHADOWMANAGAR_H__
 
 class Material;
+class Light;
 class Shader;
 
 class ShadowManager
 {
 public:
-	ShadowManager();
-	~ShadowManager();
-
-	Material* GetDepthBufferMaterial() const
-	{
-		return depthBufferMaterial_;
-	}
+	ShadowManager() = default;
+	~ShadowManager() = default;
 
 	void RenderShadowMaps();
+	void SetShadowRenderPassShaderUniforms(const Shader* shader) const;
 
 protected:
 
 private:
-	Material* depthBufferMaterial_;
-	Shader* depthBufferShader_;
+
+	Light* currentlyRenderingLight_;
 };
 
 #endif

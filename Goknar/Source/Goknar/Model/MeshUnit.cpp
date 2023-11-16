@@ -46,27 +46,36 @@ void MeshUnit::Init()
 
 	if (material_)
 	{
-		Shader* shader = material_->GetShader();
-		if(!shader)
-		{
-			shader = new Shader();
-			material_->SetShader(shader);
-			engine->GetApplication()->GetMainScene()->AddShader(shader);
-		}
-
-		shader->PreInit();
-
-		if (shader->GetShaderType() == ShaderType::Scene)
-		{
-			ShaderBuilder::GetInstance()->BuildShader(this);
-		}
-
-		shader->Init();
+		material_->Build(this);
+		material_->PreInit();
 		material_->Init();
+		material_->PostInit();
 	}
 
 	isInitialized_ = true;
 }
+
+
+//if (material_)
+//{
+//	Shader* shader = material_->GetShader(RenderPassType::Forward);
+//	if (!shader)
+//	{
+//		shader = new Shader();
+//		material_->SetShader(shader);
+//		engine->GetApplication()->GetMainScene()->AddShader(shader);
+//	}
+//
+//	shader->PreInit();
+//
+//	if (shader->GetShaderType() == ShaderType::Scene)
+//	{
+//		ShaderBuilder::GetInstance()->BuildShader(this);
+//	}
+//
+//	shader->Init();
+//	material_->Init();
+//}
 
 void MeshUnit::ClearDataFromMemory()
 {

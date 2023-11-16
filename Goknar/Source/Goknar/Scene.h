@@ -77,17 +77,20 @@ public:
 		objects_.push_back(object);
 	}
 
-	void RemoveObject(ObjectBase* object)
+	bool RemoveObject(ObjectBase* object)
 	{
-		std::vector<ObjectBase*>::iterator objectsIterator = objects_.begin();
-		for (; objectsIterator != objects_.end(); ++objectsIterator)
+		decltype(objects_.cbegin()) objectsIterator = objects_.cbegin();
+		while (objectsIterator != objects_.end())
 		{
 			if (*objectsIterator == object)
 			{
 				objects_.erase(objectsIterator);
-				return;
+				return true;
 			}
+			std::advance(objectsIterator, 1);
 		}
+
+		return false;
 	}
 
 	void ClearObjects()
@@ -164,6 +167,24 @@ public:
 	Shader* GetShader(int index) const
 	{
 		return shaders_[index];
+	}
+
+	bool RemoveShader(Shader* shader)
+	{
+		decltype(shaders_.cbegin()) shaderIterator = shaders_.cbegin();
+		while (shaderIterator != shaders_.end())
+		{
+			if (*shaderIterator == shader)
+			{
+				shaders_.erase(shaderIterator);
+
+				return true;
+			}
+
+			std::advance(shaderIterator, 1);
+		}
+
+		return false;
 	}
 
 	void AddTexture(Texture* texture)
