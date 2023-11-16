@@ -51,6 +51,16 @@ void SpotLight::Init()
 		shadowMapRenderCamera_->SetNearDistance(0.01f);
 		shadowMapRenderCamera_->SetFarDistance(radius_);
 		shadowMapRenderCamera_->SetFOV(RADIAN_TO_DEGREE(coverageAngle_ * 2.f));
+
+		shadowBiasMatrix_ =
+			Matrix
+		{
+			0.5f, 0.f, 0.f, 0.5f,
+			0.f, 0.5f, 0.f, 0.5f,
+			0.f, 0.f, 0.5f, 0.5f - 0.000005f,
+			0.f, 0.f, 0.f, 1.f
+		};
+		UpdateBiasedShadowMatrix();
 	}
 
 	Light::Init();
@@ -63,6 +73,7 @@ void SpotLight::SetPosition(const Vector3& position)
 	if (isShadowEnabled_)
 	{
 		shadowMapRenderCamera_->SetPosition(position_);
+		UpdateBiasedShadowMatrix();
 	}
 }
 
@@ -73,6 +84,7 @@ void SpotLight::SetDirection(const Vector3& direction)
 	if (isShadowEnabled_ && shadowMapRenderCamera_)
 	{
 		shadowMapRenderCamera_->SetForwardVector(direction);
+		UpdateBiasedShadowMatrix();
 	}
 }
 
@@ -83,6 +95,7 @@ void SpotLight::SetCoverageAngle(float coverageAngleInDegrees)
 	if (isShadowEnabled_ && shadowMapRenderCamera_)
 	{
 		shadowMapRenderCamera_->SetFOV(RADIAN_TO_DEGREE(coverageAngle_ * 2.f));
+		UpdateBiasedShadowMatrix();
 	}
 }
 
@@ -108,15 +121,6 @@ void SpotLight::SetShaderUniforms(const Shader* shader)
 
 	if (isShadowEnabled_)
 	{
-		biasedShadowViewProjectionMatrix_ =
-			Matrix
-		{
-			0.5f, 0.f, 0.f, 0.5f,
-			0.f, 0.5f, 0.f, 0.5f,
-			0.f, 0.f, 0.5f - 0.000001f, 0.5f,
-			0.f, 0.f, 0.f, 1.f
-		} * shadowMapRenderCamera_->GetViewProjectionMatrix();
-
 		shader->SetMatrix((SHADER_VARIABLE_NAMES::SHADOW::VIEW_MATRIX_PREFIX + name_).c_str(), biasedShadowViewProjectionMatrix_);
 	}
 }

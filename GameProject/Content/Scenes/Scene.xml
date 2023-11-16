@@ -117,30 +117,26 @@
 			<Path>Meshes/SM_FloorAndCeil.fbx</Path>
 		</StaticMesh>
 		<StaticMesh id = "2">
-			<Name>Plane</Name>
-			<Path>Meshes/SM_Plane.fbx</Path>
-		</StaticMesh>
-		<StaticMesh id = "3">
 			<Name>Arrow</Name>
 			<Path>Meshes/SM_Arrow.fbx</Path>
 		</StaticMesh>
-	    <StaticMesh id = "4">
+	    <StaticMesh id = "3">
 	      <Name>Floor</Name>
 	      <Path>Meshes/SM_Floor.fbx</Path>
 	    </StaticMesh>
-	    <StaticMesh id = "5">
+	    <StaticMesh id = "4">
 	      <Name>Wall</Name>
 	      <Path>Meshes/SM_Wall.fbx</Path>
 	    </StaticMesh>
-	    <StaticMesh id = "6">
+	    <StaticMesh id = "5">
 	      <Name>Cube</Name>
 	      <Path>Meshes/SM_Cube.fbx</Path>
 	    </StaticMesh>
-	    <StaticMesh id = "7">
+	    <StaticMesh id = "6">
 	      <Name>CylinderWithAHole</Name>
 	      <Path>Meshes/SM_CylinderWithAHole.fbx</Path>
 	    </StaticMesh>
-		<SkeletalMesh id = "9">
+		<SkeletalMesh id = "7">
 			<Name>Axis</Name>
 			<Path>Meshes/SkeletalMesh_Bow.fbx</Path>
 		</SkeletalMesh>
@@ -435,30 +431,17 @@
 			<WorldScaling>1.0 1.0 1.0</WorldScaling>
 		</StaticMeshObject>
 
-		<StaticMeshObject id = "24">
-			<Mesh>2</Mesh>
-			<Name>Plane</Name>
-			<PivotPoint>0 0 0</PivotPoint>
-			<RelativePosition>0 0 0</RelativePosition>
-			<RelativeRotation>0 0 0</RelativeRotation>
-			<RelativeScaling>1 1 1</RelativeScaling>
-			<WorldPosition>0.0 0.0 0.0</WorldPosition>
-			<WorldRotation>0.0 0.0 0.0</WorldRotation>
-			<WorldScaling>1.0 1.0 1.0</WorldScaling>
-		</StaticMeshObject>
-
-
-<!-- 	     <StaticMeshObject id = "3">
+ 	     <StaticMeshObject id = "3">
 	      <Name>Floor</Name>
 	      <PivotPoint>0 0 0</PivotPoint>
 	      <RelativePosition>0 0 0</RelativePosition>
 	      <RelativeRotation>0 0 0</RelativeRotation>
 	      <RelativeScaling>1 1 1</RelativeScaling>
-	      <WorldPosition>0.0 0.0 0.0</WorldPosition>
+	      <WorldPosition>0.0 0.0 -0.05</WorldPosition>
 	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
 	      <WorldScaling>100.0 100.0 1.0</WorldScaling>
-	      <Mesh>4</Mesh>
-	    </StaticMeshObject> -->
+	      <Mesh>3</Mesh>
+	    </StaticMeshObject>
 	    <StaticMeshObject id = "4">
 	      <Name>Wall</Name>
 	      <PivotPoint>0 0 0</PivotPoint>
@@ -468,7 +451,7 @@
 	      <WorldPosition>20.0 5.0 0.0</WorldPosition>
 	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
 	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-	      <Mesh>5</Mesh>
+	      <Mesh>4</Mesh>
 	    </StaticMeshObject>
 	    <StaticMeshObject id = "5">
 	      <Name>Wall</Name>
@@ -479,7 +462,7 @@
 	      <WorldPosition>25.0 0.0 0.0</WorldPosition>
 	      <WorldRotation>0.0 0.0 90.0</WorldRotation>
 	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-	      <Mesh>5</Mesh>
+	      <Mesh>4</Mesh>
 	    </StaticMeshObject>
 	    <StaticMeshObject id = "6">
 	      <Name>Cube</Name>
@@ -490,7 +473,7 @@
 	      <WorldPosition>20.0 0.0 0.0</WorldPosition>
 	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
 	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-	      <Mesh>6</Mesh>
+	      <Mesh>5</Mesh>
 	    </StaticMeshObject>
 	    <StaticMeshObject id = "7">
 	      <Name>Cylinder</Name>
@@ -501,7 +484,7 @@
 	      <WorldPosition>20.0 0.0 5.0</WorldPosition>
 	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
 	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
-	      <Mesh>7</Mesh>
+	      <Mesh>6</Mesh>
 	    </StaticMeshObject>
 	</Objects>
 

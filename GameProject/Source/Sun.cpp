@@ -16,6 +16,8 @@ Sun::Sun() :
 	sunLight_->SetIntensity(1.f);
 	sunLight_->SetIsShadowEnabled(true);
 	sunLight_->SetLightMobility(LightMobility::Dynamic);
+	sunLight_->SetShadowWidth(4096);
+	sunLight_->SetShadowHeight(4096);
 	engine->GetApplication()->GetMainScene()->AddDirectionalLight(sunLight_);
 }
 

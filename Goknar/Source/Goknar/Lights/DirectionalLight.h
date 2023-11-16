@@ -28,6 +28,29 @@ public:
         return direction_;
     }
 
+	inline void UpdateBiasedShadowMatrix()
+	{
+		//biasedShadowViewProjectionMatrix_ =
+		//	Matrix
+		//{
+		//	0.5f, 0.f, 0.f, 0.5f,
+		//	0.f, 0.5f, 0.f, 0.5f,
+		//	0.f, 0.f, 0.5f, 0.5f,
+		//	0.f, 0.f, 0.f, 1.f
+		//} * 
+		//	shadowMapRenderCamera_->GetProjectionMatrix() *
+		//	Matrix
+		//{
+		//	1.f, 0.f, 0.f, 0.f,
+		//		0.f, 1.f, 0.f, 0.f,
+		//		0.f, 0.f, 1.f, 0.05f,
+		//		0.f, 0.f, 0.f, 1.f
+		//} * 
+		//	shadowMapRenderCamera_->GetViewMatrix();
+
+		biasedShadowViewProjectionMatrix_ = shadowBiasMatrix_ * shadowMapRenderCamera_->GetViewProjectionMatrix();
+	}
+
 	void SetDirection(const Vector3& direction);
 
 	virtual void SetIsShadowEnabled(bool isShadowEnabled) override;

@@ -60,12 +60,18 @@ public:
 		return radius_;
 	}
 
+	inline void UpdateBiasedShadowMatrix()
+	{
+		biasedShadowViewProjectionMatrix_ = shadowBiasMatrix_ * shadowMapRenderCamera_->GetViewProjectionMatrix();
+	}
+
 	virtual void SetIsShadowEnabled(bool isShadowEnabled) override;
 
 	void RenderShadowMap() override;
 
 private:
 	Matrix biasedShadowViewProjectionMatrix_{ Matrix::IdentityMatrix };
+	Matrix shadowBiasMatrix_{ Matrix::IdentityMatrix };
 
 	Vector3 direction_{ Vector3::ForwardVector };
 
