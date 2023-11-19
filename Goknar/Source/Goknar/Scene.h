@@ -28,7 +28,9 @@ public:
     Scene();
     ~Scene();
 
+    void PreInit();
     void Init();
+    void PostInit();
 
     // Scene data parser
     void ReadSceneData(const std::string& filePath);

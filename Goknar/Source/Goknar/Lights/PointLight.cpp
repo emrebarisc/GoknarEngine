@@ -12,12 +12,11 @@
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"
 
-void PointLight::Init()
+void PointLight::PreInit()
 {
 	if (isShadowEnabled_)
 	{
 		shadowMapFramebuffer_ = new Framebuffer();
-		shadowMapFramebuffer_->SetFramebufferAttachment(FramebufferAttachment::DEPTH_ATTACHMENT);
 
 		shadowMapTexture_ = new Texture();
 		shadowMapTexture_->SetName(SHADER_VARIABLE_NAMES::SHADOW::SHADOW_MAP_PREFIX + name_);
@@ -50,7 +49,17 @@ void PointLight::Init()
 		UpdateShadowViewProjectionMatrices();
 	}
 
+	Light::PreInit();
+}
+
+void PointLight::Init()
+{
 	Light::Init();
+}
+
+void PointLight::PostInit()
+{
+	Light::PostInit();
 }
 
 void PointLight::RenderShadowMap()

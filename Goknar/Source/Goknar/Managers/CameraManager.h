@@ -15,7 +15,9 @@ public:
 
 	~CameraManager();
 
+	void PreInit();
 	void Init();
+	void PostInit();
 
 	void AddCamera(Camera* camera);
 

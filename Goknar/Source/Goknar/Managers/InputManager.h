@@ -192,7 +192,9 @@ public:
 	InputManager();
 	~InputManager();
 
+	void PreInit();
 	void Init();
+	void PostInit();
 
 	static inline void KeyboardCallback(GLFWwindow *window, int key, int scanCode, int action, int mod);
 	static inline void CursorPositionCallback(GLFWwindow *window, double xPosition, double yPosition);

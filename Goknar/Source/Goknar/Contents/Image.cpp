@@ -41,12 +41,20 @@ Image::Image(const std::string& path, int width, int height, int channels, unsig
 {
 }
 
-void Image::Init()
+void Image::PreInit()
 {
 	// TODO
 	// For now a texture is generated for every image
 	// Will be changed to generating texture atlases
 	generatedTexture_ = new Texture(this);
-	generatedTexture_->Init();
+	generatedTexture_->PreInit();
 	engine->GetApplication()->GetMainScene()->AddTexture(generatedTexture_);
+}
+
+void Image::Init()
+{
+}
+
+void Image::PostInit()
+{
 }

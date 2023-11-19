@@ -92,7 +92,11 @@ enum class TextureInternalFormat
 	RED = GL_RED,
 	RG = GL_RG,
 	RGB = GL_RGB,
-	RGBA = GL_RGBA
+	RGB16F = GL_RGB16F,
+	RGB32F = GL_RGB32F,
+	RGBA = GL_RGBA,
+	RGBA16F = GL_RGBA16F,
+	RGBA32F = GL_RGBA32F,
 };
 
 enum class TextureType
@@ -165,7 +169,10 @@ public:
 
 	~Texture();
 
+	void PreInit();
 	void Init();
+	void PostInit();
+
 	void Bind(const Shader* shader = nullptr) const;
 	void Unbind();
 
@@ -389,6 +396,16 @@ public:
 		return buffer_;
 	}
 
+	void SetGenerateMipmap(bool generateMipmap)
+	{
+		generateMipmap_ = generateMipmap;
+	}
+
+	bool GetGenerateMipmap() const
+	{
+		return generateMipmap_;
+	}
+
 protected:
 
 private:
@@ -420,6 +437,7 @@ private:
 	int channels_;
 
 	bool isInitialized_{ false };
+	bool generateMipmap_{ true };
 };
 
 #endif

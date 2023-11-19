@@ -26,7 +26,9 @@ public:
 
 	virtual ~Light();
 
+	virtual void PreInit();
 	virtual void Init();
+	virtual void PostInit();
 
 	virtual void SetPosition(const Vector3& position)
 	{

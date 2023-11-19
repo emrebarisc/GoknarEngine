@@ -272,7 +272,9 @@ public:
 
 	virtual ~SkeletalMesh();
 
-	virtual void Init();
+    virtual void PreInit() override;
+    virtual void Init() override;
+    virtual void PostInit() override;
 
     void ResizeVertexToBonesArray(unsigned int size)
     {

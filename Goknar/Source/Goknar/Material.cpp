@@ -26,7 +26,7 @@ Material::Material() :
 Material::~Material()
 {
 	delete renderPassTypeShaderMap_[RenderPassType::Forward];
-	delete renderPassTypeShaderMap_[RenderPassType::GBuffer];
+	delete renderPassTypeShaderMap_[RenderPassType::GeometryBuffer];
 	delete renderPassTypeShaderMap_[RenderPassType::Shadow];
 	delete renderPassTypeShaderMap_[RenderPassType::PointLightShadow];
 }
@@ -58,6 +58,11 @@ void Material::Build(MeshUnit* meshUnit)
 	pointLightShadowShader->SetGeometryShaderScript(ShaderBuilder::GetGeometryShaderScript_PointLightShadowPass());
 	pointLightShadowShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_PointLightShadowPass());
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow] = pointLightShadowShader;
+
+	Shader* gBufferShader = new Shader();
+	gBufferShader->SetVertexShaderScript(mainShaderVertexShaderScript);
+	gBufferShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_GeometryBufferPass(this));
+	renderPassTypeShaderMap_[RenderPassType::GeometryBuffer] = gBufferShader;
 }
 
 void Material::PreInit()
@@ -65,6 +70,7 @@ void Material::PreInit()
 	renderPassTypeShaderMap_[RenderPassType::Forward]->PreInit();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->PreInit();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->PreInit();
+	renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->PreInit();
 }
 
 void Material::Init()
@@ -72,6 +78,16 @@ void Material::Init()
 	renderPassTypeShaderMap_[RenderPassType::Forward]->Init();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->Init();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->Init();
+	renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->Init();
+
+	Renderer* renderer = engine->GetRenderer();
+
+	renderer->BindShadowTextures(renderPassTypeShaderMap_[RenderPassType::Forward]);
+
+	if (renderer->GetMainRenderType() == RenderPassType::Deferred)
+	{
+		renderer->BindGeometryBufferTextures(renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]);
+	}
 }
 
 void Material::PostInit()
@@ -79,6 +95,7 @@ void Material::PostInit()
 	renderPassTypeShaderMap_[RenderPassType::Forward]->PostInit();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->PostInit();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->PostInit();
+	renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->PostInit();
 }
 
 void Material::Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType) const

@@ -18,7 +18,9 @@ public:
         
     }
 
+	void PreInit() override;
 	void Init() override;
+	void PostInit() override;
 
 	void SetShaderUniforms(const Shader* shader) override;
 	void SetShadowRenderPassShaderUniforms(const Shader* shader) override;

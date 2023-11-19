@@ -17,7 +17,9 @@ public:
 
 	static inline void WindowSizeCallback(GLFWwindow *window, int w, int h);
 
+	void PreInit();
 	void Init();
+	void PostInit();
 	
 	inline GLFWwindow* GetWindow() const
 	{

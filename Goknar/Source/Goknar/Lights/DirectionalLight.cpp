@@ -18,7 +18,7 @@ DirectionalLight::DirectionalLight() : Light()
 	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT) + std::to_string(id_);
 }
 
-void DirectionalLight::Init()
+void DirectionalLight::PreInit()
 {
 	if (isShadowEnabled_)
 	{
@@ -57,7 +57,17 @@ void DirectionalLight::Init()
 		UpdateBiasedShadowMatrix();
 	}
 
+	Light::PreInit();
+}
+
+void DirectionalLight::Init()
+{
 	Light::Init();
+}
+
+void DirectionalLight::PostInit()
+{
+	Light::PostInit();
 }
 
 void DirectionalLight::SetShaderUniforms(const Shader* shader)

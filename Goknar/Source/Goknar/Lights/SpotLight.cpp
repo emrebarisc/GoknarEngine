@@ -24,7 +24,7 @@ SpotLight::SpotLight(float coverage, float falloff) : SpotLight()
 	falloffAngle_ = DEGREE_TO_RADIAN(falloff);
 }
 
-void SpotLight::Init()
+void SpotLight::PreInit()
 {
 	if (isShadowEnabled_)
 	{
@@ -63,7 +63,17 @@ void SpotLight::Init()
 		UpdateBiasedShadowMatrix();
 	}
 
+	Light::PreInit();
+}
+
+void SpotLight::Init()
+{
 	Light::Init();
+}
+
+void SpotLight::PostInit()
+{
+	Light::PostInit();
 }
 
 void SpotLight::SetPosition(const Vector3& position)

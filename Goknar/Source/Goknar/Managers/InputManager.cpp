@@ -14,7 +14,7 @@ InputManager::InputManager()
 
 InputManager::~InputManager() = default;
 
-void InputManager::Init()
+void InputManager::PreInit()
 {
 	GLFWwindow *window = engine->GetWindowManager()->GetWindow();
 
@@ -26,6 +26,14 @@ void InputManager::Init()
 
 	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
 	SetCursorPosition(windowSize.x * 0.5, windowSize.y * 0.5, window);
+}
+
+void InputManager::Init()
+{
+}
+
+void InputManager::PostInit()
+{
 }
 
 void InputManager::KeyboardCallback(GLFWwindow *window, int key, int scanCode, int action, int mod)

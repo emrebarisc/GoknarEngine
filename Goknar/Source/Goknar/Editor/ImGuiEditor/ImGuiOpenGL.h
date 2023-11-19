@@ -39,7 +39,7 @@ IMGUI_IMPL_API void     ImGui_Shutdown();
 IMGUI_IMPL_API void     ImGui_NewFrame();
 IMGUI_IMPL_API void     ImGui_RenderDrawData(ImDrawData* draw_data);
 
-// Called by Init/NewFrame/Shutdown
+// Called by PreInit/NewFrame/Shutdown
 IMGUI_IMPL_API bool     ImGui_CreateFontsTexture();
 IMGUI_IMPL_API void     ImGui_DestroyFontsTexture();
 IMGUI_IMPL_API bool     ImGui_CreateDeviceObjects();

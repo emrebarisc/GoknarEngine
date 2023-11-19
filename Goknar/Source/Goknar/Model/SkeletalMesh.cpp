@@ -29,11 +29,21 @@ SkeletalMesh::~SkeletalMesh()
 	delete armature_;
 }
 
+void SkeletalMesh::PreInit()
+{
+	MeshUnit::PreInit();
+
+	engine->AddSkeletalMeshToRenderer(this);
+}
+
 void SkeletalMesh::Init()
 {
 	MeshUnit::Init();
+}
 
-	engine->AddSkeletalMeshToRenderer(this);
+void SkeletalMesh::PostInit()
+{
+	MeshUnit::PostInit();
 }
 
 void SkeletalMesh::GetBoneTransforms(std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap)

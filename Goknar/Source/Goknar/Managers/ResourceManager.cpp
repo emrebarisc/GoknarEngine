@@ -19,9 +19,19 @@ ResourceManager::~ResourceManager()
 	delete resourceContainer_;
 }
 
+void ResourceManager::PreInit()
+{
+	resourceContainer_->PreInit();
+}
+
 void ResourceManager::Init()
 {
 	resourceContainer_->Init();
+}
+
+void ResourceManager::PostInit()
+{
+	resourceContainer_->PostInit();
 }
 
 Content* ResourceManager::LoadContent(const std::string& path)
@@ -107,6 +117,24 @@ ResourceContainer::~ResourceContainer()
 	}
 }
 
+void ResourceContainer::PreInit()
+{
+	for (Image* image : imageArray_)
+	{
+		image->PreInit();
+	}
+
+	for (MeshUnit* mesh : meshArray_)
+	{
+		mesh->PreInit();
+	}
+
+	for (Audio* audio : audioArray_)
+	{
+		audio->PreInit();
+	}
+}
+
 void ResourceContainer::Init()
 {
 	for (Image* image : imageArray_)
@@ -122,6 +150,24 @@ void ResourceContainer::Init()
 	for (Audio* audio : audioArray_)
 	{
 		audio->Init();
+	}
+}
+
+void ResourceContainer::PostInit()
+{
+	for (Image* image : imageArray_)
+	{
+		image->PostInit();
+	}
+
+	for (MeshUnit* mesh : meshArray_)
+	{
+		mesh->PostInit();
+	}
+
+	for (Audio* audio : audioArray_)
+	{
+		audio->PostInit();
 	}
 }
 

@@ -35,7 +35,7 @@ void WindowManager::WindowSizeCallback(GLFWwindow* window, int w, int h)
 	engine->GetWindowManager()->SetWindowSize(w, h);
 }
 
-void WindowManager::Init()
+void WindowManager::PreInit()
 {
 	const int glfwResult = glfwInit();
 	GOKNAR_CORE_ASSERT(glfwResult, "GLFW failed to initialize");
@@ -85,6 +85,14 @@ void WindowManager::Init()
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, std::bind(&WindowManager::CloseWindow, this));
 	
 	glfwSetFramebufferSizeCallback(mainWindow_, FrameBufferSizeCallback);
+}
+
+void WindowManager::Init()
+{
+}
+
+void WindowManager::PostInit()
+{
 }
 
 bool WindowManager::GetWindowShouldBeClosed()

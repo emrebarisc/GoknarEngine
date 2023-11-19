@@ -14,7 +14,7 @@
 #include "Renderer/ShaderBuilder.h"
 
 MeshUnit::MeshUnit() :
-	material_(0), 
+	material_(nullptr), 
 	vertexCount_(0), 
 	faceCount_(0),
 	baseVertex_(0),
@@ -39,7 +39,7 @@ MeshUnit::~MeshUnit()
 	}
 }
 
-void MeshUnit::Init()
+void MeshUnit::PreInit()
 {
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
@@ -48,7 +48,21 @@ void MeshUnit::Init()
 	{
 		material_->Build(this);
 		material_->PreInit();
+	}
+}
+
+void MeshUnit::Init()
+{
+	if (material_)
+	{
 		material_->Init();
+	}
+}
+
+void MeshUnit::PostInit()
+{
+	if (material_)
+	{
 		material_->PostInit();
 	}
 
@@ -73,8 +87,8 @@ void MeshUnit::Init()
 //		ShaderBuilder::GetInstance()->BuildShader(this);
 //	}
 //
-//	shader->Init();
-//	material_->Init();
+//	shader->PreInit();
+//	material_->PreInit();
 //}
 
 void MeshUnit::ClearDataFromMemory()
