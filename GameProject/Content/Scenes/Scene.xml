@@ -19,7 +19,7 @@
 			<Direction>0.57735 0.57735 -0.57735</Direction>
 			<Color>1.0 0.99 0.83</Color>
 			<Intensity>0.5</Intensity>
-			<IsCastingShadow>1</IsCastingShadow>
+			<IsCastingShadow>0</IsCastingShadow>
 			<ShadowMapResolution>4096 4096</ShadowMapResolution>
 		</DirectionalLight>
 		<PointLight id = "0">
@@ -27,7 +27,7 @@
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-			<IsCastingShadow>1</IsCastingShadow>
+			<IsCastingShadow>0</IsCastingShadow>
 			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "1">
@@ -35,7 +35,7 @@
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-			<IsCastingShadow>1</IsCastingShadow>
+			<IsCastingShadow>0</IsCastingShadow>
 			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "2">
@@ -43,7 +43,7 @@
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-			<IsCastingShadow>1</IsCastingShadow>
+			<IsCastingShadow>0</IsCastingShadow>
 			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "3">
@@ -51,7 +51,7 @@
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-			<IsCastingShadow>1</IsCastingShadow>
+			<IsCastingShadow>0</IsCastingShadow>
 			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "4">
@@ -59,7 +59,7 @@
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-			<IsCastingShadow>1</IsCastingShadow>
+			<IsCastingShadow>0</IsCastingShadow>
 			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "5">
@@ -67,7 +67,7 @@
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-			<IsCastingShadow>1</IsCastingShadow>
+			<IsCastingShadow>0</IsCastingShadow>
 			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "6">
@@ -75,7 +75,7 @@
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-			<IsCastingShadow>1</IsCastingShadow>
+			<IsCastingShadow>0</IsCastingShadow>
 			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "7">
@@ -83,7 +83,7 @@
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-			<IsCastingShadow>1</IsCastingShadow>
+			<IsCastingShadow>0</IsCastingShadow>
 			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "8">
@@ -91,7 +91,7 @@
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-			<IsCastingShadow>1</IsCastingShadow>
+			<IsCastingShadow>0</IsCastingShadow>
 			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 		<PointLight id = "9">
@@ -99,7 +99,7 @@
 			<Color>0.7605246901512146 0.09758714586496353 0.015996338799595833</Color>
 			<Intensity>10.0</Intensity>
 			<Radius>25.0</Radius>
-			<IsCastingShadow>1</IsCastingShadow>
+			<IsCastingShadow>0</IsCastingShadow>
 			<ShadowMapResolution>2048 2048</ShadowMapResolution>
 		</PointLight>
 	</Lights>
