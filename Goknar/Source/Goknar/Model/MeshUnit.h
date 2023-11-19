@@ -66,7 +66,9 @@ public:
 
 	virtual ~MeshUnit();
 
+	virtual void PreInit() override;
 	virtual void Init() override;
+	virtual void PostInit() override;
 
 	bool GetIsInitialized() const
 	{

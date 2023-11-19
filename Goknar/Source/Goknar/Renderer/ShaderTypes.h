@@ -111,6 +111,14 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* WEIGHTS;
 	}
 
+	inline namespace GBUFFER
+	{
+		extern const char* OUT_POSITION;
+		extern const char* OUT_NORMAL;
+		extern const char* OUT_DIFFUSE;
+		extern const char* OUT_SPECULAR;
+	}
+
 	inline namespace FRAGMENT_SHADER_OUTS
 	{
 		extern const char* FRAGMENT_COLOR;

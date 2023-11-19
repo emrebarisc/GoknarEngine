@@ -34,24 +34,27 @@ public:
 	Engine();
 	~Engine();
 
+	void PreInit() const;
 	void Init() const;
+	void PostInit() const;
+
 	void BeginGame();
 	void InitObjects();
 	void InitComponents();
 	void Run();
 	void Tick(float deltaTime);
 
-	WindowManager* GetWindowManager() const
+	inline WindowManager* GetWindowManager() const
 	{
 		return windowManager_;
 	}
 
-	InputManager* GetInputManager() const
+	inline InputManager* GetInputManager() const
 	{
 		return inputManager_;
 	}
 
-	Renderer* GetRenderer() const
+	inline Renderer* GetRenderer() const
 	{
 		return renderer_;
 	}
@@ -60,37 +63,37 @@ public:
 	void AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh);
 	void AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh);
 
-	Editor* GetEditor() const
+	inline Editor* GetEditor() const
 	{
 		return editor_;
 	}
 
-	CameraManager* GetCameraManager() const
+	inline CameraManager* GetCameraManager() const
 	{
 		return cameraManager_;
 	}
 
-	Application* GetApplication() const
+	inline Application* GetApplication() const
 	{
 		return application_;
 	}
 
-	Controller* GetController()
+	inline Controller* GetController()
 	{
 		return controller_;
 	}
 
-	void SetController(Controller* controller)
+	inline void SetController(Controller* controller)
 	{
 		controller_ = controller;
 	}
 
-	ResourceManager* GetResourceManager() const
+	inline ResourceManager* GetResourceManager() const
 	{
 		return resourceManager_;
 	}
 
-	PhysicsWorld* GetPhysicsWorld() const
+	inline PhysicsWorld* GetPhysicsWorld() const
 	{
 		return physicsWorld_;
 	}

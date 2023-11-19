@@ -85,30 +85,26 @@ void Shader::SetMVP(const Matrix& worldTransformationMatrix, const Matrix& relat
 
 void Shader::PreInit()
 {
-}
-
-void Shader::Init()
-{
 	programId_ = glCreateProgram();
 
 	// TODO: Change custom shader creation
 	if (shaderType_ == ShaderType::Dependent || shaderType_ == ShaderType::SelfContained)
 	{
-		GOKNAR_CORE_ASSERT(	(	(!vertexShaderPath_.empty() && !fragmentShaderPath_.empty()) ||
-								(!vertexShaderScript_.empty() && !fragmentShaderScript_.empty())
-					  		), "No data to compile the shader! (No shader paths or scripts are given.");
+		GOKNAR_CORE_ASSERT(((!vertexShaderPath_.empty() && !fragmentShaderPath_.empty()) ||
+			(!vertexShaderScript_.empty() && !fragmentShaderScript_.empty())
+			), "No data to compile the shader! (No shader paths or scripts are given.");
 
-		if(!vertexShaderPath_.empty())
+		if (!vertexShaderPath_.empty())
 		{
 			IOManager::ReadFile(vertexShaderPath_.c_str(), vertexShaderScript_);
 		}
 
-		if(!fragmentShaderPath_.empty())
+		if (!fragmentShaderPath_.empty())
 		{
 			IOManager::ReadFile(fragmentShaderPath_.c_str(), fragmentShaderScript_);
 		}
 
-		if(!geometryShaderPath_.empty())
+		if (!geometryShaderPath_.empty())
 		{
 			IOManager::ReadFile(geometryShaderPath_.c_str(), geometryShaderScript_);
 		}
@@ -120,7 +116,7 @@ void Shader::Init()
 	glShaderSource(vertexShaderId, 1, &vertexSource, 0);
 	glCompileShader(vertexShaderId);
 	ExitOnShaderIsNotCompiled(vertexShaderId, (std::string("Vertex shader compilation error!(" + vertexShaderPath_ + ").")).c_str());
-	
+
 	glAttachShader(programId_, vertexShaderId);
 
 	const GEchar* fragmentSource = (const GEchar*)fragmentShaderScript_.c_str();
@@ -155,7 +151,6 @@ void Shader::Init()
 		textures_[textureIndex]->Bind(this);
 	}
 
-	engine->GetRenderer()->BindShadowTextures(this);
 	ExitOnProgramError(programId_, "Shader error on binding texture!");
 
 	Unbind();
@@ -166,6 +161,10 @@ void Shader::Init()
 	{
 		glDetachShader(programId_, geometryShaderId);
 	}
+}
+
+void Shader::Init()
+{
 }
 
 void Shader::PostInit()

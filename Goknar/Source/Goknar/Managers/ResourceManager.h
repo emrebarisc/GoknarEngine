@@ -36,7 +36,9 @@ public:
 	ResourceContainer();
 	~ResourceContainer();
 
+	void PreInit();
 	void Init();
+	void PostInit();
 
 	void AddImage(Image* image);
 	Image* GetImage(int index) const
@@ -95,7 +97,9 @@ public:
 	ResourceManager();
 	~ResourceManager();
 
+	void PreInit();
 	void Init();
+	void PostInit();
 
 	ResourceContainer* GetResourceContainer() const
 	{

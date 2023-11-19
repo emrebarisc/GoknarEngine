@@ -109,6 +109,14 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* WEIGHTS = "outWeights";
 	}
 
+	inline namespace GBUFFER
+	{
+		const char* OUT_POSITION = "position_GBuffer";
+		const char* OUT_NORMAL = "normal_GBuffer";
+		const char* OUT_DIFFUSE = "diffuse_GBuffer";
+		const char* OUT_SPECULAR = "specular_GBuffer";
+	}
+
 	inline namespace FRAGMENT_SHADER_OUTS
 	{
 		const char* FRAGMENT_COLOR = "fragmentColor";

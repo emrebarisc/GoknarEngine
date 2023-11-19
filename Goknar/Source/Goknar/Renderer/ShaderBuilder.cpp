@@ -244,6 +244,86 @@ void main()
 	return shadowPassFragmentShader;
 }
 
+std::string ShaderBuilder::GetFragmentShaderScript_GeometryBufferPass(const Material* const material)
+{
+	const Shader* const shader = material->GetShader(RenderPassType::Forward);
+
+	const std::vector<const Texture*>* textures = shader->GetTextures();
+	size_t textureSize = textures->size();
+
+	std::string fragmentShaderUniforms;
+
+	for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
+	{
+		const Texture* texture = textures->at(textureIndex);
+		fragmentShaderUniforms += "uniform sampler2D " + texture->GetName() + ";\n";
+	}
+
+	std::string fragmentShaderInVariables = R"(
+in vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
+in vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
+
+	std::string insideMain;
+
+	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + ".xyz;\n";
+	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
+
+	bool hasADiffuseShader = false;
+	for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
+	{
+		const Texture* texture = textures->at(textureIndex);
+		if (texture->GetTextureUsage() == TextureUsage::Diffuse)
+		{
+			hasADiffuseShader = true;
+
+			std::string textureColorVariable = texture->GetName() + "Color";
+
+			insideMain += std::string("\tvec4 ") + textureColorVariable + " = texture(" + texture->GetName() + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + "); \n";
+
+			if (material->GetBlendModel() == MaterialBlendModel::Masked)
+			{
+				insideMain += "\tif (" + textureColorVariable + ".a < 0.5f) discard;\n";
+			}
+
+			insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + " = vec3(" + textureColorVariable + "); \n";
+		}
+	}
+
+	if (hasADiffuseShader)
+	{
+		fragmentShaderInVariables += std::string("in vec2 ") + SHADER_VARIABLE_NAMES::TEXTURE::UV + "; ";
+	}
+	else
+	{
+		fragmentShaderUniforms += "uniform vec3 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";\n";
+		insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + " = " + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + "; \n";
+	}
+
+	fragmentShaderUniforms += "uniform vec3 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR) + ";\n";
+	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR + " = " + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + "; \n";
+
+	std::string GBufferPassFragmentShader =
+"#version " + std::string(DEFAULT_SHADER_VERSION) + R"(
+
+layout(location = 0) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + R"(;
+layout(location = 1) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
+layout(location = 2) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(;
+layout(location = 3) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR + R"(;
+)";
+
+	GBufferPassFragmentShader += fragmentShaderUniforms;
+	GBufferPassFragmentShader += fragmentShaderInVariables;
+
+	GBufferPassFragmentShader += R"(
+void main()
+{
+)";
+	GBufferPassFragmentShader += insideMain;
+	GBufferPassFragmentShader += R"(
+})";
+	return GBufferPassFragmentShader;
+}
+
 std::string ShaderBuilder::GetGeometryShaderScript_PointLightShadowPass()
 {
 	std::string shadowPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";

@@ -10,7 +10,9 @@ public:
 	DynamicMesh(const MeshUnit& mesh);
 	virtual ~DynamicMesh();
 
-	virtual void Init();
+	virtual void PreInit() override;
+	virtual void Init() override;
+	virtual void PostInit() override;
 
 	void UpdateVertexDataAt(int index, const VertexData& vertexData);
 
@@ -25,7 +27,7 @@ public:
 	}
 
 private:
-	int rendererVertexOffset_;
+	int rendererVertexOffset_{ 0 };
 };
 
 #endif

@@ -14,13 +14,21 @@ CameraManager::~CameraManager()
 	}
 }
 
-void CameraManager::Init()
+void CameraManager::PreInit()
 {
 	std::vector<Camera*>::iterator cameraIterator = cameras_.begin();
 	for (; cameraIterator != cameras_.end(); ++cameraIterator)
 	{
 		(*cameraIterator)->Init();
 	}
+}
+
+void CameraManager::Init()
+{
+}
+
+void CameraManager::PostInit()
+{
 }
 
 void CameraManager::AddCamera(Camera* camera)

@@ -10,7 +10,9 @@ public:
 
 	virtual ~StaticMesh();
 
-	virtual void Init();
+	virtual void PreInit() override;
+	virtual void Init() override;
+	virtual void PostInit() override;
 
 private:
 };

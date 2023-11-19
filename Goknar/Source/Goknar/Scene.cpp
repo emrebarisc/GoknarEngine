@@ -93,6 +93,54 @@ Scene::~Scene()
 	}
 }
 
+void Scene::PreInit()
+{
+	for (auto object : staticPointLights_)
+	{
+		object->PreInit();
+	}
+
+	for (auto object : staticDirectionalLights_)
+	{
+		object->PreInit();
+	}
+
+	for (auto object : staticSpotLights_)
+	{
+		object->PreInit();
+	}
+
+	for (auto object : dynamicDirectionalLights_)
+	{
+		object->PreInit();
+	}
+
+	for (auto object : dynamicPointLights_)
+	{
+		object->PreInit();
+	}
+
+	for (auto object : dynamicSpotLights_)
+	{
+		object->PreInit();
+	}
+
+	for (Texture* texture : textures_)
+	{
+		texture->PreInit();
+	}
+
+	//for (Shader* shader : shaders_)
+	//{
+	//	shader->PreInit();
+	//}
+
+	//for (Material* material : materials_)
+	//{
+	//	material->PreInit();
+	//}
+}
+
 void Scene::Init()
 {
 	for (auto object : staticPointLights_)
@@ -129,16 +177,44 @@ void Scene::Init()
 	{
 		texture->Init();
 	}
+}
 
-	//for (Shader* shader : shaders_)
-	//{
-	//	shader->Init();
-	//}
+void Scene::PostInit()
+{
+	for (auto object : staticPointLights_)
+	{
+		object->PostInit();
+	}
 
-	//for (Material* material : materials_)
-	//{
-	//	material->Init();
-	//}
+	for (auto object : staticDirectionalLights_)
+	{
+		object->PostInit();
+	}
+
+	for (auto object : staticSpotLights_)
+	{
+		object->PostInit();
+	}
+
+	for (auto object : dynamicDirectionalLights_)
+	{
+		object->PostInit();
+	}
+
+	for (auto object : dynamicPointLights_)
+	{
+		object->PostInit();
+	}
+
+	for (auto object : dynamicSpotLights_)
+	{
+		object->PostInit();
+	}
+
+	for (Texture* texture : textures_)
+	{
+		texture->PostInit();
+	}
 }
 
 void Scene::ReadSceneData(const std::string& filePath)

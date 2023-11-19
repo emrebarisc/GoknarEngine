@@ -43,7 +43,9 @@ int main(int argc, char **argv)
 	GOKNAR_CORE_WARN("Setting Application: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
+	mainEngine->PreInit();
 	mainEngine->Init();
+	mainEngine->PostInit();
 
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();

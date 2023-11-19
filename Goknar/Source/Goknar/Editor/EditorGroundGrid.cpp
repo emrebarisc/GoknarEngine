@@ -124,7 +124,7 @@ EditorGroundGrid::EditorGroundGrid() : ObjectBase()
 	groundGridMesh_->AddFace(Face(1, 0, 2));
 	groundGridMesh_->AddFace(Face(1, 2, 3));
 	groundGridMesh_->SetMaterial(groundGridMeshMaterial_);
-	groundGridMesh_->Init();
+	groundGridMesh_->PreInit();
 
 	gridMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 	gridMeshComponent_->SetMesh(groundGridMesh_);

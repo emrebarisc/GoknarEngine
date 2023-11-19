@@ -21,11 +21,21 @@ DynamicMesh::~DynamicMesh()
 {
 }
 
+void DynamicMesh::PreInit()
+{
+	MeshUnit::PreInit();
+
+	engine->AddDynamicMeshToRenderer(this);
+}
+
 void DynamicMesh::Init()
 {
 	MeshUnit::Init();
+}
 
-	engine->AddDynamicMeshToRenderer(this);
+void DynamicMesh::PostInit()
+{
+	MeshUnit::PostInit();
 }
 
 void DynamicMesh::UpdateVertexDataAt(int index, const VertexData& vertexData)

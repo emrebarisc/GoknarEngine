@@ -65,7 +65,7 @@ void Texture::Save(std::string path)
 	IOManager::WritePng(path.c_str(), width_, height_, channels_, buffer_);
 }
 
-void Texture::Init()
+void Texture::PreInit()
 {
 	// Skip if already initialized
 	if (isInitialized_)
@@ -134,7 +134,7 @@ void Texture::Init()
 	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_WRAP_T, (int)textureWrappingT_);
 	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_WRAP_R, (int)textureWrappingR_);
 
-	if (textureFormat_ != TextureFormat::DEPTH && textureFormat_ != TextureFormat::DEPTH_STENCIL)
+	if (generateMipmap_ && textureFormat_ != TextureFormat::DEPTH && textureFormat_ != TextureFormat::DEPTH_STENCIL)
 	{
 		glGenerateMipmap((int)textureBindTarget_);
 	}
@@ -147,6 +147,14 @@ void Texture::Init()
 	buffer_ = nullptr;
 
 	isInitialized_ = true;
+}
+
+void Texture::Init()
+{
+}
+
+void Texture::PostInit()
+{
 }
 
 void Texture::Bind(const Shader* shader) const

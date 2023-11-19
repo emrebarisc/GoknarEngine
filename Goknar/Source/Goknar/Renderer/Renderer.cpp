@@ -3,6 +3,7 @@
 #include "Renderer.h"
 
 #include "Texture.h"
+#include "Framebuffer.h"
 
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
@@ -21,6 +22,9 @@
 #include "Goknar/Model/DynamicMeshInstance.h"
 #include "Goknar/Model/StaticMeshInstance.h"
 #include "Goknar/Model/SkeletalMeshInstance.h"
+
+#include "Goknar/Managers/CameraManager.h"
+#include "Goknar/Managers/WindowManager.h"
 
 #include "Goknar/IO/IOManager.h"
 
@@ -58,15 +62,9 @@ Renderer::Renderer() :
 Renderer::~Renderer()
 {
 	delete shadowManager_;
+	delete deferredRenderingData_;
 
 	EXIT_ON_GL_ERROR("Renderer::~Renderer");
-
-	//glDisableVertexAttribArray(VERTEX_COLOR_LOCATION);
-	//glDisableVertexAttribArray(VERTEX_POSITION_LOCATION);
-	//glDisableVertexAttribArray(VERTEX_NORMAL_LOCATION);
-	//glDisableVertexAttribArray(VERTEX_UV_LOCATION);
-	//glDisableVertexAttribArray(BONE_ID_LOCATION);
-	//glDisableVertexAttribArray(BONE_WEIGHT_LOCATION);
 
 	glDeleteBuffers(1, &staticVertexBufferId_);
 	glDeleteBuffers(1, &skeletalVertexBufferId_);
@@ -118,9 +116,15 @@ Renderer::~Renderer()
 	}
 }
 
-void Renderer::Init()
+void Renderer::PreInit()
 {
 	shadowManager_ = new ShadowManager();
+
+	if (mainRenderType_ == RenderPassType::Deferred)
+	{
+		deferredRenderingData_ = new DeferredRenderingData();
+		deferredRenderingData_->Init();
+	}
 
 	glFrontFace(GL_CCW);
 	glEnable(GL_DEPTH_TEST);
@@ -145,6 +149,15 @@ void Renderer::Init()
 	}
 
 	SetBufferData();
+}
+
+void Renderer::Init()
+{
+
+}
+
+void Renderer::PostInit()
+{
 }
 
 void Renderer::SetStaticBufferData()
@@ -337,6 +350,26 @@ void Renderer::Render(RenderPassType renderPassType)
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			break;
 		}
+		case RenderPassType::GeometryBuffer:
+		{
+			GOKNAR_CORE_CHECK(deferredRenderingData_ != nullptr, "Main rendering is not set to deferred rendering but deferred rendering is called.");
+
+			glDepthMask(GL_TRUE);
+			const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
+			glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			deferredRenderingData_->Bind();
+			break;
+		}
+		case RenderPassType::Deferred:
+		{
+			GOKNAR_CORE_CHECK(deferredRenderingData_ != nullptr, "Main rendering is not set to deferred rendering but deferred rendering is called.");
+
+			glDepthMask(GL_TRUE);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			deferredRenderingData_->Render();
+			break;
+		}
 		case RenderPassType::Shadow:
 		case RenderPassType::PointLightShadow:
 		{
@@ -351,96 +384,110 @@ void Renderer::Render(RenderPassType renderPassType)
 		}
 	}
 
-	// Static MeshUnit Instances
+	if (renderPassType != RenderPassType::Deferred)
 	{
-		if (0 < totalStaticMeshCount_)
+		// Static MeshUnit Instances
 		{
-			BindStaticVBO();
-
-			for (StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
+			if (0 < totalStaticMeshCount_)
 			{
-				if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
+				BindStaticVBO();
 
-				const MeshUnit* mesh = opaqueStaticMeshInstance->GetMesh();
-				opaqueStaticMeshInstance->Render(renderPassType);
+				for (StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
+				{
+					if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
 
-				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+					const MeshUnit* mesh = opaqueStaticMeshInstance->GetMesh();
+					opaqueStaticMeshInstance->Render(renderPassType);
+
+					int facePointCount = mesh->GetFaceCount() * 3;
+					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				}
+
+				for (StaticMeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
+				{
+					if (!maskedStaticMeshInstance->GetIsRendered()) continue;
+
+					const MeshUnit* mesh = maskedStaticMeshInstance->GetMesh();
+					maskedStaticMeshInstance->Render(renderPassType);
+
+					int facePointCount = mesh->GetFaceCount() * 3;
+					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				}
 			}
+		}
 
-			for (StaticMeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
+		// Skeletal MeshUnit Instances
+		{
+			if (0 < totalSkeletalMeshCount_)
 			{
-				if (!maskedStaticMeshInstance->GetIsRendered()) continue;
+				BindSkeletalVBO();
 
-				const MeshUnit* mesh = maskedStaticMeshInstance->GetMesh();
-				maskedStaticMeshInstance->Render(renderPassType);
+				for (SkeletalMeshInstance* opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
+				{
+					if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
 
-				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+					// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
+					const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(opaqueSkeletalMeshInstance->GetMesh());
+					opaqueSkeletalMeshInstance->Render(renderPassType);
+
+					int facePointCount = skeletalMesh->GetFaceCount() * 3;
+					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
+				}
+
+				for (SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
+				{
+					if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
+
+					// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
+					const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(maskedSkeletalMeshInstance->GetMesh());
+					maskedSkeletalMeshInstance->Render(renderPassType);
+
+					int facePointCount = skeletalMesh->GetFaceCount() * 3;
+					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
+				}
+			}
+		}
+
+		// Dynamic MeshUnit Instances
+		{
+			if (0 < totalDynamicMeshCount_)
+			{
+				BindDynamicVBO();
+
+				for (DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
+				{
+					if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
+
+					const MeshUnit* mesh = opaqueDynamicMeshInstance->GetMesh();
+					opaqueDynamicMeshInstance->Render(renderPassType);
+
+					int facePointCount = mesh->GetFaceCount() * 3;
+					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				}
+
+				for (DynamicMeshInstance* maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
+				{
+					if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
+
+					const MeshUnit* mesh = maskedDynamicMeshInstance->GetMesh();
+					maskedDynamicMeshInstance->Render(renderPassType);
+
+					int facePointCount = mesh->GetFaceCount() * 3;
+					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+				}
 			}
 		}
 	}
-
-	// Skeletal MeshUnit Instances
+	else
 	{
-		if (0 < totalSkeletalMeshCount_)
-		{
-			BindSkeletalVBO();
-
-			for (SkeletalMeshInstance* opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
-			{
-				if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
-
-				// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
-				const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(opaqueSkeletalMeshInstance->GetMesh());
-				opaqueSkeletalMeshInstance->Render(renderPassType);
-
-				int facePointCount = skeletalMesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
-			}
-
-			for (SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
-			{
-				if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
-
-				// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
-				const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(maskedSkeletalMeshInstance->GetMesh());
-				maskedSkeletalMeshInstance->Render(renderPassType);
-
-				int facePointCount = skeletalMesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
-			}
-		}
+		// Assign deferred renderer's depth buffer to depth buffer
+		// For translucent objects
 	}
 
-	// Dynamic MeshUnit Instances
+	if (renderPassType == RenderPassType::GeometryBuffer)
 	{
-		if (0 < totalDynamicMeshCount_)
-		{
-			BindDynamicVBO();
-
-			for (DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
-			{
-				if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
-
-				const MeshUnit* mesh = opaqueDynamicMeshInstance->GetMesh();
-				opaqueDynamicMeshInstance->Render(renderPassType);
-
-				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
-			}
-
-			for (DynamicMeshInstance* maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
-			{
-				if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
-
-				const MeshUnit* mesh = maskedDynamicMeshInstance->GetMesh();
-				maskedDynamicMeshInstance->Render(renderPassType);
-
-				int facePointCount = mesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
-			}
-		}
+		deferredRenderingData_->Unbind();
+		return;
 	}
 
 	// Translucent meshes needs to be hold in a single ordered array in order to work correctly in the future
@@ -712,6 +759,7 @@ void Renderer::UpdateDynamicMeshVertex(const DynamicMesh* object, int vertexInde
 
 void Renderer::BindShadowTextures(Shader* shader)
 {
+	shader->Use();
 	Scene* scene = engine->GetApplication()->GetMainScene();
 	const std::vector<DirectionalLight*>& staticDirectionalLights = scene->GetStaticDirectionalLights();
 	size_t staticDirectionalLightCount = staticDirectionalLights.size();
@@ -783,6 +831,15 @@ void Renderer::BindShadowTextures(Shader* shader)
 			Texture* shadowTexture = spotLight->GetShadowMapTexture();
 			shadowTexture->Bind(shader);
 		}
+	}
+}
+
+void Renderer::BindGeometryBufferTextures(Shader* shader)
+{
+	if (deferredRenderingData_)
+	{
+		shader->Use();
+		deferredRenderingData_->BindGeometryBufferTextures(shader);
 	}
 }
 
@@ -910,4 +967,227 @@ void Renderer::SetAttribPointersForSkeletalMesh()
 	// Bone Weight
 	glEnableVertexAttribArray(BONE_WEIGHT_LOCATION);
 	glVertexAttribPointer(BONE_WEIGHT_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+}
+
+GeometryBufferData::GeometryBufferData()
+{
+	geometryFrameBuffer = new Framebuffer();
+
+	worldPositionTexture = new Texture();
+	worldNormalTexture = new Texture();
+	diffuseTexture = new Texture();
+	specularTexture = new Texture();
+}
+
+GeometryBufferData::~GeometryBufferData()
+{
+	delete geometryFrameBuffer;
+
+	delete worldPositionTexture;
+	delete worldNormalTexture;
+	delete diffuseTexture;
+	delete specularTexture;
+}
+
+void GeometryBufferData::Init()
+{
+	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
+
+	worldPositionTexture->SetTextureDataType(TextureDataType::DYNAMIC);
+	worldPositionTexture->SetTextureFormat(TextureFormat::RGB);
+	worldPositionTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
+	worldPositionTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
+	worldPositionTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
+	worldPositionTexture->SetWidth(windowSize.x);
+	worldPositionTexture->SetHeight(windowSize.y);
+	worldPositionTexture->SetGenerateMipmap(false);
+	worldPositionTexture->PreInit();
+	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT0, worldPositionTexture);
+
+	worldNormalTexture->SetTextureDataType(TextureDataType::DYNAMIC);
+	worldNormalTexture->SetTextureFormat(TextureFormat::RGB);
+	worldNormalTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
+	worldNormalTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
+	worldNormalTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
+	worldNormalTexture->SetWidth(windowSize.x);
+	worldNormalTexture->SetHeight(windowSize.y);
+	worldNormalTexture->SetGenerateMipmap(false);
+	worldNormalTexture->PreInit();
+	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT1, worldNormalTexture);
+
+	diffuseTexture->SetTextureDataType(TextureDataType::DYNAMIC);
+	diffuseTexture->SetTextureFormat(TextureFormat::RGB);
+	diffuseTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
+	diffuseTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
+	diffuseTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
+	diffuseTexture->SetWidth(windowSize.x);
+	diffuseTexture->SetHeight(windowSize.y);
+	diffuseTexture->SetGenerateMipmap(false);
+	diffuseTexture->SetTextureType(TextureType::UNSIGNED_BYTE);
+	diffuseTexture->PreInit();
+	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT2, diffuseTexture);
+
+	specularTexture->SetTextureDataType(TextureDataType::DYNAMIC);
+	specularTexture->SetTextureFormat(TextureFormat::RGB);
+	specularTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
+	specularTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
+	specularTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
+	specularTexture->SetWidth(windowSize.x);
+	specularTexture->SetHeight(windowSize.y);
+	specularTexture->SetGenerateMipmap(false);
+	specularTexture->SetTextureType(TextureType::UNSIGNED_BYTE);
+	specularTexture->PreInit();
+	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT3, specularTexture);
+	
+	geometryFrameBuffer->PreInit();
+	geometryFrameBuffer->Bind();
+	geometryFrameBuffer->Attach();
+
+	unsigned int colorAttachments[4] = 
+	{ 
+		(int)FramebufferAttachment::COLOR_ATTACHMENT0,
+		(int)FramebufferAttachment::COLOR_ATTACHMENT1,
+		(int)FramebufferAttachment::COLOR_ATTACHMENT2,
+		(int)FramebufferAttachment::COLOR_ATTACHMENT3
+	};
+
+	glDrawBuffers(4, colorAttachments);
+
+	glGenRenderbuffers(1, &depthRenderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, windowSize.x, windowSize.y);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	geometryFrameBuffer->Unbind();
+
+	EXIT_ON_GL_ERROR("GeometryBufferData::Init");
+}
+
+void GeometryBufferData::Bind()
+{
+	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
+	geometryFrameBuffer->Bind();
+}
+
+void GeometryBufferData::Unbind()
+{
+	geometryFrameBuffer->Unbind();
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+}
+
+DeferredRenderingData::DeferredRenderingData()
+{
+}
+
+DeferredRenderingData::~DeferredRenderingData()
+{
+	delete geometryBufferData;
+	delete deferredRenderingMesh;
+}
+
+void DeferredRenderingData::Init()
+{
+	deferredRenderingMesh = new StaticMesh();
+	deferredRenderingMesh->AddVertex(Vector3{ -1.f, -1.f, 0.f });
+	deferredRenderingMesh->AddVertex(Vector3{ 3.f, -1.f, 0.f });
+	deferredRenderingMesh->AddVertex(Vector3{ -1.f, 3.f, 0.f });
+	deferredRenderingMesh->AddFace(Face{ 0, 1, 2 });
+	deferredRenderingMesh->PreInit();
+
+	deferredRenderingMeshShader = new Shader();
+	deferredRenderingMeshShader->SetVertexShaderScript(
+		R"(
+#version 440 core
+
+layout(location = 0) in vec4 color;
+layout(location = 1) in vec3 position;
+layout(location = 2) in vec3 normal;
+layout(location = 3) in vec2 uv;
+
+out vec2 textureCoordinates;
+
+void main()
+{
+	gl_Position = vec4(position, 1.f);
+	textureCoordinates = 0.5f * gl_Position.xy + vec2(0.5f);
+}
+)");
+
+	deferredRenderingMeshShader->SetFragmentShaderScript(R"(
+#version 440 core
+
+out vec4 fragmentColor;
+
+in vec2 textureCoordinates;
+
+uniform sampler2D worldPosition;
+uniform sampler2D worldNormal;
+uniform sampler2D diffuse;
+uniform sampler2D specular;
+
+void main()
+{
+	if(textureCoordinates.x < 0.5f)
+	{
+		if(textureCoordinates.y < 0.5f)
+		{
+			fragmentColor = texture(diffuse, textureCoordinates * 2.f);
+		}
+		else
+		{
+			fragmentColor = texture(worldPosition, (textureCoordinates - vec2(0.f, 0.5f)) * 2.f);
+		}
+	}
+	else
+	{
+		if(textureCoordinates.y < 0.5f)
+		{
+			fragmentColor = texture(specular, (textureCoordinates - vec2(0.5f, 0.f)) * 2.f);
+		}
+		else
+		{
+			fragmentColor = texture(worldNormal, (textureCoordinates - vec2(0.5f, 0.5f)) * 2.f);
+		}
+	}
+}
+)");
+	deferredRenderingMeshShader->PreInit();
+	deferredRenderingMeshShader->Init();
+	deferredRenderingMeshShader->PostInit();
+
+	geometryBufferData = new GeometryBufferData();
+	geometryBufferData->Init();
+}
+
+void DeferredRenderingData::Bind()
+{
+	geometryBufferData->Bind();
+}
+
+void DeferredRenderingData::Unbind()
+{
+	geometryBufferData->Unbind();
+}
+
+void DeferredRenderingData::Render()
+{
+	engine->GetRenderer()->BindStaticVBO();
+
+	deferredRenderingMeshShader->Use();
+	deferredRenderingMeshShader->SetInt("worldPosition", geometryBufferData->worldPositionTexture->GetRendererTextureId());
+	deferredRenderingMeshShader->SetInt("worldNormal", geometryBufferData->worldNormalTexture->GetRendererTextureId());
+	deferredRenderingMeshShader->SetInt("diffuse", geometryBufferData->diffuseTexture->GetRendererTextureId());
+	deferredRenderingMeshShader->SetInt("specular", geometryBufferData->specularTexture->GetRendererTextureId());
+
+	int facePointCount = deferredRenderingMesh->GetFaceCount() * 3;
+	glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)deferredRenderingMesh->GetVertexStartingIndex(), deferredRenderingMesh->GetBaseVertex());
+}
+
+void DeferredRenderingData::BindGeometryBufferTextures(Shader* shader)
+{
+	geometryBufferData->worldPositionTexture->Bind(shader);
+	geometryBufferData->worldNormalTexture->Bind(shader);
+	geometryBufferData->diffuseTexture->Bind(shader);
+	geometryBufferData->specularTexture->Bind(shader);
 }

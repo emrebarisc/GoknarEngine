@@ -21,7 +21,7 @@ void Light::SetShaderUniforms(const Shader* shader)
 	shader->SetVector3((name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY).c_str(), color_ * intensity_);
 }
 
-void Light::Init()
+void Light::PreInit()
 {
 	if (isShadowEnabled_)
 	{
@@ -29,10 +29,8 @@ void Light::Init()
 		GOKNAR_CORE_ASSERT(shadowMapFramebuffer_, "Shadow is enabled but shadow map framebuffer is not created!");
 
 		shadowMapFramebuffer_->SetFramebufferBindTarget(FramebufferBindTarget::FRAMEBUFFER);
-		shadowMapFramebuffer_->SetFramebufferAttachment(FramebufferAttachment::DEPTH_ATTACHMENT);
-
-		shadowMapFramebuffer_->SetTextureTarget(shadowMapTexture_);
-		shadowMapFramebuffer_->Init();
+		shadowMapFramebuffer_->AddAttachment(FramebufferAttachment::DEPTH_ATTACHMENT, shadowMapTexture_);
+		shadowMapFramebuffer_->PreInit();
 
 		shadowMapTexture_->SetWidth(shadowWidth_);
 		shadowMapTexture_->SetHeight(shadowHeight_);
@@ -40,7 +38,7 @@ void Light::Init()
 		shadowMapTexture_->SetTextureInternalFormat(TextureInternalFormat::DEPTH_24);
 		shadowMapTexture_->SetTextureType(TextureType::FLOAT);
 		shadowMapTexture_->SetTextureDataType(TextureDataType::DYNAMIC);
-		shadowMapTexture_->Init();
+		shadowMapTexture_->PreInit();
 		shadowMapTexture_->Bind();
 
 		shadowMapFramebuffer_->Bind();
@@ -52,6 +50,26 @@ void Light::Init()
 		shadowMapTexture_->Unbind();
 		shadowMapFramebuffer_->Unbind();
 
+		EXIT_ON_GL_ERROR("Light::PreInit");
+	}
+}
+
+void Light::Init()
+{
+	if (isShadowEnabled_)
+	{
+		shadowMapFramebuffer_->Init();
+		shadowMapTexture_->Init();
 		EXIT_ON_GL_ERROR("Light::Init");
+	}
+}
+
+void Light::PostInit()
+{
+	if (isShadowEnabled_)
+	{
+		shadowMapFramebuffer_->PostInit();
+		shadowMapTexture_->PostInit();
+		EXIT_ON_GL_ERROR("Light::PostInit");
 	}
 }

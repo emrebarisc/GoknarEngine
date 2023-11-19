@@ -9,6 +9,10 @@ class GOKNAR_API Audio : public Content
 public:
 	Audio();
 
+	virtual void PreInit() override;
+	virtual void Init() override;
+	virtual void PostInit() override;
+
 private:
 };
 

@@ -15,9 +15,19 @@ Application::~Application()
 	delete mainScene_;
 }
 
+void Application::PreInit()
+{
+	mainScene_->PreInit();
+}
+
 void Application::Init()
 {
 	mainScene_->Init();
+}
+
+void Application::PostInit()
+{
+	mainScene_->PostInit();
 }
 
 void Application::Run()
