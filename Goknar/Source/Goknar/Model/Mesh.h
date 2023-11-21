@@ -3,6 +3,7 @@
 
 #include "Goknar/Core.h"
 #include "Goknar/Math/GoknarMath.h"
+#include "Goknar/Renderer/Renderer.h"
 
 #include <vector>
 
@@ -18,7 +19,7 @@ public:
 
 	virtual void Init();
 
-	void Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix);
+	void Render(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix);
 
 protected:
 

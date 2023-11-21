@@ -33,20 +33,36 @@ Material::~Material()
 
 void Material::Build(MeshUnit* meshUnit)
 {
-	Shader* mainShader = new Shader();
-	std::vector<const Image*>::iterator imageIterator = textureImages_.begin();
-	for (; imageIterator != textureImages_.end(); ++imageIterator)
+	if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Forward)
 	{
-		mainShader->AddTexture((*imageIterator)->GetGeneratedTexture());
-	}
+		Shader* forwardRenderingShader = new Shader();
+		renderPassTypeShaderMap_[RenderPassType::Forward] = forwardRenderingShader;
 
-	renderPassTypeShaderMap_[RenderPassType::Forward] = mainShader;
-	if (mainShader->GetShaderType() == ShaderType::Scene)
+		std::vector<const Image*>::iterator imageIterator = textureImages_.begin();
+		for (; imageIterator != textureImages_.end(); ++imageIterator)
+		{
+			forwardRenderingShader->AddTexture((*imageIterator)->GetGeneratedTexture());
+		}
+
+		if (forwardRenderingShader->GetShaderType() == ShaderType::Scene)
+		{
+			ShaderBuilder::GetInstance()->BuildShader(meshUnit, this);
+		}
+	}
+	else if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Deferred)
 	{
-		ShaderBuilder::GetInstance()->BuildShader(meshUnit, this);
-	}
+		Shader* gBufferShader = new Shader();
+		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer] = gBufferShader;
 
-	const std::string& mainShaderVertexShaderScript = mainShader->GetVertexShaderScript();
+		std::vector<const Image*>::iterator imageIterator = textureImages_.begin();
+		for (; imageIterator != textureImages_.end(); ++imageIterator)
+		{
+			gBufferShader->AddTexture((*imageIterator)->GetGeneratedTexture());
+		}
+
+		gBufferShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader(meshUnit));
+		gBufferShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_GeometryBufferPass(this));
+	}
 
 	Shader* shadowShader = new Shader();
 	shadowShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_ShadowPass(meshUnit));
@@ -58,50 +74,61 @@ void Material::Build(MeshUnit* meshUnit)
 	pointLightShadowShader->SetGeometryShaderScript(ShaderBuilder::GetGeometryShaderScript_PointLightShadowPass());
 	pointLightShadowShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_PointLightShadowPass());
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow] = pointLightShadowShader;
-
-	Shader* gBufferShader = new Shader();
-	gBufferShader->SetVertexShaderScript(mainShaderVertexShaderScript);
-	gBufferShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_GeometryBufferPass(this));
-	renderPassTypeShaderMap_[RenderPassType::GeometryBuffer] = gBufferShader;
 }
 
 void Material::PreInit()
 {
-	renderPassTypeShaderMap_[RenderPassType::Forward]->PreInit();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->PreInit();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->PreInit();
-	renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->PreInit();
+
+	if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Forward)
+	{
+		renderPassTypeShaderMap_[RenderPassType::Forward]->PreInit();
+	}
+	else if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Deferred)
+	{
+		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->PreInit();
+	}
 }
 
 void Material::Init()
 {
-	renderPassTypeShaderMap_[RenderPassType::Forward]->Init();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->Init();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->Init();
-	renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->Init();
 
 	Renderer* renderer = engine->GetRenderer();
 
-	renderer->BindShadowTextures(renderPassTypeShaderMap_[RenderPassType::Forward]);
-
-	if (renderer->GetMainRenderType() == RenderPassType::Deferred)
+	if (renderer->GetMainRenderType() == RenderPassType::Forward)
 	{
+		renderPassTypeShaderMap_[RenderPassType::Forward]->Init();
+		renderer->BindShadowTextures(renderPassTypeShaderMap_[RenderPassType::Forward]);
+	}
+	else if (renderer->GetMainRenderType() == RenderPassType::Deferred)
+	{
+		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->Init();
 		renderer->BindGeometryBufferTextures(renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]);
 	}
 }
 
 void Material::PostInit()
 {
-	renderPassTypeShaderMap_[RenderPassType::Forward]->PostInit();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->PostInit();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->PostInit();
-	renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->PostInit();
+
+	if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Forward)
+	{
+		renderPassTypeShaderMap_[RenderPassType::Forward]->PostInit();
+	}
+	else if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Deferred)
+	{
+		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->PostInit();
+	}
 }
 
-void Material::Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType) const
+void Material::Render(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix) const
 {
 	Use(renderPassType);
-	SetShaderVariables(worldTransformationMatrix, relativeTransformationMatrix, renderPassType);
+	SetShaderVariables(renderPassType, worldAndRelativeTransformationMatrix);
 }
 
 void Material::Use(RenderPassType renderPassType) const
@@ -111,7 +138,7 @@ void Material::Use(RenderPassType renderPassType) const
 	renderPassTypeShaderMap_.at(renderPassType)->Use();
 }
 
-void Material::SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType) const
+void Material::SetShaderVariables(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix) const
 {
 	GOKNAR_CORE_ASSERT(renderPassTypeShaderMap_.find(renderPassType) != renderPassTypeShaderMap_.end());
 
@@ -126,20 +153,23 @@ void Material::SetShaderVariables(const Matrix& worldTransformationMatrix, const
 
 	Shader* shader = renderPassTypeShaderMap_.at(renderPassType);
 
-	if (renderPassType == RenderPassType::Forward)
+	if (renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::GeometryBuffer)
 	{
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, ambientReflectance_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, diffuseReflectance_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, phongExponent_);
-
-		engine->GetRenderer()->SetLightUniforms(shader);
 	}
 	else if (renderPassType == RenderPassType::Shadow || renderPassType == RenderPassType::PointLightShadow)
 	{
 		engine->GetRenderer()->GetShadowManager()->SetShadowRenderPassShaderUniforms(shader);
 	}
 
-	shader->SetMVP(worldTransformationMatrix, relativeTransformationMatrix);
+	if (renderPassType == RenderPassType::Forward)
+	{
+		engine->GetRenderer()->SetLightUniforms(shader);
+	}
+
+	shader->SetMVP(worldAndRelativeTransformationMatrix);
 	engine->SetShaderEngineVariables(shader);
 }

@@ -215,6 +215,27 @@ void main()
 	return vertexShader;
 }
 
+std::string ShaderBuilder::GetVertexShaderScript_DeferredPass()
+{
+	return
+		R"(
+#version 440 core
+
+layout(location = 0) in vec4 color;
+layout(location = 1) in vec3 position;
+layout(location = 2) in vec3 normal;
+layout(location = 3) in vec2 uv;
+
+out vec2 textureCoordinates;
+
+void main()
+{
+	gl_Position = vec4(position, 1.f);
+	textureCoordinates = 0.5f * gl_Position.xy + vec2(0.5f);
+}
+)";
+}
+
 std::string ShaderBuilder::GetFragmentShaderScript_ShadowPass()
 {
 	std::string shadowPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
@@ -246,7 +267,7 @@ void main()
 
 std::string ShaderBuilder::GetFragmentShaderScript_GeometryBufferPass(const Material* const material)
 {
-	const Shader* const shader = material->GetShader(RenderPassType::Forward);
+	const Shader* const shader = material->GetShader(RenderPassType::GeometryBuffer);
 
 	const std::vector<const Texture*>* textures = shader->GetTextures();
 	size_t textureSize = textures->size();
@@ -322,6 +343,48 @@ void main()
 	GBufferPassFragmentShader += R"(
 })";
 	return GBufferPassFragmentShader;
+}
+
+std::string ShaderBuilder::GetFragmentShaderScript_DeferredPass()
+{
+	return R"(
+#version 440 core
+
+out vec4 fragmentColor;
+
+in vec2 textureCoordinates;
+
+uniform sampler2D )" + std::string(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION) + R"(;
+uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
+uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(;
+uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR + R"(;
+
+void main()
+{
+	if(textureCoordinates.x < 0.5f)
+	{
+		if(textureCoordinates.y < 0.5f)
+		{
+			fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, textureCoordinates * 2.f);
+		}
+		else
+		{
+			fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + R"(, (textureCoordinates - vec2(0.f, 0.5f)) * 2.f);
+		}
+	}
+	else
+	{
+		if(textureCoordinates.y < 0.5f)
+		{
+			fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR + R"(, (textureCoordinates - vec2(0.5f, 0.f)) * 2.f);
+		}
+		else
+		{
+			fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, (textureCoordinates - vec2(0.5f, 0.5f)) * 2.f);
+		}
+	}
+}
+)";
 }
 
 std::string ShaderBuilder::GetGeometryShaderScript_PointLightShadowPass()

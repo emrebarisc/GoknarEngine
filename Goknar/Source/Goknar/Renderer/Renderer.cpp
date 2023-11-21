@@ -354,19 +354,17 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			GOKNAR_CORE_CHECK(deferredRenderingData_ != nullptr, "Main rendering is not set to deferred rendering but deferred rendering is called.");
 
-			glDepthMask(GL_TRUE);
+			deferredRenderingData_->BindGeometryBuffer();
 			const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
 			glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			deferredRenderingData_->Bind();
+			glDepthMask(GL_TRUE);
 			break;
 		}
 		case RenderPassType::Deferred:
 		{
 			GOKNAR_CORE_CHECK(deferredRenderingData_ != nullptr, "Main rendering is not set to deferred rendering but deferred rendering is called.");
-
-			glDepthMask(GL_TRUE);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClear(GL_DEPTH_BUFFER_BIT);
 			deferredRenderingData_->Render();
 			break;
 		}
@@ -486,7 +484,7 @@ void Renderer::Render(RenderPassType renderPassType)
 
 	if (renderPassType == RenderPassType::GeometryBuffer)
 	{
-		deferredRenderingData_->Unbind();
+		deferredRenderingData_->UnbindGeometryBuffer();
 		return;
 	}
 
@@ -981,18 +979,19 @@ GeometryBufferData::GeometryBufferData()
 
 GeometryBufferData::~GeometryBufferData()
 {
-	delete geometryFrameBuffer;
-
 	delete worldPositionTexture;
 	delete worldNormalTexture;
 	delete diffuseTexture;
 	delete specularTexture;
+
+	delete geometryFrameBuffer;
 }
 
 void GeometryBufferData::Init()
 {
 	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
 
+	worldPositionTexture->SetName("geometryBufferWorldPositionTexture");
 	worldPositionTexture->SetTextureDataType(TextureDataType::DYNAMIC);
 	worldPositionTexture->SetTextureFormat(TextureFormat::RGB);
 	worldPositionTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
@@ -1004,6 +1003,7 @@ void GeometryBufferData::Init()
 	worldPositionTexture->PreInit();
 	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT0, worldPositionTexture);
 
+	worldNormalTexture->SetName("geometryBufferWorldNormalTexture");
 	worldNormalTexture->SetTextureDataType(TextureDataType::DYNAMIC);
 	worldNormalTexture->SetTextureFormat(TextureFormat::RGB);
 	worldNormalTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
@@ -1015,6 +1015,7 @@ void GeometryBufferData::Init()
 	worldNormalTexture->PreInit();
 	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT1, worldNormalTexture);
 
+	diffuseTexture->SetName("geometryBufferDiffuseTexture");
 	diffuseTexture->SetTextureDataType(TextureDataType::DYNAMIC);
 	diffuseTexture->SetTextureFormat(TextureFormat::RGB);
 	diffuseTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
@@ -1027,6 +1028,7 @@ void GeometryBufferData::Init()
 	diffuseTexture->PreInit();
 	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT2, diffuseTexture);
 
+	specularTexture->SetName("geometryBufferSpecularTexture");
 	specularTexture->SetTextureDataType(TextureDataType::DYNAMIC);
 	specularTexture->SetTextureFormat(TextureFormat::RGB);
 	specularTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
@@ -1043,37 +1045,29 @@ void GeometryBufferData::Init()
 	geometryFrameBuffer->Bind();
 	geometryFrameBuffer->Attach();
 
-	unsigned int colorAttachments[4] = 
-	{ 
-		(int)FramebufferAttachment::COLOR_ATTACHMENT0,
-		(int)FramebufferAttachment::COLOR_ATTACHMENT1,
-		(int)FramebufferAttachment::COLOR_ATTACHMENT2,
-		(int)FramebufferAttachment::COLOR_ATTACHMENT3
-	};
-
-	glDrawBuffers(4, colorAttachments);
+	geometryFrameBuffer->DrawBuffers();
 
 	glGenRenderbuffers(1, &depthRenderbuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, windowSize.x, windowSize.y);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	geometryFrameBuffer->Unbind();
+
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
 
 	EXIT_ON_GL_ERROR("GeometryBufferData::Init");
 }
 
 void GeometryBufferData::Bind()
 {
-	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
 	geometryFrameBuffer->Bind();
 }
 
 void GeometryBufferData::Unbind()
 {
 	geometryFrameBuffer->Unbind();
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 DeferredRenderingData::DeferredRenderingData()
@@ -1096,76 +1090,24 @@ void DeferredRenderingData::Init()
 	deferredRenderingMesh->PreInit();
 
 	deferredRenderingMeshShader = new Shader();
-	deferredRenderingMeshShader->SetVertexShaderScript(
-		R"(
-#version 440 core
-
-layout(location = 0) in vec4 color;
-layout(location = 1) in vec3 position;
-layout(location = 2) in vec3 normal;
-layout(location = 3) in vec2 uv;
-
-out vec2 textureCoordinates;
-
-void main()
-{
-	gl_Position = vec4(position, 1.f);
-	textureCoordinates = 0.5f * gl_Position.xy + vec2(0.5f);
-}
-)");
-
-	deferredRenderingMeshShader->SetFragmentShaderScript(R"(
-#version 440 core
-
-out vec4 fragmentColor;
-
-in vec2 textureCoordinates;
-
-uniform sampler2D worldPosition;
-uniform sampler2D worldNormal;
-uniform sampler2D diffuse;
-uniform sampler2D specular;
-
-void main()
-{
-	if(textureCoordinates.x < 0.5f)
-	{
-		if(textureCoordinates.y < 0.5f)
-		{
-			fragmentColor = texture(diffuse, textureCoordinates * 2.f);
-		}
-		else
-		{
-			fragmentColor = texture(worldPosition, (textureCoordinates - vec2(0.f, 0.5f)) * 2.f);
-		}
-	}
-	else
-	{
-		if(textureCoordinates.y < 0.5f)
-		{
-			fragmentColor = texture(specular, (textureCoordinates - vec2(0.5f, 0.f)) * 2.f);
-		}
-		else
-		{
-			fragmentColor = texture(worldNormal, (textureCoordinates - vec2(0.5f, 0.5f)) * 2.f);
-		}
-	}
-}
-)");
+	deferredRenderingMeshShader->SetVertexShaderScript(ShaderBuilder::GetVertexShaderScript_DeferredPass());
+	deferredRenderingMeshShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_DeferredPass());
 	deferredRenderingMeshShader->PreInit();
 	deferredRenderingMeshShader->Init();
 	deferredRenderingMeshShader->PostInit();
+
+	engine->GetRenderer()->BindShadowTextures(deferredRenderingMeshShader);
 
 	geometryBufferData = new GeometryBufferData();
 	geometryBufferData->Init();
 }
 
-void DeferredRenderingData::Bind()
+void DeferredRenderingData::BindGeometryBuffer()
 {
 	geometryBufferData->Bind();
 }
 
-void DeferredRenderingData::Unbind()
+void DeferredRenderingData::UnbindGeometryBuffer()
 {
 	geometryBufferData->Unbind();
 }
@@ -1175,10 +1117,10 @@ void DeferredRenderingData::Render()
 	engine->GetRenderer()->BindStaticVBO();
 
 	deferredRenderingMeshShader->Use();
-	deferredRenderingMeshShader->SetInt("worldPosition", geometryBufferData->worldPositionTexture->GetRendererTextureId());
-	deferredRenderingMeshShader->SetInt("worldNormal", geometryBufferData->worldNormalTexture->GetRendererTextureId());
-	deferredRenderingMeshShader->SetInt("diffuse", geometryBufferData->diffuseTexture->GetRendererTextureId());
-	deferredRenderingMeshShader->SetInt("specular", geometryBufferData->specularTexture->GetRendererTextureId());
+	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION, geometryBufferData->worldPositionTexture->GetRendererTextureId());
+	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL, geometryBufferData->worldNormalTexture->GetRendererTextureId());
+	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE, geometryBufferData->diffuseTexture->GetRendererTextureId());
+	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR, geometryBufferData->specularTexture->GetRendererTextureId());
 
 	int facePointCount = deferredRenderingMesh->GetFaceCount() * 3;
 	glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)deferredRenderingMesh->GetVertexStartingIndex(), deferredRenderingMesh->GetBaseVertex());

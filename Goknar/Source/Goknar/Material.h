@@ -132,9 +132,9 @@ public:
 		return &textureImages_;
 	}
 
-	void Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Forward) const;
-	void Use(RenderPassType renderPassType = RenderPassType::Forward) const;
-	void SetShaderVariables(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix, RenderPassType renderPassType = RenderPassType::Forward) const;
+	void Render(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix) const;
+	void Use(RenderPassType renderPassType) const;
+	void SetShaderVariables(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix) const;
 
 protected:
 

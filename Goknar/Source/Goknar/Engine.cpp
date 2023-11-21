@@ -233,11 +233,11 @@ void Engine::Run()
 		application_->Run();
 		Tick(deltaTime_);
 
-		//renderer_->GetShadowManager()->RenderShadowMaps();
+		renderer_->GetShadowManager()->RenderShadowMaps();
 		
 		if (renderer_->GetMainRenderType() == RenderPassType::Forward)
 		{
-			renderer_->Render();
+			renderer_->Render(RenderPassType::Forward);
 		}
 		else if (renderer_->GetMainRenderType() == RenderPassType::Deferred)
 		{

@@ -87,38 +87,7 @@ inline void MeshInstance<MeshType>::PreRender(RenderPassType renderPassType)
 template<class MeshType>
 inline void MeshInstance<MeshType>::Render(RenderPassType renderPassType)
 {
-	//
-	//Matrix relativeTransformationMatrix = Matrix::IdentityMatrix;
-	//Matrix worldTransformationMatrix = Matrix::IdentityMatrix;
-
-	//// TODO: Optimize ////////
-	//Component* parent = parentComponent_;
-	//while (parent != nullptr)
-	//{
-	//	relativeTransformationMatrix = parent->GetRelativeTransformationMatrix() * relativeTransformationMatrix;
-	//	parent = parent->GetParent();
-	//}
-	////////////////////////////
-	//
-	//if (parentComponent_)
-	//{
-	//	// Only read the upmost parent when owner objectbase is attached to another ObjectBase
-
-	//	ObjectBase* parentObject = parentComponent_->GetOwner();
-	//	while (parentObject->GetParent() != nullptr)
-	//	{
-	//		parentObject = parentObject->GetParent();
-	//	}
-
-	//	worldTransformationMatrix = parentObject->GetWorldTransformationMatrix();
-	//}
-	//else
-	//{
-	//	GOKNAR_FATAL("NULL PARENT ON RENDERING MESH INSTANCE");
-	//}
-	
-	//mesh_->GetMaterial()->SetShaderVariables(worldTransformationMatrix, relativeTransformationMatrix);
-	mesh_->GetMaterial()->SetShaderVariables(parentComponent_->GetComponentToWorldTransformationMatrix(), Matrix::IdentityMatrix, renderPassType);// worldTransformationMatrix, relativeTransformationMatrix);
+	mesh_->GetMaterial()->SetShaderVariables(renderPassType, parentComponent_->GetComponentToWorldTransformationMatrix());
 }
 
 template<class MeshType>
