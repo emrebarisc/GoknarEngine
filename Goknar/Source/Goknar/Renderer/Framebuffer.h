@@ -43,6 +43,8 @@ public:
 	void Bind() const;
 	void Unbind();
 
+	void DrawBuffers();
+
 	GEuint GetRendererFramebufferId()
 	{
 		return rendererFramebufferId_;

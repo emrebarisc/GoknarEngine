@@ -57,9 +57,12 @@ public:
 		return isInstantiated_;
 	}
 
+	static std::string GetVertexShaderScript_DeferredPass();
+
 	static std::string GetFragmentShaderScript_ShadowPass();
 	static std::string GetFragmentShaderScript_PointLightShadowPass();
 	static std::string GetFragmentShaderScript_GeometryBufferPass(const Material* const material);
+	static std::string GetFragmentShaderScript_DeferredPass();
 
 	static std::string GetGeometryShaderScript_PointLightShadowPass();
 

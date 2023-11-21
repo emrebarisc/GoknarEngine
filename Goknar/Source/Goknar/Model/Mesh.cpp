@@ -28,7 +28,7 @@ void Mesh::Init()
 {
 }
 
-void Mesh::Render(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix)
+void Mesh::Render(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix)
 {
 	std::vector<MeshUnit*>::iterator subMeshIterator = subMeshes_.begin();
 	for (; subMeshIterator != subMeshes_.end(); ++subMeshIterator)
@@ -36,7 +36,7 @@ void Mesh::Render(const Matrix& worldTransformationMatrix, const Matrix& relativ
 		Material* meshUnitMaterial = (*subMeshIterator)->GetMaterial();
 		if (meshUnitMaterial)
 		{
-			meshUnitMaterial->Render(worldTransformationMatrix, relativeTransformationMatrix);
+			meshUnitMaterial->Render(renderPassType, worldAndRelativeTransformationMatrix);
 		}
 	}
 }

@@ -73,9 +73,9 @@ Shader::~Shader()
 	engine->GetApplication()->GetMainScene()->RemoveShader(this);
 }
 
-void Shader::SetMVP(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix/*, const Matrix& view, const Matrix& projection*/) const
+void Shader::SetMVP(const Matrix& worldAndRelativeTransformationMatrix) const
 {
-	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX, worldTransformationMatrix * relativeTransformationMatrix);
+	SetMatrix(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX, worldAndRelativeTransformationMatrix);
 
 	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 
@@ -143,6 +143,16 @@ void Shader::PreInit()
 	glLinkProgram(programId_);
 	ExitOnProgramError(programId_, "Shader program link error!");
 
+	glDetachShader(programId_, vertexShaderId);
+	glDetachShader(programId_, fragmentShaderId);
+	if (containsGeometryShader)
+	{
+		glDetachShader(programId_, geometryShaderId);
+	}
+}
+
+void Shader::Init()
+{
 	Bind();
 
 	int textureSize = (int)textures_.size();
@@ -154,17 +164,6 @@ void Shader::PreInit()
 	ExitOnProgramError(programId_, "Shader error on binding texture!");
 
 	Unbind();
-
-	glDetachShader(programId_, vertexShaderId);
-	glDetachShader(programId_, fragmentShaderId);
-	if (containsGeometryShader)
-	{
-		glDetachShader(programId_, geometryShaderId);
-	}
-}
-
-void Shader::Init()
-{
 }
 
 void Shader::PostInit()

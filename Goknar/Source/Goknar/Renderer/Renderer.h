@@ -63,8 +63,8 @@ public:
 	~DeferredRenderingData();
 
 	void Init();
-	void Bind();
-	void Unbind();
+	void BindGeometryBuffer();
+	void UnbindGeometryBuffer();
 
 	void Render();
 
@@ -93,7 +93,7 @@ public:
 	void Init();
 	void PostInit();
 
-	void Render(RenderPassType renderPassType = RenderPassType::Forward);
+	void Render(RenderPassType renderPassType);
 
 	void AddStaticMeshToRenderer(StaticMesh* object);
 	void AddStaticMeshInstance(StaticMeshInstance* object);
