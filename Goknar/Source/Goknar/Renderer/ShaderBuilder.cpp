@@ -35,13 +35,47 @@ void ShaderBuilder::BuildShader(MeshUnit* mesh, Material* material)
 		std::string fragmentShader = BuildFragmentShader_ForwardRendering(material);
 		shader->SetFragmentShaderScript(fragmentShader);
 
-		ResetVariables();
-
 		IOManager::WriteFile((ContentDir + mesh->GetName() + "VertexShader.glsl").c_str(), vertexShader.c_str());
 		IOManager::WriteFile((ContentDir + mesh->GetName() + "FragmentShader.glsl").c_str(), fragmentShader.c_str());
 
 		ResetVariables();
 	}
+}
+
+std::string ShaderBuilder::BuildVertexShader_GeometryBufferPass(MeshUnit* mesh)
+{
+	// Vertex Shader
+	std::string vertexShader = "// Default Vertex Shader";
+	vertexShader = GetShaderVersionText();
+	vertexShader += VS_GetMainLayouts();
+
+	SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(mesh);
+	if (skeletalMesh)
+	{
+		vertexShader += VS_GetSkeletalMeshLayouts();
+		vertexShaderModelMatrixVariable_ = std::string(SHADER_VARIABLE_NAMES::POSITIONING::BONE_TRANSFORMATION_MATRIX) + " * " + vertexShaderModelMatrixVariable_;
+		vertexShader += VS_GetSkeletalMeshVariables();
+		vertexShader += VS_GetSkeletalMeshUniforms(skeletalMesh->GetBoneSize());
+	}
+
+	vertexShader += VS_GetUniforms();
+	vertexShader += GetLightShadowViewMatrixUniforms();
+	vertexShader += VS_GetLightOutputs();
+	vertexShader += R"(
+void main()
+{
+)";
+	if (skeletalMesh)
+	{
+		vertexShader += VS_GetSkeletalMeshWeightCalculation();
+	}
+	vertexShader += VS_GetMain();
+	vertexShader += VS_GetVertexNormalText();
+	vertexShader += R"(
+}
+)";
+	ResetVariables();
+	return vertexShader;
 }
 
 std::string ShaderBuilder::BuildVertexShader_ForwardRendering(MeshUnit* mesh)

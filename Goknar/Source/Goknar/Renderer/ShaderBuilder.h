@@ -50,6 +50,7 @@ public:
 	}
 
 	void BuildShader(MeshUnit* mesh, Material* material);
+	std::string BuildVertexShader_GeometryBufferPass(MeshUnit* mesh);
 	std::string BuildVertexShader_ForwardRendering(MeshUnit* mesh);
 	std::string BuildVertexShader_ShadowPass(MeshUnit* mesh);
 	std::string BuildVertexShader_PointLightShadowPass(MeshUnit* mesh);
