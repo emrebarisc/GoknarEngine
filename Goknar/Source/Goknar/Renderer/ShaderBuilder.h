@@ -146,6 +146,8 @@ private:
 	std::string uniforms_;
 	std::string lightUniforms_;
 	std::string fragmentShaderOutsideMain_;
+	std::string fragmentShaderLightCalculationFunctions_;
+	std::string fragmentShaderStaticLightVariables_;
 	std::string fragmentShaderInsideMainBegin_;
 	std::string fragmentShaderInsideMainEnd_;
 	std::string fragmentShaderLightAdditionsInsideMain_;
