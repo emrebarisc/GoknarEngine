@@ -4,6 +4,7 @@
 #include "Engine.h"
 #include "Scene.h"
 
+#include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
 
 LightController::LightController()
@@ -61,6 +62,25 @@ LightController::LightController()
 	spotLight5_->SetIntensity(100.f);
 	spotLight5_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight5_);
+
+	float xInitial = -20.f;
+	float yInitial = -20.f;
+	float xDiff = 5.f;
+	float yDiff = 5.f;
+	float z = 1.f;
+
+	for (int y = 0; y < 16; ++y)
+	{
+		for (int x = 0; x < 16; ++x)
+		{
+			PointLight* pointLight = new PointLight();
+			pointLight->SetPosition(Vector3{ xInitial - x * xDiff, yInitial - y * yDiff, z});
+			pointLight->SetIntensity(10.f);
+			pointLight->SetIsShadowEnabled(false);
+			pointLight->SetLightMobility(LightMobility::Static);
+			scene->AddPointLight(pointLight);
+		}
+	}
 
 	angle_ = 0.f;
 	radius_ = 10.f;
