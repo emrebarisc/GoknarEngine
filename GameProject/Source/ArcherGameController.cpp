@@ -5,6 +5,8 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Managers/InputManager.h"
 #include "Goknar/Managers/WindowManager.h"
+#include "Goknar/Renderer/Renderer.h"
+#include "Goknar/Renderer/Shader.h"
 
 // Game includes
 #include "Archer.h"
@@ -47,6 +49,8 @@ void ArcherGameController::SetupInputs()
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F5, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleFullscreen, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::E, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleChest, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::Q, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::DestroyArcher, this));
+
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F1, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleDebug, this));
 
 	engine->GetInputManager()->AddScrollDelegate(std::bind(&ArcherGameController::OnScrollMove, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -157,4 +161,10 @@ void ArcherGameController::MoveRight()
 void ArcherGameController::StopMovingRight()
 {
 	archerMovementComponent_->AddMovementVector(Vector3::LeftVector);
+}
+
+void ArcherGameController::ToggleDebug()
+{
+	isDebugging_ = !isDebugging_;
+	engine->GetRenderer()->GetDeferredRenderingData()->deferredRenderingMeshShader->SetBool("isDebugging", isDebugging_);
 }

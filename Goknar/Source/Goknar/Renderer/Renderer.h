@@ -128,6 +128,11 @@ public:
 		return mainRenderType_;
 	}
 
+	DeferredRenderingData* GetDeferredRenderingData()
+	{
+		return deferredRenderingData_;
+	}
+
 private:
 	void BindStaticVBO();
 	void BindSkeletalVBO();
