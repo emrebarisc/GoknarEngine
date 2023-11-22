@@ -15,5 +15,5 @@ public:
 private:
 	PointLight* fireLight_;
 
-	float fireIntensity_{ 2.5f };
+	float fireIntensity_{ 10.f };
 };
