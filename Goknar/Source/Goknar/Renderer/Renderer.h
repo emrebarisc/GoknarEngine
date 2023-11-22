@@ -180,7 +180,7 @@ private:
 	GEuint dynamicVertexBufferId_;
 	GEuint dynamicIndexBufferId_;
 
-	RenderPassType mainRenderType_{ RenderPassType::Deferred };
+	RenderPassType mainRenderType_{ RenderPassType::Forward };
 
 	unsigned char removeStaticDataFromMemoryAfterTransferingToGPU_ : 1;
 };
