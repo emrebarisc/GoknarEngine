@@ -60,7 +60,7 @@ void Material::Build(MeshUnit* meshUnit)
 			gBufferShader->AddTexture((*imageIterator)->GetGeneratedTexture());
 		}
 
-		gBufferShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_ForwardRendering(meshUnit));
+		gBufferShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_GeometryBufferPass(meshUnit));
 		gBufferShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_GeometryBufferPass(this));
 	}
 

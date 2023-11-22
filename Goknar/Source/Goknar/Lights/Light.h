@@ -143,7 +143,7 @@ public:
 protected:
 
 	Vector3 position_{ Vector3::ZeroVector };
-	Vector3 color_{ Vector3::ZeroVector };
+	Vector3 color_{ Vector3{ 1.f } };
 
 	Camera* shadowMapRenderCamera_{ nullptr };
 	Framebuffer* shadowMapFramebuffer_{ nullptr };
