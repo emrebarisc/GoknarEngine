@@ -114,7 +114,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* OUT_POSITION = "position_GBuffer";
 		const char* OUT_NORMAL = "normal_GBuffer";
 		const char* OUT_DIFFUSE = "diffuse_GBuffer";
-		const char* OUT_SPECULAR = "specular_GBuffer";
+		const char* OUT_SPECULAR_PHONG = "specularAndPhong_GBuffer";
 	}
 
 	inline namespace FRAGMENT_SHADER_OUTS

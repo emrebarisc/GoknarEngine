@@ -60,19 +60,19 @@ void Material::Build(MeshUnit* meshUnit)
 			gBufferShader->AddTexture((*imageIterator)->GetGeneratedTexture());
 		}
 
-		gBufferShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader(meshUnit));
-		gBufferShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_GeometryBufferPass(this));
+		gBufferShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_ForwardRendering(meshUnit));
+		gBufferShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_GeometryBufferPass(this));
 	}
 
 	Shader* shadowShader = new Shader();
 	shadowShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_ShadowPass(meshUnit));
-	shadowShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_ShadowPass());
+	shadowShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_ShadowPass());
 	renderPassTypeShaderMap_[RenderPassType::Shadow] = shadowShader;
 
 	Shader* pointLightShadowShader = new Shader();
 	pointLightShadowShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_PointLightShadowPass(meshUnit));
-	pointLightShadowShader->SetGeometryShaderScript(ShaderBuilder::GetGeometryShaderScript_PointLightShadowPass());
-	pointLightShadowShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_PointLightShadowPass());
+	pointLightShadowShader->SetGeometryShaderScript(ShaderBuilder::GetInstance()->GetGeometryShaderScript_PointLightShadowPass());
+	pointLightShadowShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_PointLightShadowPass());
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow] = pointLightShadowShader;
 }
 

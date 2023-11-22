@@ -116,7 +116,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* OUT_POSITION;
 		extern const char* OUT_NORMAL;
 		extern const char* OUT_DIFFUSE;
-		extern const char* OUT_SPECULAR;
+		extern const char* OUT_SPECULAR_PHONG;
 	}
 
 	inline namespace FRAGMENT_SHADER_OUTS

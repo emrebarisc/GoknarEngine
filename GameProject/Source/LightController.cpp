@@ -19,7 +19,7 @@ LightController::LightController()
 	spotLight1_->SetDirection((centerPosition_ - spotLight1Position).GetNormalized());
 	spotLight1_->SetColor(Vector3(1.f, 0.2f, 0.2f));
 	spotLight1_->SetIntensity(250.f);
-	spotLight1_->SetIsShadowEnabled(false);
+	spotLight1_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight1_);
 
 	Vector3 spotLight2Position = centerPosition_ + Vector3(10.f, -10.f, 10.f);
@@ -29,7 +29,7 @@ LightController::LightController()
 	spotLight2_->SetDirection((centerPosition_ - spotLight2Position).GetNormalized());
 	spotLight2_->SetColor(Vector3(0.2f, 1.f, 0.2f));
 	spotLight2_->SetIntensity(250.f);
-	spotLight2_->SetIsShadowEnabled(false);
+	spotLight2_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight2_);
 
 	Vector3 spotLight3Position = centerPosition_ + Vector3(-10.f, 10.f, 10.f);
@@ -39,7 +39,7 @@ LightController::LightController()
 	spotLight3_->SetDirection((centerPosition_ - spotLight3Position).GetNormalized());
 	spotLight3_->SetColor(Vector3(1.f, 1.0f, 0.2f));
 	spotLight3_->SetIntensity(250.f);
-	spotLight3_->SetIsShadowEnabled(false);
+	spotLight3_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight3_);
 
 	Vector3 spotLight4Position = centerPosition_ + Vector3(10.f, 10.f, 10.f);
@@ -49,7 +49,7 @@ LightController::LightController()
 	spotLight4_->SetDirection((centerPosition_ - spotLight4Position).GetNormalized());
 	spotLight4_->SetColor(Vector3(0.2f, 0.2f, 1.0f));
 	spotLight4_->SetIntensity(250.f);
-	spotLight4_->SetIsShadowEnabled(false);
+	spotLight4_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight4_);
 
 	Vector3 spotLight5Position = centerPosition_ + Vector3(10.f, -10.f, 10.f);
@@ -59,7 +59,7 @@ LightController::LightController()
 	spotLight5_->SetDirection((centerPosition_ - spotLight5Position).GetNormalized());
 	spotLight5_->SetColor(Vector3(1.f, 0.75f, 0.75f));
 	spotLight5_->SetIntensity(100.f);
-	spotLight5_->SetIsShadowEnabled(false);
+	spotLight5_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight5_);
 
 	angle_ = 0.f;

@@ -9,6 +9,8 @@ class Material;
 class MeshUnit;
 class PointLight;
 class SpotLight;
+class Shader;
+class Scene;
 
 class GOKNAR_API ShaderBuilder
 {
@@ -48,21 +50,23 @@ public:
 	}
 
 	void BuildShader(MeshUnit* mesh, Material* material);
-	std::string BuildVertexShader(MeshUnit* mesh);
+	std::string BuildVertexShader_ForwardRendering(MeshUnit* mesh);
 	std::string BuildVertexShader_ShadowPass(MeshUnit* mesh);
 	std::string BuildVertexShader_PointLightShadowPass(MeshUnit* mesh);
+
+	std::string BuildFragmentShader_ForwardRendering(Material* material);
 
 	bool GetIsInstatiated() const
 	{
 		return isInstantiated_;
 	}
 
-	static std::string GetVertexShaderScript_DeferredPass();
+	std::string GetVertexShaderScript_DeferredPass();
 
-	static std::string GetFragmentShaderScript_ShadowPass();
-	static std::string GetFragmentShaderScript_PointLightShadowPass();
-	static std::string GetFragmentShaderScript_GeometryBufferPass(const Material* const material);
-	static std::string GetFragmentShaderScript_DeferredPass();
+	std::string GetFragmentShaderScript_ShadowPass();
+	std::string GetFragmentShaderScript_PointLightShadowPass();
+	std::string GetFragmentShaderScript_GeometryBufferPass(const Material* const material);
+	std::string GetFragmentShaderScript_DeferredPass();
 
 	static std::string GetGeometryShaderScript_PointLightShadowPass();
 
@@ -86,7 +90,7 @@ private:
 	std::string VS_GetSkeletalMeshVariables();
 	std::string VS_GetSkeletalMeshWeightCalculation();
 	std::string VS_GetUniforms();
-	std::string VS_GetLightUniforms();
+	std::string VS_GetLightOutputs();
 	std::string VS_GetMain();
 	std::string VS_GetMain_ShadowPass();
 	std::string VS_GetMain_PointLightShadowPass();
@@ -97,7 +101,8 @@ private:
 	std::string sceneVertexShader_;
 
 	// Fragment Shader
-	void FS_BuildScene();
+	void FS_BuildSceneForwardRendering();
+	void FS_BuildLightOperations(const Scene* scene);
 	std::string FS_GetVariableTexts();
 
 	// Fragment shader builder getter functions
@@ -127,18 +132,23 @@ private:
 	std::string GetSpotLightColorSummationText(const std::string& lightVariableName);
 
 	// Shadows
-	std::string GetLightShadowUniforms();
+	std::string GetLightShadowViewMatrixUniforms();
+	std::string GetLightShadowTextureUniforms();
+
 	std::string PointLight_GetShadowCheck(const std::string& lightName);
 	std::string DirectionalLight_GetShadowCheck(const std::string& lightName);
 	std::string SpotLight_GetShadowCheck(const std::string& lightName);
-	std::string GetShadowCalculationFunction();
+
+	// Deferred Rendering
+	std::string GetFragmentShaderUniforms_DeferredRendering();
 
 	// Fragment shader variables
 	std::string uniforms_;
 	std::string lightUniforms_;
-	std::string fragmentShaderShadowCalculation_;
 	std::string fragmentShaderOutsideMain_;
-	std::string fragmentShaderInsideMain_;
+	std::string fragmentShaderInsideMainBegin_;
+	std::string fragmentShaderInsideMainEnd_;
+	std::string fragmentShaderLightAdditionsInsideMain_;
 	std::string fragmentShaderVertexNormalText_;
 
 	std::vector<std::string> pointLightNamesForShaderSampler_;
