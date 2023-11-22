@@ -50,10 +50,14 @@ private:
 	void MoveRight();
 	void StopMovingRight();
 
+	void ToggleDebug();
+
 	Camera* thirdPersonCamera_{ nullptr };
 
 	Archer* archer_{ nullptr };
 	ArcherMovementComponent* archerMovementComponent_{ nullptr };
+
+	bool isDebugging_{ false };
 };
 
 #endif

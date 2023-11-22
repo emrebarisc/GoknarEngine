@@ -424,7 +424,9 @@ in vec2 )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + ";";
 
 	fragmentShader += "uniform vec3 ";
 	fragmentShader += SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION;
-	fragmentShader += ";\n";;
+	fragmentShader += ";\n";
+
+	fragmentShader += "uniform bool isDebugging;\n";
 
 	fragmentShader += R"(
 vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
@@ -440,6 +442,35 @@ float )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"(;
 	fragmentShader += R"(
 void main()
 {
+	if(isDebugging)
+	{
+		if()" + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + R"(.x < 0.5f)
+		{
+			if()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"(.y < 0.5f)
+			{
+				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( * 2.f).xyz;
+			}
+			else
+			{
+				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.f, 0.5f)) * 2.f).xyz;
+			}
+		}
+		else
+		{
+			if()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"(.y < 0.5f)
+			{
+				vec4 textureColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f);
+				fragmentColor = vec3((textureColor.r + textureColor.g + textureColor.b + textureColor.a) * 0.25f);
+			}
+			else
+			{
+				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f).xyz;
+			}
+		}
+
+		return;
+	}
+
 	)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = vec4(texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz, 1.f);
 	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz;
 	)" + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz;
@@ -461,32 +492,7 @@ void main()
 	fragmentShader += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + " = sceneAmbient;\n";;
 	fragmentShader += fragmentShaderLightAdditionsInsideMain_;
 	fragmentShader += fragmentShaderInsideMainEnd_;
-
-	fragmentShader += R"(
-	/*if()" + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + R"(.x < 0.5f)
-	{
-		if()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"(.y < 0.5f)
-		{
-			fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( * 2.f);
-		}
-		else
-		{
-			fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.f, 0.5f)) * 2.f);
-		}
-	}
-	else
-	{
-		if()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"(.y < 0.5f)
-		{
-			fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.f)) * 2.f);
-		}
-		else
-		{
-			fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f);
-		}
-	}*/
-}
-)";
+	fragmentShader += "\n}";
 
 	return fragmentShader;
 }
