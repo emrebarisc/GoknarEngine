@@ -1030,8 +1030,8 @@ void GeometryBufferData::Init()
 
 	specularTexture->SetName("geometryBufferSpecularTexture");
 	specularTexture->SetTextureDataType(TextureDataType::DYNAMIC);
-	specularTexture->SetTextureFormat(TextureFormat::RGB);
-	specularTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
+	specularTexture->SetTextureFormat(TextureFormat::RGBA);
+	specularTexture->SetTextureInternalFormat(TextureInternalFormat::RGBA);
 	specularTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	specularTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
 	specularTexture->SetWidth(windowSize.x);
@@ -1090,8 +1090,8 @@ void DeferredRenderingData::Init()
 	deferredRenderingMesh->PreInit();
 
 	deferredRenderingMeshShader = new Shader();
-	deferredRenderingMeshShader->SetVertexShaderScript(ShaderBuilder::GetVertexShaderScript_DeferredPass());
-	deferredRenderingMeshShader->SetFragmentShaderScript(ShaderBuilder::GetFragmentShaderScript_DeferredPass());
+	deferredRenderingMeshShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->GetVertexShaderScript_DeferredPass());
+	deferredRenderingMeshShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_DeferredPass());
 	deferredRenderingMeshShader->PreInit();
 	deferredRenderingMeshShader->Init();
 	deferredRenderingMeshShader->PostInit();
@@ -1120,7 +1120,9 @@ void DeferredRenderingData::Render()
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION, geometryBufferData->worldPositionTexture->GetRendererTextureId());
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL, geometryBufferData->worldNormalTexture->GetRendererTextureId());
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE, geometryBufferData->diffuseTexture->GetRendererTextureId());
-	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR, geometryBufferData->specularTexture->GetRendererTextureId());
+	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG, geometryBufferData->specularTexture->GetRendererTextureId());
+
+	engine->GetRenderer()->SetLightUniforms(deferredRenderingMeshShader);
 
 	int facePointCount = deferredRenderingMesh->GetFaceCount() * 3;
 	glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)deferredRenderingMesh->GetVertexStartingIndex(), deferredRenderingMesh->GetBaseVertex());
