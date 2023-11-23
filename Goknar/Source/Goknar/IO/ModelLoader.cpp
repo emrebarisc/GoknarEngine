@@ -17,6 +17,25 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 
+#ifdef GOKNAR_PLATFORM_UNIX
+std::string ConvertToLinuxPath(const std::string& input)
+{
+    std::string output;
+    output.reserve(input.size());
+
+    for (char c : input) {
+		if(c == '\\')
+		{
+			c = '/';
+		}
+
+		output += c;
+    }
+
+    return output;
+}
+#endif
+
 StaticMesh* ModelLoader::LoadPlyFile(const std::string& path)
 {
 	std::ifstream file(path);
@@ -411,6 +430,10 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 						imagePath += diffuseTexturePath.C_Str();
 
+#ifdef GOKNAR_PLATFORM_UNIX
+						imagePath = ConvertToLinuxPath(imagePath);
+#endif
+
 						Image* image = engine->GetResourceManager()->GetContent<Image>(imagePath);
 						if (image)
 						{
@@ -435,9 +458,16 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 						normalImagePath += normalTexturePath.C_Str();
 
+#ifdef GOKNAR_PLATFORM_UNIX
+						normalImagePath = ConvertToLinuxPath(normalImagePath);
+#endif
+
 						Image* image = engine->GetResourceManager()->GetContent<Image>(normalImagePath);
-						image->SetTextureUsage(TextureUsage::Normal);
-						material->AddTextureImage(image);
+						if(image)
+						{
+							image->SetTextureUsage(TextureUsage::Normal);
+							material->AddTextureImage(image);
+						}
 					}
 
 					gameScene->AddMaterial(material);
