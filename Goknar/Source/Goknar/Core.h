@@ -23,7 +23,8 @@
 	#endif
 
 #elif defined(GOKNAR_PLATFORM_UNIX)
-	#define DEBUG_BREAK() 
+	#include <csignal>
+	#define DEBUG_BREAK() std::raise(SIGINT)
 	#ifndef GOKNAR_BUILD_DLL
 		#define GOKNAR_API __declspec(dllexport)
 	#else
@@ -39,6 +40,8 @@
 #define UNLIKELY(x) (x)
 
 #define BUFFER_OFFSET(index) ((const void *) index)
+
+#define VA_ARGS(...) , ##__VA_ARGS__
 
 #define EXIT_ON_GL_ERROR(errorMessage) \
 { \

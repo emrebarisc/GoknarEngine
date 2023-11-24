@@ -9,7 +9,7 @@ class LightController : public ObjectBase
 public:
 	LightController();
 
-	void BeginPlay();
+	void BeginGame();
 	void Tick(float deltaTime);
 
 private:

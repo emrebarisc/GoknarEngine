@@ -37,7 +37,7 @@ void ArcherMovementComponent::TickComponent(float deltaTime)
 {
 	Component::TickComponent(deltaTime);
 	
-	if (EPSILON < movementVector_.current.Length())
+	if (BIGGER_EPSILON < movementVector_.current.Length())
 	{
 		Vector3 normalizedMovementVector = movementVector_.current.GetNormalized();
 

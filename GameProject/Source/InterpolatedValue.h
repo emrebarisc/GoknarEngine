@@ -17,7 +17,7 @@ struct InterpolatedValue
 		limitWithTime = false;
 	}
 
-	void UpdateDestination(const T& newDestination)
+	virtual void UpdateDestination(const T& newDestination)
 	{
 		if (this->limitWithTime && 0.f < this->innerTimer)
 		{
@@ -124,17 +124,20 @@ struct RotatingInterpolatedValue : public InterpolatedValue<T>
 		this->destination = Vector3::ForwardVector;
 	}
 
-	void UpdateDestination(const T& newDestination)
+	void UpdateDestination(const T& newDestination) override
 	{
 		if (this->limitWithTime && 0.f < this->innerTimer)
 		{
 			return;
 		}
 
-		InterpolatedValue::UpdateDestination(newDestination);
+		this->destination = newDestination;
+		this->initial = this->current;
+		this->interpolationValue = 0.f;
+		this->innerTimer = this->timer;
 
 		const float newDestinationAngle = atan2f(newDestination.y, newDestination.x);
-		const float currentAngle = atan2f(current.y, current.x);
+		const float currentAngle = atan2f(this->current.y, this->current.x);
 
 		this->destinationAngle = newDestinationAngle - currentAngle; 
 		if(PI < this->destinationAngle)
