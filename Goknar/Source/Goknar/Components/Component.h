@@ -111,6 +111,7 @@ public:
 	void SetOwner(ObjectBase* owner)
 	{
 		owner_ = owner;
+		UpdateRelativeTransformationMatrix();
 	}
 
 	ObjectBase* GetOwner() const

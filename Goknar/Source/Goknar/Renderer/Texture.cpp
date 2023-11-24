@@ -101,6 +101,7 @@ void Texture::PreInit()
 	if (channels_ == 4)
 	{
 		textureFormat_ = TextureFormat::RGBA;
+		textureInternalFormat_ = TextureInternalFormat::RGBA;
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
