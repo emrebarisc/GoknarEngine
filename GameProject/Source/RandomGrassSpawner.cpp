@@ -11,18 +11,19 @@
 RandomGrassSpawner::RandomGrassSpawner()
 {
 	SetIsTickable(false);
-		const Vector3 initialPosition = Vector3{20.f, 20.f, 0.f};
+	
+	const Vector3 initialPosition = Vector3{20.f, 20.f, 0.f};
 	constexpr float xDiff = 1.f;
 	constexpr float yDiff = 1.f;
 
 	float minPositionDifferenceX = 0.f;
-	float maxPositionDifferenceX = 0.8f;
+	float maxPositionDifferenceX = 0.5f;
 
 	float minPositionDifferenceY = 0.f;
-	float maxPositionDifferenceY = 0.8f;
+	float maxPositionDifferenceY = 0.5f;
 
 	float minScale = 0.75f;
-	float maxScale = 1.25f;
+	float maxScale = 2.f;
 
 	float minRotationOnZ = 0.f;
 	float maxRotationOnZ = 3.1415f;
@@ -37,9 +38,9 @@ RandomGrassSpawner::RandomGrassSpawner()
 	std::uniform_real_distribution<float> rotationDist(0.f, 1.f);
 	std::uniform_real_distribution<float> scalingDist(0.f, 1.f);
 
-	for(int y = 0; y < 16; ++y)
+	for(int y = 0; y < 64; ++y)
 	{
-		for(int x = 0; x < 16; ++x)
+		for(int x = 0; x < 64; ++x)
 		{
 			float randomPositionX = GoknarMath::Lerp(minPositionDifferenceX, maxPositionDifferenceX, positionDistX(rd));
 			float randomPositionY = GoknarMath::Lerp(minPositionDifferenceY, maxPositionDifferenceY, positionDistY(rd));
@@ -63,5 +64,5 @@ void RandomGrassSpawner::BeginGame()
 
 void RandomGrassSpawner::Tick(float deltaTime)
 {
-
+	
 }
