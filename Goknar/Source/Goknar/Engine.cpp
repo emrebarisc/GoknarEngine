@@ -192,7 +192,7 @@ void Engine::Run()
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
-		// Initialize dynamically created object and components initialization /////
+		// Initialize dynamically created object and components /////
 
 		if (hasUninitializedObjects_)
 		{
