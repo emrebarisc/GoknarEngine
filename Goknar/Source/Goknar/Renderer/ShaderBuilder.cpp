@@ -339,10 +339,6 @@ in vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POS
 in vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
 
 	std::string insideMain;
-
-	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + ".xyz;\n";
-	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
-
 	bool hasADiffuseShader = false;
 	for (size_t textureIndex = 0; textureIndex < textureSize; textureIndex++)
 	{
@@ -378,6 +374,9 @@ in vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
 	fragmentShaderUniforms += "uniform float " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT) + ";\n";
 	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + " = vec4(" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + ", " + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + "); \n";
 
+	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + ".xyz;\n";
+	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
+	
 	std::string GBufferPassFragmentShader =
 "#version " + std::string(DEFAULT_SHADER_VERSION) + R"(
 
@@ -471,9 +470,7 @@ void main()
 		return;
 	}
 
-	vec4 diffuse = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
-	if(diffuse.a < 0.5f) discard;
-	)" + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + R"( = diffuse.xyz;
+	)" + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz;
 	
 	)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = vec4(texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz, 1.f);
 	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz;
