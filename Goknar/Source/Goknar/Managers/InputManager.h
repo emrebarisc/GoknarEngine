@@ -194,7 +194,7 @@ private:
 	class GOKNAR_API KeyboardEvent
 	{
 	public:
-		KeyboardEvent(KEY_MAP keyCode, void* owner, const KeyboardDelegate& pressedCallback, const KeyboardDelegate& releasedCallback);
+		KeyboardEvent(KEY_MAP keyCode, const KeyboardDelegate& pressedCallback, const KeyboardDelegate& releasedCallback);
 		KeyboardEvent(const KeyboardEvent* other);
 		~KeyboardEvent();
 
@@ -208,8 +208,10 @@ private:
 		KeyboardDelegate pressedCallback_;
 		KeyboardDelegate releasedCallback_;
 	};
+
 	typedef std::unique_ptr<KeyboardEvent> KeyboardEventPointer;
-	typedef std::vector < KeyboardEventPointer > KeyboardEventVector;
+	typedef std::vector<KeyboardEventPointer> KeyboardEventVector;
+	typedef std::unordered_map< KEY_MAP, KeyboardEventVector > KeyboardEventMap;
 
 public:
 	InputManager();
@@ -291,7 +293,7 @@ public:
 	}
 
 private:
-	std::unordered_map< int, KeyboardEventVector > keyboardEvents_;
+	KeyboardEventMap* keyboardEvents_;
 
 	// Keyboard Delegates
 	std::unordered_map< int, KeyboardDelegateVector > pressedKeyDelegates_;
@@ -319,16 +321,14 @@ template<typename Class>
 void InputManager::AddKeyboardEvent(KEY_MAP keyCode, Class* owner, void (Class::* pressedCallback)(void), void (Class::* releasedCallback)(void))
 {
 	std::unique_ptr<InputManager::KeyboardEvent> keyboardEvent = 
-		std::make_unique<InputManager::KeyboardEvent>(new InputManager::KeyboardEvent(keyCode, owner, std::bind(pressedCallback, owner), std::bind(releasedCallback, owner)));
+		std::make_unique<InputManager::KeyboardEvent>(keyCode, std::bind(pressedCallback, owner), std::bind(releasedCallback, owner));
 
-	int keyCodeInt = (int)keyCode;
-
-	if(keyboardEvents_.find(keyCodeInt) == keyboardEvents_.end())
+	if(keyboardEvents_->find(keyCode) == keyboardEvents_->end())
 	{
 		AddKeyboardInputDelegate(keyCode, INPUT_ACTION::G_PRESS, 
 			[this, keyCode]()
 			{
-				KeyboardEventVector& keyboardEvents = this->keyboardEvents_[(int)keyCode];
+				KeyboardEventVector& keyboardEvents = this->keyboardEvents_->at(keyCode);
 				for(KeyboardEventPointer& keyboardEventPointer : keyboardEvents)
 				{
 					keyboardEventPointer->OnPressed();
@@ -338,14 +338,16 @@ void InputManager::AddKeyboardEvent(KEY_MAP keyCode, Class* owner, void (Class::
 		AddKeyboardInputDelegate(keyCode, INPUT_ACTION::G_RELEASE,
 			[this, keyCode]()
 			{
-				KeyboardEventVector& keyboardEvents = this->keyboardEvents_[(int)keyCode];
+				KeyboardEventVector& keyboardEvents = this->keyboardEvents_->at(keyCode);
 				for(KeyboardEventPointer& keyboardEventPointer : keyboardEvents)
 				{
 					keyboardEventPointer->OnReleased();
 				}
 			});
+
+		keyboardEvents_->insert(std::pair<KEY_MAP, KeyboardEventVector>(keyCode, KeyboardEventVector()));
 	}
 
-	keyboardEvents_[keyCodeInt].push_back(std::move(keyboardEvent));
+	keyboardEvents_->at(keyCode).push_back(std::move(keyboardEvent));
 }
 #endif

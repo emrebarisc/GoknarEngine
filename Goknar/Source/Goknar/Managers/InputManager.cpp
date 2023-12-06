@@ -8,7 +8,7 @@
 
 #include "GLFW/glfw3.h"
 
-InputManager::KeyboardEvent::KeyboardEvent(KEY_MAP keyCode, void* owner, const KeyboardDelegate& pressedCallback, const KeyboardDelegate& releasedCallback) :
+InputManager::KeyboardEvent::KeyboardEvent(KEY_MAP keyCode, const KeyboardDelegate& pressedCallback, const KeyboardDelegate& releasedCallback) :
 		keyCode_(keyCode),
 		latestAction_(INPUT_ACTION::G_NONE),
 		pressedCallback_(pressedCallback),
@@ -59,9 +59,13 @@ void InputManager::KeyboardEvent::OnReleased()
 
 InputManager::InputManager()
 {
+	keyboardEvents_ = new KeyboardEventMap();
 }
 
-InputManager::~InputManager() = default;
+InputManager::~InputManager()
+{
+	delete keyboardEvents_;
+}
 
 void InputManager::PreInit()
 {
