@@ -105,9 +105,11 @@ void Texture::PreInit()
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
+	int textureBindTargetInt = (int)textureBindTarget_;
+
 	glGenTextures(1, &rendererTextureId_);
 	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
-	glBindTexture((int)textureBindTarget_, rendererTextureId_);
+	glBindTexture(textureBindTargetInt, rendererTextureId_);
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
@@ -121,26 +123,26 @@ void Texture::PreInit()
 		}
 	}
 
-	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_COMPARE_MODE, (int)textureCompareMode_);
+	glTexParameteri(textureBindTargetInt, GL_TEXTURE_COMPARE_MODE, (int)textureCompareMode_);
 
 	if (textureCompareMode_ == TextureCompareMode::COMPARE_REF_TO_TEXTURE)
 	{
-		glTexParameteri((int)textureBindTarget_, GL_TEXTURE_COMPARE_FUNC, (int)textureCompareFunc_);
+		glTexParameteri(textureBindTargetInt, GL_TEXTURE_COMPARE_FUNC, (int)textureCompareFunc_);
 	}
 
-	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_MIN_FILTER, (int)minFilter_);
-	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_MAG_FILTER, (int)magFilter_);
+	glTexParameteri(textureBindTargetInt, GL_TEXTURE_MIN_FILTER, (int)minFilter_);
+	glTexParameteri(textureBindTargetInt, GL_TEXTURE_MAG_FILTER, (int)magFilter_);
 
-	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_WRAP_S, (int)textureWrappingS_);
-	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_WRAP_T, (int)textureWrappingT_);
-	glTexParameteri((int)textureBindTarget_, GL_TEXTURE_WRAP_R, (int)textureWrappingR_);
+	glTexParameteri(textureBindTargetInt, GL_TEXTURE_WRAP_S, (int)textureWrappingS_);
+	glTexParameteri(textureBindTargetInt, GL_TEXTURE_WRAP_T, (int)textureWrappingT_);
+	glTexParameteri(textureBindTargetInt, GL_TEXTURE_WRAP_R, (int)textureWrappingR_);
 
 	if (generateMipmap_ && textureFormat_ != TextureFormat::DEPTH && textureFormat_ != TextureFormat::DEPTH_STENCIL)
 	{
-		glGenerateMipmap((int)textureBindTarget_);
+		glGenerateMipmap(textureBindTargetInt);
 	}
 	
-	glBindTexture((int)textureBindTarget_, 0);
+	glBindTexture(textureBindTargetInt, 0);
 	
 	EXIT_ON_GL_ERROR("Texture::Init");
 
