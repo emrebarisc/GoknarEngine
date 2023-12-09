@@ -991,7 +991,7 @@ void GeometryBufferData::Init()
 {
 	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
 
-	worldPositionTexture->SetName("geometryBufferWorldPositionTexture");
+	worldPositionTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION);
 	worldPositionTexture->SetTextureDataType(TextureDataType::DYNAMIC);
 	worldPositionTexture->SetTextureFormat(TextureFormat::RGB);
 	worldPositionTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
@@ -1003,7 +1003,7 @@ void GeometryBufferData::Init()
 	worldPositionTexture->PreInit();
 	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT0, worldPositionTexture);
 
-	worldNormalTexture->SetName("geometryBufferWorldNormalTexture");
+	worldNormalTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL);
 	worldNormalTexture->SetTextureDataType(TextureDataType::DYNAMIC);
 	worldNormalTexture->SetTextureFormat(TextureFormat::RGB);
 	worldNormalTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
@@ -1015,7 +1015,7 @@ void GeometryBufferData::Init()
 	worldNormalTexture->PreInit();
 	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT1, worldNormalTexture);
 
-	diffuseTexture->SetName("geometryBufferDiffuseTexture");
+	diffuseTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE);
 	diffuseTexture->SetTextureDataType(TextureDataType::DYNAMIC);
 	diffuseTexture->SetTextureFormat(TextureFormat::RGB);
 	diffuseTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
@@ -1028,7 +1028,7 @@ void GeometryBufferData::Init()
 	diffuseTexture->PreInit();
 	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT2, diffuseTexture);
 
-	specularTexture->SetName("geometryBufferSpecularTexture");
+	specularTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG);
 	specularTexture->SetTextureDataType(TextureDataType::DYNAMIC);
 	specularTexture->SetTextureFormat(TextureFormat::RGBA);
 	specularTexture->SetTextureInternalFormat(TextureInternalFormat::RGBA);
@@ -1055,7 +1055,6 @@ void GeometryBufferData::Init()
 	geometryFrameBuffer->Unbind();
 
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
 
 	EXIT_ON_GL_ERROR("GeometryBufferData::Init");
 }
