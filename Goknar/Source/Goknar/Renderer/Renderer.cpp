@@ -997,6 +997,7 @@ void GeometryBufferData::Init()
 	worldPositionTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
 	worldPositionTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	worldPositionTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
+	worldPositionTexture->SetTextureType(TextureType::FLOAT);
 	worldPositionTexture->SetWidth(windowSize.x);
 	worldPositionTexture->SetHeight(windowSize.y);
 	worldPositionTexture->SetGenerateMipmap(false);
@@ -1009,6 +1010,7 @@ void GeometryBufferData::Init()
 	worldNormalTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
 	worldNormalTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	worldNormalTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
+	worldNormalTexture->SetTextureType(TextureType::FLOAT);
 	worldNormalTexture->SetWidth(windowSize.x);
 	worldNormalTexture->SetHeight(windowSize.y);
 	worldNormalTexture->SetGenerateMipmap(false);
