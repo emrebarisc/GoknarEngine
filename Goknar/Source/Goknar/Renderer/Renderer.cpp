@@ -994,10 +994,9 @@ void GeometryBufferData::Init()
 	worldPositionTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION);
 	worldPositionTexture->SetTextureDataType(TextureDataType::DYNAMIC);
 	worldPositionTexture->SetTextureFormat(TextureFormat::RGB);
-	worldPositionTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
+	worldPositionTexture->SetTextureInternalFormat(TextureInternalFormat::RGB32F);
 	worldPositionTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	worldPositionTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
-	worldPositionTexture->SetTextureType(TextureType::FLOAT);
 	worldPositionTexture->SetWidth(windowSize.x);
 	worldPositionTexture->SetHeight(windowSize.y);
 	worldPositionTexture->SetGenerateMipmap(false);
@@ -1010,7 +1009,6 @@ void GeometryBufferData::Init()
 	worldNormalTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
 	worldNormalTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	worldNormalTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
-	worldNormalTexture->SetTextureType(TextureType::FLOAT);
 	worldNormalTexture->SetWidth(windowSize.x);
 	worldNormalTexture->SetHeight(windowSize.y);
 	worldNormalTexture->SetGenerateMipmap(false);
