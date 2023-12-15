@@ -29,6 +29,7 @@ void ArcherGameController::BeginGame()
 	engine->GetInputManager()->SetIsCursorVisible(false);
 }
 
+
 void ArcherGameController::SetupInputs()
 {
 	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::DrawBow, this));
