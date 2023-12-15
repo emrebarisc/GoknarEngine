@@ -1,0 +1,120 @@
+<Scene>
+	<BackgroundColor>0 0 0</BackgroundColor>
+	<Cameras>
+<!-- 		<Camera id = "0">
+			<Position>0.0 0.0 1.75</Position>
+			<Gaze>0.0 0.9999999403953552 0.0</Gaze>
+			<Up>0.0 0.0 0.9999999403953552</Up>
+			<NearPlane>-0.5 0.5 -0.28125 0.28125</NearPlane>
+			<NearDistance>1</NearDistance>
+			<ImageResolution>1600 900</ImageResolution>
+			<NumSamples>1</NumSamples>
+			<ImageName></ImageName>
+		</Camera> -->
+	</Cameras>
+
+	<Lights>
+		<AmbientLight>10 10 10</AmbientLight>
+	</Lights>
+
+	<Materials>
+	</Materials>
+
+	<Meshes>
+		<StaticMesh id = "0">
+			<Name>BuildingWall</Name>
+			<Path>Meshes/SM_BuildingWall.fbx</Path>
+		</StaticMesh>
+		<StaticMesh id = "1">
+			<Name>FloorAndCeil</Name>
+			<Path>Meshes/SM_FloorAndCeil.fbx</Path>
+		</StaticMesh>
+		<StaticMesh id = "2">
+			<Name>Arrow</Name>
+			<Path>Meshes/SM_Arrow.fbx</Path>
+		</StaticMesh>
+	    <StaticMesh id = "3">
+	      <Name>Floor</Name>
+	      <Path>Meshes/SM_Floor.fbx</Path>
+	    </StaticMesh>
+	    <StaticMesh id = "4">
+	      <Name>Wall</Name>
+	      <Path>Meshes/SM_Wall.fbx</Path>
+	    </StaticMesh>
+	    <StaticMesh id = "5">
+	      <Name>Cube</Name>
+	      <Path>Meshes/SM_Cube.fbx</Path>
+	    </StaticMesh>
+	    <StaticMesh id = "6">
+	      <Name>CylinderWithAHole</Name>
+	      <Path>Meshes/SM_CylinderWithAHole.fbx</Path>
+	    </StaticMesh>
+		<SkeletalMesh id = "7">
+			<Name>Axis</Name>
+			<Path>Meshes/SkeletalMesh_Bow.fbx</Path>
+		</SkeletalMesh>
+	    <StaticMesh id = "8">
+	      <Name>CylinderWithAHole</Name>
+	      <Path>Meshes/SM_Grass.fbx</Path>
+	    </StaticMesh>
+	</Meshes>
+
+	<Objects>
+ 	     <StaticMeshObject id = "3">
+	      <Name>Floor</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>0.0 0.0 -0.05</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>100.0 100.0 1.0</WorldScaling>
+	      <Mesh>3</Mesh>
+	    </StaticMeshObject>
+	    <StaticMeshObject id = "4">
+	      <Name>Wall</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>20.0 5.0 0.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>4</Mesh>
+	    </StaticMeshObject>
+	    <StaticMeshObject id = "5">
+	      <Name>Wall</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>25.0 0.0 0.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 90.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>4</Mesh>
+	    </StaticMeshObject>
+	    <StaticMeshObject id = "6">
+	      <Name>Cube</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>20.0 0.0 0.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>5</Mesh>
+	    </StaticMeshObject>
+	    <StaticMeshObject id = "7">
+	      <Name>Cylinder</Name>
+	      <PivotPoint>0 0 0</PivotPoint>
+	      <RelativePosition>0 0 0</RelativePosition>
+	      <RelativeRotation>0 0 0</RelativeRotation>
+	      <RelativeScaling>1 1 1</RelativeScaling>
+	      <WorldPosition>20.0 0.0 5.0</WorldPosition>
+	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
+	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
+	      <Mesh>6</Mesh>
+	    </StaticMeshObject>
+	</Objects>
+
+</Scene>

@@ -1,7 +1,5 @@
 # Goknar Engine
 
-![alt text](http://www.binarytorgb.com/wp-content/uploads/2023/02/Goknar_Macarena.gif "Goknar Engine Skeletal Animation")
-
 # How to Run
 
 - In order to be able to run the engine, you need to clone submodules as well.
@@ -29,3 +27,5 @@ Work in progress:
 Missing points:
 - Audio Engine(Most probably OpenAL will be integrated)
 - And tons of other things(Frustum and occlusion culling, multi-threading etc.)
+
+![alt text](http://www.binarytorgb.com/wp-content/uploads/2023/02/Goknar_Macarena.gif "Goknar Engine Skeletal Animation")
