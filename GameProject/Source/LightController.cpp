@@ -73,9 +73,9 @@ LightController::LightController()
 	float yDiff = 5.f;
 	float z = 3.f;
 
-	for (int y = 0; y < 32; ++y)
+	for (int y = 0; y < 4; ++y)
 	{
-		for (int x = 0; x < 32; ++x)
+		for (int x = 0; x < 4; ++x)
 		{
 			Vector3 position{ xInitial - x * xDiff, yInitial - y * yDiff, z};
 

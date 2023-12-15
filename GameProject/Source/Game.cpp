@@ -54,9 +54,9 @@ Game::Game() : Application()
 
 	archer_ = new Archer();
 	// dancer_ = new Dancer();
-	// lightController_ = new LightController();
+	lightController_ = new LightController();
 	sun_ = new Sun();
-	randomGrassSpawner_ = new RandomGrassSpawner();
+	// randomGrassSpawner_ = new RandomGrassSpawner();
 	// fire_ = new Fire();
 
 	MeshUnit* floorStaticMesh = engine->GetResourceManager()->GetContent<MeshUnit>("Meshes/SM_Floor.fbx");
