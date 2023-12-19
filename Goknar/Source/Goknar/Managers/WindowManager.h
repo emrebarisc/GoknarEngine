@@ -2,6 +2,7 @@
 #define __WINDOWMANAGER_H__
 
 #include "Goknar/Core.h"
+#include "Goknar/Delegates/Delegates.h"
 #include "Goknar/Math/GoknarMath.h"
 
 struct GLFWwindow;
@@ -63,6 +64,11 @@ public:
 		return Vector2i(windowWidth_, windowHeight_);
 	}
 
+	void AddWindowSizeCallback(const std::function<void(int, int)>& callback)
+	{
+		windowSizeDelegate_.AddCallback(callback);
+	}
+
 private:
 	void CloseWindow();
 
@@ -71,6 +77,8 @@ private:
 	GLFWwindow *mainWindow_;
 	GLFWmonitor *mainMonitor_;
 	const char *windowTitle_;
+
+	MulticastDelegate<void, int, int> windowSizeDelegate_;
 	
 	// Defines the multisample anti-aliasing level
 	int MSAAValue_;

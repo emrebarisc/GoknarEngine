@@ -33,6 +33,8 @@ WindowManager::~WindowManager()
 void WindowManager::WindowSizeCallback(GLFWwindow* window, int w, int h)
 {
 	engine->GetWindowManager()->SetWindowSize(w, h);
+	
+	engine->GetWindowManager()->windowSizeDelegate_.Broadcast(w, h);
 }
 
 void WindowManager::PreInit()
