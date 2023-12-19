@@ -13,6 +13,7 @@
 #include "Components/ProjectileMovementComponent.h"
 #include "Managers/CameraManager.h"
 #include "Managers/ResourceManager.h"
+#include "Managers/WindowManager.h"
 #include "Model/SkeletalMesh.h"
 #include "Model/SkeletalMeshInstance.h"
 
@@ -85,6 +86,8 @@ void Archer::BeginGame()
 	GOKNAR_INFO("Archer::BeginPlay()");
 
 	EquipBow(true);
+
+	engine->GetWindowManager()->AddWindowSizeCallback([](int x, int y) -> void {GOKNAR_INFO("Window size: ({}, {})", x, y);});
 }
 
 void Archer::Tick(float deltaTime)
