@@ -86,8 +86,6 @@ void Archer::BeginGame()
 	GOKNAR_INFO("Archer::BeginPlay()");
 
 	EquipBow(true);
-
-	engine->GetWindowManager()->AddWindowSizeCallback([](int x, int y) -> void {GOKNAR_INFO("Window size: ({}, {})", x, y);});
 }
 
 void Archer::Tick(float deltaTime)
