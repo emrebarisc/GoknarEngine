@@ -13,6 +13,8 @@
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 
+#include "Goknar/Managers/WindowManager.h"
+
 Material::Material() : 
 	ambientReflectance_(Vector3::ZeroVector), 
 	diffuseReflectance_(Vector3::ZeroVector), 
@@ -107,6 +109,12 @@ void Material::Init()
 	{
 		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->Init();
 		renderer->BindGeometryBufferTextures(renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]);
+
+		engine->GetWindowManager()->AddWindowSizeCallback(
+			[this, renderer](int, int)
+			{
+				renderer->BindGeometryBufferTextures(renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]);
+			});
 	}
 }
 

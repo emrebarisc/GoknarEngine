@@ -54,6 +54,7 @@ public:
 
 	unsigned int depthRenderbuffer{ 0 };
 private:
+	void OnWindowSizeChange(int width, int height);
 };
 
 class GOKNAR_API DeferredRenderingData

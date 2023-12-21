@@ -30,8 +30,10 @@ public:
     SinglecastDelegate() = default;
     ~SinglecastDelegate() = default;
 
-    void SetCallback(const std::function<ReturnType(Arguments...)> callback)
+	template<typename Class>
+	void SetCallback(Class* owner, ReturnType (Class::* callback)(Arguments...))
     {
+        callback_ = std::bind(callback, owner);
     }
 
     void RemoveCallback()
@@ -56,7 +58,7 @@ public:
     MulticastDelegate() = default;
     ~MulticastDelegate() = default;
 
-    void AddCallback(const std::function<ReturnType(Arguments...)>& callback)
+	void AddCallback(const std::function<ReturnType(Arguments...)>& callback)
     {
         callbacks_.push_back(callback);
     }

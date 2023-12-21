@@ -1,6 +1,8 @@
 #ifndef __WINDOWMANAGER_H__
 #define __WINDOWMANAGER_H__
 
+#include <functional>
+
 #include "Goknar/Core.h"
 #include "Goknar/Delegates/Delegates.h"
 #include "Goknar/Math/GoknarMath.h"
@@ -64,9 +66,9 @@ public:
 		return Vector2i(windowWidth_, windowHeight_);
 	}
 
-	void AddWindowSizeCallback(const std::function<void(int, int)>& callback)
+	void AddWindowSizeCallback(const std::function<void(int, int)>& calback)
 	{
-		windowSizeDelegate_.AddCallback(callback);
+		windowSizeDelegate_.AddCallback(calback);
 	}
 
 private:
@@ -74,9 +76,9 @@ private:
 
 	static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 
-	GLFWwindow *mainWindow_;
-	GLFWmonitor *mainMonitor_;
-	const char *windowTitle_;
+	GLFWwindow* mainWindow_;
+	GLFWmonitor* mainMonitor_;
+	const char* windowTitle_;
 
 	MulticastDelegate<void, int, int> windowSizeDelegate_;
 	
