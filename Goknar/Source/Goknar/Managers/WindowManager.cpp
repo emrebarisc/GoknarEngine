@@ -33,8 +33,6 @@ WindowManager::~WindowManager()
 void WindowManager::WindowSizeCallback(GLFWwindow* window, int w, int h)
 {
 	engine->GetWindowManager()->SetWindowSize(w, h);
-	
-	engine->GetWindowManager()->windowSizeDelegate_.Broadcast(w, h);
 }
 
 void WindowManager::PreInit()
@@ -125,6 +123,7 @@ void WindowManager::SetWindowWidth(int w)
 	if (activeCamera && activeCamera->GetCameraType() == CameraType::Scene)
 	{
 		activeCamera->SetImageWidth(windowWidth_);
+		UpdateViewport();
 		UpdateWindow();
 	}
 }
@@ -136,6 +135,21 @@ void WindowManager::SetWindowHeight(int h)
 	if (activeCamera && activeCamera->GetCameraType() == CameraType::Scene)
 	{
 		activeCamera->SetImageHeight(windowHeight_);
+		UpdateViewport();
+		UpdateWindow();
+	}
+}
+
+void WindowManager::SetWindowSize(int w, int h)
+{
+	windowWidth_ = w;
+	windowHeight_ = h;
+	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+	if (activeCamera && activeCamera->GetCameraType() == CameraType::Scene)
+	{
+		activeCamera->SetImageWidth(windowWidth_);
+		activeCamera->SetImageHeight(windowHeight_);
+		UpdateViewport();
 		UpdateWindow();
 	}
 }
@@ -215,6 +229,11 @@ void WindowManager::Update()
 }
 
 void WindowManager::UpdateWindow()
+{
+	windowSizeDelegate_(windowWidth_, windowHeight_);
+}
+
+void WindowManager::UpdateViewport()
 {
 	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 	if (activeCamera)

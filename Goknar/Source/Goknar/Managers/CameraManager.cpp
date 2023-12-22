@@ -44,5 +44,5 @@ void CameraManager::AddCamera(Camera* camera)
 void CameraManager::SetActiveCamera(Camera* camera)
 {
 	activeCamera_ = camera;
-	engine->GetWindowManager()->UpdateWindow();
+	engine->GetWindowManager()->UpdateViewport();
 }

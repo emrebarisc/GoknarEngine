@@ -31,6 +31,7 @@ public:
 
 	void Update();
 	void UpdateWindow();
+	void UpdateViewport();
 
 	void SetWindowWidth(int w);
 	void SetWindowHeight(int h);
@@ -55,20 +56,16 @@ public:
 
 	bool GetWindowShouldBeClosed();
 
-	void SetWindowSize(int w, int h)
-	{
-		windowWidth_ = w;
-		windowHeight_ = h;
-	}
-
+	void SetWindowSize(int w, int h);
 	Vector2i GetWindowSize() const
 	{
 		return Vector2i(windowWidth_, windowHeight_);
 	}
 
-	void AddWindowSizeCallback(const std::function<void(int, int)>& calback)
+	template<typename Class>
+	void AddWindowSizeCallback(Class* owner, void (Class::* callback)(int, int))
 	{
-		windowSizeDelegate_.AddCallback(calback);
+		windowSizeDelegate_.AddCallback(owner, callback, std::placeholders::_1, std::placeholders::_2);
 	}
 
 private:
@@ -82,7 +79,6 @@ private:
 
 	MulticastDelegate<void, int, int> windowSizeDelegate_;
 	
-	// Defines the multisample anti-aliasing level
 	int MSAAValue_;
 
 	int contextVersionMajor_;

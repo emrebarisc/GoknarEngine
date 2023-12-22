@@ -18,6 +18,11 @@ public:
 
     virtual void Broadcast(Arguments... arguments) = 0;
 
+    void operator()(Arguments... arguments)
+    {
+        Broadcast(arguments...);
+    }
+
 protected:
 
 private:
@@ -30,14 +35,15 @@ public:
     SinglecastDelegate() = default;
     ~SinglecastDelegate() = default;
 
-	template<typename Class>
-	void SetCallback(Class* owner, ReturnType (Class::* callback)(Arguments...))
+    template<typename Class, typename... Binders>
+	void SetCallback(Class* owner, ReturnType (Class::* callback)(Arguments...), Binders... binders)
     {
-        callback_ = std::bind(callback, owner);
+        callback_ = std::bind(callback, owner, binders...);
     }
 
     void RemoveCallback()
     {
+        callback_ = nullptr;
     }
 
     virtual void Broadcast(Arguments... arguments) override
@@ -48,7 +54,7 @@ public:
 protected:
 
 private:
-    std::function<ReturnType(Arguments...)>& callback_(Arguments...);
+    std::function<ReturnType(Arguments...)>& callback_(Arguments...) { nullptr };
 };
 
 template<typename ReturnType, typename... Arguments>
@@ -58,18 +64,20 @@ public:
     MulticastDelegate() = default;
     ~MulticastDelegate() = default;
 
-	void AddCallback(const std::function<ReturnType(Arguments...)>& callback)
+    template<typename Class, typename... Binders>
+    void AddCallback(Class* owner, ReturnType(Class::* callback)(Arguments...), Binders... binders)
     {
-        callbacks_.push_back(callback);
+        callbacks_.push_back(std::move(std::bind(callback, owner, binders...)));
     }
 
-    void RemoveCallback(const std::function<ReturnType(Arguments...)>& callback)
+    template<typename Class>
+    void ClearCallbacksOf(const Class* owner)
     {
     }
 
     virtual void Broadcast(Arguments... arguments) override
     {
-        for(const auto& callback : callbacks_)
+        for(const std::function<ReturnType(Arguments...)>& callback : callbacks_)
         {
             callback(arguments...);
         }
