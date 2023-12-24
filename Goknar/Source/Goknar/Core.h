@@ -8,6 +8,12 @@
 #pragma warning (disable : 4251)
 #endif
 
+#ifndef NDEBUG
+	#define GOKNAR_BUILD_DEBUG true
+#else
+	#define GOKNAR_BUILD_DEBUG false
+#endif
+
 #ifdef CONTENT_DIR
 	extern const std::string ContentDir;
 #else

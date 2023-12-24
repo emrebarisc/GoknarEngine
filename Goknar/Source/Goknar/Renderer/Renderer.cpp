@@ -1111,6 +1111,12 @@ void DeferredRenderingData::Init()
 	deferredRenderingMeshShader = new Shader();
 	deferredRenderingMeshShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->GetVertexShaderScript_DeferredPass());
 	deferredRenderingMeshShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_DeferredPass());
+
+#if GOKNAR_BUILD_DEBUG
+	IOManager::WriteFile("./DeferredRendering.vert", deferredRenderingMeshShader->GetVertexShaderScript().c_str());
+	IOManager::WriteFile("./DeferredRendering.frag", deferredRenderingMeshShader->GetFragmentShaderScript().c_str());
+#endif
+
 	deferredRenderingMeshShader->PreInit();
 	deferredRenderingMeshShader->Init();
 	deferredRenderingMeshShader->PostInit();
