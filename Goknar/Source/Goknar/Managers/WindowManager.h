@@ -73,6 +73,8 @@ private:
 
 	static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 
+	void SetWindowSize_Impl(int w, int h);
+
 	GLFWwindow* mainWindow_;
 	GLFWmonitor* mainMonitor_;
 	const char* windowTitle_;

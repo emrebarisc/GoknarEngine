@@ -20,6 +20,10 @@ public:
 	void PostInit();
 
 	void AddCamera(Camera* camera);
+	const std::vector<Camera*>& GetCameras() const
+	{
+		return cameras_;
+	}
 
 	void SetActiveCamera(Camera* camera);
 

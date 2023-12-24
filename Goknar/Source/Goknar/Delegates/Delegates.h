@@ -54,7 +54,7 @@ public:
 protected:
 
 private:
-    std::function<ReturnType(Arguments...)>& callback_(Arguments...) { nullptr };
+    std::function<ReturnType(Arguments...)>& callback_(Arguments...);
 };
 
 template<typename ReturnType, typename... Arguments>
