@@ -74,6 +74,20 @@ void Framebuffer::DrawBuffers()
 	delete[] buffers;
 }
 
+void Framebuffer::DrawBuffers()
+{
+	int attachmentsSize = attachments.size();
+	unsigned int* buffers = new unsigned int[attachmentsSize];
+
+	for (int attachmentIndex = 0; attachmentIndex < attachmentsSize; ++attachmentIndex)
+	{
+		buffers[attachmentIndex] = (unsigned int)attachments[attachmentIndex].first;
+	}
+
+	glDrawBuffers(attachmentsSize, buffers);
+	delete[] buffers;
+}
+
 void Framebuffer::Attach()
 {
 	GOKNAR_CORE_ASSERT(0 < attachments.size(), "Framebuffer texture target is null to attach!");

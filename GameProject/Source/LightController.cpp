@@ -12,11 +12,11 @@
 
 LightController::LightController()
 {
-	SetIsTickable(true);
+	SetIsTickable(false);
 
 	Scene* scene = engine->GetApplication()->GetMainScene();
 
-	Vector3 spotLight1Position = centerPosition_ + Vector3(-10.f, -10.f, 10.f);
+/*	Vector3 spotLight1Position = centerPosition_ + Vector3(-10.f, -10.f, 10.f);
 	spotLight1_ = new SpotLight(15.f, 5.f);
 	spotLight1_->SetLightMobility(LightMobility::Dynamic);
 	spotLight1_->SetPosition(spotLight1Position);
@@ -65,6 +65,34 @@ LightController::LightController()
 	spotLight5_->SetIntensity(100.f);
 	spotLight5_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight5_);
+*/
+
+	float xInitial = -20.f;
+	float yInitial = -20.f;
+	float xDiff = 5.f;
+	float yDiff = 5.f;
+	float z = 3.f;
+
+	for (int y = 0; y < 4; ++y)
+	{
+		for (int x = 0; x < 4; ++x)
+		{
+			Vector3 position{ xInitial - x * xDiff, yInitial - y * yDiff, z};
+
+			PointLight* pointLight = new PointLight();
+			pointLight->SetPosition(position);
+			pointLight->SetIntensity(10.f);
+			pointLight->SetIsShadowEnabled(false);
+			pointLight->SetLightMobility(LightMobility::Static);
+			scene->AddPointLight(pointLight);
+
+			ObjectBase* boxObject = new ObjectBase();
+			boxObject->SetWorldPosition(position - Vector3{0.f, 0.f, z});
+			StaticMeshComponent* boxComponent = boxObject->AddSubComponent<StaticMeshComponent>();
+			StaticMesh* staticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Cube.fbx");
+			boxComponent->SetMesh(staticMesh);
+		}
+	}
 
 	float xInitial = -20.f;
 	float yInitial = -20.f;

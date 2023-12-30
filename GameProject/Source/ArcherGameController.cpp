@@ -37,7 +37,7 @@ void ArcherGameController::SetupInputs()
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::NUM_1, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::EquipBow, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::G, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::DropBow, this));
-	
+  
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F5, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleFullscreen, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F6, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleWindowSize, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::E, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleChest, this));
