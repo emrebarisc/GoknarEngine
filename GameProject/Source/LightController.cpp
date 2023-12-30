@@ -12,11 +12,11 @@
 
 LightController::LightController()
 {
-	SetIsTickable(false);
+	SetIsTickable(true);
 
 	Scene* scene = engine->GetApplication()->GetMainScene();
 
-/*	Vector3 spotLight1Position = centerPosition_ + Vector3(-10.f, -10.f, 10.f);
+	Vector3 spotLight1Position = centerPosition_ + Vector3(-10.f, -10.f, 10.f);
 	spotLight1_ = new SpotLight(15.f, 5.f);
 	spotLight1_->SetLightMobility(LightMobility::Dynamic);
 	spotLight1_->SetPosition(spotLight1Position);
@@ -65,7 +65,6 @@ LightController::LightController()
 	spotLight5_->SetIntensity(100.f);
 	spotLight5_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight5_);
-*/
 
 	float xInitial = -20.f;
 	float yInitial = -20.f;

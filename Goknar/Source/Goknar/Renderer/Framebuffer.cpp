@@ -57,6 +57,7 @@ void Framebuffer::Bind() const
 void Framebuffer::Unbind()
 {
 	glBindFramebuffer((int)framebufferBindTarget_, 0);
+	EXIT_ON_GL_ERROR("Framebuffer::Unbind");
 }
 
 void Framebuffer::DrawBuffers()

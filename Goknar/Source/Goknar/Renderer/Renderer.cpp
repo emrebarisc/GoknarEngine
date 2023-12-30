@@ -1084,7 +1084,7 @@ void GeometryBufferData::OnWindowSizeChange(int width, int height)
 
 	delete geometryFrameBuffer;
 	
-	glDeleteFramebuffers(1, &depthRenderbuffer);
+	glDeleteRenderbuffers(1, &depthRenderbuffer);
 
 	GenerateBuffers(width, height);
 }
