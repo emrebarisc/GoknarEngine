@@ -45,6 +45,8 @@ public:
 	void Bind();
 	void Unbind();
 
+	void GenerateBuffers(int width, int height);
+
 	Framebuffer* geometryFrameBuffer;
 
 	Texture* worldPositionTexture;
@@ -54,6 +56,7 @@ public:
 
 	unsigned int depthRenderbuffer{ 0 };
 private:
+	void OnWindowSizeChange(int width, int height);
 };
 
 class GOKNAR_API DeferredRenderingData
@@ -68,6 +71,7 @@ public:
 
 	void Render();
 
+	void OnWindowSizeChange(int x, int y);
 	void BindGeometryBufferTextures(Shader* shader);
 
 	GeometryBufferData* geometryBufferData{ nullptr };

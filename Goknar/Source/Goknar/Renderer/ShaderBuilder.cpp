@@ -463,7 +463,7 @@ void main()
 			}
 			else
 			{
-				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f).xyz;
+				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f).xyz * 0.5f + vec3(0.5f);
 			}
 		}
 
@@ -580,8 +580,10 @@ void ShaderBuilder::FS_BuildSceneForwardRendering()
 
 	CombineFragmentShader();
 	
+#if GOKNAR_BUILD_DEBUG
 	IOManager::WriteFile("./DefaultSceneVertexShader.glsl", sceneVertexShader_.c_str());
 	IOManager::WriteFile("./DefaultSceneFragmentShader.glsl", sceneFragmentShader_.c_str());
+#endif
 }
 
 void ShaderBuilder::FS_BuildLightOperations(const Scene* scene)

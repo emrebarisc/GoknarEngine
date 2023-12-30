@@ -57,6 +57,21 @@ void Framebuffer::Bind() const
 void Framebuffer::Unbind()
 {
 	glBindFramebuffer((int)framebufferBindTarget_, 0);
+	EXIT_ON_GL_ERROR("Framebuffer::Unbind");
+}
+
+void Framebuffer::DrawBuffers()
+{
+	int attachmentsSize = attachments.size();
+	unsigned int* buffers = new unsigned int[attachmentsSize];
+
+	for (int attachmentIndex = 0; attachmentIndex < attachmentsSize; ++attachmentIndex)
+	{
+		buffers[attachmentIndex] = (unsigned int)attachments[attachmentIndex].first;
+	}
+
+	glDrawBuffers(attachmentsSize, buffers);
+	delete[] buffers;
 }
 
 void Framebuffer::DrawBuffers()

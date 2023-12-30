@@ -32,7 +32,7 @@ WindowManager::~WindowManager()
 
 void WindowManager::WindowSizeCallback(GLFWwindow* window, int w, int h)
 {
-	engine->GetWindowManager()->SetWindowSize(w, h);
+	engine->GetWindowManager()->SetWindowSize_Impl(w, h);
 }
 
 void WindowManager::PreInit()
@@ -74,7 +74,7 @@ void WindowManager::PreInit()
 	}
 	bool enableDebugContext = false;
 #ifdef GOKNAR_PLATFORM_WINDOWS
-#if _DEBUG 
+#if GOKNAR_BUILD_DEBUG 
 	enableDebugContext = true;
 #endif
 #endif
@@ -102,13 +102,7 @@ bool WindowManager::GetWindowShouldBeClosed()
 
 void WindowManager::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-	engine->GetWindowManager()->SetWindowWidth(width);
-	engine->GetWindowManager()->SetWindowHeight(height);
-
-	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
-	activeCamera->SetImageWidth(width);
-	activeCamera->SetImageHeight(height);
-	activeCamera->Update();
+	engine->GetWindowManager()->SetWindowSize_Impl(width, height);
 }
 
 void WindowManager::CloseWindow()
@@ -123,6 +117,7 @@ void WindowManager::SetWindowWidth(int w)
 	if (activeCamera && activeCamera->GetCameraType() == CameraType::Scene)
 	{
 		activeCamera->SetImageWidth(windowWidth_);
+		UpdateViewport();
 		UpdateWindow();
 	}
 }
@@ -134,8 +129,35 @@ void WindowManager::SetWindowHeight(int h)
 	if (activeCamera && activeCamera->GetCameraType() == CameraType::Scene)
 	{
 		activeCamera->SetImageHeight(windowHeight_);
+		UpdateViewport();
 		UpdateWindow();
 	}
+}
+
+void WindowManager::SetWindowSize(int w, int h)
+{
+	glfwSetWindowSize(mainWindow_, w, h);
+}
+
+void WindowManager::SetWindowSize_Impl(int w, int h)
+{
+	windowWidth_ = w;
+	windowHeight_ = h;
+
+	const std::vector<Camera*>& cameras = engine->GetCameraManager()->GetCameras();
+	for(decltype(cameras.begin()) cameraIterator = cameras.begin(); cameraIterator < cameras.end(); ++cameraIterator)
+	{
+		Camera* camera = *cameraIterator;
+
+		if(camera->GetCameraType() == CameraType::Scene)
+		{
+			camera->SetImageWidth(w);
+			camera->SetImageHeight(h);
+			camera->Update();
+		}
+	}
+
+	UpdateWindow();
 }
 
 void WindowManager::SetWindowTitle(const char *title)
@@ -213,6 +235,11 @@ void WindowManager::Update()
 }
 
 void WindowManager::UpdateWindow()
+{
+	windowSizeDelegate_(windowWidth_, windowHeight_);
+}
+
+void WindowManager::UpdateViewport()
 {
 	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 	if (activeCamera)

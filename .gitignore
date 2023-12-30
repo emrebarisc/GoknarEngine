@@ -3,7 +3,9 @@
 bin/
 obj/
 .vscode/
-Build/
+[Bb]uild/
+[Bb]uild_[Rr]elease/
+[Bb]uild_[Dd]ebug/
 Goknar/Build/
 
 # Files

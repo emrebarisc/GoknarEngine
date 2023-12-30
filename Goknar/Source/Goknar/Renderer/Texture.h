@@ -194,6 +194,10 @@ public:
 	void SetWidth(int width)
 	{
 		width_ = width;
+		if(isInitialized_)
+		{
+			UpdateSizeOnGPU();
+		}
 	}
 
 	int GetHeight() const
@@ -204,6 +208,21 @@ public:
 	void SetHeight(int height)
 	{
 		height_ = height;
+		if(isInitialized_)
+		{
+			UpdateSizeOnGPU();
+		}
+	}
+
+	void SetSize(int width, int height)
+	{
+		width_ = width;
+		height_ = height;
+
+		if(isInitialized_)
+		{
+			UpdateSizeOnGPU();
+		}
 	}
 
 	void SetTextureImagePath(const std::string& imagePath)
@@ -409,6 +428,8 @@ public:
 protected:
 
 private:
+	void UpdateSizeOnGPU();
+
 	std::string name_;
 	std::string imagePath_{ "" };
 	const unsigned char* buffer_{ nullptr };

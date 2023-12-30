@@ -111,7 +111,6 @@ void ImGuiEditor::Tick(float deltaTime)
 
 void ImGuiEditor::Log(const char* logMessage)
 {
-	imguiLog_.AddLog(logMessage);
 }
 
 void ImGuiEditor::OnKeyboardEvent(int key, int scanCode, int action, int mod)

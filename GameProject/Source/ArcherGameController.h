@@ -31,6 +31,7 @@ private:
 	void OnScrollMove(double x, double y);
 
 	void ToggleFullscreen();
+	void ToggleWindowSize();
 
 	void DestroyArcher();
 

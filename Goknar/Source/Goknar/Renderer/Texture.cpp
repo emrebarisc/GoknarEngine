@@ -100,8 +100,18 @@ void Texture::PreInit()
 
 	if (channels_ == 4)
 	{
-		textureFormat_ = TextureFormat::RGBA;
-		textureInternalFormat_ = TextureInternalFormat::RGBA;
+		if(textureFormat_ != TextureFormat::RGBA)
+		{
+			textureFormat_ = TextureFormat::RGBA;
+		}
+
+		if(	textureInternalFormat_ != TextureInternalFormat::RGBA &&
+			textureInternalFormat_ != TextureInternalFormat::RGBA16F &&
+			textureInternalFormat_ != TextureInternalFormat::RGBA32F)
+		{
+			textureInternalFormat_ = TextureInternalFormat::RGBA;
+		}
+
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
@@ -180,4 +190,17 @@ void Texture::Unbind()
 bool Texture::LoadTextureImage()
 {
 	return IOManager::ReadImage(imagePath_.c_str(), width_, height_, channels_, &buffer_);
+}
+
+void Texture::UpdateSizeOnGPU()
+{
+	glTexImage2D((int)textureImageTarget_, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
+
+	if (textureImageTarget_ == TextureImageTarget::TEXTURE_CUBE_MAP_POSITIVE_X)
+	{
+		for (int i = 1; i < 6; ++i)
+		{
+			glTexImage2D((int)textureImageTarget_ + i, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
+		}
+	}
 }

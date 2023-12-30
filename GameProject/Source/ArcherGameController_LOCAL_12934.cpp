@@ -37,9 +37,8 @@ void ArcherGameController::SetupInputs()
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::NUM_1, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::EquipBow, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::G, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::DropBow, this));
-	
+
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F5, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleFullscreen, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F6, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleWindowSize, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::E, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleChest, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::Q, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::DestroyArcher, this));
 
@@ -89,14 +88,6 @@ void ArcherGameController::OnScrollMove(double x, double y)
 void ArcherGameController::ToggleFullscreen()
 {
 	engine->GetWindowManager()->ToggleFullscreen();
-}
-
-void ArcherGameController::ToggleWindowSize()
-{
-	static bool isWindowSizeSet = false;
-
-	engine->GetWindowManager()->SetWindowSize(isWindowSizeSet ? 1600 : 1200, isWindowSizeSet ? 800 : 600);
-	isWindowSizeSet = !isWindowSizeSet;
 }
 
 void ArcherGameController::DestroyArcher()

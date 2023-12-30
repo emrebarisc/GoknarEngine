@@ -13,6 +13,7 @@
 #include "Components/ProjectileMovementComponent.h"
 #include "Managers/CameraManager.h"
 #include "Managers/ResourceManager.h"
+#include "Managers/WindowManager.h"
 #include "Model/SkeletalMesh.h"
 #include "Model/SkeletalMeshInstance.h"
 
