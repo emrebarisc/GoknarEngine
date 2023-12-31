@@ -988,7 +988,7 @@ void GeometryBufferData::Init()
 
 	GenerateBuffers(windowSize.x, windowSize.y);
 	
-	engine->GetWindowManager()->AddWindowSizeCallback(SA::delegate<void(int, int)>::create<GeometryBufferData, &GeometryBufferData::OnWindowSizeChange>(this));
+	engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::create<GeometryBufferData, &GeometryBufferData::OnWindowSizeChange>(this));
 }
 
 void GeometryBufferData::Bind()
@@ -1128,7 +1128,7 @@ void DeferredRenderingData::Init()
 	geometryBufferData = new GeometryBufferData();
 	geometryBufferData->Init();
 
-	engine->GetWindowManager()->AddWindowSizeCallback(SA::delegate<void(int, int)>::create<DeferredRenderingData, &DeferredRenderingData::OnWindowSizeChange>(this));
+	engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::create<DeferredRenderingData, &DeferredRenderingData::OnWindowSizeChange>(this));
 }
 
 void DeferredRenderingData::BindGeometryBuffer()
