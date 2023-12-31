@@ -5,6 +5,7 @@
 
 #include "Goknar/Core.h"
 #include "Goknar/Delegates/Delegates.h"
+#include "Goknar/Delegates/MultiCastDelegate.h"
 #include "Goknar/Math/GoknarMath.h"
 
 struct GLFWwindow;
@@ -62,10 +63,9 @@ public:
 		return Vector2i(windowWidth_, windowHeight_);
 	}
 
-	template<typename Class>
-	void AddWindowSizeCallback(Class* owner, void (Class::* callback)(int, int))
+	void AddWindowSizeCallback(const SA::delegate<void(int, int)>& callback)
 	{
-		windowSizeDelegate_.AddCallback(owner, callback, std::placeholders::_1, std::placeholders::_2);
+		windowSizeDelegate_ += callback;
 	}
 
 private:
@@ -79,7 +79,7 @@ private:
 	GLFWmonitor* mainMonitor_;
 	const char* windowTitle_;
 
-	MulticastDelegate<void, int, int> windowSizeDelegate_;
+	SA::multicast_delegate<void(int, int)> windowSizeDelegate_;
 	
 	int MSAAValue_;
 
