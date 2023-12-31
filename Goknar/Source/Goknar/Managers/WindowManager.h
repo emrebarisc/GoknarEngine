@@ -4,7 +4,6 @@
 #include <functional>
 
 #include "Goknar/Core.h"
-#include "Goknar/Delegates/Delegates.h"
 #include "Goknar/Delegates/MultiCastDelegate.h"
 #include "Goknar/Math/GoknarMath.h"
 
