@@ -10,7 +10,7 @@ public:
 
 	static void Run() {
 		// 20000, 10000
-		OperationSet<10000, 10000, 10000, SA::delegate<double(int)>, double, int> set;
+		OperationSet<10000, 10000, 10000, Delegate<double(int)>, double, int> set;
 		set.Run(11);
 	} //Run
 
@@ -32,14 +32,14 @@ private:
 			Start();
 			for (rep repeat_index = 0; repeat_index < creation_repeat_count; ++repeat_index)
 				for (DELEGATE *j = delegates; j != delegates + delegate_count; ++j)
-					*j = SA::delegate<RET(PARAMS...)>:: template create<decltype(lambda)>(lambda);
+					*j = Delegate<RET(PARAMS...)>:: template create<decltype(lambda)>(lambda);
 			return Stop();
 		} //LambdaDelegateCreation
 		ns DelegateCall(PARAMS... arg) {
 			Start();
-			for (size_t delegate = 0; delegate < delegate_count; ++delegate)
+			for (size_t Delegate = 0; Delegate < delegate_count; ++Delegate)
 				for (size_t index = 0; index < call_count; ++index)
-					delegates[delegate](arg...);
+					delegates[Delegate](arg...);
 			return Stop();
 		} //DelegateCall
 		ns FunctionCreation() {
@@ -104,9 +104,9 @@ private:
 				std::cout << "\ttotal gain:\t" << 1.0*total2/total1 << std::endl;
 			};
 			comparison(delegateCreationTime, delegateCallTime, functionCreationTime, functionCallTime,
-				"Instance methods of a class, delegate vs. std::function");
+				"Instance methods of a class, Delegate vs. std::function");
 			comparison(lambdaDelegateCreationTime, lambdaDelegateCallTime, lambdaFunctionCreationTime, lambdaFunctionCallTime,
-				"Lambda functions, delegate vs. std::function");
+				"Lambda functions, Delegate vs. std::function");
 		} //Show
 		std::chrono::high_resolution_clock clock;
 		std::chrono::high_resolution_clock::time_point before;

@@ -51,7 +51,6 @@ public:
 	double InstanceMember(unsigned long, char) { return 0.1;  }
 
 	static void Demo() {
-		using namespace SA;
 		printf("Single-cast delegates:\n\n");
 		DelegateSample sample(11);
 		DelegateSample anotherSample(12);
@@ -61,18 +60,18 @@ public:
 			printf("Delegate is assigned to lambda expression\n");
 			return a * 0.5;
 		};
-		delegate<double(unsigned long, char)> dlambda;
+		Delegate<double(unsigned long, char)> dlambda;
 		dlambda = lambda; // template instantiation deduced (inferred)
 		double lambdaResult = dlambda(1, 'a');
 		printf("lambda result: %g, captured: %d\n", lambdaResult, touchPoint);
-		auto d1 = delegate<double(unsigned long, char)>::create<DelegateSample, &DelegateSample::A>(&sample);
-		auto dcompare = delegate<double(unsigned long, char)>::create<DelegateSample, &DelegateSample::A>(&sample);
+		auto d1 = Delegate<double(unsigned long, char)>::create<DelegateSample, &DelegateSample::A>(&sample);
+		auto dcompare = Delegate<double(unsigned long, char)>::create<DelegateSample, &DelegateSample::A>(&sample);
 		if (d1 == dcompare)
 			printf("Two delegates are the same\n");
-		auto d2 = delegate<double(unsigned long, char)>::create<DelegateSample, &DelegateSample::A>(&anotherSample);
-		auto d3 = delegate<double(unsigned long, char&)>::create<DelegateSample, &DelegateSample::B>(&sample);
-		auto d4 = delegate<double(unsigned long, char&)>::create<DelegateSample, &DelegateSample::B>(&anotherSample);
-		auto d5 = delegate<int(char)>::create<&DelegateSample::F>();
+		auto d2 = Delegate<double(unsigned long, char)>::create<DelegateSample, &DelegateSample::A>(&anotherSample);
+		auto d3 = Delegate<double(unsigned long, char&)>::create<DelegateSample, &DelegateSample::B>(&sample);
+		auto d4 = Delegate<double(unsigned long, char&)>::create<DelegateSample, &DelegateSample::B>(&anotherSample);
+		auto d5 = Delegate<int(char)>::create<&DelegateSample::F>();
 		double ret1 = d1(1, 'a');
 		double ret2 = d2(2, 'b');
 		printf("Returned: %g, %g\n", ret1, ret2);
@@ -86,7 +85,7 @@ public:
 		printf("Returned: %d\n", ret5);
 		printf("Returned: %g, %g\n", ret3, ret4);
 		printf("\nMulticast delegates:\n\n");
-		multicast_delegate<double(unsigned long, char)> md1, md2;
+		MulticastDelegate<double(unsigned long, char)> md1, md2;
 		if (!md2.isNull())
 			md2(111, '1');
 		((md1 += d1) += d2) += d2;
@@ -94,7 +93,7 @@ public:
 		md2 += d1;
 		md2 += d1;
 		md2 += d1;
-		md2 += delegate<double(unsigned long, char)>::create<&DelegateSample::StaticMember>();
+		md2 += Delegate<double(unsigned long, char)>::create<&DelegateSample::StaticMember>();
 		md2 += dlambda; // template instantiation deduced (inferred)
 		if (!md1.isNull())
 			md1(5, 'F');

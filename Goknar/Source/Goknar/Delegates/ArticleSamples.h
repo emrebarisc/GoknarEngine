@@ -26,12 +26,11 @@ public:
 	static double StaticFunction(int, char, const char*) { return 0.3; }
 
 	void Demo() {
-		using namespace SA;
 		typedef ArticleSampleSet Sample;
 
 		ArticleSampleSet sample;
 
-		delegate<double (int, char, const char*)> d;
+		Delegate<double (int, char, const char*)> d;
 		auto dInstance = decltype(d)::create<Sample, &Sample::InstanceFunction>(&sample);
 		auto dConst = decltype(d)::create<Sample, &Sample::ConstInstanceFunction>(&sample);
 		auto dFunc = decltype(d)::create<&Sample::StaticFunction>(); // same thing with non-class functions
@@ -54,20 +53,20 @@ public:
 		if (d != nullptr) // true
 			d(1, '2', "lambda call"); //won't
 
-		d = dLambda; // delegate to delegate
+		d = dLambda; // Delegate to Delegate
 
 		if (d == dLambda) // true, and also d != nullptr
 			d(3, '4', "another lambda call"); //will be called
 
 											  // multicast delegates:
 
-		multicast_delegate<double(int, char, const char*)> md;
-		multicast_delegate<double(int, char, const char*)> mdSecond;
+		MulticastDelegate<double(int, char, const char*)> md;
+		MulticastDelegate<double(int, char, const char*)> mdSecond;
 
 		if (md == nullptr) // true
 			md(5, '6', "zero calls"); //won't
 
-									  // add some of the delegate instances:
+									  // add some of the Delegate instances:
 		md += mdSecond; // nothing happens to md
 		md += d; // invocation list: size=1
 		md += dLambda; // invocation list: size=2

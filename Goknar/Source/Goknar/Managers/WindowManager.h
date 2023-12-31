@@ -62,7 +62,7 @@ public:
 		return Vector2i(windowWidth_, windowHeight_);
 	}
 
-	void AddWindowSizeCallback(const SA::delegate<void(int, int)>& callback)
+	void AddWindowSizeCallback(const Delegate<void(int, int)>& callback)
 	{
 		windowSizeDelegate_ += callback;
 	}
@@ -78,7 +78,7 @@ private:
 	GLFWmonitor* mainMonitor_;
 	const char* windowTitle_;
 
-	SA::multicast_delegate<void(int, int)> windowSizeDelegate_;
+	MulticastDelegate<void(int, int)> windowSizeDelegate_;
 	
 	int MSAAValue_;
 

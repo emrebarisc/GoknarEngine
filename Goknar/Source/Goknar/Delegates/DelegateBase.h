@@ -17,35 +17,31 @@
 
 #pragma once
 
-namespace SA {
-	
-	template<typename T>
-	class delegate_base;
-	
-	template<typename RET, typename ...PARAMS>
-	class delegate_base<RET(PARAMS...)> {
+template<typename T>
+class DelegateBase;
 
-	protected:
+template<typename RET, typename ...PARAMS>
+class DelegateBase<RET(PARAMS...)> {
 
-		using stub_type = RET(*)(void* this_ptr, PARAMS...);
+protected:
 
-		struct InvocationElement {
-			InvocationElement() = default;
-			InvocationElement(void* this_ptr, stub_type aStub) : object(this_ptr), stub(aStub) {}
-			void Clone(InvocationElement& target) const {
-				target.stub = stub;
-				target.object = object;
-			} //Clone
-			bool operator ==(const InvocationElement& another) const {
-				return another.stub == stub && another.object == object;
-			} //==
-			bool operator !=(const InvocationElement& another) const {
-				return another.stub != stub || another.object != object;
-			} //!=
-			void* object = nullptr;
-			stub_type stub = nullptr;
-		}; //InvocationElement
+	using stub_type = RET(*)(void* this_ptr, PARAMS...);
 
-	}; //class delegate_base
+	struct InvocationElement {
+		InvocationElement() = default;
+		InvocationElement(void* this_ptr, stub_type aStub) : object(this_ptr), stub(aStub) {}
+		void Clone(InvocationElement& target) const {
+			target.stub = stub;
+			target.object = object;
+		} //Clone
+		bool operator ==(const InvocationElement& another) const {
+			return another.stub == stub && another.object == object;
+		} //==
+		bool operator !=(const InvocationElement& another) const {
+			return another.stub != stub || another.object != object;
+		} //!=
+		void* object = nullptr;
+		stub_type stub = nullptr;
+	}; //InvocationElement
 
-} /* namespace SA */
+}; //class DelegateBase
