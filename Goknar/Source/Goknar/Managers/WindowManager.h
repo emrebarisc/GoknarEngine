@@ -4,7 +4,7 @@
 #include <functional>
 
 #include "Goknar/Core.h"
-#include "Goknar/Delegates/MultiCastDelegate.h"
+#include "Goknar/Delegates/MulticastDelegate.h"
 #include "Goknar/Math/GoknarMath.h"
 
 struct GLFWwindow;
