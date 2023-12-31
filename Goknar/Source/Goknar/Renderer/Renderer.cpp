@@ -12,6 +12,8 @@
 #include "Goknar/Log.h"
 #include "Goknar/Material.h"
 
+#include "Goknar/Delegates/Delegate.h"
+
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
@@ -985,8 +987,8 @@ void GeometryBufferData::Init()
 	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
 
 	GenerateBuffers(windowSize.x, windowSize.y);
-
-	engine->GetWindowManager()->AddWindowSizeCallback(this, &GeometryBufferData::OnWindowSizeChange);
+	
+	engine->GetWindowManager()->AddWindowSizeCallback(SA::delegate<void(int, int)>::create<GeometryBufferData, &GeometryBufferData::OnWindowSizeChange>(this));
 }
 
 void GeometryBufferData::Bind()
@@ -1126,7 +1128,7 @@ void DeferredRenderingData::Init()
 	geometryBufferData = new GeometryBufferData();
 	geometryBufferData->Init();
 
-	engine->GetWindowManager()->AddWindowSizeCallback(this, &DeferredRenderingData::OnWindowSizeChange);
+	engine->GetWindowManager()->AddWindowSizeCallback(SA::delegate<void(int, int)>::create<DeferredRenderingData, &DeferredRenderingData::OnWindowSizeChange>(this));
 }
 
 void DeferredRenderingData::BindGeometryBuffer()
