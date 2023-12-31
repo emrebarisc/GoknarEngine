@@ -77,6 +77,30 @@ public:
 		return *this;
 	} //operator +=
 
+	MulticastDelegate& operator -=(const Delegate<RET(PARAMS...)>& another) {
+		if (another.isNull()) return *this;
+
+		decltype(this->invocationList.begin()) invocationListIterator = this->invocationList.begin();
+		while(invocationListIterator != this->invocationList.end())
+		{
+			if(**invocationListIterator == another.invocation)
+			{
+				break;
+			}
+
+			++invocationListIterator;
+		}
+
+		if(invocationListIterator != this->invocationList.end())
+		{
+			delete *invocationListIterator;
+
+			this->invocationList.erase(invocationListIterator);
+		}
+
+		return *this;
+	} //operator +=
+
 	// will work even if RET is void, return values are ignored:
 	// (for handling return values, see operator(..., handler))
 	void operator()(PARAMS... arg) const {
