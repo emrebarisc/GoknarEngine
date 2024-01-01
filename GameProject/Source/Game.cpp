@@ -14,6 +14,7 @@
 #include "Sun.h"
 #include "Fire.h"
 #include "RandomGrassSpawner.h"
+#include "MaterialSphereSpawner.h"
 
 #include <chrono>
 
@@ -35,6 +36,7 @@ private:
 	Sun* sun_;
 	Fire* fire_;
 	RandomGrassSpawner* randomGrassSpawner_;
+	MaterialSphereSpawner* materialSphereSpawner_;
 };
 
 Game::Game() : Application()
@@ -54,10 +56,11 @@ Game::Game() : Application()
 
 	archer_ = new Archer();
 	// dancer_ = new Dancer();
-	lightController_ = new LightController();
+	// lightController_ = new LightController();
 	sun_ = new Sun();
 	// randomGrassSpawner_ = new RandomGrassSpawner();
 	fire_ = new Fire();
+	materialSphereSpawner_ = new MaterialSphereSpawner();
 
 	MeshUnit* floorStaticMesh = engine->GetResourceManager()->GetContent<MeshUnit>("Meshes/SM_Floor.fbx");
 	if (floorStaticMesh)
