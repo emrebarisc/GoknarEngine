@@ -9,11 +9,11 @@
 Sun::Sun() :
 	ObjectBase()
 {
-	SetIsTickable(true);
+	SetIsTickable(false);
 
 	sunLight_ = new DirectionalLight();
 	sunLight_->SetColor(Vector3(1.0f, 0.99f, 0.83f));
-	sunLight_->SetIntensity(1.f);
+	sunLight_->SetIntensity(2.f);
 	sunLight_->SetIsShadowEnabled(true);
 	sunLight_->SetLightMobility(LightMobility::Dynamic);
 	sunLight_->SetShadowWidth(4096);
@@ -23,6 +23,7 @@ Sun::Sun() :
 
 void Sun::BeginGame()
 {
+	sunLight_->SetDirection(sunLightDirection_);
 	sunRotationAxis_ = Vector3::Cross(sunLightDirection_, Vector3::Cross(sunLightDirection_.GetOrthonormalBasis(), sunLightDirection_));
 }
 
