@@ -29,6 +29,7 @@ class GOKNAR_API Material
 {
 public:
 	Material();
+	Material(const Material* other);
 	~Material();
 
 	void Build(MeshUnit* meshUnit);
