@@ -25,7 +25,14 @@ public:
 	{
 	}
 
-	inline virtual ~MeshInstance() {}
+	inline virtual ~MeshInstance()
+	{
+		delete material_;
+	}
+
+	inline void PreInit();
+	inline void Init();
+	inline void PostInit();
 
 	inline int GetComponentId() const
 	{
@@ -42,6 +49,16 @@ public:
 	inline MeshType* GetMesh() const
 	{
 		return mesh_;
+	}
+
+	inline void SetMaterial(Material* material)
+	{
+		material_ = material;
+	}
+
+	inline Material* GetMaterial()
+	{
+		return material_;
 	}
 
 	inline virtual void PreRender(RenderPassType renderPassType = RenderPassType::Forward);
@@ -66,6 +83,8 @@ protected:
 	MeshType* mesh_{ nullptr };
 
 	RenderComponent* parentComponent_{ nullptr };
+
+	Material* material_{ nullptr };
 private:
 
 	int componentId_{ lastComponentId_++ };
@@ -79,15 +98,57 @@ template<class MeshType>
 int MeshInstance<MeshType>::lastComponentId_ = 0;
 
 template<class MeshType>
+inline void MeshInstance<MeshType>::PreInit()
+{
+    if(material_)
+    {
+        material_->Build(mesh_);
+        material_->PreInit();
+    }
+}
+
+template<class MeshType>
+inline void MeshInstance<MeshType>::Init()
+{
+    if(material_)
+    {
+        material_->Init();
+    }
+}
+
+template<class MeshType>
+inline void MeshInstance<MeshType>::PostInit()
+{
+    if(material_)
+    {
+        material_->PostInit();
+    }
+}
+
+template<class MeshType>
 inline void MeshInstance<MeshType>::PreRender(RenderPassType renderPassType)
 {
-	mesh_->GetMaterial()->Use(renderPassType);
+	if(material_)
+	{
+		material_->Use(renderPassType);
+	}
+	else
+	{
+		mesh_->GetMaterial()->Use(renderPassType);
+	}
 }
 
 template<class MeshType>
 inline void MeshInstance<MeshType>::Render(RenderPassType renderPassType)
 {
-	mesh_->GetMaterial()->SetShaderVariables(renderPassType, parentComponent_->GetComponentToWorldTransformationMatrix());
+	if(material_)
+	{
+		material_->SetShaderVariables(renderPassType, parentComponent_->GetComponentToWorldTransformationMatrix());
+	}
+	else
+	{
+		mesh_->GetMaterial()->SetShaderVariables(renderPassType, parentComponent_->GetComponentToWorldTransformationMatrix());
+	}
 }
 
 template<class MeshType>

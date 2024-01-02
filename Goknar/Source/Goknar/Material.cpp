@@ -25,6 +25,23 @@ Material::Material() :
 {
 }
 
+Material::Material(const Material* other)
+{
+	if(this == other)
+	{
+		return;
+	}
+
+	ambientReflectance_ = other->ambientReflectance_;
+	diffuseReflectance_ = other->diffuseReflectance_;
+	specularReflectance_ = other->specularReflectance_;
+	phongExponent_ = other->phongExponent_;
+	blendModel_ = other->blendModel_;
+	shadingModel_ = other->shadingModel_;
+	textureImages_ = other->textureImages_;
+	renderPassTypeShaderMap_ = other->renderPassTypeShaderMap_;
+}
+
 Material::~Material()
 {
 	delete renderPassTypeShaderMap_[RenderPassType::Forward];

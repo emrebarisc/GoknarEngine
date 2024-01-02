@@ -150,15 +150,162 @@ void Renderer::PreInit()
 	}
 
 	SetBufferData();
+
+	PreInitMeshInstances();
 }
 
 void Renderer::Init()
 {
-
+	InitMeshInstances();
 }
 
 void Renderer::PostInit()
 {
+	PostInitMeshInstances();
+}
+
+void Renderer::PreInitMeshInstances() const
+{
+	for(auto& opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
+	{
+		opaqueStaticMeshInstance->PreInit();
+	}
+
+	for(auto& maskedStaticMeshInstance : maskedStaticMeshInstances_)
+	{
+		maskedStaticMeshInstance->PreInit();
+	}
+
+	for(auto& translucentStaticMeshInstance : translucentStaticMeshInstances_)
+	{
+		translucentStaticMeshInstance->PreInit();
+	}
+
+	for(auto& opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
+	{
+		opaqueSkeletalMeshInstance->PreInit();
+	}
+
+	for(auto& maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
+	{
+		maskedSkeletalMeshInstance->PreInit();
+	}
+
+	for(auto& translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
+	{
+		translucentSkeletalMeshInstance->PreInit();
+	}
+
+	for(auto& opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
+	{
+		opaqueDynamicMeshInstance->PreInit();
+	}
+
+	for(auto& maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
+	{
+		maskedDynamicMeshInstance->PreInit();
+	}
+
+	for(auto& translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
+	{
+		translucentDynamicMeshInstance->PreInit();
+	}
+}
+
+void Renderer::InitMeshInstances() const
+{
+	for(auto& opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
+	{
+		opaqueStaticMeshInstance->Init();
+	}
+
+	for(auto& maskedStaticMeshInstance : maskedStaticMeshInstances_)
+	{
+		maskedStaticMeshInstance->Init();
+	}
+
+	for(auto& translucentStaticMeshInstance : translucentStaticMeshInstances_)
+	{
+		translucentStaticMeshInstance->Init();
+	}
+
+	for(auto& opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
+	{
+		opaqueSkeletalMeshInstance->Init();
+	}
+
+	for(auto& maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
+	{
+		maskedSkeletalMeshInstance->Init();
+	}
+
+	for(auto& translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
+	{
+		translucentSkeletalMeshInstance->Init();
+	}
+
+	for(auto& opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
+	{
+		opaqueDynamicMeshInstance->Init();
+	}
+
+	for(auto& maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
+	{
+		maskedDynamicMeshInstance->Init();
+	}
+
+	for(auto& translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
+	{
+		translucentDynamicMeshInstance->Init();
+	}
+}
+
+void Renderer::PostInitMeshInstances() const
+{
+	for(auto& opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
+	{
+		opaqueStaticMeshInstance->PostInit();
+	}
+
+	for(auto& maskedStaticMeshInstance : maskedStaticMeshInstances_)
+	{
+		maskedStaticMeshInstance->PostInit();
+	}
+
+	for(auto& translucentStaticMeshInstance : translucentStaticMeshInstances_)
+	{
+		translucentStaticMeshInstance->PostInit();
+	}
+
+	for(auto& opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
+	{
+		opaqueSkeletalMeshInstance->PostInit();
+	}
+
+	for(auto& maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
+	{
+		maskedSkeletalMeshInstance->PostInit();
+	}
+
+	for(auto& translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
+	{
+		translucentSkeletalMeshInstance->PostInit();
+	}
+
+	for(auto& opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
+	{
+		opaqueDynamicMeshInstance->PostInit();
+	}
+
+	for(auto& maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
+	{
+		maskedDynamicMeshInstance->PostInit();
+	}
+
+	for(auto& translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
+	{
+		translucentDynamicMeshInstance->PostInit();
+	}
 }
 
 void Renderer::SetStaticBufferData()

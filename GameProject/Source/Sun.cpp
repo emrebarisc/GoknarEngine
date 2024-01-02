@@ -13,7 +13,7 @@ Sun::Sun() :
 
 	sunLight_ = new DirectionalLight();
 	sunLight_->SetColor(Vector3(1.0f, 0.99f, 0.83f));
-	sunLight_->SetIntensity(2.f);
+	sunLight_->SetIntensity(0.5f);
 	sunLight_->SetIsShadowEnabled(true);
 	sunLight_->SetLightMobility(LightMobility::Dynamic);
 	sunLight_->SetShadowWidth(4096);

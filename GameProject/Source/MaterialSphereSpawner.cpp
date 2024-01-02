@@ -8,27 +8,37 @@
 MaterialSphereSpawner::MaterialSphereSpawner()
 {
     Vector3 offset{20.f, 20.f, 0.f};
-    for (float y = 0; y < 5.f; y++)
+    for (float y = 0; y < 10.f; y++)
     {
-        for (float x = 0; x < 5.f; x++)
+        for (float x = 0; x < 10.f; x++)
         {
-            MaterialSphere* materialSphere = new MaterialSphere();
-            StaticMeshComponent* materialSphereMeshComponent = materialSphere->GetSphereMeshComponent();
-            StaticMesh* staticMesh = materialSphereMeshComponent->GetMeshInstance()->GetMesh();
-            Material* material = staticMesh->GetMaterial();
-            material->SetSpecularReflectance(Vector3{5.f / x});
-            material->SetPhongExponent(5.f / y);
-
-            materialSphere->SetWorldPosition(offset + Vector3{x * 3.f, y * 3.f, 1.f});
+            MaterialSphere* materialSphere = materialSpheres_.emplace_back(new MaterialSphere());
+            materialSphere->SetWorldPosition(offset + Vector3{x * 2.f, y * 2.f, 1.f});
         }
     }
 }
 
 MaterialSphereSpawner::~MaterialSphereSpawner()
 {
-
 }
 
 void MaterialSphereSpawner::BeginGame()
 {
+    for (float y = 0; y < 10.f; y++)
+    {
+        for (float x = 0; x < 10.f; x++)
+        {
+            MaterialSphere* materialSphere = materialSpheres_[y * 10 + x];
+
+            StaticMeshComponent* materialSphereMeshComponent = materialSphere->GetSphereMeshComponent();
+            StaticMeshInstance* staticMeshInstance = materialSphereMeshComponent->GetMeshInstance();
+            StaticMesh* staticMesh = staticMeshInstance->GetMesh();
+
+            Material* instanceMaterial = new Material(staticMesh->GetMaterial());
+            instanceMaterial->SetDiffuseReflectance(Vector3{0.3725490196f, 0.f, 0.62745098039f});
+            instanceMaterial->SetSpecularReflectance(Vector3{x / 9.f});
+            instanceMaterial->SetPhongExponent(pow(2, y));
+            staticMeshInstance->SetMaterial(instanceMaterial);
+        }
+    }
 }
