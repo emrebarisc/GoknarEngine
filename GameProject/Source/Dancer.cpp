@@ -2,10 +2,10 @@
 
 #include "IO/ModelLoader.h"
 
-#include "Application.h"
-#include "Engine.h"
-#include "Material.h"
-#include "Scene.h"
+#include "Goknar/Application.h"
+#include "Goknar/Engine.h"
+#include "Goknar/Scene.h"
+#include "Goknar/Materials/Material.h"
 
 #include "Components/SkeletalMeshComponent.h"
 #include "Managers/ResourceManager.h"

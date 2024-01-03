@@ -1,6 +1,6 @@
 #include "MaterialSphereSpawner.h"
 
-#include "Goknar/Material.h"
+#include "Goknar/Materials/Material.h"
 #include "Goknar/Components/StaticMeshComponent.h"
 
 #include "Objects/MaterialSphere.h"

@@ -9,7 +9,7 @@
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
 #include "Goknar/GoknarAssert.h"
-#include "Goknar/Material.h"
+#include "Goknar/Materials/Material.h"
 #include "Goknar/Model/MeshUnit.h"
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/Managers/InputManager.h"

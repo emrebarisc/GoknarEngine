@@ -5,8 +5,8 @@
 #include "Application.h"
 #include "Camera.h"
 #include "Engine.h"
-#include "Material.h"
 #include "Scene.h"
+#include "Materials/Material.h"
 #include "Renderer/Shader.h"
 
 #include "Managers/CameraManager.h"

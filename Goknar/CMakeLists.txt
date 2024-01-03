@@ -29,6 +29,7 @@ set(SUBDIRS
 	${SOURCE_DIR_NAME}/Goknar/Lights
 	${SOURCE_DIR_NAME}/Goknar/Lights/ShadowManager
 	${SOURCE_DIR_NAME}/Goknar/Managers
+	${SOURCE_DIR_NAME}/Goknar/Materials
 	${SOURCE_DIR_NAME}/Goknar/Math
 	${SOURCE_DIR_NAME}/Goknar/Model
 	#${SOURCE_DIR_NAME}/Goknar/Model/2D

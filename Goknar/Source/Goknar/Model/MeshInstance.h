@@ -4,9 +4,9 @@
 #include "Goknar/Core.h"
 #include "Goknar/Math/Matrix.h"
 
-#include "Goknar/Components/RenderComponent.h"
 #include "Goknar/Engine.h"
-#include "Goknar/Material.h"
+#include "Goknar/Components/RenderComponent.h"
+#include "Goknar/Materials/Material.h"
 
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/StaticMesh.h"

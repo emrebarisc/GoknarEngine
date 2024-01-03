@@ -4,7 +4,7 @@
 
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
-#include "Goknar/Material.h"
+#include "Goknar/Materials/Material.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Scene.h"

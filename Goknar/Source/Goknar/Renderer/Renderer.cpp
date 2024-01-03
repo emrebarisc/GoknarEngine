@@ -8,15 +8,16 @@
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
-#include "Goknar/Lights/ShadowManager/ShadowManager.h"
 #include "Goknar/Log.h"
-#include "Goknar/Material.h"
+
+#include "Goknar/Materials/Material.h"
 
 #include "Goknar/Delegates/Delegate.h"
 
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
+#include "Goknar/Lights/ShadowManager/ShadowManager.h"
 
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/StaticMesh.h"
