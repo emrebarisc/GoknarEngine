@@ -4,9 +4,9 @@
 
 #include "Goknar/Engine.h"
 #include "Goknar/GoknarAssert.h"
-#include "Goknar/Material.h"
 #include "Goknar/ObjectBase.h"
 #include "Goknar/Helpers/SceneParser.h"
+#include "Goknar/Materials/Material.h"
 #include "Goknar/Renderer/Texture.h"
 
 #include "Goknar/Model/DynamicMesh.h"
