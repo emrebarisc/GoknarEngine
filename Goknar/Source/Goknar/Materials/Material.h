@@ -1,104 +1,27 @@
 #ifndef __MATERIAL_H__
 #define __MATERIAL_H__
 
-#include <string>
-#include <unordered_map>
+#include <vector>
 
-#include "Goknar/Core.h"
-#include "Math/GoknarMath.h"
-#include "Renderer/Renderer.h"
-#include "Renderer/Shader.h"
+#include "MaterialBase.h"
 
 class MeshUnit;
-class Image;
+class MaterialInstance;
 
-enum class MaterialBlendModel
-{
-	Opaque = 0,
-	Masked,
-	Translucent
-};
-
-enum class MaterialShadingModel
-{
-	Default,
-	TwoSided
-};
-
-class GOKNAR_API Material
+class GOKNAR_API Material : public IMaterialBase
 {
 public:
 	Material();
-	Material(const Material* other);
+	Material(const Material* parent);
 	~Material();
 
 	void Build(MeshUnit* meshUnit);
 
-	void PreInit();
-	void Init();
-	void PostInit();
+	virtual void PreInit() override;
+	virtual void Init() override;
+	virtual void PostInit() override;
 
-	const Vector3& GetAmbientReflectance() const
-	{
-		return ambientReflectance_;
-	}
-
-	void SetAmbientReflectance(const Vector3& ambientReflectance)
-	{
-		ambientReflectance_ = ambientReflectance;
-	}
-
-	const Vector3& GetDiffuseReflectance() const
-	{
-		return diffuseReflectance_;
-	}
-
-	void SetDiffuseReflectance(const Vector3& diffuseReflectance)
-	{
-		diffuseReflectance_ = diffuseReflectance;
-	}
-
-	const Vector3& GetSpecularReflectance() const
-	{
-		return specularReflectance_;
-	}
-
-	void SetSpecularReflectance(const Vector3& specularReflectance)
-	{
-		specularReflectance_ = specularReflectance;
-	}
-
-	float GetPhongExponent() const
-	{
-		return phongExponent_;
-	}
-
-	void SetPhongExponent(float phongExponent)
-	{
-		phongExponent_ = phongExponent;
-	}
-
-	MaterialBlendModel GetBlendModel() const
-	{
-		return blendModel_;
-	}
-
-	void SetBlendModel(MaterialBlendModel blendModel)
-	{
-		blendModel_ = blendModel;
-	}
-
-	MaterialShadingModel GetShadingModel() const
-	{
-		return shadingModel_;
-	}
-
-	void SetShadingModel(MaterialShadingModel shadingModel)
-	{
-		shadingModel_ = shadingModel;
-	}
-
-	inline Shader* GetShader(RenderPassType renderPassType) const
+	inline virtual Shader* GetShader(RenderPassType renderPassType) const override
 	{
 		if (renderPassTypeShaderMap_.find(renderPassType) == renderPassTypeShaderMap_.end())
 		{
@@ -113,47 +36,32 @@ public:
 		renderPassTypeShaderMap_[renderPassType] = shader;
 	}
 
-	inline void SetName(const std::string& name)
+	void AddDerivedMaterialInstance(MaterialInstance* materialInstance)
 	{
-		name_ = name;
+		derivedMaterialInstances_.push_back(materialInstance);
 	}
 
-	inline const std::string& GetName() const
+	void RemoveDerivedMaterialInstance(MaterialInstance* materialInstance)
 	{
-		return name_;
+		decltype(derivedMaterialInstances_.cbegin()) derivedMaterialInstancesIterator = derivedMaterialInstances_.cbegin();
+		while (derivedMaterialInstancesIterator != derivedMaterialInstances_.end())
+		{
+			if (*derivedMaterialInstancesIterator == materialInstance)
+			{
+				derivedMaterialInstances_.erase(derivedMaterialInstancesIterator);
+				break;
+			}
+			std::advance(derivedMaterialInstancesIterator, 1);
+		}
 	}
-
-	void AddTextureImage(const Image* image)
-	{
-		textureImages_.push_back(image);
-	}
-
-	const std::vector<const Image*>* GetTextureImages() const
-	{
-		return &textureImages_;
-	}
-
-	void Render(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix) const;
-	void Use(RenderPassType renderPassType) const;
-	void SetShaderVariables(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix) const;
 
 protected:
 
+
 private:
-	std::vector<const Image*> textureImages_;
-
-	Vector3 ambientReflectance_;
-	Vector3 diffuseReflectance_;
-	Vector3 specularReflectance_;
-
-	std::string name_;
+	std::vector<MaterialInstance*> derivedMaterialInstances_;
 
 	std::unordered_map<RenderPassType, Shader*> renderPassTypeShaderMap_;
-
-	float phongExponent_;
-
-	MaterialBlendModel blendModel_;
-	MaterialShadingModel shadingModel_;
 };
 
 #endif

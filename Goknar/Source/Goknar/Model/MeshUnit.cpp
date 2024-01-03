@@ -69,28 +69,6 @@ void MeshUnit::PostInit()
 	isInitialized_ = true;
 }
 
-
-//if (material_)
-//{
-//	Shader* shader = material_->GetShader(RenderPassType::Forward);
-//	if (!shader)
-//	{
-//		shader = new Shader();
-//		material_->SetShader(shader);
-//		engine->GetApplication()->GetMainScene()->AddShader(shader);
-//	}
-//
-//	shader->PreInit();
-//
-//	if (shader->GetShaderType() == ShaderType::Scene)
-//	{
-//		ShaderBuilder::GetInstance()->BuildShader(this);
-//	}
-//
-//	shader->PreInit();
-//	material_->PreInit();
-//}
-
 void MeshUnit::ClearDataFromMemory()
 {
 	vertices_->clear();

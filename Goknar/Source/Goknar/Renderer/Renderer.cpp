@@ -11,6 +11,8 @@
 #include "Goknar/Log.h"
 
 #include "Goknar/Materials/Material.h"
+#include "Goknar/Materials/MaterialBase.h"
+#include "Goknar/Materials/MaterialInstance.h"
 
 #include "Goknar/Delegates/Delegate.h"
 
@@ -680,7 +682,7 @@ void Renderer::AddStaticMeshToRenderer(StaticMesh* staticMesh)
 
 void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 {
-	MaterialBlendModel materialShadingModel = meshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+	MaterialBlendModel materialShadingModel = meshInstance->GetMaterial()->GetBlendModel();
 	switch (materialShadingModel)
 	{
 	case MaterialBlendModel::Opaque:
@@ -699,7 +701,7 @@ void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 
 void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 {
-	MaterialBlendModel blendModel = staticMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+	MaterialBlendModel blendModel = staticMeshInstance->GetMaterial()->GetBlendModel();
 
 	switch (blendModel)
 	{
@@ -755,7 +757,7 @@ void Renderer::AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh)
 
 void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
 {
-	MaterialBlendModel materialShadingModel = skeletalMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+	MaterialBlendModel materialShadingModel = skeletalMeshInstance->GetMaterial()->GetBlendModel();
 	switch (materialShadingModel)
 	{
 	case MaterialBlendModel::Opaque:
@@ -774,7 +776,7 @@ void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstanc
 
 void Renderer::RemoveSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
 {
-	MaterialBlendModel blendModel = skeletalMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+	MaterialBlendModel blendModel = skeletalMeshInstance->GetMaterial()->GetBlendModel();
 
 	switch (blendModel)
 	{
@@ -830,7 +832,7 @@ void Renderer::AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh)
 
 void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
-	MaterialBlendModel materialShadingModel = dynamicMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+	MaterialBlendModel materialShadingModel = dynamicMeshInstance->GetMaterial()->GetBlendModel();
 	switch (materialShadingModel)
 	{
 	case MaterialBlendModel::Opaque:
@@ -849,7 +851,7 @@ void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 
 void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
-	MaterialBlendModel blendModel = dynamicMeshInstance->GetMesh()->GetMaterial()->GetBlendModel();
+	MaterialBlendModel blendModel = dynamicMeshInstance->GetMaterial()->GetBlendModel();
 
 	switch (blendModel)
 	{

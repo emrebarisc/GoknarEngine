@@ -7,7 +7,7 @@
 
 #include "Goknar/Engine.h"
 #include "Goknar/Components/SocketComponent.h"
-#include "Goknar/Materials/Material.h"
+#include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Renderer.h"

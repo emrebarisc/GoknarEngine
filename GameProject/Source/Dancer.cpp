@@ -5,7 +5,7 @@
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
-#include "Goknar/Materials/Material.h"
+#include "Goknar/Materials/MaterialBase.h"
 
 #include "Components/SkeletalMeshComponent.h"
 #include "Managers/ResourceManager.h"

@@ -7,6 +7,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Components/RenderComponent.h"
 #include "Goknar/Materials/Material.h"
+#include "Goknar/Materials/MaterialInstance.h"
 
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/StaticMesh.h"
@@ -27,7 +28,6 @@ public:
 
 	inline virtual ~MeshInstance()
 	{
-		delete material_;
 	}
 
 	inline void PreInit();
@@ -51,15 +51,12 @@ public:
 		return mesh_;
 	}
 
-	inline void SetMaterial(Material* material)
+	inline void SetMaterial(MaterialInstance* material)
 	{
 		material_ = material;
 	}
 
-	inline Material* GetMaterial()
-	{
-		return material_;
-	}
+	inline IMaterialBase* GetMaterial();
 
 	inline virtual void PreRender(RenderPassType renderPassType = RenderPassType::Forward);
 	inline virtual void Render(RenderPassType renderPassType = RenderPassType::Forward);
@@ -84,7 +81,7 @@ protected:
 
 	RenderComponent* parentComponent_{ nullptr };
 
-	Material* material_{ nullptr };
+	MaterialInstance* material_{ nullptr };
 private:
 
 	int componentId_{ lastComponentId_++ };
@@ -100,29 +97,27 @@ int MeshInstance<MeshType>::lastComponentId_ = 0;
 template<class MeshType>
 inline void MeshInstance<MeshType>::PreInit()
 {
-    if(material_)
-    {
-        material_->Build(mesh_);
-        material_->PreInit();
-    }
 }
 
 template<class MeshType>
 inline void MeshInstance<MeshType>::Init()
 {
-    if(material_)
-    {
-        material_->Init();
-    }
 }
 
 template<class MeshType>
 inline void MeshInstance<MeshType>::PostInit()
 {
-    if(material_)
-    {
-        material_->PostInit();
-    }
+}
+
+template<class MeshType>
+inline IMaterialBase* MeshInstance<MeshType>::GetMaterial()
+{
+	if (material_)
+	{
+		return material_;
+	}
+
+	return mesh_->GetMaterial();
 }
 
 template<class MeshType>

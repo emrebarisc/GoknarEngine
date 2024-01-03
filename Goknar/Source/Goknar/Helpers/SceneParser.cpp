@@ -12,7 +12,7 @@
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/IO/ModelLoader.h"
 #include "Goknar/ObjectBase.h"
-#include "Goknar/Materials/Material.h"
+#include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Texture.h"
 
@@ -548,50 +548,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 		stream.clear();
 	}
 
-	//Get Shaders
-	element = root->FirstChildElement("Shaders");
-	if (element)
-	{
-		element = element->FirstChildElement("Shader");
-		Shader* shader;
-		while (element)
-		{
-			shader = new Shader();
-			child = element->FirstChildElement("Type");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				std::string shaderType;
-				stream >> shaderType;
-				shader->SetShaderType(shaderType == "SelfContained" ? ShaderType::SelfContained :
-					shaderType == "Dependent" ? ShaderType::Dependent :
-					ShaderType::Scene);
-			}
-
-			child = element->FirstChildElement("VertexShaderPath");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				std::string vertexShaderPath;
-				stream >> vertexShaderPath;
-				shader->SetVertexShaderPath(vertexShaderPath);
-			}
-
-			child = element->FirstChildElement("FragmentShaderPath");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				std::string fragmentShaderPath;
-				stream >> fragmentShaderPath;
-				shader->SetFragmentShaderPath(fragmentShaderPath);
-			}
-
-			scene->AddShader(shader);
-			element = element->NextSiblingElement("Shader");
-		}
-		stream.clear();
-	}
-
 	//Get Materials
 	element = root->FirstChildElement("Materials");
 	if (element)
@@ -622,15 +578,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				material->SetShadingModel(shadingModel == "Default" ? MaterialShadingModel::Default :
 										  shadingModel == "TwoSided" ? MaterialShadingModel::TwoSided :
 										  material->GetShadingModel());
-			}
-
-			child = element->FirstChildElement("Shader");
-			if (child)
-			{
-				int shaderID = std::stoi(child->Attribute("id"));
-
-				Shader* shader = scene->GetShader(shaderID);
-				material->SetShader(shader);
 			}
 
 			child = element->FirstChildElement("Texture");

@@ -1,6 +1,6 @@
 #include "MaterialSphereSpawner.h"
 
-#include "Goknar/Materials/Material.h"
+#include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Components/StaticMeshComponent.h"
 
 #include "Objects/MaterialSphere.h"
@@ -34,7 +34,7 @@ void MaterialSphereSpawner::BeginGame()
             StaticMeshInstance* staticMeshInstance = materialSphereMeshComponent->GetMeshInstance();
             StaticMesh* staticMesh = staticMeshInstance->GetMesh();
 
-            Material* instanceMaterial = new Material(staticMesh->GetMaterial());
+            MaterialInstance* instanceMaterial = MaterialInstance::Create(staticMesh->GetMaterial());
             instanceMaterial->SetDiffuseReflectance(Vector3{0.3725490196f, 0.f, 0.62745098039f});
             instanceMaterial->SetSpecularReflectance(Vector3{x / 9.f});
             instanceMaterial->SetPhongExponent(pow(2, y));
