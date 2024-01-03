@@ -4,7 +4,7 @@
 
 #include "Goknar/Application.h"
 #include "Goknar/Camera.h"
-#include "Goknar/Materials/Material.h"
+#include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Log.h"

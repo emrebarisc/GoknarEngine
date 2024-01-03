@@ -4,7 +4,7 @@
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/StaticMesh.h"
-#include "Goknar/Materials/Material.h"
+#include "Goknar/Materials/MaterialBase.h"
 
 #include <random> 
 

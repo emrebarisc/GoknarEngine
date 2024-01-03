@@ -1,7 +1,7 @@
 #ifndef __SHADOWMANAGAR_H__
 #define __SHADOWMANAGAR_H__
 
-class Material;
+class IMaterialBase;
 class Light;
 class Shader;
 

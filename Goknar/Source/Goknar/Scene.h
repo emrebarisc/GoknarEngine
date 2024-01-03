@@ -11,7 +11,6 @@ class PointLight;
 class SpotLight;
 class Material;
 class ObjectBase;
-class Shader;
 class Texture;
 class TimeDependentObject;
 
@@ -156,39 +155,6 @@ public:
 		return materials_[index];
 	}
 
-	void AddShader(Shader* shader)
-	{
-		shaders_.push_back(shader);
-	}
-
-	const std::vector<Shader*>& GetShaders() const
-	{
-		return shaders_;
-	}
-
-	Shader* GetShader(int index) const
-	{
-		return shaders_[index];
-	}
-
-	bool RemoveShader(Shader* shader)
-	{
-		decltype(shaders_.cbegin()) shaderIterator = shaders_.cbegin();
-		while (shaderIterator != shaders_.end())
-		{
-			if (*shaderIterator == shader)
-			{
-				shaders_.erase(shaderIterator);
-
-				return true;
-			}
-
-			std::advance(shaderIterator, 1);
-		}
-
-		return false;
-	}
-
 	void AddTexture(Texture* texture)
 	{
 		textures_.push_back(texture);
@@ -226,7 +192,6 @@ public:
 
 private:
 	std::vector<Material*> materials_;
-	std::vector<Shader*> shaders_;
 	std::vector<Texture*> textures_;
 	std::vector<StaticMesh*> staticMeshes_;
 	std::vector<SkeletalMesh*> skeletalMeshes_;

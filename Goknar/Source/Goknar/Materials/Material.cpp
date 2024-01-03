@@ -1,49 +1,32 @@
  #include "pch.h"
 
 #include "Material.h"
+#include "MaterialInstance.h"
 
-#include "Application.h"
-#include "Engine.h"
-#include "Scene.h"
-
+#include "Goknar/Engine.h"
 #include "Goknar/Contents/Image.h"
-#include "Goknar/Lights/ShadowManager/ShadowManager.h"
 #include "Goknar/Renderer/Renderer.h"
-#include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 
-#include "Goknar/Managers/WindowManager.h"
-
-Material::Material() : 
-	ambientReflectance_(Vector3::ZeroVector), 
-	diffuseReflectance_(Vector3::ZeroVector), 
-	specularReflectance_(Vector3::ZeroVector),
-	phongExponent_(1.f),
-	blendModel_(MaterialBlendModel::Opaque),
-	shadingModel_(MaterialShadingModel::Default)
+Material::Material() :
+	IMaterialBase()
 {
 }
 
-Material::Material(const Material* other)
+Material::Material(const Material* other) :
+	IMaterialBase(dynamic_cast<const IMaterialBase*>(other))
 {
-	if(this == other)
-	{
-		return;
-	}
-
-	ambientReflectance_ = other->ambientReflectance_;
-	diffuseReflectance_ = other->diffuseReflectance_;
-	specularReflectance_ = other->specularReflectance_;
-	phongExponent_ = other->phongExponent_;
-	blendModel_ = other->blendModel_;
-	shadingModel_ = other->shadingModel_;
-	textureImages_ = other->textureImages_;
 	renderPassTypeShaderMap_ = other->renderPassTypeShaderMap_;
 }
 
 Material::~Material()
 {
+	for (auto derivedMaterialInstance : derivedMaterialInstances_)
+	{
+		delete derivedMaterialInstance;
+	}
+
 	delete renderPassTypeShaderMap_[RenderPassType::Forward];
 	delete renderPassTypeShaderMap_[RenderPassType::GeometryBuffer];
 	delete renderPassTypeShaderMap_[RenderPassType::Shadow];
@@ -108,6 +91,11 @@ void Material::PreInit()
 	{
 		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->PreInit();
 	}
+
+	for (auto derivedMaterialInstance : derivedMaterialInstances_)
+	{
+		derivedMaterialInstance->PreInit();
+	}
 }
 
 void Material::Init()
@@ -127,6 +115,11 @@ void Material::Init()
 		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->Init();
 		renderer->BindGeometryBufferTextures(renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]);
 	}
+
+	for (auto derivedMaterialInstance : derivedMaterialInstances_)
+	{
+		derivedMaterialInstance->Init();
+	}
 }
 
 void Material::PostInit()
@@ -142,53 +135,9 @@ void Material::PostInit()
 	{
 		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer]->PostInit();
 	}
-}
 
-void Material::Render(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix) const
-{
-	Use(renderPassType);
-	SetShaderVariables(renderPassType, worldAndRelativeTransformationMatrix);
-}
-
-void Material::Use(RenderPassType renderPassType) const
-{
-	GOKNAR_CORE_ASSERT(renderPassTypeShaderMap_.find(renderPassType) != renderPassTypeShaderMap_.end());
-	
-	renderPassTypeShaderMap_.at(renderPassType)->Use();
-}
-
-void Material::SetShaderVariables(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix) const
-{
-	GOKNAR_CORE_ASSERT(renderPassTypeShaderMap_.find(renderPassType) != renderPassTypeShaderMap_.end());
-
-	if (shadingModel_ == MaterialShadingModel::Default)
+	for (auto derivedMaterialInstance : derivedMaterialInstances_)
 	{
-		glEnable(GL_CULL_FACE);
+		derivedMaterialInstance->PostInit();
 	}
-	else if (shadingModel_ == MaterialShadingModel::TwoSided)
-	{
-		glDisable(GL_CULL_FACE);
-	}
-
-	Shader* shader = renderPassTypeShaderMap_.at(renderPassType);
-
-	if (renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::GeometryBuffer)
-	{
-		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, ambientReflectance_);
-		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, diffuseReflectance_);
-		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);
-		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, phongExponent_);
-	}
-	else if (renderPassType == RenderPassType::Shadow || renderPassType == RenderPassType::PointLightShadow)
-	{
-		engine->GetRenderer()->GetShadowManager()->SetShadowRenderPassShaderUniforms(shader);
-	}
-
-	if (renderPassType == RenderPassType::Forward)
-	{
-		engine->GetRenderer()->SetLightUniforms(shader);
-	}
-
-	shader->SetMVP(worldAndRelativeTransformationMatrix);
-	engine->SetShaderEngineVariables(shader);
 }

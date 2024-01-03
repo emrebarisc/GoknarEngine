@@ -8,7 +8,7 @@
 #include "Goknar/Core.h"
 #include "Goknar/Math/GoknarMath.h"
 
-class Material;
+class IMaterialBase;
 class Texture;
 
 enum class ShaderType

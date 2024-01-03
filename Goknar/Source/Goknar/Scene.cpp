@@ -27,64 +27,59 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-	for (auto object : staticMeshes_)
+	for (auto staticMesh : staticMeshes_)
 	{
-		delete object;
+		delete staticMesh;
 	}
 
-	for (auto object : dynamicMeshes_)
+	for (auto dynamicMesh : dynamicMeshes_)
 	{
-		delete object;
+		delete dynamicMesh;
 	}
 
-	for (auto object : skeletalMeshes_)
+	for (auto skeletalMesh : skeletalMeshes_)
 	{
-		delete object;
+		delete skeletalMesh;
 	}
 
-	for (auto object : materials_)
+	for (auto material : materials_)
 	{
-		delete object;
+		delete material;
 	}
 
-	for (auto object : shaders_)
+	for (auto texture : textures_)
 	{
-		delete object;
+		delete texture;
 	}
 
-	for (auto object : textures_)
+	for (auto staticPointLight : staticPointLights_)
 	{
-		delete object;
+		delete staticPointLight;
 	}
 
-	for (auto object : staticPointLights_)
+	for (auto staticDirectionalLight : staticDirectionalLights_)
 	{
-		delete object;
+		delete staticDirectionalLight;
 	}
 
-	for (auto object : staticDirectionalLights_)
+	for (auto staticSpotLight : staticSpotLights_)
 	{
-		delete object;
+		delete staticSpotLight;
 	}
 
-	for (auto object : staticSpotLights_)
+	for (auto dynamicDirectionalLight : dynamicDirectionalLights_)
 	{
-		delete object;
+		delete dynamicDirectionalLight;
 	}
 
-	for (auto object : dynamicDirectionalLights_)
+	for (auto dynamicPointLight : dynamicPointLights_)
 	{
-		delete object;
+		delete dynamicPointLight;
 	}
 
-	for (auto object : dynamicPointLights_)
+	for (auto dynamicSpotLight : dynamicSpotLights_)
 	{
-		delete object;
-	}
-
-	for (auto object : dynamicSpotLights_)
-	{
-		delete object;
+		delete dynamicSpotLight;
 	}
 
 	for (auto object : objects_)
@@ -95,82 +90,72 @@ Scene::~Scene()
 
 void Scene::PreInit()
 {
-	for (auto object : staticPointLights_)
+	for (auto staticPointLight : staticPointLights_)
 	{
-		object->PreInit();
+		staticPointLight->PreInit();
 	}
 
-	for (auto object : staticDirectionalLights_)
+	for (auto staticDirectionalLight : staticDirectionalLights_)
 	{
-		object->PreInit();
+		staticDirectionalLight->PreInit();
 	}
 
-	for (auto object : staticSpotLights_)
+	for (auto staticSpotLight : staticSpotLights_)
 	{
-		object->PreInit();
+		staticSpotLight->PreInit();
 	}
 
-	for (auto object : dynamicDirectionalLights_)
+	for (auto dynamicDirectionalLight : dynamicDirectionalLights_)
 	{
-		object->PreInit();
+		dynamicDirectionalLight->PreInit();
 	}
 
-	for (auto object : dynamicPointLights_)
+	for (auto dynamicPointLight : dynamicPointLights_)
 	{
-		object->PreInit();
+		dynamicPointLight->PreInit();
 	}
 
-	for (auto object : dynamicSpotLights_)
+	for (auto dynamicSpotLight : dynamicSpotLights_)
 	{
-		object->PreInit();
+		dynamicSpotLight->PreInit();
 	}
 
 	for (Texture* texture : textures_)
 	{
 		texture->PreInit();
 	}
-
-	//for (Shader* shader : shaders_)
-	//{
-	//	shader->PreInit();
-	//}
-
-	//for (Material* material : materials_)
-	//{
-	//	material->PreInit();
-	//}
 }
 
 void Scene::Init()
 {
-	for (auto object : staticPointLights_)
+	for (auto staticPointLight : staticPointLights_)
 	{
-		object->Init();
+		staticPointLight->Init();
 	}
 
-	for (auto object : staticDirectionalLights_)
+	for (auto staticDirectionalLight : staticDirectionalLights_)
 	{
-		object->Init();
+		staticDirectionalLight->Init();
 	}
 
-	for (auto object : staticSpotLights_)
+	for (auto staticSpotLight : staticSpotLights_)
 	{
-		object->Init();
+		staticSpotLight->Init();
 	}
 
-	for (auto object : dynamicDirectionalLights_)
+	for (auto dynamicDirectionalLight : dynamicDirectionalLights_)
 	{
-		object->Init();
+		dynamicDirectionalLight->Init();
 	}
 
-	for (auto object : dynamicPointLights_)
+	for (auto dynamicPointLight : dynamicPointLights_)
 	{
-		object->Init();
+		dynamicPointLight->Init();
 	}
 
-	for (auto object : dynamicSpotLights_)
+	for (auto dynamicSpotLight : dynamicSpotLights_)
 	{
-		object->Init();
+		dynamicSpotLight->Init();
 	}
 
 	for (Texture* texture : textures_)
@@ -181,34 +166,34 @@ void Scene::Init()
 
 void Scene::PostInit()
 {
-	for (auto object : staticPointLights_)
+	for (auto staticPointLight : staticPointLights_)
 	{
-		object->PostInit();
+		staticPointLight->PostInit();
 	}
 
-	for (auto object : staticDirectionalLights_)
+	for (auto staticDirectionalLight : staticDirectionalLights_)
 	{
-		object->PostInit();
+		staticDirectionalLight->PostInit();
 	}
 
-	for (auto object : staticSpotLights_)
+	for (auto staticSpotLight : staticSpotLights_)
 	{
-		object->PostInit();
+		staticSpotLight->PostInit();
 	}
 
-	for (auto object : dynamicDirectionalLights_)
+	for (auto dynamicDirectionalLight : dynamicDirectionalLights_)
 	{
-		object->PostInit();
+		dynamicDirectionalLight->PostInit();
 	}
 
-	for (auto object : dynamicPointLights_)
+	for (auto dynamicPointLight : dynamicPointLights_)
 	{
-		object->PostInit();
+		dynamicPointLight->PostInit();
 	}
 
-	for (auto object : dynamicSpotLights_)
+	for (auto dynamicSpotLight : dynamicSpotLights_)
 	{
-		object->PostInit();
+		dynamicSpotLight->PostInit();
 	}
 
 	for (Texture* texture : textures_)

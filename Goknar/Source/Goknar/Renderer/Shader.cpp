@@ -64,13 +64,13 @@ void ExitOnProgramError(GEuint programId, const char* errorMessage)
 
 Shader::Shader()
 {
-	engine->GetApplication()->GetMainScene()->AddShader(this);
+	//engine->GetApplication()->GetMainScene()->AddShader(this);
 }
 
 Shader::~Shader()
 {
 	glDeleteProgram(programId_);
-	engine->GetApplication()->GetMainScene()->RemoveShader(this);
+	//engine->GetApplication()->GetMainScene()->RemoveShader(this);
 }
 
 void Shader::SetMVP(const Matrix& worldAndRelativeTransformationMatrix) const
