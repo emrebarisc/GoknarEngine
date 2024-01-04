@@ -56,7 +56,7 @@ Game::Game() : Application()
 
 	archer_ = new Archer();
 	// dancer_ = new Dancer();
-	// lightController_ = new LightController();
+	lightController_ = new LightController();
 	sun_ = new Sun();
 	// randomGrassSpawner_ = new RandomGrassSpawner();
 	fire_ = new Fire();

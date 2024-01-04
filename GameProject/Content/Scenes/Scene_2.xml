@@ -57,6 +57,10 @@
 	      <Name>CylinderWithAHole</Name>
 	      <Path>Meshes/SM_Grass.fbx</Path>
 	    </StaticMesh>
+	    <StaticMesh id = "9">
+	      <Name>SM_Sphere</Name>
+	      <Path>Meshes/SM_Sphere.fbx</Path>
+	    </StaticMesh>
 	</Meshes>
 
 	<Objects>

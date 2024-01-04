@@ -69,5 +69,6 @@
         "thread": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/home/baris/Desktop/Projects/GoknarEngine/GameProject"
 }
