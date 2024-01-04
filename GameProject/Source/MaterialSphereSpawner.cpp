@@ -7,15 +7,6 @@
 
 MaterialSphereSpawner::MaterialSphereSpawner()
 {
-    Vector3 offset{20.f, 20.f, 0.f};
-    for (float y = 0; y < 10.f; y++)
-    {
-        for (float x = 0; x < 10.f; x++)
-        {
-            MaterialSphere* materialSphere = materialSpheres_.emplace_back(new MaterialSphere());
-            materialSphere->SetWorldPosition(offset + Vector3{x * 2.f, y * 2.f, 1.f});
-        }
-    }
 }
 
 MaterialSphereSpawner::~MaterialSphereSpawner()
@@ -24,12 +15,14 @@ MaterialSphereSpawner::~MaterialSphereSpawner()
 
 void MaterialSphereSpawner::BeginGame()
 {
+    Vector3 offset{20.f, 20.f, 0.f};
     for (float y = 0; y < 10.f; y++)
     {
         for (float x = 0; x < 10.f; x++)
         {
-            MaterialSphere* materialSphere = materialSpheres_[y * 10 + x];
-
+            MaterialSphere* materialSphere = materialSpheres_.emplace_back(new MaterialSphere());
+            materialSphere->SetWorldPosition(offset + Vector3{x * 2.f, y * 2.f, 1.f});
+            
             StaticMeshComponent* materialSphereMeshComponent = materialSphere->GetSphereMeshComponent();
             StaticMeshInstance* staticMeshInstance = materialSphereMeshComponent->GetMeshInstance();
             StaticMesh* staticMesh = staticMeshInstance->GetMesh();

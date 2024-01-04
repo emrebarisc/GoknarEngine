@@ -13,6 +13,7 @@
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Managers/WindowManager.h"
+#include "Goknar/Materials/Material.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Model/SkeletalMeshInstance.h"
 
@@ -29,6 +30,8 @@ Archer::Archer() :
 	SetIsTickable(true);
 
 	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Akai.fbx");
+	skeletalMesh_->GetMaterial()->SetSpecularReflectance(Vector3{0.f});
+
 	skeletalMeshComponent_ = AddSubComponent<SkeletalMeshComponent>();
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
 	skeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
