@@ -1249,6 +1249,7 @@ DeferredRenderingData::~DeferredRenderingData()
 {
 	delete geometryBufferData;
 	delete deferredRenderingMesh;
+	delete deferredRenderingMeshShader;
 }
 
 void DeferredRenderingData::Init()
