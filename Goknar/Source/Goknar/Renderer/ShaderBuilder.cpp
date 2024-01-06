@@ -489,7 +489,7 @@ void main()
 	}
 	fragmentShader += "//-------------------------------------------------------------------------------\n\n";
 
-	fragmentShader += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " = sceneAmbient;\n";;
+	fragmentShader += "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " = sceneAmbient;\n";;
 	fragmentShader += fragmentShaderLightAdditionsInsideMain_;
 	fragmentShader += fragmentShaderInsideMainEnd_;
 	fragmentShader += "\n}";
