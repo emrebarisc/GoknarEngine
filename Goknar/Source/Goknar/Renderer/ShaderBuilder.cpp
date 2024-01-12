@@ -372,18 +372,18 @@ in vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
 
 	fragmentShaderUniforms += "uniform vec3 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR) + ";\n";
 	fragmentShaderUniforms += "uniform float " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT) + ";\n";
-	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + " = vec4(" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + ", " + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + "); \n";
+	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + " = " + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + "; \n";
 
 	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + ".xyz;\n";
-	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
+	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + " = vec4(" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ", " + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + ");\n";
 	
 	std::string GBufferPassFragmentShader =
 "#version " + std::string(DEFAULT_SHADER_VERSION) + R"(
 
 layout(location = 0) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + R"(;
-layout(location = 1) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
+layout(location = 1) out vec4 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
 layout(location = 2) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(;
-layout(location = 3) out vec4 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(;
+layout(location = 3) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(;
 )";
 
 	GBufferPassFragmentShader += fragmentShaderUniforms;
@@ -458,12 +458,11 @@ void main()
 		{
 			if()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"(.y < 0.5f)
 			{
-				vec4 textureColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f);
-				fragmentColor = vec3((textureColor.r + textureColor.g + textureColor.b + textureColor.a) * 0.25f);
+				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f).xyz;
 			}
 			else
 			{
-				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f).xyz * 0.5f + vec3(0.5f);
+				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f).xyz * 0.5f + vec3(0.5f).xyz;
 			}
 		}
 
@@ -472,12 +471,13 @@ void main()
 
 	)" + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz;
 	
-	)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = vec4(texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz, 1.f);
-	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz;
+	)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = vec4(texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz, 1.f);
+
+	vec4 fragmentNormalAndPhongExponent = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
+	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"( = fragmentNormalAndPhongExponent.xyz;
+	)" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"( = pow(2.f, fragmentNormalAndPhongExponent.a);
 	
-	vec4 specularAndPhongTextureValue = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
-	)" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( = specularAndPhongTextureValue.xyz;
-	)" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"( = specularAndPhongTextureValue.a;
+	)" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz;
 )";
 
 	fragmentShader += "//------------------------ FRAGMENT POSITION LIGHT SPACE ------------------------\n\n";

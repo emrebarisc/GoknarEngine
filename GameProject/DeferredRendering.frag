@@ -108,7 +108,7 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
 
 	// Diffuse
 	float cosThetaPrime = max(0.f, normalDotLightDirection);
-	vec3 diffuseColor = diffuseReflectance * cosThetaPrime * intensityOverDistanceSquare;
+	vec3 diffuseColor = cosThetaPrime * intensityOverDistanceSquare;
 
 	// Specular
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), phongExponent);
@@ -128,7 +128,7 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 
 	if(normalDotLightDirection < 0.f) return vec3(0.f);
 
-	vec3 diffuseColor = intensity * max(0.f, normalDotLightDirection);
+	vec3 diffuseColor = intensity * normalDotLightDirection;
 
 	// To viewpoint vector
 	vec3 wo = normalize(viewPosition - vec3(fragmentPositionWorldSpace));
@@ -153,16 +153,16 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 	float wiLength = length(wi);
 	wi /= wiLength;
 
-	float normalDotLightDirection = dot(wi, vertexNormal);
-	if(0.f < normalDotLightDirection) return vec3(0.f);
+	float normalDotVertexNormal = dot(wi, vertexNormal);
+	if(0.f < normalDotVertexNormal) return vec3(0.f);
 
 	vec3 intensityOverDistanceSquare = intensity / (wiLength * wiLength);
 
-	vec3 diffuseColor = max(0.f, normalDotLightDirection) * intensityOverDistanceSquare;
+	vec3 diffuseColor = -normalDotVertexNormal * intensityOverDistanceSquare;
 
 	float cosCoverage = cos(coverageAngle);
 	float cosFalloff = cos(falloffAngle);
-	float cosTheta = dot(wi, direction);
+	float cosTheta = abs(dot(wi, direction));
 	
 	if(cosTheta < cosCoverage)
 	{
@@ -175,7 +175,7 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 	}
 	else
 	{
-		lightMultiplier = pow((cosTheta - cosCoverage) / (cosFalloff - cosCoverage), 8);
+		lightMultiplier = pow((cosTheta - cosCoverage) / (cosFalloff - cosCoverage), 4);
 	}
 
 	// To viewpoint vector
@@ -188,8 +188,8 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), phongExponent);
 	vec3 specularColor = specularReflectance * cosAlphaPrimeToThePowerOfPhongExponent;
 
-	specularColor = (1.f + specularColor) * lightMultiplier * intensityOverDistanceSquare;
-	return specularColor + diffuseColor;
+	specularColor = specularColor * intensityOverDistanceSquare;
+	return (specularColor + diffuseColor) * lightMultiplier;
 }
 
 
@@ -212,12 +212,11 @@ void main()
 		{
 			if(textureUV.y < 0.5f)
 			{
-				vec4 textureColor = texture(specularAndPhong_GBuffer, (textureUV - vec2(0.5f, 0.5f)) * 2.f);
-				fragmentColor = vec3((textureColor.r + textureColor.g + textureColor.b + textureColor.a) * 0.25f);
+				fragmentColor = texture(specularAndPhong_GBuffer, (textureUV - vec2(0.5f, 0.5f)) * 2.f);
 			}
 			else
 			{
-				fragmentColor = texture(normal_GBuffer, (textureUV - vec2(0.5f, 0.5f)) * 2.f).xyz * 0.5f + vec3(0.5f);
+				fragmentColor = texture(normal_GBuffer, (textureUV - vec2(0.5f, 0.5f)) * 2.f).xyz * 0.5f + vec3(0.5f).xyz;
 			}
 		}
 
@@ -226,12 +225,13 @@ void main()
 
 	diffuseReflectance = texture(diffuse_GBuffer, textureUV).xyz;
 	
-	fragmentPositionWorldSpace = vec4(texture(position_GBuffer, textureUV).xyz, 1.f);
-	vertexNormal = texture(normal_GBuffer, textureUV).xyz;
+	fragmentPositionWorldSpace = vec4(texture(position_GBuffer, textureUV), 1.f);
+
+	vec4 fragmentNormalAndPhongExponent = texture(normal_GBuffer, textureUV);
+	vertexNormal = fragmentNormalAndPhongExponent.xyz;
+	phongExponent = fragmentNormalAndPhongExponent.a;
 	
-	vec4 specularAndPhongTextureValue = texture(specularAndPhong_GBuffer, textureUV);
-	specularReflectance = specularAndPhongTextureValue.xyz;
-	phongExponent = specularAndPhongTextureValue.a;
+	specularReflectance = texture(specularAndPhong_GBuffer, textureUV).xyz;
 //------------------------ FRAGMENT POSITION LIGHT SPACE ------------------------
 
 	 vec4 fragmentPositionLightSpace_DirectionalLight0 = fragmentPositionWorldSpace * lightViewMatrix_DirectionalLight0; 
@@ -242,7 +242,7 @@ void main()
 	 vec4 fragmentPositionLightSpace_SpotLight3 = fragmentPositionWorldSpace * lightViewMatrix_SpotLight3; 
 //-------------------------------------------------------------------------------
 
-	vec3 fragmentColor = sceneAmbient;
+	fragmentColor = sceneAmbient;
 
 	if(PointLight0IsCastingShadow)
 	{
