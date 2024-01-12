@@ -77,10 +77,7 @@ public:
 		return phongExponent_;
 	}
 
-	void SetPhongExponent(float phongExponent)
-	{
-		phongExponent_ = phongExponent;
-	}
+	void SetPhongExponent(float phongExponent);
 
 	MaterialBlendModel GetBlendModel() const
 	{

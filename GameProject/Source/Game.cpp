@@ -43,7 +43,7 @@ Game::Game() : Application()
 {
 	engine->SetApplication(this);
 
-	engine->GetRenderer()->SetMainRenderType(RenderPassType::Forward);
+	engine->GetRenderer()->SetMainRenderType(RenderPassType::Deferred);
 
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
 	mainScene_->ReadSceneData("Scenes/Scene_2.xml");
@@ -56,7 +56,7 @@ Game::Game() : Application()
 
 	archer_ = new Archer();
 	// dancer_ = new Dancer();
-	lightController_ = new LightController();
+	// lightController_ = new LightController();
 	sun_ = new Sun();
 	// randomGrassSpawner_ = new RandomGrassSpawner();
 	fire_ = new Fire();

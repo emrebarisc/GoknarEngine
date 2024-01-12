@@ -1171,8 +1171,8 @@ void GeometryBufferData::GenerateBuffers(int width, int height)
 	worldNormalTexture = new Texture();
 	worldNormalTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL);
 	worldNormalTexture->SetTextureDataType(TextureDataType::DYNAMIC);
-	worldNormalTexture->SetTextureFormat(TextureFormat::RGB);
-	worldNormalTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
+	worldNormalTexture->SetTextureFormat(TextureFormat::RGBA);
+	worldNormalTexture->SetTextureInternalFormat(TextureInternalFormat::RGBA16F);
 	worldNormalTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	worldNormalTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
 	worldNormalTexture->SetWidth(width);
@@ -1198,8 +1198,8 @@ void GeometryBufferData::GenerateBuffers(int width, int height)
 	specularTexture = new Texture();
 	specularTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG);
 	specularTexture->SetTextureDataType(TextureDataType::DYNAMIC);
-	specularTexture->SetTextureFormat(TextureFormat::RGBA);
-	specularTexture->SetTextureInternalFormat(TextureInternalFormat::RGBA);
+	specularTexture->SetTextureFormat(TextureFormat::RGB);
+	specularTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
 	specularTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	specularTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
 	specularTexture->SetWidth(width);

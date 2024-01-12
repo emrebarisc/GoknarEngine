@@ -41,6 +41,16 @@ IMaterialBase::~IMaterialBase()
 {
 }
 
+void IMaterialBase::SetPhongExponent(float phongExponent)
+{
+	if(engine->GetRenderer()->GetMainRenderType() == RenderPassType::Deferred)
+	{
+		phongExponent = GoknarMath::Log(phongExponent) / LN_OF_2;
+	}
+
+	phongExponent_ = phongExponent;
+}
+
 void IMaterialBase::PreInit()
 {
 }

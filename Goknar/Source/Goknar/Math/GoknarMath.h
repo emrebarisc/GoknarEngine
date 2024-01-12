@@ -108,6 +108,12 @@ public:
 	}
 
 	template<class T>
+	static inline T Log(T value)
+	{
+		return std::log(value);
+	}
+
+	template<class T>
 	static inline T Sqrt(T value)
 	{
 		return std::sqrt(value);
