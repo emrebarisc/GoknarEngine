@@ -13,7 +13,7 @@ class SocketComponent;
 struct GOKNAR_API PlayLoopData
 {
 	bool playOnce{ false };
-	std::function<void()> callback;
+	std::function<void()> callback { nullptr };
 };
 
 struct GOKNAR_API KeyframeData
@@ -29,8 +29,8 @@ struct GOKNAR_API KeyframeData
 struct GOKNAR_API SkeletalMeshAnimation
 {
 	std::string name{ "" };
-	PlayLoopData playLoopData;
-	KeyframeData keyframeData;
+	PlayLoopData playLoopData {};
+	KeyframeData keyframeData {};
 	const SkeletalAnimation* skeletalAnimation{ nullptr };
 	float animationTime{ 0.f };
 	float elapsedTimeInSeconds{ 0.f };
