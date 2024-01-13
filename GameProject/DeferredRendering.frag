@@ -143,7 +143,7 @@ void main()
 	 vec4 fragmentPositionLightSpace_DirectionalLight0 = fragmentPositionWorldSpace * lightViewMatrix_DirectionalLight0; 
 //-------------------------------------------------------------------------------
 
-	 vec3 lightColor = sceneAmbient;
+	 vec3 lightIntensity = sceneAmbient;
 
 	if(PointLight0IsCastingShadow)
 	{
@@ -152,13 +152,13 @@ void main()
 		shadowValue_PointLight0 *= PointLight0Radius;
 		if(length(fragmentToLightVector_PointLight0) < shadowValue_PointLight0)
 		{
-			vec3 lightColor_PointLight0 = CalculatePointLightColor(PointLight0Position, PointLight0Intensity, PointLight0Radius);
-			lightColor += shadowValue_PointLight0 * lightColor_PointLight0;
+			vec3 lightIntensity_PointLight0 = CalculatePointLightColor(PointLight0Position, PointLight0Intensity, PointLight0Radius);
+			lightIntensity += shadowValue_PointLight0 * lightIntensity_PointLight0;
 		}
 	}
 	else
 	{
-			lightColor += CalculatePointLightColor(PointLight0Position, PointLight0Intensity, PointLight0Radius);
+			lightIntensity += CalculatePointLightColor(PointLight0Position, PointLight0Intensity, PointLight0Radius);
 	}
 
 	if(DirectionalLight0IsCastingShadow)
@@ -172,19 +172,19 @@ void main()
 
 			if(0.f < shadowValue_DirectionalLight0)
 			{
-				vec3 lightColor_DirectionalLight0 = CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity); 
-				lightColor += shadowValue_DirectionalLight0 * lightColor_DirectionalLight0;
+				vec3 lightIntensity_DirectionalLight0 = CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity); 
+				lightIntensity += shadowValue_DirectionalLight0 * lightIntensity_DirectionalLight0;
 			}
 		}
 		else
 		{
-			lightColor +=  CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity);
+			lightIntensity +=  CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity);
 		}
 	}
 	else
 	{
-		lightColor +=  CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity);
+		lightIntensity +=  CalculateDirectionalLightColor(DirectionalLight0Direction, DirectionalLight0Intensity);
 
 	}
-	fragmentColor = vec4(lightColor) * diffuseReflectance;
+	fragmentColor = vec4(lightIntensity, 1.f) * diffuseReflectance;
 }

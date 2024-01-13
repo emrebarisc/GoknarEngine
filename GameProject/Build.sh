@@ -21,6 +21,8 @@ done
 
 if [ "$isDebugBuild" = true ]; then
 	directoryName="Build_Debug"
+
+	rm $directoryName/$gameName
 	
 	if [ "$cleanBuild" = true ]; then
 		rm -rf $directoryName && mkdir $directoryName && cd $directoryName && cmake -DCMAKE_BUILD_TYPE=Debug .. && make -j 8
@@ -32,6 +34,9 @@ if [ "$isDebugBuild" = true ]; then
 	fi
 else
 	directoryName="Build_Release"
+
+	rm $directoryName/$gameName
+	
 	if [ "$cleanBuild" = true ]; then
 		rm -rf $directoryName && mkdir $directoryName && cd $directoryName && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j 8
 	else

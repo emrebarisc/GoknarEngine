@@ -62,19 +62,29 @@ void SkeletalMeshInstance::Render(RenderPassType renderPassType)
 			}
 		}
 
+
+		// TODO: OPTIMIZE
 		const int currentKeyframe = (int)std::floor(skeletalMeshAnimation_.animationTime);
 		if (currentKeyframe != skeletalMeshAnimation_.currentKeyframe)
 		{
-			skeletalMeshAnimation_.currentKeyframe = currentKeyframe;
-			if (skeletalMeshAnimation_.keyframeData.keyframeCallbackMap.find(currentKeyframe) != skeletalMeshAnimation_.keyframeData.keyframeCallbackMap.end())
+			decltype(skeletalMeshAnimation_.keyframeData.keyframeCallbackMap)& keyframeCallbackMap = skeletalMeshAnimation_.keyframeData.keyframeCallbackMap;
+			
+			int keyframeIndex = skeletalMeshAnimation_.currentKeyframe;
+			while(keyframeIndex < currentKeyframe)
 			{
-				skeletalMeshAnimation_.keyframeData.keyframeCallbackMap[currentKeyframe]();
+				if (keyframeCallbackMap.find(keyframeIndex) != keyframeCallbackMap.end())
+				{
+					keyframeCallbackMap[keyframeIndex]();
+				}
+
+				keyframeIndex = (keyframeIndex + 1) % skeletalMeshAnimation_.skeletalAnimation->maxKeyframe;
 			}
+			
+			skeletalMeshAnimation_.currentKeyframe = currentKeyframe;
 		}
 	}
 
 	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
-
 
 	// TODO: Implement a proper multi threading
 	// Following std::for_each parallelizing causes game crash

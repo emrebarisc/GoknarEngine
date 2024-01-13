@@ -5,6 +5,7 @@
 
 #include <unordered_map>
 
+#include "Delegates/Delegate.h"
 #include "Model/SkeletalMesh.h"
 
 class SkeletalAnimation;
@@ -13,17 +14,17 @@ class SocketComponent;
 struct GOKNAR_API PlayLoopData
 {
 	bool playOnce{ false };
-	std::function<void()> callback { nullptr };
+	Delegate<void()> callback {};
 };
 
 struct GOKNAR_API KeyframeData
 {
-	void AddCallbackToKeyframe(int keyframe, const std::function<void()>& callback)
+	void AddCallbackToKeyframe(int keyframe, const Delegate<void()>& callback)
 	{
 		keyframeCallbackMap.insert({ keyframe, callback });
 	}
 
-	std::unordered_map<int, std::function<void()>> keyframeCallbackMap;
+	std::unordered_map<int, Delegate<void()>> keyframeCallbackMap {};
 };
 
 struct GOKNAR_API SkeletalMeshAnimation
@@ -62,11 +63,11 @@ public:
 protected:
 
 private:
-	SkeletalMeshAnimation skeletalMeshAnimation_;
+	SkeletalMeshAnimation skeletalMeshAnimation_{};
 
-	std::vector<Matrix> boneTransformations_;
-	std::unordered_map<std::string, SocketComponent*> sockets_;
-	std::unordered_map<int, const Matrix*> boneIdToAttachedMatrixPointerMap_;
+	std::vector<Matrix> boneTransformations_ {};
+	std::unordered_map<std::string, SocketComponent*> sockets_ {};
+	std::unordered_map<int, const Matrix*> boneIdToAttachedMatrixPointerMap_ {};
 };
 
 #endif

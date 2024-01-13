@@ -161,31 +161,14 @@ void Archer::HandleDrawBowInput()
 		isAnimationBusy_ = true;
 
 		KeyframeData keyframeData;
-		keyframeData.AddCallbackToKeyframe(9,
-			[&]()
-			{
-				loadedArrow_ = new Arrow();
-				loadedArrow_->AttachToSocket(rightHandSocket_);
-			});
-
-		keyframeData.AddCallbackToKeyframe(18,
-			[&]()
-			{
-				bow_->GetSkeletalMesh()->GetMeshInstance()->AttachBoneToMatrixPointer("BowString", &bowStringSocket_->GetComponentToWorldTransformationMatrix());
-			});
+		keyframeData.AddCallbackToKeyframe(9, Delegate<void()>::create<Archer, &Archer::OnCreateArrow>(this));
+		keyframeData.AddCallbackToKeyframe(18, Delegate<void()>::create<Archer, &Archer::OnAttachBowStringToHand>(this));
 
 		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDrawArrow.001",
-			PlayLoopData{
+			PlayLoopData
+			{
 				true,
-				[&]()
-				{
-					if (isAiming_)
-					{
-						isAnimationBusy_ = false;
-						canShoot_ = true;
-						skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimIdle");
-					}
-				} 
+				Delegate<void()>::create<Archer, &Archer::OnAimingIdle>(this)
 			}, keyframeData);
 	}
 }
@@ -201,22 +184,12 @@ void Archer::HandleLooseBowInput()
 			isAnimationBusy_ = true;
 
 			KeyframeData keyframeData;
-			keyframeData.AddCallbackToKeyframe(5,
-				[&]()
-				{
-					Shoot();
-					bow_->GetSkeletalMesh()->GetMeshInstance()->AttachBoneToMatrixPointer("BowString", nullptr);
-				});
+			keyframeData.AddCallbackToKeyframe(5, Delegate<void()>::create<Archer, &Archer::OnShoot>(this));
 
 			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimRecoil",
 				PlayLoopData{
 					true,
-					[&]()
-					{
-						isAnimationBusy_ = false;
-						isLoosing_ = false;
-						Idle();
-					}
+					Delegate<void()>::create<Archer, &Archer::OnFinishedLoosing>(this)
 				}, keyframeData);
 
 			canShoot_ = false;
@@ -249,21 +222,12 @@ void Archer::EquipBow(bool equip)
 			isAnimationBusy_ = true;
 			
 			KeyframeData keyframeData;
-			keyframeData.AddCallbackToKeyframe(8, 
-				[&]() 
-				{
-					bow_->SetIsActive(true);
-				});
+			keyframeData.AddCallbackToKeyframe(8, Delegate<void()>::create<Archer, &Archer::OnBowIsHandled>(this));
 
 			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingEquipBow",
 				{
 					false,
-					[&]()
-					{
-						isBowEquiped_ = true;
-						isAnimationBusy_ = false;
-						Idle();
-					}
+					Delegate<void()>::create<Archer, &Archer::OnFinishedEquipingBow>(this)
 				}, keyframeData);
 		}
 		else
@@ -271,22 +235,12 @@ void Archer::EquipBow(bool equip)
 			isAnimationBusy_ = true;
 
 			KeyframeData keyframeData;
-			keyframeData.AddCallbackToKeyframe(
-				14,
-				[&]()
-				{
-					bow_->SetIsActive(false);
-				});
+			keyframeData.AddCallbackToKeyframe(14, Delegate<void()>::create<Archer, &Archer::OnBowIsUnhandled>(this));
 
 			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDisarmBow",
 				PlayLoopData{
 					true,
-					[&]()
-					{
-						isAnimationBusy_ = false;
-						isBowEquiped_ = false;
-						Idle();
-					}
+					Delegate<void()>::create<Archer, &Archer::OnBowIsDisarmed>(this)
 				}, keyframeData);
 		}
 
@@ -306,4 +260,62 @@ void Archer::Shoot()
 		loadedArrow_->Shoot();
 		loadedArrow_ = nullptr;
 	}
+}
+
+void Archer::OnCreateArrow()
+{
+	loadedArrow_ = new Arrow();
+	loadedArrow_->AttachToSocket(rightHandSocket_);
+}
+
+void Archer::OnAttachBowStringToHand()
+{
+	bow_->GetSkeletalMesh()->GetMeshInstance()->AttachBoneToMatrixPointer("BowString", &bowStringSocket_->GetComponentToWorldTransformationMatrix());
+}
+
+void Archer::OnAimingIdle()
+{
+	if (isAiming_)
+	{
+		isAnimationBusy_ = false;
+		canShoot_ = true;
+		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimIdle");
+	}
+}
+
+void Archer::OnShoot()
+{
+	Shoot();
+	bow_->GetSkeletalMesh()->GetMeshInstance()->AttachBoneToMatrixPointer("BowString", nullptr);
+}
+
+void Archer::OnFinishedLoosing()
+{
+	isAnimationBusy_ = false;
+	isLoosing_ = false;
+	Idle();
+}
+
+void Archer::OnBowIsHandled()
+{
+	bow_->SetIsActive(true);
+}
+
+void Archer::OnFinishedEquipingBow()
+{
+	isBowEquiped_ = true;
+	isAnimationBusy_ = false;
+	Idle();
+}
+
+void Archer::OnBowIsUnhandled()
+{
+	bow_->SetIsActive(false);
+}
+
+void Archer::OnBowIsDisarmed()
+{
+	isAnimationBusy_ = false;
+	isBowEquiped_ = false;
+	Idle();
 }

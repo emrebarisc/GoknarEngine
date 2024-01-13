@@ -285,6 +285,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 						skeletalAnimation->animationNodes = new SkeletalAnimationNode * [skeletalAnimation->animationNodeSize];
 						skeletalAnimation->duration = assimpAnimation->mDuration;
 						skeletalAnimation->ticksPerSecond = assimpAnimation->mTicksPerSecond;
+						skeletalAnimation->maxKeyframe = (int)(skeletalAnimation->ticksPerSecond * skeletalAnimation->duration);
 
 						for (unsigned int animationNodeIndex = 0; animationNodeIndex < skeletalAnimation->animationNodeSize; ++animationNodeIndex)
 						{

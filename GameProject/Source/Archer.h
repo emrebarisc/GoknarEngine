@@ -77,6 +77,18 @@ private:
 
 	void Shoot();
 
+	// ----- Delegate Callbacks -----
+	void OnCreateArrow();
+	void OnAttachBowStringToHand();
+	void OnAimingIdle();
+	void OnShoot();
+	void OnFinishedLoosing();
+	void OnBowIsHandled();
+	void OnFinishedEquipingBow();
+	void OnBowIsUnhandled();
+	void OnBowIsDisarmed();
+	// ------------------------------
+
 	SkeletalMesh* skeletalMesh_{ nullptr };
 	SkeletalMeshComponent* skeletalMeshComponent_{ nullptr };
 

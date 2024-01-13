@@ -12,6 +12,6 @@ vec3 sceneAmbient = vec3(0.039216, 0.039216, 0.039216);
 
 void main()
 {
-	 vec3 lightColor = sceneAmbient * ambientReflectance * diffuseReflectance;
-	fragmentColor = vec4(lightColor) * diffuseReflectance;
+	vec3 lightIntensity = sceneAmbient * ambientReflectance * diffuseReflectance;
+	fragmentColor = vec4(lightIntensity, 1.f) * diffuseReflectance;
 }
