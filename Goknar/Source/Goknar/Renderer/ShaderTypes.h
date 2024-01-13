@@ -25,8 +25,8 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace LIGHT
 	{
-		extern const char* LIGHT_COLOR;
-		extern const char* LIGHT_COLOR_PREFIX;
+		extern const char* LIGHT_INTENSITY;
+		extern const char* LIGHT_INTENSITY_PREFIX;
 
 		extern const char* IS_CASTING_SHADOW;
 
