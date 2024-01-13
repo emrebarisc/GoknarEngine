@@ -84,9 +84,9 @@ Renderer::~Renderer()
 		delete maskedStaticMeshInstance;
 	}
 
-	for (StaticMeshInstance* translucentStaticMeshInstance : translucentStaticMeshInstances_)
+	for (StaticMeshInstance* transparentStaticMeshInstance : transparentStaticMeshInstances_)
 	{
-		delete translucentStaticMeshInstance;
+		delete transparentStaticMeshInstance;
 	}
 
 	for (SkeletalMeshInstance* opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
@@ -99,9 +99,9 @@ Renderer::~Renderer()
 		delete maskedSkeletalMeshInstance;
 	}
 
-	for (SkeletalMeshInstance* translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
+	for (SkeletalMeshInstance* transparentSkeletalMeshInstance : transparentSkeletalMeshInstances_)
 	{
-		delete translucentSkeletalMeshInstance;
+		delete transparentSkeletalMeshInstance;
 	}
 
 	for (DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
@@ -114,9 +114,9 @@ Renderer::~Renderer()
 		delete maskedDynamicMeshInstance;
 	}
 
-	for (DynamicMeshInstance* translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
+	for (DynamicMeshInstance* transparentDynamicMeshInstance : transparentDynamicMeshInstances_)
 	{
-		delete translucentDynamicMeshInstance;
+		delete transparentDynamicMeshInstance;
 	}
 }
 
@@ -179,9 +179,9 @@ void Renderer::PreInitMeshInstances() const
 		maskedStaticMeshInstance->PreInit();
 	}
 
-	for(auto& translucentStaticMeshInstance : translucentStaticMeshInstances_)
+	for(auto& transparentStaticMeshInstance : transparentStaticMeshInstances_)
 	{
-		translucentStaticMeshInstance->PreInit();
+		transparentStaticMeshInstance->PreInit();
 	}
 
 	for(auto& opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
@@ -194,9 +194,9 @@ void Renderer::PreInitMeshInstances() const
 		maskedSkeletalMeshInstance->PreInit();
 	}
 
-	for(auto& translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
+	for(auto& transparentSkeletalMeshInstance : transparentSkeletalMeshInstances_)
 	{
-		translucentSkeletalMeshInstance->PreInit();
+		transparentSkeletalMeshInstance->PreInit();
 	}
 
 	for(auto& opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
@@ -209,9 +209,9 @@ void Renderer::PreInitMeshInstances() const
 		maskedDynamicMeshInstance->PreInit();
 	}
 
-	for(auto& translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
+	for(auto& transparentDynamicMeshInstance : transparentDynamicMeshInstances_)
 	{
-		translucentDynamicMeshInstance->PreInit();
+		transparentDynamicMeshInstance->PreInit();
 	}
 }
 
@@ -227,9 +227,9 @@ void Renderer::InitMeshInstances() const
 		maskedStaticMeshInstance->Init();
 	}
 
-	for(auto& translucentStaticMeshInstance : translucentStaticMeshInstances_)
+	for(auto& transparentStaticMeshInstance : transparentStaticMeshInstances_)
 	{
-		translucentStaticMeshInstance->Init();
+		transparentStaticMeshInstance->Init();
 	}
 
 	for(auto& opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
@@ -242,9 +242,9 @@ void Renderer::InitMeshInstances() const
 		maskedSkeletalMeshInstance->Init();
 	}
 
-	for(auto& translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
+	for(auto& transparentSkeletalMeshInstance : transparentSkeletalMeshInstances_)
 	{
-		translucentSkeletalMeshInstance->Init();
+		transparentSkeletalMeshInstance->Init();
 	}
 
 	for(auto& opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
@@ -257,9 +257,9 @@ void Renderer::InitMeshInstances() const
 		maskedDynamicMeshInstance->Init();
 	}
 
-	for(auto& translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
+	for(auto& transparentDynamicMeshInstance : transparentDynamicMeshInstances_)
 	{
-		translucentDynamicMeshInstance->Init();
+		transparentDynamicMeshInstance->Init();
 	}
 }
 
@@ -275,9 +275,9 @@ void Renderer::PostInitMeshInstances() const
 		maskedStaticMeshInstance->PostInit();
 	}
 
-	for(auto& translucentStaticMeshInstance : translucentStaticMeshInstances_)
+	for(auto& transparentStaticMeshInstance : transparentStaticMeshInstances_)
 	{
-		translucentStaticMeshInstance->PostInit();
+		transparentStaticMeshInstance->PostInit();
 	}
 
 	for(auto& opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
@@ -290,9 +290,9 @@ void Renderer::PostInitMeshInstances() const
 		maskedSkeletalMeshInstance->PostInit();
 	}
 
-	for(auto& translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
+	for(auto& transparentSkeletalMeshInstance : transparentSkeletalMeshInstances_)
 	{
-		translucentSkeletalMeshInstance->PostInit();
+		transparentSkeletalMeshInstance->PostInit();
 	}
 
 	for(auto& opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
@@ -305,9 +305,9 @@ void Renderer::PostInitMeshInstances() const
 		maskedDynamicMeshInstance->PostInit();
 	}
 
-	for(auto& translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
+	for(auto& transparentDynamicMeshInstance : transparentDynamicMeshInstances_)
 	{
-		translucentDynamicMeshInstance->PostInit();
+		transparentDynamicMeshInstance->PostInit();
 	}
 }
 
@@ -630,7 +630,7 @@ void Renderer::Render(RenderPassType renderPassType)
 	else
 	{
 		// Assign deferred renderer's depth buffer to depth buffer
-		// For translucent objects
+		// For transparent objects
 	}
 
 	if (renderPassType == RenderPassType::GeometryBuffer)
@@ -639,39 +639,42 @@ void Renderer::Render(RenderPassType renderPassType)
 		return;
 	}
 
-	// Translucent meshes needs to be hold in a single ordered array in order to work correctly in the future
-	glEnable(GL_BLEND);
-	for (StaticMeshInstance* translucentStaticMeshInstance : translucentStaticMeshInstances_)
+	if (renderPassType != RenderPassType::GeometryBuffer)
 	{
-		if (!translucentStaticMeshInstance->GetIsRendered()) continue;
-		const MeshUnit* mesh = translucentStaticMeshInstance->GetMesh();
-		translucentStaticMeshInstance->Render(renderPassType);
+		// Transparent meshes needs to be hold in a single ordered array in order to work correctly in the future
+		glEnable(GL_BLEND);
+		for (StaticMeshInstance* transparentStaticMeshInstance : transparentStaticMeshInstances_)
+		{
+			if (!transparentStaticMeshInstance->GetIsRendered()) continue;
+			const MeshUnit* mesh = transparentStaticMeshInstance->GetMesh();
+			transparentStaticMeshInstance->Render(renderPassType);
 
-		int facePointCount = mesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+			int facePointCount = mesh->GetFaceCount() * 3;
+			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+		}
+
+		for (SkeletalMeshInstance* transparentSkeletalMeshInstance : transparentSkeletalMeshInstances_)
+		{
+			if (!transparentSkeletalMeshInstance->GetIsRendered()) continue;
+			// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
+			const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(transparentSkeletalMeshInstance->GetMesh());
+			transparentSkeletalMeshInstance->Render(renderPassType);
+
+			int facePointCount = skeletalMesh->GetFaceCount() * 3;
+			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
+		}
+
+		for (DynamicMeshInstance* transparentDynamicMeshInstance : transparentDynamicMeshInstances_)
+		{
+			if (!transparentDynamicMeshInstance->GetIsRendered()) continue;
+			const MeshUnit* mesh = transparentDynamicMeshInstance->GetMesh();
+			transparentDynamicMeshInstance->Render(renderPassType);
+
+			int facePointCount = mesh->GetFaceCount() * 3;
+			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+		}
+		glDisable(GL_BLEND);
 	}
-
-	for (SkeletalMeshInstance* translucentSkeletalMeshInstance : translucentSkeletalMeshInstances_)
-	{
-		if (!translucentSkeletalMeshInstance->GetIsRendered()) continue;
-		// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
-		const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(translucentSkeletalMeshInstance->GetMesh());
-		translucentSkeletalMeshInstance->Render(renderPassType);
-
-		int facePointCount = skeletalMesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
-	}
-
-	for (DynamicMeshInstance* translucentDynamicMeshInstance : translucentDynamicMeshInstances_)
-	{
-		if (!translucentDynamicMeshInstance->GetIsRendered()) continue;
-		const MeshUnit* mesh = translucentDynamicMeshInstance->GetMesh();
-		translucentDynamicMeshInstance->Render(renderPassType);
-
-		int facePointCount = mesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
-	}
-	glDisable(GL_BLEND);
 }
 
 void Renderer::AddStaticMeshToRenderer(StaticMesh* staticMesh)
@@ -691,8 +694,8 @@ void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 	case MaterialBlendModel::Masked:
 		maskedStaticMeshInstances_.push_back(meshInstance);
 		break;
-	case MaterialBlendModel::Translucent:
-		translucentStaticMeshInstances_.push_back(meshInstance);
+	case MaterialBlendModel::Transparent:
+		transparentStaticMeshInstances_.push_back(meshInstance);
 		break;
 	default:
 		break;
@@ -731,14 +734,14 @@ void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 		}
 		break;
 	}
-	case MaterialBlendModel::Translucent:
+	case MaterialBlendModel::Transparent:
 	{
-		size_t meshInstanceCount = translucentStaticMeshInstances_.size();
+		size_t meshInstanceCount = transparentStaticMeshInstances_.size();
 		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 		{
-			if (translucentStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
+			if (transparentStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
 			{
-				translucentStaticMeshInstances_.erase(translucentStaticMeshInstances_.begin() + meshInstanceIndex);
+				transparentStaticMeshInstances_.erase(transparentStaticMeshInstances_.begin() + meshInstanceIndex);
 				return;
 			}
 		}
@@ -766,8 +769,8 @@ void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstanc
 	case MaterialBlendModel::Masked:
 		maskedSkeletalMeshInstances_.push_back(skeletalMeshInstance);
 		break;
-	case MaterialBlendModel::Translucent:
-		translucentSkeletalMeshInstances_.push_back(skeletalMeshInstance);
+	case MaterialBlendModel::Transparent:
+		transparentSkeletalMeshInstances_.push_back(skeletalMeshInstance);
 		break;
 	default:
 		break;
@@ -806,14 +809,14 @@ void Renderer::RemoveSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInst
 		}
 		break;
 	}
-	case MaterialBlendModel::Translucent:
+	case MaterialBlendModel::Transparent:
 	{
-		size_t meshInstanceCount = translucentSkeletalMeshInstances_.size();
+		size_t meshInstanceCount = transparentSkeletalMeshInstances_.size();
 		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 		{
-			if (translucentSkeletalMeshInstances_[meshInstanceIndex] == skeletalMeshInstance)
+			if (transparentSkeletalMeshInstances_[meshInstanceIndex] == skeletalMeshInstance)
 			{
-				translucentSkeletalMeshInstances_.erase(translucentSkeletalMeshInstances_.begin() + meshInstanceIndex);
+				transparentSkeletalMeshInstances_.erase(transparentSkeletalMeshInstances_.begin() + meshInstanceIndex);
 				return;
 			}
 		}
@@ -841,8 +844,8 @@ void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 	case MaterialBlendModel::Masked:
 		maskedDynamicMeshInstances_.push_back(dynamicMeshInstance);
 		break;
-	case MaterialBlendModel::Translucent:
-		translucentDynamicMeshInstances_.push_back(dynamicMeshInstance);
+	case MaterialBlendModel::Transparent:
+		transparentDynamicMeshInstances_.push_back(dynamicMeshInstance);
 		break;
 	default:
 		break;
@@ -881,14 +884,14 @@ void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstanc
 		}
 		break;
 	}
-	case MaterialBlendModel::Translucent:
+	case MaterialBlendModel::Transparent:
 	{
-		size_t meshInstanceCount = translucentDynamicMeshInstances_.size();
+		size_t meshInstanceCount = transparentDynamicMeshInstances_.size();
 		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
 		{
-			if (translucentDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
+			if (transparentDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
 			{
-				translucentDynamicMeshInstances_.erase(translucentDynamicMeshInstances_.begin() + meshInstanceIndex);
+				transparentDynamicMeshInstances_.erase(transparentDynamicMeshInstances_.begin() + meshInstanceIndex);
 				return;
 			}
 		}

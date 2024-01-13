@@ -15,7 +15,7 @@ enum class MaterialBlendModel
 {
 	Opaque = 0,
 	Masked,
-	Translucent
+	Transparent
 };
 
 enum class MaterialShadingModel
