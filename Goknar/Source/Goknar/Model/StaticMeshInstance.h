@@ -1,10 +1,10 @@
 #ifndef __STATICMESHINSTANCE_H__
 #define __STATICMESHINSTANCE_H__
 
-#include "MeshInstance.h"
+#include "IMeshInstance.h"
 #include "Model/StaticMesh.h"
 
-class GOKNAR_API StaticMeshInstance : public MeshInstance<StaticMesh>
+class GOKNAR_API StaticMeshInstance : public IMeshInstance<StaticMesh>
 {
 public:
 	StaticMeshInstance() = delete;

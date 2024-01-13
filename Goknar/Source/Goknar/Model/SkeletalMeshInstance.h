@@ -1,7 +1,7 @@
 #ifndef __SKELETALMESHINSTANCE_H__
 #define __SKELETALMESHINSTANCE_H__
 
-#include "MeshInstance.h"
+#include "IMeshInstance.h"
 
 #include <unordered_map>
 
@@ -38,7 +38,7 @@ struct GOKNAR_API SkeletalMeshAnimation
 	int currentKeyframe{ 0 };
 };
 
-class GOKNAR_API SkeletalMeshInstance : public MeshInstance<SkeletalMesh>
+class GOKNAR_API SkeletalMeshInstance : public IMeshInstance<SkeletalMesh>
 {
 public:
 	SkeletalMeshInstance() = delete;

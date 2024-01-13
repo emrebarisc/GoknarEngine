@@ -6,7 +6,7 @@
 #include "Goknar/Renderer/Renderer.h"
 
 StaticMeshInstance::StaticMeshInstance(RenderComponent* parentComponent) : 
-	MeshInstance(parentComponent)
+	IMeshInstance(parentComponent)
 {
 
 }
@@ -14,7 +14,7 @@ StaticMeshInstance::StaticMeshInstance(RenderComponent* parentComponent) :
 void StaticMeshInstance::Render(RenderPassType renderPassType)
 {
 	PreRender(renderPassType);
-	MeshInstance::Render(renderPassType);
+	IMeshInstance::Render(renderPassType);
 }
 
 void StaticMeshInstance::AddMeshInstanceToRenderer()

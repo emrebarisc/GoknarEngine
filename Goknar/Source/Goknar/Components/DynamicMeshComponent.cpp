@@ -5,7 +5,7 @@
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/DynamicMeshInstance.h"
 #include "Goknar/Log.h"
-#include "Goknar/Model/MeshInstance.h"
+#include "Goknar/Model/IMeshInstance.h"
 
 DynamicMeshComponent::DynamicMeshComponent(Component* parent) : MeshComponent(parent)
 {}
