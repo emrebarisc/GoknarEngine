@@ -26,8 +26,8 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace LIGHT
 	{
-		const char* LIGHT_COLOR = "lightColor";
-		const char* LIGHT_COLOR_PREFIX = "lightColor_";
+		const char* LIGHT_INTENSITY = "lightIntensity";
+		const char* LIGHT_INTENSITY_PREFIX = "lightIntensity_";
 
 		const char* DIRECTIONAL_LIGHT = "DirectionalLight";
 		const char* POINT_LIGHT = "PointLight";
