@@ -15,7 +15,9 @@ public:
 
 	}
 
+	virtual void PreInit();
 	virtual void Init();
+	virtual void PostInit();
 	virtual void BeginGame() {}
 	virtual void TickComponent(float deltaTime) {}
 
