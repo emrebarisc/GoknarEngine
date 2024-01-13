@@ -257,6 +257,7 @@ struct GOKNAR_API SkeletalAnimation
     float duration{ 0.f };
     float ticksPerSecond{ 0.f };
     unsigned int animationNodeSize{ 0 };
+	unsigned int maxKeyframe{ 0 };
 };
 
 typedef std::vector<VertexBoneData> VertexBoneDataArray;
