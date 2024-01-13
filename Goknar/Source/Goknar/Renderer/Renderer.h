@@ -155,17 +155,17 @@ private:
 	std::vector<StaticMeshInstance*> opaqueStaticMeshInstances_;
 	//TODO: Is it really necessary to hold masked objects as a seperate array?
 	std::vector<StaticMeshInstance*> maskedStaticMeshInstances_;
-	std::vector<StaticMeshInstance*> translucentStaticMeshInstances_;
+	std::vector<StaticMeshInstance*> transparentStaticMeshInstances_;
 
 	std::vector<SkeletalMeshInstance*> opaqueSkeletalMeshInstances_;
 	//TODO: Is it really necessary to hold masked objects as a seperate array?
 	std::vector<SkeletalMeshInstance*> maskedSkeletalMeshInstances_;
-	std::vector<SkeletalMeshInstance*> translucentSkeletalMeshInstances_;
+	std::vector<SkeletalMeshInstance*> transparentSkeletalMeshInstances_;
 
 	std::vector<DynamicMeshInstance*> opaqueDynamicMeshInstances_;
 	//TODO: Is it really necessary to hold masked objects as a seperate array?
 	std::vector<DynamicMeshInstance*> maskedDynamicMeshInstances_;
-	std::vector<DynamicMeshInstance*> translucentDynamicMeshInstances_;
+	std::vector<DynamicMeshInstance*> transparentDynamicMeshInstances_;
 
 	ShadowManager* shadowManager_{ nullptr };
 

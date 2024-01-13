@@ -565,7 +565,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				std::string blendModel;
 				stream >> blendModel;
 				material->SetBlendModel(blendModel == "Masked" ? MaterialBlendModel::Masked :
-					blendModel == "Translucent" ? MaterialBlendModel::Translucent :
+					blendModel == "Transparent" ? MaterialBlendModel::Transparent :
 					MaterialBlendModel::Opaque);
 			}
 
