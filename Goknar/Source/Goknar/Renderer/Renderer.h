@@ -97,10 +97,6 @@ public:
 	void Init();
 	void PostInit();
 
-	void PreInitMeshInstances() const;
-	void InitMeshInstances() const;
-	void PostInitMeshInstances() const;
-
 	void Render(RenderPassType renderPassType);
 
 	void AddStaticMeshToRenderer(StaticMesh* object);
