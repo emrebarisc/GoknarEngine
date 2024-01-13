@@ -11,7 +11,7 @@
 #include "Goknar/Managers/InputManager.h"
 #include "Goknar/Log.h"
 #include "Goknar/Editor/EditorGroundGrid.h"
-#include "Goknar/Model/MeshInstance.h"
+#include "Goknar/Model/IMeshInstance.h"
 
 ImGuiEditor::ImGuiEditor() :
 	Editor(),

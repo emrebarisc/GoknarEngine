@@ -14,7 +14,7 @@
 #include "Goknar/Renderer/ShaderTypes.h"
 
 SkeletalMeshInstance::SkeletalMeshInstance(RenderComponent* parentComponent) :
-	MeshInstance(parentComponent)
+	IMeshInstance(parentComponent)
 {
 }
 
@@ -113,12 +113,12 @@ void SkeletalMeshInstance::Render(RenderPassType renderPassType)
 void SkeletalMeshInstance::SetRenderOperations(RenderPassType renderPassType)
 {
 	mesh_->GetMaterial()->GetShader(renderPassType)->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
-	MeshInstance::Render(renderPassType);
+	IMeshInstance::Render(renderPassType);
 }
 
 void SkeletalMeshInstance::SetMesh(SkeletalMesh* skeletalMesh)
 {
-	MeshInstance::SetMesh(skeletalMesh);
+	IMeshInstance::SetMesh(skeletalMesh);
 
 	boneTransformations_.resize(skeletalMesh->GetBoneSize(), Matrix::IdentityMatrix);
 }

@@ -4,13 +4,12 @@
 #include "RenderComponent.h"
 
 #include "Goknar/Core.h"
-#include "Goknar/Model/MeshInstance.h"
+#include "Goknar/Model/IMeshInstance.h"
 #include "Goknar/Model/DynamicMeshInstance.h"
 #include "Goknar/Model/StaticMeshInstance.h"
 #include "Goknar/Model/SkeletalMeshInstance.h"
 
 #include "Goknar/Engine.h"
-#include "Goknar/Model/MeshInstance.h"
 #include "Goknar/ObjectBase.h"
 
 class MeshUnit;

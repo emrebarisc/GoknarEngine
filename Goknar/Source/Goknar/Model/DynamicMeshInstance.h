@@ -2,9 +2,9 @@
 #define __DYNAMICMESHINSTANCE_H__
 
 #include "Model/DynamicMesh.h"
-#include "MeshInstance.h"
+#include "IMeshInstance.h"
 
-class GOKNAR_API DynamicMeshInstance : public MeshInstance<DynamicMesh>
+class GOKNAR_API DynamicMeshInstance : public IMeshInstance<DynamicMesh>
 {
 public:
 	DynamicMeshInstance() = delete;

@@ -4,7 +4,7 @@
 
 #include "Goknar/Model/2D/AnimatedSpriteMesh.h"
 #include "Goknar/Model/DynamicMeshInstance.h"
-#include "Goknar/Model/MeshInstance.h"
+#include "Goknar/Model/IMeshInstance.h"
 
 AnimatedSpriteComponent::AnimatedSpriteComponent(Component* parent) :
 	MeshComponent(parent, new DynamicMeshInstance(this))
