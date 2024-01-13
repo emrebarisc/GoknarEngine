@@ -67,10 +67,18 @@ void Component::SetIsTickable(bool isTickable)
 	}
 }
 
+void Component::PreInit()
+{
+}
+
 void Component::Init()
 {
-	isInitialized_ = true;
 	BeginGame();
+}
+
+void Component::PostInit()
+{
+	isInitialized_ = true;
 }
 
 void Component::SetPivotPoint(const Vector3& pivotPoint)

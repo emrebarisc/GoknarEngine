@@ -12,7 +12,7 @@ public:
 	StaticMeshComponent() = delete;
 	StaticMeshComponent(Component* parent);
 	virtual ~StaticMeshComponent();
-	
+
 	void SetMesh(StaticMesh* mesh) override;
 
 protected:

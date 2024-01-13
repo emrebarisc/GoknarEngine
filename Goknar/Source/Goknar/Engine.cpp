@@ -289,7 +289,9 @@ void Engine::InitComponents()
 	// For example creating new components on BeginGame() function
 	for (int componentIndex = 0; componentIndex < componentsToBeInitializedSize_; ++componentIndex)
 	{
+		componentsToBeInitialized_[componentIndex]->PreInit();
 		componentsToBeInitialized_[componentIndex]->Init();
+		componentsToBeInitialized_[componentIndex]->PostInit();
 	}
 	componentsToBeInitialized_.clear();
 	hasUninitializedComponents_ = false;

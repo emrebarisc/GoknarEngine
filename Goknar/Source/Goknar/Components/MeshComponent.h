@@ -23,6 +23,10 @@ public:
 	MeshComponent() = delete;
 	inline virtual ~MeshComponent();
 
+	inline virtual void PreInit() override;
+	inline virtual void Init() override;
+	inline virtual void PostInit() override; 
+
 	inline void Destroy() override;
 
 	inline virtual void SetMesh(MeshType* mesh) = 0;
@@ -50,6 +54,30 @@ MeshComponent<MeshType, MeshInstanceType>::MeshComponent(Component* parent) :
 	RenderComponent(parent),
 	meshInstance_(new MeshInstanceType(this))
 {
+}
+
+template<class MeshType, class MeshInstanceType>
+void MeshComponent<MeshType, MeshInstanceType>::PreInit()
+{
+	Component::PreInit();
+
+	meshInstance_->PreInit();
+}
+
+template<class MeshType, class MeshInstanceType>
+void MeshComponent<MeshType, MeshInstanceType>::Init()
+{
+	Component::Init();
+
+	meshInstance_->Init();
+}
+
+template<class MeshType, class MeshInstanceType>
+void MeshComponent<MeshType, MeshInstanceType>::PostInit()
+{
+	Component::PostInit();
+
+	meshInstance_->PostInit();
 }
 
 template<class MeshType, class MeshInstanceType>
