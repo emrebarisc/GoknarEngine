@@ -28,9 +28,18 @@ void MaterialSphereSpawner::BeginGame()
             StaticMesh* staticMesh = staticMeshInstance->GetMesh();
 
             MaterialInstance* instanceMaterial = MaterialInstance::Create(staticMesh->GetMaterial());
-            instanceMaterial->SetDiffuseReflectance(Vector3{0.3725490196f, 0.f, 0.62745098039f});
-            instanceMaterial->SetSpecularReflectance(Vector3{x / 9.f});
-            instanceMaterial->SetPhongExponent(pow(2, y));
+
+            if(y < 5.f)
+            {
+                instanceMaterial->SetDiffuseReflectance(Vector3{0.3725490196f, 0.f, 0.62745098039f});
+                instanceMaterial->SetSpecularReflectance(Vector3{x / 9.f});
+                instanceMaterial->SetPhongExponent(pow(2, y));
+            }
+            else
+            {
+                instanceMaterial->SetBlendModel(MaterialBlendModel::Transparent);
+                instanceMaterial->SetDiffuseReflectance(Vector4{});
+            }
             staticMeshInstance->SetMaterial(instanceMaterial);
         }
     }
