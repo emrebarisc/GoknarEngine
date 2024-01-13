@@ -11,9 +11,9 @@
 
 #include "Goknar/Managers/WindowManager.h"
 
-IMaterialBase::IMaterialBase() : 
-	ambientReflectance_(Vector3::ZeroVector), 
-	diffuseReflectance_(Vector3::ZeroVector), 
+IMaterialBase::IMaterialBase() :  
+	diffuseReflectance_(Vector4::ZeroVector), 
+	ambientReflectance_(Vector3::ZeroVector),
 	specularReflectance_(Vector3::ZeroVector),
 	blendModel_(MaterialBlendModel::Opaque),
 	shadingModel_(MaterialShadingModel::Default),
@@ -93,8 +93,8 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 
 	if (renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::GeometryBuffer)
 	{
+		shader->SetVector4(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, diffuseReflectance_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, ambientReflectance_);
-		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, diffuseReflectance_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, phongExponent_);
 	}

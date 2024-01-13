@@ -52,12 +52,17 @@ public:
 		ambientReflectance_ = ambientReflectance;
 	}
 
-	const Vector3& GetDiffuseReflectance() const
+	const Vector4& GetDiffuseReflectance() const
 	{
 		return diffuseReflectance_;
 	}
 
 	void SetDiffuseReflectance(const Vector3& diffuseReflectance)
+	{
+		diffuseReflectance_ = Vector4(diffuseReflectance, 1.f);
+	}
+
+	void SetDiffuseReflectance(const Vector4& diffuseReflectance)
 	{
 		diffuseReflectance_ = diffuseReflectance;
 	}
@@ -122,8 +127,8 @@ public:
 protected:
 	std::vector<const Image*> textureImages_;
 
+	Vector4 diffuseReflectance_{ Vector4::ZeroVector };
 	Vector3 ambientReflectance_{ Vector3::ZeroVector };
-	Vector3 diffuseReflectance_{ Vector3::ZeroVector };
 	Vector3 specularReflectance_{ Vector3::ZeroVector };
 
 	std::string name_{ "" };

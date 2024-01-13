@@ -222,3 +222,9 @@ void Shader::SetVector3(const char* name, const Vector3& vector) const
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
 	glUniform3fv(uniformLocation, 1, &vector.x);
 }
+
+void Shader::SetVector4(const char* name, const Vector4& vector) const
+{
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniform4fv(uniformLocation, 1, &vector.x);
+}
