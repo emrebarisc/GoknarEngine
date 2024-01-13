@@ -243,7 +243,7 @@ void main()
 				fragmentShaderMain += "\tif (" + textureColorVariable + ".a < 0.5f) discard;\n";
 			}
 
-			fragmentShaderMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + " = vec3(" + textureColorVariable + "); \n";
+			fragmentShaderMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + " = vec4(" + textureColorVariable + "); \n";
 		}
 	}
 
@@ -366,8 +366,8 @@ in vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
 	}
 	else
 	{
-		fragmentShaderUniforms += "uniform vec3 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";\n";
-		insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + " = " + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + "; \n";
+		fragmentShaderUniforms += GetMaterialDiffuseVariable();
+		insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + " = " + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + ".xyz; \n";
 	}
 
 	fragmentShaderUniforms += "uniform vec3 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR) + ";\n";
@@ -407,7 +407,7 @@ std::string ShaderBuilder::GetFragmentShaderScript_DeferredPass()
 	fragmentShader += R"(
 #version 440 core
 
-out vec3 )" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + R"(;
+out vec4 )" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + R"(;
 
 in vec2 )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + ";";
 	const Vector3& sceneAmbientLight = scene->GetAmbientLight();
@@ -429,9 +429,9 @@ in vec2 )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + ";";
 
 	fragmentShader += R"(
 vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
-vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(;
-vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + R"(;
+vec4 )" + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + R"(;
 vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"(;
+vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(;
 float )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"(;
 )";
 
@@ -447,29 +447,29 @@ void main()
 		{
 			if()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"(.y < 0.5f)
 			{
-				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( * 2.f).xyz;
+				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( * 2.f);
 			}
 			else
 			{
-				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.f, 0.5f)) * 2.f).xyz;
+				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.f, 0.5f)) * 2.f);
 			}
 		}
 		else
 		{
 			if()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"(.y < 0.5f)
 			{
-				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f).xyz;
+				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f);
 			}
 			else
 			{
-				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f).xyz * 0.5f + vec3(0.5f).xyz;
+				fragmentColor = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(, ()" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"( - vec2(0.5f, 0.5f)) * 2.f) * 0.5f + vec4(0.5f);
 			}
 		}
 
 		return;
 	}
 
-	)" + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz;
+	)" + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
 	
 	)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = vec4(texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz, 1.f);
 
@@ -489,7 +489,7 @@ void main()
 	}
 	fragmentShader += "//-------------------------------------------------------------------------------\n\n";
 
-	fragmentShader += "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " = sceneAmbient;\n";;
+	fragmentShader += "\t vec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + " = sceneAmbient;\n";;
 	fragmentShader += fragmentShaderLightAdditionsInsideMain_;
 	fragmentShader += fragmentShaderInsideMainEnd_;
 	fragmentShader += "\n}";
@@ -571,9 +571,9 @@ void ShaderBuilder::FS_BuildSceneForwardRendering()
 
 	const Vector3& sceneAmbientLight = scene->GetAmbientLight();
 	fragmentShaderOutsideMain_ += "vec3 sceneAmbient = vec3(" + std::to_string(sceneAmbientLight.x / 255.f) + ", " + std::to_string(sceneAmbientLight.y / 255.f) + ", " + std::to_string(sceneAmbientLight.z / 255.f) + ");\n";
-	fragmentShaderInsideMainBegin_ += "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " = sceneAmbient * " + SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT+ " * " + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + ";\n";
+	fragmentShaderInsideMainBegin_ += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + " = sceneAmbient * " + SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT+ " * " + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + ";\n";
 
-	fragmentShaderInsideMainEnd_ += "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " *= " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";";
+	fragmentShaderInsideMainEnd_ += "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " = vec4(" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR + ", 1.f) * " + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + ";";
 
 	uniforms_ = lightUniforms_;
 
@@ -720,7 +720,7 @@ std::string ShaderBuilder::VS_GetVertexNormalText()
 std::string ShaderBuilder::FS_GetVariableTexts()
 {
 	std::string variableTexts = "\n";
-	variableTexts += "out vec3 ";
+	variableTexts += "out vec4 ";
 	variableTexts += SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR;
 	variableTexts += ";\n";
 
@@ -989,12 +989,12 @@ std::string ShaderBuilder::GetMaterialVariables()
 
 std::string ShaderBuilder::GetMaterialDiffuseVariable()
 {
-	return "uniform vec3 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";\n";
+	return "uniform vec4 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";\n";
 }
 
 std::string ShaderBuilder::GetTextureDiffuseVariable()
 {
-	return "vec3 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";\n";
+	return "vec4 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";\n";
 }
 
 std::string ShaderBuilder::GetPointLightUniformTexts(const std::string& lightVariableName)
@@ -1064,7 +1064,7 @@ std::string ShaderBuilder::GetStaticPointLightText(const PointLight* pointLight)
 
 std::string ShaderBuilder::GetPointLightColorSummationText(const std::string& lightVariableName)
 {
-	return "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " += CalculatePointLightColor(" +
+	return "\t" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + " += CalculatePointLightColor(" +
 		lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " +
 		lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " +
 		lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + ");\n";
@@ -1120,7 +1120,7 @@ std::string ShaderBuilder::GetStaticDirectionalLightText(const DirectionalLight*
 
 std::string ShaderBuilder::GetDirectionalLightColorSummationText(const std::string& lightVariableName)
 {
-	return "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " += CalculateDirectionalLightColor(" +
+	return "\t" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + " += CalculateDirectionalLightColor(" +
 		lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " +
 		lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ");\n";
 }
@@ -1209,7 +1209,7 @@ std::string ShaderBuilder::GetStaticSpotLightText(const SpotLight* spotLight) co
 
 std::string ShaderBuilder::GetSpotLightColorSummationText(const std::string& lightVariableName)
 {
-	return "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " += CalculateSpotLightColor(" +
+	return "\t" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + " += CalculateSpotLightColor(" +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " +
 			lightVariableName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " +
@@ -1259,12 +1259,12 @@ std::string ShaderBuilder::PointLight_GetShadowCheck(const std::string& lightNam
 		if(length()" + std::string(SHADER_VARIABLE_NAMES::SHADOW::FRAGMENT_TO_LIGHT_VECTOR_PREFIX) + lightName + ") < " + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + R"()
 		{
 			vec3 )" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX + lightName + " = CalculatePointLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + R"();
-			)" + SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR + R"( += )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + " * " + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX + lightName + R"(;
+			)" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR + R"( += )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + " * " + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX + lightName + R"(;
 		}
 	}
 	else
 	{
-			)" + SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR + R"( += )" +  "CalculatePointLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + R"();
+			)" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR + R"( += )" +  "CalculatePointLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + R"();
 	}
 )";
 }
@@ -1284,17 +1284,17 @@ std::string ShaderBuilder::DirectionalLight_GetShadowCheck(const std::string& li
 			if(0.f < )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + R"()
 			{
 				vec3 )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX) + lightName + " = CalculateDirectionalLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"(); 
-				)" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + R"( += )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + " * " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX) + lightName + R"(;
+				)" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + R"( += )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + " * " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX) + lightName + R"(;
 			}
 		}
 		else
 		{
-			)" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + R"( += )" + " CalculateDirectionalLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"();
+			)" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + R"( += )" + " CalculateDirectionalLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"();
 		}
 	}
 	else
 	{
-		)" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + R"( += )" + " CalculateDirectionalLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"();
+		)" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + R"( += )" + " CalculateDirectionalLightColor(" + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " + lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"();
 
 	}
 )";
@@ -1320,12 +1320,12 @@ std::string ShaderBuilder::SpotLight_GetShadowCheck(const std::string& lightName
 					lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " +
 					lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::COVERAGE_ANGLE + ", " +
 					lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::FALLOFF_ANGLE + R"(); 
-				)" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + R"( += )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + " * " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX) + lightName + R"(;
+				)" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + R"( += )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE_PREFIX + lightName + " * " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR_PREFIX) + lightName + R"(;
 			}
 		}
 		else
 		{
-			)" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + R"( += )" + " CalculateSpotLightColor(" +
+			)" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + R"( += )" + " CalculateSpotLightColor(" +
 					lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " +
 					lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " +
 					lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " +
@@ -1335,7 +1335,7 @@ std::string ShaderBuilder::SpotLight_GetShadowCheck(const std::string& lightName
 	}
 	else
 	{
-		)" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + R"( += )" + " CalculateSpotLightColor(" +
+		)" + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_COLOR) + R"( += )" + " CalculateSpotLightColor(" +
 				lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + ", " +
 				lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + ", " +
 				lightName + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + ", " +
