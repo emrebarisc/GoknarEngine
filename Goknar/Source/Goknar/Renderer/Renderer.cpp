@@ -505,6 +505,23 @@ void Renderer::Render(RenderPassType renderPassType)
 		// Transparent meshes needs to be hold in a single ordered array in order to work correctly in the future
 		glEnable(GL_BLEND);
 		BindStaticVBO();
+
+		struct
+		{
+			bool operator()(const StaticMeshInstance* a, const StaticMeshInstance* b) const
+			{
+				Vector3 cameraPosition = engine->GetCameraManager()->GetActiveCamera()->GetPosition();
+				return (cameraPosition - a->GetParentComponent()->GetWorldPosition()).SquareLength() > 
+					   (cameraPosition - b->GetParentComponent()->GetWorldPosition()).SquareLength();
+			}
+		}
+		customLess;
+	
+		std::sort(
+			transparentStaticMeshInstances_.begin(),
+			transparentStaticMeshInstances_.end(),
+			customLess);
+
 		for (StaticMeshInstance* transparentStaticMeshInstance : transparentStaticMeshInstances_)
 		{
 			if (!transparentStaticMeshInstance->GetIsRendered()) continue;

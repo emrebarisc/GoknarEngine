@@ -34,6 +34,11 @@ public:
 	inline void Init();
 	inline void PostInit();
 
+	const RenderComponent* GetParentComponent() const
+	{
+		return parentComponent_;
+	}
+
 	inline int GetComponentId() const
 	{
 		return componentId_;
