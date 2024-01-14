@@ -571,7 +571,7 @@ void ShaderBuilder::FS_BuildSceneForwardRendering()
 
 	const Vector3& sceneAmbientLight = scene->GetAmbientLight();
 	fragmentShaderOutsideMain_ += "vec3 sceneAmbient = vec3(" + std::to_string(sceneAmbientLight.x / 255.f) + ", " + std::to_string(sceneAmbientLight.y / 255.f) + ", " + std::to_string(sceneAmbientLight.z / 255.f) + ");\n";
-	fragmentShaderInsideMainBegin_ += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = sceneAmbient * " + SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT+ " * " + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + ";\n";
+	fragmentShaderInsideMainBegin_ += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = sceneAmbient * " + SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT + ";\n";
 
 	fragmentShaderInsideMainEnd_ += "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " = vec4(" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY + ", 1.f) * " + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + ";";
 
