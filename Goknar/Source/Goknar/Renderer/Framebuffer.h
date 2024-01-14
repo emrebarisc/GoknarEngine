@@ -41,6 +41,7 @@ public:
 	void PostInit();
 
 	void Bind() const;
+	void Bind(FramebufferBindTarget bindTarget) const;
 	void Unbind();
 
 	void DrawBuffers();

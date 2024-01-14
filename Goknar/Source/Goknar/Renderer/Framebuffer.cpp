@@ -54,6 +54,12 @@ void Framebuffer::Bind() const
 	EXIT_ON_GL_ERROR("Framebuffer::Bind");
 }
 
+void Framebuffer::Bind(FramebufferBindTarget bindTarget) const
+{
+	glBindFramebuffer((int)bindTarget, rendererFramebufferId_);
+	EXIT_ON_GL_ERROR("Framebuffer::Bind(FramebufferBindTarget)");
+}
+
 void Framebuffer::Unbind()
 {
 	glBindFramebuffer((int)framebufferBindTarget_, 0);

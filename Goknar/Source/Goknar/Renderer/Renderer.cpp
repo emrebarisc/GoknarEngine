@@ -485,7 +485,8 @@ void Renderer::Render(RenderPassType renderPassType)
 		// For transparent objects
 
 		GeometryBufferData* geometryBufferData = deferredRenderingData_->geometryBufferData;
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, geometryBufferData->depthRenderbuffer);
+		geometryBufferData->geometryFrameBuffer->Bind(FramebufferBindTarget::READ_FRAMEBUFFER);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBlitFramebuffer(0, 0, geometryBufferData->bufferWidth, geometryBufferData->bufferHeight, 
 						  0, 0, geometryBufferData->bufferWidth, geometryBufferData->bufferHeight,
 						  GL_DEPTH_BUFFER_BIT, GL_NEAREST);
