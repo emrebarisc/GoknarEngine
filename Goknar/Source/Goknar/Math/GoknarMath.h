@@ -350,6 +350,16 @@ struct GOKNAR_API Vector3
 		return (*this - rhs).Length();
 	}
 
+	static inline float SquareDistance(const Vector3& vec1, const Vector3& vec2)
+	{
+		return (vec2 - vec1).SquareLength();
+	}
+
+	inline float SquareDistance(const Vector3& rhs) const
+	{
+		return (*this - rhs).SquareLength();
+	}
+
 	static inline Vector3 Cross(const Vector3& v1, const Vector3& v2)
 	{
 		return Vector3( v1.y * v2.z - v1.z * v2.y,
