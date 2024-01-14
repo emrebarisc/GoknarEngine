@@ -46,6 +46,7 @@ public:
 	void Unbind();
 
 	void GenerateBuffers();
+	void BindGBufferDepth();
 
 	Framebuffer* geometryFrameBuffer;
 
@@ -71,6 +72,8 @@ public:
 	void Init();
 	void BindGeometryBuffer();
 	void UnbindGeometryBuffer();
+
+	void BindGBufferDepth();
 
 	void Render();
 
@@ -146,6 +149,8 @@ private:
 	void BindDynamicVBO();
 	void SetAttribPointers();
 	void SetAttribPointersForSkeletalMesh();
+
+	void SortTransparentInstances();
 
 	std::vector<StaticMesh*> staticMeshes_;
 	std::vector<SkeletalMesh*> skeletalMeshes_;

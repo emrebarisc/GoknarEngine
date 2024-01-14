@@ -21,6 +21,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* DIFFUSE;
 		extern const char* SPECULAR;
 		extern const char* PHONG_EXPONENT;
+		extern const char* TRANSLUCENCY;
 	}
 
 	inline namespace LIGHT

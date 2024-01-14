@@ -481,16 +481,7 @@ void Renderer::Render(RenderPassType renderPassType)
 	}
 	else
 	{
-		// Assign deferred renderer's depth buffer to depth buffer
-		// For transparent objects
-
-		GeometryBufferData* geometryBufferData = deferredRenderingData_->geometryBufferData;
-		geometryBufferData->geometryFrameBuffer->Bind(FramebufferBindTarget::READ_FRAMEBUFFER);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		glBlitFramebuffer(0, 0, geometryBufferData->bufferWidth, geometryBufferData->bufferHeight, 
-						  0, 0, geometryBufferData->bufferWidth, geometryBufferData->bufferHeight,
-						  GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-
+		deferredRenderingData_->BindGBufferDepth();
 	}
 
 	if (renderPassType == RenderPassType::GeometryBuffer)
@@ -502,25 +493,10 @@ void Renderer::Render(RenderPassType renderPassType)
 	if (renderPassType == RenderPassType::Forward ||
 		renderPassType == RenderPassType::Deferred)
 	{
-		// Transparent meshes needs to be hold in a single ordered array in order to work correctly in the future
+		SortTransparentInstances();
+
 		glEnable(GL_BLEND);
 		BindStaticVBO();
-
-		struct
-		{
-			bool operator()(const StaticMeshInstance* a, const StaticMeshInstance* b) const
-			{
-				Vector3 cameraPosition = engine->GetCameraManager()->GetActiveCamera()->GetPosition();
-				return (cameraPosition - a->GetParentComponent()->GetWorldPosition()).SquareLength() > 
-					   (cameraPosition - b->GetParentComponent()->GetWorldPosition()).SquareLength();
-			}
-		}
-		customLess;
-	
-		std::sort(
-			transparentStaticMeshInstances_.begin(),
-			transparentStaticMeshInstances_.end(),
-			customLess);
 
 		for (StaticMeshInstance* transparentStaticMeshInstance : transparentStaticMeshInstances_)
 		{
@@ -1002,6 +978,44 @@ void Renderer::SetAttribPointersForSkeletalMesh()
 	glVertexAttribPointer(BONE_WEIGHT_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
 }
 
+void Renderer::SortTransparentInstances()
+{
+	struct
+	{
+		Vector3 cameraPosition = engine->GetCameraManager()->GetActiveCamera()->GetPosition();
+		bool operator()(const StaticMeshInstance* a, const StaticMeshInstance* b) const
+		{
+			return  (cameraPosition - a->GetParentComponent()->GetWorldPosition()).SquareLength() > 
+					(cameraPosition - b->GetParentComponent()->GetWorldPosition()).SquareLength();
+		}
+		bool operator()(const SkeletalMeshInstance* a, const SkeletalMeshInstance* b) const
+		{
+			return  (cameraPosition - a->GetParentComponent()->GetWorldPosition()).SquareLength() > 
+					(cameraPosition - b->GetParentComponent()->GetWorldPosition()).SquareLength();
+		}
+		bool operator()(const DynamicMeshInstance* a, const DynamicMeshInstance* b) const
+		{
+			return  (cameraPosition - a->GetParentComponent()->GetWorldPosition()).SquareLength() > 
+					(cameraPosition - b->GetParentComponent()->GetWorldPosition()).SquareLength();
+		}
+	} cameraDistanceSorter;
+
+	std::sort(
+		transparentStaticMeshInstances_.begin(),
+		transparentStaticMeshInstances_.end(),
+		cameraDistanceSorter);
+
+	std::sort(
+		transparentSkeletalMeshInstances_.begin(),
+		transparentSkeletalMeshInstances_.end(),
+		cameraDistanceSorter);
+
+	std::sort(
+		transparentDynamicMeshInstances_.begin(),
+		transparentDynamicMeshInstances_.end(),
+		cameraDistanceSorter);
+}
+
 GeometryBufferData::GeometryBufferData()
 {
 }
@@ -1089,8 +1103,8 @@ void GeometryBufferData::GenerateBuffers()
 	specularTexture = new Texture();
 	specularTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG);
 	specularTexture->SetTextureDataType(TextureDataType::DYNAMIC);
-	specularTexture->SetTextureFormat(TextureFormat::RGB);
-	specularTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
+	specularTexture->SetTextureFormat(TextureFormat::RGBA);
+	specularTexture->SetTextureInternalFormat(TextureInternalFormat::RGBA);
 	specularTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	specularTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
 	specularTexture->SetWidth(bufferWidth);
@@ -1136,6 +1150,15 @@ void GeometryBufferData::OnWindowSizeChange(int width, int height)
 	bufferWidth = width;
 	bufferHeight = height;
 	GenerateBuffers();
+}
+
+void GeometryBufferData::BindGBufferDepth()
+{
+	geometryFrameBuffer->Bind(FramebufferBindTarget::READ_FRAMEBUFFER);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBlitFramebuffer(0, 0, bufferWidth, bufferHeight, 
+						0, 0, bufferWidth, bufferHeight,
+						GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 }
 
 DeferredRenderingData::DeferredRenderingData()
@@ -1223,4 +1246,9 @@ void DeferredRenderingData::BindGeometryBufferTextures(Shader* shader)
 	geometryBufferData->worldNormalTexture->Bind(shader);
 	geometryBufferData->diffuseTexture->Bind(shader);
 	geometryBufferData->specularTexture->Bind(shader);
+}
+
+void DeferredRenderingData::BindGBufferDepth()
+{
+	geometryBufferData->BindGBufferDepth();
 }
