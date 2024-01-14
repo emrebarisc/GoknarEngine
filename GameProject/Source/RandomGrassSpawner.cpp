@@ -31,6 +31,7 @@ RandomGrassSpawner::RandomGrassSpawner()
 	StaticMesh* grassStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Grass.fbx");
 	grassStaticMesh->GetMaterial()->SetShadingModel(MaterialShadingModel::TwoSided);
 	grassStaticMesh->GetMaterial()->SetBlendModel(MaterialBlendModel::Masked);
+	grassStaticMesh->GetMaterial()->SetTranslucency(0.5f);
 
 	std::random_device rd;
 	std::uniform_real_distribution<float> positionDistX(0.f, 1.f);

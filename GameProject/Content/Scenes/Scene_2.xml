@@ -14,7 +14,7 @@
 	</Cameras>
 
 	<Lights>
-		<AmbientLight>10 10 10</AmbientLight>
+		<AmbientLight>0 0 0</AmbientLight>
 	</Lights>
 
 	<Materials>
