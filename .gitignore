@@ -13,6 +13,9 @@ Goknar/Build/
 *.user
 *.vcxproj
 *.filters
+*.glsl
+*.frag
+*.vert
 GameProject/Goknar.dll
 # Goknar/thirdparty/spdlog
 # Goknar/thirdparty/imgui
