@@ -22,6 +22,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* DIFFUSE = "diffuseReflectance";
 		const char* SPECULAR = "specularReflectance";
 		const char* PHONG_EXPONENT = "phongExponent";
+		const char* TRANSLUCENCY = "translucency";
 	}
 
 	inline namespace LIGHT

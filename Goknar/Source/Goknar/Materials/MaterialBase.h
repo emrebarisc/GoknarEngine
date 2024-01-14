@@ -84,6 +84,16 @@ public:
 
 	void SetPhongExponent(float phongExponent);
 
+	float GetTranslucency() const
+	{
+		return translucency_;
+	}
+
+	void SetTranslucency(float translucency)
+	{
+		translucency_ = translucency;
+	}
+
 	MaterialBlendModel GetBlendModel() const
 	{
 		return blendModel_;
@@ -133,6 +143,7 @@ protected:
 
 	std::string name_{ "" };
 
+	float translucency_{ 0.f };
 	float phongExponent_{ 1.f };
 
 	MaterialBlendModel blendModel_{ MaterialBlendModel::Opaque };

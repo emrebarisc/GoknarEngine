@@ -372,7 +372,8 @@ in vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
 
 	fragmentShaderUniforms += "uniform vec3 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR) + ";\n";
 	fragmentShaderUniforms += "uniform float " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT) + ";\n";
-	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + " = " + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + "; \n";
+	fragmentShaderUniforms += "uniform float " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY) + ";\n";
+	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + " = vec4(" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + ", " + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + "); \n";
 
 	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + ".xyz;\n";
 	insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + " = vec4(" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ", " + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + ");\n";
@@ -383,7 +384,7 @@ in vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
 layout(location = 0) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + R"(;
 layout(location = 1) out vec4 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
 layout(location = 2) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(;
-layout(location = 3) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(;
+layout(location = 3) out vec4 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(;
 )";
 
 	GBufferPassFragmentShader += fragmentShaderUniforms;
@@ -433,6 +434,7 @@ vec4 )" + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + R"(;
 vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"(;
 vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(;
 float )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"(;
+float )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
 )";
 
 	fragmentShader += fragmentShaderOutsideMain_;
@@ -477,7 +479,9 @@ void main()
 	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"( = fragmentNormalAndPhongExponent.xyz;
 	)" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"( = pow(2.f, fragmentNormalAndPhongExponent.a);
 	
-	)" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz;
+	vec4 specularAndTranslucency = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
+	)" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( = specularAndTranslucency.xyz;
+	)" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"( = specularAndTranslucency.a;
 )";
 
 	fragmentShader += "//------------------------ FRAGMENT POSITION LIGHT SPACE ------------------------\n\n";
@@ -984,6 +988,10 @@ std::string ShaderBuilder::GetMaterialVariables()
 	materialVariableText += "uniform float ";
 	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT;
 	materialVariableText += ";\n\n";
+
+	materialVariableText += "uniform float ";
+	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY;
+	materialVariableText += ";\n\n";
 	return materialVariableText;
 }
 
@@ -1022,7 +1030,20 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
 	wi /= wiLength;
 
 	float normalDotLightDirection = dot()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"(, wi);
-	if(normalDotLightDirection < 0.f) return vec3(0.f);
+	
+	bool isTranslucent = 0.f < )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
+	
+	if(normalDotLightDirection < 0.f)
+	{
+		if(!isTranslucent)
+		{
+			return vec3(0.f);
+		}
+		else
+		{
+			normalDotLightDirection = -normalDotLightDirection;
+		}
+	}
 
 	// To viewpoint vector
 	vec3 wo = normalize()" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION) + R"( - vec3()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"());
@@ -1042,7 +1063,14 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
 
 	specularColor *= cosThetaPrime * intensityOverDistanceSquare;
 
-	return specularColor + diffuseColor;
+	vec3 finalIntensity = specularColor + diffuseColor;
+
+	if(isTranslucent)
+	{
+		finalIntensity *= )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
+	}
+
+	return finalIntensity;
 }
 )";
 }
@@ -1086,6 +1114,20 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 
 	float normalDotLightDirection = dot(wi, )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"();
 
+	bool isTranslucent = 0.f < )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
+	
+	if(normalDotLightDirection < 0.f)
+	{
+		if(!isTranslucent)
+		{
+			return vec3(0.f);
+		}
+		else
+		{
+			normalDotLightDirection = -normalDotLightDirection;
+		}
+	}
+
 	if(normalDotLightDirection < 0.f) return vec3(0.f);
 
 	vec3 diffuseColor = intensity * normalDotLightDirection;
@@ -1100,7 +1142,15 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"();
 	vec3 specularColor = )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( * cosAlphaPrimeToThePowerOfPhongExponent;
 	specularColor *= max(0, normalDotLightDirection) * intensity;
-	return diffuseColor + specularColor;
+	
+	vec3 finalIntensity = specularColor + diffuseColor;
+
+	if(isTranslucent)
+	{
+		finalIntensity *= )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
+	}
+
+	return finalIntensity;
 }
 )";
 }
@@ -1148,6 +1198,21 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 	wi /= wiLength;
 
 	float normalDotVertexNormal = dot(wi, )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"();
+	
+	bool isTranslucent = 0.f < )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
+	
+	if(0.f < normalDotVertexNormal)
+	{
+		if(!isTranslucent)
+		{
+			return vec3(0.f);
+		}
+		else
+		{
+			normalDotVertexNormal = -normalDotVertexNormal;
+		}
+	}
+
 	if(0.f < normalDotVertexNormal) return vec3(0.f);
 
 	vec3 intensityOverDistanceSquare = intensity / (wiLength * wiLength);
@@ -1182,8 +1247,16 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"(, halfVector)), )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"();
 	vec3 specularColor = )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( * cosAlphaPrimeToThePowerOfPhongExponent;
 
-	specularColor = specularColor * intensityOverDistanceSquare;
-	return (specularColor + diffuseColor) * lightMultiplier;
+	specularColor *= intensityOverDistanceSquare;
+	
+	vec3 finalIntensity = (specularColor + diffuseColor) * lightMultiplier;
+
+	if(isTranslucent)
+	{
+		finalIntensity *= )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
+	}
+
+	return finalIntensity;
 }
 )";
 }
