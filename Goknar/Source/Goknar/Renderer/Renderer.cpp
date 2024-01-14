@@ -483,6 +483,13 @@ void Renderer::Render(RenderPassType renderPassType)
 	{
 		// Assign deferred renderer's depth buffer to depth buffer
 		// For transparent objects
+
+		GeometryBufferData* geometryBufferData = deferredRenderingData_->geometryBufferData;
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, geometryBufferData->depthRenderbuffer);
+		glBlitFramebuffer(0, 0, geometryBufferData->bufferWidth, geometryBufferData->bufferHeight, 
+						  0, 0, geometryBufferData->bufferWidth, geometryBufferData->bufferHeight,
+						  GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
 	}
 
 	if (renderPassType == RenderPassType::GeometryBuffer)
@@ -995,7 +1002,10 @@ void GeometryBufferData::Init()
 {
 	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
 
-	GenerateBuffers(windowSize.x, windowSize.y);
+	bufferWidth = windowSize.x;
+	bufferHeight = windowSize.y;
+
+	GenerateBuffers();
 	
 	engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::create<GeometryBufferData, &GeometryBufferData::OnWindowSizeChange>(this));
 }
@@ -1010,7 +1020,7 @@ void GeometryBufferData::Unbind()
 	geometryFrameBuffer->Unbind();
 }
 
-void GeometryBufferData::GenerateBuffers(int width, int height)
+void GeometryBufferData::GenerateBuffers()
 {
 	geometryFrameBuffer = new Framebuffer();
 
@@ -1021,8 +1031,8 @@ void GeometryBufferData::GenerateBuffers(int width, int height)
 	worldPositionTexture->SetTextureInternalFormat(TextureInternalFormat::RGB32F);
 	worldPositionTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	worldPositionTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
-	worldPositionTexture->SetWidth(width);
-	worldPositionTexture->SetHeight(height);
+	worldPositionTexture->SetWidth(bufferWidth);
+	worldPositionTexture->SetHeight(bufferHeight);
 	worldPositionTexture->SetGenerateMipmap(false);
 	worldPositionTexture->PreInit();
 	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT0, worldPositionTexture);
@@ -1034,10 +1044,12 @@ void GeometryBufferData::GenerateBuffers(int width, int height)
 	worldNormalTexture->SetTextureInternalFormat(TextureInternalFormat::RGBA16F);
 	worldNormalTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	worldNormalTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
-	worldNormalTexture->SetWidth(width);
-	worldNormalTexture->SetHeight(height);
+	worldNormalTexture->SetWidth(bufferWidth);
+	worldNormalTexture->SetHeight(bufferHeight);
 	worldNormalTexture->SetGenerateMipmap(false);
 	worldNormalTexture->PreInit();
+	worldNormalTexture->Init();
+	worldNormalTexture->PostInit();
 	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT1, worldNormalTexture);
 
 	diffuseTexture = new Texture();
@@ -1047,11 +1059,13 @@ void GeometryBufferData::GenerateBuffers(int width, int height)
 	diffuseTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
 	diffuseTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	diffuseTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
-	diffuseTexture->SetWidth(width);
-	diffuseTexture->SetHeight(height);
+	diffuseTexture->SetWidth(bufferWidth);
+	diffuseTexture->SetHeight(bufferHeight);
 	diffuseTexture->SetGenerateMipmap(false);
 	diffuseTexture->SetTextureType(TextureType::UNSIGNED_BYTE);
 	diffuseTexture->PreInit();
+	diffuseTexture->Init();
+	diffuseTexture->PostInit();
 	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT2, diffuseTexture);
 
 	specularTexture = new Texture();
@@ -1061,14 +1075,18 @@ void GeometryBufferData::GenerateBuffers(int width, int height)
 	specularTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
 	specularTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	specularTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
-	specularTexture->SetWidth(width);
-	specularTexture->SetHeight(height);
+	specularTexture->SetWidth(bufferWidth);
+	specularTexture->SetHeight(bufferHeight);
 	specularTexture->SetGenerateMipmap(false);
 	specularTexture->SetTextureType(TextureType::UNSIGNED_BYTE);
 	specularTexture->PreInit();
+	specularTexture->Init();
+	specularTexture->PostInit();
 	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT3, specularTexture);
 
 	geometryFrameBuffer->PreInit();
+	geometryFrameBuffer->Init();
+	geometryFrameBuffer->PostInit();
 	geometryFrameBuffer->Bind();
 	geometryFrameBuffer->Attach();
 
@@ -1076,7 +1094,7 @@ void GeometryBufferData::GenerateBuffers(int width, int height)
 
 	glGenRenderbuffers(1, &depthRenderbuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, bufferWidth, bufferHeight);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
 
 	geometryFrameBuffer->Unbind();
@@ -1097,7 +1115,9 @@ void GeometryBufferData::OnWindowSizeChange(int width, int height)
 	
 	glDeleteRenderbuffers(1, &depthRenderbuffer);
 
-	GenerateBuffers(width, height);
+	bufferWidth = width;
+	bufferHeight = height;
+	GenerateBuffers();
 }
 
 DeferredRenderingData::DeferredRenderingData()

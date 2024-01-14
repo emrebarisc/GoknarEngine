@@ -45,7 +45,7 @@ public:
 	void Bind();
 	void Unbind();
 
-	void GenerateBuffers(int width, int height);
+	void GenerateBuffers();
 
 	Framebuffer* geometryFrameBuffer;
 
@@ -55,6 +55,9 @@ public:
 	Texture* specularTexture;
 
 	unsigned int depthRenderbuffer{ 0 };
+
+	int bufferWidth{ 1920 };
+	int bufferHeight{ 1080 };
 private:
 	void OnWindowSizeChange(int width, int height);
 };
