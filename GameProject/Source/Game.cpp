@@ -43,7 +43,7 @@ Game::Game() : Application()
 {
 	engine->SetApplication(this);
 
-	engine->GetRenderer()->SetMainRenderType(RenderPassType::Forward);
+	engine->GetRenderer()->SetMainRenderType(RenderPassType::Deferred);
 
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
 	mainScene_->ReadSceneData("Scenes/Scene_2.xml");
