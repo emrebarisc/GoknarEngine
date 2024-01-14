@@ -171,5 +171,10 @@ void ArcherGameController::StopMovingRight()
 void ArcherGameController::ToggleDebug()
 {
 	isDebugging_ = !isDebugging_;
-	engine->GetRenderer()->GetDeferredRenderingData()->deferredRenderingMeshShader->SetBool("isDebugging", isDebugging_);
+
+	DeferredRenderingData* deferredRenderingData = engine->GetRenderer()->GetDeferredRenderingData();
+	if(deferredRenderingData)
+	{
+		deferredRenderingData->deferredRenderingMeshShader->SetBool("isDebugging", isDebugging_);
+	}
 }

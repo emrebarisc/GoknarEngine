@@ -184,7 +184,7 @@ void Archer::HandleLooseBowInput()
 			isAnimationBusy_ = true;
 
 			KeyframeData keyframeData;
-			keyframeData.AddCallbackToKeyframe(5, Delegate<void()>::create<Archer, &Archer::OnShoot>(this));
+			keyframeData.AddCallbackToKeyframe(3, Delegate<void()>::create<Archer, &Archer::OnShoot>(this));
 
 			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimRecoil",
 				PlayLoopData{

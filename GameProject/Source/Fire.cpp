@@ -16,7 +16,7 @@ Fire::Fire() :
 	fireLight_->SetColor(Vector3{ 0.7605246901512146f, 0.09758714586496353f, 0.015996338799595833f });
 	fireLight_->SetIntensity(fireIntensity_);
 	fireLight_->SetRadius(25.f);
-	fireLight_->SetIsShadowEnabled(true);
+	fireLight_->SetIsShadowEnabled(false);
 	fireLight_->SetLightMobility(LightMobility::Dynamic);
 	engine->GetApplication()->GetMainScene()->AddPointLight(fireLight_);
 }
