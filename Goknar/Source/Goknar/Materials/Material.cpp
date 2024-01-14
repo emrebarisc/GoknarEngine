@@ -35,7 +35,31 @@ Material::~Material()
 
 void Material::Build(MeshUnit* meshUnit)
 {
-	if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Forward)
+	RenderPassType mainRenderPassType = engine->GetRenderer()->GetMainRenderType();
+
+	bool createForwardRenderingShader = mainRenderPassType == RenderPassType::Forward;
+
+	if (mainRenderPassType == RenderPassType::Deferred)
+	{
+		Shader* gBufferShader = new Shader();
+		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer] = gBufferShader;
+
+		std::vector<const Image*>::iterator imageIterator = textureImages_.begin();
+		for (; imageIterator != textureImages_.end(); ++imageIterator)
+		{
+			gBufferShader->AddTexture((*imageIterator)->GetGeneratedTexture());
+		}
+
+		gBufferShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_GeometryBufferPass(meshUnit));
+		gBufferShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_GeometryBufferPass(this));
+	
+		if(blendModel_ == MaterialBlendModel::Transparent)
+		{
+			createForwardRenderingShader = true;
+		}
+	}
+
+	if(createForwardRenderingShader)
 	{
 		Shader* forwardRenderingShader = new Shader();
 		renderPassTypeShaderMap_[RenderPassType::Forward] = forwardRenderingShader;
@@ -50,20 +74,6 @@ void Material::Build(MeshUnit* meshUnit)
 		{
 			ShaderBuilder::GetInstance()->BuildShader(meshUnit, this);
 		}
-	}
-	else if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Deferred)
-	{
-		Shader* gBufferShader = new Shader();
-		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer] = gBufferShader;
-
-		std::vector<const Image*>::iterator imageIterator = textureImages_.begin();
-		for (; imageIterator != textureImages_.end(); ++imageIterator)
-		{
-			gBufferShader->AddTexture((*imageIterator)->GetGeneratedTexture());
-		}
-
-		gBufferShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_GeometryBufferPass(meshUnit));
-		gBufferShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_GeometryBufferPass(this));
 	}
 
 	Shader* shadowShader = new Shader();

@@ -491,36 +491,40 @@ void Renderer::Render(RenderPassType renderPassType)
 		return;
 	}
 
-	if (renderPassType != RenderPassType::GeometryBuffer)
+	if (renderPassType == RenderPassType::Forward ||
+		renderPassType == RenderPassType::Deferred)
 	{
 		// Transparent meshes needs to be hold in a single ordered array in order to work correctly in the future
 		glEnable(GL_BLEND);
+		BindStaticVBO();
 		for (StaticMeshInstance* transparentStaticMeshInstance : transparentStaticMeshInstances_)
 		{
 			if (!transparentStaticMeshInstance->GetIsRendered()) continue;
 			const MeshUnit* mesh = transparentStaticMeshInstance->GetMesh();
-			transparentStaticMeshInstance->Render(renderPassType);
+			transparentStaticMeshInstance->Render(RenderPassType::Forward);
 
 			int facePointCount = mesh->GetFaceCount() * 3;
 			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 		}
 
+		BindSkeletalVBO();
 		for (SkeletalMeshInstance* transparentSkeletalMeshInstance : transparentSkeletalMeshInstances_)
 		{
 			if (!transparentSkeletalMeshInstance->GetIsRendered()) continue;
 			// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
 			const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(transparentSkeletalMeshInstance->GetMesh());
-			transparentSkeletalMeshInstance->Render(renderPassType);
+			transparentSkeletalMeshInstance->Render(RenderPassType::Forward);
 
 			int facePointCount = skeletalMesh->GetFaceCount() * 3;
 			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
 		}
 
+		BindDynamicVBO();
 		for (DynamicMeshInstance* transparentDynamicMeshInstance : transparentDynamicMeshInstances_)
 		{
 			if (!transparentDynamicMeshInstance->GetIsRendered()) continue;
 			const MeshUnit* mesh = transparentDynamicMeshInstance->GetMesh();
-			transparentDynamicMeshInstance->Render(renderPassType);
+			transparentDynamicMeshInstance->Render(RenderPassType::Forward);
 
 			int facePointCount = mesh->GetFaceCount() * 3;
 			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());

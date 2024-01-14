@@ -93,6 +93,7 @@ int IMeshInstance<MeshType>::lastComponentId_ = 0;
 template<class MeshType>
 inline void IMeshInstance<MeshType>::PreInit()
 {
+	AddMeshInstanceToRenderer();
 }
 
 template<class MeshType>
@@ -170,7 +171,6 @@ inline void IMeshInstance<MeshType>::SetMesh(MeshType* mesh)
 	}
 
 	mesh_ = mesh;
-	AddMeshInstanceToRenderer();
 }
 
 template<class MeshType>
