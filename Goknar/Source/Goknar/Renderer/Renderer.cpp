@@ -546,7 +546,7 @@ void Renderer::Render(RenderPassType renderPassType)
 		glDisable(GL_BLEND);
 
 		// After finishing transparent object rendering
-		// Use deferred rendering shader again
+		// Use deferred rendering shader again if doing deferred rendering
 		// Otherwise it causes crash on setting g-buffer debug on
 		// And wishing to visualize g-buffers on deferred rendering mesh
 		if(renderPassType == RenderPassType::Deferred)
