@@ -37,6 +37,10 @@ void MaterialSphereSpawner::BeginGame()
             }
             else if(y < 6.f)
             {
+                if(y == 5.f)
+                {
+                    instanceMaterial->SetTranslucency(x / 5.f);
+                }
                 instanceMaterial->SetBlendModel(MaterialBlendModel::Transparent);
                 instanceMaterial->SetDiffuseReflectance(Vector4{0.3725490196f, 0.f, 0.62745098039f, x / 5.f});
             }
