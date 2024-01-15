@@ -506,6 +506,8 @@ void Renderer::Render(RenderPassType renderPassType)
 		SortTransparentInstances();
 
 		glEnable(GL_BLEND);
+		glDepthMask(GL_FALSE);
+
 		BindStaticVBO();
 
 		for (StaticMeshInstance* transparentStaticMeshInstance : transparentStaticMeshInstances_)
@@ -523,7 +525,7 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			if (!transparentSkeletalMeshInstance->GetIsRendered()) continue;
 			// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
-			const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(transparentSkeletalMeshInstance->GetMesh());
+			const SkeletalMesh* skeletalMesh = transparentSkeletalMeshInstance->GetMesh();
 			transparentSkeletalMeshInstance->Render(RenderPassType::Forward);
 
 			int facePointCount = skeletalMesh->GetFaceCount() * 3;
@@ -540,7 +542,17 @@ void Renderer::Render(RenderPassType renderPassType)
 			int facePointCount = mesh->GetFaceCount() * 3;
 			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
 		}
+		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
+
+		// After finishing transparent object rendering
+		// Use deferred rendering shader again
+		// Otherwise it causes crash on setting g-buffer debug on
+		// And wishing to visualize g-buffers on deferred rendering mesh
+		if(renderPassType == RenderPassType::Deferred)
+		{
+			deferredRenderingData_->deferredRenderingMeshShader->Use();
+		}
 	}
 }
 
