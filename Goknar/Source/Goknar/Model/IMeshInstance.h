@@ -72,6 +72,16 @@ public:
 		return isRendered_;
 	}
 
+	inline void SetIsCastingShadow(bool isCastingShadow)
+	{
+		isCastingShadow_ = isCastingShadow;
+	}
+
+	inline bool GetIsCastingShadow() const
+	{
+		return isCastingShadow_;
+	}
+
 	inline virtual void Destroy();
 
 protected:
@@ -90,6 +100,7 @@ private:
 	static int lastComponentId_;
 
 	bool isRendered_{ true };
+	bool isCastingShadow_{ true };
 };
 
 template<class MeshType>
