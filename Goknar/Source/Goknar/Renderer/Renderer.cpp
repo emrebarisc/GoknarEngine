@@ -385,6 +385,10 @@ void Renderer::Render(RenderPassType renderPassType)
 		}
 	}
 
+	bool isShadowRender = 
+		renderPassType == RenderPassType::Shadow || 
+		renderPassType == RenderPassType::PointLightShadow;
+
 	if (renderPassType != RenderPassType::Deferred)
 	{
 		// Static MeshUnit Instances
@@ -396,6 +400,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				for (StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
 				{
 					if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
+					if (isShadowRender && !opaqueStaticMeshInstance->GetIsCastingShadow()) continue;
 
 					const MeshUnit* mesh = opaqueStaticMeshInstance->GetMesh();
 					opaqueStaticMeshInstance->Render(renderPassType);
@@ -407,6 +412,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				for (StaticMeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
 				{
 					if (!maskedStaticMeshInstance->GetIsRendered()) continue;
+					if (isShadowRender && !maskedStaticMeshInstance->GetIsCastingShadow()) continue;
 
 					const MeshUnit* mesh = maskedStaticMeshInstance->GetMesh();
 					maskedStaticMeshInstance->Render(renderPassType);
@@ -426,6 +432,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				for (SkeletalMeshInstance* opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
 				{
 					if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
+					if (isShadowRender && !opaqueSkeletalMeshInstance->GetIsCastingShadow()) continue;
 
 					// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
 					const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(opaqueSkeletalMeshInstance->GetMesh());
@@ -438,6 +445,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				for (SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
 				{
 					if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
+					if (isShadowRender && !maskedSkeletalMeshInstance->GetIsCastingShadow()) continue;
 
 					// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
 					const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(maskedSkeletalMeshInstance->GetMesh());
@@ -458,6 +466,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				for (DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
 				{
 					if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
+					if (isShadowRender && !opaqueDynamicMeshInstance->GetIsCastingShadow()) continue;
 
 					const MeshUnit* mesh = opaqueDynamicMeshInstance->GetMesh();
 					opaqueDynamicMeshInstance->Render(renderPassType);
@@ -469,6 +478,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				for (DynamicMeshInstance* maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
 				{
 					if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
+					if (isShadowRender && !maskedDynamicMeshInstance->GetIsCastingShadow()) continue;
 
 					const MeshUnit* mesh = maskedDynamicMeshInstance->GetMesh();
 					maskedDynamicMeshInstance->Render(renderPassType);
