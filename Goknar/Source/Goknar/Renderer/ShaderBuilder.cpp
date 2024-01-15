@@ -1032,8 +1032,9 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
 	float normalDotLightDirection = dot()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"(, wi);
 	
 	bool isTranslucent = 0.f < )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
-	
-	if(normalDotLightDirection < 0.f)
+	bool isBackface = normalDotLightDirection < 0.f;
+
+	if(isBackface)
 	{
 		if(!isTranslucent)
 		{
@@ -1042,6 +1043,7 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
 		else
 		{
 			normalDotLightDirection = -normalDotLightDirection;
+			normalDotLightDirection = clamp(normalDotLightDirection + )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(, 0.f, 1.f);
 		}
 	}
 
@@ -1065,7 +1067,7 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
 
 	vec3 finalIntensity = specularColor + diffuseColor;
 
-	if(isTranslucent)
+	if(isBackface && isTranslucent)
 	{
 		finalIntensity *= )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
 	}
@@ -1115,8 +1117,9 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	float normalDotLightDirection = dot(wi, )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"();
 
 	bool isTranslucent = 0.f < )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
-	
-	if(normalDotLightDirection < 0.f)
+	bool isBackface = normalDotLightDirection < 0.f;
+
+	if(isBackface)
 	{
 		if(!isTranslucent)
 		{
@@ -1127,8 +1130,11 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 			normalDotLightDirection = -normalDotLightDirection;
 		}
 	}
-
-	if(normalDotLightDirection < 0.f) return vec3(0.f);
+	
+	if(isTranslucent)
+	{
+		normalDotLightDirection = clamp(normalDotLightDirection * (1.f +)" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(), 0.f, 1.f);
+	}
 
 	vec3 diffuseColor = intensity * normalDotLightDirection;
 
@@ -1145,7 +1151,7 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	
 	vec3 finalIntensity = specularColor + diffuseColor;
 
-	if(isTranslucent)
+	if(isBackface && isTranslucent)
 	{
 		finalIntensity *= )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
 	}
@@ -1197,11 +1203,13 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 	float wiLength = length(wi);
 	wi /= wiLength;
 
-	float normalDotVertexNormal = dot(wi, )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"();
+	float normalDotLightDirection = dot(wi, )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"();
 	
 	bool isTranslucent = 0.f < )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
 	
-	if(0.f < normalDotVertexNormal)
+	bool isBackface = 0.f < normalDotLightDirection;
+
+	if(isBackface)
 	{
 		if(!isTranslucent)
 		{
@@ -1209,15 +1217,14 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 		}
 		else
 		{
-			normalDotVertexNormal = -normalDotVertexNormal;
+			normalDotLightDirection = -normalDotLightDirection;
+			normalDotLightDirection = -clamp(-normalDotLightDirection + )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(, 0.f, 1.f);
 		}
 	}
-
-	if(0.f < normalDotVertexNormal) return vec3(0.f);
-
+	
 	vec3 intensityOverDistanceSquare = intensity / (wiLength * wiLength);
 
-	vec3 diffuseColor = -normalDotVertexNormal * intensityOverDistanceSquare;
+	vec3 diffuseColor = -normalDotLightDirection * intensityOverDistanceSquare;
 
 	float cosCoverage = cos(coverageAngle);
 	float cosFalloff = cos(falloffAngle);
@@ -1251,7 +1258,7 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 	
 	vec3 finalIntensity = (specularColor + diffuseColor) * lightMultiplier;
 
-	if(isTranslucent)
+	if(isBackface && isTranslucent)
 	{
 		finalIntensity *= )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
 	}
