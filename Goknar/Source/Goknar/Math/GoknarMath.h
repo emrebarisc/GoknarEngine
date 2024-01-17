@@ -392,7 +392,7 @@ struct GOKNAR_API Vector3
 			return *this / this->Length();
 		}
 
-		GOKNAR_CHECK(false, "Division By Zero");
+		GOKNAR_CORE_CHECK(false, "Division By Zero");
 		return *this;
 	}
 

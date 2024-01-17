@@ -92,7 +92,7 @@ public:
 		return &textures_;
 	}
 
-	void SetMVP(const Matrix& worldTransformationMatrix, const Matrix& relativeTransformationMatrix) const;
+	void SetMVP(const Matrix& worldAndRelativeTransformationMatrix) const;
 
 	unsigned int GetProgramId() const
 	{

@@ -14,9 +14,19 @@ StaticMesh::~StaticMesh()
 {
 }
 
+void StaticMesh::PreInit()
+{
+	MeshUnit::PreInit();
+
+	engine->AddStaticMeshToRenderer(this);
+}
+
 void StaticMesh::Init()
 {
 	MeshUnit::Init();
+}
 
-	engine->AddStaticMeshToRenderer(this);
+void StaticMesh::PostInit()
+{
+	MeshUnit::PostInit();
 }

@@ -27,7 +27,6 @@ void ShadowManager::RenderShadowMaps()
 	CameraManager* cameraManager = engine->GetCameraManager();
 	Camera* mainCamera = engine->GetCameraManager()->GetActiveCamera();
 
-	EXIT_ON_GL_ERROR("ShadowManager::RenderShadowMaps 0 ");
 	// Only draw the depth buffer
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 

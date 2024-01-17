@@ -10,7 +10,7 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Components/StaticMeshComponent.h"
 
-constexpr char* vertexShader = R"(
+std::string vertexShader = R"(
 #version 440 core
 
 layout(location = 0) in vec4 color;
@@ -38,7 +38,7 @@ void main()
 }
 )";
 
-constexpr char* fragmentShader = R"(
+std::string fragmentShader = R"(
 #version 440 core
 
 #define PI 3.141592653589793238462643383279
@@ -124,7 +124,7 @@ EditorGroundGrid::EditorGroundGrid() : ObjectBase()
 	groundGridMesh_->AddFace(Face(1, 0, 2));
 	groundGridMesh_->AddFace(Face(1, 2, 3));
 	groundGridMesh_->SetMaterial(groundGridMeshMaterial_);
-	groundGridMesh_->Init();
+	groundGridMesh_->PreInit();
 
 	gridMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 	gridMeshComponent_->SetMesh(groundGridMesh_);

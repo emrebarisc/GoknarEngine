@@ -22,10 +22,9 @@ public:
 
 	virtual ~Content() {}
 
-	virtual void Init()
-	{
-
-	}
+	virtual void PreInit() {}
+	virtual void Init() {}
+	virtual void PostInit() {}
 
 	const std::string& GetPath() const
 	{

@@ -80,17 +80,17 @@ private:
 };
 
 // Core log macros
-#define GOKNAR_CORE_TRACE(...)			::Log::LogCore(LogType::Trace, __VA_ARGS__)
-#define GOKNAR_CORE_INFO(...)			::Log::LogCore(LogType::Info, __VA_ARGS__)
-#define GOKNAR_CORE_WARN(...)			::Log::LogCore(LogType::Warn, __VA_ARGS__)
-#define GOKNAR_CORE_ERROR(...)			::Log::LogCore(LogType::Error, __VA_ARGS__)
-#define GOKNAR_CORE_FATAL(...)			::Log::LogCore(LogType::Fatal, __VA_ARGS__)
+#define GOKNAR_CORE_TRACE(...)			::Log::LogCore(LogType::Trace, ##__VA_ARGS__)
+#define GOKNAR_CORE_INFO(...)			::Log::LogCore(LogType::Info, ##__VA_ARGS__)
+#define GOKNAR_CORE_WARN(...)			::Log::LogCore(LogType::Warn, ##__VA_ARGS__)
+#define GOKNAR_CORE_ERROR(...)			::Log::LogCore(LogType::Error, ##__VA_ARGS__)
+#define GOKNAR_CORE_FATAL(...)			::Log::LogCore(LogType::Fatal, ##__VA_ARGS__)
 
 // Client log macros
-#define GOKNAR_TRACE(...)			::Log::LogClient(LogType::Trace, __VA_ARGS__)
-#define GOKNAR_INFO(...)			::Log::LogClient(LogType::Info, __VA_ARGS__)
-#define GOKNAR_WARN(...)			::Log::LogClient(LogType::Warn, __VA_ARGS__)
-#define GOKNAR_ERROR(...)			::Log::LogClient(LogType::Error, __VA_ARGS__)
-#define GOKNAR_FATAL(...)			::Log::LogClient(LogType::Fatal, __VA_ARGS__)
+#define GOKNAR_TRACE(...)			::Log::LogClient(LogType::Trace, ##__VA_ARGS__)
+#define GOKNAR_INFO(...)			::Log::LogClient(LogType::Info, ##__VA_ARGS__)
+#define GOKNAR_WARN(...)			::Log::LogClient(LogType::Warn, ##__VA_ARGS__)
+#define GOKNAR_ERROR(...)			::Log::LogClient(LogType::Error, ##__VA_ARGS__)
+#define GOKNAR_FATAL(...)			::Log::LogClient(LogType::Fatal, ##__VA_ARGS__)
 
 #endif

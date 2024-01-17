@@ -1,9 +1,5 @@
 # Goknar Engine
 
-![alt text](http://www.binarytorgb.com/wp-content/uploads/2020/01/Mesh-InstancingTexturingShadingAnd-GenericSceneGeneration.png "Goknar Engine Sample Render")
-![alt text](http://www.binarytorgb.com/wp-content/uploads/2023/02/Goknar_SkeletalAnimation.gif "Goknar Engine Skeletal Animation")
-![alt text](http://www.binarytorgb.com/wp-content/uploads/2023/02/Goknar_Macarena.gif "Goknar Engine Skeletal Animation")
-
 # How to Run
 
 - In order to be able to run the engine, you need to clone submodules as well.
@@ -18,17 +14,18 @@
 
 This engine is capable of:
 - Reading FBX objects, XML and image files
-- Rendering scenes with objects
-- Playing 2D animations
-- Rendering skeletal meshes and playing their animations
+- Rendering static, dynamic and skeletal meshes
+- Deferred or forward rendering capability
 - Shading with 3 different light sources(Directional, point and spot)
+- Shadows mapping for all three light sources
 - Doing input/output operations
 - Timers
 
 Work in progress:
-- Implementing a physics engine
-- Implementing shadows
+- Implementing a physics engine(Rigid body physics is done, collision detection is WIP)
 
 Missing points:
-- Audio Engine
-- And tons of other things
+- Audio Engine(Most probably OpenAL will be integrated)
+- And tons of other things(Frustum and occlusion culling, multi-threading etc.)
+
+![alt text](http://www.binarytorgb.com/wp-content/uploads/2023/02/Goknar_Macarena.gif "Goknar Engine Skeletal Animation")

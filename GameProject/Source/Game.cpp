@@ -4,15 +4,16 @@
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Material.h"
 #include "Goknar/Managers/ResourceManager.h"
+#include "Goknar/Camera.h"
+#include "Goknar/Managers/CameraManager.h"
+#include "Goknar/Managers/WindowManager.h"
 
 #include "Archer.h"
 #include "Dancer.h"
 #include "LightController.h"
 #include "Sun.h"
 #include "Fire.h"
-#include "Goknar/Camera.h"
-#include "Goknar/Managers/CameraManager.h"
-#include "Goknar/Managers/WindowManager.h"
+#include "RandomGrassSpawner.h"
 
 #include <chrono>
 
@@ -33,13 +34,17 @@ private:
 	LightController* lightController_;
 	Sun* sun_;
 	Fire* fire_;
+	RandomGrassSpawner* randomGrassSpawner_;
 };
 
 Game::Game() : Application()
 {
 	engine->SetApplication(this);
+
+	engine->GetRenderer()->SetMainRenderType(RenderPassType::Deferred);
+
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
-	mainScene_->ReadSceneData("Scenes/Scene.xml");
+	mainScene_->ReadSceneData("Scenes/Scene_2.xml");
 
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
@@ -48,9 +53,10 @@ Game::Game() : Application()
 	lastFrameTimePoint = currentTimePoint;
 
 	archer_ = new Archer();
-	dancer_ = new Dancer();
+	// dancer_ = new Dancer();
 	lightController_ = new LightController();
 	sun_ = new Sun();
+	// randomGrassSpawner_ = new RandomGrassSpawner();
 	fire_ = new Fire();
 
 	MeshUnit* floorStaticMesh = engine->GetResourceManager()->GetContent<MeshUnit>("Meshes/SM_Floor.fbx");

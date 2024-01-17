@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <unordered_map>
+#include <memory>
 
 #include "GLFW/glfw3.h"
 
@@ -21,7 +22,8 @@ enum class GOKNAR_API INPUT_TYPE : uint8_t
 
 enum class GOKNAR_API INPUT_ACTION : uint8_t
 {
-	G_PRESS = 0x00,
+	G_NONE = 0x00,
+	G_PRESS,
 	G_RELEASE,
 	G_REPEAT
 };
@@ -188,17 +190,45 @@ typedef std::vector < CharDelegate > CharDelegateVector;
 
 class GOKNAR_API InputManager
 {
+private:
+	class GOKNAR_API KeyboardEvent
+	{
+	public:
+		KeyboardEvent(KEY_MAP keyCode, const KeyboardDelegate& pressedCallback, const KeyboardDelegate& releasedCallback);
+		KeyboardEvent(const KeyboardEvent* other);
+		~KeyboardEvent();
+
+		void OnPressed();
+		void OnReleased();	
+	protected:
+
+	private:
+		KEY_MAP keyCode_;
+		INPUT_ACTION latestAction_{ INPUT_ACTION::G_NONE };
+		KeyboardDelegate pressedCallback_;
+		KeyboardDelegate releasedCallback_;
+	};
+
+	typedef std::unique_ptr<KeyboardEvent> KeyboardEventPointer;
+	typedef std::vector<KeyboardEventPointer> KeyboardEventVector;
+	typedef std::unordered_map< KEY_MAP, KeyboardEventVector > KeyboardEventMap;
+
 public:
 	InputManager();
 	~InputManager();
 
+	void PreInit();
 	void Init();
+	void PostInit();
 
 	static inline void KeyboardCallback(GLFWwindow *window, int key, int scanCode, int action, int mod);
 	static inline void CursorPositionCallback(GLFWwindow *window, double xPosition, double yPosition);
 	static inline void MouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 	static inline void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset);
 	static inline void CharCallback(GLFWwindow *window, unsigned int codePoint);
+
+	template<typename Class>
+	void AddKeyboardEvent(KEY_MAP keyCode, Class* owner, void (Class::* pressedCallback)(void), void (Class::* releasedCallback)(void));
 
 	void AddKeyboardInputDelegate(KEY_MAP keyCode, INPUT_ACTION inputAction, const KeyboardDelegate &binderFunction)
 	{
@@ -263,6 +293,8 @@ public:
 	}
 
 private:
+	KeyboardEventMap* keyboardEvents_;
+
 	// Keyboard Delegates
 	std::unordered_map< int, KeyboardDelegateVector > pressedKeyDelegates_;
 	std::unordered_map< int, KeyboardDelegateVector > repeatedKeyDelegates_;
@@ -285,4 +317,37 @@ private:
 	CharDelegateVector charDelegates_;
 };
 
+template<typename Class>
+void InputManager::AddKeyboardEvent(KEY_MAP keyCode, Class* owner, void (Class::* pressedCallback)(void), void (Class::* releasedCallback)(void))
+{
+	std::unique_ptr<InputManager::KeyboardEvent> keyboardEvent = 
+		std::make_unique<InputManager::KeyboardEvent>(keyCode, std::bind(pressedCallback, owner), std::bind(releasedCallback, owner));
+
+	if(keyboardEvents_->find(keyCode) == keyboardEvents_->end())
+	{
+		AddKeyboardInputDelegate(keyCode, INPUT_ACTION::G_PRESS, 
+			[this, keyCode]()
+			{
+				KeyboardEventVector& keyboardEvents = this->keyboardEvents_->at(keyCode);
+				for(KeyboardEventPointer& keyboardEventPointer : keyboardEvents)
+				{
+					keyboardEventPointer->OnPressed();
+				}
+			});
+
+		AddKeyboardInputDelegate(keyCode, INPUT_ACTION::G_RELEASE,
+			[this, keyCode]()
+			{
+				KeyboardEventVector& keyboardEvents = this->keyboardEvents_->at(keyCode);
+				for(KeyboardEventPointer& keyboardEventPointer : keyboardEvents)
+				{
+					keyboardEventPointer->OnReleased();
+				}
+			});
+
+		keyboardEvents_->insert(std::pair<KEY_MAP, KeyboardEventVector>(keyCode, KeyboardEventVector()));
+	}
+
+	keyboardEvents_->at(keyCode).push_back(std::move(keyboardEvent));
+}
 #endif

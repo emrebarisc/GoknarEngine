@@ -23,7 +23,9 @@ public:
         
     }
 
+    void PreInit() override;
     void Init() override;
+    void PostInit() override;
 
     void RenderShadowMap() override;
     void SetShaderUniforms(const Shader* shader) override;

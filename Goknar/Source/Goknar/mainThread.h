@@ -4,7 +4,7 @@
 	#define _CRTDBG_MAP_ALLOC
 	#include <stdlib.h>
 	#include <crtdbg.h>
-	#ifdef _DEBUG
+	#ifdef GOKNAR_BUILD_DEBUG
 		#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
 		// Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
 		// allocations to be of _CLIENT_BLOCK type
@@ -43,7 +43,9 @@ int main(int argc, char **argv)
 	GOKNAR_CORE_WARN("Setting Application: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
+	mainEngine->PreInit();
 	mainEngine->Init();
+	mainEngine->PostInit();
 
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();

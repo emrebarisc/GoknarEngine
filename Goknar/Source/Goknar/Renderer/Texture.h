@@ -92,7 +92,11 @@ enum class TextureInternalFormat
 	RED = GL_RED,
 	RG = GL_RG,
 	RGB = GL_RGB,
-	RGBA = GL_RGBA
+	RGB16F = GL_RGB16F,
+	RGB32F = GL_RGB32F,
+	RGBA = GL_RGBA,
+	RGBA16F = GL_RGBA16F,
+	RGBA32F = GL_RGBA32F,
 };
 
 enum class TextureType
@@ -165,7 +169,10 @@ public:
 
 	~Texture();
 
+	void PreInit();
 	void Init();
+	void PostInit();
+
 	void Bind(const Shader* shader = nullptr) const;
 	void Unbind();
 
@@ -187,6 +194,10 @@ public:
 	void SetWidth(int width)
 	{
 		width_ = width;
+		if(isInitialized_)
+		{
+			UpdateSizeOnGPU();
+		}
 	}
 
 	int GetHeight() const
@@ -197,6 +208,21 @@ public:
 	void SetHeight(int height)
 	{
 		height_ = height;
+		if(isInitialized_)
+		{
+			UpdateSizeOnGPU();
+		}
+	}
+
+	void SetSize(int width, int height)
+	{
+		width_ = width;
+		height_ = height;
+
+		if(isInitialized_)
+		{
+			UpdateSizeOnGPU();
+		}
 	}
 
 	void SetTextureImagePath(const std::string& imagePath)
@@ -389,9 +415,21 @@ public:
 		return buffer_;
 	}
 
+	void SetGenerateMipmap(bool generateMipmap)
+	{
+		generateMipmap_ = generateMipmap;
+	}
+
+	bool GetGenerateMipmap() const
+	{
+		return generateMipmap_;
+	}
+
 protected:
 
 private:
+	void UpdateSizeOnGPU();
+
 	std::string name_;
 	std::string imagePath_{ "" };
 	const unsigned char* buffer_{ nullptr };
@@ -420,6 +458,7 @@ private:
 	int channels_;
 
 	bool isInitialized_{ false };
+	bool generateMipmap_{ true };
 };
 
 #endif

@@ -7,3 +7,15 @@ Audio::Audio() :
 {
 	
 }
+
+void Audio::PreInit()
+{
+}
+
+void Audio::Init()
+{
+}
+
+void Audio::PostInit()
+{
+}

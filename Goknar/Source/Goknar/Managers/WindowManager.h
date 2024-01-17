@@ -1,7 +1,10 @@
 #ifndef __WINDOWMANAGER_H__
 #define __WINDOWMANAGER_H__
 
+#include <functional>
+
 #include "Goknar/Core.h"
+#include "Goknar/Delegates/MulticastDelegate.h"
 #include "Goknar/Math/GoknarMath.h"
 
 struct GLFWwindow;
@@ -17,7 +20,9 @@ public:
 
 	static inline void WindowSizeCallback(GLFWwindow *window, int w, int h);
 
+	void PreInit();
 	void Init();
+	void PostInit();
 	
 	inline GLFWwindow* GetWindow() const
 	{
@@ -26,6 +31,7 @@ public:
 
 	void Update();
 	void UpdateWindow();
+	void UpdateViewport();
 
 	void SetWindowWidth(int w);
 	void SetWindowHeight(int h);
@@ -50,15 +56,15 @@ public:
 
 	bool GetWindowShouldBeClosed();
 
-	void SetWindowSize(int w, int h)
-	{
-		windowWidth_ = w;
-		windowHeight_ = h;
-	}
-
+	void SetWindowSize(int w, int h);
 	Vector2i GetWindowSize() const
 	{
 		return Vector2i(windowWidth_, windowHeight_);
+	}
+
+	void AddWindowSizeCallback(const Delegate<void(int, int)>& callback)
+	{
+		windowSizeDelegate_ += callback;
 	}
 
 private:
@@ -66,11 +72,14 @@ private:
 
 	static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 
-	GLFWwindow *mainWindow_;
-	GLFWmonitor *mainMonitor_;
-	const char *windowTitle_;
+	void SetWindowSize_Impl(int w, int h);
+
+	GLFWwindow* mainWindow_;
+	GLFWmonitor* mainMonitor_;
+	const char* windowTitle_;
+
+	MulticastDelegate<void(int, int)> windowSizeDelegate_;
 	
-	// Defines the multisample anti-aliasing level
 	int MSAAValue_;
 
 	int contextVersionMajor_;

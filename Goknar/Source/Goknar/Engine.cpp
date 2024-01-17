@@ -82,22 +82,22 @@ Engine::~Engine()
 	delete windowManager_;
 }
 
-void Engine::Init() const
+void Engine::PreInit() const
 {
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
-	windowManager_->Init();
+	windowManager_->PreInit();
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Window Manager Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
-	inputManager_->Init();
+	inputManager_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Input Manager Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
-	application_->Init();
+	application_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Application Initialization: {} s.", elapsedTime);
@@ -109,13 +109,13 @@ void Engine::Init() const
 	GOKNAR_CORE_INFO("Shader Builder Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
-	resourceManager_->Init();
+	resourceManager_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Resource Manager Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
-	cameraManager_->Init();
+	cameraManager_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Camera Manager Initialization: {} s.", elapsedTime);
@@ -134,18 +134,56 @@ void Engine::Init() const
 	}
 
 #if GOKNAR_EDITOR
-	editor_->Init();
+	editor_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Editor Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 #endif
 
-	renderer_->Init();
+	renderer_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Renderer Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
+}
+
+void Engine::Init() const
+{
+	windowManager_->Init();
+
+	inputManager_->Init();
+
+	application_->Init();
+
+	resourceManager_->Init();
+
+	cameraManager_->Init();
+
+#if GOKNAR_EDITOR
+	editor_->PreInit();
+#endif
+
+	renderer_->Init();
+}
+
+void Engine::PostInit() const
+{
+	windowManager_->PostInit();
+
+	inputManager_->PostInit();
+
+	application_->PostInit();
+
+	resourceManager_->PostInit();
+
+	cameraManager_->PostInit();
+
+#if GOKNAR_EDITOR
+	editor_->PostInit();
+#endif
+
+	renderer_->PostInit();
 }
 
 void Engine::Run()
@@ -154,7 +192,7 @@ void Engine::Run()
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
-		// Initialize dynamically created object and components initialization /////
+		// Initialize dynamically created object and components /////
 
 		if (hasUninitializedObjects_)
 		{
@@ -196,7 +234,16 @@ void Engine::Run()
 		Tick(deltaTime_);
 
 		renderer_->GetShadowManager()->RenderShadowMaps();
-		renderer_->Render();
+		
+		if (renderer_->GetMainRenderType() == RenderPassType::Forward)
+		{
+			renderer_->Render(RenderPassType::Forward);
+		}
+		else if (renderer_->GetMainRenderType() == RenderPassType::Deferred)
+		{
+			renderer_->Render(RenderPassType::GeometryBuffer);
+			renderer_->Render(RenderPassType::Deferred);
+		}
 
 #if GOKNAR_EDITOR
 		editor_->Tick(deltaTime_);

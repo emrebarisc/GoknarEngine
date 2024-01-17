@@ -12,7 +12,9 @@ public:
 	Image(const std::string& path);
 	Image(const std::string& path, int width, int height, int channels, unsigned char* buffer);
 
+	virtual void PreInit() override;
 	virtual void Init() override;
+	virtual void PostInit() override;
 
 	const unsigned char* GetBuffer() const
 	{
