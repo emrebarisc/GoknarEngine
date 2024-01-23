@@ -85,6 +85,11 @@ void PhysicsWorld::PostInit()
 void PhysicsWorld::PhysicsTick(float deltaTime)
 {
 	m_dynamicsWorld->stepSimulation(deltaTime);
+
+	for(RigidBody* rigidBody : rigidBodies_)
+	{
+		rigidBody->PhysicsTick(deltaTime);
+	}
 }
 
 void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)

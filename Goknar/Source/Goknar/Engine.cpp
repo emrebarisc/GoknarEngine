@@ -269,12 +269,27 @@ void Engine::Run()
 
 void Engine::BeginGame()
 {
+	PreInitObjects();
+	PreInitComponents();
 	InitObjects();
 	InitComponents();
+	PostInitObjects();
+	PostInitComponents();
 
 	if (controller_)
 	{
 		controller_->BeginGame();
+	}
+}
+
+void Engine::PreInitObjects()
+{
+	// Looping over vector via member size optimizes size() call and
+	// Protects objectsToBeInitialized_ modification in mid air
+	// For example creating new object on BeginGame() function
+	for (int objectIndex = 0; objectIndex < objectsToBeInitializedSize_; ++objectIndex)
+	{
+		objectsToBeInitialized_[objectIndex]->PreInit();
 	}
 }
 
@@ -285,8 +300,17 @@ void Engine::InitObjects()
 	// For example creating new object on BeginGame() function
 	for (int objectIndex = 0; objectIndex < objectsToBeInitializedSize_; ++objectIndex)
 	{
-		objectsToBeInitialized_[objectIndex]->PreInit();
 		objectsToBeInitialized_[objectIndex]->Init();
+	}
+}
+
+void Engine::PostInitObjects()
+{
+	// Looping over vector via member size optimizes size() call and
+	// Protects objectsToBeInitialized_ modification in mid air
+	// For example creating new object on BeginGame() function
+	for (int objectIndex = 0; objectIndex < objectsToBeInitializedSize_; ++objectIndex)
+	{
 		objectsToBeInitialized_[objectIndex]->PostInit();
 	}
 	objectsToBeInitialized_.clear();
@@ -294,7 +318,7 @@ void Engine::InitObjects()
 	objectsToBeInitializedSize_ = 0;
 }
 
-void Engine::InitComponents()
+void Engine::PreInitComponents()
 {
 	// Looping over vector via member size optimizes size() call and
 	// Protects componentsToBeInitialized_ modification in mid air
@@ -302,7 +326,21 @@ void Engine::InitComponents()
 	for (int componentIndex = 0; componentIndex < componentsToBeInitializedSize_; ++componentIndex)
 	{
 		componentsToBeInitialized_[componentIndex]->PreInit();
+	}
+}
+
+void Engine::InitComponents()
+{
+	for (int componentIndex = 0; componentIndex < componentsToBeInitializedSize_; ++componentIndex)
+	{
 		componentsToBeInitialized_[componentIndex]->Init();
+	}
+}
+
+void Engine::PostInitComponents()
+{
+	for (int componentIndex = 0; componentIndex < componentsToBeInitializedSize_; ++componentIndex)
+	{
 		componentsToBeInitialized_[componentIndex]->PostInit();
 	}
 	componentsToBeInitialized_.clear();

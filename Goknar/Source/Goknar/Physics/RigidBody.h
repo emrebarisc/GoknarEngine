@@ -19,6 +19,14 @@ public:
 	virtual void Init();
 	virtual void PostInit();
 
+	virtual void BeginGame() override;
+	virtual void Tick(float deltaTime) override;
+
+	virtual void PhysicsTick(float deltaTime);
+
+	virtual void SetWorldPosition(const Vector3& worldPosition, bool updateWorldTransformationMatrix = true) override;
+	virtual void SetWorldRotation(const Quaternion& worldRotation, bool updateWorldTransformationMatrix = true) override;
+
 	float GetMass() const
 	{
 		return mass_;
@@ -40,6 +48,11 @@ public:
 		localInertia_.setY(localInertia.y);
 		localInertia_.setZ(localInertia.z);
 	}
+
+	void ApplyForce(const Vector3& force, const Vector3& position);
+	void ApplyCentralImpulse(const Vector3& impulse);
+	void ApplyTorqueImpulse(const Vector3& impulse);
+	void ApplyPushImpulse(const Vector3& impulse, const Vector3& position);
 
 	btRigidBody* GetBulletRigidBody() const
 	{

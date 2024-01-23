@@ -54,7 +54,7 @@ public:
 		return isInitialized_;
 	}
 
-	void SetWorldPosition(const Vector3& position, bool updateWorldTransformationMatrix = true);
+	virtual void SetWorldPosition(const Vector3& position, bool updateWorldTransformationMatrix = true);
 	const Vector3& GetWorldPosition() const
 	{
 		return worldPosition_;
@@ -66,7 +66,7 @@ public:
 		return worldRotation_;
 	}
 
-	void SetWorldScaling(const Vector3& scaling, bool updateWorldTransformationMatrix = true);
+	virtual void SetWorldScaling(const Vector3& scaling, bool updateWorldTransformationMatrix = true);
 	const Vector3& GetWorldScaling() const
 	{
 		return worldScaling_;
