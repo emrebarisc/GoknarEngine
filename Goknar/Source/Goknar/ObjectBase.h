@@ -20,7 +20,9 @@ public:
     ObjectBase();
 	virtual ~ObjectBase();
 
+	virtual void PreInit();
 	virtual void Init();
+	virtual void PostInit();
 
 	virtual void BeginGame()
 	{

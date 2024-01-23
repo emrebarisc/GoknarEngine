@@ -141,8 +141,3 @@ void EditorGroundGrid::BeginGame()
 	SetWorldPosition(Vector3::ZeroVector);
 	SetWorldScaling(Vector3(1000.f, 1000.f, 1.f));
 }
-
-void EditorGroundGrid::Init()
-{
-	ObjectBase::Init();
-}
