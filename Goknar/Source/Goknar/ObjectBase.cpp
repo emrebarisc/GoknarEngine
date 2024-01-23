@@ -22,7 +22,7 @@ ObjectBase::~ObjectBase()
 {
 }
 
-void ObjectBase::Init()
+void ObjectBase::PreInit()
 {
 	if (isInitialized_)
 	{
@@ -31,6 +31,14 @@ void ObjectBase::Init()
 	}
 
 	engine->GetApplication()->GetMainScene()->AddObject(this);
+}
+
+void ObjectBase::Init()
+{
+}
+
+void ObjectBase::PostInit()
+{
 	BeginGame();
 	isInitialized_ = true;
 }

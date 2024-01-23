@@ -141,6 +141,12 @@ void Engine::PreInit() const
 	lastFrameTimePoint = currentTimePoint;
 #endif
 
+	physicsWorld_->PreInit();
+	currentTimePoint = std::chrono::steady_clock::now();
+	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
+	GOKNAR_CORE_INFO("Physics Initialization: {} s.", elapsedTime);
+	lastFrameTimePoint = currentTimePoint;
+
 	renderer_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
@@ -164,6 +170,8 @@ void Engine::Init() const
 	editor_->PreInit();
 #endif
 
+	physicsWorld_->Init();
+
 	renderer_->Init();
 }
 
@@ -182,6 +190,8 @@ void Engine::PostInit() const
 #if GOKNAR_EDITOR
 	editor_->PostInit();
 #endif
+
+	physicsWorld_->PostInit();
 
 	renderer_->PostInit();
 }
@@ -275,7 +285,9 @@ void Engine::InitObjects()
 	// For example creating new object on BeginGame() function
 	for (int objectIndex = 0; objectIndex < objectsToBeInitializedSize_; ++objectIndex)
 	{
+		objectsToBeInitialized_[objectIndex]->PreInit();
 		objectsToBeInitialized_[objectIndex]->Init();
+		objectsToBeInitialized_[objectIndex]->PostInit();
 	}
 	objectsToBeInitialized_.clear();
 	hasUninitializedObjects_ = false;

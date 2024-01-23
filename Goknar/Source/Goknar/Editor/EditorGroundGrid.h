@@ -15,8 +15,6 @@ public:
 
 	void BeginGame() override;
 
-	void Init();
-
 protected:
 
 private:

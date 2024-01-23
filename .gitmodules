@@ -10,3 +10,6 @@
 [submodule "Goknar/thirdparty/assimp"]
 	path = Goknar/thirdparty/assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "Goknar/thirdparty/bullet3"]
+	path = Goknar/thirdparty/bullet3
+	url = https://github.com/bulletphysics/bullet3.git
