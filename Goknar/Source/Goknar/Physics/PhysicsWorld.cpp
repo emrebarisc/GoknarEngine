@@ -11,67 +11,66 @@ PhysicsWorld::PhysicsWorld()
 
 PhysicsWorld::~PhysicsWorld()
 {
-
-	if (m_dynamicsWorld)
+	if (dynamicsWorld_)
 	{
 		int i;
-		for (i = m_dynamicsWorld->getNumConstraints() - 1; i >= 0; i--)
+		for (i = dynamicsWorld_->getNumConstraints() - 1; i >= 0; i--)
 		{
-			m_dynamicsWorld->removeConstraint(m_dynamicsWorld->getConstraint(i));
+			dynamicsWorld_->removeConstraint(dynamicsWorld_->getConstraint(i));
 		}
-		for (i = m_dynamicsWorld->getNumCollisionObjects() - 1; i >= 0; i--)
+		for (i = dynamicsWorld_->getNumCollisionObjects() - 1; i >= 0; i--)
 		{
-			btCollisionObject* obj = m_dynamicsWorld->getCollisionObjectArray()[i];
+			btCollisionObject* obj = dynamicsWorld_->getCollisionObjectArray()[i];
 			btRigidBody* body = btRigidBody::upcast(obj);
 			if (body && body->getMotionState())
 			{
 				delete body->getMotionState();
 			}
-			m_dynamicsWorld->removeCollisionObject(obj);
+			dynamicsWorld_->removeCollisionObject(obj);
 			delete obj;
 		}
 	}
 	//delete collision shapes
-	for (int j = 0; j < m_collisionShapes.size(); j++)
+	for (int j = 0; j < collisionShapes_.size(); j++)
 	{
-		btCollisionShape* shape = m_collisionShapes[j];
+		btCollisionShape* shape = collisionShapes_[j];
 		delete shape;
 	}
-	m_collisionShapes.clear();
+	collisionShapes_.clear();
 
-	delete m_dynamicsWorld;
-	m_dynamicsWorld = nullptr;
+	delete dynamicsWorld_;
+	dynamicsWorld_ = nullptr;
 
-	delete m_solver;
-	m_solver = nullptr;
+	delete solver_;
+	solver_ = nullptr;
 
-	delete m_broadphase;
-	m_broadphase = nullptr;
+	delete broadphase_;
+	broadphase_ = nullptr;
 
-	delete m_dispatcher;
-	m_dispatcher = nullptr;
+	delete dispatcher_;
+	dispatcher_ = nullptr;
 
-	delete m_collisionConfiguration;
-	m_collisionConfiguration = nullptr;
+	delete collisionConfiguration_;
+	collisionConfiguration_ = nullptr;
 }
 
 void PhysicsWorld::PreInit()
 {
 	///collision configuration contains default setup for memory, collision setup
-	m_collisionConfiguration = new btDefaultCollisionConfiguration();
+	collisionConfiguration_ = new btDefaultCollisionConfiguration();
 	//m_collisionConfiguration->setConvexConvexMultipointIterations();
 
 	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
-	m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
+	dispatcher_ = new btCollisionDispatcher(collisionConfiguration_);
 
-	m_broadphase = new btDbvtBroadphase();
+	broadphase_ = new btDbvtBroadphase();
 
 	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
 	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
-	m_solver = solver;
+	solver_ = solver;
 
-	m_dynamicsWorld = new btDiscreteDynamicsWorld(m_dispatcher, m_broadphase, m_solver, m_collisionConfiguration);
-	m_dynamicsWorld->setGravity({ gravity_.x, gravity_.y, gravity_.z });
+	dynamicsWorld_ = new btDiscreteDynamicsWorld(dispatcher_, broadphase_, solver_, collisionConfiguration_);
+	dynamicsWorld_->setGravity({ gravity_.x, gravity_.y, gravity_.z });
 }
 
 void PhysicsWorld::Init()
@@ -84,7 +83,7 @@ void PhysicsWorld::PostInit()
 
 void PhysicsWorld::PhysicsTick(float deltaTime)
 {
-	m_dynamicsWorld->stepSimulation(deltaTime);
+	dynamicsWorld_->stepSimulation(deltaTime);
 
 	for(RigidBody* rigidBody : rigidBodies_)
 	{
@@ -97,7 +96,7 @@ void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
 	rigidBodies_.push_back(rigidBody);
 
 	btRigidBody* bulletRigidBody = rigidBody->GetBulletRigidBody();
-	m_dynamicsWorld->addRigidBody(bulletRigidBody);
+	dynamicsWorld_->addRigidBody(bulletRigidBody);
 }
 
 void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
@@ -115,5 +114,5 @@ void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 	}
 
 	btRigidBody* bulletRigidBody = rigidBody->GetBulletRigidBody();
-	m_dynamicsWorld->removeRigidBody(bulletRigidBody);
+	dynamicsWorld_->removeRigidBody(bulletRigidBody);
 }

@@ -16,6 +16,11 @@ CollisionComponent::~CollisionComponent()
 {
 }
 
+void CollisionComponent::UpdateComponentToWorldTransformationMatrix()
+{
+	Component::UpdateComponentToWorldTransformationMatrix();
+}
+
 void CollisionComponent::PreInit()
 {
 	Component::PreInit();

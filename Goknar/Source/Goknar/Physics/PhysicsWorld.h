@@ -43,12 +43,12 @@ protected:
 private:
     Vector3 gravity_{ Vector3{0.f, 0.f, -10.f} };
 
-    btAlignedObjectArray<btCollisionShape*> m_collisionShapes;
-    btBroadphaseInterface* m_broadphase{ nullptr };
-    btCollisionDispatcher* m_dispatcher{ nullptr };
-    btConstraintSolver* m_solver{ nullptr };
-    btDefaultCollisionConfiguration* m_collisionConfiguration{ nullptr };
-    btDiscreteDynamicsWorld* m_dynamicsWorld{ nullptr };
+    btAlignedObjectArray<btCollisionShape*> collisionShapes_;
+    btBroadphaseInterface* broadphase_{ nullptr };
+    btCollisionDispatcher* dispatcher_{ nullptr };
+    btConstraintSolver* solver_{ nullptr };
+    btDefaultCollisionConfiguration* collisionConfiguration_{ nullptr };
+    btDiscreteDynamicsWorld* dynamicsWorld_{ nullptr };
 };
 
 #endif

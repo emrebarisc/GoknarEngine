@@ -12,6 +12,8 @@ public:
 	BoxCollisionComponent(ObjectBase* parentObjectBase);
 	~BoxCollisionComponent();
 
+	virtual void UpdateComponentToWorldTransformationMatrix() override;
+
 	virtual void PreInit() override;
 	virtual void Init() override;
 	virtual void PostInit() override;
@@ -24,10 +26,7 @@ public:
 		return halfSize_;
 	}
 
-	void SetHalfSize(const Vector3& halfSize)
-	{
-		halfSize_ = halfSize;
-	}
+	void SetHalfSize(const Vector3& halfSize);
 
 protected:
 	Vector3 halfSize_{ Vector3{1.f} };

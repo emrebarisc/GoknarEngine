@@ -16,8 +16,6 @@
 
 #include "Goknar/Delegates/Delegate.h"
 
-#include "Goknar/Delegates/Delegate.h"
-
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"

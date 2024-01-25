@@ -204,14 +204,18 @@ void Engine::Run()
 	{
 		// Initialize dynamically created object and components /////
 
-		if (hasUninitializedObjects_)
-		{
-			InitObjects();
-		}
-
 		if (hasUninitializedComponents_)
 		{
+			PreInitComponents();
 			InitComponents();
+			PostInitComponents();
+		}
+
+		if (hasUninitializedObjects_)
+		{
+			PreInitObjects();
+			InitObjects();
+			PostInitObjects();
 		}
 
 		////////////////////////////////////////////////////////////////////////////
