@@ -54,17 +54,20 @@ public:
 	void ApplyTorqueImpulse(const Vector3& impulse);
 	void ApplyPushImpulse(const Vector3& impulse, const Vector3& position);
 
+	void ClearForces();
+	void ClearGravity();
+
 	btRigidBody* GetBulletRigidBody() const
 	{
 		return bulletRigidBody_;
 	}
 
 protected:
-	btRigidBody* bulletRigidBody_;
+	btRigidBody* bulletRigidBody_{ nullptr };
 
 private:
-	btVector3 localInertia_;
-	float mass_;
+	btVector3 localInertia_{ btVector3(0.f, 0.f, 0.f) };
+	float mass_{ 0.f };
 };
 
 #endif

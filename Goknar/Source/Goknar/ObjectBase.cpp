@@ -39,8 +39,8 @@ void ObjectBase::Init()
 
 void ObjectBase::PostInit()
 {
-	BeginGame();
 	isInitialized_ = true;
+	BeginGame();
 }
 
 void ObjectBase::Destroy()

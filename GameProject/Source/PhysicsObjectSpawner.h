@@ -15,8 +15,13 @@ public:
 
     virtual void BeginGame() override;
 
+    void CreatePhysicsBox();
+
 protected:
 
 private:
-    PhysicsBox* physicsBox_;
+    //Vector3 initialPosition_{ Vector3{-20.f, 20.f, 0.f} };
+    Vector3 initialPosition_{ Vector3::ZeroVector };
+
+    PhysicsBox* groundPhysicsBox_;
 };

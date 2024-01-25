@@ -8,7 +8,7 @@
 PhysicsBox::PhysicsBox() : RigidBody()
 {
 	boxCollisionComponent_ = AddSubComponent<BoxCollisionComponent>();
-	boxCollisionComponent_->SetHalfSize(GetWorldScaling() * 0.5f);
+	boxCollisionComponent_->SetHalfSize(Vector3{1.f, 1.f, 1.f});
 
 	staticMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 
