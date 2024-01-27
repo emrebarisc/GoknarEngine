@@ -103,7 +103,7 @@
 	      <RelativePosition>0 0 0</RelativePosition>
 	      <RelativeRotation>0 0 0</RelativeRotation>
 	      <RelativeScaling>1 1 1</RelativeScaling>
-	      <WorldPosition>20.0 0.0 0.0</WorldPosition>
+	      <WorldPosition>20.0 0.0 1.0</WorldPosition>
 	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
 	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
 	      <Mesh>5</Mesh>
