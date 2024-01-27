@@ -12,8 +12,6 @@ public:
 	BoxCollisionComponent(ObjectBase* parentObjectBase);
 	~BoxCollisionComponent();
 
-	virtual void UpdateComponentToWorldTransformationMatrix() override;
-
 	virtual void PreInit() override;
 	virtual void Init() override;
 	virtual void PostInit() override;

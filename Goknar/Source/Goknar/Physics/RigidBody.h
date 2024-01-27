@@ -32,10 +32,7 @@ public:
 		return mass_;
 	}
 
-	void SetMass(float mass)
-	{
-		mass_ = mass;
-	}
+	void SetMass(float mass);
 
 	Vector3 GetLocalInertia() const
 	{
@@ -49,7 +46,10 @@ public:
 		localInertia_.setZ(localInertia.z);
 	}
 
-	void ApplyForce(const Vector3& force, const Vector3& position);
+	void SetLinearVelocity(const Vector3& velocity);
+	void SetAngularVelocity(const Vector3& angularVelocity);
+
+	void ApplyForce(const Vector3& force, const Vector3& position = Vector3::ZeroVector);
 	void ApplyCentralImpulse(const Vector3& impulse);
 	void ApplyTorqueImpulse(const Vector3& impulse);
 	void ApplyPushImpulse(const Vector3& impulse, const Vector3& position);
@@ -66,6 +66,16 @@ protected:
 	btRigidBody* bulletRigidBody_{ nullptr };
 
 private:
+	btVector3 initialVelocity_{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 initialAngularVelocity_{ btVector3(0.f, 0.f, 0.f) };
+	
+	btVector3 initialForce_{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 initialForcePosition_{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 initialCentralImpulse_{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 initialTorqueImpulse_{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 initialPushImpulse_{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 initialPushImpulsePosition_{ btVector3(0.f, 0.f, 0.f) };
+
 	btVector3 localInertia_{ btVector3(0.f, 0.f, 0.f) };
 	float mass_{ 0.f };
 };
