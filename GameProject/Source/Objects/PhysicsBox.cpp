@@ -15,6 +15,8 @@ PhysicsBox::PhysicsBox() : RigidBody()
 	StaticMesh* cubeStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Cube.fbx");
 	staticMeshComponent_->SetMesh(cubeStaticMesh);
 	staticMeshComponent_->SetParent(boxCollisionComponent_);
+
+	SetMass(100.f);
 }
 
 void PhysicsBox::BeginGame()

@@ -14,8 +14,10 @@ public:
     ~PhysicsObjectSpawner();
 
     virtual void BeginGame() override;
+    virtual void Tick(float deltaTime) override;
 
     void CreatePhysicsBox();
+    void ThrowPhysicsSphere();
 
 protected:
 

@@ -1,3 +1,7 @@
+#include "pch.h"
+
+#include "Game.h"
+
 #include <Goknar.h>
 
 #include "Goknar/Scene.h"
@@ -18,29 +22,6 @@
 #include "PhysicsObjectSpawner.h"
 
 #include <chrono>
-
-class Game : public Application
-{
-public:
-	Game();
-
-	~Game()
-	{
-	}
-
-	void Run() override;
-
-private:
-	Archer* archer_;
-	Dancer* dancer_;
-	LightController* lightController_;
-	Sun* sun_;
-	Fire* fire_;
-	RandomGrassSpawner* randomGrassSpawner_;
-	MaterialSphereSpawner* materialSphereSpawner_;
-
-	PhysicsObjectSpawner* physicsObjectSpawner_;
-};
 
 Game::Game() : Application()
 {

@@ -61,6 +61,10 @@
 	      <Name>SM_Sphere</Name>
 	      <Path>Meshes/SM_Sphere.fbx</Path>
 	    </StaticMesh>
+	    <StaticMesh id = "10">
+	      <Name>SM_HalfRadiusSphere</Name>
+	      <Path>Meshes/SM_HalfRadiusSphere.fbx</Path>
+	    </StaticMesh>
 	</Meshes>
 
 	<Objects>
