@@ -207,6 +207,12 @@ public:
         return out << "[" << val.r << ", " << val.g << ", " << val.b << "]";
     }
 
+    static Colorf Red;
+    static Colorf Green;
+    static Colorf Blue;
+    static Colorf Yellow;
+    static Colorf Magenta;
+    static Colorf Orange;
 
     float r, g, b;
 private:

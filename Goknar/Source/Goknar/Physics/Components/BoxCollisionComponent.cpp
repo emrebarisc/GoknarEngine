@@ -5,8 +5,6 @@
 #include "BoxCollisionComponent.h"
 #include "ObjectBase.h"
 
-#include <btIDebugDraw.h>
-
 BoxCollisionComponent::BoxCollisionComponent(Component* parent) :
 	CollisionComponent(parent)
 {
