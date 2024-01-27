@@ -18,19 +18,6 @@ BoxCollisionComponent::BoxCollisionComponent(ObjectBase* parentObjectBase) :
 
 BoxCollisionComponent::~BoxCollisionComponent()
 {
-	delete bulletCollisionShape_;
-}
-
-void BoxCollisionComponent::UpdateComponentToWorldTransformationMatrix()
-{
-	CollisionComponent::UpdateComponentToWorldTransformationMatrix();
-
-	if (!GetIsInitialized())
-	{
-		return;
-	}
-
-	bulletCollisionShape_->setLocalScaling(btVector3(worldScaling_.x, worldScaling_.y, worldScaling_.z));
 }
 
 void BoxCollisionComponent::PreInit()

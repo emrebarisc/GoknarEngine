@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include "BulletCollision/CollisionShapes/btCollisionShape.h"
+
 #include "CollisionComponent.h"
 
 CollisionComponent::CollisionComponent(Component* parent) :
@@ -14,11 +16,19 @@ CollisionComponent::CollisionComponent(ObjectBase* parentObjectBase) :
 
 CollisionComponent::~CollisionComponent()
 {
+	delete bulletCollisionShape_;
 }
 
 void CollisionComponent::UpdateComponentToWorldTransformationMatrix()
 {
 	Component::UpdateComponentToWorldTransformationMatrix();
+
+	if (!GetIsInitialized())
+	{
+		return;
+	}
+
+	bulletCollisionShape_->setLocalScaling(btVector3(worldScaling_.x, worldScaling_.y, worldScaling_.z));
 }
 
 void CollisionComponent::PreInit()
