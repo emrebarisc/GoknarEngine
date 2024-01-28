@@ -9,6 +9,20 @@
 
 class btRigidBody;
 
+struct GOKNAR_API RigidBodyInitializationData
+{
+	btVector3 velocity{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 angularVelocity{ btVector3(0.f, 0.f, 0.f) };
+	
+	btVector3 force{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 forcePosition{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 centralImpulse{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 torqueImpulse{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 pushImpulse{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 pushImpulsePosition{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 localInertia{ btVector3(0.f, 0.f, 0.f) };
+};
+
 class GOKNAR_API RigidBody : public ObjectBase
 {
 public:
@@ -34,18 +48,6 @@ public:
 
 	void SetMass(float mass);
 
-	Vector3 GetLocalInertia() const
-	{
-		return Vector3{ localInertia_.x(), localInertia_.y(), localInertia_.z() };
-	}
-
-	void SetLocalInertia(const Vector3& localInertia)
-	{
-		localInertia_.setX(localInertia.x);
-		localInertia_.setY(localInertia.y);
-		localInertia_.setZ(localInertia.z);
-	}
-
 	void SetLinearVelocity(const Vector3& velocity);
 	void SetAngularVelocity(const Vector3& angularVelocity);
 
@@ -66,17 +68,8 @@ protected:
 	btRigidBody* bulletRigidBody_{ nullptr };
 
 private:
-	btVector3 initialVelocity_{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 initialAngularVelocity_{ btVector3(0.f, 0.f, 0.f) };
-	
-	btVector3 initialForce_{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 initialForcePosition_{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 initialCentralImpulse_{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 initialTorqueImpulse_{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 initialPushImpulse_{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 initialPushImpulsePosition_{ btVector3(0.f, 0.f, 0.f) };
+	RigidBodyInitializationData* initializationData_{ nullptr };
 
-	btVector3 localInertia_{ btVector3(0.f, 0.f, 0.f) };
 	float mass_{ 0.f };
 };
 
