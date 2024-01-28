@@ -11,6 +11,9 @@ class btRigidBody;
 
 struct GOKNAR_API RigidBodyInitializationData
 {
+	btVector3 linearFactor{ btVector3(1.f, 1.f, 1.f) };
+	btVector3 angularFactor{ btVector3(1.f, 1.f, 1.f) };
+
 	btVector3 velocity{ btVector3(0.f, 0.f, 0.f) };
 	btVector3 angularVelocity{ btVector3(0.f, 0.f, 0.f) };
 	
@@ -47,6 +50,16 @@ public:
 	}
 
 	void SetMass(float mass);
+
+	// For un/locking physics movement on an axis
+	// For movement on all axis Vector3{1.f, 1.f, 1.f}
+	// For locking on z-axis Vector3{1.f, 1.f, 0.f}
+	void SetLinearFactor(const Vector3& linearFactor);
+
+	// For un/locking physics rotation on an axis
+	// For rotation on all axis Vector3{1.f, 1.f, 1.f}
+	// For locking on z-axis Vector3{1.f, 1.f, 0.f}
+	void SetAngularFactor(const Vector3& angularFactor);
 
 	void SetLinearVelocity(const Vector3& velocity);
 	void SetAngularVelocity(const Vector3& angularVelocity);
