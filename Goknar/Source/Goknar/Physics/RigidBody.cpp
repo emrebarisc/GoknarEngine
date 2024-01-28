@@ -91,6 +91,9 @@ void RigidBody::PostInit()
         bulletRigidBody_->applyForce(initializationData_->force, initializationData_->forcePosition);
     }
 
+    bulletRigidBody_->setLinearFactor(initializationData_->linearFactor);
+    bulletRigidBody_->setAngularFactor(initializationData_->angularFactor);
+
     delete initializationData_;
     initializationData_ = nullptr;
 }
@@ -124,6 +127,32 @@ void RigidBody::SetMass(float mass)
     }
 
 	bulletRigidBody_->setMassProps(mass_, bulletRigidBody_->getLocalInertia());
+}
+
+void RigidBody::SetLinearFactor(const Vector3& linearFactor)
+{
+    btVector3 btLinearFactor = btVector3(linearFactor.x, linearFactor.y, linearFactor.z);
+
+    if (!GetIsInitialized())
+    {
+        initializationData_->linearFactor = btLinearFactor;
+        return;
+    }
+
+    bulletRigidBody_->setLinearFactor(btLinearFactor);
+}
+
+void RigidBody::SetAngularFactor(const Vector3& angularFactor)
+{
+    btVector3 btAngularFactor = btVector3(angularFactor.x, angularFactor.y, angularFactor.z);
+
+    if (!GetIsInitialized())
+    {
+        initializationData_->angularFactor = btAngularFactor;
+        return;
+    }
+
+    bulletRigidBody_->setAngularFactor(btAngularFactor);
 }
 
 void RigidBody::SetWorldPosition(const Vector3& worldPosition, bool updateWorldTransformationMatrix)
