@@ -11,11 +11,15 @@
 
 RigidBody::RigidBody() : ObjectBase()
 {
-
+    initializationData_ = new RigidBodyInitializationData();
 }
 
 RigidBody::~RigidBody()
 {
+    if(initializationData_)
+    {
+        delete initializationData_;
+    }
 }
 
 void RigidBody::PreInit()
@@ -34,7 +38,7 @@ void RigidBody::Init()
     bool isDynamic = (mass_ != 0.f);
     if (isDynamic)
     {
-        bulletCollisionShape->calculateLocalInertia(mass_, localInertia_);
+        bulletCollisionShape->calculateLocalInertia(mass_, initializationData_->localInertia);
     }
 
     btTransform bulletTransform;
@@ -44,7 +48,7 @@ void RigidBody::Init()
 
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
     btDefaultMotionState* bulletMotionState = new btDefaultMotionState(bulletTransform);
-    btRigidBody::btRigidBodyConstructionInfo rigidBodyInfo(mass_, bulletMotionState, bulletCollisionShape, localInertia_);
+    btRigidBody::btRigidBodyConstructionInfo rigidBodyInfo(mass_, bulletMotionState, bulletCollisionShape, initializationData_->localInertia);
 
     bulletRigidBody_ = new btRigidBody(rigidBodyInfo);
 
@@ -57,35 +61,38 @@ void RigidBody::PostInit()
 {
     ObjectBase::PostInit();
 
-    if(0.01f < initialVelocity_.length2())
+    if(0.01f < initializationData_->velocity.length2())
     {
-        bulletRigidBody_->setLinearVelocity(initialVelocity_);
+        bulletRigidBody_->setLinearVelocity(initializationData_->velocity);
     }
     
-    if(0.01f < initialAngularVelocity_.length2())
+    if(0.01f < initializationData_->angularVelocity.length2())
     {
-        bulletRigidBody_->setAngularVelocity(initialAngularVelocity_);
+        bulletRigidBody_->setAngularVelocity(initializationData_->angularVelocity);
     }    
 
-    if(0.01f < initialCentralImpulse_.length2())
+    if(0.01f < initializationData_->centralImpulse.length2())
     {
-        bulletRigidBody_->applyCentralImpulse(initialCentralImpulse_);
+        bulletRigidBody_->applyCentralImpulse(initializationData_->centralImpulse);
     }    
 
-    if(0.01f < initialTorqueImpulse_.length2())
+    if(0.01f < initializationData_->torqueImpulse.length2())
     {
-        bulletRigidBody_->applyTorqueImpulse(initialTorqueImpulse_);
+        bulletRigidBody_->applyTorqueImpulse(initializationData_->torqueImpulse);
     }    
 
-    if(0.01f < initialPushImpulse_.length2())
+    if(0.01f < initializationData_->pushImpulse.length2())
     {
-        bulletRigidBody_->applyPushImpulse(initialPushImpulse_, initialPushImpulsePosition_);
+        bulletRigidBody_->applyPushImpulse(initializationData_->pushImpulse, initializationData_->pushImpulsePosition);
     }    
 
-    if(0.01f < initialForce_.length2())
+    if(0.01f < initializationData_->force.length2())
     {
-        bulletRigidBody_->applyForce(initialForce_, initialForcePosition_);
+        bulletRigidBody_->applyForce(initializationData_->force, initializationData_->forcePosition);
     }
+
+    delete initializationData_;
+    initializationData_ = nullptr;
 }
 
 void RigidBody::BeginGame()
@@ -149,76 +156,84 @@ void RigidBody::SetWorldRotation(const Quaternion& worldRotation, bool updateWor
 
 void RigidBody::SetLinearVelocity(const Vector3& velocity)
 {
-    initialVelocity_ = btVector3(velocity.x, velocity.y, velocity.z);
+    btVector3 btVelocity = btVector3(velocity.x, velocity.y, velocity.z);
 
     if(!GetIsInitialized())
     {
+        initializationData_->velocity = btVelocity;
         return;
     }
 
-    bulletRigidBody_->setLinearVelocity(initialVelocity_);
+    bulletRigidBody_->setLinearVelocity(btVelocity);
 }
 
 void RigidBody::SetAngularVelocity(const Vector3& angularVelocity)
 {
-    initialAngularVelocity_ = btVector3(angularVelocity.x, angularVelocity.y, angularVelocity.z);
+    btVector3 btAngularVelocity = btVector3(angularVelocity.x, angularVelocity.y, angularVelocity.z);
 
     if(!GetIsInitialized())
     {
+        initializationData_->angularVelocity = btAngularVelocity;
         return;
     }
 
-    bulletRigidBody_->setAngularVelocity(initialAngularVelocity_);
+    bulletRigidBody_->setAngularVelocity(btAngularVelocity);
 }
 
 void RigidBody::ApplyForce(const Vector3& force, const Vector3& position)
 {
-    initialForce_ = btVector3(force.x, force.y, force.z);
-    initialForcePosition_ = btVector3(position.x, position.y, position.z);
+    btVector3 btForce = btVector3(force.x, force.y, force.z);
+    btVector3 btForcePosition = btVector3(position.x, position.y, position.z);
 
     if(!GetIsInitialized())
     {
+        initializationData_->force = btForce;
+        initializationData_->forcePosition = btForcePosition;
         return;
     }
 
-    bulletRigidBody_->applyForce(initialForce_, initialForcePosition_);
+    bulletRigidBody_->applyForce(btForce, btForcePosition);
 }
 
 void RigidBody::ApplyCentralImpulse(const Vector3& impulse)
 {
-    initialCentralImpulse_ = btVector3(impulse.x, impulse.y, impulse.z);
+    btVector3 btImpulse = btVector3(impulse.x, impulse.y, impulse.z);
 
     if(!GetIsInitialized())
     {
+        initializationData_->centralImpulse = btImpulse;
         return;
     }
 
-    bulletRigidBody_->applyCentralImpulse(initialCentralImpulse_);
+    bulletRigidBody_->applyCentralImpulse(btImpulse);
 }
 
 void RigidBody::ApplyTorqueImpulse(const Vector3& impulse)
 {
-    initialTorqueImpulse_ = btVector3(impulse.x, impulse.y, impulse.z);
+    btVector3 btImpulse = btVector3(impulse.x, impulse.y, impulse.z);
 
     if(!GetIsInitialized())
     {
+        initializationData_->torqueImpulse = btImpulse;
         return;
     }
 
-    bulletRigidBody_->applyTorqueImpulse(initialTorqueImpulse_);
+    bulletRigidBody_->applyTorqueImpulse(btImpulse);
 }
 
 void RigidBody::ApplyPushImpulse(const Vector3& impulse, const Vector3& position)
 {
-    initialPushImpulse_ = btVector3(impulse.x, impulse.y, impulse.z);
-    initialPushImpulsePosition_ = btVector3(position.x, position.y, position.z);
+    btVector3 btPushImpulse = btVector3(impulse.x, impulse.y, impulse.z);
+    btVector3 btPushImpulsePosition = btVector3(position.x, position.y, position.z);
 
     if(!GetIsInitialized())
     {
+        initializationData_->pushImpulse = btPushImpulse;
+        initializationData_->pushImpulsePosition = btPushImpulsePosition;
         return;
     }
 
-    bulletRigidBody_->applyPushImpulse(initialPushImpulse_, initialPushImpulsePosition_);
+    bulletRigidBody_->applyPushImpulse(btPushImpulse, btPushImpulsePosition);
 }
 
 void RigidBody::ClearForces()
