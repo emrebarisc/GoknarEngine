@@ -2,7 +2,7 @@
 
 #include <random>
 
-#include "Archer.h"
+#include "PhysicsArcher.h"
 #include "Objects/PhysicsBox.h"
 #include "Objects/PhysicsSphere.h"
 
@@ -16,7 +16,7 @@ PhysicsObjectSpawner::PhysicsObjectSpawner()
 
     groundPhysicsBox_ = new PhysicsBox();
     groundPhysicsBox_->SetWorldPosition(initialPosition_);
-    groundPhysicsBox_->SetWorldScaling(Vector3{ 10.f, 10.f, 0.25f });
+    groundPhysicsBox_->SetWorldScaling(Vector3{ 100.f, 100.f, 0.25f });
     groundPhysicsBox_->SetMass(0.f);
 }
 
@@ -62,7 +62,7 @@ void PhysicsObjectSpawner::ThrowPhysicsSphere()
 
     Game* game = dynamic_cast<Game*>(engine->GetApplication());
 
-    Archer* archer = game->GetArcher();
+    PhysicsArcher* archer = game->GetPhysicsArcher();
 
     physicsSphere->SetWorldPosition(archer->GetWorldPosition() + archer->GetUpVector() + archer->GetForwardVector() * 0.25f);
     physicsSphere->SetLinearVelocity(50.f * (archer->GetForwardVector() * 0.85f + archer->GetUpVector() * 0.15f));

@@ -1,6 +1,7 @@
 #include "Goknar/Application.h"
 
 class Archer;
+class PhysicsArcher;
 class Dancer;
 class LightController;
 class Sun;
@@ -25,8 +26,14 @@ public:
 		return archer_;
 	}
 
+	PhysicsArcher* GetPhysicsArcher() const
+	{
+		return physicsArcher_;
+	}
+
 private:
 	Archer* archer_;
+	PhysicsArcher* physicsArcher_;
 	Dancer* dancer_;
 	LightController* lightController_;
 	Sun* sun_;
