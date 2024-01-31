@@ -21,6 +21,7 @@
 #include "RandomGrassSpawner.h"
 #include "MaterialSphereSpawner.h"
 #include "PhysicsObjectSpawner.h"
+#include "Objects/Terrain.h"
 
 #include <chrono>
 
@@ -42,12 +43,12 @@ Game::Game() : Application()
 	//archer_ = new Archer();
 	physicsArcher_ = new PhysicsArcher();
 	physicsArcher_->SetWorldPosition(Vector3{-20.f, 0.f, 5.f});
-	dancer_ = new Dancer();
-	lightController_ = new LightController();
+	// dancer_ = new Dancer();
+	// lightController_ = new LightController();
 	sun_ = new Sun();
-	randomGrassSpawner_ = new RandomGrassSpawner();
-	fire_ = new Fire();
-	materialSphereSpawner_ = new MaterialSphereSpawner();
+	// randomGrassSpawner_ = new RandomGrassSpawner();
+	// fire_ = new Fire();
+	// materialSphereSpawner_ = new MaterialSphereSpawner();
 
 	physicsObjectSpawner_ = new PhysicsObjectSpawner();
 
@@ -56,6 +57,8 @@ Game::Game() : Application()
 	{
 		floorStaticMesh->GetMaterial()->SetShadingModel(MaterialShadingModel::TwoSided);
 	}
+
+	terrain = new Terrain();
 
 	engine->GetWindowManager()->SetIsInFullscreen(false);
 	//engine->SetTimeScale(0.1f);

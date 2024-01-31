@@ -68,7 +68,7 @@
 	</Meshes>
 
 	<Objects>
- 	     <StaticMeshObject id = "3">
+ 	     <!-- <StaticMeshObject id = "3">
 	      <Name>Floor</Name>
 	      <PivotPoint>0 0 0</PivotPoint>
 	      <RelativePosition>0 0 0</RelativePosition>
@@ -122,7 +122,7 @@
 	      <WorldRotation>0.0 0.0 0.0</WorldRotation>
 	      <WorldScaling>1.0 1.0 1.0</WorldScaling>
 	      <Mesh>6</Mesh>
-	    </StaticMeshObject>
+	    </StaticMeshObject> -->
 	</Objects>
 
 </Scene>
