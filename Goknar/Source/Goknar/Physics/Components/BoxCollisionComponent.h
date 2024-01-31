@@ -3,8 +3,6 @@
 
 #include "CollisionComponent.h"
 
-class btCollisionShape;
-
 class GOKNAR_API BoxCollisionComponent : public CollisionComponent
 {
 public:

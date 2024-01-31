@@ -22,10 +22,9 @@ BoxCollisionComponent::~BoxCollisionComponent()
 
 void BoxCollisionComponent::PreInit()
 {
-	CollisionComponent::PreInit();
-
 	bulletCollisionShape_ = new btBoxShape(btVector3(halfSize_.x, halfSize_.y, halfSize_.z));
-	bulletCollisionShape_->setLocalScaling(btVector3(worldScaling_.x, worldScaling_.y, worldScaling_.z));
+	
+	CollisionComponent::PreInit();
 }
 
 void BoxCollisionComponent::Init()

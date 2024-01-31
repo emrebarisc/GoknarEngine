@@ -12,9 +12,13 @@ const Vector3 Vector3::UpVector = Vector3(0.f, 0.f, 1.f);
 
 const Vector4 Vector4::ZeroVector = Vector4(0.f);
 
-//constexpr float MAX_FLOAT = std::numeric_limits<float>::max();
-//constexpr int MAX_INT = std::numeric_limits<int>::max();
-//constexpr unsigned int MAX_UINT = std::numeric_limits<unsigned int>::max();
+const float MAX_FLOAT = std::numeric_limits<float>::max();
+const int MAX_INT = std::numeric_limits<int>::max();
+const unsigned int MAX_UINT = std::numeric_limits<unsigned int>::max();
+
+const float MIN_FLOAT = std::numeric_limits<float>::min();
+const int MIN_INT = std::numeric_limits<int>::min();
+const unsigned int MIN_UINT = std::numeric_limits<unsigned int>::min();
 
 Vector2::Vector2(): x(0), y(0)
 {

@@ -16,6 +16,10 @@ extern const float MAX_FLOAT;
 extern const int MAX_INT;
 extern const unsigned int MAX_UINT;
 
+extern const float MIN_FLOAT;
+extern const int MIN_INT;
+extern const unsigned int MIN_UINT;
+
 struct Vector2;
 struct Vector2i;
 struct Vector3;

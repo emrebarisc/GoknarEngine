@@ -3,6 +3,7 @@
 
 #include "Goknar/Core.h"
 #include "Goknar/Contents/Content.h"
+#include "Goknar/Geometry/Box.h"
 #include "Goknar/Math/Matrix.h"
 #include "Goknar/Math/GoknarMath.h"
 
@@ -39,7 +40,7 @@ public:
 	unsigned int vertexIndices[3];
 };
 
-// THIS CLASS IS DIRECTLY SENT TO THE GPU
+// THIS CLASS IS DIBoxLY SENT TO THE GPU
 // BEWARE OF ADDING MORE DATA TO GPU SPACE BEFORE ADDING ANOTHER VARIABLE
 class GOKNAR_API VertexData
 {
@@ -97,12 +98,37 @@ public:
 
 	void AddVertex(const Vector3& vertex)
 	{
-		vertices_->push_back(VertexData(vertex));
-		vertexCount_++;
+		AddVertexData(VertexData(vertex));
 	}
 
 	void AddVertexData(const VertexData& vertexData)
 	{
+		if(aabb_.GetMaxX() < vertexData.position.x)
+		{
+			aabb_.SetMaxX(vertexData.position.x, false);
+		}
+		if(aabb_.GetMaxY() < vertexData.position.y)
+		{
+			aabb_.SetMaxY(vertexData.position.y, false);
+		}
+		if(aabb_.GetMaxZ() < vertexData.position.z)
+		{
+			aabb_.SetMaxZ(vertexData.position.z, false);
+		}
+
+		if(vertexData.position.x < aabb_.GetMinX())
+		{
+			aabb_.SetMinX(vertexData.position.x, false);
+		}
+		if(vertexData.position.y < aabb_.GetMinY())
+		{
+			aabb_.SetMinY(vertexData.position.y, false);
+		}
+		if(vertexData.position.z < aabb_.GetMinZ())
+		{
+			aabb_.SetMinZ(vertexData.position.z, false);
+		}
+
 		vertices_->push_back(vertexData);
 		vertexCount_++;
 	}
@@ -162,6 +188,16 @@ public:
 		return vertexStartingIndex_;
 	}
 
+	void SetAABB(const Box& aabb)
+	{
+		aabb_ = aabb;
+	}
+
+	const Box& GetAABB() const
+	{
+		return aabb_;
+	}
+
 	void ClearDataFromMemory();
 
 protected:
@@ -173,6 +209,8 @@ protected:
 	bool isInitialized_;
 
 private:
+	Box aabb_{ Box(Vector3(MAX_FLOAT, MAX_FLOAT, MAX_FLOAT), Vector3(MIN_FLOAT, MIN_FLOAT, MIN_FLOAT)) };
+
 	VertexArray* vertices_;
 	FaceArray* faces_;
 

@@ -20,10 +20,9 @@ SphereCollisionComponent::~SphereCollisionComponent()
 
 void SphereCollisionComponent::PreInit()
 {
-	CollisionComponent::PreInit();
-
 	bulletCollisionShape_ = new btSphereShape(radius_);
-	bulletCollisionShape_->setLocalScaling(btVector3(worldScaling_.x, worldScaling_.y, worldScaling_.z));
+	
+	CollisionComponent::PreInit();
 }
 
 void SphereCollisionComponent::Init()

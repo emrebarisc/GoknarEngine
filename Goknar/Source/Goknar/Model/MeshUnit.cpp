@@ -41,6 +41,8 @@ MeshUnit::~MeshUnit()
 
 void MeshUnit::PreInit()
 {
+	aabb_.CalculateSize();
+
 	vertexCount_ = (int)vertices_->size();
 	faceCount_ = (int)faces_->size();
 

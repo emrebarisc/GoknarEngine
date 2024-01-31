@@ -1,21 +1,21 @@
-#ifndef __RECT_H__
-#define __RECT_H__
+#ifndef __BOX_H__
+#define __BOX_H__
 
 #include "Goknar/Core.h"
 #include "Goknar/Math/GoknarMath.h"
 
-class GOKNAR_API Rect
+class GOKNAR_API Box
 {
 public:
-	Rect();
-	Rect(const Vector2& min, const Vector2& max);
+	Box();
+	Box(const Vector3& min, const Vector3& max);
 
-	const Vector2& GetMin() const
+	const Vector3& GetMin() const
 	{
 		return min_;
 	}
 
-	inline void SetMin(const Vector2& min)
+	inline void SetMin(const Vector3& min)
 	{
 		min_ = min;
 		CalculateSize();
@@ -49,12 +49,26 @@ public:
 		}
 	}
 
-	inline const Vector2& GetMax() const
+	inline float GetMinZ() const
+	{
+		return min_.z;
+	}
+
+	inline void SetMinZ(float minZ, bool recalculateSize = true)
+	{
+		min_.z = minZ;
+		if(recalculateSize)
+		{
+			CalculateSize();
+		}
+	}
+
+	inline const Vector3& GetMax() const
 	{
 		return max_;
 	}
 
-	inline void SetMax(const Vector2& max)
+	inline void SetMax(const Vector3& max)
 	{
 		max_ = max;
 		CalculateSize();
@@ -88,21 +102,36 @@ public:
 		}
 	}
 
+	inline float GetMaxZ() const
+	{
+		return max_.z;
+	}
+
+	inline void SetMaxZ(float maxZ, bool recalculateSize = true)
+	{
+		max_.z = maxZ;
+		if(recalculateSize)
+		{
+			CalculateSize();
+		}
+	}
+
 	void CalculateSize()
 	{
 		width_ = max_.x - min_.x;
-		height_ = max_.y - min_.y;
+		depth_ = max_.y - min_.y;
+		height_ = max_.z - min_.z;
 	}
-
 protected:
 
 private:
 
-	Vector2 min_;
-	Vector2 max_;
+	Vector3 min_{ Vector3::ZeroVector };
+	Vector3 max_{ Vector3::ZeroVector };
 
-	float width_;
-	float height_;
+	float width_{ 0.f };
+	float depth_{ 0.f };
+	float height_{ 0.f };
 };
 
 #endif

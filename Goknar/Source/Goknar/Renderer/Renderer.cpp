@@ -59,7 +59,7 @@ Renderer::Renderer() :
 	totalSkeletalMeshCount_(0),
 	totalDynamicMeshCount_(0),
 	shadowManager_(nullptr),
-	removeStaticDataFromMemoryAfterTransferingToGPU_(true)
+	removeStaticDataFromMemoryAfterTransferingToGPU_(false)
 {
 }
 
