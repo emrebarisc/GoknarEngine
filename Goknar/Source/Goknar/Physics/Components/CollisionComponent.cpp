@@ -34,6 +34,8 @@ void CollisionComponent::UpdateComponentToWorldTransformationMatrix()
 void CollisionComponent::PreInit()
 {
 	Component::PreInit();
+	
+	bulletCollisionShape_->setLocalScaling(btVector3(worldScaling_.x, worldScaling_.y, worldScaling_.z));
 }
 
 void CollisionComponent::Init()

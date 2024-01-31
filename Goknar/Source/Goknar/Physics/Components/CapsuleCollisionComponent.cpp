@@ -20,10 +20,9 @@ CapsuleCollisionComponent::~CapsuleCollisionComponent()
 
 void CapsuleCollisionComponent::PreInit()
 {
-	CollisionComponent::PreInit();
-
 	bulletCollisionShape_ = new btCapsuleShape(radius_, height_);
-	bulletCollisionShape_->setLocalScaling(btVector3(worldScaling_.x, worldScaling_.y, worldScaling_.z));
+
+	CollisionComponent::PreInit();
 }
 
 void CapsuleCollisionComponent::Init()
