@@ -9,6 +9,7 @@ class Fire;
 class RandomGrassSpawner;
 class MaterialSphereSpawner;
 class PhysicsObjectSpawner;
+class Terrain;
 
 class GOKNAR_API Game : public Application
 {
@@ -42,4 +43,6 @@ private:
 	MaterialSphereSpawner* materialSphereSpawner_;
 
 	PhysicsObjectSpawner* physicsObjectSpawner_;
+
+	Terrain* terrain;
 };
