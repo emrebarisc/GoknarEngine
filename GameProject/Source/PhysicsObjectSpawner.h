@@ -16,7 +16,9 @@ public:
     virtual void BeginGame() override;
     virtual void Tick(float deltaTime) override;
 
+    Vector3 GetRandomPosition();
     void CreatePhysicsBox();
+    void CreatePhysicsSphere();
     void ThrowPhysicsSphere();
 
 protected:
