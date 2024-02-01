@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include <limits>
+
 #include "GoknarMath.h"
 #include "Matrix.h"
 
@@ -12,13 +14,21 @@ const Vector3 Vector3::UpVector = Vector3(0.f, 0.f, 1.f);
 
 const Vector4 Vector4::ZeroVector = Vector4(0.f);
 
+#ifdef GOKNAR_PLATFORM_WINDOWS
+const float MAX_FLOAT = FLT_MAX;
+const int MAX_INT = INT_MAX;
+const unsigned int MAX_UINT = UINT_MAX;
+
+const float MIN_FLOAT = FLT_MIN;
+const int MIN_INT = INT_MIN;
+#else
 const float MAX_FLOAT = std::numeric_limits<float>::max();
 const int MAX_INT = std::numeric_limits<int>::max();
 const unsigned int MAX_UINT = std::numeric_limits<unsigned int>::max();
 
 const float MIN_FLOAT = std::numeric_limits<float>::min();
 const int MIN_INT = std::numeric_limits<int>::min();
-const unsigned int MIN_UINT = std::numeric_limits<unsigned int>::min();
+#endif // GOKNAR_PLATFORM_WINDOWS
 
 Vector2::Vector2(): x(0), y(0)
 {
