@@ -8,6 +8,8 @@
 #include "Model/MeshUnit.h"
 #include "Physics/PhysicsUtils.h"
 
+#include "Log.h"
+
 StaticTriangleMeshCollisionComponent::StaticTriangleMeshCollisionComponent(Component* parent) :
 	CollisionComponent(parent)
 {

@@ -12,6 +12,7 @@
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Renderer/Texture.h"
+#include "Goknar/Log.h"
 
 #include "assimp/Importer.hpp"
 #include "assimp/scene.h"
