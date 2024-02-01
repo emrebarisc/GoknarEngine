@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "Components/CollisionComponent.h"
 #include "Physics/PhysicsWorld.h"
+#include "Physics/PhysicsUtils.h"
 
 #include "btBulletDynamicsCommon.h"
 #include "Bullet3Common/b3Vector3.h"
@@ -43,8 +44,8 @@ void RigidBody::Init()
 
     btTransform bulletTransform;
     bulletTransform.setIdentity();
-    bulletTransform.setOrigin(btVector3{ worldPosition_.x, worldPosition_.y, worldPosition_.z });
-    bulletTransform.setRotation(btQuaternion{ worldRotation_.x, worldRotation_.y, worldRotation_.z, worldRotation_.w });
+    bulletTransform.setOrigin(PhysicsUtils::FromVector3ToBtVector3(worldPosition_));
+    bulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(worldRotation_));
 
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
     btDefaultMotionState* bulletMotionState = new btDefaultMotionState(bulletTransform);
@@ -131,7 +132,7 @@ void RigidBody::SetMass(float mass)
 
 void RigidBody::SetLinearFactor(const Vector3& linearFactor)
 {
-    btVector3 btLinearFactor = btVector3(linearFactor.x, linearFactor.y, linearFactor.z);
+    btVector3 btLinearFactor = PhysicsUtils::FromVector3ToBtVector3(linearFactor);
 
     if (!GetIsInitialized())
     {
@@ -144,7 +145,7 @@ void RigidBody::SetLinearFactor(const Vector3& linearFactor)
 
 void RigidBody::SetAngularFactor(const Vector3& angularFactor)
 {
-    btVector3 btAngularFactor = btVector3(angularFactor.x, angularFactor.y, angularFactor.z);
+    btVector3 btAngularFactor = PhysicsUtils::FromVector3ToBtVector3(angularFactor);
 
     if (!GetIsInitialized())
     {
@@ -179,13 +180,13 @@ void RigidBody::SetWorldRotation(const Quaternion& worldRotation, bool updateWor
     }
 
     btTransform newBulletTransform = bulletRigidBody_->getCenterOfMassTransform();
-    newBulletTransform.setRotation(btQuaternion{ worldRotation.x, worldRotation.y, worldRotation.z, worldRotation.w });
+    newBulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(worldRotation));
     bulletRigidBody_->setCenterOfMassTransform(newBulletTransform);
 }
 
 void RigidBody::SetLinearVelocity(const Vector3& velocity)
 {
-    btVector3 btVelocity = btVector3(velocity.x, velocity.y, velocity.z);
+    btVector3 btVelocity = PhysicsUtils::FromVector3ToBtVector3(velocity);
 
     if(!GetIsInitialized())
     {
@@ -198,7 +199,7 @@ void RigidBody::SetLinearVelocity(const Vector3& velocity)
 
 void RigidBody::SetAngularVelocity(const Vector3& angularVelocity)
 {
-    btVector3 btAngularVelocity = btVector3(angularVelocity.x, angularVelocity.y, angularVelocity.z);
+    btVector3 btAngularVelocity = PhysicsUtils::FromVector3ToBtVector3(angularVelocity);
 
     if(!GetIsInitialized())
     {
@@ -211,8 +212,8 @@ void RigidBody::SetAngularVelocity(const Vector3& angularVelocity)
 
 void RigidBody::ApplyForce(const Vector3& force, const Vector3& position)
 {
-    btVector3 btForce = btVector3(force.x, force.y, force.z);
-    btVector3 btForcePosition = btVector3(position.x, position.y, position.z);
+    btVector3 btForce = PhysicsUtils::FromVector3ToBtVector3(force);
+    btVector3 btForcePosition = PhysicsUtils::FromVector3ToBtVector3(position);
 
     if(!GetIsInitialized())
     {
@@ -226,7 +227,7 @@ void RigidBody::ApplyForce(const Vector3& force, const Vector3& position)
 
 void RigidBody::ApplyCentralImpulse(const Vector3& impulse)
 {
-    btVector3 btImpulse = btVector3(impulse.x, impulse.y, impulse.z);
+    btVector3 btImpulse = PhysicsUtils::FromVector3ToBtVector3(impulse);
 
     if(!GetIsInitialized())
     {
@@ -239,7 +240,7 @@ void RigidBody::ApplyCentralImpulse(const Vector3& impulse)
 
 void RigidBody::ApplyTorqueImpulse(const Vector3& impulse)
 {
-    btVector3 btImpulse = btVector3(impulse.x, impulse.y, impulse.z);
+    btVector3 btImpulse = PhysicsUtils::FromVector3ToBtVector3(impulse);
 
     if(!GetIsInitialized())
     {
@@ -252,8 +253,8 @@ void RigidBody::ApplyTorqueImpulse(const Vector3& impulse)
 
 void RigidBody::ApplyPushImpulse(const Vector3& impulse, const Vector3& position)
 {
-    btVector3 btPushImpulse = btVector3(impulse.x, impulse.y, impulse.z);
-    btVector3 btPushImpulsePosition = btVector3(position.x, position.y, position.z);
+    btVector3 btPushImpulse = PhysicsUtils::FromVector3ToBtVector3(impulse);
+    btVector3 btPushImpulsePosition = PhysicsUtils::FromVector3ToBtVector3(position);
 
     if(!GetIsInitialized())
     {
