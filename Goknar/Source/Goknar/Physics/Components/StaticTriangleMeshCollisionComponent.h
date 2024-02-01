@@ -5,6 +5,8 @@
 
 class MeshUnit;
 
+class btTriangleMesh;
+
 // For static(non-moving) collisions
 class GOKNAR_API StaticTriangleMeshCollisionComponent : public CollisionComponent
 {
@@ -33,6 +35,7 @@ public:
 protected:
 private:
 	const MeshUnit* relativeMesh_{ nullptr };
+	btTriangleMesh* bulletTriangleMesh_;
 };
 
 #endif
