@@ -33,16 +33,16 @@ public:
 	}
 
 private:
-	Archer* archer_;
-	PhysicsArcher* physicsArcher_;
-	Dancer* dancer_;
-	LightController* lightController_;
-	Sun* sun_;
-	Fire* fire_;
-	RandomGrassSpawner* randomGrassSpawner_;
-	MaterialSphereSpawner* materialSphereSpawner_;
+	Archer* archer_{ nullptr };
+	PhysicsArcher* physicsArcher_{ nullptr };
+	Dancer* dancer_{ nullptr };
+	LightController* lightController_{ nullptr };
+	Sun* sun_{ nullptr };
+	Fire* fire_{ nullptr };
+	RandomGrassSpawner* randomGrassSpawner_{ nullptr };
+	MaterialSphereSpawner* materialSphereSpawner_{ nullptr };
 
-	PhysicsObjectSpawner* physicsObjectSpawner_;
+	PhysicsObjectSpawner* physicsObjectSpawner_{ nullptr };
 
-	Terrain* terrain;
+	Terrain* terrain{ nullptr };
 };
