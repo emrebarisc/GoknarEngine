@@ -10,6 +10,35 @@ public:
 	Box();
 	Box(const Vector3& min, const Vector3& max);
 
+	inline void ExtendWRTPoint(const Vector3& point, bool recalculateSize = true)
+	{
+		if (max_.x < point.x)
+		{
+			SetMaxX(point.x, recalculateSize);
+		}
+		if (max_.y < point.y)
+		{
+			SetMaxY(point.y, recalculateSize);
+		}
+		if (max_.z < point.z)
+		{
+			SetMaxZ(point.z, recalculateSize);
+		}
+
+		if (point.x < min_.x)
+		{
+			SetMinX(point.x, recalculateSize);
+		}
+		if (point.y < min_.y)
+		{
+			SetMinY(point.y, recalculateSize);
+		}
+		if (point.z < min_.z)
+		{
+			SetMinZ(point.z, recalculateSize);
+		}
+	}
+
 	const Vector3& GetMin() const
 	{
 		return min_;
@@ -125,7 +154,6 @@ public:
 protected:
 
 private:
-
 	Vector3 min_{ Vector3::ZeroVector };
 	Vector3 max_{ Vector3::ZeroVector };
 

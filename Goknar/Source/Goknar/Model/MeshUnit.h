@@ -103,31 +103,7 @@ public:
 
 	void AddVertexData(const VertexData& vertexData)
 	{
-		if(aabb_.GetMaxX() < vertexData.position.x)
-		{
-			aabb_.SetMaxX(vertexData.position.x, false);
-		}
-		if(aabb_.GetMaxY() < vertexData.position.y)
-		{
-			aabb_.SetMaxY(vertexData.position.y, false);
-		}
-		if(aabb_.GetMaxZ() < vertexData.position.z)
-		{
-			aabb_.SetMaxZ(vertexData.position.z, false);
-		}
-
-		if(vertexData.position.x < aabb_.GetMinX())
-		{
-			aabb_.SetMinX(vertexData.position.x, false);
-		}
-		if(vertexData.position.y < aabb_.GetMinY())
-		{
-			aabb_.SetMinY(vertexData.position.y, false);
-		}
-		if(vertexData.position.z < aabb_.GetMinZ())
-		{
-			aabb_.SetMinZ(vertexData.position.z, false);
-		}
+		aabb_.ExtendWRTPoint(vertexData.position, false);
 
 		vertices_->push_back(vertexData);
 		vertexCount_++;
