@@ -3,7 +3,9 @@
 #include "BulletCollision/CollisionShapes/btBoxShape.h"
 
 #include "BoxCollisionComponent.h"
+#include "Log.h"
 #include "ObjectBase.h"
+#include "Physics/PhysicsUtils.h"
 
 BoxCollisionComponent::BoxCollisionComponent(Component* parent) :
 	CollisionComponent(parent)
@@ -22,7 +24,7 @@ BoxCollisionComponent::~BoxCollisionComponent()
 
 void BoxCollisionComponent::PreInit()
 {
-	bulletCollisionShape_ = new btBoxShape(btVector3(halfSize_.x, halfSize_.y, halfSize_.z));
+	bulletCollisionShape_ = new btBoxShape(PhysicsUtils::FromVector3ToBtVector3(halfSize_));
 	
 	CollisionComponent::PreInit();
 }

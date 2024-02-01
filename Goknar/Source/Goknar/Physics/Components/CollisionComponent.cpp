@@ -3,6 +3,7 @@
 #include "BulletCollision/CollisionShapes/btCollisionShape.h"
 
 #include "CollisionComponent.h"
+#include "Physics/PhysicsUtils.h"
 
 CollisionComponent::CollisionComponent(Component* parent) :
 	Component(parent)
@@ -28,14 +29,14 @@ void CollisionComponent::UpdateComponentToWorldTransformationMatrix()
 		return;
 	}
 
-	bulletCollisionShape_->setLocalScaling(btVector3(worldScaling_.x, worldScaling_.y, worldScaling_.z));
+	bulletCollisionShape_->setLocalScaling(PhysicsUtils::FromVector3ToBtVector3(worldScaling_));
 }
 
 void CollisionComponent::PreInit()
 {
 	Component::PreInit();
-	
-	bulletCollisionShape_->setLocalScaling(btVector3(worldScaling_.x, worldScaling_.y, worldScaling_.z));
+
+	bulletCollisionShape_->setLocalScaling(PhysicsUtils::FromVector3ToBtVector3(worldScaling_));
 }
 
 void CollisionComponent::Init()
