@@ -4,13 +4,13 @@
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Model/StaticMesh.h"
-#include "Goknar/Physics/Components/StaticTriangleMeshCollisionComponent.h"
+#include "Goknar/Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 
 Terrain::Terrain() : ObjectBase()
 {
 	StaticMesh* terrainStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Terrain.fbx");
 
-	collisionComponent_ = AddSubComponent<StaticTriangleMeshCollisionComponent>();
+	collisionComponent_ = AddSubComponent<NonMovingTriangleMeshCollisionComponent>();
 	collisionComponent_->SetMesh(terrainStaticMesh);
 	SetRootComponent(collisionComponent_);
 
