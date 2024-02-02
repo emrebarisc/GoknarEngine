@@ -1,5 +1,5 @@
-#ifndef __STATICTRIANGLEMESHCOLLISIONCOMPONENT_H__
-#define __STATICTRIANGLEMESHCOLLISIONCOMPONENT_H__
+#ifndef __NONMOVINGTRIANGLEMESHCOLLISIONCOMPONENT_H__
+#define __NONMOVINGTRIANGLEMESHCOLLISIONCOMPONENT_H__
 
 #include "CollisionComponent.h"
 
@@ -8,12 +8,12 @@ class MeshUnit;
 class btTriangleMesh;
 
 // For static(non-moving) collisions
-class GOKNAR_API StaticTriangleMeshCollisionComponent : public CollisionComponent
+class GOKNAR_API NonMovingTriangleMeshCollisionComponent : public CollisionComponent
 {
 public:
-	StaticTriangleMeshCollisionComponent(Component* parent);
-	StaticTriangleMeshCollisionComponent(ObjectBase* parentObjectBase);
-	~StaticTriangleMeshCollisionComponent();
+	NonMovingTriangleMeshCollisionComponent(Component* parent);
+	NonMovingTriangleMeshCollisionComponent(ObjectBase* parentObjectBase);
+	~NonMovingTriangleMeshCollisionComponent();
 
 	virtual void PreInit() override;
 	virtual void Init() override;

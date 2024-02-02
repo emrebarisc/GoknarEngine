@@ -4,29 +4,29 @@
 #include "BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h"
 
 #include "ObjectBase.h"
-#include "StaticTriangleMeshCollisionComponent.h"
+#include "NonMovingTriangleMeshCollisionComponent.h"
 #include "Model/MeshUnit.h"
 #include "Physics/PhysicsUtils.h"
 
 #include "Log.h"
 
-StaticTriangleMeshCollisionComponent::StaticTriangleMeshCollisionComponent(Component* parent) :
+NonMovingTriangleMeshCollisionComponent::NonMovingTriangleMeshCollisionComponent(Component* parent) :
 	CollisionComponent(parent)
 {
 
 }
 
-StaticTriangleMeshCollisionComponent::StaticTriangleMeshCollisionComponent(ObjectBase* parentObjectBase) :
+NonMovingTriangleMeshCollisionComponent::NonMovingTriangleMeshCollisionComponent(ObjectBase* parentObjectBase) :
 	CollisionComponent(parentObjectBase)
 {
 }
 
-StaticTriangleMeshCollisionComponent::~StaticTriangleMeshCollisionComponent()
+NonMovingTriangleMeshCollisionComponent::~NonMovingTriangleMeshCollisionComponent()
 {
 	delete bulletTriangleMesh_;
 }
 
-void StaticTriangleMeshCollisionComponent::PreInit()
+void NonMovingTriangleMeshCollisionComponent::PreInit()
 {
 	GOKNAR_ASSERT(relativeMesh_ != nullptr);
 
@@ -86,12 +86,12 @@ void StaticTriangleMeshCollisionComponent::PreInit()
 	CollisionComponent::PreInit();
 }
 
-void StaticTriangleMeshCollisionComponent::Init()
+void NonMovingTriangleMeshCollisionComponent::Init()
 {
 	CollisionComponent::Init();
 }
 
-void StaticTriangleMeshCollisionComponent::PostInit()
+void NonMovingTriangleMeshCollisionComponent::PostInit()
 {
 	CollisionComponent::PostInit();
 	
@@ -102,19 +102,19 @@ void StaticTriangleMeshCollisionComponent::PostInit()
 	}
 }
 	
-void StaticTriangleMeshCollisionComponent::BeginGame()
+void NonMovingTriangleMeshCollisionComponent::BeginGame()
 {
 	CollisionComponent::BeginGame();
 }
 
-void StaticTriangleMeshCollisionComponent::TickComponent(float deltaTime)
+void NonMovingTriangleMeshCollisionComponent::TickComponent(float deltaTime)
 {
 	CollisionComponent::TickComponent(deltaTime);
 
 	
 }
 
-void StaticTriangleMeshCollisionComponent::UpdateTransformation()
+void NonMovingTriangleMeshCollisionComponent::UpdateTransformation()
 {
 	if(!isScalable_)
 	{

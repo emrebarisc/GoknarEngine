@@ -4,7 +4,7 @@
 #include "Goknar/ObjectBase.h"
 
 class StaticMeshComponent;
-class StaticTriangleMeshCollisionComponent;
+class NonMovingTriangleMeshCollisionComponent;
 
 class GOKNAR_API Terrain : public ObjectBase
 {
@@ -13,6 +13,6 @@ public:
 
 protected:
 	StaticMeshComponent* staticMeshComponent_;
-	StaticTriangleMeshCollisionComponent* collisionComponent_;
+	NonMovingTriangleMeshCollisionComponent* collisionComponent_;
 private:
 };
