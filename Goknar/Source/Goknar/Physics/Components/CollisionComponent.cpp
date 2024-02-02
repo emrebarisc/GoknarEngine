@@ -28,7 +28,12 @@ void CollisionComponent::UpdateComponentToWorldTransformationMatrix()
 	{
 		return;
 	}
+	
+	UpdateTransformation();
+}
 
+void CollisionComponent::UpdateTransformation()
+{
 	bulletCollisionShape_->setLocalScaling(PhysicsUtils::FromVector3ToBtVector3(worldScaling_));
 }
 
