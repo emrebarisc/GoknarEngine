@@ -21,6 +21,8 @@ public:
 	virtual void BeginGame() override;
 	virtual void TickComponent(float deltaTime) override;
 
+	virtual void UpdateTransformation();
+
 	btCollisionShape* GetBulletCollisionShape() const
 	{
 		return bulletCollisionShape_;

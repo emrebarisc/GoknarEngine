@@ -48,8 +48,8 @@ void StaticTriangleMeshCollisionComponent::PreInit()
 		const Face& face = faceArray->at(faceIndex);
 		bulletTriangleMesh_->addTriangle(
 			PhysicsUtils::FromVector3ToBtVector3(vertexArray->at(face.vertexIndices[0]).position),
-			PhysicsUtils::FromVector3ToBtVector3(vertexArray->at(face.vertexIndices[1]).position),
-			PhysicsUtils::FromVector3ToBtVector3(vertexArray->at(face.vertexIndices[2]).position)
+			PhysicsUtils::FromVector3ToBtVector3(vertexArray->at(face.vertexIndices[2]).position),
+			PhysicsUtils::FromVector3ToBtVector3(vertexArray->at(face.vertexIndices[1]).position)
 			);
 	}
 	bulletCollisionShape_ = new btBvhTriangleMeshShape(bulletTriangleMesh_, true, true);
@@ -94,12 +94,12 @@ void StaticTriangleMeshCollisionComponent::Init()
 void StaticTriangleMeshCollisionComponent::PostInit()
 {
 	CollisionComponent::PostInit();
-
-	// If bulletTriangleMesh_ is deleted here, 
-	// it cannot be resized via 
-	// void ObjectBase::SetRelativeScaling(const Vector3&)
-	delete bulletTriangleMesh_;
-	bulletTriangleMesh_ = nullptr;
+	
+	if(!isScalable_)
+	{
+		delete bulletTriangleMesh_;
+		bulletTriangleMesh_ = nullptr;
+	}
 }
 	
 void StaticTriangleMeshCollisionComponent::BeginGame()
@@ -112,4 +112,14 @@ void StaticTriangleMeshCollisionComponent::TickComponent(float deltaTime)
 	CollisionComponent::TickComponent(deltaTime);
 
 	
+}
+
+void StaticTriangleMeshCollisionComponent::UpdateTransformation()
+{
+	if(!isScalable_)
+	{
+		return;
+	}
+
+	CollisionComponent::UpdateTransformation();
 }
