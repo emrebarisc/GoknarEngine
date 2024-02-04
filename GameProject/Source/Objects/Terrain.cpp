@@ -6,7 +6,9 @@
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 
-Terrain::Terrain() : ObjectBase()
+#include "BulletDynamics/Dynamics/btRigidBody.h"
+
+Terrain::Terrain() : RigidBody()
 {
 	StaticMesh* terrainStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Terrain.fbx");
 
@@ -19,4 +21,7 @@ Terrain::Terrain() : ObjectBase()
 	staticMeshComponent_->SetParent(collisionComponent_);
 
 	SetWorldPosition(Vector3{0.f, 0.f, -10.f});
+
+	// SetCcdMotionThreshold(1.f);
+  	// SetCcdSweptSphereRadius(0.05f);
 }

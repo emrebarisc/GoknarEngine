@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Goknar/Core.h"
-#include "Goknar/ObjectBase.h"
+#include "Goknar/Physics/RigidBody.h"
 
 class StaticMeshComponent;
 class NonMovingTriangleMeshCollisionComponent;
 
-class GOKNAR_API Terrain : public ObjectBase
+class GOKNAR_API Terrain : public RigidBody
 {
 public:
 	Terrain();

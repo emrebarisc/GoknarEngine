@@ -24,6 +24,9 @@ struct GOKNAR_API RigidBodyInitializationData
 	btVector3 pushImpulse{ btVector3(0.f, 0.f, 0.f) };
 	btVector3 pushImpulsePosition{ btVector3(0.f, 0.f, 0.f) };
 	btVector3 localInertia{ btVector3(0.f, 0.f, 0.f) };
+
+	float ccdMotionThreshold{ 0.f };
+  	float ccdSweptSphereRadius{ 0.f };
 };
 
 class GOKNAR_API RigidBody : public ObjectBase
@@ -50,6 +53,9 @@ public:
 	}
 
 	void SetMass(float mass);
+
+	void SetCcdMotionThreshold(float ccdMotionThreshold);
+  	void SetCcdSweptSphereRadius(float ccdSweptSphereRadius);
 
 	// For un/locking physics movement on an axis
 	// For movement on all axis Vector3{1.f, 1.f, 1.f}

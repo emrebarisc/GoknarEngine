@@ -22,8 +22,6 @@ public:
 	virtual void BeginGame() override;
 	virtual void TickComponent(float deltaTime) override;
 
-	virtual void UpdateTransformation() override;
-
 	const MeshUnit* GetMesh() const
 	{
 		return relativeMesh_;
@@ -34,22 +32,10 @@ public:
 		relativeMesh_ = relativeMesh;
 	}
 
-	bool GetIsScalable() const
-	{
-		return isScalable_;
-	}
-
-	void SetIsScalable(bool isScalable)
-	{
-		isScalable_ = isScalable;
-	}
-
 protected:
 private:
 	const MeshUnit* relativeMesh_{ nullptr };
 	btTriangleMesh* bulletTriangleMesh_;
-
-	bool isScalable_{ false };
 };
 
 #endif

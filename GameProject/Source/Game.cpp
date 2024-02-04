@@ -40,9 +40,9 @@ Game::Game() : Application()
 
 	lastFrameTimePoint = currentTimePoint;
 
-	archer_ = new Archer();
-	//physicsArcher_ = new PhysicsArcher();
-	//physicsArcher_->SetWorldPosition(Vector3{-20.f, 0.f, 5.f});
+	// archer_ = new Archer();
+	physicsArcher_ = new PhysicsArcher();
+	physicsArcher_->SetWorldPosition(Vector3{-20.f, 0.f, 5.f});
 	// dancer_ = new Dancer();
 	// lightController_ = new LightController();
 	sun_ = new Sun();
