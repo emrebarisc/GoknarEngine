@@ -96,7 +96,7 @@ void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
 	rigidBodies_.push_back(rigidBody);
 
 	btRigidBody* bulletRigidBody = rigidBody->GetBulletRigidBody();
-	dynamicsWorld_->addRigidBody(bulletRigidBody);
+	dynamicsWorld_->addRigidBody(bulletRigidBody, (int)rigidBody->GetCollisionGroup(), (int)rigidBody->GetCollisionMask());
 }
 
 void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
