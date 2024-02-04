@@ -19,6 +19,7 @@ public:
     Vector3 GetRandomPosition();
     void CreatePhysicsBox();
     void CreatePhysicsSphere();
+    void CreateMonkey();
     void ThrowPhysicsSphere();
 
 protected:
