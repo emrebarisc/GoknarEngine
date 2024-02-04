@@ -24,6 +24,6 @@ Monkey::Monkey() : RigidBody()
 
 	SetMass(50.f);
 
-	// SetCcdMotionThreshold(1.f);
-  	// SetCcdSweptSphereRadius(0.05f);
+	SetCollisionGroup(CollisionGroup::WorldDynamic);
+	SetCollisionMask(CollisionMask::BlockAll);
 }

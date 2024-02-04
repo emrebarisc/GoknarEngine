@@ -19,6 +19,9 @@ PhysicsBox::PhysicsBox() : RigidBody()
 	SetMass(100.f);
 	// SetLinearFactor(Vector3{0.f, 1.f, 1.f});
 	// SetAngularFactor(Vector3{1.f, 1.f, 0.f});
+
+	SetCollisionGroup(CollisionGroup::WorldDynamic);
+	SetCollisionMask(CollisionMask::BlockAll);
 }
 
 void PhysicsBox::BeginGame()

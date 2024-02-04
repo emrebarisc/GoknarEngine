@@ -29,6 +29,22 @@ struct GOKNAR_API RigidBodyInitializationData
   	float ccdSweptSphereRadius{ 0.f };
 };
 
+enum class GOKNAR_API CollisionGroup : unsigned char
+{
+    None =              0b00000000,
+    WorldDynamic =      0b00000010,
+    WorldStatic =       0b00000100,
+	All =				WorldDynamic | WorldStatic
+};  
+
+enum class GOKNAR_API CollisionMask : unsigned char
+{
+    None =              		0b00000000,
+    BlockWorldDynamic = 		(unsigned char)(CollisionGroup::WorldDynamic),
+    BlockWorldStatic = 			(unsigned char)(CollisionGroup::WorldStatic),
+    BlockAll = 					BlockWorldDynamic | BlockWorldStatic
+};
+
 class GOKNAR_API RigidBody : public ObjectBase
 {
 public:
@@ -83,12 +99,34 @@ public:
 		return bulletRigidBody_;
 	}
 
+	CollisionGroup GetCollisionGroup() const
+	{
+		return collisionGroup_;
+	}
+
+	void SetCollisionGroup(CollisionGroup collisionGroup)
+	{
+		collisionGroup_ = collisionGroup;
+	}
+
+	CollisionMask GetCollisionMask() const
+	{
+		return collisionMask_;
+	}
+
+	void SetCollisionMask(CollisionMask collisionMask) 
+	{
+		collisionMask_ = collisionMask;
+	}
+
 protected:
 	btRigidBody* bulletRigidBody_{ nullptr };
 
 private:
 	RigidBodyInitializationData* initializationData_{ nullptr };
 
+    CollisionGroup collisionGroup_{ CollisionGroup::WorldDynamic };
+    CollisionMask collisionMask_{ CollisionMask::BlockAll };
 	float mass_{ 0.f };
 };
 

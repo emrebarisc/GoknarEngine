@@ -34,11 +34,11 @@ void PhysicsObjectSpawner::BeginGame()
 
 void PhysicsObjectSpawner::Tick(float deltaTime)
 {
-    static float counter = 0.25f;
+    static float counter = 1.f;
 
     if(counter < 0.f)
     {
-        counter += 0.25f;
+        counter += 1.f;
         CreatePhysicsSphere();
         
         std::random_device randomDevice;

@@ -39,6 +39,9 @@ PhysicsArcher::PhysicsArcher() :
 	capsuleCollisionComponent_->SetRelativePosition(Vector3{0.f, 0.f, -0.3f});
 	SetRootComponent(capsuleCollisionComponent_);
 
+	SetCollisionGroup(CollisionGroup::WorldDynamic);
+	SetCollisionMask(CollisionMask::BlockAll);
+
 	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Akai.fbx");
 	skeletalMesh_->GetMaterial()->SetSpecularReflectance(Vector3{0.f});
 

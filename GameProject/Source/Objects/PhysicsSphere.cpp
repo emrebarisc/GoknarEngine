@@ -17,6 +17,9 @@ PhysicsSphere::PhysicsSphere() : RigidBody()
 	staticMeshComponent_->SetParent(sphereCollisionComponent_);
 
 	SetMass(100.f);
+
+	SetCollisionGroup(CollisionGroup::WorldDynamic);
+	SetCollisionMask(CollisionMask::BlockAll);
 }
 
 void PhysicsSphere::BeginGame()
