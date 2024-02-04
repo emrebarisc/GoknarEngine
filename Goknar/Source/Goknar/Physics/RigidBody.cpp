@@ -61,6 +61,9 @@ void RigidBody::Init()
 void RigidBody::PostInit()
 {
     ObjectBase::PostInit();
+    
+    bulletRigidBody_->setCcdMotionThreshold(initializationData_->ccdMotionThreshold);
+    bulletRigidBody_->setCcdSweptSphereRadius(initializationData_->ccdSweptSphereRadius);
 
     if(0.01f < initializationData_->velocity.length2())
     {
@@ -128,6 +131,28 @@ void RigidBody::SetMass(float mass)
     }
 
 	bulletRigidBody_->setMassProps(mass_, bulletRigidBody_->getLocalInertia());
+}
+
+void RigidBody::SetCcdMotionThreshold(float ccdMotionThreshold)
+{
+    if (!GetIsInitialized())
+    {
+        initializationData_->ccdMotionThreshold = ccdMotionThreshold;
+        return;
+    }
+
+    bulletRigidBody_->setCcdMotionThreshold(ccdMotionThreshold);
+}
+
+void RigidBody::SetCcdSweptSphereRadius(float ccdSweptSphereRadius)
+{
+    if (!GetIsInitialized())
+    {
+        initializationData_->ccdSweptSphereRadius = ccdSweptSphereRadius;
+        return;
+    }
+
+    bulletRigidBody_->setCcdSweptSphereRadius(ccdSweptSphereRadius);
 }
 
 void RigidBody::SetLinearFactor(const Vector3& linearFactor)

@@ -8,8 +8,6 @@
 #include "Model/MeshUnit.h"
 #include "Physics/PhysicsUtils.h"
 
-#include "Log.h"
-
 NonMovingTriangleMeshCollisionComponent::NonMovingTriangleMeshCollisionComponent(Component* parent) :
 	CollisionComponent(parent)
 {
@@ -54,35 +52,6 @@ void NonMovingTriangleMeshCollisionComponent::PreInit()
 	}
 	bulletCollisionShape_ = new btBvhTriangleMeshShape(bulletTriangleMesh_, true, true);
 
-	//2----1
-	//|   /|
-	//|  / |
-	//| /  |
-	//|/   |
-	//3----0
-
-	//btVector3 quad[] = {
-	//	btVector3(100, -100, 1),
-	//	btVector3(100, 100, 1),
-	//	btVector3(-100, 100, 1),
-	//	btVector3(-100, -100, 1) };
-
-	//bulletTriangleMesh_->addTriangle(quad[0], quad[1], quad[2], true);
-	//bulletTriangleMesh_->addTriangle(quad[0], quad[2], quad[3], true);
-
-	//btVector3 quad[] = {
-	//	btVector3(0, 100, -100),
-	//	btVector3(0, 100, 100),
-	//	btVector3(0, -100, 100),
-	//	btVector3(0, -100, -100) };
-
-	//btTriangleMesh* mesh = new btTriangleMesh();
-	//mesh->addTriangle(quad[0], quad[1], quad[2], true);
-	//mesh->addTriangle(quad[0], quad[2], quad[3], true);
-
-	//btBvhTriangleMeshShape* trimesh = new btBvhTriangleMeshShape(mesh, true, true);
-	//bulletCollisionShape_ = trimesh;
-
 	CollisionComponent::PreInit();
 }
 
@@ -94,12 +63,6 @@ void NonMovingTriangleMeshCollisionComponent::Init()
 void NonMovingTriangleMeshCollisionComponent::PostInit()
 {
 	CollisionComponent::PostInit();
-	
-	if(!isScalable_)
-	{
-		delete bulletTriangleMesh_;
-		bulletTriangleMesh_ = nullptr;
-	}
 }
 	
 void NonMovingTriangleMeshCollisionComponent::BeginGame()
@@ -112,14 +75,4 @@ void NonMovingTriangleMeshCollisionComponent::TickComponent(float deltaTime)
 	CollisionComponent::TickComponent(deltaTime);
 
 	
-}
-
-void NonMovingTriangleMeshCollisionComponent::UpdateTransformation()
-{
-	if(!isScalable_)
-	{
-		return;
-	}
-
-	CollisionComponent::UpdateTransformation();
 }
