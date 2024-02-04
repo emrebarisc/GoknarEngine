@@ -6,6 +6,7 @@
 #include "PhysicsArcher.h"
 #include "Objects/PhysicsBox.h"
 #include "Objects/PhysicsSphere.h"
+#include "Objects/Monkey.h"
 
 #include "Engine.h"
 #include "Game.h"
@@ -38,8 +39,24 @@ void PhysicsObjectSpawner::Tick(float deltaTime)
     if(counter < 0.f)
     {
         counter += 0.25f;
-        //CreatePhysicsBox();
         CreatePhysicsSphere();
+        
+        std::random_device randomDevice;
+        std::uniform_int_distribution<int> randomObjectDist(0, 2);
+        int randomObjectInt = randomObjectDist(randomDevice);
+
+        if(randomObjectInt == 0)
+        {
+            CreatePhysicsBox();
+        }
+        else if(randomObjectInt == 1)
+        {
+            CreatePhysicsBox();
+        }
+        else if(randomObjectInt == 2)
+        {
+            CreateMonkey();
+        }
     }
 
     counter -= deltaTime;
@@ -66,6 +83,12 @@ void PhysicsObjectSpawner::CreatePhysicsSphere()
 {
     PhysicsSphere* physicsSphere = new PhysicsSphere();
     physicsSphere->SetWorldPosition(initialPosition_ + GetRandomPosition());
+}
+
+void PhysicsObjectSpawner::CreateMonkey()
+{
+    Monkey* monkey = new Monkey();
+    monkey->SetWorldPosition(initialPosition_ + GetRandomPosition());
 }
 
 void PhysicsObjectSpawner::ThrowPhysicsSphere()
