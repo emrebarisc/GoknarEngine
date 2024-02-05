@@ -32,6 +32,7 @@ PhysicsArcher::PhysicsArcher() :
 
 	SetAngularFactor(Vector3(0.f, 0.f, 0.f));
 	SetMass(60.f);
+	SetLinearSleepingThreshold(0.f);
 
 	capsuleCollisionComponent_ = AddSubComponent<CapsuleCollisionComponent>();
 	capsuleCollisionComponent_->SetRadius(0.3f);
