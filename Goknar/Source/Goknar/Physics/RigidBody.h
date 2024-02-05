@@ -27,6 +27,9 @@ struct GOKNAR_API RigidBodyInitializationData
 
 	float ccdMotionThreshold{ 0.f };
   	float ccdSweptSphereRadius{ 0.f };
+
+	float linearSleepingThreshold{ -1.f };
+	float angularSleepingThreshold{ -1.f };
 };
 
 enum class GOKNAR_API CollisionGroup : unsigned char
@@ -71,7 +74,10 @@ public:
 	void SetMass(float mass);
 
 	void SetCcdMotionThreshold(float ccdMotionThreshold);
-  	void SetCcdSweptSphereRadius(float ccdSweptSphereRadius);
+	void SetCcdSweptSphereRadius(float ccdSweptSphereRadius);
+
+	void SetLinearSleepingThreshold(float linearSleepingThreshold);
+	void SetAngularSleepingThreshold(float angularSleepingThreshold);
 
 	// For un/locking physics movement on an axis
 	// For movement on all axis Vector3{1.f, 1.f, 1.f}
@@ -114,7 +120,7 @@ public:
 		return collisionMask_;
 	}
 
-	void SetCollisionMask(CollisionMask collisionMask) 
+	void SetCollisionMask(CollisionMask collisionMask)
 	{
 		collisionMask_ = collisionMask;
 	}

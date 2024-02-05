@@ -51,6 +51,16 @@ void RigidBody::Init()
     btDefaultMotionState* bulletMotionState = new btDefaultMotionState(bulletTransform);
     btRigidBody::btRigidBodyConstructionInfo rigidBodyInfo(mass_, bulletMotionState, bulletCollisionShape, initializationData_->localInertia);
 
+    if (0.f <= initializationData_->linearSleepingThreshold)
+    {
+        rigidBodyInfo.m_linearSleepingThreshold = initializationData_->linearSleepingThreshold;
+    }
+
+    if (0.f <= initializationData_->angularSleepingThreshold)
+    {
+        rigidBodyInfo.m_angularSleepingThreshold = initializationData_->angularSleepingThreshold;
+    }
+
     bulletRigidBody_ = new btRigidBody(rigidBodyInfo);
 
     engine->GetPhysicsWorld()->AddRigidBody(this);
@@ -155,6 +165,26 @@ void RigidBody::SetCcdSweptSphereRadius(float ccdSweptSphereRadius)
     bulletRigidBody_->setCcdSweptSphereRadius(ccdSweptSphereRadius);
 }
 
+void RigidBody::SetLinearSleepingThreshold(float linearSleepingThreshold)
+{
+    if (GetIsInitialized())
+    {
+        return;
+    }
+
+    initializationData_->linearSleepingThreshold = linearSleepingThreshold;
+}
+
+void RigidBody::SetAngularSleepingThreshold(float angularSleepingThreshold)
+{
+    if (GetIsInitialized())
+    {
+        return;
+    }
+
+    initializationData_->angularSleepingThreshold = angularSleepingThreshold;
+}
+
 void RigidBody::SetLinearFactor(const Vector3& linearFactor)
 {
     btVector3 btLinearFactor = PhysicsUtils::FromVector3ToBtVector3(linearFactor);
@@ -191,7 +221,7 @@ void RigidBody::SetWorldPosition(const Vector3& worldPosition, bool updateWorldT
     }
 
     btTransform newBulletTransform = bulletRigidBody_->getCenterOfMassTransform();
-    newBulletTransform.setOrigin(btVector3{ worldPosition.x, worldPosition.y, worldPosition.z });
+    newBulletTransform.setOrigin(PhysicsUtils::FromVector3ToBtVector3(worldPosition));
     bulletRigidBody_->setCenterOfMassTransform(newBulletTransform);
 }
 
