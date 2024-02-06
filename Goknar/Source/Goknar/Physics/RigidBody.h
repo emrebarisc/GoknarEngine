@@ -4,6 +4,7 @@
 #include "Core.h"
 
 #include "Goknar/ObjectBase.h"
+#include "Goknar/Physics/PhysicsTypes.h"
 
 #include "LinearMath/btVector3.h"
 
@@ -30,22 +31,6 @@ struct GOKNAR_API RigidBodyInitializationData
 
 	float linearSleepingThreshold{ -1.f };
 	float angularSleepingThreshold{ -1.f };
-};
-
-enum class GOKNAR_API CollisionGroup : unsigned char
-{
-    None =              0b00000000,
-    WorldDynamic =      0b00000010,
-    WorldStatic =       0b00000100,
-	All =				WorldDynamic | WorldStatic
-};  
-
-enum class GOKNAR_API CollisionMask : unsigned char
-{
-    None =              		0b00000000,
-    BlockWorldDynamic = 		(unsigned char)(CollisionGroup::WorldDynamic),
-    BlockWorldStatic = 			(unsigned char)(CollisionGroup::WorldStatic),
-    BlockAll = 					BlockWorldDynamic | BlockWorldStatic
 };
 
 class GOKNAR_API RigidBody : public ObjectBase

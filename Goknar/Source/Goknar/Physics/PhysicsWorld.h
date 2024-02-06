@@ -1,13 +1,32 @@
 #ifndef __IPHYSICSWORLD_H__
 #define __IPHYSICSWORLD_H__
 
+#include <unordered_map>
+
 #include "Core.h"
 #include "Math/GoknarMath.h"
+#include "Physics/PhysicsTypes.h"
 
 #include "btBulletDynamicsCommon.h"
 
 class CollisionComponent;
 class RigidBody;
+
+struct GOKNAR_API RaycastData
+{
+    Vector3 from;
+    Vector3 to;
+    CollisionGroup collisionGroup{ CollisionGroup::All };
+    CollisionMask collisionMask{ CollisionMask::BlockAll };
+};
+
+struct GOKNAR_API RaycastClosestResult
+{
+    RigidBody* hitObject;
+    Vector3 hitPosition;
+    Vector3 hitNormal;
+    float hitFraction;
+};
 
 class GOKNAR_API PhysicsWorld
 {
@@ -26,6 +45,9 @@ public:
 
     virtual void AddCollision(CollisionComponent* collisionComponent) {}
 
+    bool RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest);
+    //virtual bool RaycastAll(const RaycastData& raycastData, RaycastAllResult& raycastClosest);
+
     const Vector3& GetGravity() const
     {
         return gravity_;
@@ -39,6 +61,9 @@ public:
 protected:
     typedef std::vector<RigidBody*> RigidBodies;
     RigidBodies rigidBodies_;
+
+    typedef std::unordered_map<btCollisionObject const*, RigidBody*> PhysicsObjectMap;
+    PhysicsObjectMap physicsObjectMap_;
 
 private:
     Vector3 gravity_{ Vector3{0.f, 0.f, -10.f} };
