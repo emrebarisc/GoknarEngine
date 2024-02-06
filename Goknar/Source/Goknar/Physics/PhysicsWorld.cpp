@@ -4,6 +4,7 @@
 
 #include "PhysicsWorld.h"
 #include "RigidBody.h"
+#include "PhysicsUtils.h"
 
 PhysicsWorld::PhysicsWorld()
 {
@@ -93,14 +94,22 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
 
 void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
 {
-	rigidBodies_.push_back(rigidBody);
-
 	btRigidBody* bulletRigidBody = rigidBody->GetBulletRigidBody();
+	GOKNAR_ASSERT(physicsObjectMap_.find(bulletRigidBody) == physicsObjectMap_.end());
+	physicsObjectMap_[bulletRigidBody] = rigidBody;
+
 	dynamicsWorld_->addRigidBody(bulletRigidBody, (int)rigidBody->GetCollisionGroup(), (int)rigidBody->GetCollisionMask());
+	rigidBodies_.push_back(rigidBody);
 }
 
 void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 {
+	btRigidBody* bulletRigidBody = rigidBody->GetBulletRigidBody();
+
+	PhysicsObjectMap::const_iterator relativePhysicsObject = physicsObjectMap_.find(bulletRigidBody);
+	GOKNAR_ASSERT(relativePhysicsObject != physicsObjectMap_.end());
+	physicsObjectMap_.erase(relativePhysicsObject);
+
 	decltype(rigidBodies_.begin()) rigidBodyIterator = rigidBodies_.begin();
 	while(rigidBodyIterator != rigidBodies_.end())
 	{
@@ -113,6 +122,30 @@ void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 		++rigidBodyIterator;
 	}
 
-	btRigidBody* bulletRigidBody = rigidBody->GetBulletRigidBody();
 	dynamicsWorld_->removeRigidBody(bulletRigidBody);
+}
+
+bool PhysicsWorld::RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest)
+{
+	btVector3 bulletFrom = PhysicsUtils::FromVector3ToBtVector3(raycastData.from);
+	btVector3 bulletTo = PhysicsUtils::FromVector3ToBtVector3(raycastData.to);
+
+	btCollisionWorld::ClosestRayResultCallback closestRayResultCallback(bulletFrom, bulletTo);
+
+	closestRayResultCallback.m_collisionFilterGroup = (int)raycastData.collisionGroup;
+	closestRayResultCallback.m_collisionFilterMask = (int)raycastData.collisionMask;
+
+	dynamicsWorld_->rayTest(bulletFrom, bulletTo, closestRayResultCallback);
+
+	if(closestRayResultCallback.hasHit())
+	{
+		raycastClosest.hitObject = (*physicsObjectMap_.find(closestRayResultCallback.m_collisionObject)).second;
+		raycastClosest.hitFraction = closestRayResultCallback.m_closestHitFraction;
+		raycastClosest.hitPosition = PhysicsUtils::FromBtVector3ToVector3(closestRayResultCallback.m_hitPointWorld);
+		raycastClosest.hitNormal = PhysicsUtils::FromBtVector3ToVector3(closestRayResultCallback.m_hitNormalWorld);
+
+		return true;
+	}
+
+	return false;
 }

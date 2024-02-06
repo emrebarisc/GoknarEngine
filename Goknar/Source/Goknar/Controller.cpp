@@ -6,7 +6,10 @@
 
 Controller::Controller()
 {
-	engine->SetController(this);
+	if (!engine->GetController())
+	{
+		engine->SetController(this);
+	}
 }
 
 Controller::~Controller()
