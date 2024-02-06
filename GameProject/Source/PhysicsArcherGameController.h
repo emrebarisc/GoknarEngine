@@ -32,6 +32,7 @@ private:
 
 	void ToggleFullscreen();
 	void ToggleWindowSize();
+	void ToggleFreeCamera();
 
 	void DestroyPhysicsArcher();
 
@@ -59,6 +60,7 @@ private:
 	PhysicsArcherMovementComponent* archerMovementComponent_{ nullptr };
 
 	bool isDebugging_{ false };
+	bool isInFreeCamera_{ false };
 };
 
 #endif

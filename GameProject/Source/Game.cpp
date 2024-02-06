@@ -21,6 +21,7 @@
 #include "RandomGrassSpawner.h"
 #include "MaterialSphereSpawner.h"
 #include "PhysicsObjectSpawner.h"
+#include "Objects/FreeCameraObject.h"
 #include "Objects/Terrain.h"
 
 #include <chrono>
@@ -57,6 +58,8 @@ Game::Game() : Application()
 	//{
 	//	floorStaticMesh->GetMaterial()->SetShadingModel(MaterialShadingModel::TwoSided);
 	//}
+
+	freeCameraObject_ = new FreeCameraObject();
 
 	terrain = new Terrain();
 
