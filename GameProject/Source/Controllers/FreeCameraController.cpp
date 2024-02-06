@@ -14,6 +14,8 @@
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/Managers/InputManager.h"
 #include "Goknar/Managers/WindowManager.h"
+#include "Goknar/Physics/PhysicsWorld.h"
+#include "Goknar/Physics/RigidBody.h"
 
 FreeCameraController::FreeCameraController(Component* parent) :
 	Component(parent),
@@ -33,6 +35,9 @@ FreeCameraController::~FreeCameraController()
 void FreeCameraController::BeginGame()
 {
 	InputManager* inputManager = engine->GetInputManager();
+
+	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::OnMouseLeftClickPressed, this));
+
 
 	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::OnMouseRightClickPressed, this));
 	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_RELEASE, std::bind(&FreeCameraController::OnMouseRightClickReleased, this));
@@ -90,6 +95,26 @@ void FreeCameraController::Yaw(float value)
 void FreeCameraController::Pitch(float value)
 {
 	freeCamera_->Pitch(value);
+}
+
+void FreeCameraController::OnMouseLeftClickPressed()
+{
+	double x, y;
+	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
+	Vector2i screenCoordinate = Vector2i{x, y};
+	
+
+	RaycastData raycastData;
+	RaycastClosestResult raycastClosestResult;
+
+	Vector3 cameraPosition = freeCamera_->GetPosition();
+	raycastData.from = cameraPosition;
+	raycastData.to = cameraPosition + 1000.f * freeCamera_->GetWorldDirectionAtPixel(screenCoordinate);
+	if(engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastClosestResult))
+	{
+		RigidBody* hitObject = raycastClosestResult.hitObject;
+		hitObject->ApplyForce(Vector3::UpVector * 100000.f);
+	}
 }
 
 void FreeCameraController::OnMouseRightClickPressed()

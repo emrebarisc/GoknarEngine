@@ -36,8 +36,8 @@ void PhysicsArcherGameController::BeginGame()
 
 void PhysicsArcherGameController::SetupInputs()
 {
-	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_PRESS, std::bind(&PhysicsArcherGameController::DrawBow, this));
-	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_RELEASE, std::bind(&PhysicsArcherGameController::LooseBow, this));
+	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, std::bind(&PhysicsArcherGameController::DrawBow, this));
+	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_RELEASE, std::bind(&PhysicsArcherGameController::LooseBow, this));
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::NUM_1, INPUT_ACTION::G_PRESS, std::bind(&PhysicsArcherGameController::EquipBow, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::G, INPUT_ACTION::G_PRESS, std::bind(&PhysicsArcherGameController::DropBow, this));
@@ -136,21 +136,29 @@ void PhysicsArcherGameController::ToggleChest()
 
 void PhysicsArcherGameController::DropBow()
 {
+	if(isInFreeCamera_) return;
+
 	archer_->HandleDropBowInput();
 }
 
 void PhysicsArcherGameController::EquipBow()
 {
+	if(isInFreeCamera_) return;
+
 	archer_->HandleEquipBowInput();
 }
 
 void PhysicsArcherGameController::DrawBow()
 {
+	if(isInFreeCamera_) return;
+
 	archer_->HandleDrawBowInput();
 }
 
 void PhysicsArcherGameController::LooseBow()
 {
+	if(isInFreeCamera_) return;
+
 	archer_->HandleLooseBowInput();
 }
 
