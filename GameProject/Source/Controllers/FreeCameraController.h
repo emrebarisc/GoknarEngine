@@ -32,6 +32,8 @@ private:
 		isRotatingTheCamera_ = false;
 	}
 
+	void OnMouseLeftClickPressed();
+
 	void OnMouseMiddleClickPressed();
 	void OnMouseMiddleClickReleased()
 	{
