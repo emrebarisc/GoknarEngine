@@ -101,9 +101,8 @@ void FreeCameraController::OnMouseLeftClickPressed()
 {
 	double x, y;
 	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
-	Vector2i screenCoordinate = Vector2i{x, y};
+	Vector2i screenCoordinate = Vector2i{(int)x, (int)y};
 	
-
 	RaycastData raycastData;
 	RaycastClosestResult raycastClosestResult;
 
