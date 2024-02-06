@@ -79,6 +79,8 @@ public:
 		LookAt();
 	}
 
+	Vector3 GetWorldDirectionAtPixel(const Vector2i& pixelCoordinate);
+
 	Vector3 GetPosition() const
 	{
 		return position_;
