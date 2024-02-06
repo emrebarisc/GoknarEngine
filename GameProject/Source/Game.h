@@ -10,6 +10,7 @@ class RandomGrassSpawner;
 class MaterialSphereSpawner;
 class PhysicsObjectSpawner;
 class Terrain;
+class FreeCameraObject;
 
 class GOKNAR_API Game : public Application
 {
@@ -32,6 +33,11 @@ public:
 		return physicsArcher_;
 	}
 
+	FreeCameraObject* GetFreeCameraObject() const
+	{
+		return freeCameraObject_;
+	}
+
 private:
 	Archer* archer_{ nullptr };
 	PhysicsArcher* physicsArcher_{ nullptr };
@@ -41,6 +47,7 @@ private:
 	Fire* fire_{ nullptr };
 	RandomGrassSpawner* randomGrassSpawner_{ nullptr };
 	MaterialSphereSpawner* materialSphereSpawner_{ nullptr };
+	FreeCameraObject* freeCameraObject_;
 
 	PhysicsObjectSpawner* physicsObjectSpawner_{ nullptr };
 
