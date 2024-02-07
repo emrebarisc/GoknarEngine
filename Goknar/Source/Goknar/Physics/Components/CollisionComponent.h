@@ -3,6 +3,7 @@
 
 #include "Components/Component.h"
 #include "Delegates/Delegate.h"
+#include "Physics/PhysicsTypes.h"
 
 class btCollisionShape;
 class btCollisionObject;
@@ -46,6 +47,26 @@ public:
 
 	void SetIsOverlapping(bool isOverlapping);
 
+	CollisionGroup GetCollisionGroup() const
+	{
+		return collisionGroup_;
+	}
+
+	void SetCollisionGroup(CollisionGroup collisionGroup)
+	{
+		collisionGroup_ = collisionGroup;
+	}
+
+	CollisionMask GetCollisionMask() const
+	{
+		return collisionMask_;
+	}
+
+	void SetCollisionMask(CollisionMask collisionMask)
+	{
+		collisionMask_ = collisionMask;
+	}
+
 	Delegate<OverlapCollisionAlias> OnOverlapBegin;
 	Delegate<OverlapCollisionAlias> OnOverlapContinue;
 	Delegate<OverlapCollisionAlias> OnOverlapEnd;
@@ -54,6 +75,8 @@ protected:
 	btCollisionShape* bulletCollisionShape_{ nullptr };
 	btCollisionObject* bulletCollisionObject_{ nullptr };
 private:
+	CollisionGroup collisionGroup_{ CollisionGroup::WorldDynamic };
+	CollisionMask collisionMask_{ CollisionMask::BlockAll };
 
 	bool isOverlapping_{ false };
 };

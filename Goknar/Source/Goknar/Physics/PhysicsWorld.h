@@ -9,7 +9,10 @@
 
 #include "btBulletDynamicsCommon.h"
 
+class btGhostObject;
+
 class CollisionComponent;
+class OverlappingCollisionPairCallback;
 class RigidBody;
 
 struct GOKNAR_API RaycastData
@@ -62,13 +65,19 @@ protected:
     typedef std::vector<RigidBody*> RigidBodies;
     RigidBodies rigidBodies_;
 
-    typedef std::vector<CollisionComponent*> OverlappingCollisionComponents;
-    OverlappingCollisionComponents overlappingCollisionComponents_;
-
     typedef std::unordered_map<btCollisionObject const*, RigidBody*> PhysicsObjectMap;
     PhysicsObjectMap physicsObjectMap_;
 
+    typedef std::vector<CollisionComponent*> OverlappingCollisionComponents;
+    OverlappingCollisionComponents overlappingCollisionComponents_;
+    
+    typedef std::unordered_map<btCollisionObject const*, CollisionComponent*> OverlappingCollisionComponentMap;
+    OverlappingCollisionComponentMap overlappingCollisionComponentMap_;
+
 private:
+    void OnOverlappingCollisionPairAdded(btCollisionObject* ghostObject1, btCollisionObject* ghostObject2);
+    void OnOverlappingCollisionPairRemoved(btCollisionObject* ghostObject1, btCollisionObject* ghostObject2);
+
     Vector3 gravity_{ Vector3{0.f, 0.f, -10.f} };
 
     btBroadphaseInterface* broadphase_{ nullptr };
@@ -76,8 +85,7 @@ private:
     btConstraintSolver* solver_{ nullptr };
     btDefaultCollisionConfiguration* collisionConfiguration_{ nullptr };
     btDiscreteDynamicsWorld* dynamicsWorld_{ nullptr };
-
-    int overlappingCollisionComponentCount_{ 0 };
+    OverlappingCollisionPairCallback* overlappingCollisionPairCallback_{ nullptr };
 };
 
 #endif
