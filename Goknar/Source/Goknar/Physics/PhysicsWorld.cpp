@@ -1,10 +1,13 @@
 #include "pch.h"
 
 #include "btBulletDynamicsCommon.h"
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
+#include "Log.h"
+#include "PhysicsUtils.h"
 #include "PhysicsWorld.h"
 #include "RigidBody.h"
-#include "PhysicsUtils.h"
+#include "Components/CollisionComponent.h"
 
 PhysicsWorld::PhysicsWorld()
 {
@@ -31,13 +34,6 @@ PhysicsWorld::~PhysicsWorld()
 			delete obj;
 		}
 	}
-	//delete collision shapes
-	for (int j = 0; j < collisionShapes_.size(); j++)
-	{
-		btCollisionShape* shape = collisionShapes_[j];
-		delete shape;
-	}
-	collisionShapes_.clear();
 
 	delete dynamicsWorld_;
 	dynamicsWorld_ = nullptr;
@@ -90,6 +86,66 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
 	{
 		rigidBody->PhysicsTick(deltaTime);
 	}
+
+	for (size_t overlappingCollisionComponentIndex = 0; overlappingCollisionComponentIndex < overlappingCollisionComponentCount_; overlappingCollisionComponentIndex++)
+	{
+		GOKNAR_CORE_INFO("overlappingCollisionComponentCount_ {}", overlappingCollisionComponentCount_);
+
+		btPairCachingGhostObject* ghostObject = dynamic_cast<btPairCachingGhostObject*>(overlappingCollisionComponents_[overlappingCollisionComponentIndex]);
+		
+		// Prepare for getting all the contact manifolds for one Overlapping Pair
+		btManifoldArray manifoldArray;
+		// Get all the Overlapping Pair
+		btBroadphasePairArray& pairArray = ghostObject->getOverlappingPairCache()->getOverlappingPairArray();
+		int numPairs = pairArray.size();
+
+		for (int i=0;i < numPairs;i++)
+		{
+			GOKNAR_CORE_INFO("numPairs {}", numPairs);
+			manifoldArray.clear();
+
+			const btBroadphasePair& pair = pairArray[i];
+			
+			//unless we manually perform collision detection on this pair, the contacts are in the dynamics world paircache: 
+			//The next line fetches the collision information for this Pair
+			btBroadphasePair* collisionPair = dynamicsWorld_->getPairCache()->findPair(pair.m_pProxy0, pair.m_pProxy1);
+			if (!collisionPair)
+			{
+				continue;
+			}
+
+			// Read out the all contact manifolds for this Overlapping Pair
+			if (collisionPair->m_algorithm)
+			{
+				collisionPair->m_algorithm->getAllContactManifolds(manifoldArray);
+			}
+
+			for (int j = 0; j < manifoldArray.size();j++)
+			{
+			GOKNAR_CORE_INFO("manifoldArray.size() {}", manifoldArray.size());
+				btPersistentManifold* manifold = manifoldArray[j];
+
+				// Check if the first object in the Pair is GhostObject or not.
+				btScalar directionSign = manifold->getBody0() == ghostObject ? btScalar(-1.f) : btScalar(1.f);
+				for (int p = 0; p < manifold->getNumContacts(); p++)
+				{
+					GOKNAR_CORE_INFO("manifold->getNumContacts {}", manifold->getNumContacts());
+
+					const btManifoldPoint&pt = manifold->getContactPoint(p);
+					if (pt.getDistance() < 0.f)
+					{
+						// Actually you can get the local information from this Overlapping pair, not just world Position
+						const btVector3& ptA = pt.getPositionWorldOnA();
+						const btVector3& ptB = pt.getPositionWorldOnB();
+						const btVector3& normalOnB = pt.m_normalWorldOnB;
+						/// work here
+
+						GOKNAR_CORE_INFO("Overlap at {} with normal {}", PhysicsUtils::FromBtVector3ToVector3(ptA).ToString(), PhysicsUtils::FromBtVector3ToVector3(normalOnB).ToString());
+					}
+				}
+			}
+		}
+	}
 }
 
 void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
@@ -123,6 +179,15 @@ void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 	}
 
 	dynamicsWorld_->removeRigidBody(bulletRigidBody);
+}
+
+void PhysicsWorld::AddOverlappingCollisionComponent(CollisionComponent* collisionComponent)
+{
+	++overlappingCollisionComponentCount_;
+	overlappingCollisionComponents_.push_back(collisionComponent);
+	dynamicsWorld_->addCollisionObject(collisionComponent->GetBulletCollisionObject());
+	// m_dynamicsWorld->addCollisionObject(bulletCollisionObject_);
+	// m_dynamicsWorld->getBroadphase()->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 }
 
 bool PhysicsWorld::RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest)
