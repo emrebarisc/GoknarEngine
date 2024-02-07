@@ -20,6 +20,8 @@ PhysicsSphere::PhysicsSphere() : RigidBody()
 
 	SetCollisionGroup(CollisionGroup::WorldDynamic);
 	SetCollisionMask(CollisionMask::BlockAll);
+
+	SetName("PhysicsSphere");
 }
 
 void PhysicsSphere::BeginGame()

@@ -20,7 +20,7 @@ public:
     void CreatePhysicsBox();
     void CreatePhysicsSphere();
     void CreateMonkey();
-    void ThrowPhysicsSphere();
+    void ThrowCannonBall();
 
 protected:
 

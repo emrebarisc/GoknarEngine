@@ -7,6 +7,7 @@
 #include "Objects/PhysicsBox.h"
 #include "Objects/PhysicsSphere.h"
 #include "Objects/Monkey.h"
+#include "Objects/CannonBall.h"
 
 #include "Engine.h"
 #include "Game.h"
@@ -29,7 +30,7 @@ PhysicsObjectSpawner::~PhysicsObjectSpawner()
 void PhysicsObjectSpawner::BeginGame()
 {
     //engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, [this]() { CreatePhysicsBox(); });
-    engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, [this]() { ThrowPhysicsSphere(); });
+    engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, [this]() { ThrowCannonBall(); });
 }
 
 void PhysicsObjectSpawner::Tick(float deltaTime)
@@ -91,10 +92,10 @@ void PhysicsObjectSpawner::CreateMonkey()
     monkey->SetWorldPosition(initialPosition_ + GetRandomPosition());
 }
 
-void PhysicsObjectSpawner::ThrowPhysicsSphere()
+void PhysicsObjectSpawner::ThrowCannonBall()
 {
-    PhysicsSphere* physicsSphere = new PhysicsSphere();
-    physicsSphere->SetWorldScaling(Vector3(0.2f));
+    CannonBall* cannonBall = new CannonBall();
+    cannonBall->SetWorldScaling(Vector3(0.2f));
 
     Game* game = dynamic_cast<Game*>(engine->GetApplication());
 
@@ -104,8 +105,8 @@ void PhysicsObjectSpawner::ThrowPhysicsSphere()
         archer = game->GetArcher();
     }
 
-    physicsSphere->SetWorldPosition(archer->GetWorldPosition() + archer->GetUpVector() + archer->GetForwardVector() * 0.25f);
-    physicsSphere->SetLinearVelocity(50.f * (archer->GetForwardVector() * 0.85f + archer->GetUpVector() * 0.15f));
+    cannonBall->SetWorldPosition(archer->GetWorldPosition() + archer->GetUpVector() + archer->GetForwardVector() * 0.25f);
+    cannonBall->SetLinearVelocity(50.f * (archer->GetForwardVector() * 0.85f + archer->GetUpVector() * 0.15f));
 
-    //physicsSphere->ApplyForce(1000000.f * (archer->GetForwardVector() * 0.9f + archer->GetUpVector() * 0.1f));
+    //cannonBall->ApplyForce(1000000.f * (archer->GetForwardVector() * 0.9f + archer->GetUpVector() * 0.1f));
 }

@@ -22,6 +22,8 @@ PhysicsBox::PhysicsBox() : RigidBody()
 
 	SetCollisionGroup(CollisionGroup::WorldDynamic);
 	SetCollisionMask(CollisionMask::BlockAll);
+
+	SetName("PhysicsBox");
 }
 
 void PhysicsBox::BeginGame()

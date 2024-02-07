@@ -73,6 +73,10 @@
 	      <Name>SM_MonkeyCollision</Name>
 	      <Path>Meshes/SM_MonkeyCollision.fbx</Path>
 	    </StaticMesh>
+	    <StaticMesh id = "10">
+	      <Name>SM_Axis</Name>
+	      <Path>Meshes/SM_Axis.fbx</Path>
+	    </StaticMesh>
 	</Meshes>
 
 	<Objects>
