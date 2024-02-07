@@ -18,12 +18,12 @@ Arrow::Arrow() : StaticMeshObject()
 	movementComponent_ = AddSubComponent<ProjectileMovementComponent>();
 	movementComponent_->SetIsActive(false);
 
-	// overlappingCollisionComponent_ = AddSubComponent<SphereCollisionComponent>();
-	// overlappingCollisionComponent_->SetRadius(2.f);
-	// overlappingCollisionComponent_->SetIsOverlapping(true);
-	// overlappingCollisionComponent_->OnOverlapBegin = Delegate<OverlapCollisionAlias>::create<Arrow, &Arrow::OnOverlapBegin>(this);
-	// overlappingCollisionComponent_->OnOverlapContinue = Delegate<OverlapCollisionAlias>::create<Arrow, &Arrow::OnOverlapContinue>(this);
-	// overlappingCollisionComponent_->OnOverlapEnd = Delegate<OverlapCollisionAlias>::create<Arrow, &Arrow::OnOverlapEnd>(this);
+	overlappingCollisionComponent_ = AddSubComponent<SphereCollisionComponent>();
+	overlappingCollisionComponent_->SetRadius(2.f);
+	overlappingCollisionComponent_->SetIsOverlapping(true);
+	overlappingCollisionComponent_->OnOverlapBegin = Delegate<OverlapCollisionAlias>::create<Arrow, &Arrow::OnOverlapBegin>(this);
+	overlappingCollisionComponent_->OnOverlapContinue = Delegate<OverlapCollisionAlias>::create<Arrow, &Arrow::OnOverlapContinue>(this);
+	overlappingCollisionComponent_->OnOverlapEnd = Delegate<OverlapCollisionAlias>::create<Arrow, &Arrow::OnOverlapEnd>(this);
 
 	AxisObject* axisObject = new AxisObject();
 	axisObject->SetParent(this);

@@ -114,7 +114,7 @@ void FreeCameraController::OnMouseLeftClickPressed()
 		RigidBody* hitObject = raycastClosestResult.hitObject;
 		hitObject->ApplyForce(Vector3::UpVector * 100000.f);
 
-		GOKNAR_INFO("Hit object: {}", hitObject->GetName());
+		GOKNAR_INFO("Raycast hit object: {}", hitObject->GetName());
 	}
 }
 
