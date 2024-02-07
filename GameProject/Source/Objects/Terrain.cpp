@@ -25,6 +25,5 @@ Terrain::Terrain() : RigidBody()
 	SetCollisionGroup(CollisionGroup::WorldStatic);
 	SetCollisionMask(CollisionMask::BlockAll);
 
-	// SetCcdMotionThreshold(1.f);
-  	// SetCcdSweptSphereRadius(0.05f);
+	SetName("Terrain");
 }

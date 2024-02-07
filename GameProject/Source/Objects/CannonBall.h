@@ -1,34 +1,24 @@
 #pragma once
 
-#include "StaticMeshObject.h"
+#include "Physics/RigidBody.h"
 
-class ProjectileMovementComponent;
-class SphereCollisionComponent;
-class ObjectBase;
 class CollisionComponent;
+class SphereCollisionComponent;
+class StaticMeshComponent;
 
-class GOKNAR_API Arrow : public StaticMeshObject
+class GOKNAR_API CannonBall : public RigidBody
 {
 public:
-	Arrow();
+	CannonBall();
 
 	virtual void BeginGame() override;
-
-	void Shoot();
-
-	ProjectileMovementComponent* GetMovementComponent() const
-	{
-		return movementComponent_;
-	}
-
 protected:
-
-private:
 	void OnOverlapBegin(ObjectBase* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal);
 	void OnOverlapContinue(ObjectBase* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal);
 	void OnOverlapEnd(ObjectBase* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal);
 
-	ProjectileMovementComponent* movementComponent_;
-	
+private:
+	SphereCollisionComponent* sphereCollisionComponent_;
 	SphereCollisionComponent* overlappingCollisionComponent_;
+	StaticMeshComponent* staticMeshComponent_;
 };

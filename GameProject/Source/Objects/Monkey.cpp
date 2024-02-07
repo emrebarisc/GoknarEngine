@@ -26,4 +26,6 @@ Monkey::Monkey() : RigidBody()
 
 	SetCollisionGroup(CollisionGroup::WorldDynamic);
 	SetCollisionMask(CollisionMask::BlockAll);
+
+	SetName("Monkey");
 }
