@@ -3,11 +3,12 @@
 #include "ObjectBase.h"
 
 #include "Goknar/Application.h"
-#include "Goknar/Components/Component.h"
-#include "Goknar/Components/SocketComponent.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Log.h"
 #include "Goknar/Scene.h"
+#include "Goknar/Components/Component.h"
+#include "Goknar/Components/SocketComponent.h"
+#include "Goknar/Managers/ObjectIDManager.h"
 
 ObjectBase::ObjectBase() :
 	totalComponentCount_(0),
@@ -31,6 +32,8 @@ void ObjectBase::PreInit()
 	}
 
 	engine->GetApplication()->GetMainScene()->AddObject(this);
+
+	id_ = ObjectIDManager::GetInstance()->GetAndIncreaseObjectBaseID();
 }
 
 void ObjectBase::Init()

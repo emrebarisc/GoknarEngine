@@ -43,7 +43,7 @@ public:
     virtual void AddRigidBody(RigidBody* rigidBody);
     virtual void RemoveRigidBody(RigidBody* rigidBody);
 
-    virtual void AddCollision(CollisionComponent* collisionComponent) {}
+    virtual void AddOverlappingCollisionComponent(CollisionComponent* collisionComponent);
 
     bool RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest);
     //virtual bool RaycastAll(const RaycastData& raycastData, RaycastAllResult& raycastClosest);
@@ -62,18 +62,22 @@ protected:
     typedef std::vector<RigidBody*> RigidBodies;
     RigidBodies rigidBodies_;
 
+    typedef std::vector<CollisionComponent*> OverlappingCollisionComponents;
+    OverlappingCollisionComponents overlappingCollisionComponents_;
+
     typedef std::unordered_map<btCollisionObject const*, RigidBody*> PhysicsObjectMap;
     PhysicsObjectMap physicsObjectMap_;
 
 private:
     Vector3 gravity_{ Vector3{0.f, 0.f, -10.f} };
 
-    btAlignedObjectArray<btCollisionShape*> collisionShapes_;
     btBroadphaseInterface* broadphase_{ nullptr };
     btCollisionDispatcher* dispatcher_{ nullptr };
     btConstraintSolver* solver_{ nullptr };
     btDefaultCollisionConfiguration* collisionConfiguration_{ nullptr };
     btDiscreteDynamicsWorld* dynamicsWorld_{ nullptr };
+
+    int overlappingCollisionComponentCount_{ 0 };
 };
 
 #endif

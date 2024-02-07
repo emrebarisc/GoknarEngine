@@ -47,7 +47,6 @@ void RigidBody::Init()
     bulletTransform.setOrigin(PhysicsUtils::FromVector3ToBtVector3(worldPosition_));
     bulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(worldRotation_));
 
-    //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
     btDefaultMotionState* bulletMotionState = new btDefaultMotionState(bulletTransform);
     btRigidBody::btRigidBodyConstructionInfo rigidBodyInfo(mass_, bulletMotionState, bulletCollisionShape, initializationData_->localInertia);
 
@@ -237,6 +236,13 @@ void RigidBody::SetWorldRotation(const Quaternion& worldRotation, bool updateWor
     btTransform newBulletTransform = bulletRigidBody_->getCenterOfMassTransform();
     newBulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(worldRotation));
     bulletRigidBody_->setCenterOfMassTransform(newBulletTransform);
+}
+
+void RigidBody::SetIsActive(bool isActive)
+{
+    ObjectBase::SetIsActive(isActive);
+
+    //bulletRigidBody_->setActivationState(isActive ? : );
 }
 
 void RigidBody::SetLinearVelocity(const Vector3& velocity)

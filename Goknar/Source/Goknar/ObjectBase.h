@@ -97,7 +97,17 @@ public:
 		return worldTransformationMatrix_.GetUpVector().GetNormalized();
 	}
 
-	void SetIsActive(bool isRendered);
+	std::string GetName() const
+	{
+		return name_ + std::to_string(id_);
+	}
+
+	void SetName(const std::string& name)
+	{
+		name_ = name;
+	}
+
+	virtual void SetIsActive(bool isActive);
 
 	bool GetIsActive() const
 	{
@@ -143,6 +153,7 @@ protected:
 	Vector3 worldScaling_{ Vector3(1.f) };
 
 private:
+	std::string name_{ "ObjectBase" };
 	std::vector<ObjectBase*> children_;
 	std::vector<Component*> components_;
 	Component* rootComponent_{ nullptr };
@@ -152,6 +163,7 @@ private:
 
 	int totalComponentCount_;
 
+	unsigned int id_{ 0 };
     unsigned int isTickable_ : 1;
 	unsigned int isActive_ : 1;
 	unsigned int isInitialized_ : 1;

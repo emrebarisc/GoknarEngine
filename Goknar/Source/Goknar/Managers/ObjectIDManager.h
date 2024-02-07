@@ -18,6 +18,11 @@ public:
 	{
 	}
 
+	int GetAndIncreaseObjectBaseID()
+	{
+		return objectBaseID_++;
+	}
+
 	int GetAndIncreasePointLightID()
 	{
 		return pointLightID_++;
@@ -50,6 +55,7 @@ public:
 
 private:
 	ObjectIDManager() :
+		objectBaseID_(0),
 		pointLightID_(0),
 		directionalLightID_(0),
 		spotLightID_(0),
@@ -60,6 +66,7 @@ private:
 
 	static ObjectIDManager* instance_;
 
+	int objectBaseID_;
 	int pointLightID_;
 	int directionalLightID_;
 	int spotLightID_;

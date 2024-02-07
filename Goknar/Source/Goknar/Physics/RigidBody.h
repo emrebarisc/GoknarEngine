@@ -51,6 +51,8 @@ public:
 	virtual void SetWorldPosition(const Vector3& worldPosition, bool updateWorldTransformationMatrix = true) override;
 	virtual void SetWorldRotation(const Quaternion& worldRotation, bool updateWorldTransformationMatrix = true) override;
 
+	virtual void SetIsActive(bool isActive) override;
+
 	float GetMass() const
 	{
 		return mass_;
