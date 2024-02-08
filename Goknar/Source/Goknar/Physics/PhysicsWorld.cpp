@@ -50,6 +50,9 @@ PhysicsWorld::~PhysicsWorld()
 
 	delete collisionConfiguration_;
 	collisionConfiguration_ = nullptr;
+
+	delete overlappingCollisionPairCallback_;
+	overlappingCollisionPairCallback_ = nullptr;
 }
 
 void PhysicsWorld::PreInit()
