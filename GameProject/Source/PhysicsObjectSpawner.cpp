@@ -35,8 +35,6 @@ void PhysicsObjectSpawner::BeginGame()
 
 void PhysicsObjectSpawner::Tick(float deltaTime)
 {
-    return;
-
     static float counter = 1.f;
 
     if(counter < 0.f)

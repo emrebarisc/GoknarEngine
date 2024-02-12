@@ -18,7 +18,7 @@ PhysicsSphere::PhysicsSphere() : RigidBody()
 
 	SetMass(100.f);
 
-	SetCollisionGroup(CollisionGroup::WorldDynamic);
+	SetCollisionGroup(CollisionGroup::WorldDynamicBlock);
 	SetCollisionMask(CollisionMask::BlockAll);
 
 	SetName("PhysicsSphere");

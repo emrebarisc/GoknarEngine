@@ -42,7 +42,7 @@ PhysicsArcher::PhysicsArcher() :
 	capsuleCollisionComponent_->SetRelativePosition(Vector3{0.f, 0.f, -0.3f});
 	SetRootComponent(capsuleCollisionComponent_);
 
-	SetCollisionGroup(CollisionGroup::WorldDynamic);
+	SetCollisionGroup(CollisionGroup::WorldDynamicBlock);
 	SetCollisionMask(CollisionMask::BlockAll);
 
 	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Akai.fbx");
@@ -77,8 +77,8 @@ PhysicsArcher::PhysicsArcher() :
 	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3{ 1.f, 0.f, 0.f }, Vector3{ 0.f, 0.f, 1.f }.GetNormalized());
 	//thirdPersonCamera_->SetImageWidth(1920);
 	//thirdPersonCamera_->SetImageHeight(1080);
-	thirdPersonCamera_->SetImageWidth(1600);
-	thirdPersonCamera_->SetImageHeight(900);
+	thirdPersonCamera_->SetImageWidth(3200);
+	thirdPersonCamera_->SetImageHeight(1800);
 	thirdPersonCamera_->SetNearDistance(1.f);
 	thirdPersonCamera_->SetFarDistance(1000.f);
 	thirdPersonCamera_->SetFOV(45.f);

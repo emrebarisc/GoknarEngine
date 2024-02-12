@@ -22,7 +22,7 @@ Terrain::Terrain() : RigidBody()
 
 	SetWorldPosition(Vector3{0.f, 0.f, -10.f});
 
-	SetCollisionGroup(CollisionGroup::WorldStatic);
+	SetCollisionGroup(CollisionGroup::WorldStaticBlock);
 	SetCollisionMask(CollisionMask::BlockAll);
 
 	SetName("Terrain");
