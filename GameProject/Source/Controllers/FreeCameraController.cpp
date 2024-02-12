@@ -56,6 +56,9 @@ void FreeCameraController::BeginGame()
 
 	inputManager->AddCursorDelegate(std::bind(&FreeCameraController::CursorMovement, this, std::placeholders::_1, std::placeholders::_2));
 
+	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
+	freeCamera_->SetImageWidth(windowSize.x);
+	freeCamera_->SetImageHeight(windowSize.y);
 }
 
 void FreeCameraController::CursorMovement(double x, double y)
@@ -109,10 +112,14 @@ void FreeCameraController::OnMouseLeftClickPressed()
 	Vector3 cameraPosition = freeCamera_->GetPosition();
 	raycastData.from = cameraPosition;
 	raycastData.to = cameraPosition + 1000.f * freeCamera_->GetWorldDirectionAtPixel(screenCoordinate);
-	if(engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastClosestResult))
+	if (engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastClosestResult))
 	{
-		RigidBody* hitObject = raycastClosestResult.hitObject;
-		hitObject->ApplyForce(Vector3::UpVector * 100000.f);
+		PhysicsObject* hitObject = raycastClosestResult.hitObject;
+		RigidBody* hitRigidBody = dynamic_cast<RigidBody*>(hitObject);
+		if (hitRigidBody)
+		{
+			hitRigidBody->ApplyForce(Vector3::UpVector * 100000.f);
+		}
 
 		GOKNAR_INFO("Raycast hit object: {}", hitObject->GetName());
 	}

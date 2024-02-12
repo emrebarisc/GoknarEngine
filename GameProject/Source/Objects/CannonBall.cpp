@@ -31,7 +31,7 @@ CannonBall::CannonBall() : RigidBody()
 
 	SetMass(100.f);
 
-	SetCollisionGroup(CollisionGroup::WorldDynamic);
+	SetCollisionGroup(CollisionGroup::WorldDynamicBlock);
 	SetCollisionMask(CollisionMask::BlockAll);
 	SetCcdMotionThreshold(0.1f);
   	SetCcdSweptSphereRadius(0.05f);

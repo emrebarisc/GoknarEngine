@@ -8,22 +8,23 @@
 #include "Components/ProjectileMovementComponent.h"
 #include "Objects/AxisObject.h"
 
-#include "Physics/Components/SphereCollisionComponent.h"
+#include "Physics/Components/BoxCollisionComponent.h"
 
-Arrow::Arrow() : StaticMeshObject()
+Arrow::Arrow() : OverlappingPhysicsObject()
 {
 	StaticMesh* arrowStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Arrow.fbx");
+
+	overlappingCollisionComponent_ = AddSubComponent<BoxCollisionComponent>();
+	overlappingCollisionComponent_->SetHalfSize(arrowStaticMesh->GetAABB().GetSize());
+	overlappingCollisionComponent_->OnOverlapBegin = Delegate<OverlapBeginAlias>::create<Arrow, &Arrow::OnOverlapBegin>(this);
+	overlappingCollisionComponent_->OnOverlapContinue = Delegate<OverlapContinueAlias>::create<Arrow, &Arrow::OnOverlapContinue>(this);
+	overlappingCollisionComponent_->OnOverlapEnd = Delegate<OverlapEndAlias>::create<Arrow, &Arrow::OnOverlapEnd>(this);
+
+	staticMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 	staticMeshComponent_->SetMesh(arrowStaticMesh);
 
 	movementComponent_ = AddSubComponent<ProjectileMovementComponent>();
 	movementComponent_->SetIsActive(false);
-
-	overlappingCollisionComponent_ = AddSubComponent<SphereCollisionComponent>();
-	overlappingCollisionComponent_->SetRadius(2.f);
-	overlappingCollisionComponent_->SetIsOverlapping(true);
-	overlappingCollisionComponent_->OnOverlapBegin = Delegate<OverlapCollisionAlias>::create<Arrow, &Arrow::OnOverlapBegin>(this);
-	overlappingCollisionComponent_->OnOverlapContinue = Delegate<OverlapCollisionAlias>::create<Arrow, &Arrow::OnOverlapContinue>(this);
-	overlappingCollisionComponent_->OnOverlapEnd = Delegate<OverlapCollisionAlias>::create<Arrow, &Arrow::OnOverlapEnd>(this);
 
 	AxisObject* axisObject = new AxisObject();
 	axisObject->SetParent(this);
@@ -39,18 +40,32 @@ void Arrow::Shoot()
 	movementComponent_->Shoot();
 }
 
-
-void Arrow::OnOverlapBegin(ObjectBase* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)
+void Arrow::OnOverlapBegin(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)
 {
-	GOKNAR_INFO("Arrow started overlapped with {} ", otherObject->GetName());
+	if(otherObject->GetName().find("ObjectBase") != std::string::npos)
+	{
+		return;
+	}
+
+	GOKNAR_INFO("Arrow started overlapping with {} ", otherObject->GetName());
+
+	Quaternion relativeRotation = otherObject->GetWorldRotation() * GetWorldRotation().GetInverse();
+	Vector3 relativePosition = GetWorldPosition() - otherObject->GetWorldPosition();
+	Vector3 relativeScaling = Vector3{ 1.f } / otherObject->GetWorldScaling();
+
+	movementComponent_->SetIsActive(false);
+	SetWorldPosition(hitPosition, false);
+	SetWorldRotation(relativeRotation, false);
+	SetWorldScaling(relativeScaling);
+	SetParent(otherObject);
 }
 
-void Arrow::OnOverlapContinue(ObjectBase* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)
+void Arrow::OnOverlapContinue(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)
 {
 	GOKNAR_INFO("Arrow continue overlapping with {} ", otherObject->GetName());
 }
 
-void Arrow::OnOverlapEnd(ObjectBase* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)
+void Arrow::OnOverlapEnd(PhysicsObject* otherObject, CollisionComponent* otherComponent)
 {
-	GOKNAR_INFO("Arrow ended overlapped with {} ", otherObject->GetName());
+	GOKNAR_INFO("Arrow ended overlapping with {} ", otherObject->GetName());
 }

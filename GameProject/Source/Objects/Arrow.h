@@ -1,13 +1,14 @@
 #pragma once
 
-#include "StaticMeshObject.h"
+#include "Physics/OverlappingPhysicsObject.h"
 
 class ProjectileMovementComponent;
-class SphereCollisionComponent;
+class BoxCollisionComponent;
 class ObjectBase;
 class CollisionComponent;
+class StaticMeshComponent;
 
-class GOKNAR_API Arrow : public StaticMeshObject
+class GOKNAR_API Arrow : public OverlappingPhysicsObject
 {
 public:
 	Arrow();
@@ -24,11 +25,12 @@ public:
 protected:
 
 private:
-	void OnOverlapBegin(ObjectBase* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal);
-	void OnOverlapContinue(ObjectBase* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal);
-	void OnOverlapEnd(ObjectBase* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal);
+	void OnOverlapBegin(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal);
+	void OnOverlapContinue(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal);
+	void OnOverlapEnd(PhysicsObject* otherObject, CollisionComponent* otherComponent);
 
 	ProjectileMovementComponent* movementComponent_;
-	
-	SphereCollisionComponent* overlappingCollisionComponent_;
+
+	BoxCollisionComponent* overlappingCollisionComponent_;
+	StaticMeshComponent* staticMeshComponent_;
 };
