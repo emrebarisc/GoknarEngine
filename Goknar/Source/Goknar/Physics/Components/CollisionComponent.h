@@ -8,9 +8,11 @@
 class btCollisionShape;
 class btCollisionObject;
 
-class ObjectBase;
+class PhysicsObject;
 
-using OverlapCollisionAlias = void(ObjectBase*, class CollisionComponent*, const Vector3&, const Vector3&);
+using OverlapBeginAlias = void(PhysicsObject*, class CollisionComponent*, const Vector3&, const Vector3&);
+using OverlapContinueAlias = void(PhysicsObject*, class CollisionComponent*, const Vector3&, const Vector3&);
+using OverlapEndAlias = void(PhysicsObject*, class CollisionComponent*);
 
 class GOKNAR_API CollisionComponent : public Component
 {
@@ -35,18 +37,6 @@ public:
 		return bulletCollisionShape_;
 	}
 
-	btCollisionObject* GetBulletCollisionObject() const
-	{
-		return bulletCollisionObject_;
-	}
-
-	inline bool GetIsOverlapping() const
-	{
-		return isOverlapping_;
-	}
-
-	void SetIsOverlapping(bool isOverlapping);
-
 	CollisionGroup GetCollisionGroup() const
 	{
 		return collisionGroup_;
@@ -67,18 +57,16 @@ public:
 		collisionMask_ = collisionMask;
 	}
 
-	Delegate<OverlapCollisionAlias> OnOverlapBegin;
-	Delegate<OverlapCollisionAlias> OnOverlapContinue;
-	Delegate<OverlapCollisionAlias> OnOverlapEnd;
+	Delegate<OverlapBeginAlias> OnOverlapBegin;
+	Delegate<OverlapContinueAlias> OnOverlapContinue;
+	Delegate<OverlapEndAlias> OnOverlapEnd;
 
 protected:
 	btCollisionShape* bulletCollisionShape_{ nullptr };
-	btCollisionObject* bulletCollisionObject_{ nullptr };
-private:
-	CollisionGroup collisionGroup_{ CollisionGroup::WorldDynamic };
-	CollisionMask collisionMask_{ CollisionMask::BlockAll };
 
-	bool isOverlapping_{ false };
+private:
+	CollisionGroup collisionGroup_{ CollisionGroup::All };
+	CollisionMask collisionMask_{ CollisionMask::BlockAndOverlapAll };
 };
 
 #endif

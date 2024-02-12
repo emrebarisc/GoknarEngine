@@ -145,21 +145,36 @@ public:
 		}
 	}
 
+	const Vector3& GetSize() const
+	{
+		return size_;
+	}
+
+	float GetWidth() const
+	{
+		return size_.x;
+	}
+
+	float GetDepth() const
+	{
+		return size_.y;
+	}
+
+	float GetHeight() const
+	{
+		return size_.z;
+	}
+
 	void CalculateSize()
 	{
-		width_ = max_.x - min_.x;
-		depth_ = max_.y - min_.y;
-		height_ = max_.z - min_.z;
+		size_ = max_ - min_;
 	}
 protected:
 
 private:
 	Vector3 min_{ Vector3::ZeroVector };
 	Vector3 max_{ Vector3::ZeroVector };
-
-	float width_{ 0.f };
-	float depth_{ 0.f };
-	float height_{ 0.f };
+	Vector3 size_{ Vector3::ZeroVector };
 };
 
 #endif

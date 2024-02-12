@@ -10,22 +10,19 @@
 #include "btBulletDynamicsCommon.h"
 #include "Bullet3Common/b3Vector3.h"
 
-RigidBody::RigidBody() : ObjectBase()
+RigidBody::RigidBody() : PhysicsObject()
 {
-    initializationData_ = new RigidBodyInitializationData();
+    rigidBodyInitializationData_ = new RigidBodyInitializationData();
 }
 
 RigidBody::~RigidBody()
 {
-    if(initializationData_)
-    {
-        delete initializationData_;
-    }
+    delete rigidBodyInitializationData_;
 }
 
 void RigidBody::PreInit()
 {
-    ObjectBase::PreInit();
+    PhysicsObject::PreInit();
 }
 
 void RigidBody::Init()
@@ -39,7 +36,7 @@ void RigidBody::Init()
     bool isDynamic = (mass_ != 0.f);
     if (isDynamic)
     {
-        bulletCollisionShape->calculateLocalInertia(mass_, initializationData_->localInertia);
+        bulletCollisionShape->calculateLocalInertia(mass_, rigidBodyInitializationData_->localInertia);
     }
 
     btTransform bulletTransform;
@@ -48,86 +45,89 @@ void RigidBody::Init()
     bulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(worldRotation_));
 
     btDefaultMotionState* bulletMotionState = new btDefaultMotionState(bulletTransform);
-    btRigidBody::btRigidBodyConstructionInfo rigidBodyInfo(mass_, bulletMotionState, bulletCollisionShape, initializationData_->localInertia);
+    btRigidBody::btRigidBodyConstructionInfo rigidBodyInfo(mass_, bulletMotionState, bulletCollisionShape, rigidBodyInitializationData_->localInertia);
 
-    if (0.f <= initializationData_->linearSleepingThreshold)
+    if (0.f <= rigidBodyInitializationData_->linearSleepingThreshold)
     {
-        rigidBodyInfo.m_linearSleepingThreshold = initializationData_->linearSleepingThreshold;
+        rigidBodyInfo.m_linearSleepingThreshold = rigidBodyInitializationData_->linearSleepingThreshold;
     }
 
-    if (0.f <= initializationData_->angularSleepingThreshold)
+    if (0.f <= rigidBodyInitializationData_->angularSleepingThreshold)
     {
-        rigidBodyInfo.m_angularSleepingThreshold = initializationData_->angularSleepingThreshold;
+        rigidBodyInfo.m_angularSleepingThreshold = rigidBodyInitializationData_->angularSleepingThreshold;
     }
 
     bulletRigidBody_ = new btRigidBody(rigidBodyInfo);
+    bulletCollisionObject_ = bulletRigidBody_;
 
     engine->GetPhysicsWorld()->AddRigidBody(this);
 
-    ObjectBase::Init();
+    PhysicsObject::Init();
 }
 
 void RigidBody::PostInit()
 {
-    ObjectBase::PostInit();
-    
-    bulletRigidBody_->setCcdMotionThreshold(initializationData_->ccdMotionThreshold);
-    bulletRigidBody_->setCcdSweptSphereRadius(initializationData_->ccdSweptSphereRadius);
+    PhysicsObject::PostInit();
 
-    if(0.01f < initializationData_->velocity.length2())
-    {
-        bulletRigidBody_->setLinearVelocity(initializationData_->velocity);
-    }
-    
-    if(0.01f < initializationData_->angularVelocity.length2())
-    {
-        bulletRigidBody_->setAngularVelocity(initializationData_->angularVelocity);
-    }    
-
-    if(0.01f < initializationData_->centralImpulse.length2())
-    {
-        bulletRigidBody_->applyCentralImpulse(initializationData_->centralImpulse);
-    }    
-
-    if(0.01f < initializationData_->torqueImpulse.length2())
-    {
-        bulletRigidBody_->applyTorqueImpulse(initializationData_->torqueImpulse);
-    }    
-
-    if(0.01f < initializationData_->pushImpulse.length2())
-    {
-        bulletRigidBody_->applyPushImpulse(initializationData_->pushImpulse, initializationData_->pushImpulsePosition);
-    }    
-
-    if(0.01f < initializationData_->force.length2())
-    {
-        bulletRigidBody_->applyForce(initializationData_->force, initializationData_->forcePosition);
-    }
-
-    bulletRigidBody_->setLinearFactor(initializationData_->linearFactor);
-    bulletRigidBody_->setAngularFactor(initializationData_->angularFactor);
-
-    delete initializationData_;
-    initializationData_ = nullptr;
+    SetupRigidBodyInitializationData();
 }
 
 void RigidBody::BeginGame()
 {
-    ObjectBase::BeginGame();
+    PhysicsObject::BeginGame();
 }
 
 void RigidBody::Tick(float deltaTime)
 {
-    ObjectBase::Tick(deltaTime);
+    PhysicsObject::Tick(deltaTime);
 }
 
 void RigidBody::PhysicsTick(float deltaTime)
 {
     const btVector3& bulletWorldPosition = bulletRigidBody_->getCenterOfMassPosition();
     const btQuaternion& bulletWorldRotation = bulletRigidBody_->getOrientation();
-    
-    ObjectBase::SetWorldPosition(Vector3{bulletWorldPosition.x(), bulletWorldPosition.y(), bulletWorldPosition.z()}, false);
-    ObjectBase::SetWorldRotation(Quaternion(bulletWorldRotation.x(), bulletWorldRotation.y(), bulletWorldRotation.z(), bulletWorldRotation.w()));
+
+    PhysicsObject::SetWorldPosition(Vector3{ bulletWorldPosition.x(), bulletWorldPosition.y(), bulletWorldPosition.z() }, false);
+    PhysicsObject::SetWorldRotation(Quaternion(bulletWorldRotation.x(), bulletWorldRotation.y(), bulletWorldRotation.z(), bulletWorldRotation.w()));
+}
+
+void RigidBody::SetupRigidBodyInitializationData()
+{
+    if (0.01f < rigidBodyInitializationData_->velocity.length2())
+    {
+        bulletRigidBody_->setLinearVelocity(rigidBodyInitializationData_->velocity);
+    }
+
+    if (0.01f < rigidBodyInitializationData_->angularVelocity.length2())
+    {
+        bulletRigidBody_->setAngularVelocity(rigidBodyInitializationData_->angularVelocity);
+    }
+
+    if (0.01f < rigidBodyInitializationData_->centralImpulse.length2())
+    {
+        bulletRigidBody_->applyCentralImpulse(rigidBodyInitializationData_->centralImpulse);
+    }
+
+    if (0.01f < rigidBodyInitializationData_->torqueImpulse.length2())
+    {
+        bulletRigidBody_->applyTorqueImpulse(rigidBodyInitializationData_->torqueImpulse);
+    }
+
+    if (0.01f < rigidBodyInitializationData_->pushImpulse.length2())
+    {
+        bulletRigidBody_->applyPushImpulse(rigidBodyInitializationData_->pushImpulse, rigidBodyInitializationData_->pushImpulsePosition);
+    }
+
+    if (0.01f < rigidBodyInitializationData_->force.length2())
+    {
+        bulletRigidBody_->applyForce(rigidBodyInitializationData_->force, rigidBodyInitializationData_->forcePosition);
+    }
+
+    bulletRigidBody_->setLinearFactor(rigidBodyInitializationData_->linearFactor);
+    bulletRigidBody_->setAngularFactor(rigidBodyInitializationData_->angularFactor);
+
+    delete rigidBodyInitializationData_;
+    rigidBodyInitializationData_ = nullptr;
 }
 
 void RigidBody::SetMass(float mass)
@@ -139,49 +139,7 @@ void RigidBody::SetMass(float mass)
         return;
     }
 
-	bulletRigidBody_->setMassProps(mass_, bulletRigidBody_->getLocalInertia());
-}
-
-void RigidBody::SetCcdMotionThreshold(float ccdMotionThreshold)
-{
-    if (!GetIsInitialized())
-    {
-        initializationData_->ccdMotionThreshold = ccdMotionThreshold;
-        return;
-    }
-
-    bulletRigidBody_->setCcdMotionThreshold(ccdMotionThreshold);
-}
-
-void RigidBody::SetCcdSweptSphereRadius(float ccdSweptSphereRadius)
-{
-    if (!GetIsInitialized())
-    {
-        initializationData_->ccdSweptSphereRadius = ccdSweptSphereRadius;
-        return;
-    }
-
-    bulletRigidBody_->setCcdSweptSphereRadius(ccdSweptSphereRadius);
-}
-
-void RigidBody::SetLinearSleepingThreshold(float linearSleepingThreshold)
-{
-    if (GetIsInitialized())
-    {
-        return;
-    }
-
-    initializationData_->linearSleepingThreshold = linearSleepingThreshold;
-}
-
-void RigidBody::SetAngularSleepingThreshold(float angularSleepingThreshold)
-{
-    if (GetIsInitialized())
-    {
-        return;
-    }
-
-    initializationData_->angularSleepingThreshold = angularSleepingThreshold;
+    bulletRigidBody_->setMassProps(mass_, bulletRigidBody_->getLocalInertia());
 }
 
 void RigidBody::SetLinearFactor(const Vector3& linearFactor)
@@ -190,7 +148,7 @@ void RigidBody::SetLinearFactor(const Vector3& linearFactor)
 
     if (!GetIsInitialized())
     {
-        initializationData_->linearFactor = btLinearFactor;
+        rigidBodyInitializationData_->linearFactor = btLinearFactor;
         return;
     }
 
@@ -203,7 +161,7 @@ void RigidBody::SetAngularFactor(const Vector3& angularFactor)
 
     if (!GetIsInitialized())
     {
-        initializationData_->angularFactor = btAngularFactor;
+        rigidBodyInitializationData_->angularFactor = btAngularFactor;
         return;
     }
 
@@ -212,7 +170,7 @@ void RigidBody::SetAngularFactor(const Vector3& angularFactor)
 
 void RigidBody::SetWorldPosition(const Vector3& worldPosition, bool updateWorldTransformationMatrix)
 {
-    ObjectBase::SetWorldPosition(worldPosition, updateWorldTransformationMatrix);
+    PhysicsObject::SetWorldPosition(worldPosition, updateWorldTransformationMatrix);
 
     if (!GetIsInitialized())
     {
@@ -226,7 +184,7 @@ void RigidBody::SetWorldPosition(const Vector3& worldPosition, bool updateWorldT
 
 void RigidBody::SetWorldRotation(const Quaternion& worldRotation, bool updateWorldTransformationMatrix)
 {
-    ObjectBase::SetWorldRotation(worldRotation, updateWorldTransformationMatrix);
+    PhysicsObject::SetWorldRotation(worldRotation, updateWorldTransformationMatrix);
 
     if (!GetIsInitialized())
     {
@@ -240,7 +198,7 @@ void RigidBody::SetWorldRotation(const Quaternion& worldRotation, bool updateWor
 
 void RigidBody::SetIsActive(bool isActive)
 {
-    ObjectBase::SetIsActive(isActive);
+    PhysicsObject::SetIsActive(isActive);
 
     //bulletRigidBody_->setActivationState(isActive ? : );
 }
@@ -251,7 +209,7 @@ void RigidBody::SetLinearVelocity(const Vector3& velocity)
 
     if(!GetIsInitialized())
     {
-        initializationData_->velocity = btVelocity;
+        rigidBodyInitializationData_->velocity = btVelocity;
         return;
     }
 
@@ -264,7 +222,7 @@ void RigidBody::SetAngularVelocity(const Vector3& angularVelocity)
 
     if(!GetIsInitialized())
     {
-        initializationData_->angularVelocity = btAngularVelocity;
+        rigidBodyInitializationData_->angularVelocity = btAngularVelocity;
         return;
     }
 
@@ -278,8 +236,8 @@ void RigidBody::ApplyForce(const Vector3& force, const Vector3& position)
 
     if(!GetIsInitialized())
     {
-        initializationData_->force = btForce;
-        initializationData_->forcePosition = btForcePosition;
+        rigidBodyInitializationData_->force = btForce;
+        rigidBodyInitializationData_->forcePosition = btForcePosition;
         return;
     }
 
@@ -292,7 +250,7 @@ void RigidBody::ApplyCentralImpulse(const Vector3& impulse)
 
     if(!GetIsInitialized())
     {
-        initializationData_->centralImpulse = btImpulse;
+        rigidBodyInitializationData_->centralImpulse = btImpulse;
         return;
     }
 
@@ -305,7 +263,7 @@ void RigidBody::ApplyTorqueImpulse(const Vector3& impulse)
 
     if(!GetIsInitialized())
     {
-        initializationData_->torqueImpulse = btImpulse;
+        rigidBodyInitializationData_->torqueImpulse = btImpulse;
         return;
     }
 
@@ -319,8 +277,8 @@ void RigidBody::ApplyPushImpulse(const Vector3& impulse, const Vector3& position
 
     if(!GetIsInitialized())
     {
-        initializationData_->pushImpulse = btPushImpulse;
-        initializationData_->pushImpulsePosition = btPushImpulsePosition;
+        rigidBodyInitializationData_->pushImpulse = btPushImpulse;
+        rigidBodyInitializationData_->pushImpulsePosition = btPushImpulsePosition;
         return;
     }
 

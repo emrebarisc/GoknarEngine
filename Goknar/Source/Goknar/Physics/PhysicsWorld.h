@@ -13,6 +13,7 @@ class btGhostObject;
 
 class CollisionComponent;
 class OverlappingCollisionPairCallback;
+class PhysicsObject;
 class RigidBody;
 
 struct GOKNAR_API RaycastData
@@ -25,7 +26,7 @@ struct GOKNAR_API RaycastData
 
 struct GOKNAR_API RaycastClosestResult
 {
-    RigidBody* hitObject;
+    PhysicsObject* hitObject;
     Vector3 hitPosition;
     Vector3 hitNormal;
     float hitFraction;
@@ -46,7 +47,7 @@ public:
     virtual void AddRigidBody(RigidBody* rigidBody);
     virtual void RemoveRigidBody(RigidBody* rigidBody);
 
-    virtual void AddOverlappingCollisionComponent(CollisionComponent* collisionComponent);
+    virtual void AddPhysicsObject(PhysicsObject* physicsObject);
 
     bool RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest);
     //virtual bool RaycastAll(const RaycastData& raycastData, RaycastAllResult& raycastClosest);
@@ -61,27 +62,26 @@ public:
         gravity_ = gravity;
     }
 
+    void OnOverlappingCollisionBegin(btPersistentManifold* const& manifold);
+    void OnOverlappingCollisionContinue(btManifoldPoint& monifoldPoint, const btCollisionObject* ghostObject1, const btCollisionObject* ghostObject2);
+    void OnOverlappingCollisionEnd(btPersistentManifold* const& manifold);
 protected:
-    typedef std::vector<RigidBody*> RigidBodies;
-    RigidBodies rigidBodies_;
+    typedef std::vector<PhysicsObject*> PhysicsObjects;
+    PhysicsObjects physicsObjects_;
 
-    typedef std::unordered_map<btCollisionObject const*, RigidBody*> PhysicsObjectMap;
+    typedef std::unordered_map<btCollisionObject const*, PhysicsObject*> PhysicsObjectMap;
     PhysicsObjectMap physicsObjectMap_;
 
     typedef std::vector<CollisionComponent*> OverlappingCollisionComponents;
     OverlappingCollisionComponents overlappingCollisionComponents_;
-    
-    typedef std::unordered_map<btCollisionObject const*, CollisionComponent*> OverlappingCollisionComponentMap;
-    OverlappingCollisionComponentMap overlappingCollisionComponentMap_;
 
 private:
-    void OnOverlappingCollisionPairAdded(btCollisionObject* ghostObject1, btCollisionObject* ghostObject2);
-    void OnOverlappingCollisionPairRemoved(btCollisionObject* ghostObject1, btCollisionObject* ghostObject2);
 
     Vector3 gravity_{ Vector3{0.f, 0.f, -10.f} };
 
     btBroadphaseInterface* broadphase_{ nullptr };
     btCollisionDispatcher* dispatcher_{ nullptr };
+    btDispatcherInfo* dispatcherInfo_{ nullptr };
     btConstraintSolver* solver_{ nullptr };
     btDefaultCollisionConfiguration* collisionConfiguration_{ nullptr };
     btDiscreteDynamicsWorld* dynamicsWorld_{ nullptr };

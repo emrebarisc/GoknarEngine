@@ -20,7 +20,7 @@ CapsuleCollisionComponent::~CapsuleCollisionComponent()
 
 void CapsuleCollisionComponent::PreInit()
 {
-	bulletCollisionShape_ = new btCapsuleShape(radius_, height_);
+	bulletCollisionShape_ = new btCapsuleShape(height_, radius_);
 
 	CollisionComponent::PreInit();
 }

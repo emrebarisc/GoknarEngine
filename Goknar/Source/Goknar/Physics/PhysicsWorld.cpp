@@ -3,6 +3,7 @@
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
+#include "Engine.h"
 #include "Log.h"
 #include "PhysicsUtils.h"
 #include "PhysicsWorld.h"
@@ -55,6 +56,27 @@ PhysicsWorld::~PhysicsWorld()
 	overlappingCollisionPairCallback_ = nullptr;
 }
 
+bool OverlappingDestroyedCallback(void* userPersistentData)
+{
+	return true;
+}
+
+bool OverlappingProcessedCallback(btManifoldPoint& manifoldPoint, void* body0, void* body1)
+{
+	engine->GetPhysicsWorld()->OnOverlappingCollisionContinue(manifoldPoint, static_cast<const btCollisionObject*>(body0), static_cast<const btCollisionObject*>(body1));
+	return true;
+}
+
+void OverlappingStartedCallback(btPersistentManifold* const& manifold)
+{
+	engine->GetPhysicsWorld()->OnOverlappingCollisionBegin(manifold);
+}
+
+void OverlappingEndedCallback(btPersistentManifold* const& manifold)
+{
+	engine->GetPhysicsWorld()->OnOverlappingCollisionEnd(manifold);
+}
+
 void PhysicsWorld::PreInit()
 {
 	///collision configuration contains default setup for memory, collision setup
@@ -63,6 +85,7 @@ void PhysicsWorld::PreInit()
 
 	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
 	dispatcher_ = new btCollisionDispatcher(collisionConfiguration_);
+	//dispatcher_->setNearCallback(&NearCallback);
 
 	broadphase_ = new btDbvtBroadphase();
 
@@ -73,10 +96,10 @@ void PhysicsWorld::PreInit()
 	dynamicsWorld_ = new btDiscreteDynamicsWorld(dispatcher_, broadphase_, solver_, collisionConfiguration_);
 	dynamicsWorld_->setGravity({ gravity_.x, gravity_.y, gravity_.z });
 
-	overlappingCollisionPairCallback_ = new OverlappingCollisionPairCallback();
-	overlappingCollisionPairCallback_->OnAddOverlappingPair = Delegate<void(btCollisionObject*, btCollisionObject*)>::create<PhysicsWorld, &PhysicsWorld::OnOverlappingCollisionPairAdded>(this);
-	overlappingCollisionPairCallback_->OnRemoveOverlappingPair = Delegate<void(btCollisionObject*, btCollisionObject*)>::create<PhysicsWorld, &PhysicsWorld::OnOverlappingCollisionPairRemoved>(this);
-	broadphase_->getOverlappingPairCache()->setInternalGhostPairCallback(overlappingCollisionPairCallback_);
+	gContactDestroyedCallback = OverlappingDestroyedCallback;
+	//gContactProcessedCallback = OverlappingProcessedCallback;
+	gContactStartedCallback = OverlappingStartedCallback;
+	gContactEndedCallback = OverlappingEndedCallback;
 }
 
 void PhysicsWorld::Init()
@@ -91,62 +114,110 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
 {
 	dynamicsWorld_->stepSimulation(deltaTime);
 
-	for(RigidBody* rigidBody : rigidBodies_)
+	for(PhysicsObject* physicsObject : physicsObjects_)
 	{
-		rigidBody->PhysicsTick(deltaTime);
+		physicsObject->PhysicsTick(deltaTime);
 	}
 }
 
-void PhysicsWorld::OnOverlappingCollisionPairAdded(btCollisionObject* ghostObject1, btCollisionObject* ghostObject2)
+void PhysicsWorld::OnOverlappingCollisionBegin(btPersistentManifold* const& manifold)
 {
-	ObjectBase* collisionObject1 = nullptr;
-	if(overlappingCollisionComponentMap_.find(ghostObject1) != overlappingCollisionComponentMap_.end())
-	{
-		collisionObject1 = overlappingCollisionComponentMap_[ghostObject1]->GetOwner();
-	}
-	else if(physicsObjectMap_.find(ghostObject1) != physicsObjectMap_.end())
-	{
-		collisionObject1 = physicsObjectMap_[ghostObject1];
-	}
+	const btCollisionObject* ghostObject1 = manifold->getBody0();
+	const btCollisionObject* ghostObject2 = manifold->getBody1();
 
-	ObjectBase* collisionObject2 = nullptr;
-	if(overlappingCollisionComponentMap_.find(ghostObject2) != overlappingCollisionComponentMap_.end())
-	{
-		collisionObject2 = overlappingCollisionComponentMap_[ghostObject2]->GetOwner();
-	}
-	else if(physicsObjectMap_.find(ghostObject2) != physicsObjectMap_.end())
-	{
-		collisionObject2 = physicsObjectMap_[ghostObject2];
-	}
+	PhysicsObject* collisionObject1 = physicsObjectMap_[ghostObject1];
+	PhysicsObject* collisionObject2 = physicsObjectMap_[ghostObject2];
+
 	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2);
 
-	GOKNAR_CORE_INFO("OnAddOverlappingPair {}-{}", collisionObject1->GetName(), collisionObject2->GetName());
-};
+	CollisionComponent* collisionComponent1 = dynamic_cast<CollisionComponent*>(collisionObject1->GetRootComponent());
+	CollisionComponent* collisionComponent2 = dynamic_cast<CollisionComponent*>(collisionObject2->GetRootComponent());
 
-void PhysicsWorld::OnOverlappingCollisionPairRemoved(btCollisionObject* ghostObject1, btCollisionObject* ghostObject2)
+	GOKNAR_CORE_ASSERT(collisionComponent1 && collisionComponent2);
+
+	Vector3 worldPositionOnA = PhysicsUtils::FromBtVector3ToVector3(manifold->getContactPoint(0).getPositionWorldOnA());
+	Vector3 hitNormalOnA = -PhysicsUtils::FromBtVector3ToVector3(manifold->getContactPoint(0).m_normalWorldOnB);
+
+	Vector3 worldPositionOnB = PhysicsUtils::FromBtVector3ToVector3(manifold->getContactPoint(0).getPositionWorldOnB());
+	Vector3 hitNormalOnB = PhysicsUtils::FromBtVector3ToVector3(manifold->getContactPoint(0).m_normalWorldOnB);
+
+	if (!collisionComponent1->OnOverlapBegin.isNull())
+	{
+		collisionComponent1->OnOverlapBegin(collisionObject2, collisionComponent2, worldPositionOnA, hitNormalOnA);
+	}
+
+	if (!collisionComponent2->OnOverlapBegin.isNull())
+	{
+		collisionComponent2->OnOverlapBegin(collisionObject1, collisionComponent1, worldPositionOnB, hitNormalOnB);
+	}
+
+	//GOKNAR_CORE_INFO("On Overlapping Begin {}-{} at {} with normal {}",
+	//	collisionObject1->GetName(),
+	//	collisionObject2->GetName(),
+	//	PhysicsUtils::FromBtVector3ToVector3(manifold->getContactPoint(0).getPositionWorldOnB()).ToString(),
+	//	PhysicsUtils::FromBtVector3ToVector3(manifold->getContactPoint(0).m_normalWorldOnB).ToString());
+}
+
+void PhysicsWorld::OnOverlappingCollisionContinue(btManifoldPoint& monifoldPoint, const btCollisionObject* ghostObject1, const btCollisionObject* ghostObject2)
 {
-	ObjectBase* collisionObject1 = nullptr;
-	if(overlappingCollisionComponentMap_.find(ghostObject1) != overlappingCollisionComponentMap_.end())
-	{
-		collisionObject1 = overlappingCollisionComponentMap_[ghostObject1]->GetOwner();
-	}
-	else if(physicsObjectMap_.find(ghostObject1) != physicsObjectMap_.end())
-	{
-		collisionObject1 = physicsObjectMap_[ghostObject1];
-	}
+	PhysicsObject* collisionObject1 = physicsObjectMap_[ghostObject1];
+	PhysicsObject* collisionObject2 = physicsObjectMap_[ghostObject2];
 
-	ObjectBase* collisionObject2 = nullptr;
-	if(overlappingCollisionComponentMap_.find(ghostObject2) != overlappingCollisionComponentMap_.end())
-	{
-		collisionObject2 = overlappingCollisionComponentMap_[ghostObject2]->GetOwner();
-	}
-	else if(physicsObjectMap_.find(ghostObject2) != physicsObjectMap_.end())
-	{
-		collisionObject2 = physicsObjectMap_[ghostObject2];
-	}
 	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2);
 
-	GOKNAR_CORE_INFO("OnRemoveOverlappingPair {}-{}", collisionObject1->GetName(), collisionObject2->GetName());
+	CollisionComponent* collisionComponent1 = dynamic_cast<CollisionComponent*>(collisionObject1->GetRootComponent());
+	CollisionComponent* collisionComponent2 = dynamic_cast<CollisionComponent*>(collisionObject2->GetRootComponent());
+
+	GOKNAR_CORE_ASSERT(collisionComponent1 && collisionComponent2);
+
+	Vector3 worldPositionOnA = PhysicsUtils::FromBtVector3ToVector3(monifoldPoint.getPositionWorldOnA());
+	Vector3 hitNormalOnA = -PhysicsUtils::FromBtVector3ToVector3(monifoldPoint.m_normalWorldOnB);
+
+	Vector3 worldPositionOnB = PhysicsUtils::FromBtVector3ToVector3(monifoldPoint.getPositionWorldOnB());
+	Vector3 hitNormalOnB = PhysicsUtils::FromBtVector3ToVector3(monifoldPoint.m_normalWorldOnB);
+
+	if (!collisionComponent1->OnOverlapContinue.isNull())
+	{
+		collisionComponent1->OnOverlapContinue(collisionObject2, collisionComponent2, worldPositionOnA, hitNormalOnA);
+	}
+
+	if (!collisionComponent2->OnOverlapContinue.isNull())
+	{
+		collisionComponent2->OnOverlapContinue(collisionObject1, collisionComponent1, worldPositionOnB, hitNormalOnB);
+	}
+
+	//GOKNAR_CORE_INFO("On Overlapping Continue {}-{} at {} with normal {}",
+	//	collisionObject1->GetName(),
+	//	collisionObject2->GetName(),
+	//	PhysicsUtils::FromBtVector3ToVector3(monifoldPoint.getPositionWorldOnB()).ToString(),
+	//	PhysicsUtils::FromBtVector3ToVector3(monifoldPoint.m_normalWorldOnB).ToString());
+}
+
+void PhysicsWorld::OnOverlappingCollisionEnd(btPersistentManifold* const& manifold)
+{
+	PhysicsObject* collisionObject1 = physicsObjectMap_[manifold->getBody0()];
+	PhysicsObject* collisionObject2 = physicsObjectMap_[manifold->getBody1()];
+
+	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2);
+
+	CollisionComponent* collisionComponent1 = dynamic_cast<CollisionComponent*>(collisionObject1->GetRootComponent());
+	CollisionComponent* collisionComponent2 = dynamic_cast<CollisionComponent*>(collisionObject2->GetRootComponent());
+
+	GOKNAR_CORE_ASSERT(collisionComponent1 && collisionComponent2);
+
+	if (!collisionComponent1->OnOverlapEnd.isNull())
+	{
+		collisionComponent1->OnOverlapEnd(collisionObject2, collisionComponent2);
+	}
+
+	if (!collisionComponent2->OnOverlapEnd.isNull())
+	{
+		collisionComponent2->OnOverlapEnd(collisionObject1, collisionComponent1);
+	}
+
+	//GOKNAR_CORE_INFO("On Overlapping Ended {}-{}",
+	//	collisionObject1->GetName(),
+	//	collisionObject2->GetName());
 };
 
 void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
@@ -156,7 +227,7 @@ void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
 	physicsObjectMap_[bulletRigidBody] = rigidBody;
 
 	dynamicsWorld_->addRigidBody(bulletRigidBody, (int)rigidBody->GetCollisionGroup(), (int)rigidBody->GetCollisionMask());
-	rigidBodies_.push_back(rigidBody);
+	physicsObjects_.push_back(rigidBody);
 }
 
 void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
@@ -167,12 +238,12 @@ void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 	GOKNAR_ASSERT(relativePhysicsObject != physicsObjectMap_.end());
 	physicsObjectMap_.erase(relativePhysicsObject);
 
-	decltype(rigidBodies_.begin()) rigidBodyIterator = rigidBodies_.begin();
-	while(rigidBodyIterator != rigidBodies_.end())
+	decltype(physicsObjects_.begin()) rigidBodyIterator = physicsObjects_.begin();
+	while(rigidBodyIterator != physicsObjects_.end())
 	{
 		if(*rigidBodyIterator == rigidBody)
 		{
-			rigidBodies_.erase(rigidBodyIterator);
+			physicsObjects_.erase(rigidBodyIterator);
 			break;
 		}
 
@@ -182,14 +253,15 @@ void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 	dynamicsWorld_->removeRigidBody(bulletRigidBody);
 }
 
-void PhysicsWorld::AddOverlappingCollisionComponent(CollisionComponent* collisionComponent)
+void PhysicsWorld::AddPhysicsObject(PhysicsObject* physicsObject)
 {
-	btGhostObject* bulletGhostObject = dynamic_cast<btGhostObject*>(collisionComponent->GetBulletCollisionObject());
-	GOKNAR_ASSERT(overlappingCollisionComponentMap_.find(bulletGhostObject) == overlappingCollisionComponentMap_.end());
-	overlappingCollisionComponentMap_[bulletGhostObject] = collisionComponent;
+	const btCollisionObject* bulletCollisionObject = dynamic_cast<const btCollisionObject*>(physicsObject->GetBulletCollisionObject());
+	GOKNAR_ASSERT(physicsObjectMap_.find(bulletCollisionObject) == physicsObjectMap_.end());
 
-	overlappingCollisionComponents_.push_back(collisionComponent);
-	dynamicsWorld_->addCollisionObject(collisionComponent->GetBulletCollisionObject(), (int)collisionComponent->GetCollisionGroup(), (int)collisionComponent->GetCollisionMask());
+	physicsObjectMap_[bulletCollisionObject] = physicsObject;
+
+	//overlappingCollisionComponents_.push_back(collisionComponent);
+	dynamicsWorld_->addCollisionObject(physicsObject->GetBulletCollisionObject(), (int)physicsObject->GetCollisionGroup(), (int)physicsObject->GetCollisionMask());
 }
 
 bool PhysicsWorld::RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest)

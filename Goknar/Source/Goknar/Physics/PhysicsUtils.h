@@ -6,6 +6,7 @@
 #include "Math/Quaternion.h"
 
 #include "LinearMath/btVector3.h"
+#include "LinearMath/btQuaternion.h"
 
 class GOKNAR_API PhysicsUtils
 {
