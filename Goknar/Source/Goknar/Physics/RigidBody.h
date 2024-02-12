@@ -3,14 +3,14 @@
 
 #include "Core.h"
 
-#include "Goknar/ObjectBase.h"
+#include "Goknar/Physics/PhysicsObject.h"
 #include "Goknar/Physics/PhysicsTypes.h"
 
 #include "LinearMath/btVector3.h"
 
 class btRigidBody;
 
-struct GOKNAR_API RigidBodyInitializationData
+struct GOKNAR_API RigidBodyInitializationData : public PhysicsObjectInitializationData
 {
 	btVector3 linearFactor{ btVector3(1.f, 1.f, 1.f) };
 	btVector3 angularFactor{ btVector3(1.f, 1.f, 1.f) };
@@ -25,15 +25,9 @@ struct GOKNAR_API RigidBodyInitializationData
 	btVector3 pushImpulse{ btVector3(0.f, 0.f, 0.f) };
 	btVector3 pushImpulsePosition{ btVector3(0.f, 0.f, 0.f) };
 	btVector3 localInertia{ btVector3(0.f, 0.f, 0.f) };
-
-	float ccdMotionThreshold{ 0.f };
-  	float ccdSweptSphereRadius{ 0.f };
-
-	float linearSleepingThreshold{ -1.f };
-	float angularSleepingThreshold{ -1.f };
 };
 
-class GOKNAR_API RigidBody : public ObjectBase
+class GOKNAR_API RigidBody : public PhysicsObject
 {
 public:
 	RigidBody();
@@ -46,7 +40,9 @@ public:
 	virtual void BeginGame() override;
 	virtual void Tick(float deltaTime) override;
 
-	virtual void PhysicsTick(float deltaTime);
+	virtual void PhysicsTick(float deltaTime) override;
+
+	virtual void SetupRigidBodyInitializationData();
 
 	virtual void SetWorldPosition(const Vector3& worldPosition, bool updateWorldTransformationMatrix = true) override;
 	virtual void SetWorldRotation(const Quaternion& worldRotation, bool updateWorldTransformationMatrix = true) override;
@@ -59,12 +55,6 @@ public:
 	}
 
 	void SetMass(float mass);
-
-	void SetCcdMotionThreshold(float ccdMotionThreshold);
-	void SetCcdSweptSphereRadius(float ccdSweptSphereRadius);
-
-	void SetLinearSleepingThreshold(float linearSleepingThreshold);
-	void SetAngularSleepingThreshold(float angularSleepingThreshold);
 
 	// For un/locking physics movement on an axis
 	// For movement on all axis Vector3{1.f, 1.f, 1.f}
@@ -92,34 +82,11 @@ public:
 		return bulletRigidBody_;
 	}
 
-	CollisionGroup GetCollisionGroup() const
-	{
-		return collisionGroup_;
-	}
-
-	void SetCollisionGroup(CollisionGroup collisionGroup)
-	{
-		collisionGroup_ = collisionGroup;
-	}
-
-	CollisionMask GetCollisionMask() const
-	{
-		return collisionMask_;
-	}
-
-	void SetCollisionMask(CollisionMask collisionMask)
-	{
-		collisionMask_ = collisionMask;
-	}
-
 protected:
 	btRigidBody* bulletRigidBody_{ nullptr };
 
 private:
-	RigidBodyInitializationData* initializationData_{ nullptr };
-
-    CollisionGroup collisionGroup_{ CollisionGroup::WorldDynamic };
-    CollisionMask collisionMask_{ CollisionMask::BlockAll };
+	RigidBodyInitializationData* rigidBodyInitializationData_{ nullptr };
 	float mass_{ 0.f };
 };
 
