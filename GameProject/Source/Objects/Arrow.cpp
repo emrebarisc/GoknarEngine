@@ -20,6 +20,9 @@ Arrow::Arrow() : OverlappingPhysicsObject()
 	overlappingCollisionComponent_->OnOverlapContinue = Delegate<OverlapContinueAlias>::create<Arrow, &Arrow::OnOverlapContinue>(this);
 	overlappingCollisionComponent_->OnOverlapEnd = Delegate<OverlapEndAlias>::create<Arrow, &Arrow::OnOverlapEnd>(this);
 
+	// SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
+	// SetCollisionMask(CollisionMask::OverlapAllExceptPawn);
+
 	staticMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 	staticMeshComponent_->SetMesh(arrowStaticMesh);
 
@@ -27,7 +30,7 @@ Arrow::Arrow() : OverlappingPhysicsObject()
 	movementComponent_->SetIsActive(false);
 
 	AxisObject* axisObject = new AxisObject();
-	axisObject->SetParent(this);
+	axisObject->SetParent(this, SnappingRule::KeepWorldScaling);
 }
 
 void Arrow::BeginGame()
@@ -42,22 +45,19 @@ void Arrow::Shoot()
 
 void Arrow::OnOverlapBegin(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)
 {
-	if(otherObject->GetName().find("ObjectBase") != std::string::npos)
+	if(otherObject->GetTag() == "Archer")
 	{
 		return;
 	}
 
 	GOKNAR_INFO("Arrow started overlapping with {} ", otherObject->GetName());
 
-	Quaternion relativeRotation = otherObject->GetWorldRotation() * GetWorldRotation().GetInverse();
-	Vector3 relativePosition = GetWorldPosition() - otherObject->GetWorldPosition();
-	Vector3 relativeScaling = Vector3{ 1.f } / otherObject->GetWorldScaling();
+	Vector3 newPosition = hitPosition - GetForwardVector() * 0.75f;
+	SetWorldPosition(newPosition);
 
-	movementComponent_->SetIsActive(false);
-	SetWorldPosition(hitPosition, false);
-	SetWorldRotation(relativeRotation, false);
-	SetWorldScaling(relativeScaling);
 	SetParent(otherObject);
+
+	SetIsActive(false);
 }
 
 void Arrow::OnOverlapContinue(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)

@@ -258,6 +258,7 @@ void Archer::Shoot()
 	{
 		loadedArrow_->RemoveFromSocket(rightHandSocket_);
 		loadedArrow_->Shoot();
+		loadedArrow_->SetIsActive(true);
 		loadedArrow_ = nullptr;
 	}
 }
@@ -265,6 +266,7 @@ void Archer::Shoot()
 void Archer::OnCreateArrow()
 {
 	loadedArrow_ = new Arrow();
+	loadedArrow_->SetIsActive(false);
 	loadedArrow_->AttachToSocket(rightHandSocket_);
 }
 

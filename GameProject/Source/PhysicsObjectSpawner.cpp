@@ -40,7 +40,6 @@ void PhysicsObjectSpawner::Tick(float deltaTime)
     if(counter < 0.f)
     {
         counter += 1.f;
-        CreatePhysicsSphere();
         
         std::random_device randomDevice;
         std::uniform_int_distribution<int> randomObjectDist(0, 2);
@@ -52,7 +51,7 @@ void PhysicsObjectSpawner::Tick(float deltaTime)
         }
         else if(randomObjectInt == 1)
         {
-            CreatePhysicsBox();
+            CreatePhysicsSphere();
         }
         else if(randomObjectInt == 2)
         {

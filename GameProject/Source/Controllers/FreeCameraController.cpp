@@ -11,6 +11,7 @@
 #include "Goknar/GoknarAssert.h"
 #include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Model/MeshUnit.h"
+#include "Goknar/Model/IMeshInstance.h"
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/Managers/InputManager.h"
 #include "Goknar/Managers/WindowManager.h"
@@ -118,7 +119,9 @@ void FreeCameraController::OnMouseLeftClickPressed()
 		RigidBody* hitRigidBody = dynamic_cast<RigidBody*>(hitObject);
 		if (hitRigidBody)
 		{
-			hitRigidBody->ApplyForce(Vector3::UpVector * 100000.f);
+			hitRigidBody->SetIsActive(false);
+			hitRigidBody->GetComponent<MeshComponent>()->GetMeshInstance()->SetIsRendered(false);
+			//hitRigidBody->ApplyForce(Vector3::UpVector * 100000.f);
 		}
 
 		GOKNAR_INFO("Raycast hit object: {}", hitObject->GetName());
