@@ -50,6 +50,14 @@ void OverlappingPhysicsObject::PostInit()
     PhysicsObject::PostInit();
 }
 
+void OverlappingPhysicsObject::Destroy()
+{
+    engine->GetPhysicsWorld()->RemovePhysicsObject(this);
+
+    PhysicsObject::Destroy();
+}
+
+
 void OverlappingPhysicsObject::BeginGame()
 {
     PhysicsObject::BeginGame();

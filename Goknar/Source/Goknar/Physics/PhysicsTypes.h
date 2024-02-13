@@ -15,7 +15,9 @@ enum class GOKNAR_API CollisionGroup : unsigned char
     WorldStaticOverlap =            0b00010000,
     AllOverlap =                    WorldDynamicOverlap | WorldStaticOverlap,
 
-	All =				            AllBlock | AllOverlap,
+    Pawn =                          0b00100000,
+
+	All =				            AllBlock | AllOverlap | Pawn,
 };  
 
 enum class GOKNAR_API CollisionMask : unsigned char
@@ -23,11 +25,14 @@ enum class GOKNAR_API CollisionMask : unsigned char
     None =              		0b00000000,
     BlockWorldDynamic = 		(unsigned char)(CollisionGroup::WorldDynamicBlock),
     BlockWorldStatic = 			(unsigned char)(CollisionGroup::WorldStaticBlock),
-    BlockAll = 					BlockWorldDynamic | BlockWorldStatic,
+    BlockPawn = 				(unsigned char)(CollisionGroup::Pawn),
+    BlockAll = 					BlockWorldDynamic | BlockWorldStatic | BlockPawn,
 
     OverlapWorldDynamic = 		(unsigned char)(CollisionGroup::WorldDynamicOverlap),
     OverlapWorldStatic = 		(unsigned char)(CollisionGroup::WorldStaticOverlap),
-    OverlapAll = 				OverlapWorldDynamic | OverlapWorldStatic,
+    OverlapPawn = 		        (unsigned char)(CollisionGroup::Pawn),
+    OverlapAll = 				OverlapWorldDynamic | OverlapWorldStatic | OverlapPawn,
+    OverlapAllExceptPawn = 		OverlapWorldDynamic | OverlapWorldStatic,
 
     BlockAndOverlapAll = 		BlockAll | OverlapAll,
 };

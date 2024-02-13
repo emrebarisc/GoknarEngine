@@ -20,6 +20,8 @@ public:
 	virtual void Init() override;
 	virtual void PostInit() override;
 
+	virtual void Destroy() override;
+
 	virtual void BeginGame() override;
 	virtual void Tick(float deltaTime) override;
 

@@ -12,9 +12,6 @@ struct GOKNAR_API PhysicsObjectInitializationData
 {
 	float ccdMotionThreshold{ 0.f };
 	float ccdSweptSphereRadius{ 0.f };
-
-	float linearSleepingThreshold{ -1.f };
-	float angularSleepingThreshold{ -1.f };
 };
 
 class GOKNAR_API PhysicsObject : public ObjectBase
@@ -27,15 +24,16 @@ public:
 	virtual void Init();
 	virtual void PostInit();
 
+	virtual void Destroy() override;
+
+	virtual void SetIsActive(bool isActive) override;
+
 	virtual void PhysicsTick(float deltaTime) {}
 
 	void SetupPhysicsObjectInitializationData();
 
 	void SetCcdMotionThreshold(float ccdMotionThreshold);
 	void SetCcdSweptSphereRadius(float ccdSweptSphereRadius);
-
-	void SetLinearSleepingThreshold(float linearSleepingThreshold);
-	void SetAngularSleepingThreshold(float angularSleepingThreshold);
 
 	btCollisionObject* GetBulletCollisionObject() const
 	{
@@ -62,13 +60,25 @@ public:
 		collisionMask_ = collisionMask;
 	}
 
+	const std::string& GetTag() const
+	{
+		return tag_;
+	}
+
+	void SetTag(const std::string& tag)
+	{
+		tag_ = tag;
+	}
+
 protected:
 	btCollisionObject* bulletCollisionObject_{ nullptr };
 
 	PhysicsObjectInitializationData* physicsObjectInitializationData_{ nullptr };
 
     CollisionGroup collisionGroup_{ CollisionGroup::WorldDynamicBlock };
-    CollisionMask collisionMask_{ CollisionMask::BlockAll };
+    CollisionMask collisionMask_{ CollisionMask::BlockAndOverlapAll };
+
+	std::string tag_{ "None" };
 private:
 };
 

@@ -72,6 +72,12 @@ void RigidBody::PostInit()
     SetupRigidBodyInitializationData();
 }
 
+void RigidBody::Destroy()
+{
+    engine->GetPhysicsWorld()->RemoveRigidBody(this);
+    PhysicsObject::Destroy();
+}
+
 void RigidBody::BeginGame()
 {
     PhysicsObject::BeginGame();
@@ -303,4 +309,24 @@ void RigidBody::ClearGravity()
     }
 
     bulletRigidBody_->clearGravity();
+}
+
+void RigidBody::SetLinearSleepingThreshold(float linearSleepingThreshold)
+{
+    if (GetIsInitialized())
+    {
+        return;
+    }
+
+    rigidBodyInitializationData_->linearSleepingThreshold = linearSleepingThreshold;
+}
+
+void RigidBody::SetAngularSleepingThreshold(float angularSleepingThreshold)
+{
+    if (GetIsInitialized())
+    {
+        return;
+    }
+
+    rigidBodyInitializationData_->angularSleepingThreshold = angularSleepingThreshold;
 }
