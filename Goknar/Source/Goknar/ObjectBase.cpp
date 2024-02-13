@@ -153,7 +153,7 @@ void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
 	socketComponent->RemoveObject(this);
 }
 
-void ObjectBase::SetParent(ObjectBase* newParent, bool resetTransformation/* = false*/, bool updateWorldTransformation/* = true*/)
+void ObjectBase::SetParent(ObjectBase* newParent, SnappingRule snappingRule/* = SnappingRule::KeepWorldAll*/, bool updateWorldTransformation/* = true*/)
 {
 	if (parent_)
 	{
@@ -168,10 +168,35 @@ void ObjectBase::SetParent(ObjectBase* newParent, bool resetTransformation/* = f
 
 		if (updateWorldTransformation)
 		{
-			if (resetTransformation)
+			// In case of getting another ObjectBase as a parent
+			// World transformations(Position, rotation and scaling)
+			// Act like relative transformations
+			// Just like in Component's relative transformations
+
+			if((unsigned char)snappingRule & (unsigned char)SnappingRule::KeepWorldPosition)
+			{
+				worldPosition_ -= newParent->GetWorldPosition();
+			}
+			else
 			{
 				worldPosition_ = Vector3::ZeroVector;
+			}
+			
+			if((unsigned char)snappingRule & (unsigned char)SnappingRule::KeepWorldRotation)
+			{
+				worldRotation_ = worldRotation_ * newParent->GetWorldRotation().GetInverse();
+			}
+			else
+			{
 				worldRotation_ = Quaternion::Identity;
+			}
+			
+			if((unsigned char)snappingRule & (unsigned char)SnappingRule::KeepWorldScaling)
+			{
+				worldScaling_ = worldScaling_ / newParent->GetWorldScaling();
+			}
+			else
+			{
 				worldScaling_ = Vector3{ 1.f };
 			}
 

@@ -11,9 +11,18 @@
 class Component;
 class SocketComponent;
 
-/*
-    Base object class
-*/
+enum class SnappingRule : unsigned char
+{
+	None = 								0b00000000,
+	KeepWorldPosition = 				0b00000001,
+	KeepWorldRotation = 				0b00000010,
+	KeepWorldScaling = 					0b00000100,
+	KeepWorldPositionRotation = 		KeepWorldPosition | KeepWorldRotation,
+	KeepWorldPositionScaling = 			KeepWorldPosition | KeepWorldScaling,
+	KeepWorldScalingRotation = 			KeepWorldRotation | KeepWorldScaling,
+	KeepWorldAll =						KeepWorldPosition | KeepWorldRotation | KeepWorldScaling
+};
+
 class GOKNAR_API ObjectBase
 {
 public:
@@ -125,7 +134,7 @@ public:
 		return parent_;
 	}
 
-	void SetParent(ObjectBase* parent, bool resetChildTransformation = false, bool updateWorldTransformation = true);
+	void SetParent(ObjectBase* parent, SnappingRule snappingRule = SnappingRule::KeepWorldAll, bool updateWorldTransformation = true);
 
 	void AddChild(ObjectBase* child)
 	{
