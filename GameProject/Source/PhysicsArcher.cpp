@@ -36,6 +36,8 @@ PhysicsArcher::PhysicsArcher() :
 	// SetCcdMotionThreshold(1.f);
   	// SetCcdSweptSphereRadius(0.05f);
 
+	SetTag("Archer");
+
 	capsuleCollisionComponent_ = AddSubComponent<CapsuleCollisionComponent>();
 	capsuleCollisionComponent_->SetRadius(0.3f);
 	capsuleCollisionComponent_->SetHeight(1.8f);
