@@ -126,6 +126,12 @@ public:
 	template<class T>
 	T* AddSubComponent();
 
+	template<class T>
+	T* GetComponent();
+	
+	template<class T>
+	std::vector<T*> GetComponents();
+
 	void AttachToSocket(SocketComponent* socketComponent);
 	void RemoveFromSocket(SocketComponent* socketComponent);
 
@@ -185,6 +191,40 @@ T* ObjectBase::AddSubComponent()
 	AddComponent(subComponent);
 
 	return subComponent;
+}
+
+template<class T>
+T* ObjectBase::GetComponent()
+{
+	std::vector<Component *>::iterator componentIterator = components_.begin();
+	for (; componentIterator != components_.end(); ++componentIterator)
+	{
+		T* component = dynamic_cast<T*>(*componentIterator);
+		if(component != nullptr)
+		{
+			return component;
+		}
+	}
+	
+	return nullptr;
+}
+
+template<class T>
+std::vector<T*> ObjectBase::GetComponents()
+{
+	std::vector<T*> components;
+
+	std::vector<Component *>::iterator componentIterator = components_.begin();
+	for (; componentIterator != components_.end(); ++componentIterator)
+	{
+		T* component = dynamic_cast<T*>(*componentIterator);
+		if(component != nullptr)
+		{
+			components.push_back(component);
+		}
+	}
+	
+	return components;
 }
 
 #endif
