@@ -37,6 +37,26 @@ void PhysicsObject::PostInit()
     SetupPhysicsObjectInitializationData();
 }
 
+void PhysicsObject::Destroy()
+{
+    ObjectBase::Destroy();
+}
+
+void PhysicsObject::SetIsActive(bool isActive)
+{
+    ObjectBase::SetIsActive(isActive);
+
+    if(isActive)
+    {
+        bulletCollisionObject_->setActivationState(ACTIVE_TAG);
+        bulletCollisionObject_->setCollisionFlags(bulletCollisionObject_->getCollisionFlags() & !btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    }
+    else
+    {
+        bulletCollisionObject_->setActivationState(DISABLE_SIMULATION);
+        bulletCollisionObject_->setCollisionFlags(bulletCollisionObject_->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    }
+}
 
 void PhysicsObject::SetupPhysicsObjectInitializationData()
 {
@@ -67,24 +87,4 @@ void PhysicsObject::SetCcdSweptSphereRadius(float ccdSweptSphereRadius)
     }
 
     bulletCollisionObject_->setCcdSweptSphereRadius(ccdSweptSphereRadius);
-}
-
-void PhysicsObject::SetLinearSleepingThreshold(float linearSleepingThreshold)
-{
-    if (GetIsInitialized())
-    {
-        return;
-    }
-
-    physicsObjectInitializationData_->linearSleepingThreshold = linearSleepingThreshold;
-}
-
-void PhysicsObject::SetAngularSleepingThreshold(float angularSleepingThreshold)
-{
-    if (GetIsInitialized())
-    {
-        return;
-    }
-
-    physicsObjectInitializationData_->angularSleepingThreshold = angularSleepingThreshold;
 }

@@ -25,6 +25,9 @@ struct GOKNAR_API RigidBodyInitializationData : public PhysicsObjectInitializati
 	btVector3 pushImpulse{ btVector3(0.f, 0.f, 0.f) };
 	btVector3 pushImpulsePosition{ btVector3(0.f, 0.f, 0.f) };
 	btVector3 localInertia{ btVector3(0.f, 0.f, 0.f) };
+
+	float linearSleepingThreshold{ -1.f };
+	float angularSleepingThreshold{ -1.f };
 };
 
 class GOKNAR_API RigidBody : public PhysicsObject
@@ -36,6 +39,8 @@ public:
 	virtual void PreInit();
 	virtual void Init();
 	virtual void PostInit();
+
+	virtual void Destroy() override;
 
 	virtual void BeginGame() override;
 	virtual void Tick(float deltaTime) override;
@@ -76,6 +81,9 @@ public:
 
 	void ClearForces();
 	void ClearGravity();
+
+	void SetLinearSleepingThreshold(float linearSleepingThreshold);
+	void SetAngularSleepingThreshold(float angularSleepingThreshold);
 
 	btRigidBody* GetBulletRigidBody() const
 	{

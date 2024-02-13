@@ -43,7 +43,7 @@ public:
 
     }
 	
-	void Destroy();
+	virtual void Destroy();
 
 	Component* GetRootComponent() const
 	{
@@ -51,7 +51,7 @@ public:
 	}
 
 	void SetRootComponent(Component* rootComponent);
-
+	
     void SetIsTickable(bool tickable);
 	bool GetIsTickable() const
 	{

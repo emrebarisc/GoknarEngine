@@ -48,6 +48,7 @@ public:
     virtual void RemoveRigidBody(RigidBody* rigidBody);
 
     virtual void AddPhysicsObject(PhysicsObject* physicsObject);
+    virtual void RemovePhysicsObject(PhysicsObject* physicsObject);
 
     bool RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest);
     //virtual bool RaycastAll(const RaycastData& raycastData, RaycastAllResult& raycastClosest);
