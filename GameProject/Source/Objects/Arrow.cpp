@@ -57,7 +57,8 @@ void Arrow::OnOverlapBegin(PhysicsObject* otherObject, CollisionComponent* other
 
 	SetParent(otherObject);
 
-	SetIsActive(false);
+	overlappingCollisionComponent_->SetIsActive(false);
+	movementComponent_->SetIsActive(false);
 }
 
 void Arrow::OnOverlapContinue(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)
