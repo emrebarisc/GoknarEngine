@@ -140,21 +140,8 @@ void PhysicsWorld::OnOverlappingCollisionBegin(btPersistentManifold* const& moni
 
 	Vector3 worldPositionOnB = PhysicsUtils::FromBtVector3ToVector3(monifoldPointPtr->getContactPoint(0).getPositionWorldOnB());
 
-	if (!collisionComponent1->OnOverlapBegin.isNull())
-	{
-		collisionComponent1->OnOverlapBegin(collisionObject2, collisionComponent2, worldPositionOnA, hitNormal);
-	}
-
-	if (!collisionComponent2->OnOverlapBegin.isNull())
-	{
-		collisionComponent2->OnOverlapBegin(collisionObject1, collisionComponent1, worldPositionOnB, hitNormal);
-	}
-
-	//GOKNAR_CORE_INFO("On Overlapping Begin {}-{} at {} with normal {}",
-	//	collisionObject1->GetName(),
-	//	collisionObject2->GetName(),
-	//	PhysicsUtils::FromBtVector3ToVector3(manifold->getContactPoint(0).getPositionWorldOnB()).ToString(),
-	//	PhysicsUtils::FromBtVector3ToVector3(manifold->getContactPoint(0).m_normalWorldOnB).ToString());
+	collisionComponent1->OverlapBegin(collisionObject2, collisionComponent2, worldPositionOnA, hitNormal);
+	collisionComponent2->OverlapBegin(collisionObject1, collisionComponent1, worldPositionOnB, hitNormal);
 }
 
 void PhysicsWorld::OnOverlappingCollisionContinue(btManifoldPoint& monifoldPoint, const btCollisionObject* ghostObject1, const btCollisionObject* ghostObject2)
@@ -174,21 +161,8 @@ void PhysicsWorld::OnOverlappingCollisionContinue(btManifoldPoint& monifoldPoint
 
 	Vector3 worldPositionOnB = PhysicsUtils::FromBtVector3ToVector3(monifoldPoint.getPositionWorldOnB());
 
-	if (!collisionComponent1->OnOverlapContinue.isNull())
-	{
-		collisionComponent1->OnOverlapContinue(collisionObject2, collisionComponent2, worldPositionOnA, hitNormal);
-	}
-
-	if (!collisionComponent2->OnOverlapContinue.isNull())
-	{
-		collisionComponent2->OnOverlapContinue(collisionObject1, collisionComponent1, worldPositionOnB, hitNormal);
-	}
-
-	//GOKNAR_CORE_INFO("On Overlapping Continue {}-{} at {} with normal {}",
-	//	collisionObject1->GetName(),
-	//	collisionObject2->GetName(),
-	//	PhysicsUtils::FromBtVector3ToVector3(monifoldPoint.getPositionWorldOnB()).ToString(),
-	//	PhysicsUtils::FromBtVector3ToVector3(monifoldPoint.m_normalWorldOnB).ToString());
+	collisionComponent1->OverlapContinue(collisionObject2, collisionComponent2, worldPositionOnA, hitNormal);
+	collisionComponent2->OverlapContinue(collisionObject1, collisionComponent1, worldPositionOnB, hitNormal);
 }
 
 void PhysicsWorld::OnOverlappingCollisionEnd(btPersistentManifold* const& manifold)
@@ -203,19 +177,8 @@ void PhysicsWorld::OnOverlappingCollisionEnd(btPersistentManifold* const& manifo
 
 	GOKNAR_CORE_ASSERT(collisionComponent1 && collisionComponent2);
 
-	if (!collisionComponent1->OnOverlapEnd.isNull())
-	{
-		collisionComponent1->OnOverlapEnd(collisionObject2, collisionComponent2);
-	}
-
-	if (!collisionComponent2->OnOverlapEnd.isNull())
-	{
-		collisionComponent2->OnOverlapEnd(collisionObject1, collisionComponent1);
-	}
-
-	//GOKNAR_CORE_INFO("On Overlapping Ended {}-{}",
-	//	collisionObject1->GetName(),
-	//	collisionObject2->GetName());
+	collisionComponent1->OverlapEnd(collisionObject2, collisionComponent2);
+	collisionComponent2->OverlapEnd(collisionObject1, collisionComponent1);
 };
 
 void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
