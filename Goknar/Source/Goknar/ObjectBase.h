@@ -127,10 +127,10 @@ public:
 	T* AddSubComponent();
 
 	template<class T>
-	T* GetComponent();
+	T* GetFirstComponentOfType();
 	
 	template<class T>
-	std::vector<T*> GetComponents();
+	std::vector<T*> GetComponentsOfType();
 
 	void AttachToSocket(SocketComponent* socketComponent);
 	void RemoveFromSocket(SocketComponent* socketComponent);
@@ -194,7 +194,7 @@ T* ObjectBase::AddSubComponent()
 }
 
 template<class T>
-T* ObjectBase::GetComponent()
+T* ObjectBase::GetFirstComponentOfType()
 {
 	std::vector<Component *>::iterator componentIterator = components_.begin();
 	for (; componentIterator != components_.end(); ++componentIterator)
@@ -210,7 +210,7 @@ T* ObjectBase::GetComponent()
 }
 
 template<class T>
-std::vector<T*> ObjectBase::GetComponents()
+std::vector<T*> ObjectBase::GetComponentsOfType()
 {
 	std::vector<T*> components;
 
