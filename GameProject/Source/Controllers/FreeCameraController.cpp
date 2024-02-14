@@ -119,9 +119,8 @@ void FreeCameraController::OnMouseLeftClickPressed()
 		RigidBody* hitRigidBody = dynamic_cast<RigidBody*>(hitObject);
 		if (hitRigidBody)
 		{
-			hitRigidBody->SetIsActive(false);
-			hitRigidBody->GetComponent<MeshComponent>()->GetMeshInstance()->SetIsRendered(false);
-			//hitRigidBody->ApplyForce(Vector3::UpVector * 100000.f);
+			//hitRigidBody->SetIsActive(false);
+			hitRigidBody->ApplyForce(Vector3::UpVector * 100000.f);
 		}
 
 		GOKNAR_INFO("Raycast hit object: {}", hitObject->GetName());

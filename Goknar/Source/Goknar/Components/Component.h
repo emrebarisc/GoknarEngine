@@ -3,7 +3,8 @@
 
 #include "Goknar/Core.h"
 #include "Goknar/Math/Matrix.h"
-#include "Goknar/ObjectBase.h"
+
+class ObjectBase;
 
 class GOKNAR_API Component
 {
@@ -160,33 +161,7 @@ protected:
 		UpdateComponentToWorldTransformationMatrix();
 	}
 
-	inline virtual void UpdateComponentToWorldTransformationMatrix()
-	{
-		if (parent_)
-		{
-			componentToWorldTransformationMatrix_ = parent_->GetComponentToWorldTransformationMatrix();
-
-			worldPosition_ = parent_->GetWorldPosition();
-			worldRotation_ = parent_->GetWorldRotation();
-			worldScaling_ = parent_->GetWorldScaling();
-		}
-		else
-		{
-			componentToWorldTransformationMatrix_ = owner_->GetWorldTransformationMatrix();
-
-			worldPosition_ = owner_->GetWorldPosition();
-			worldRotation_ = owner_->GetWorldRotation();
-			worldScaling_ = owner_->GetWorldScaling();
-		}
-
-		worldPosition_ += GetRelativePosition();
-		worldRotation_ *= GetRelativeRotation();
-		worldScaling_ *= GetRelativeScaling();
-
-		componentToWorldTransformationMatrix_ = componentToWorldTransformationMatrix_ * GetRelativeTransformationMatrix();
-
-		UpdateChildrenComponentToWorldTransformations();
-	}
+	virtual void UpdateComponentToWorldTransformationMatrix();
 
 	inline void UpdateChildrenComponentToWorldTransformations()
 	{

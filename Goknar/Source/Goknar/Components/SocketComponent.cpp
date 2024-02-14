@@ -1,5 +1,7 @@
 #include "SocketComponent.h"
 
+#include "ObjectBase.h"
+
 void SocketComponent::Destroy()
 {
 	std::vector<Component*>::iterator childrenIterator = children_.begin();

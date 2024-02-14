@@ -104,3 +104,31 @@ void Component::SetRelativeScaling(const Vector3& scaling)
 	relativeScaling_ = scaling;
 	UpdateRelativeTransformationMatrix();
 }
+
+void Component::UpdateComponentToWorldTransformationMatrix()
+{
+	if (parent_)
+	{
+		componentToWorldTransformationMatrix_ = parent_->GetComponentToWorldTransformationMatrix();
+
+		worldPosition_ = parent_->GetWorldPosition();
+		worldRotation_ = parent_->GetWorldRotation();
+		worldScaling_ = parent_->GetWorldScaling();
+	}
+	else
+	{
+		componentToWorldTransformationMatrix_ = owner_->GetWorldTransformationMatrix();
+
+		worldPosition_ = owner_->GetWorldPosition();
+		worldRotation_ = owner_->GetWorldRotation();
+		worldScaling_ = owner_->GetWorldScaling();
+	}
+
+	worldPosition_ += GetRelativePosition();
+	worldRotation_ *= GetRelativeRotation();
+	worldScaling_ *= GetRelativeScaling();
+
+	componentToWorldTransformationMatrix_ = componentToWorldTransformationMatrix_ * GetRelativeTransformationMatrix();
+
+	UpdateChildrenComponentToWorldTransformations();
+}
