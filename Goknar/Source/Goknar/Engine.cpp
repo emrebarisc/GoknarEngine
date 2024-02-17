@@ -209,6 +209,7 @@ void Engine::Run()
 			PreInitComponents();
 			InitComponents();
 			PostInitComponents();
+			BeginGameComponents();
 		}
 
 		if (hasUninitializedObjects_)
@@ -216,6 +217,7 @@ void Engine::Run()
 			PreInitObjects();
 			InitObjects();
 			PostInitObjects();
+			BeginGameObjects();
 		}
 
 		////////////////////////////////////////////////////////////////////////////
@@ -279,6 +281,9 @@ void Engine::BeginGame()
 	InitComponents();
 	PostInitObjects();
 	PostInitComponents();
+	
+	BeginGameComponents();
+	BeginGameObjects();
 
 	if (controller_)
 	{
@@ -317,6 +322,14 @@ void Engine::PostInitObjects()
 	{
 		objectsToBeInitialized_[objectIndex]->PostInit();
 	}
+}
+
+void Engine::BeginGameObjects()
+{
+	for (int objectIndex = 0; objectIndex < objectsToBeInitializedSize_; ++objectIndex)
+	{
+		objectsToBeInitialized_[objectIndex]->BeginGame();
+	}
 	objectsToBeInitialized_.clear();
 	hasUninitializedObjects_ = false;
 	objectsToBeInitializedSize_ = 0;
@@ -346,6 +359,14 @@ void Engine::PostInitComponents()
 	for (int componentIndex = 0; componentIndex < componentsToBeInitializedSize_; ++componentIndex)
 	{
 		componentsToBeInitialized_[componentIndex]->PostInit();
+	}
+}
+
+void Engine::BeginGameComponents()
+{
+	for (int componentIndex = 0; componentIndex < componentsToBeInitializedSize_; ++componentIndex)
+	{
+		componentsToBeInitialized_[componentIndex]->BeginGame();
 	}
 	componentsToBeInitialized_.clear();
 	hasUninitializedComponents_ = false;
