@@ -641,6 +641,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 		element = element->FirstChildElement("StaticMesh");
 		while (element)
 		{
+			StaticMesh* mesh = nullptr;
 			int materialId = -1;
 			child = element->FirstChildElement("Material");
 			if (child)
@@ -658,7 +659,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				stream >> modelFilePath;
 
-				StaticMesh* mesh = engine->GetResourceManager()->GetContent<StaticMesh>(modelFilePath);
+				mesh = engine->GetResourceManager()->GetContent<StaticMesh>(modelFilePath);
 				if (mesh != nullptr)
 				{
 					if (0 <= materialId)
@@ -672,68 +673,71 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				continue;
 			}
 
-			StaticMesh* mesh = new StaticMesh();
-			if (0 <= materialId)
+			if (!mesh)
 			{
-				mesh->SetMaterial(scene->GetMaterial(materialId));
-			}
-
-			child = element->FirstChildElement("Vertices");
-			stream << child->GetText() << std::endl;
-			Vector3 vertex;
-			while (!(stream >> vertex.x).eof())
-			{
-				stream >> vertex.y >> vertex.z;
-				mesh->AddVertex(vertex);
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("Normals");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				int normalIndex = 0;
-				Vector3 normal;
-				while (!(stream >> normal.x).eof())
+				mesh = new StaticMesh();
+				if (0 <= materialId)
 				{
-					stream >> normal.y >> normal.z;
-					mesh->SetVertexNormal(normalIndex++, normal);
+					mesh->SetMaterial(scene->GetMaterial(materialId));
 				}
-			}
-			stream.clear();
 
-			child = element->FirstChildElement("Faces");
-			stream << child->GetText() << std::endl;
-			unsigned int v0;
-			while (!(stream >> v0).eof())
-			{
-				Face face = Face();
-				face.vertexIndices[0] = v0;
-				stream >> face.vertexIndices[1] >> face.vertexIndices[2];
-				mesh->AddFace(face);
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("UVs");
-			if (child)
-			{
+				child = element->FirstChildElement("Vertices");
 				stream << child->GetText() << std::endl;
-				unsigned int uvIndex = 0;
-				Vector2 UV;
-				while (!(stream >> UV.x).eof())
+				Vector3 vertex;
+				while (!(stream >> vertex.x).eof())
 				{
-					stream >> UV.y;
-					if (uvIndex < mesh->GetVertexCount())
+					stream >> vertex.y >> vertex.z;
+					mesh->AddVertex(vertex);
+				}
+				stream.clear();
+
+				child = element->FirstChildElement("Normals");
+				if (child)
+				{
+					stream << child->GetText() << std::endl;
+					int normalIndex = 0;
+					Vector3 normal;
+					while (!(stream >> normal.x).eof())
 					{
-						mesh->SetVertexUV(uvIndex++, UV);
-					}
-					else
-					{
-						break;
+						stream >> normal.y >> normal.z;
+						mesh->SetVertexNormal(normalIndex++, normal);
 					}
 				}
+				stream.clear();
+
+				child = element->FirstChildElement("Faces");
+				stream << child->GetText() << std::endl;
+				unsigned int v0;
+				while (!(stream >> v0).eof())
+				{
+					Face face = Face();
+					face.vertexIndices[0] = v0;
+					stream >> face.vertexIndices[1] >> face.vertexIndices[2];
+					mesh->AddFace(face);
+				}
+				stream.clear();
+
+				child = element->FirstChildElement("UVs");
+				if (child)
+				{
+					stream << child->GetText() << std::endl;
+					unsigned int uvIndex = 0;
+					Vector2 UV;
+					while (!(stream >> UV.x).eof())
+					{
+						stream >> UV.y;
+						if (uvIndex < mesh->GetVertexCount())
+						{
+							mesh->SetVertexUV(uvIndex++, UV);
+						}
+						else
+						{
+							break;
+						}
+					}
+				}
+				stream.clear();
 			}
-			stream.clear();
 
 			if (!loadedWithFile && 0 < mesh->GetVertexCount())
 			{
