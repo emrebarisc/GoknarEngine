@@ -93,8 +93,8 @@ void RigidBody::PhysicsTick(float deltaTime)
     const btVector3& bulletWorldPosition = bulletRigidBody_->getCenterOfMassPosition();
     const btQuaternion& bulletWorldRotation = bulletRigidBody_->getOrientation();
 
-    PhysicsObject::SetWorldPosition(Vector3{ bulletWorldPosition.x(), bulletWorldPosition.y(), bulletWorldPosition.z() }, false);
-    PhysicsObject::SetWorldRotation(Quaternion(bulletWorldRotation.x(), bulletWorldRotation.y(), bulletWorldRotation.z(), bulletWorldRotation.w()));
+    PhysicsObject::SetWorldPosition(PhysicsUtils::FromBtVector3ToVector3(bulletWorldPosition), false);
+    PhysicsObject::SetWorldRotation(PhysicsUtils::FromBtQuaternionToQuaternion(bulletWorldRotation));
 }
 
 void RigidBody::SetupRigidBodyInitializationData()
