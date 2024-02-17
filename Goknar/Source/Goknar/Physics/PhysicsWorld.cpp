@@ -94,7 +94,7 @@ void PhysicsWorld::PreInit()
 	solver_ = solver;
 
 	dynamicsWorld_ = new btDiscreteDynamicsWorld(dispatcher_, broadphase_, solver_, collisionConfiguration_);
-	dynamicsWorld_->setGravity({ gravity_.x, gravity_.y, gravity_.z });
+	dynamicsWorld_->setGravity(PhysicsUtils::FromVector3ToBtVector3(gravity_));
 
 	gContactDestroyedCallback = OverlappingDestroyedCallback;
 	//gContactProcessedCallback = OverlappingProcessedCallback;
