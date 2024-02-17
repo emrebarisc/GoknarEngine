@@ -39,12 +39,17 @@ public:
 	void PostInit() const;
 
 	void BeginGame();
+
 	void PreInitObjects();
 	void InitObjects();
 	void PostInitObjects();
+	void BeginGameObjects();
+
 	void PreInitComponents();
 	void InitComponents();
 	void PostInitComponents();
+	void BeginGameComponents();
+
 	void Run();
 	void Tick(float deltaTime);
 
