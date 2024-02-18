@@ -129,6 +129,11 @@ void RigidBody::SetupRigidBodyInitializationData()
         bulletRigidBody_->applyForce(rigidBodyInitializationData_->force, rigidBodyInitializationData_->forcePosition);
     }
 
+    if (0.01f < rigidBodyInitializationData_->torque.length2())
+    {
+        bulletRigidBody_->applyTorque(rigidBodyInitializationData_->torque);
+    }
+
     bulletRigidBody_->setLinearFactor(rigidBodyInitializationData_->linearFactor);
     bulletRigidBody_->setAngularFactor(rigidBodyInitializationData_->angularFactor);
 
@@ -248,6 +253,19 @@ void RigidBody::ApplyForce(const Vector3& force, const Vector3& position)
     }
 
     bulletRigidBody_->applyForce(btForce, btForcePosition);
+}
+
+void RigidBody::ApplyTorque(const Vector3& torque)
+{
+    btVector3 btTorque = PhysicsUtils::FromVector3ToBtVector3(torque);
+
+    if(!GetIsInitialized())
+    {
+        rigidBodyInitializationData_->torque = btTorque;
+        return;
+    }
+
+    bulletRigidBody_->applyTorque(btTorque);
 }
 
 void RigidBody::ApplyCentralImpulse(const Vector3& impulse)
