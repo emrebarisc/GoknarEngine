@@ -204,7 +204,7 @@ void Engine::Run()
 	{
 		// Initialize dynamically created object and components /////
 
-		if (hasUninitializedComponents_)
+		if(hasUninitializedComponents_)
 		{
 			PreInitComponents();
 			InitComponents();
@@ -212,7 +212,7 @@ void Engine::Run()
 			BeginGameComponents();
 		}
 
-		if (hasUninitializedObjects_)
+		if(hasUninitializedObjects_)
 		{
 			PreInitObjects();
 			InitObjects();
@@ -222,7 +222,7 @@ void Engine::Run()
 
 		////////////////////////////////////////////////////////////////////////////
 
-		if (0.25f < deltaTime_)
+		if(0.25f < deltaTime_)
 		{
 			deltaTime_ = 0.25f;
 		}
@@ -277,8 +277,10 @@ void Engine::BeginGame()
 {
 	PreInitObjects();
 	PreInitComponents();
+
 	InitObjects();
 	InitComponents();
+	
 	PostInitObjects();
 	PostInitComponents();
 	
@@ -300,6 +302,8 @@ void Engine::PreInitObjects()
 	{
 		objectsToBeInitialized_[objectIndex]->PreInit();
 	}
+
+	GOKNAR_CORE_ASSERT(objectsToBeInitialized_.size() == objectsToBeInitializedSize_, "CANNOT ADD OBJECTS BEFORE INITIALIZATION!");
 }
 
 void Engine::InitObjects()
@@ -311,6 +315,8 @@ void Engine::InitObjects()
 	{
 		objectsToBeInitialized_[objectIndex]->Init();
 	}
+
+	GOKNAR_CORE_ASSERT(objectsToBeInitialized_.size() == objectsToBeInitializedSize_, "CANNOT ADD OBJECTS BEFORE INITIALIZATION!");
 }
 
 void Engine::PostInitObjects()
@@ -322,17 +328,26 @@ void Engine::PostInitObjects()
 	{
 		objectsToBeInitialized_[objectIndex]->PostInit();
 	}
+
+	GOKNAR_CORE_ASSERT(objectsToBeInitialized_.size() == objectsToBeInitializedSize_, "CANNOT ADD OBJECTS BEFORE INITIALIZATION!");
 }
 
 void Engine::BeginGameObjects()
 {
-	for (int objectIndex = 0; objectIndex < objectsToBeInitializedSize_; ++objectIndex)
+	std::vector<ObjectBase*> objectsToBeInitialized;
+	std::swap(objectsToBeInitialized, objectsToBeInitialized_);
+	
+	int objectsToBeInitializedSizeBeforeBeginGame = objectsToBeInitializedSize_;
+	
+	decltype(objectsToBeInitialized_.begin()) objectsToBeInitializedIterator = objectsToBeInitialized_.begin();
+
+	for (int objectToBeInitializedIndex = 0; objectToBeInitializedIndex < objectsToBeInitializedSizeBeforeBeginGame; ++objectToBeInitializedIndex)
 	{
-		objectsToBeInitialized_[objectIndex]->BeginGame();
+		objectsToBeInitialized[objectToBeInitializedIndex]->BeginGame();
 	}
-	objectsToBeInitialized_.clear();
-	hasUninitializedObjects_ = false;
-	objectsToBeInitializedSize_ = 0;
+
+	objectsToBeInitializedSize_ -= objectsToBeInitializedSizeBeforeBeginGame;
+	hasUninitializedObjects_ = objectsToBeInitializedSize_ != 0;
 }
 
 void Engine::PreInitComponents()
@@ -344,6 +359,8 @@ void Engine::PreInitComponents()
 	{
 		componentsToBeInitialized_[componentIndex]->PreInit();
 	}
+
+	GOKNAR_CORE_ASSERT(componentsToBeInitialized_.size() == componentsToBeInitializedSize_, "CANNOT ADD COMPONENTS BEFORE INITIALIZATION!");
 }
 
 void Engine::InitComponents()
@@ -352,6 +369,8 @@ void Engine::InitComponents()
 	{
 		componentsToBeInitialized_[componentIndex]->Init();
 	}
+
+	GOKNAR_CORE_ASSERT(componentsToBeInitialized_.size() == componentsToBeInitializedSize_, "CANNOT ADD COMPONENTS BEFORE INITIALIZATION!");
 }
 
 void Engine::PostInitComponents()
@@ -360,17 +379,26 @@ void Engine::PostInitComponents()
 	{
 		componentsToBeInitialized_[componentIndex]->PostInit();
 	}
+
+	GOKNAR_CORE_ASSERT(componentsToBeInitialized_.size() == componentsToBeInitializedSize_, "CANNOT ADD COMPONENTS BEFORE INITIALIZATION!");
 }
 
 void Engine::BeginGameComponents()
-{
-	for (int componentIndex = 0; componentIndex < componentsToBeInitializedSize_; ++componentIndex)
+{	
+	std::vector<Component*> componentsToBeInitialized;
+	std::swap(componentsToBeInitialized, componentsToBeInitialized_);
+	
+	int componentsToBeInitializedSizeBeforeBeginGame = componentsToBeInitializedSize_;
+	
+	decltype(componentsToBeInitialized_.begin()) componentsToBeInitializedIterator = componentsToBeInitialized_.begin();
+
+	for (int objectToBeInitializedIndex = 0; objectToBeInitializedIndex < componentsToBeInitializedSizeBeforeBeginGame; ++objectToBeInitializedIndex)
 	{
-		componentsToBeInitialized_[componentIndex]->BeginGame();
+		componentsToBeInitialized[objectToBeInitializedIndex]->BeginGame();
 	}
-	componentsToBeInitialized_.clear();
-	hasUninitializedComponents_ = false;
-	componentsToBeInitializedSize_ = 0;
+
+	componentsToBeInitializedSize_ -= componentsToBeInitializedSizeBeforeBeginGame;
+	hasUninitializedComponents_ = componentsToBeInitializedSize_ != 0;
 }
 
 void Engine::Tick(float deltaTime)

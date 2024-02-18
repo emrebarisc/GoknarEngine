@@ -9,7 +9,7 @@
 
 #include "btBulletDynamicsCommon.h"
 
-PhysicsObject::PhysicsObject()
+PhysicsObject::PhysicsObject() : ObjectBase()
 {
     physicsObjectInitializationData_ = new PhysicsObjectInitializationData();
 }
