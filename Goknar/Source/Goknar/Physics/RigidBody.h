@@ -24,6 +24,7 @@ struct GOKNAR_API RigidBodyInitializationData : public PhysicsObjectInitializati
 	btVector3 torqueImpulse{ btVector3(0.f, 0.f, 0.f) };
 	btVector3 pushImpulse{ btVector3(0.f, 0.f, 0.f) };
 	btVector3 pushImpulsePosition{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 torque{ btVector3(0.f, 0.f, 0.f) };
 	btVector3 localInertia{ btVector3(0.f, 0.f, 0.f) };
 
 	float linearSleepingThreshold{ -1.f };
@@ -78,6 +79,7 @@ public:
 	void ApplyCentralImpulse(const Vector3& impulse);
 	void ApplyTorqueImpulse(const Vector3& impulse);
 	void ApplyPushImpulse(const Vector3& impulse, const Vector3& position);
+	void ApplyTorque(const Vector3& torque);
 
 	void ClearForces();
 	void ClearGravity();
