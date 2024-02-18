@@ -97,7 +97,7 @@ void PhysicsWorld::PreInit()
 	dynamicsWorld_->setGravity(PhysicsUtils::FromVector3ToBtVector3(gravity_));
 
 	gContactDestroyedCallback = OverlappingDestroyedCallback;
-	//gContactProcessedCallback = OverlappingProcessedCallback;
+	gContactProcessedCallback = OverlappingProcessedCallback;
 	gContactStartedCallback = OverlappingStartedCallback;
 	gContactEndedCallback = OverlappingEndedCallback;
 }
