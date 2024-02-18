@@ -21,7 +21,7 @@ struct GOKNAR_API RaycastData
     Vector3 from;
     Vector3 to;
     CollisionGroup collisionGroup{ CollisionGroup::All };
-    CollisionMask collisionMask{ CollisionMask::BlockAll };
+    CollisionMask collisionMask{ CollisionMask::BlockAndOverlapAll };
 };
 
 struct GOKNAR_API RaycastClosestResult
