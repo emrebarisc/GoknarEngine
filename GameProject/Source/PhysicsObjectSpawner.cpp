@@ -3,7 +3,7 @@
 #include <random>
 
 #include "Archer.h"
-#include "PhysicsArcher.h"
+#include "ArcherCharacter.h"
 #include "Objects/PhysicsBox.h"
 #include "Objects/PhysicsSphere.h"
 #include "Objects/Monkey.h"
@@ -15,7 +15,7 @@
 
 PhysicsObjectSpawner::PhysicsObjectSpawner()
 {
-    SetIsTickable(true);
+    SetIsTickable(false);
 
     //groundPhysicsBox_ = new PhysicsBox();
     //groundPhysicsBox_->SetWorldPosition(initialPosition_);
@@ -31,6 +31,8 @@ void PhysicsObjectSpawner::BeginGame()
 {
     //engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, [this]() { CreatePhysicsBox(); });
     engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, [this]() { ThrowCannonBall(); });
+
+    SpawnStaticBoxes();
 }
 
 void PhysicsObjectSpawner::Tick(float deltaTime)
@@ -108,4 +110,19 @@ void PhysicsObjectSpawner::ThrowCannonBall()
     cannonBall->SetLinearVelocity(50.f * (archer->GetForwardVector() * 0.85f + archer->GetUpVector() * 0.15f));
 
     //cannonBall->ApplyForce(1000000.f * (archer->GetForwardVector() * 0.9f + archer->GetUpVector() * 0.1f));
+}
+
+void PhysicsObjectSpawner::SpawnStaticBoxes()
+{
+    constexpr float xOffset = 2.25f;
+    constexpr float yOffset = 2.25f;
+    for(int y = -20; y < 0; ++y)
+    {
+        for(int x = -20; x < 0; ++x)
+        {
+            PhysicsBox* physicsBox = new PhysicsBox();
+            physicsBox->SetWorldPosition(initialPosition_ + Vector3{x + x * xOffset, y + y * yOffset, 10.f});
+            physicsBox->SetLinearFactor(Vector3::ZeroVector);
+        }
+    }
 }

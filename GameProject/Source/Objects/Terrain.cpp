@@ -21,6 +21,7 @@ Terrain::Terrain() : RigidBody()
 	staticMeshComponent_->SetParent(collisionComponent_);
 
 	SetWorldPosition(Vector3{0.f, 0.f, -10.f});
+	SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{0.f, 0.f, 90.f}));
 
 	SetCollisionGroup(CollisionGroup::WorldStaticBlock);
 	SetCollisionMask(CollisionMask::BlockAll);

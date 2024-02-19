@@ -1,7 +1,7 @@
 #include "Goknar/Application.h"
 
 class Archer;
-class PhysicsArcher;
+class ArcherCharacter;
 class Dancer;
 class LightController;
 class Sun;
@@ -28,7 +28,7 @@ public:
 		return archer_;
 	}
 
-	PhysicsArcher* GetPhysicsArcher() const
+	ArcherCharacter* GetPhysicsArcher() const
 	{
 		return physicsArcher_;
 	}
@@ -40,7 +40,7 @@ public:
 
 private:
 	Archer* archer_{ nullptr };
-	PhysicsArcher* physicsArcher_{ nullptr };
+	ArcherCharacter* physicsArcher_{ nullptr };
 	Dancer* dancer_{ nullptr };
 	LightController* lightController_{ nullptr };
 	Sun* sun_{ nullptr };

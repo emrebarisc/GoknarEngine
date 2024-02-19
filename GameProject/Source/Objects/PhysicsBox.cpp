@@ -28,5 +28,5 @@ PhysicsBox::PhysicsBox() : RigidBody()
 
 void PhysicsBox::BeginGame()
 {
-	ObjectBase::BeginGame();
+	RigidBody::BeginGame();
 }

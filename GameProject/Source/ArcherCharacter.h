@@ -1,22 +1,19 @@
 #pragma once
 
-#include "Goknar/Physics/RigidBody.h"
+#include "Goknar/Physics/Character.h"
 
 class Camera;
 class SkeletalMesh;
-class SkeletalMeshComponent;
 
-class PhysicsArcherGameController;
-class PhysicsArcherMovementComponent;
+class ArcherCharacterController;
 class Arrow;
 class Bow;
-class CapsuleCollisionComponent;
-class SosketComponent;
+class SocketComponent;
 
-class PhysicsArcher : public RigidBody
+class ArcherCharacter : public Character
 {
 public:
-	PhysicsArcher();
+	ArcherCharacter();
 	virtual void BeginGame() override;
     virtual void Tick(float deltaTime) override;
 
@@ -30,12 +27,7 @@ public:
 		return skeletalMeshComponent_;
 	}
 
-	PhysicsArcherMovementComponent* GetMovementComponent() const
-	{
-		return movementComponent_;
-	}
-
-	PhysicsArcherGameController* GetController() const
+	ArcherCharacterController* GetController() const
 	{
 		return controller_;
 	}
@@ -95,10 +87,7 @@ private:
 
 	Camera* thirdPersonCamera_{ nullptr };
 
-	CapsuleCollisionComponent* capsuleCollisionComponent_;
-
-	PhysicsArcherGameController* controller_{ nullptr };
-	PhysicsArcherMovementComponent* movementComponent_{ nullptr };
+	ArcherCharacterController* controller_{ nullptr };
 	Arrow* loadedArrow_{ nullptr };
 	Bow* bow_{ nullptr };
 	SocketComponent* leftHandSocket_{ nullptr };
