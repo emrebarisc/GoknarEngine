@@ -12,6 +12,7 @@ struct GOKNAR_API PhysicsObjectInitializationData
 {
 	float ccdMotionThreshold{ 0.f };
 	float ccdSweptSphereRadius{ 0.f };
+	int collisionFlag{ -1 };
 };
 
 class GOKNAR_API PhysicsObject : public ObjectBase
@@ -60,6 +61,9 @@ public:
 		collisionMask_ = collisionMask;
 	}
 
+	void SetCollisionFlag(CollisionFlag collisionFlag);
+	CollisionFlag GetCollisionFlag() const;
+	
 	const std::string& GetTag() const
 	{
 		return tag_;
