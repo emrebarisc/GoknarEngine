@@ -11,7 +11,9 @@
 
 class btGhostObject;
 
+class Character;
 class CollisionComponent;
+class CharacterMovementComponent;
 class OverlappingCollisionPairCallback;
 class PhysicsObject;
 class RigidBody;
@@ -49,6 +51,9 @@ public:
 
     virtual void AddPhysicsObject(PhysicsObject* physicsObject);
     virtual void RemovePhysicsObject(PhysicsObject* physicsObject);
+    
+    virtual void AddCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent);
+    virtual void RemoveCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent);
 
     bool RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest);
     //virtual bool RaycastAll(const RaycastData& raycastData, RaycastAllResult& raycastClosest);
@@ -66,9 +71,18 @@ public:
     void OnOverlappingCollisionBegin(btPersistentManifold* const& manifold);
     void OnOverlappingCollisionContinue(btManifoldPoint& monifoldPoint, const btCollisionObject* ghostObject1, const btCollisionObject* ghostObject2);
     void OnOverlappingCollisionEnd(btPersistentManifold* const& manifold);
+
+    btDiscreteDynamicsWorld* GetBulletPhysicsWorld() const
+    {
+        return dynamicsWorld_;
+    }
+
 protected:
-    typedef std::vector<PhysicsObject*> PhysicsObjects;
-    PhysicsObjects physicsObjects_;
+    typedef std::vector<PhysicsObject*> PhysicsObjectVector;
+    PhysicsObjectVector physicsObjects_;
+    
+    typedef std::vector<CharacterMovementComponent*> CharacterMovementComponentVector;
+    CharacterMovementComponentVector characterMovementComponents_;
 
     typedef std::unordered_map<btCollisionObject const*, PhysicsObject*> PhysicsObjectMap;
     PhysicsObjectMap physicsObjectMap_;

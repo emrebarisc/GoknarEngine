@@ -8,8 +8,10 @@
 #include "PhysicsUtils.h"
 #include "PhysicsWorld.h"
 #include "RigidBody.h"
-#include "Components/OverlappingTypes.h"
+#include "Character.h"
+#include "Components/CharacterMovementComponent.h"
 #include "Components/CollisionComponent.h"
+#include "Components/OverlappingTypes.h"
 
 PhysicsWorld::PhysicsWorld()
 {
@@ -117,6 +119,12 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
 	for(PhysicsObject* physicsObject : physicsObjects_)
 	{
 		physicsObject->PhysicsTick(deltaTime);
+	}
+
+	for(CharacterMovementComponent* characterMovementComponent : characterMovementComponents_)
+	{
+		characterMovementComponent->PreStep(dynamicsWorld_);
+		characterMovementComponent->PlayerStep(dynamicsWorld_, deltaTime);
 	}
 }
 
@@ -246,6 +254,26 @@ void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)
 	}
 
 	dynamicsWorld_->removeCollisionObject(bulletCollisionObject);
+}
+
+void PhysicsWorld::AddCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent)
+{
+	characterMovementComponents_.push_back(characterMovementComponent);
+}
+
+void PhysicsWorld::RemoveCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent)
+{
+	decltype(characterMovementComponents_.begin()) characterIterator = characterMovementComponents_.begin();
+	while(characterIterator != characterMovementComponents_.end())
+	{
+		if(*characterIterator == characterMovementComponent)
+		{
+			characterMovementComponents_.erase(characterIterator);
+			break;
+		}
+
+		++characterIterator;
+	}
 }
 
 bool PhysicsWorld::RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest)
