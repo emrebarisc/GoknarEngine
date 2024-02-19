@@ -36,6 +36,7 @@ ArcherCharacter::ArcherCharacter() : Character()
 
 	SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
 	SetCollisionMask(CollisionMask::BlockAndOverlapAll);
+	SetCollisionFlag(CollisionFlag::KINEMATIC_OBJECT);
 
 	characterCapsuleCollisionComponent_->SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
 	characterCapsuleCollisionComponent_->SetCollisionMask(CollisionMask::BlockAndOverlapAll);

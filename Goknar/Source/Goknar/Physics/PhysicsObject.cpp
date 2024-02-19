@@ -62,6 +62,11 @@ void PhysicsObject::SetupPhysicsObjectInitializationData()
 {
     bulletCollisionObject_->setCcdMotionThreshold(physicsObjectInitializationData_->ccdMotionThreshold);
     bulletCollisionObject_->setCcdSweptSphereRadius(physicsObjectInitializationData_->ccdSweptSphereRadius);
+    
+    if(0 <= physicsObjectInitializationData_->collisionFlag)
+    {
+        bulletCollisionObject_->setCollisionFlags(physicsObjectInitializationData_->collisionFlag);
+    }
 
     delete physicsObjectInitializationData_;
     physicsObjectInitializationData_ = nullptr;
@@ -87,4 +92,25 @@ void PhysicsObject::SetCcdSweptSphereRadius(float ccdSweptSphereRadius)
     }
 
     bulletCollisionObject_->setCcdSweptSphereRadius(ccdSweptSphereRadius);
+}
+
+void PhysicsObject::SetCollisionFlag(CollisionFlag collisionFlag)
+{
+    if (!GetIsInitialized())
+    {
+        physicsObjectInitializationData_->collisionFlag = (int)collisionFlag;
+        return;
+    }
+
+    bulletCollisionObject_->setCollisionFlags((int)collisionFlag);
+}
+
+CollisionFlag PhysicsObject::GetCollisionFlag() const
+{
+    if (!GetIsInitialized())
+    {
+        return CollisionFlag::NONE;
+    }
+
+    return (CollisionFlag)bulletCollisionObject_->getCollisionFlags();
 }
