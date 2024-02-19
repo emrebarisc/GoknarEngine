@@ -5,14 +5,14 @@
 
 class Camera;
 
-class PhysicsArcher;
+class ArcherCharacter;
 class PhysicsArcherMovementComponent;
 
-class PhysicsArcherGameController : public Controller
+class ArcherCharacterController : public Controller
 {
 public:
-	PhysicsArcherGameController(PhysicsArcher* archer_);
-	~PhysicsArcherGameController()
+	ArcherCharacterController(ArcherCharacter* archer_);
+	~ArcherCharacterController()
 	{
 
 	}
@@ -21,7 +21,7 @@ public:
 
 	void SetupInputs() override;
 
-	void SetPhysicsArcher(PhysicsArcher* a)
+	void SetPhysicsArcher(ArcherCharacter* a)
 	{
 		archer_ = a;
 	}
@@ -56,7 +56,7 @@ private:
 
 	Camera* thirdPersonCamera_{ nullptr };
 
-	PhysicsArcher* archer_{ nullptr };
+	ArcherCharacter* archer_{ nullptr };
 	PhysicsArcherMovementComponent* archerMovementComponent_{ nullptr };
 
 	bool isDebugging_{ false };

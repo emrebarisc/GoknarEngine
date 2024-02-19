@@ -1,4 +1,4 @@
-#include "PhysicsArcher.h"
+#include "ArcherCharacter.h"
 
 #include "IO/ModelLoader.h"
 
@@ -18,46 +18,38 @@
 #include "Goknar/Model/SkeletalMeshInstance.h"
 #include "Goknar/Physics/Components/CapsuleCollisionComponent.h"
 
-#include "PhysicsArcherGameController.h"
-#include "Components/PhysicsArcherMovementComponent.h"
+#include "ArcherCharacterController.h"
 #include "Components/ProjectileMovementComponent.h"
 #include "Objects/Arrow.h"
 #include "Objects/AxisObject.h"
 #include "Objects/Bow.h"
 
-PhysicsArcher::PhysicsArcher() : 
-	RigidBody()
+ArcherCharacter::ArcherCharacter() : Character()
 {
 	SetIsTickable(true);
 
-	SetAngularFactor(Vector3(0.f, 0.f, 0.f));
-	SetMass(60.f);
-	SetLinearSleepingThreshold(0.f);
-	// SetCcdMotionThreshold(1.f);
-  	// SetCcdSweptSphereRadius(0.05f);
-
 	SetTag("Archer");
 
-	capsuleCollisionComponent_ = AddSubComponent<CapsuleCollisionComponent>();
-	capsuleCollisionComponent_->SetRadius(0.3f);
-	capsuleCollisionComponent_->SetHeight(1.8f);
-	capsuleCollisionComponent_->SetRelativePosition(Vector3{0.f, 0.f, -0.3f});
-	SetRootComponent(capsuleCollisionComponent_);
+	characterCapsuleCollisionComponent_->SetRadius(0.3f);
+	characterCapsuleCollisionComponent_->SetHeight(1.8f);
+	characterCapsuleCollisionComponent_->SetRelativePosition(Vector3{0.f, 0.f, -0.3f});
 
-	SetCollisionGroup(CollisionGroup::WorldDynamicBlock);
-	SetCollisionMask(CollisionMask::BlockAll);
+	SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
+	SetCollisionMask(CollisionMask::BlockAndOverlapAll);
+
+	characterCapsuleCollisionComponent_->SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
+	characterCapsuleCollisionComponent_->SetCollisionMask(CollisionMask::BlockAndOverlapAll);
 
 	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Akai.fbx");
 	skeletalMesh_->GetMaterial()->SetSpecularReflectance(Vector3{0.f});
 
-	skeletalMeshComponent_ = AddSubComponent<SkeletalMeshComponent>();
-	skeletalMeshComponent_->SetMesh(skeletalMesh_);
-	skeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
-	skeletalMeshComponent_->SetRelativeScaling(Vector3{ 0.0125f });
-	skeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
-	skeletalMeshComponent_->SetParent(capsuleCollisionComponent_);
+	characterSkeletalMeshComponent_->SetMesh(skeletalMesh_);
+	characterSkeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
+	characterSkeletalMeshComponent_->SetRelativeScaling(Vector3{ 0.0125f });
+	characterSkeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
+	characterSkeletalMeshComponent_->SetParent(characterCapsuleCollisionComponent_);
 
-	SkeletalMeshInstance* skeletalMeshInstance = skeletalMeshComponent_->GetMeshInstance();
+	SkeletalMeshInstance* skeletalMeshInstance = characterSkeletalMeshComponent_->GetMeshInstance();
 	leftHandSocket_ = skeletalMeshInstance->AddSocketToBone("mixamorig:LeftHand");
 	leftHandSocket_->SetRelativePosition(Vector3{ 0.f, 10.f, 1.5f });
 	leftHandSocket_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 90.f, 180.f }));
@@ -77,33 +69,28 @@ PhysicsArcher::PhysicsArcher() :
 	bow_->SetIsActive(false);
 
 	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3{ 1.f, 0.f, 0.f }, Vector3{ 0.f, 0.f, 1.f }.GetNormalized());
-	//thirdPersonCamera_->SetImageWidth(1920);
-	//thirdPersonCamera_->SetImageHeight(1080);
-	thirdPersonCamera_->SetImageWidth(3200);
-	thirdPersonCamera_->SetImageHeight(1800);
+	thirdPersonCamera_->SetImageWidth(1920);
+	thirdPersonCamera_->SetImageHeight(1000);
 	thirdPersonCamera_->SetNearDistance(1.f);
 	thirdPersonCamera_->SetFarDistance(1000.f);
 	thirdPersonCamera_->SetFOV(45.f);
 
-	movementComponent_ = AddSubComponent<PhysicsArcherMovementComponent>();
-	movementComponent_->SetOwnerPhysicsArcher(this);
-
-	controller_ = new PhysicsArcherGameController(this);
+	controller_ = new ArcherCharacterController(this);
 }
 
-void PhysicsArcher::BeginGame()
+void ArcherCharacter::BeginGame()
 {
-	GOKNAR_INFO("PhysicsArcher::BeginPlay()");
+	GOKNAR_INFO("ArcherCharacter::BeginPlay()");
 
 	EquipBow(true);
 }
 
-void PhysicsArcher::Tick(float deltaTime)
+void ArcherCharacter::Tick(float deltaTime)
 {
 	thirdPersonCamera_->SetPosition(GetWorldPosition() + Vector3(0.f, 0.f, 2.f) + thirdPersonCamera_->GetForwardVector() * -4.f * thirdPersonCameraDistance_);
 }
 
-void PhysicsArcher::Idle()
+void ArcherCharacter::Idle()
 {
 	if (isAnimationBusy_ || canShoot_)
 	{
@@ -112,37 +99,37 @@ void PhysicsArcher::Idle()
 
 	if (isBowEquiped_)
 	{
-		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingIdle");
+		characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingIdle");
 	}
 	else
 	{
-		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Idle");
+		characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Idle");
 	}
 }
 
-void PhysicsArcher::RunForward()
+void ArcherCharacter::RunForward()
 {
 	if (isAnimationBusy_ || canShoot_)
 	{
 		return;
 	}
 
-	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingRunForward");
+	characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingRunForward");
 }
 
-void PhysicsArcher::RunBackward()
+void ArcherCharacter::RunBackward()
 {
 }
 
-void PhysicsArcher::RunRight()
+void ArcherCharacter::RunRight()
 {
 }
 
-void PhysicsArcher::RunLeft()
+void ArcherCharacter::RunLeft()
 {
 }
 
-void PhysicsArcher::HandleDropBowInput()
+void ArcherCharacter::HandleDropBowInput()
 {
 	if (bow_ && !isAiming_)
 	{
@@ -155,12 +142,12 @@ void PhysicsArcher::HandleDropBowInput()
 	}
 }
 
-void PhysicsArcher::HandleEquipBowInput()
+void ArcherCharacter::HandleEquipBowInput()
 {
 	EquipBow(!isBowEquiped_);
 }
 
-void PhysicsArcher::HandleDrawBowInput()
+void ArcherCharacter::HandleDrawBowInput()
 {
 	if (bow_ && isBowEquiped_ && !isAiming_)
 	{
@@ -168,19 +155,19 @@ void PhysicsArcher::HandleDrawBowInput()
 		isAnimationBusy_ = true;
 
 		KeyframeData keyframeData;
-		keyframeData.AddCallbackToKeyframe(9, Delegate<void()>::create<PhysicsArcher, &PhysicsArcher::OnCreateArrow>(this));
-		keyframeData.AddCallbackToKeyframe(18, Delegate<void()>::create<PhysicsArcher, &PhysicsArcher::OnAttachBowStringToHand>(this));
+		keyframeData.AddCallbackToKeyframe(9, Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnCreateArrow>(this));
+		keyframeData.AddCallbackToKeyframe(18, Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnAttachBowStringToHand>(this));
 
-		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDrawArrow.001",
+		characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDrawArrow.001",
 			PlayLoopData
 			{
 				true,
-				Delegate<void()>::create<PhysicsArcher, &PhysicsArcher::OnAimingIdle>(this)
+				Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnAimingIdle>(this)
 			}, keyframeData);
 	}
 }
 
-void PhysicsArcher::HandleLooseBowInput()
+void ArcherCharacter::HandleLooseBowInput()
 {
 	if (bow_ && isBowEquiped_ && isAiming_)
 	{
@@ -191,12 +178,12 @@ void PhysicsArcher::HandleLooseBowInput()
 			isAnimationBusy_ = true;
 
 			KeyframeData keyframeData;
-			keyframeData.AddCallbackToKeyframe(3, Delegate<void()>::create<PhysicsArcher, &PhysicsArcher::OnShoot>(this));
+			keyframeData.AddCallbackToKeyframe(3, Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnShoot>(this));
 
-			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimRecoil",
+			characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimRecoil",
 				PlayLoopData{
 					true,
-					Delegate<void()>::create<PhysicsArcher, &PhysicsArcher::OnFinishedLoosing>(this)
+					Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnFinishedLoosing>(this)
 				}, keyframeData);
 
 			canShoot_ = false;
@@ -220,7 +207,7 @@ void PhysicsArcher::HandleLooseBowInput()
 	}
 }
 
-void PhysicsArcher::EquipBow(bool equip)
+void ArcherCharacter::EquipBow(bool equip)
 {
 	if (bow_)
 	{
@@ -229,12 +216,12 @@ void PhysicsArcher::EquipBow(bool equip)
 			isAnimationBusy_ = true;
 			
 			KeyframeData keyframeData;
-			keyframeData.AddCallbackToKeyframe(8, Delegate<void()>::create<PhysicsArcher, &PhysicsArcher::OnBowIsHandled>(this));
+			keyframeData.AddCallbackToKeyframe(8, Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnBowIsHandled>(this));
 
-			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingEquipBow",
+			characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingEquipBow",
 				{
 					false,
-					Delegate<void()>::create<PhysicsArcher, &PhysicsArcher::OnFinishedEquipingBow>(this)
+					Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnFinishedEquipingBow>(this)
 				}, keyframeData);
 		}
 		else
@@ -242,24 +229,24 @@ void PhysicsArcher::EquipBow(bool equip)
 			isAnimationBusy_ = true;
 
 			KeyframeData keyframeData;
-			keyframeData.AddCallbackToKeyframe(14, Delegate<void()>::create<PhysicsArcher, &PhysicsArcher::OnBowIsUnhandled>(this));
+			keyframeData.AddCallbackToKeyframe(14, Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnBowIsUnhandled>(this));
 
-			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDisarmBow",
+			characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDisarmBow",
 				PlayLoopData{
 					true,
-					Delegate<void()>::create<PhysicsArcher, &PhysicsArcher::OnBowIsDisarmed>(this)
+					Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnBowIsDisarmed>(this)
 				}, keyframeData);
 		}
 
 	}
 }
 
-void PhysicsArcher::EquipTorch(bool equip)
+void ArcherCharacter::EquipTorch(bool equip)
 {
 
 }
 
-void PhysicsArcher::Shoot()
+void ArcherCharacter::Shoot()
 {
 	if (loadedArrow_)
 	{
@@ -269,58 +256,58 @@ void PhysicsArcher::Shoot()
 	}
 }
 
-void PhysicsArcher::OnCreateArrow()
+void ArcherCharacter::OnCreateArrow()
 {
 	loadedArrow_ = new Arrow();
 	loadedArrow_->AttachToSocket(rightHandSocket_);
 }
 
-void PhysicsArcher::OnAttachBowStringToHand()
+void ArcherCharacter::OnAttachBowStringToHand()
 {
 	bow_->GetSkeletalMesh()->GetMeshInstance()->AttachBoneToMatrixPointer("BowString", &bowStringSocket_->GetComponentToWorldTransformationMatrix());
 }
 
-void PhysicsArcher::OnAimingIdle()
+void ArcherCharacter::OnAimingIdle()
 {
 	if (isAiming_)
 	{
 		isAnimationBusy_ = false;
 		canShoot_ = true;
-		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimIdle");
+		characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimIdle");
 	}
 }
 
-void PhysicsArcher::OnShoot()
+void ArcherCharacter::OnShoot()
 {
 	Shoot();
 	bow_->GetSkeletalMesh()->GetMeshInstance()->AttachBoneToMatrixPointer("BowString", nullptr);
 }
 
-void PhysicsArcher::OnFinishedLoosing()
+void ArcherCharacter::OnFinishedLoosing()
 {
 	isAnimationBusy_ = false;
 	isLoosing_ = false;
 	Idle();
 }
 
-void PhysicsArcher::OnBowIsHandled()
+void ArcherCharacter::OnBowIsHandled()
 {
 	bow_->SetIsActive(true);
 }
 
-void PhysicsArcher::OnFinishedEquipingBow()
+void ArcherCharacter::OnFinishedEquipingBow()
 {
 	isBowEquiped_ = true;
 	isAnimationBusy_ = false;
 	Idle();
 }
 
-void PhysicsArcher::OnBowIsUnhandled()
+void ArcherCharacter::OnBowIsUnhandled()
 {
 	bow_->SetIsActive(false);
 }
 
-void PhysicsArcher::OnBowIsDisarmed()
+void ArcherCharacter::OnBowIsDisarmed()
 {
 	isAnimationBusy_ = false;
 	isBowEquiped_ = false;

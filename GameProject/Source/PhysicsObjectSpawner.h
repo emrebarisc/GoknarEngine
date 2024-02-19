@@ -21,6 +21,7 @@ public:
     void CreatePhysicsSphere();
     void CreateMonkey();
     void ThrowCannonBall();
+    void SpawnStaticBoxes();
 
 protected:
 

@@ -13,7 +13,7 @@
 #include "Goknar/Managers/WindowManager.h"
 
 #include "Archer.h"
-#include "PhysicsArcher.h"
+#include "ArcherCharacter.h"
 #include "Dancer.h"
 #include "LightController.h"
 #include "Sun.h"
@@ -42,8 +42,8 @@ Game::Game() : Application()
 	lastFrameTimePoint = currentTimePoint;
 
 	// archer_ = new Archer();
-	physicsArcher_ = new PhysicsArcher();
-	physicsArcher_->SetWorldPosition(Vector3{-20.f, 0.f, 5.f});
+	physicsArcher_ = new ArcherCharacter();
+	physicsArcher_->SetWorldPosition(Vector3{-20.f, -10.f, 30.f});
 	// dancer_ = new Dancer();
 	// lightController_ = new LightController();
 	sun_ = new Sun();

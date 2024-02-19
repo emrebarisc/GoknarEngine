@@ -119,7 +119,8 @@ void FreeCameraController::OnMouseLeftClickPressed()
 		if (hitRigidBody)
 		{
 			//hitRigidBody->SetIsActive(false);
-			hitRigidBody->ApplyForce(Vector3::UpVector * 100000.f);
+			// hitRigidBody->ApplyForce(Vector3::UpVector * 100000.f);
+			hitRigidBody->ApplyTorque(Vector3::LeftVector * 1000000000.f);
 		}
 
 		GOKNAR_INFO("Raycast hit object: {}", hitObject->GetName());
