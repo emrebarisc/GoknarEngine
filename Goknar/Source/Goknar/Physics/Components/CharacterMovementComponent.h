@@ -45,6 +45,8 @@ public:
 	virtual void Reset(PhysicsWorld* physicsWorld);
 	virtual void Warp(const Vector3& origin);
 
+	virtual void Update(PhysicsWorld* physicsWorld, float dt);
+	virtual void Update(btCollisionWorld* bulletCollisionWorld, float dt);
 	virtual void PreStep(PhysicsWorld* physicsWorld);
 	virtual void PreStep(btCollisionWorld* bulletCollisionWorld);
 	virtual void PlayerStep(PhysicsWorld* physicsWorld, float dt);
@@ -82,9 +84,14 @@ public:
 		return ownerOverlappingPhysicsObject_;
 	}
 
-protected:
+	btKinematicCharacterController* GetBulletKinematicCharacterController() const
+	{
+		return bulletKinematicCharacterController_;
+	}
 
 	virtual void UpdateOwnerTransformation();
+
+protected:
 
 private:
 	btKinematicCharacterController* bulletKinematicCharacterController_;

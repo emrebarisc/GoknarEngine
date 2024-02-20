@@ -2,6 +2,7 @@
 
 #include "btBulletDynamicsCommon.h"
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
+#include "BulletDynamics/Character/btKinematicCharacterController.h"
 
 #include "Engine.h"
 #include "Log.h"
@@ -90,6 +91,7 @@ void PhysicsWorld::PreInit()
 	//dispatcher_->setNearCallback(&NearCallback);
 
 	broadphase_ = new btDbvtBroadphase();
+	broadphase_->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
 
 	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
 	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
@@ -123,8 +125,9 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
 
 	for(CharacterMovementComponent* characterMovementComponent : characterMovementComponents_)
 	{
-		characterMovementComponent->PreStep(dynamicsWorld_);
-		characterMovementComponent->PlayerStep(dynamicsWorld_, deltaTime);
+		// characterMovementComponent->PreStep(dynamicsWorld_);
+		// characterMovementComponent->PlayerStep(dynamicsWorld_, deltaTime);
+		characterMovementComponent->UpdateOwnerTransformation();
 	}
 }
 
@@ -259,6 +262,7 @@ void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)
 void PhysicsWorld::AddCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent)
 {
 	characterMovementComponents_.push_back(characterMovementComponent);
+	dynamicsWorld_->addAction(characterMovementComponent->GetBulletKinematicCharacterController());
 }
 
 void PhysicsWorld::RemoveCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent)
@@ -274,6 +278,8 @@ void PhysicsWorld::RemoveCharacterMovementComponent(CharacterMovementComponent* 
 
 		++characterIterator;
 	}
+
+	dynamicsWorld_->removeAction(characterMovementComponent->GetBulletKinematicCharacterController());
 }
 
 bool PhysicsWorld::RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest)
