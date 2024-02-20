@@ -10,9 +10,9 @@ class btCollisionObject;
 
 class PhysicsObject;
 
-using OverlapBeginAlias = void(PhysicsObject*, class CollisionComponent*, const Vector3&, const Vector3&);
-using OverlapContinueAlias = void(PhysicsObject*, class CollisionComponent*, const Vector3&, const Vector3&);
-using OverlapEndAlias = void(PhysicsObject*, class CollisionComponent*);
+using OverlapBeginAlias = void(PhysicsObject* /*otherObject*/, class CollisionComponent* /*otherComponent*/, const Vector3& /*hitPosition*/, const Vector3& /*hitNormal*/);
+using OverlapContinueAlias = void(PhysicsObject* /*otherObject*/, class CollisionComponent* /*otherComponent*/, const Vector3& /*hitPosition*/, const Vector3& /*hitNormal*/);
+using OverlapEndAlias = void(PhysicsObject* /*otherObject*/, class CollisionComponent* /*otherComponent*/);
 
 class GOKNAR_API CollisionComponent : public Component
 {
