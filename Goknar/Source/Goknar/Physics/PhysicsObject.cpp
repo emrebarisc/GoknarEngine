@@ -109,7 +109,7 @@ CollisionFlag PhysicsObject::GetCollisionFlag() const
 {
     if (!GetIsInitialized())
     {
-        return CollisionFlag::NONE;
+        return CollisionFlag::None;
     }
 
     return (CollisionFlag)bulletCollisionObject_->getCollisionFlags();
