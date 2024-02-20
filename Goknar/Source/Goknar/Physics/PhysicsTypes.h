@@ -27,33 +27,33 @@ enum class GOKNAR_API CollisionMask : unsigned char
     None =              		0b00000000,
     BlockWorldDynamic = 		(unsigned char)(CollisionGroup::WorldDynamicBlock),
     BlockWorldStatic = 			(unsigned char)(CollisionGroup::WorldStaticBlock),
-    BlockPawn = 				(unsigned char)(CollisionGroup::Pawn),
-    BlockAll = 					BlockWorldDynamic | BlockWorldStatic | BlockPawn,
+    BlockCharacter = 				(unsigned char)(CollisionGroup::Character),
+    BlockAll = 					BlockWorldDynamic | BlockWorldStatic | BlockCharacter,
 
     OverlapWorldDynamic = 		(unsigned char)(CollisionGroup::WorldDynamicOverlap),
     OverlapWorldStatic = 		(unsigned char)(CollisionGroup::WorldStaticOverlap),
-    OverlapPawn = 		        (unsigned char)(CollisionGroup::Pawn),
-    OverlapAll = 				OverlapWorldDynamic | OverlapWorldStatic | OverlapPawn,
-    OverlapAllExceptPawn = 		OverlapWorldDynamic | OverlapWorldStatic,
+    OverlapCharacter = 		    (unsigned char)(CollisionGroup::Character),
+    OverlapAll = 				OverlapWorldDynamic | OverlapWorldStatic | OverlapCharacter,
+    OverlapAllExceptCharacter = OverlapWorldDynamic | OverlapWorldStatic,
 
     BlockAndOverlapAll = 		BlockAll | OverlapAll,
 };
 
 enum class GOKNAR_API CollisionFlag
 {
-    NONE = -1,
-    DYNAMIC_OBJECT = btCollisionObject::CF_DYNAMIC_OBJECT,
-    STATIC_OBJECT = btCollisionObject::CF_STATIC_OBJECT,
-    KINEMATIC_OBJECT = btCollisionObject::CF_KINEMATIC_OBJECT,
-    NO_CONTACT_RESPONSE = btCollisionObject::CF_NO_CONTACT_RESPONSE,
-    CUSTOM_MATERIAL_CALLBACK = btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK,
-    CHARACTER_OBJECT = btCollisionObject::CF_CHARACTER_OBJECT,
-    DISABLE_VISUALIZE_OBJECT = btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT,
-    DISABLE_SPU_COLLISION_PROCESSING = btCollisionObject::CF_DISABLE_SPU_COLLISION_PROCESSING,
-    HAS_CONTACT_STIFFNESS_DAMPING = btCollisionObject::CF_HAS_CONTACT_STIFFNESS_DAMPING,
-    HAS_CUSTOM_DEBUG_RENDERING_COLOR = btCollisionObject::CF_HAS_CUSTOM_DEBUG_RENDERING_COLOR,
-    HAS_FRICTION_ANCHOR = btCollisionObject::CF_HAS_FRICTION_ANCHOR,
-    HAS_COLLISION_SOUND_TRIGGER = btCollisionObject::CF_HAS_COLLISION_SOUND_TRIGGER,
+    None = -1,
+    DynamicObject = btCollisionObject::CF_DYNAMIC_OBJECT,
+    StaticObject = btCollisionObject::CF_STATIC_OBJECT,
+    KinematicObject = btCollisionObject::CF_KINEMATIC_OBJECT,
+    NoContactResponse = btCollisionObject::CF_NO_CONTACT_RESPONSE,
+    CustomMaterialCallback = btCollisionObject::CF_CUSTOM_MATERIAL_CALLBACK,
+    CharacterObject = btCollisionObject::CF_CHARACTER_OBJECT,
+    DisableVisualizeObject = btCollisionObject::CF_DISABLE_VISUALIZE_OBJECT,
+    DisableSpuCollisionProcessing = btCollisionObject::CF_DISABLE_SPU_COLLISION_PROCESSING,
+    HasContactStiffnessDamping = btCollisionObject::CF_HAS_CONTACT_STIFFNESS_DAMPING,
+    HasCustomDebugRenderingColor = btCollisionObject::CF_HAS_CUSTOM_DEBUG_RENDERING_COLOR,
+    HasFrictionAnchor = btCollisionObject::CF_HAS_FRICTION_ANCHOR,
+    HasCollisionSoundTrigger = btCollisionObject::CF_HAS_COLLISION_SOUND_TRIGGER,
 };
 
 #endif
