@@ -224,6 +224,7 @@ void RigidBody::SetLinearVelocity(const Vector3& velocity)
         return;
     }
 
+    bulletRigidBody_->activate();
     bulletRigidBody_->setLinearVelocity(btVelocity);
 }
 
@@ -252,6 +253,7 @@ void RigidBody::ApplyForce(const Vector3& force, const Vector3& position)
         return;
     }
 
+    bulletRigidBody_->activate();
     bulletRigidBody_->applyForce(btForce, btForcePosition);
 }
 
@@ -265,6 +267,7 @@ void RigidBody::ApplyTorque(const Vector3& torque)
         return;
     }
 
+    bulletRigidBody_->activate();
     bulletRigidBody_->applyTorque(btTorque);
 }
 
@@ -278,6 +281,7 @@ void RigidBody::ApplyCentralImpulse(const Vector3& impulse)
         return;
     }
 
+    bulletRigidBody_->activate();
     bulletRigidBody_->applyCentralImpulse(btImpulse);
 }
 
@@ -291,6 +295,7 @@ void RigidBody::ApplyTorqueImpulse(const Vector3& impulse)
         return;
     }
 
+    bulletRigidBody_->activate();
     bulletRigidBody_->applyTorqueImpulse(btImpulse);
 }
 
@@ -306,6 +311,7 @@ void RigidBody::ApplyPushImpulse(const Vector3& impulse, const Vector3& position
         return;
     }
 
+    bulletRigidBody_->activate();
     bulletRigidBody_->applyPushImpulse(btPushImpulse, btPushImpulsePosition);
 }
 
