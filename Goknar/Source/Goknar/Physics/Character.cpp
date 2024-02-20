@@ -3,14 +3,19 @@
 #include "Character.h"
 
 #include "Goknar/Components/SkeletalMeshComponent.h"
+#include "Goknar/Physics/PhysicsTypes.h"
 #include "Goknar/Physics/Components/CapsuleCollisionComponent.h"
 #include "Goknar/Physics/Components/CharacterMovementComponent.h"
 
 Character::Character() : OverlappingPhysicsObject()
 {
-	characterCapsuleCollisionComponent_ = AddSubComponent<CapsuleCollisionComponent>();
-	characterMovementComponent_ = AddSubComponent<CharacterMovementComponent>();
-    characterSkeletalMeshComponent_ = AddSubComponent<SkeletalMeshComponent>();
+	capsuleCollisionComponent_ = AddSubComponent<CapsuleCollisionComponent>();
+	movementComponent_ = AddSubComponent<CharacterMovementComponent>();
+    skeletalMeshComponent_ = AddSubComponent<SkeletalMeshComponent>();
+
+    SetCollisionGroup(CollisionGroup::Character);
+    SetCollisionMask(CollisionMask::OverlapAllExceptCharacter);
+    SetCollisionFlag(CollisionFlag::CharacterObject);
 }
 
 Character::~Character()
