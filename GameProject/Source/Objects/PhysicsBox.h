@@ -11,6 +11,11 @@ public:
 	PhysicsBox();
 
 	virtual void BeginGame() override;
+
+	StaticMeshComponent* GetStaticMeshComponent() const
+	{
+		return staticMeshComponent_;
+	}
 protected:
 
 private:

@@ -70,6 +70,10 @@ private:
 
 	void Shoot();
 
+	void OnOverlapBegin(PhysicsObject* otherObject, class CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3&  hitNormal);
+	void OnOverlapContinue(PhysicsObject* otherObject, class CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3&  hitNormal);
+	void OnOverlapEnd(PhysicsObject* otherObject, class CollisionComponent* otherComponent);
+
 	// ----- Delegate Callbacks -----
 	void OnCreateArrow();
 	void OnAttachBowStringToHand();
@@ -83,13 +87,14 @@ private:
 	// ------------------------------
 
 	SkeletalMesh* skeletalMesh_{ nullptr };
-	SkeletalMeshComponent* skeletalMeshComponent_{ nullptr };
 
 	Camera* thirdPersonCamera_{ nullptr };
 
 	ArcherCharacterController* controller_{ nullptr };
+	
 	Arrow* loadedArrow_{ nullptr };
 	Bow* bow_{ nullptr };
+
 	SocketComponent* leftHandSocket_{ nullptr };
 	SocketComponent* rightHandSocket_{ nullptr };
 	SocketComponent* bowStringSocket_{ nullptr };

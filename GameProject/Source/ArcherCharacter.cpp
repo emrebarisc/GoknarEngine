@@ -30,27 +30,31 @@ ArcherCharacter::ArcherCharacter() : Character()
 
 	SetTag("Archer");
 
-	characterCapsuleCollisionComponent_->SetRadius(0.3f);
-	characterCapsuleCollisionComponent_->SetHeight(1.8f);
-	characterCapsuleCollisionComponent_->SetRelativePosition(Vector3{0.f, 0.f, -0.3f});
+	capsuleCollisionComponent_->SetRadius(0.3f);
+	capsuleCollisionComponent_->SetHeight(1.8f);
+	capsuleCollisionComponent_->SetRelativePosition(Vector3{0.f, 0.f, -0.3f});
 
-	SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
-	SetCollisionMask(CollisionMask::BlockAndOverlapAll);
-	SetCollisionFlag(CollisionFlag::KINEMATIC_OBJECT);
+	capsuleCollisionComponent_->OnOverlapBegin = Delegate<OverlapBeginAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapBegin>(this);
+	capsuleCollisionComponent_->OnOverlapContinue = Delegate<OverlapContinueAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapContinue>(this);
+	capsuleCollisionComponent_->OnOverlapEnd = Delegate<OverlapEndAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapEnd>(this);
 
-	characterCapsuleCollisionComponent_->SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
-	characterCapsuleCollisionComponent_->SetCollisionMask(CollisionMask::BlockAndOverlapAll);
+	// SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
+	// SetCollisionMask(CollisionMask::BlockAndOverlapAll);
+	// SetCollisionFlag(CollisionFlag::KinematicObject);
+
+	// capsuleCollisionComponent_->SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
+	// capsuleCollisionComponent_->SetCollisionMask(CollisionMask::BlockAndOverlapAll);
 
 	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Akai.fbx");
 	skeletalMesh_->GetMaterial()->SetSpecularReflectance(Vector3{0.f});
 
-	characterSkeletalMeshComponent_->SetMesh(skeletalMesh_);
-	characterSkeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
-	characterSkeletalMeshComponent_->SetRelativeScaling(Vector3{ 0.0125f });
-	characterSkeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
-	characterSkeletalMeshComponent_->SetParent(characterCapsuleCollisionComponent_);
+	skeletalMeshComponent_->SetMesh(skeletalMesh_);
+	skeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
+	skeletalMeshComponent_->SetRelativeScaling(Vector3{ 0.0125f });
+	skeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
+	skeletalMeshComponent_->SetParent(capsuleCollisionComponent_);
 
-	SkeletalMeshInstance* skeletalMeshInstance = characterSkeletalMeshComponent_->GetMeshInstance();
+	SkeletalMeshInstance* skeletalMeshInstance = skeletalMeshComponent_->GetMeshInstance();
 	leftHandSocket_ = skeletalMeshInstance->AddSocketToBone("mixamorig:LeftHand");
 	leftHandSocket_->SetRelativePosition(Vector3{ 0.f, 10.f, 1.5f });
 	leftHandSocket_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 90.f, 180.f }));
@@ -81,8 +85,6 @@ ArcherCharacter::ArcherCharacter() : Character()
 
 void ArcherCharacter::BeginGame()
 {
-	GOKNAR_INFO("ArcherCharacter::BeginPlay()");
-
 	EquipBow(true);
 }
 
@@ -90,6 +92,22 @@ void ArcherCharacter::Tick(float deltaTime)
 {
 	thirdPersonCamera_->SetPosition(GetWorldPosition() + Vector3(0.f, 0.f, 2.f) + thirdPersonCamera_->GetForwardVector() * -4.f * thirdPersonCameraDistance_);
 }
+
+void ArcherCharacter::OnOverlapBegin(PhysicsObject* otherObject, class CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3&  hitNormal)
+{
+	GOKNAR_INFO("OnOverlapBegin with {}", otherObject->GetName());
+}
+
+void ArcherCharacter::OnOverlapContinue(PhysicsObject* otherObject, class CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3&  hitNormal)
+{
+	GOKNAR_INFO("OnOverlapBegin continue {}", otherObject->GetName());
+}
+
+void ArcherCharacter::OnOverlapEnd(PhysicsObject* otherObject, class CollisionComponent* otherComponent)
+{
+	GOKNAR_INFO("OnOverlapBegin end {}", otherObject->GetName());
+}
+
 
 void ArcherCharacter::Idle()
 {
@@ -100,11 +118,11 @@ void ArcherCharacter::Idle()
 
 	if (isBowEquiped_)
 	{
-		characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingIdle");
+		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingIdle");
 	}
 	else
 	{
-		characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Idle");
+		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Idle");
 	}
 }
 
@@ -115,7 +133,7 @@ void ArcherCharacter::RunForward()
 		return;
 	}
 
-	characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingRunForward");
+	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingRunForward");
 }
 
 void ArcherCharacter::RunBackward()
@@ -159,7 +177,7 @@ void ArcherCharacter::HandleDrawBowInput()
 		keyframeData.AddCallbackToKeyframe(9, Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnCreateArrow>(this));
 		keyframeData.AddCallbackToKeyframe(18, Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnAttachBowStringToHand>(this));
 
-		characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDrawArrow.001",
+		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDrawArrow.001",
 			PlayLoopData
 			{
 				true,
@@ -181,7 +199,7 @@ void ArcherCharacter::HandleLooseBowInput()
 			KeyframeData keyframeData;
 			keyframeData.AddCallbackToKeyframe(3, Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnShoot>(this));
 
-			characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimRecoil",
+			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimRecoil",
 				PlayLoopData{
 					true,
 					Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnFinishedLoosing>(this)
@@ -219,7 +237,7 @@ void ArcherCharacter::EquipBow(bool equip)
 			KeyframeData keyframeData;
 			keyframeData.AddCallbackToKeyframe(8, Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnBowIsHandled>(this));
 
-			characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingEquipBow",
+			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingEquipBow",
 				{
 					false,
 					Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnFinishedEquipingBow>(this)
@@ -232,7 +250,7 @@ void ArcherCharacter::EquipBow(bool equip)
 			KeyframeData keyframeData;
 			keyframeData.AddCallbackToKeyframe(14, Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnBowIsUnhandled>(this));
 
-			characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDisarmBow",
+			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDisarmBow",
 				PlayLoopData{
 					true,
 					Delegate<void()>::create<ArcherCharacter, &ArcherCharacter::OnBowIsDisarmed>(this)
@@ -274,7 +292,7 @@ void ArcherCharacter::OnAimingIdle()
 	{
 		isAnimationBusy_ = false;
 		canShoot_ = true;
-		characterSkeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimIdle");
+		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimIdle");
 	}
 }
 

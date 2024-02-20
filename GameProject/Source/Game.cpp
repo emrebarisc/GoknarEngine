@@ -43,7 +43,8 @@ Game::Game() : Application()
 
 	// archer_ = new Archer();
 	physicsArcher_ = new ArcherCharacter();
-	physicsArcher_->SetWorldPosition(Vector3{-20.f, -10.f, 30.f});
+	physicsArcher_->SetWorldPosition(Vector3{0.f, 0.f, 0.f});
+	// physicsArcher_->SetWorldPosition(Vector3{-20.f, -10.f, 30.f});
 	// dancer_ = new Dancer();
 	// lightController_ = new LightController();
 	sun_ = new Sun();
@@ -61,7 +62,7 @@ Game::Game() : Application()
 
 	freeCameraObject_ = new FreeCameraObject();
 
-	terrain = new Terrain();
+	// terrain = new Terrain();
 
 	engine->GetWindowManager()->SetIsInFullscreen(false);
 	//engine->SetTimeScale(0.1f);

@@ -21,7 +21,7 @@ Arrow::Arrow() : OverlappingPhysicsObject()
 	overlappingCollisionComponent_->OnOverlapEnd = Delegate<OverlapEndAlias>::create<Arrow, &Arrow::OnOverlapEnd>(this);
 
 	// SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
-	// SetCollisionMask(CollisionMask::OverlapAllExceptPawn);
+	// SetCollisionMask(CollisionMask::OverlapAllExceptCharacter);
 
 	staticMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 	staticMeshComponent_->SetMesh(arrowStaticMesh);
