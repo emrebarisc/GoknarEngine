@@ -29,25 +29,25 @@ public:
 	virtual void UpdateWorldTransformationMatrix() override;
 
 
-	CapsuleCollisionComponent* GetCharacterCapsuleCollisionComponent() const
+	CapsuleCollisionComponent* GetCapsuleCollisionComponent() const
 	{
-		return characterCapsuleCollisionComponent_;
+		return capsuleCollisionComponent_;
 	}
 
-	CharacterMovementComponent* GetCharacterMovementComponent() const
+	CharacterMovementComponent* GetMovementComponent() const
 	{
-		return characterMovementComponent_;
+		return movementComponent_;
 	}
 
-	SkeletalMeshComponent* GetCharacterSkeletalMeshComponent() const
+	SkeletalMeshComponent* GetSkeletalMeshComponent() const
 	{
-		return characterSkeletalMeshComponent_;
+		return skeletalMeshComponent_;
 	}
 
 protected:
-	CapsuleCollisionComponent* characterCapsuleCollisionComponent_;
-	CharacterMovementComponent* characterMovementComponent_;
-	SkeletalMeshComponent* characterSkeletalMeshComponent_;
+	CapsuleCollisionComponent* capsuleCollisionComponent_;
+	CharacterMovementComponent* movementComponent_;
+	SkeletalMeshComponent* skeletalMeshComponent_;
 
 private:
 };
