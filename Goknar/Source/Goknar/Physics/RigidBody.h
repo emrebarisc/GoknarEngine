@@ -5,6 +5,7 @@
 
 #include "Goknar/Physics/PhysicsObject.h"
 #include "Goknar/Physics/PhysicsTypes.h"
+#include "Goknar/Physics/PhysicsUtils.h"
 
 #include "LinearMath/btVector3.h"
 
@@ -12,20 +13,20 @@ class btRigidBody;
 
 struct GOKNAR_API RigidBodyInitializationData : public PhysicsObjectInitializationData
 {
-	btVector3 linearFactor{ btVector3(1.f, 1.f, 1.f) };
-	btVector3 angularFactor{ btVector3(1.f, 1.f, 1.f) };
+	btVector3 linearFactor{ PhysicsUtils::FromVector3ToBtVector3(Vector3(1.f, 1.f, 1.f)) };
+	btVector3 angularFactor{ PhysicsUtils::FromVector3ToBtVector3(Vector3(1.f, 1.f, 1.f)) };
 
-	btVector3 velocity{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 angularVelocity{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 velocity{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
+	btVector3 angularVelocity{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
 	
-	btVector3 force{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 forcePosition{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 centralImpulse{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 torqueImpulse{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 pushImpulse{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 pushImpulsePosition{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 torque{ btVector3(0.f, 0.f, 0.f) };
-	btVector3 localInertia{ btVector3(0.f, 0.f, 0.f) };
+	btVector3 force{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
+	btVector3 forcePosition{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
+	btVector3 centralImpulse{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
+	btVector3 torqueImpulse{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
+	btVector3 pushImpulse{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
+	btVector3 pushImpulsePosition{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
+	btVector3 torque{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
+	btVector3 localInertia{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
 
 	float linearSleepingThreshold{ -1.f };
 	float angularSleepingThreshold{ -1.f };
