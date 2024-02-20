@@ -52,18 +52,19 @@ void CharacterMovementComponent::Init()
 	GOKNAR_CORE_ASSERT(ownerCollisionComponent, "CHARACTER MOVEMENT OWNER'S ROOT COMPONENT CAN ONLY BE A COMPONENT OF CollisionComponent!");
 
 	btConvexShape* bulletConvexShape = dynamic_cast<btConvexShape*>(ownerCollisionComponent->GetBulletCollisionShape());
-	GOKNAR_CORE_ASSERT(bulletConvexShape, "CHARACTER MOVEMENT OWNER'S ROOT COMPONENT CAN ONLY HAVE COMPONENT OF btConvexShape!");
+	GOKNAR_CORE_ASSERT(bulletConvexShape, "CHARACTER MOVEMENT OWNER'S ROOT COMPONENT CAN ONLY HAVE A BULLET COMPONENT OF btConvexShape!");
 
 	bulletKinematicCharacterController_ = 
 		new btKinematicCharacterController(
 			bulletPairCachingGhostObject, 
 			bulletConvexShape,
-			0.25f,
+			0.35f,
 			PhysicsUtils::FromVector3ToBtVector3(Vector3::UpVector));
 
-	SetGravity(engine->GetPhysicsWorld()->GetGravity());
+	PhysicsWorld* physicsWorld = engine->GetPhysicsWorld();
+	physicsWorld->AddCharacterMovementComponent(this);
 
-	engine->GetPhysicsWorld()->AddCharacterMovementComponent(this);
+	// bulletKinematicCharacterController_->setGravity(PhysicsUtils::FromVector3ToBtVector3(physicsWorld->GetGravity()));
 }
 
 void CharacterMovementComponent::PostInit()
@@ -144,6 +145,17 @@ void CharacterMovementComponent::Reset(PhysicsWorld* physicsWorld)
 void CharacterMovementComponent::Warp(const Vector3& origin)
 {
 	bulletKinematicCharacterController_->warp(PhysicsUtils::FromVector3ToBtVector3(origin));
+}
+
+void CharacterMovementComponent::Update(PhysicsWorld* physicsWorld, float dt)
+{
+	Update(physicsWorld->GetBulletPhysicsWorld(), dt);
+}
+
+void CharacterMovementComponent::Update(btCollisionWorld* bulletCollisionWorld, float dt)
+{
+	bulletKinematicCharacterController_->updateAction(bulletCollisionWorld, dt);
+	UpdateOwnerTransformation();
 }
 
 void CharacterMovementComponent::PreStep(PhysicsWorld* physicsWorld)
