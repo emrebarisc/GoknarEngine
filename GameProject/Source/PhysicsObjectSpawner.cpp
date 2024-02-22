@@ -18,70 +18,69 @@
 PhysicsObjectSpawner::PhysicsObjectSpawner()
 {
     SetIsTickable(false);
-    groundPhysicsBox_ = new PhysicsBox();
-    groundPhysicsBox_->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-    groundPhysicsBox_->SetWorldPosition(Vector3{ 0.f, 0.f, -20.f });
-    groundPhysicsBox_->SetMass(0.f);
-    
-    groundPhysicsBox_ = new PhysicsBox();
-    groundPhysicsBox_->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-    groundPhysicsBox_->SetWorldPosition(Vector3{ 0.f, 0.f, 20.f });
-    groundPhysicsBox_->SetMass(0.f);
-    StaticMeshComponent* groundBoxStaticMeshComponent = groundPhysicsBox_->GetStaticMeshComponent();
-    StaticMeshInstance* groundPhysicsBoxStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
-    Material* groundPhysicsBoxMaterial = groundPhysicsBoxStaticMeshInstance->GetMesh()->GetMaterial();
-    MaterialInstance* groundMaterialInstance = MaterialInstance::Create(groundPhysicsBoxMaterial);
-    groundMaterialInstance->SetDiffuseReflectance(Vector3{0.f, 1.f, 0.f}); 
 
-    groundPhysicsBoxStaticMeshInstance->SetMaterial(groundMaterialInstance);
+    /*{
+        PhysicsBox* wall = new PhysicsBox();
+        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
+        wall->SetWorldPosition(Vector3{ 0.f, 0.f, -20.f });
+        wall->SetMass(0.f);
 
-    groundPhysicsBox_ = new PhysicsBox();
-    groundPhysicsBox_->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-    groundPhysicsBox_->SetWorldPosition(Vector3{ 0.f, -20.f, 0.f });
-    groundPhysicsBox_->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 0.f }));
-    groundPhysicsBox_->SetMass(0.f);
-    groundMaterialInstance = MaterialInstance::Create(groundPhysicsBoxMaterial);
-    groundMaterialInstance->SetDiffuseReflectance(Vector3{0.f, 0.f, 1.f}); 
-    groundBoxStaticMeshComponent = groundPhysicsBox_->GetStaticMeshComponent();
-    groundPhysicsBoxStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
-    groundPhysicsBoxStaticMeshInstance->SetMaterial(groundMaterialInstance);
-    
-    groundPhysicsBox_ = new PhysicsBox();
-    groundPhysicsBox_->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-    groundPhysicsBox_->SetWorldPosition(Vector3{ 0.f, 20.f, 0.f });
-    groundPhysicsBox_->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 0.f }));
-    groundPhysicsBox_->SetMass(0.f);
-    groundMaterialInstance = MaterialInstance::Create(groundPhysicsBoxMaterial);
-    groundMaterialInstance->SetDiffuseReflectance(Vector3{1.f, 1.f, 0.f}); 
-    groundBoxStaticMeshComponent = groundPhysicsBox_->GetStaticMeshComponent();
-    groundPhysicsBoxStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
-    groundPhysicsBoxStaticMeshInstance->SetMaterial(groundMaterialInstance);
+        wall = new PhysicsBox();
+        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
+        wall->SetWorldPosition(Vector3{ 0.f, 0.f, 20.f });
+        wall->SetMass(0.f);
+        StaticMeshComponent* groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
+        StaticMeshInstance* wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
+        Material* wallMaterial = wallStaticMeshInstance->GetMesh()->GetMaterial();
+        MaterialInstance* groundMaterialInstance = MaterialInstance::Create(wallMaterial);
+        groundMaterialInstance->SetDiffuseReflectance(Vector3{ 0.f, 1.f, 0.f });
 
-    
-    groundPhysicsBox_ = new PhysicsBox();
-    groundPhysicsBox_->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-    groundPhysicsBox_->SetWorldPosition(Vector3{ -20.f, 0.f, 0.f });
-    groundPhysicsBox_->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
-    groundPhysicsBox_->SetMass(0.f);
-    groundMaterialInstance = MaterialInstance::Create(groundPhysicsBoxMaterial);
-    groundMaterialInstance->SetDiffuseReflectance(Vector3{1.f, 0.f, 1.f}); 
-    groundBoxStaticMeshComponent = groundPhysicsBox_->GetStaticMeshComponent();
-    groundPhysicsBoxStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
-    groundPhysicsBoxStaticMeshInstance->SetMaterial(groundMaterialInstance);
+        wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
 
-    
-    groundPhysicsBox_ = new PhysicsBox();
-    groundPhysicsBox_->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-    groundPhysicsBox_->SetWorldPosition(Vector3{ 20.f, 0.f, 0.f });
-    groundPhysicsBox_->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
-    groundPhysicsBox_->SetMass(0.f);
-    groundMaterialInstance = MaterialInstance::Create(groundPhysicsBoxMaterial);
-    groundMaterialInstance->SetDiffuseReflectance(Vector3{1.f, 1.f, 1.f}); 
-    groundBoxStaticMeshComponent = groundPhysicsBox_->GetStaticMeshComponent();
-    groundPhysicsBoxStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
-    groundPhysicsBoxStaticMeshInstance->SetMaterial(groundMaterialInstance);
+        wall = new PhysicsBox();
+        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
+        wall->SetWorldPosition(Vector3{ 0.f, -20.f, 0.f });
+        wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 0.f }));
+        wall->SetMass(0.f);
+        groundMaterialInstance = MaterialInstance::Create(wallMaterial);
+        groundMaterialInstance->SetDiffuseReflectance(Vector3{ 0.f, 0.f, 1.f });
+        groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
+        wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
+        wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
 
-    
+        wall = new PhysicsBox();
+        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
+        wall->SetWorldPosition(Vector3{ 0.f, 20.f, 0.f });
+        wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 0.f }));
+        wall->SetMass(0.f);
+        groundMaterialInstance = MaterialInstance::Create(wallMaterial);
+        groundMaterialInstance->SetDiffuseReflectance(Vector3{ 1.f, 1.f, 0.f });
+        groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
+        wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
+        wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
+
+        wall = new PhysicsBox();
+        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
+        wall->SetWorldPosition(Vector3{ -20.f, 0.f, 0.f });
+        wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
+        wall->SetMass(0.f);
+        groundMaterialInstance = MaterialInstance::Create(wallMaterial);
+        groundMaterialInstance->SetDiffuseReflectance(Vector3{ 1.f, 0.f, 1.f });
+        groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
+        wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
+        wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
+
+        wall = new PhysicsBox();
+        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
+        wall->SetWorldPosition(Vector3{ 20.f, 0.f, 0.f });
+        wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
+        wall->SetMass(0.f);
+        groundMaterialInstance = MaterialInstance::Create(wallMaterial);
+        groundMaterialInstance->SetDiffuseReflectance(Vector3{ 1.f, 1.f, 1.f });
+        groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
+        wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
+        wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
+    }*/
 }
 
 PhysicsObjectSpawner::~PhysicsObjectSpawner()

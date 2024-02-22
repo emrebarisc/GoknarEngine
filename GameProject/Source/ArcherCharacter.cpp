@@ -19,6 +19,7 @@
 #include "Goknar/Physics/Components/CapsuleCollisionComponent.h"
 
 #include "ArcherCharacterController.h"
+#include "Components/ArcherCharacterMovementComponent.h"
 #include "Components/ProjectileMovementComponent.h"
 #include "Objects/Arrow.h"
 #include "Objects/AxisObject.h"
@@ -30,20 +31,15 @@ ArcherCharacter::ArcherCharacter() : Character()
 
 	SetTag("Archer");
 
+	movementComponent_ = AddSubComponent<ArcherCharacterMovementComponent>();
+
 	capsuleCollisionComponent_->SetRadius(0.3f);
 	capsuleCollisionComponent_->SetHeight(1.8f);
 	capsuleCollisionComponent_->SetRelativePosition(Vector3{0.f, 0.f, -0.3f});
 
 	capsuleCollisionComponent_->OnOverlapBegin = Delegate<OverlapBeginAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapBegin>(this);
-	capsuleCollisionComponent_->OnOverlapContinue = Delegate<OverlapContinueAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapContinue>(this);
+	//capsuleCollisionComponent_->OnOverlapContinue = Delegate<OverlapContinueAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapContinue>(this);
 	capsuleCollisionComponent_->OnOverlapEnd = Delegate<OverlapEndAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapEnd>(this);
-
-	// SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
-	// SetCollisionMask(CollisionMask::BlockAndOverlapAll);
-	// SetCollisionFlag(CollisionFlag::KinematicObject);
-
-	// capsuleCollisionComponent_->SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
-	// capsuleCollisionComponent_->SetCollisionMask(CollisionMask::BlockAndOverlapAll);
 
 	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Akai.fbx");
 	skeletalMesh_->GetMaterial()->SetSpecularReflectance(Vector3{0.f});
@@ -100,14 +96,13 @@ void ArcherCharacter::OnOverlapBegin(PhysicsObject* otherObject, class Collision
 
 void ArcherCharacter::OnOverlapContinue(PhysicsObject* otherObject, class CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3&  hitNormal)
 {
-	GOKNAR_INFO("OnOverlapBegin continue {}", otherObject->GetName());
+	GOKNAR_INFO("OnOverlapContinue with {}", otherObject->GetName());
 }
 
 void ArcherCharacter::OnOverlapEnd(PhysicsObject* otherObject, class CollisionComponent* otherComponent)
 {
-	GOKNAR_INFO("OnOverlapBegin end {}", otherObject->GetName());
+	GOKNAR_INFO("OnOverlapEnd with {}", otherObject->GetName());
 }
-
 
 void ArcherCharacter::Idle()
 {

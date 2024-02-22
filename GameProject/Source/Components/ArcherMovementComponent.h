@@ -3,7 +3,7 @@
 
 #include "Goknar/Components/Component.h"
 
-#include "InterpolatedValue.h"
+#include "Goknar/Math/InterpolatingValue.h"
 
 class Archer;
 class Camera;
@@ -33,8 +33,8 @@ public:
 protected:
 
 private:
-	InterpolatedValue<Vector3> movementVector_;
-	InterpolatedValue<float> movementRotation_;
+	InterpolatingValue<Vector3> movementVector_;
+	InterpolatingValue<float> movementRotation_;
 
 	Archer* ownerArcher_{ nullptr };
 	Camera* thirdPersonCamera_{ nullptr };

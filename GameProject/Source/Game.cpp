@@ -62,7 +62,7 @@ Game::Game() : Application()
 
 	freeCameraObject_ = new FreeCameraObject();
 
-	// terrain = new Terrain();
+	terrain = new Terrain();
 
 	engine->GetWindowManager()->SetIsInFullscreen(false);
 	//engine->SetTimeScale(0.1f);

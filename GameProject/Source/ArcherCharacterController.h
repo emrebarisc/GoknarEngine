@@ -2,11 +2,12 @@
 #define __GAMECONTROLLER_H__
 
 #include "Goknar/Controller.h"
+#include "Goknar/Math/InterpolatingValue.h"
 
 class Camera;
 
 class ArcherCharacter;
-class PhysicsArcherMovementComponent;
+class ArcherCharacterMovementComponent;
 
 class ArcherCharacterController : public Controller
 {
@@ -54,10 +55,14 @@ private:
 
 	void ToggleDebug();
 
+
+	InterpolatingValue<Vector3> movementVector_;
+	InterpolatingValue<float> movementRotation_;
+
 	Camera* thirdPersonCamera_{ nullptr };
 
 	ArcherCharacter* archer_{ nullptr };
-	PhysicsArcherMovementComponent* archerMovementComponent_{ nullptr };
+	ArcherCharacterMovementComponent* archerMovementComponent_{ nullptr };
 
 	bool isDebugging_{ false };
 	bool isInFreeCamera_{ false };
