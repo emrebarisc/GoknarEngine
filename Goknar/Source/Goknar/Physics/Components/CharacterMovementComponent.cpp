@@ -6,8 +6,9 @@
 #include "Physics/PhysicsWorld.h"
 #include "Physics/RigidBody.h"
 
-#include "Physics/OverlappingPhysicsObject.h"
+#include "Physics/Character.h"
 #include "Physics/Components/CollisionComponent.h"
+#include "Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #include "BulletDynamics/Character/btKinematicCharacterController.h"
@@ -42,27 +43,31 @@ void CharacterMovementComponent::Init()
 {
 	Component::Init();
 
-	ownerOverlappingPhysicsObject_ = dynamic_cast<OverlappingPhysicsObject*>(GetOwner());
-	GOKNAR_CORE_ASSERT(ownerOverlappingPhysicsObject_, "CHARACTER MOVEMENT OWNER CAN ONLY BE AN OBJECT OF OverlappingPhysicsObject!");
+	Character* ownerCharacter = dynamic_cast<Character*>(GetOwner());
+	GOKNAR_CORE_ASSERT(ownerCharacter, "CharacterMovementComponent can only be added to a Character object");
+	ownerCharacter_ = ownerCharacter;
 
-	btPairCachingGhostObject* bulletPairCachingGhostObject = dynamic_cast<btPairCachingGhostObject*>(ownerOverlappingPhysicsObject_->GetBulletCollisionObject());
-	GOKNAR_CORE_ASSERT(bulletPairCachingGhostObject, "CHARACTER MOVEMENT OWNER CAN ONLY HAVE A BULLET OBJECT OF btPairCachingGhostObject!");
+	GOKNAR_CORE_ASSERT
+	(
+		collisionComponent_ && 
+		dynamic_cast<CollisionComponent*>(collisionComponent_) && 
+		!dynamic_cast<NonMovingTriangleMeshCollisionComponent*>(collisionComponent_), 
+		"Relative collision component can obly be a CollisionComponent excluding NonMovingTriangleMeshCollisionComponent"
+	);
 
-	CollisionComponent* ownerCollisionComponent = dynamic_cast<CollisionComponent*>(ownerOverlappingPhysicsObject_->GetRootComponent());
-	GOKNAR_CORE_ASSERT(ownerCollisionComponent, "CHARACTER MOVEMENT OWNER'S ROOT COMPONENT CAN ONLY BE A COMPONENT OF CollisionComponent!");
+	btPairCachingGhostObject* bulletPairCachingGhostObject = (btPairCachingGhostObject*)ownerCharacter->GetBulletCollisionObject();
 
-	btConvexShape* bulletConvexShape = dynamic_cast<btConvexShape*>(ownerCollisionComponent->GetBulletCollisionShape());
-	GOKNAR_CORE_ASSERT(bulletConvexShape, "CHARACTER MOVEMENT OWNER'S ROOT COMPONENT CAN ONLY HAVE A BULLET COMPONENT OF btConvexShape!");
-
-	bulletKinematicCharacterController_ = 
+	bulletKinematicCharacterController_ =
 		new btKinematicCharacterController(
-			bulletPairCachingGhostObject, 
-			bulletConvexShape,
+			bulletPairCachingGhostObject,
+			(btConvexShape*)collisionComponent_->GetBulletCollisionShape(),
 			0.35f,
 			PhysicsUtils::FromVector3ToBtVector3(Vector3::UpVector));
 
 	PhysicsWorld* physicsWorld = engine->GetPhysicsWorld();
 	physicsWorld->AddCharacterMovementComponent(this);
+
+	bulletPairCachingGhostObject->setUserPointer(this);
 
 	// bulletKinematicCharacterController_->setGravity(PhysicsUtils::FromVector3ToBtVector3(physicsWorld->GetGravity()));
 }
@@ -71,7 +76,7 @@ void CharacterMovementComponent::PostInit()
 {
 	Component::PostInit();
 }
-	
+
 void CharacterMovementComponent::BeginGame()
 {
 	Component::BeginGame();
@@ -89,7 +94,7 @@ void CharacterMovementComponent::UpdateComponentToWorldTransformationMatrix()
 
 void CharacterMovementComponent::SetMovementDirection(const Vector3& movementDirection)
 {
-	bulletKinematicCharacterController_->setWalkDirection(PhysicsUtils::FromVector3ToBtVector3(movementDirection));
+	bulletKinematicCharacterController_->setWalkDirection(PhysicsUtils::FromVector3ToBtVector3(movementDirection * movementSpeed_));
 }
 
 void CharacterMovementComponent::SetMovementVelocityForGivenDuration(const Vector3& movementVelocity, float duration)
@@ -276,8 +281,8 @@ void CharacterMovementComponent::SetUpInterpolate(bool value)
 
 void CharacterMovementComponent::UpdateOwnerTransformation()
 {
-    const btTransform& bulletWorldTransform = ownerOverlappingPhysicsObject_->GetBulletCollisionObject()->getWorldTransform();
+	const btTransform& bulletWorldTransform = ownerCharacter_->GetBulletCollisionObject()->getWorldTransform();
 
-    ownerOverlappingPhysicsObject_->SetWorldPosition(PhysicsUtils::FromBtVector3ToVector3(bulletWorldTransform.getOrigin()), false);
-    ownerOverlappingPhysicsObject_->SetWorldRotation(PhysicsUtils::FromBtQuaternionToQuaternion(bulletWorldTransform.getRotation()));
+	ownerCharacter_->SetWorldPosition(PhysicsUtils::FromBtVector3ToVector3(bulletWorldTransform.getOrigin()), false);
+	ownerCharacter_->SetWorldRotation(PhysicsUtils::FromBtQuaternionToQuaternion(bulletWorldTransform.getRotation()));
 }

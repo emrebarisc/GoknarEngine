@@ -7,7 +7,8 @@
 class btCollisionWorld;
 class btKinematicCharacterController;
 
-class OverlappingPhysicsObject;
+class Character;
+class CollisionComponent;
 class PhysicsWorld;
 
 class GOKNAR_API CharacterMovementComponent : public Component
@@ -79,24 +80,42 @@ public:
 	virtual bool OnGround() const;
 	virtual void SetUpInterpolate(bool value);
 
-	virtual OverlappingPhysicsObject* GetOverlappingPhysicsObject()
-	{
-		return ownerOverlappingPhysicsObject_;
-	}
-
 	btKinematicCharacterController* GetBulletKinematicCharacterController() const
 	{
 		return bulletKinematicCharacterController_;
 	}
 
+	CollisionComponent* GetCollisionComponent() const
+	{
+		return collisionComponent_;
+	}
+
+	void SetCollisionComponent(CollisionComponent* collisionComponent)
+	{
+		collisionComponent_ = collisionComponent;
+	}
+
 	virtual void UpdateOwnerTransformation();
+
+	void SetMovementSpeed(float movementSpeed)
+	{
+		movementSpeed_ = movementSpeed;
+	}
+	
+	float GetMovementSpeed() const
+	{
+		return movementSpeed_;
+	}
 
 protected:
 
 private:
-	btKinematicCharacterController* bulletKinematicCharacterController_;
+	btKinematicCharacterController* bulletKinematicCharacterController_{ nullptr };
 
-	OverlappingPhysicsObject* ownerOverlappingPhysicsObject_;
+	CollisionComponent* collisionComponent_{ nullptr };
+	Character* ownerCharacter_{ nullptr };
+
+	float movementSpeed_{ 1.f };
 };
 
 #endif
