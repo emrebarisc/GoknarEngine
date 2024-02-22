@@ -17,6 +17,8 @@ ObjectBase::ObjectBase() :
 	isInitialized_(false)
 {
 	engine->RegisterObject(this);
+
+	id_ = ObjectIDManager::GetInstance()->GetAndIncreaseObjectBaseID();
 }
 
 ObjectBase::~ObjectBase()
@@ -32,8 +34,6 @@ void ObjectBase::PreInit()
 	}
 
 	engine->GetApplication()->GetMainScene()->AddObject(this);
-
-	id_ = ObjectIDManager::GetInstance()->GetAndIncreaseObjectBaseID();
 }
 
 void ObjectBase::Init()
