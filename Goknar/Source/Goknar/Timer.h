@@ -1,34 +1,43 @@
 #include "TimeDependentObject.h"
 
-#include <functional>
-
-typedef std::function<void()> TimerDelegate;
+#include "Delegates/Delegate.h"
 
 class GOKNAR_API Timer : public TimeDependentObject
 {
 public:
-	Timer() :
-		TimeDependentObject()
-	{
+	Timer();
+	~Timer() {}
 
+	virtual void Tick(float deltaSecond) override;
+
+	void CallOnTick(const Delegate<void()>& function)
+	{
+		onOperate_ = function;
 	}
 
-	~Timer()
+	int GetTicksPerSecond() const
 	{
-
+		return ticksPerSecond_;
 	}
 
-	void CallOnTick(const TimerDelegate& function)
+	void SetTicksPerSecond(int ticksPerSecond)
 	{
-		onOperate = function;
+		ticksPerSecond_ = ticksPerSecond;
+		timeToRefreshTimeVariables_ = 1.f / ticksPerSecond;
 	}
+
+	virtual void SetIsActive(bool isActive) override;
 
 protected:
 	virtual void Operate()
 	{
-		onOperate();
+		onOperate_();
 	}
 
 private:
-	TimerDelegate onOperate;
+	Delegate<void()> onOperate_;
+
+	int ticksPerSecond_{ 30 };
+	float timeToRefreshTimeVariables_{ 1.f / ticksPerSecond_ };
+	float elapsedTime_{ 0.f };
 };

@@ -232,7 +232,6 @@ void PhysicsWorld::AddPhysicsObject(PhysicsObject* physicsObject)
 
 	physicsObjectMap_[bulletCollisionObject] = physicsObject;
 
-	//overlappingCollisionComponents_.push_back(collisionComponent);
 	dynamicsWorld_->addCollisionObject(physicsObject->GetBulletCollisionObject(), (int)physicsObject->GetCollisionGroup(), (int)physicsObject->GetCollisionMask());
 }
 

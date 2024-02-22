@@ -13,54 +13,22 @@ public:
 
 	}
 
-	virtual void Init() {};
-	void Tick(float deltaSecond)
-	{
-		elapsedTime_ += deltaSecond;
-		if (timeToRefreshTimeVariables_ < elapsedTime_)
-		{
-			elapsedTime_ -= timeToRefreshTimeVariables_;
-			Operate();
-		}
-	}
+	virtual void Tick(float deltaSecond) = 0;
 
-	int GetTicksPerSecond() const
-	{
-		return ticksPerSecond_;
-	}
-
-	void SetTicksPerSecond(int ticksPerSecond)
-	{
-		ticksPerSecond_ = ticksPerSecond;
-		timeToRefreshTimeVariables_ = 1.f / ticksPerSecond;
-	}
-
-	bool GetIsActive()
+	bool GetIsActive() const
 	{
 		return isActive_;
 	}
 
-	void Activate()
+	virtual void SetIsActive(bool isActive)
 	{
-		isActive_ = true;
-	}
-
-	void Deactivate()
-	{
-		isActive_ = false;
-		elapsedTime_ = 0.f;
+		isActive_ = isActive;
 	}
 
 protected:
 	TimeDependentObject();
 
-	virtual void Operate() = 0;
-
-	int ticksPerSecond_;
-	float timeToRefreshTimeVariables_;
-	float elapsedTime_;
-
-	bool isActive_;
+	bool isActive_{ true };
 };
 
 #endif
