@@ -9,12 +9,11 @@
 
 Character::Character() : OverlappingPhysicsObject()
 {
-	capsuleCollisionComponent_ = AddSubComponent<CapsuleCollisionComponent>();
-	movementComponent_ = AddSubComponent<CharacterMovementComponent>();
+    capsuleCollisionComponent_ = AddSubComponent<CapsuleCollisionComponent>();
     skeletalMeshComponent_ = AddSubComponent<SkeletalMeshComponent>();
 
     SetCollisionGroup(CollisionGroup::Character);
-    SetCollisionMask(CollisionMask::OverlapAllExceptCharacter);
+    SetCollisionMask(CollisionMask::BlockAllExceptCharacter);
     SetCollisionFlag(CollisionFlag::CharacterObject);
 }
 
@@ -26,6 +25,12 @@ Character::~Character()
 void Character::PreInit()
 {
     OverlappingPhysicsObject::PreInit();
+
+    if (!movementComponent_)
+    {
+        movementComponent_ = AddSubComponent<CharacterMovementComponent>();
+    }
+    movementComponent_->SetCollisionComponent(capsuleCollisionComponent_);
 }
 
 void Character::Init()

@@ -22,12 +22,12 @@ public:
 	virtual void PreInit() override;
 	virtual void Init() override;
 	virtual void PostInit() override;
-	
+
 	virtual void BeginGame() override;
 	virtual void TickComponent(float deltaTime) override;
 
 	virtual void UpdateComponentToWorldTransformationMatrix();
-	
+
 	virtual void SetMovementDirection(const Vector3& movementDirection);
 	virtual void SetMovementVelocityForGivenDuration(const Vector3& movementVelocity, float duration);
 

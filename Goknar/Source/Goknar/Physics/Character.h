@@ -45,9 +45,9 @@ public:
 	}
 
 protected:
-	CapsuleCollisionComponent* capsuleCollisionComponent_;
-	CharacterMovementComponent* movementComponent_;
-	SkeletalMeshComponent* skeletalMeshComponent_;
+	CapsuleCollisionComponent* capsuleCollisionComponent_{ nullptr };
+	CharacterMovementComponent* movementComponent_{ nullptr };
+	SkeletalMeshComponent* skeletalMeshComponent_{ nullptr };
 
 private:
 };
