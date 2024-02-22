@@ -3,7 +3,7 @@
 
 #include "Goknar/Components/Component.h"
 
-#include "InterpolatedValue.h"
+#include "Goknar/Math/InterpolatingValue.h"
 
 class Camera;
 class SkeletalMeshComponent;

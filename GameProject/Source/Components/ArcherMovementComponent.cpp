@@ -63,9 +63,6 @@ void ArcherMovementComponent::TickComponent(float deltaTime)
 	{
 		ownerArcher_->Idle();
 	}
-
-	movementVector_.Interpolate(deltaTime);
-	movementRotation_.Interpolate(deltaTime);
 }
 
 void ArcherMovementComponent::SetMovementVector(const Vector3& movementVector)

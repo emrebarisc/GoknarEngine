@@ -12,11 +12,9 @@
 // Game includes
 #include "Game.h"
 #include "ArcherCharacter.h"
+#include "Components/ArcherCharacterMovementComponent.h"
 #include "Controllers/FreeCameraController.h"
 #include "Objects/FreeCameraObject.h"
-
-#define MAX_BONE_INDEX 37
-#define MAX_ANIMATION_INDEX 19
 
 ArcherCharacterController::ArcherCharacterController(ArcherCharacter* archer) :
 	Controller(),
@@ -26,12 +24,11 @@ ArcherCharacterController::ArcherCharacterController(ArcherCharacter* archer) :
 
 void ArcherCharacterController::BeginGame()
 {
-	//archerMovementComponent_ = archer_->GetMovementComponent();
+	archerMovementComponent_ = dynamic_cast<ArcherCharacterMovementComponent*>(archer_->GetMovementComponent());
 	thirdPersonCamera_ = archer_->GetThirdPersonCamera();
 
 	engine->GetInputManager()->SetIsCursorVisible(false);
 }
-
 
 void ArcherCharacterController::SetupInputs()
 {
@@ -164,49 +161,49 @@ void ArcherCharacterController::LooseBow()
 void ArcherCharacterController::MoveForward()
 {
 	if(isInFreeCamera_) return;
-	//archerMovementComponent_->AddMovementVector(Vector3::ForwardVector);
+	archerMovementComponent_->AddMovementDirection(Vector3::ForwardVector);
 }
 
 void ArcherCharacterController::StopMovingForward()
 {
 	if(isInFreeCamera_) return;
-	//archerMovementComponent_->AddMovementVector(-Vector3::ForwardVector);
+	archerMovementComponent_->AddMovementDirection(-Vector3::ForwardVector);
 }
 
 void ArcherCharacterController::MoveBackward()
 {
-	if(isInFreeCamera_) return;
-	//archerMovementComponent_->AddMovementVector(-Vector3::ForwardVector);
+	if (isInFreeCamera_) return;
+	archerMovementComponent_->AddMovementDirection(-Vector3::ForwardVector);
 }
 
 void ArcherCharacterController::StopMovingBackward()
 {
-	if(isInFreeCamera_) return;
-	//archerMovementComponent_->AddMovementVector(Vector3::ForwardVector);
+	if (isInFreeCamera_) return;
+	archerMovementComponent_->AddMovementDirection(Vector3::ForwardVector);
 }
 
 void ArcherCharacterController::MoveLeft()
 {
-	if(isInFreeCamera_) return;
-	//archerMovementComponent_->AddMovementVector(Vector3::LeftVector);
+	if (isInFreeCamera_) return;
+	archerMovementComponent_->AddMovementDirection(Vector3::LeftVector);
 }
 
 void ArcherCharacterController::StopMovingLeft()
 {
-	if(isInFreeCamera_) return;
-	//archerMovementComponent_->AddMovementVector(-Vector3::LeftVector);
+	if (isInFreeCamera_) return;
+	archerMovementComponent_->AddMovementDirection(-Vector3::LeftVector);
 }
 
 void ArcherCharacterController::MoveRight()
 {
-	if(isInFreeCamera_) return;
-	//archerMovementComponent_->AddMovementVector(-Vector3::LeftVector);
+	if (isInFreeCamera_) return;
+	archerMovementComponent_->AddMovementDirection(-Vector3::LeftVector);
 }
 
 void ArcherCharacterController::StopMovingRight()
 {
-	if(isInFreeCamera_) return;
-	//archerMovementComponent_->AddMovementVector(Vector3::LeftVector);
+	if (isInFreeCamera_) return;
+	archerMovementComponent_->AddMovementDirection(Vector3::LeftVector);
 }
 
 void ArcherCharacterController::ToggleDebug()
