@@ -12,7 +12,6 @@ class SpotLight;
 class Material;
 class ObjectBase;
 class Texture;
-class TimeDependentObject;
 
 class DynamicMesh;
 class StaticMesh;

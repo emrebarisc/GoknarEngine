@@ -17,8 +17,6 @@
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
 
-#include "Goknar/TimeDependentObject.h"
-
 Scene::Scene()
 {
 	backgroundColor_ = Colori(0, 0, 0);
