@@ -55,7 +55,7 @@ void Arrow::OnOverlapBegin(PhysicsObject* otherObject, CollisionComponent* other
 	Vector3 newPosition = hitPosition - GetForwardVector() * 0.75f;
 	SetWorldPosition(newPosition);
 
-	SetParent(otherObject);
+	//SetParent(otherObject);
 
 	overlappingCollisionComponent_->SetIsActive(false);
 	movementComponent_->SetIsActive(false);

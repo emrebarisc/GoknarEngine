@@ -17,7 +17,7 @@
 
 PhysicsObjectSpawner::PhysicsObjectSpawner()
 {
-    SetIsTickable(false);
+    SetIsTickable(true);
 
     /*{
         PhysicsBox* wall = new PhysicsBox();
