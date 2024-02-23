@@ -105,6 +105,8 @@ void PhysicsWorld::PreInit()
 	dynamicsWorld_ = new btDiscreteDynamicsWorld(dispatcher_, broadphase_, solver_, collisionConfiguration_);
 	dynamicsWorld_->setGravity(PhysicsUtils::FromVector3ToBtVector3(gravity_));
 
+	//dynamicsWorld_->getDispatchInfo().m_allowedCcdPenetration = 0.04f;
+
 	gContactDestroyedCallback = OverlappingDestroyedCallback;
 	gContactProcessedCallback = OverlappingProcessedCallback;
 	gContactStartedCallback = OverlappingStartedCallback;
