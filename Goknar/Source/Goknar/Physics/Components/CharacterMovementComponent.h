@@ -115,7 +115,7 @@ private:
 	CollisionComponent* collisionComponent_{ nullptr };
 	Character* ownerCharacter_{ nullptr };
 
-	float movementSpeed_{ 1.f };
+	float movementSpeed_{ 0.25f };
 };
 
 #endif
