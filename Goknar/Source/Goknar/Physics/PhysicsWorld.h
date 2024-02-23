@@ -10,6 +10,7 @@
 #include "btBulletDynamicsCommon.h"
 
 class btGhostObject;
+class btGhostPairCallback;
 
 class Character;
 class CollisionComponent;
@@ -94,6 +95,7 @@ private:
 
     Vector3 gravity_{ Vector3{0.f, 0.f, -10.f} };
 
+    btGhostPairCallback* ghostPairCallback_{ nullptr };
     btBroadphaseInterface* broadphase_{ nullptr };
     btCollisionDispatcher* dispatcher_{ nullptr };
     btDispatcherInfo* dispatcherInfo_{ nullptr };

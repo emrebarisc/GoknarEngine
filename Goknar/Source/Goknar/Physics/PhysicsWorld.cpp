@@ -49,6 +49,9 @@ PhysicsWorld::~PhysicsWorld()
 	delete broadphase_;
 	broadphase_ = nullptr;
 
+	delete ghostPairCallback_;
+	ghostPairCallback_ = nullptr;
+
 	delete dispatcher_;
 	dispatcher_ = nullptr;
 
@@ -90,8 +93,10 @@ void PhysicsWorld::PreInit()
 	dispatcher_ = new btCollisionDispatcher(collisionConfiguration_);
 	//dispatcher_->setNearCallback(&NearCallback);
 
+	ghostPairCallback_ = new btGhostPairCallback();
+
 	broadphase_ = new btDbvtBroadphase();
-	broadphase_->getOverlappingPairCache()->setInternalGhostPairCallback(new btGhostPairCallback());
+	broadphase_->getOverlappingPairCache()->setInternalGhostPairCallback(ghostPairCallback_);
 
 	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
 	btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
