@@ -23,32 +23,11 @@ public:
 	virtual void BeginGame() override;
 	virtual void TickComponent(float deltaTime) override;
 
-	virtual void AddMovementDirection(const Vector3& movementDirection)
-	{
-		Vector3 newMovementDirection = movementDirection_.current + movementDirection;
-
-		if (EPSILON < newMovementDirection.Length())
-		{
-			const float newDestinationAngle = atan2f(newMovementDirection.y, newMovementDirection.x);
-
-			float destinationAngle = newDestinationAngle - movementRotation_.current;
-			if (PI < destinationAngle)
-			{
-				destinationAngle -= TWO_PI;
-			}
-			else if (destinationAngle <= -PI)
-			{
-				destinationAngle += TWO_PI;
-			}
-
-			movementRotation_ = destinationAngle;
-		}
-
-		movementDirection_ = newMovementDirection;
-	}
+	virtual void AddMovementDirection(const Vector3& movementDirection);
 
 private:
 	void OnMovementDirectionInterpolated();
+	void OnMovementRotationInterpolated();
 
 	InterpolatingValue<Vector3> movementDirection_;
 	InterpolatingValue<float> movementRotation_;
