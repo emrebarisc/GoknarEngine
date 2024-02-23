@@ -25,13 +25,17 @@ CharacterMovementComponent::CharacterMovementComponent(ObjectBase* parentObjectB
 
 CharacterMovementComponent::~CharacterMovementComponent()
 {
+	delete bulletKinematicCharacterController_;
 }
 
 void CharacterMovementComponent::Destroy()
 {
-	Component::Destroy();
-	
 	engine->GetPhysicsWorld()->RemoveCharacterMovementComponent(this);
+
+	delete bulletKinematicCharacterController_;
+	bulletKinematicCharacterController_ = nullptr;
+
+	Component::Destroy();
 }
 
 void CharacterMovementComponent::PreInit()
