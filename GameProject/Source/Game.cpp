@@ -23,6 +23,7 @@
 #include "PhysicsObjectSpawner.h"
 #include "Objects/FreeCameraObject.h"
 #include "Objects/Terrain.h"
+#include "Objects/PhysicsBox.h"
 
 #include <chrono>
 
@@ -48,9 +49,9 @@ Game::Game() : Application()
 	// dancer_ = new Dancer();
 	// lightController_ = new LightController();
 	sun_ = new Sun();
-	// randomGrassSpawner_ = new RandomGrassSpawner();
+	randomGrassSpawner_ = new RandomGrassSpawner();
 	// fire_ = new Fire();
-	// materialSphereSpawner_ = new MaterialSphereSpawner();
+	materialSphereSpawner_ = new MaterialSphereSpawner();
 
 	physicsObjectSpawner_ = new PhysicsObjectSpawner();
 
@@ -66,6 +67,10 @@ Game::Game() : Application()
 
 	engine->GetWindowManager()->SetIsInFullscreen(false);
 	//engine->SetTimeScale(0.1f);
+
+	//boxFloor_ = new PhysicsBox();
+	//boxFloor_->SetWorldPosition(Vector3{0.f, 0.f, -10.f});
+	//boxFloow_->SetWorldScaling(Vector3{50.f, 50.f, 0.1f});
 }
 
 void Game::Run()

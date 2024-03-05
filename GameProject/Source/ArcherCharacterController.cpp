@@ -39,7 +39,7 @@ void ArcherCharacterController::SetupInputs()
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::G, INPUT_ACTION::G_PRESS, std::bind(&ArcherCharacterController::DropBow, this));
 	
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::E, INPUT_ACTION::G_PRESS, std::bind(&ArcherCharacterController::ToggleChest, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::Q, INPUT_ACTION::G_PRESS, std::bind(&ArcherCharacterController::DestroyPhysicsArcher, this));
+	//engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::Q, INPUT_ACTION::G_PRESS, std::bind(&ArcherCharacterController::DestroyPhysicsArcher, this));
 
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F1, INPUT_ACTION::G_PRESS, std::bind(&ArcherCharacterController::ToggleDebug, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F2, INPUT_ACTION::G_PRESS, std::bind(&ArcherCharacterController::ToggleFreeCamera, this));

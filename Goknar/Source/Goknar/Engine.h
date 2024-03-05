@@ -5,6 +5,8 @@
 
 #include "Core.h"
 
+class DebugDrawer;
+
 class TimeDependentObject;
 class Application;
 class CameraManager;
@@ -152,6 +154,8 @@ public:
 	void Exit();
 
 private:
+	DebugDrawer* debugDrawer_{ nullptr };
+
 	InputManager* inputManager_;
 	ResourceManager* resourceManager_;
 	ObjectManager* objectManager_;
@@ -163,7 +167,7 @@ private:
 	PhysicsWorld* physicsWorld_{ nullptr };
 
 	Application* application_{ nullptr };
-	
+
 	std::vector<ObjectBase*> objectsToBeInitialized_;
 	std::vector<ObjectBase*> registeredObjects_;
 	std::vector<ObjectBase*> tickableObjects_;

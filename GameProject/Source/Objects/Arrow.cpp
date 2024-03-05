@@ -20,7 +20,7 @@ Arrow::Arrow() : OverlappingPhysicsObject()
 	overlappingCollisionComponent_->OnOverlapContinue = Delegate<OverlapContinueAlias>::create<Arrow, &Arrow::OnOverlapContinue>(this);
 	overlappingCollisionComponent_->OnOverlapEnd = Delegate<OverlapEndAlias>::create<Arrow, &Arrow::OnOverlapEnd>(this);
 
-	// SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
+	// SetCollisionGroup(CollisionGroup::WoraaaaaldDynamicOverlap);
 	// SetCollisionMask(CollisionMask::OverlapAllExceptCharacter);
 
 	staticMeshComponent_ = AddSubComponent<StaticMeshComponent>();
@@ -29,8 +29,8 @@ Arrow::Arrow() : OverlappingPhysicsObject()
 	movementComponent_ = AddSubComponent<ProjectileMovementComponent>();
 	movementComponent_->SetIsActive(false);
 
-	AxisObject* axisObject = new AxisObject();
-	axisObject->SetParent(this, SnappingRule::KeepWorldScaling);
+	//AxisObject* axisObject = new AxisObject();
+	//axisObject->SetParent(this, SnappingRule::KeepWorldScaling);
 }
 
 void Arrow::BeginGame()
@@ -55,10 +55,11 @@ void Arrow::OnOverlapBegin(PhysicsObject* otherObject, CollisionComponent* other
 	Vector3 newPosition = hitPosition - GetForwardVector() * 0.75f;
 	SetWorldPosition(newPosition);
 
-	//SetParent(otherObject);
+	SetIsActive(false);
 
-	overlappingCollisionComponent_->SetIsActive(false);
-	movementComponent_->SetIsActive(false);
+	//SetParent(otherObject);
+	//overlappingCollisionComponent_->SetIsActive(false);
+	//movementComponent_->SetIsActive(false);
 }
 
 void Arrow::OnOverlapContinue(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)

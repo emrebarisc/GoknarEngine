@@ -10,12 +10,16 @@
 
 #include "Goknar/Components/SkeletalMeshComponent.h"
 #include "Goknar/Components/SocketComponent.h"
+#include "Goknar/Debug/DebugDrawer.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Managers/WindowManager.h"
 #include "Goknar/Materials/Material.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Model/SkeletalMeshInstance.h"
+#include "Goknar/Physics/PhysicsDebugger.h"
+#include "Goknar/Physics/PhysicsUtils.h"
+#include "Goknar/Physics/PhysicsWorld.h"
 #include "Goknar/Physics/Components/CapsuleCollisionComponent.h"
 
 #include "ArcherCharacterController.h"
@@ -33,13 +37,13 @@ ArcherCharacter::ArcherCharacter() : Character()
 
 	movementComponent_ = AddSubComponent<ArcherCharacterMovementComponent>();
 
-	capsuleCollisionComponent_->SetRadius(0.3f);
-	capsuleCollisionComponent_->SetHeight(1.8f);
-	capsuleCollisionComponent_->SetRelativePosition(Vector3{0.f, 0.f, -0.3f});
+	capsuleCollisionComponent_->SetRadius(0.4f);
+	capsuleCollisionComponent_->SetHeight(1.5f);
+	capsuleCollisionComponent_->SetRelativePosition(Vector3{0.f, 0.f, -1.0f});
 
-	capsuleCollisionComponent_->OnOverlapBegin = Delegate<OverlapBeginAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapBegin>(this);
+	//capsuleCollisionComponent_->OnOverlapBegin = Delegate<OverlapBeginAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapBegin>(this);
 	//capsuleCollisionComponent_->OnOverlapContinue = Delegate<OverlapContinueAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapContinue>(this);
-	capsuleCollisionComponent_->OnOverlapEnd = Delegate<OverlapEndAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapEnd>(this);
+	//capsuleCollisionComponent_->OnOverlapEnd = Delegate<OverlapEndAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapEnd>(this);
 
 	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SkeletalMesh_Akai.fbx");
 	skeletalMesh_->GetMaterial()->SetSpecularReflectance(Vector3{0.f});
@@ -82,6 +86,17 @@ ArcherCharacter::ArcherCharacter() : Character()
 void ArcherCharacter::BeginGame()
 {
 	EquipBow(true);
+	btCapsuleShape* capsuleShape = (btCapsuleShape*)capsuleCollisionComponent_->GetBulletCollisionShape();
+
+	engine->GetPhysicsWorld()->GetPhysicsDebugger()->drawCapsule(
+		capsuleShape->getRadius(),
+		capsuleShape->getHalfHeight(),
+		capsuleShape->getUpAxis(),
+		GetBulletCollisionObject()->getWorldTransform(),
+		PhysicsUtils::FromVector3ToBtVector3(Vector3{1.f, 0.f, 0.f})
+	);
+
+	DebugDrawer::DrawCollisionComponent(capsuleCollisionComponent_, Colorf::Blue, 1.f, 1.f, this);
 }
 
 void ArcherCharacter::Tick(float deltaTime)

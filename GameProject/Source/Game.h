@@ -11,6 +11,7 @@ class MaterialSphereSpawner;
 class PhysicsObjectSpawner;
 class Terrain;
 class FreeCameraObject;
+class PhysicsBox;
 
 class GOKNAR_API Game : public Application
 {
@@ -50,6 +51,7 @@ private:
 	FreeCameraObject* freeCameraObject_;
 
 	PhysicsObjectSpawner* physicsObjectSpawner_{ nullptr };
+	PhysicsBox* boxFloor_{ nullptr };
 
 	Terrain* terrain{ nullptr };
 };
