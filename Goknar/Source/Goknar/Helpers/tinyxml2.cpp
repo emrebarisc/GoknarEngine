@@ -23,7 +23,9 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
+#if defined(GOKNAR_PLATFORM_UNIX)
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough="
+#endif
 
 #include "tinyxml2.h"
 
