@@ -29,6 +29,7 @@
 #include "Goknar/Model/SkeletalMeshInstance.h"
 
 #include "Goknar/Managers/CameraManager.h"
+#include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Managers/WindowManager.h"
 
 #include "Goknar/IO/IOManager.h"
@@ -1252,8 +1253,7 @@ void DeferredRenderingData::Render()
 
 void DeferredRenderingData::OnWindowSizeChange(int x, int y)
 {
-	const Scene* currentScene = engine->GetApplication()->GetMainScene();
-	const std::vector<Material*>& materials = currentScene->GetMaterials();
+	const std::vector<Material*>& materials = engine->GetResourceManager()->GetMaterials();
 
 	decltype(materials.begin()) materialIteration = materials.begin();
 	for (; materialIteration < materials.end(); ++materialIteration)

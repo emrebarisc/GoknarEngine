@@ -215,8 +215,6 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, aiNode* assimpNode)
 
 StaticMesh* ModelLoader::LoadModel(const std::string& path)
 {
-	Scene* gameScene = engine->GetApplication()->GetMainScene();
-
 	StaticMesh* staticMesh = nullptr;
 	SkeletalMesh* skeletalMesh = nullptr;
 
@@ -472,7 +470,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 						}
 					}
 
-					gameScene->AddMaterial(material);
+					engine->GetResourceManager()->AddMaterial(material);
 					staticMesh->SetMaterial(material);
 				}
 			}

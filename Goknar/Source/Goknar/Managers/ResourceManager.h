@@ -7,6 +7,7 @@
 
 class Audio;
 class Content;
+class Material;
 class MeshUnit;
 class Image;
 
@@ -109,16 +110,52 @@ public:
 	template <class T>
 	T* GetContent(const std::string& path)
 	{
-		if (resourceContainer_->contentPathMap_.find(path) != resourceContainer_->contentPathMap_.end())
+		std::string fullPath = ContentDir + path;
+
+		T* content = resourceContainer_->GetContent<T>(fullPath);
+		if (content)
 		{
-			return dynamic_cast<T*>(resourceContainer_->contentPathMap_[path]);
+			return content;
 		}
 
-		return dynamic_cast<T*>(LoadContent(path));
+		return dynamic_cast<T*>(LoadContent(fullPath));
+	}
+
+#if defined(GOKNAR_BUILD_DEBUG)
+	template <class T>
+	T* GetEngineContent(const std::string& path)
+	{
+		std::string fullPath = EngineContentDir + path;
+
+		T* content = resourceContainer_->GetContent<T>(fullPath);
+		if (content)
+		{
+			return content;
+		}
+
+		return dynamic_cast<T*>(LoadContent(fullPath));
+	}
+#endif
+
+	void AddMaterial(Material* material)
+	{
+		materials_.push_back(material);
+	}
+
+	const std::vector<Material*>& GetMaterials() const
+	{
+		return materials_;
+	}
+
+	Material* GetMaterial(int index) const
+	{
+		return materials_[index];
 	}
 
 private:
 	Content* LoadContent(const std::string& path);
+
+	std::vector<Material*> materials_;
 
 	ResourceContainer* resourceContainer_;
 };
