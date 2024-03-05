@@ -20,7 +20,7 @@ CapsuleCollisionComponent::~CapsuleCollisionComponent()
 
 void CapsuleCollisionComponent::PreInit()
 {
-	bulletCollisionShape_ = new btCapsuleShape(radius_, height_);
+	bulletCollisionShape_ = new btCapsuleShapeZ(radius_, height_);
 
 	CollisionComponent::PreInit();
 }
@@ -51,24 +51,12 @@ void CapsuleCollisionComponent::TickComponent(float deltaTime)
 
 void CapsuleCollisionComponent::SetRadius(float radius)
 {
+	GOKNAR_CORE_CHECK(!GetIsInitialized(), "Trying to set radius after initialization. Use scaling instead.");
 	radius_ = radius;
-
-	if(!GetIsInitialized())
-	{
-		return;
-	}
-
-	// bulletCollisionShape_->setRadius(radius_);
 }
 
 void CapsuleCollisionComponent::SetHeight(float height)
 {
+	GOKNAR_CORE_CHECK(!GetIsInitialized(), "Trying to set height after initialization. Use scaling instead.");
 	height_ = height;
-
-	if(!GetIsInitialized())
-	{
-		return;
-	}
-
-	// bulletCollisionShape_->setRadius(radius_);
 }
