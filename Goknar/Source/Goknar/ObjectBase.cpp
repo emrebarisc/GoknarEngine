@@ -183,7 +183,11 @@ void ObjectBase::SetParent(ObjectBase* newParent, SnappingRule snappingRule/* = 
 			
 			if((unsigned char)snappingRule & (unsigned char)SnappingRule::KeepWorldRotation)
 			{
-				worldRotation_ = worldRotation_ * newParent->GetWorldRotation().GetInverse();
+				//Vector3 eulerThis = worldRotation_.ToEulerRadians();
+				//Vector3 eulerParent = newParent->GetWorldRotation().ToEulerRadians();
+				//worldRotation_ = Quaternion::FromEulerRadians(eulerThis - eulerParent);
+
+				worldRotation_ = newParent->GetWorldRotation().GetInverse() * worldRotation_;
 			}
 			else
 			{
