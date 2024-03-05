@@ -74,7 +74,7 @@ void WindowManager::PreInit()
 	}
 	bool enableDebugContext = false;
 #ifdef GOKNAR_PLATFORM_WINDOWS
-#if GOKNAR_BUILD_DEBUG 
+#if defined(GOKNAR_BUILD_DEBUG) 
 	enableDebugContext = true;
 #endif
 #endif

@@ -583,7 +583,7 @@ void ShaderBuilder::FS_BuildSceneForwardRendering()
 
 	CombineFragmentShader();
 	
-#if GOKNAR_BUILD_DEBUG
+#if defined(GOKNAR_BUILD_DEBUG)
 	IOManager::WriteFile("./DefaultSceneVertexShader.glsl", sceneVertexShader_.c_str());
 	IOManager::WriteFile("./DefaultSceneFragmentShader.glsl", sceneFragmentShader_.c_str());
 #endif

@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Core.h"
+
 #ifdef GOKNAR_PLATFORM_WINDOWS
 	#define _CRTDBG_MAP_ALLOC
 	#include <stdlib.h>
 	#include <crtdbg.h>
-	#ifdef GOKNAR_BUILD_DEBUG
+	#if defined(GOKNAR_BUILD_DEBUG)
 		#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
 		// Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
 		// allocations to be of _CLIENT_BLOCK type

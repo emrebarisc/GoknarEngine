@@ -8,10 +8,13 @@
 #pragma warning (disable : 4251)
 #endif
 
-#ifndef NDEBUG
-	#define GOKNAR_BUILD_DEBUG true
-#else
-	#define GOKNAR_BUILD_DEBUG false
+#if defined(GOKNAR_BUILD_DEBUG)
+	#if defined(ENGINE_CONTENT_DIR)
+		extern const std::string EngineContentDir;
+	#else
+		extern const std::string EngineContentDir;
+#endif
+	
 #endif
 
 #ifdef CONTENT_DIR
