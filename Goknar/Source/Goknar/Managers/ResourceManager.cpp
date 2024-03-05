@@ -8,6 +8,7 @@
 #include "Contents/Image.h"
 #include "Model/StaticMesh.h"
 #include "IO/IOManager.h"
+#include "Materials/Material.h"
 
 ResourceManager::ResourceManager() :
 	resourceContainer_(new ResourceContainer())
@@ -17,6 +18,11 @@ ResourceManager::ResourceManager() :
 ResourceManager::~ResourceManager()
 {
 	delete resourceContainer_;
+
+	for (auto material : materials_)
+	{
+		delete material;
+	}
 }
 
 void ResourceManager::PreInit()

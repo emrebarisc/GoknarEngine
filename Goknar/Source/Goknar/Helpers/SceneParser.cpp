@@ -41,6 +41,8 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 
 	tinyxml2::XMLError res;
 
+	ResourceManager* resourceManager = engine->GetResourceManager();
+
 	try
 	{
 		res = xmlFile.LoadFile(filePath.c_str());
@@ -628,7 +630,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			stream >> phongExponent;
 			material->SetPhongExponent(phongExponent);
 
-			scene->AddMaterial(material);
+			resourceManager->AddMaterial(material);
 			element = element->NextSiblingElement("Material");
 		}
 		stream.clear();
@@ -664,7 +666,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				{
 					if (0 <= materialId)
 					{
-						mesh->SetMaterial(scene->GetMaterial(materialId));
+						mesh->SetMaterial(resourceManager->GetMaterial(materialId));
 					}
 					loadedWithFile = true;
 				}
@@ -678,7 +680,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				mesh = new StaticMesh();
 				if (0 <= materialId)
 				{
-					mesh->SetMaterial(scene->GetMaterial(materialId));
+					mesh->SetMaterial(resourceManager->GetMaterial(materialId));
 				}
 
 				child = element->FirstChildElement("Vertices");
@@ -776,7 +778,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				{
 					if (0 <= materialId)
 					{
-						skeletalMesh->SetMaterial(scene->GetMaterial(materialId));
+						skeletalMesh->SetMaterial(resourceManager->GetMaterial(materialId));
 					}
 				}
 				stream.clear();

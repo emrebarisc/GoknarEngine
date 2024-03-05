@@ -40,11 +40,6 @@ Scene::~Scene()
 		delete skeletalMesh;
 	}
 
-	for (auto material : materials_)
-	{
-		delete material;
-	}
-
 	for (auto texture : textures_)
 	{
 		delete texture;
