@@ -142,10 +142,10 @@ target_compile_definitions(${APP_NAME} PUBLIC "CONTENT_DIR=\"${CMAKE_BINARY_DIR}
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
 	file(COPY "EngineContent" DESTINATION ${CMAKE_BINARY_DIR}/)
 	target_compile_definitions(${APP_NAME} PUBLIC "ENGINE_CONTENT_DIR=\"${CMAKE_BINARY_DIR}/EngineContent/\"")
-	add_compile_definitions(GOKNAR_DEBUG GOKNAR_ENABLE_ASSERTS)
+	add_compile_definitions(GOKNAR_BUILD_DEBUG GOKNAR_ENABLE_ASSERTS)
 	message("-------------------- Debug --------------------")
 elseif(${CMAKE_BUILD_TYPE} STREQUAL Release)
-	add_compile_definitions(GOKNAR_RELEASE)
+	add_compile_definitions(GOKNAR_BUILD_RELEASE)
 	message("-------------------- Release --------------------")
 endif()
 
