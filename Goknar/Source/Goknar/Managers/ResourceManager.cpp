@@ -52,6 +52,7 @@ Content* ResourceManager::LoadContent(const std::string& path)
 		Image* image = IOManager::LoadImage(path);
 		if (image)
 		{
+			image->SetPath(path);
 			resourceContainer_->AddImage(image);
 			content = image;
 		}
@@ -75,6 +76,7 @@ Content* ResourceManager::LoadContent(const std::string& path)
 		MeshUnit* mesh = IOManager::LoadModel(path);
 		if (mesh)
 		{
+			mesh->SetPath(path);
 			resourceContainer_->AddMesh(mesh);
 			content = mesh;
 		}
@@ -82,9 +84,13 @@ Content* ResourceManager::LoadContent(const std::string& path)
 	}
 	case ResourceType::Audio:
 	{
-		//Audio* audio = LoadAudio(path);
-		//resourceContainer_->AddAudio(audio);
-		//content = audio;
+		//Audio* audio = IOManager::LoadAudio(path);
+		//if(audio)
+		//{
+		//	audio->SetPath(path); 
+		//	resourceContainer_->AddAudio(audio);
+		//	content = audio;
+		//}
 		break;
 	}
 	case ResourceType::None:
@@ -94,7 +100,6 @@ Content* ResourceManager::LoadContent(const std::string& path)
 
 	if (content)
 	{
-		content->SetPath(path);
 		resourceContainer_->contentPathMap_[path] = content;
 	}
 
@@ -179,18 +184,24 @@ void ResourceContainer::PostInit()
 
 void ResourceContainer::AddImage(Image* image)
 {
+	GOKNAR_CORE_ASSERT(!image->GetPath().empty());
+
 	imageArray_.push_back(image);
 	contentPathMap_[image->GetPath()] = image;
 }
 
 void ResourceContainer::AddMesh(MeshUnit* mesh)
 {
+	GOKNAR_CORE_ASSERT(!mesh->GetPath().empty());
+
 	meshArray_.push_back(mesh);
 	contentPathMap_[mesh->GetPath()] = mesh;
 }
 
 void ResourceContainer::AddAudio(Audio* audio)
 {
+	GOKNAR_CORE_ASSERT(!audio->GetPath().empty());
+
 	audioArray_.push_back(audio);
 	contentPathMap_[audio->GetPath()] = audio;
 }
