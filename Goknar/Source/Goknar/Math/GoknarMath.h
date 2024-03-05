@@ -117,6 +117,30 @@ public:
 	}
 
 	template<class T>
+	static inline T Cos(T value)
+	{
+		return std::cos(value);
+	}
+
+	template<class T>
+	static inline T Acos(T value)
+	{
+		return std::acos(value);
+	}
+
+	template<class T>
+	static inline T Sin(T value)
+	{
+		return std::sin(value);
+	}
+
+	template<class T>
+	static inline T Asin(T value)
+	{
+		return std::asin(value);
+	}
+
+	template<class T>
 	static inline T Sqrt(T value)
 	{
 		return std::sqrt(value);
@@ -608,6 +632,7 @@ struct GOKNAR_API Vector4
 	}
 
 	Vector4(const Vector3& rhs, float value = 0);
+
 	Vector4 operator*(const Matrix &rhs) const;
 
 	inline friend std::ostream& operator<<(std::ostream& out, const Vector4& val)
