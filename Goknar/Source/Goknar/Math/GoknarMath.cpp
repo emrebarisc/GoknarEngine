@@ -249,7 +249,7 @@ Vector4::Vector4(float xVal, float yVal, float zVal, float wVal): x(xVal), y(yVa
 {
 }
 
-Vector4::Vector4(const Vector3& rhs, float value): x(rhs.x), y(rhs.y), z(rhs.z), w(value)
+Vector4::Vector4(const Vector3& rhs, float value) : x(rhs.x), y(rhs.y), z(rhs.z), w(value)
 {
 }
 

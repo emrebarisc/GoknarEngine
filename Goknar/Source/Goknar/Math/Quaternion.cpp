@@ -135,6 +135,39 @@ Quaternion Quaternion::FromEulerRadians(const Vector3& radians)
     );
 }
 
+Quaternion Quaternion::LookAt(const Vector3& from, const Vector3& to)
+{
+    Vector3 forwardVector = (to - from).GetNormalized();
+
+    float dot = Vector3::ForwardVector.Dot(forwardVector);
+
+    if (GoknarMath::Abs(dot + 1.f) < 0.000001f)
+    {
+        return Quaternion(Vector3::UpVector.x, Vector3::UpVector.y, Vector3::UpVector.z, PI);
+    }
+    if (GoknarMath::Abs(dot - (1.0f)) < 0.000001f)
+    {
+        return Quaternion::Identity;
+    }
+
+    float rotAngle = GoknarMath::Acos(dot);
+    Vector3 rotAxis = Vector3::ForwardVector.Cross(forwardVector);
+    rotAxis.Normalize();
+    return CreateFromAxisAngle(rotAxis, rotAngle);
+}
+
+Quaternion Quaternion::CreateFromAxisAngle(const Vector3& axis, float angle)
+{
+    float halfAngle = angle * .5f;
+    float s = GoknarMath::Sin(halfAngle);
+    Quaternion q;
+    q.x = axis.x * s;
+    q.y = axis.y * s;
+    q.z = axis.z * s;
+    q.w = GoknarMath::Cos(halfAngle);
+    return q;
+}
+
 void Quaternion::AddVector(const Vector3& vector)
 {
     Quaternion newQ(vector.x, vector.y, vector.z, 0.f);

@@ -52,6 +52,9 @@ public:
     static Quaternion FromEulerDegrees(const Vector3& degrees);
     static Quaternion FromEulerRadians(const Vector3& radians);
 
+    static Quaternion LookAt(const Vector3& from, const Vector3& to);
+    static Quaternion CreateFromAxisAngle(const Vector3& axis, float angle);
+
     void AddVector(const Vector3& vector);
 
     Vector3 ToEulerDegrees() const;
