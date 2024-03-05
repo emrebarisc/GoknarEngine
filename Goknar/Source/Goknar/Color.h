@@ -15,15 +15,15 @@ public:
 
     }
 
-    Colori(const Vector3 &vector) 
+    Colori(const Vector3& vector) 
     : r((int)vector.x), g((int)vector.y), b((int)vector.z)
     {}
 
-    Colori(const Vector3i &vector) 
+    Colori(const Vector3i& vector) 
     : r(vector.x), g(vector.y), b(vector.z)
     {}
 
-    Colori(const volatile Vector3i &vector) 
+    Colori(const volatile Vector3i& vector) 
     : r(vector.x), g(vector.y), b(vector.z)
     {}
 
@@ -115,6 +115,16 @@ public:
     ~Colorf()
     {
 
+    }
+
+    Vector4 ToVector4() const
+    {
+        return Vector4(r, g, b, 1.f);
+    }
+
+    Vector3 ToVector3() const
+    {
+        return Vector3(r, g, b);
     }
 
     inline void ClampColor(float min, float max)
