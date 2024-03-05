@@ -6,6 +6,7 @@
 
 #include "Engine.h"
 #include "Log.h"
+#include "PhysicsDebugger.h"
 #include "PhysicsUtils.h"
 #include "PhysicsWorld.h"
 #include "RigidBody.h"
@@ -16,6 +17,7 @@
 
 PhysicsWorld::PhysicsWorld()
 {
+	physicsDebugger_ = new PhysicsDebugger();
 }
 
 PhysicsWorld::~PhysicsWorld()

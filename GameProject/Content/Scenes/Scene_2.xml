@@ -65,15 +65,15 @@
 	      <Name>SM_HalfRadiusSphere</Name>
 	      <Path>Meshes/SM_HalfRadiusSphere.fbx</Path>
 	    </StaticMesh>
-	    <StaticMesh id = "10">
+	    <StaticMesh id = "11">
 	      <Name>SM_Monkey</Name>
 	      <Path>Meshes/SM_Monkey.fbx</Path>
 	    </StaticMesh>
-	    <StaticMesh id = "10">
+	    <StaticMesh id = "12">
 	      <Name>SM_MonkeyCollision</Name>
 	      <Path>Meshes/SM_MonkeyCollision.fbx</Path>
 	    </StaticMesh>
-	    <StaticMesh id = "10">
+	    <StaticMesh id = "13">
 	      <Name>SM_Axis</Name>
 	      <Path>Meshes/SM_Axis.fbx</Path>
 	    </StaticMesh>

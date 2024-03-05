@@ -16,6 +16,7 @@ class Character;
 class CollisionComponent;
 class CharacterMovementComponent;
 class OverlappingCollisionPairCallback;
+class PhysicsDebugger;
 class PhysicsObject;
 class RigidBody;
 
@@ -78,6 +79,11 @@ public:
         return dynamicsWorld_;
     }
 
+    PhysicsDebugger* GetPhysicsDebugger() const
+    {
+        return physicsDebugger_;
+    }
+
 protected:
     typedef std::vector<PhysicsObject*> PhysicsObjectVector;
     PhysicsObjectVector physicsObjects_;
@@ -94,6 +100,8 @@ protected:
 private:
 
     Vector3 gravity_{ Vector3{0.f, 0.f, -10.f} };
+
+    PhysicsDebugger* physicsDebugger_{ nullptr };
 
     btGhostPairCallback* ghostPairCallback_{ nullptr };
     btBroadphaseInterface* broadphase_{ nullptr };

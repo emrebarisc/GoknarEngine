@@ -7,6 +7,7 @@
 #include "Managers/CameraManager.h"
 #include "Components/Component.h"
 #include "Controller.h"
+#include "Debug/DebugDrawer.h"
 #include "Editor/ImGuiEditor/ImGuiEditor.h"
 #include "Managers/InputManager.h"
 #include "Log.h"
@@ -53,6 +54,8 @@ Engine::Engine()
 #endif
 	cameraManager_ = new CameraManager();
 
+	debugDrawer_ = new DebugDrawer();
+
 	// TODO
 	//application_ = CreateApplication();
 }
@@ -65,8 +68,9 @@ Engine::~Engine()
 #if GOKNAR_EDITOR
 	delete editor_;
 #endif
-
 	DestroyAllObjectsAndComponents();
+
+	delete debugDrawer_;
 
 	delete objectManager_;
 	delete resourceManager_;

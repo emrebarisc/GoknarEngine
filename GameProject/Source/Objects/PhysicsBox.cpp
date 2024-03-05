@@ -3,7 +3,14 @@
 #include "Engine.h"
 #include "Components/StaticMeshComponent.h"
 #include "Managers/ResourceManager.h"
+#include "Physics/PhysicsDebugger.h"
+#include "Physics/PhysicsWorld.h"
 #include "Physics/Components/BoxCollisionComponent.h"
+
+#include "Debug/DebugDrawer.h"
+
+
+#include "BulletCollision/CollisionShapes/btBoxShape.h"
 
 PhysicsBox::PhysicsBox() : RigidBody()
 {
@@ -29,4 +36,14 @@ PhysicsBox::PhysicsBox() : RigidBody()
 void PhysicsBox::BeginGame()
 {
 	RigidBody::BeginGame();
+
+	DebugDrawer::DrawCollisionComponent(boxCollisionComponent_, Colorf::Yellow, 5.f, 1.f, this);
+	
+	btBoxShape* boxShape = (btBoxShape*)boxCollisionComponent_->GetBulletCollisionShape();
+
+	engine->GetPhysicsWorld()->GetPhysicsDebugger()->drawBox(
+		bulletCollisionObject_->getWorldTransform().getOrigin() - boxShape->getHalfExtentsWithoutMargin(),
+		bulletCollisionObject_->getWorldTransform().getOrigin() + boxShape->getHalfExtentsWithoutMargin(),
+		PhysicsUtils::FromVector3ToBtVector3(Vector3{ 1.f, 1.f, 1.f })
+	);
 }

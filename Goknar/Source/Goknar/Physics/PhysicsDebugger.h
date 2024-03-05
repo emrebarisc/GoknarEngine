@@ -20,10 +20,10 @@ public:
 	virtual void draw3dText(const btVector3& location, const char* textString) override {}
 
 	virtual void setDebugMode(int debugMode) override {}
+	virtual int getDebugMode() const override { return 0; }
 protected:
 
 private:
-
 };
 
 
