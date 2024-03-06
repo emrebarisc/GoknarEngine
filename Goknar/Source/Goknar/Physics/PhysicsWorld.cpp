@@ -62,6 +62,9 @@ PhysicsWorld::~PhysicsWorld()
 
 	delete overlappingCollisionPairCallback_;
 	overlappingCollisionPairCallback_ = nullptr;
+
+	delete physicsDebugger_;
+	physicsDebugger_ = nullptr;
 }
 
 bool OverlappingDestroyedCallback(void* userPersistentData)
