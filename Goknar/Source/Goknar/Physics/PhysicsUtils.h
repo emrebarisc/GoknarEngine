@@ -6,6 +6,7 @@
 #include "Math/Quaternion.h"
 
 #include "LinearMath/btVector3.h"
+#include "LinearMath/btTransform.h"
 #include "LinearMath/btQuaternion.h"
 
 class GOKNAR_API PhysicsUtils
@@ -29,6 +30,15 @@ public:
     static inline Quaternion FromBtQuaternionToQuaternion(const btQuaternion& bulletQuaternion)
     {
         return Quaternion(bulletQuaternion.x(), bulletQuaternion.y(), bulletQuaternion.z(), bulletQuaternion.w());
+    }
+
+    static inline btTransform GetBulletTransform(const Quaternion& rotation, const Vector3& position)
+    {
+        btTransform bulletTransform;
+        bulletTransform.setIdentity();
+        bulletTransform.setOrigin(PhysicsUtils::FromVector3ToBtVector3(position));
+        bulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(rotation));
+        return bulletTransform;
     }
 };
 
