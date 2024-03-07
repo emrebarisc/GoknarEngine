@@ -524,6 +524,7 @@ void Engine::RemoveFromObjectToBeInitialized(ObjectBase* object)
 		{
 			objectsToBeInitialized_.erase(objectsToBeInitializedIterator);
 			--objectsToBeInitializedSize_;
+			hasUninitializedObjects_ = objectsToBeInitializedSize_ != 0;
 			return;
 		}
 	}
@@ -591,6 +592,7 @@ void Engine::RemoveFromComponentsToBeInitialized(Component* component)
 		{
 			componentsToBeInitialized_.erase(componentsToBeInitializedIterator);
 			--componentsToBeInitializedSize_;
+			hasUninitializedObjects_ = componentsToBeInitializedSize_ != 0;
 			return;
 		}
 	}
