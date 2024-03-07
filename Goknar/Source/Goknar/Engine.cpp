@@ -523,6 +523,7 @@ void Engine::RemoveFromObjectToBeInitialized(ObjectBase* object)
 		if (*objectsToBeInitializedIterator == object)
 		{
 			objectsToBeInitialized_.erase(objectsToBeInitializedIterator);
+			--objectsToBeInitializedSize_;
 			return;
 		}
 	}
@@ -589,6 +590,7 @@ void Engine::RemoveFromComponentsToBeInitialized(Component* component)
 		if (*componentsToBeInitializedIterator == component)
 		{
 			componentsToBeInitialized_.erase(componentsToBeInitializedIterator);
+			--componentsToBeInitializedSize_;
 			return;
 		}
 	}
