@@ -28,12 +28,41 @@ struct GOKNAR_API RaycastData
     CollisionMask collisionMask{ CollisionMask::BlockAndOverlapAll };
 };
 
-struct GOKNAR_API RaycastClosestResult
+struct GOKNAR_API SweepData
 {
-    PhysicsObject* hitObject;
-    Vector3 hitPosition;
-    Vector3 hitNormal;
-    float hitFraction;
+    Quaternion fromRotation{ Quaternion::Identity };
+    Quaternion toRotation{ Quaternion::Identity };
+
+    Vector3 fromPosition{ Vector3::ZeroVector };
+    Vector3 toPosition{ Vector3::ZeroVector };
+
+    const CollisionComponent* collisionComponent{ nullptr };
+    
+    float ccdPenetration{ 0.f };
+
+    CollisionGroup collisionGroup{ CollisionGroup::All };
+    CollisionMask collisionMask{ CollisionMask::BlockAndOverlapAll };
+};
+
+struct GOKNAR_API RaycastSingleResult
+{
+    RaycastSingleResult(){}
+    RaycastSingleResult(PhysicsObject* object, const Vector3& position, const Vector3& normal, float fraction) :
+        hitObject(object),
+        hitPosition(position),
+        hitNormal(normal),
+        hitFraction(fraction)
+    {}
+
+    PhysicsObject* hitObject{ nullptr };
+    Vector3 hitPosition { Vector3::ZeroVector };
+    Vector3 hitNormal { Vector3::ZeroVector };
+    float hitFraction { 0.f };
+};
+
+struct GOKNAR_API RaycastAllResult
+{
+    std::vector<RaycastSingleResult> hitResults;
 };
 
 class GOKNAR_API PhysicsWorld
@@ -57,8 +86,9 @@ public:
     virtual void AddCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent);
     virtual void RemoveCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent);
 
-    bool RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest);
-    //virtual bool RaycastAll(const RaycastData& raycastData, RaycastAllResult& raycastClosest);
+    virtual bool RaycastClosest(const RaycastData& raycastData, RaycastSingleResult& raycastClosest);
+    virtual bool RaycastAll(const RaycastData& raycastData, RaycastAllResult& raycastClosest);
+    virtual bool SweepClosest(const SweepData& sweepData, RaycastSingleResult& result);
 
     const Vector3& GetGravity() const
     {
@@ -98,7 +128,6 @@ protected:
     OverlappingCollisionComponents overlappingCollisionComponents_;
 
 private:
-
     Vector3 gravity_{ Vector3{0.f, 0.f, -10.f} };
 
     PhysicsDebugger* physicsDebugger_{ nullptr };

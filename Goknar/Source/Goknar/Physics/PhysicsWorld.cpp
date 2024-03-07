@@ -293,7 +293,7 @@ void PhysicsWorld::RemoveCharacterMovementComponent(CharacterMovementComponent* 
 	dynamicsWorld_->removeAction(characterMovementComponent->GetBulletKinematicCharacterController());
 }
 
-bool PhysicsWorld::RaycastClosest(const RaycastData& raycastData, RaycastClosestResult& raycastClosest)
+bool PhysicsWorld::RaycastClosest(const RaycastData& raycastData, RaycastSingleResult& raycastClosest)
 {
 	btVector3 bulletFrom = PhysicsUtils::FromVector3ToBtVector3(raycastData.from);
 	btVector3 bulletTo = PhysicsUtils::FromVector3ToBtVector3(raycastData.to);
@@ -315,5 +315,67 @@ bool PhysicsWorld::RaycastClosest(const RaycastData& raycastData, RaycastClosest
 		return true;
 	}
 
+	return false;
+}
+
+bool PhysicsWorld::RaycastAll(const RaycastData& raycastData, RaycastAllResult& raycastAllResult)
+{
+	btVector3 bulletFrom = PhysicsUtils::FromVector3ToBtVector3(raycastData.from);
+	btVector3 bulletTo = PhysicsUtils::FromVector3ToBtVector3(raycastData.to);
+
+	btCollisionWorld::AllHitsRayResultCallback allHitsRayResultCallback(bulletFrom, bulletTo);
+
+	allHitsRayResultCallback.m_collisionFilterGroup = (int)raycastData.collisionGroup;
+	allHitsRayResultCallback.m_collisionFilterMask = (int)raycastData.collisionMask;
+
+	dynamicsWorld_->rayTest(bulletFrom, bulletTo, allHitsRayResultCallback);
+
+	if(allHitsRayResultCallback.hasHit())
+	{
+		const int hitCount = allHitsRayResultCallback.m_collisionObjects.size();
+		for (int hitIndex = 0; hitIndex < hitCount; hitIndex++)
+		{
+			raycastAllResult.hitResults.emplace_back(
+				RaycastSingleResult(
+					(*physicsObjectMap_.find(allHitsRayResultCallback.m_collisionObjects[hitIndex])).second,
+					PhysicsUtils::FromBtVector3ToVector3(allHitsRayResultCallback.m_hitPointWorld[hitIndex]),
+					PhysicsUtils::FromBtVector3ToVector3(allHitsRayResultCallback.m_hitNormalWorld[hitIndex]),
+					allHitsRayResultCallback.m_hitFractions[hitIndex]
+				)
+			);
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool PhysicsWorld::SweepClosest(const SweepData& sweepData, RaycastSingleResult& result)
+{
+	GOKNAR_CORE_ASSERT(sweepData.collisionComponent->GetBulletCollisionShape()->isConvex());
+
+	btConvexShape* bulletcollisionShape = (btConvexShape*)sweepData.collisionComponent->GetBulletCollisionShape();
+	
+	btTransform bulletFromTransform = PhysicsUtils::GetBulletTransform(sweepData.fromRotation, sweepData.fromPosition);
+	btTransform bulletToTransform = PhysicsUtils::GetBulletTransform(sweepData.toRotation, sweepData.toPosition);
+
+	btCollisionWorld::ClosestConvexResultCallback closestResultCallback(
+		PhysicsUtils::FromVector3ToBtVector3(sweepData.fromPosition),
+		PhysicsUtils::FromVector3ToBtVector3(sweepData.toPosition)
+	);
+
+	dynamicsWorld_->convexSweepTest(bulletcollisionShape, bulletFromTransform, bulletToTransform, closestResultCallback, sweepData.ccdPenetration);
+
+	if(closestResultCallback.hasHit())
+	{
+		result.hitObject = (*physicsObjectMap_.find(closestResultCallback.m_hitCollisionObject)).second;
+		result.hitFraction = closestResultCallback.m_closestHitFraction;
+		result.hitPosition = PhysicsUtils::FromBtVector3ToVector3(closestResultCallback.m_hitPointWorld);
+		result.hitNormal = PhysicsUtils::FromBtVector3ToVector3(closestResultCallback.m_hitNormalWorld);
+
+		return true;
+	}
+	
 	return false;
 }
