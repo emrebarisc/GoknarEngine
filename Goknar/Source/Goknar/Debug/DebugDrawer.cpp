@@ -78,20 +78,22 @@ void DebugDrawer::DrawSphere(const Vector3& position, float radius, const Colorf
 {
 }
 
-void DebugDrawer::DrawBox(const Vector3& position, const Vector3& halfSize, const Colorf& color, float thickness, float time, ObjectBase* owner)
+void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, const Vector3& halfSize, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
 	ObjectBase* box = new ObjectBase();
 
+	Vector4 rotatedHalfSize = rotation.GetMatrix() * Vector4{ halfSize, 1.f };
+
 	Vector3 corners[8] =
 	{
-		{ position.x - halfSize.x, position.y - halfSize.y, position.z - halfSize.z },
-		{ position.x + halfSize.x, position.y - halfSize.y, position.z - halfSize.z },
-		{ position.x - halfSize.x, position.y + halfSize.y, position.z - halfSize.z },
-		{ position.x + halfSize.x, position.y + halfSize.y, position.z - halfSize.z },
-		{ position.x - halfSize.x, position.y - halfSize.y, position.z + halfSize.z },
-		{ position.x + halfSize.x, position.y - halfSize.y, position.z + halfSize.z },
-		{ position.x - halfSize.x, position.y + halfSize.y, position.z + halfSize.z },
-		{ position.x + halfSize.x, position.y + halfSize.y, position.z + halfSize.z } 
+		{ position.x - rotatedHalfSize.x, position.y - rotatedHalfSize.y, position.z - rotatedHalfSize.z },
+		{ position.x + rotatedHalfSize.x, position.y - rotatedHalfSize.y, position.z - rotatedHalfSize.z },
+		{ position.x - rotatedHalfSize.x, position.y + rotatedHalfSize.y, position.z - rotatedHalfSize.z },
+		{ position.x + rotatedHalfSize.x, position.y + rotatedHalfSize.y, position.z - rotatedHalfSize.z },
+		{ position.x - rotatedHalfSize.x, position.y - rotatedHalfSize.y, position.z + rotatedHalfSize.z },
+		{ position.x + rotatedHalfSize.x, position.y - rotatedHalfSize.y, position.z + rotatedHalfSize.z },
+		{ position.x - rotatedHalfSize.x, position.y + rotatedHalfSize.y, position.z + rotatedHalfSize.z },
+		{ position.x + rotatedHalfSize.x, position.y + rotatedHalfSize.y, position.z + rotatedHalfSize.z } 
 	};
 
 	DrawLine(corners[0], corners[1], color, thickness, time, box);
@@ -121,7 +123,7 @@ void DebugDrawer::DrawCapsule(const Vector3& position, float radius, const Color
 
 void DebugDrawer::DrawCollisionComponent(BoxCollisionComponent* boxCollisionComponent, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
-	DrawBox(boxCollisionComponent->GetWorldPosition(), boxCollisionComponent->GetHalfSize(), color, thickness, time, owner);
+	DrawBox(boxCollisionComponent->GetWorldPosition(), boxCollisionComponent->GetWorldRotation(), boxCollisionComponent->GetHalfSize(), color, thickness, time, owner);
 }
 
 void DebugDrawer::DrawCollisionComponent(CapsuleCollisionComponent* capsuleCollisionComponent, const Colorf& color, float thickness, float time, ObjectBase* owner)
