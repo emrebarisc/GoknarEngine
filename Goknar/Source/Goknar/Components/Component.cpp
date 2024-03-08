@@ -115,13 +115,19 @@ void Component::UpdateComponentToWorldTransformationMatrix()
 		worldRotation_ = parent_->GetWorldRotation();
 		worldScaling_ = parent_->GetWorldScaling();
 	}
-	else
+	else if(owner_)
 	{
 		componentToWorldTransformationMatrix_ = owner_->GetWorldTransformationMatrix();
 
 		worldPosition_ = owner_->GetWorldPosition();
 		worldRotation_ = owner_->GetWorldRotation();
 		worldScaling_ = owner_->GetWorldScaling();
+	}
+	else
+	{
+		worldPosition_ = Vector3::ZeroVector;
+		worldRotation_ = Quaternion::Identity;
+		worldScaling_ = Vector3{ 1.f, 1.f, 1.f };
 	}
 
 	worldPosition_ += GetRelativePosition();
