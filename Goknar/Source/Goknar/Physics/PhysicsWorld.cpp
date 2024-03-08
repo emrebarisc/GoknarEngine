@@ -365,6 +365,9 @@ bool PhysicsWorld::SweepClosest(const SweepData& sweepData, RaycastSingleResult&
 		PhysicsUtils::FromVector3ToBtVector3(sweepData.toPosition)
 	);
 
+	closestResultCallback.m_collisionFilterGroup = (int)sweepData.collisionGroup;
+	closestResultCallback.m_collisionFilterMask = (int)sweepData.collisionMask;
+
 	dynamicsWorld_->convexSweepTest(bulletcollisionShape, bulletFromTransform, bulletToTransform, closestResultCallback, sweepData.ccdPenetration);
 
 	if(closestResultCallback.hasHit())
