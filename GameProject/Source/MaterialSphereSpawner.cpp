@@ -28,7 +28,7 @@ void MaterialSphereSpawner::BeginGame()
             raycastData.from = position + Vector3{ 0.f, 0.f, 1000.f };
             raycastData.to = position - Vector3{ 0.f, 0.f, 1000.f };
 
-            RaycastClosestResult raycastResult;
+            RaycastSingleResult raycastResult;
 
             if (engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult))
             {

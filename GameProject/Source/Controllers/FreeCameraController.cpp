@@ -9,6 +9,7 @@
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
 #include "Goknar/GoknarAssert.h"
+#include "Goknar/Debug/DebugDrawer.h"
 #include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Model/MeshUnit.h"
 #include "Goknar/Model/IMeshInstance.h"
@@ -16,6 +17,7 @@
 #include "Goknar/Managers/WindowManager.h"
 #include "Goknar/Physics/PhysicsWorld.h"
 #include "Goknar/Physics/RigidBody.h"
+#include "Goknar/Physics/Components/BoxCollisionComponent.h"
 
 FreeCameraController::FreeCameraController(Component* parent) :
 	Component(parent),
@@ -36,9 +38,6 @@ void FreeCameraController::BeginGame()
 {
 	InputManager* inputManager = engine->GetInputManager();
 
-	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::OnMouseLeftClickPressed, this));
-
-
 	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::OnMouseRightClickPressed, this));
 	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_RELEASE, std::bind(&FreeCameraController::OnMouseRightClickReleased, this));
 
@@ -53,6 +52,10 @@ void FreeCameraController::BeginGame()
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::DOWN, INPUT_ACTION::G_REPEAT, std::bind(&FreeCameraController::MoveBackwardListener, this));
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT_CONTROL, INPUT_ACTION::G_REPEAT, std::bind(&FreeCameraController::MoveDownListener, this));
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_REPEAT, std::bind(&FreeCameraController::MoveUpListener, this));
+
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_8, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::DoRaycastClosestTest, this));
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_9, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::DoRaycastAllTest, this));
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_0, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::DoSweepTest, this));
 
 	inputManager->AddCursorDelegate(std::bind(&FreeCameraController::CursorMovement, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -100,31 +103,109 @@ void FreeCameraController::Pitch(float value)
 	freeCamera_->Pitch(value);
 }
 
-void FreeCameraController::OnMouseLeftClickPressed()
+void FreeCameraController::DoRaycastClosestTest()
 {
 	double x, y;
 	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
 	Vector2i screenCoordinate = Vector2i{(int)x, (int)y};
 	
 	RaycastData raycastData;
-	RaycastClosestResult raycastClosestResult;
+	RaycastSingleResult raycastSingleResult;
 
 	Vector3 cameraPosition = freeCamera_->GetPosition();
 	raycastData.from = cameraPosition;
 	raycastData.to = cameraPosition + 1000.f * freeCamera_->GetWorldDirectionAtPixel(screenCoordinate);
-	if (engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastClosestResult))
+	if (engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastSingleResult))
 	{
-		PhysicsObject* hitObject = raycastClosestResult.hitObject;
+		PhysicsObject* hitObject = raycastSingleResult.hitObject;
 		RigidBody* hitRigidBody = dynamic_cast<RigidBody*>(hitObject);
 		if (hitRigidBody)
 		{
-			//hitRigidBody->SetIsActive(false);
 			hitRigidBody->ApplyForce(Vector3::UpVector * 10000.f);
 			hitRigidBody->ApplyTorque(Vector3::LeftVector * 10000.f);
 		}
 
 		GOKNAR_INFO("Raycast hit object: {}", hitObject->GetName());
 	}
+}
+
+void FreeCameraController::DoRaycastAllTest()
+{
+	double x, y;
+	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
+	Vector2i screenCoordinate = Vector2i{(int)x, (int)y};
+	
+	RaycastAllResult raycastAllResult;
+	RaycastData raycastData;
+
+	Vector3 cameraPosition = freeCamera_->GetPosition();
+	raycastData.from = cameraPosition;
+	raycastData.to = cameraPosition + 1000.f * freeCamera_->GetWorldDirectionAtPixel(screenCoordinate);
+	if (engine->GetPhysicsWorld()->RaycastAll(raycastData, raycastAllResult))
+	{
+		int hitCount = raycastAllResult.hitResults.size();
+		for(int hitIndex = 0; hitIndex < hitCount; ++hitIndex)
+		{
+			RaycastSingleResult raycastSingleResult = raycastAllResult.hitResults[hitIndex];
+			PhysicsObject* hitObject = raycastSingleResult.hitObject;
+			RigidBody* hitRigidBody = dynamic_cast<RigidBody*>(hitObject);
+			if (hitRigidBody)
+			{
+				hitRigidBody->ApplyForce(Vector3::UpVector * 10000.f);
+				hitRigidBody->ApplyTorque(Vector3::LeftVector * 10000.f);
+			}
+
+			GOKNAR_INFO("\tRaycast hit object: {}", hitObject->GetName());
+		}
+	}
+}
+
+void FreeCameraController::DoSweepTest()
+{
+	double x, y;
+	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
+	Vector2i screenCoordinate = Vector2i{(int)x, (int)y};
+	
+	RaycastSingleResult raycastSingleResult;
+
+	SweepData sweepData;
+
+	BoxCollisionComponent* sweepCollisionComponent = new BoxCollisionComponent(static_cast<Component*>(nullptr));
+
+	sweepCollisionComponent->SetHalfSize(Vector3{1.f, 1.f, 1.f});
+	sweepCollisionComponent->PreInit();
+	sweepCollisionComponent->Init();
+	sweepCollisionComponent->PostInit();
+
+	sweepData.collisionComponent = sweepCollisionComponent;
+
+	Vector3 cameraPosition = freeCamera_->GetPosition();
+	Quaternion cameraRotation = Quaternion(freeCamera_->GetViewMatrix());
+
+	sweepData.fromPosition = cameraPosition;
+	sweepData.fromRotation = cameraRotation;
+	sweepData.toPosition = cameraPosition + 1000.f * freeCamera_->GetWorldDirectionAtPixel(screenCoordinate);
+	sweepData.toRotation = cameraRotation;
+	sweepData.ccdPenetration = 1.f;
+
+	sweepCollisionComponent->SetRelativePosition(cameraPosition);
+	sweepCollisionComponent->SetRelativeRotation(cameraRotation);
+	DebugDrawer::DrawCollisionComponent(sweepCollisionComponent, Colorf::Blue, 10.f, 0.f);
+
+	if (engine->GetPhysicsWorld()->SweepClosest(sweepData, raycastSingleResult))
+	{
+		PhysicsObject* hitObject = raycastSingleResult.hitObject;
+		RigidBody* hitRigidBody = dynamic_cast<RigidBody*>(hitObject);
+		if (hitRigidBody)
+		{
+			hitRigidBody->ApplyForce(Vector3::UpVector * 10000.f);
+			hitRigidBody->ApplyTorque(Vector3::LeftVector * 10000.f);
+		}
+
+		GOKNAR_INFO("Raycast hit object: {}", hitObject->GetName());
+	}
+
+	sweepCollisionComponent->Destroy();
 }
 
 void FreeCameraController::OnMouseRightClickPressed()

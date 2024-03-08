@@ -32,7 +32,9 @@ private:
 		isRotatingTheCamera_ = false;
 	}
 
-	void OnMouseLeftClickPressed();
+	void DoRaycastClosestTest();
+	void DoRaycastAllTest();
+	void DoSweepTest();
 
 	void OnMouseMiddleClickPressed();
 	void OnMouseMiddleClickReleased()
