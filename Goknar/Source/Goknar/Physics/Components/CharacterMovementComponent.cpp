@@ -55,8 +55,8 @@ void CharacterMovementComponent::Init()
 	(
 		collisionComponent_ && 
 		dynamic_cast<CollisionComponent*>(collisionComponent_) && 
-		!dynamic_cast<NonMovingTriangleMeshCollisionComponent*>(collisionComponent_), 
-		"Relative collision component can obly be a CollisionComponent excluding NonMovingTriangleMeshCollisionComponent"
+		collisionComponent_->GetBulletCollisionShape()->isConvex(), 
+		"Relative collision component can obly be a convex CollisionComponent"
 	);
 
 	btPairCachingGhostObject* bulletPairCachingGhostObject = (btPairCachingGhostObject*)ownerCharacter->GetBulletCollisionObject();
