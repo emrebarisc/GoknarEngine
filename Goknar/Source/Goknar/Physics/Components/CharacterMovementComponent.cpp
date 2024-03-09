@@ -73,7 +73,7 @@ void CharacterMovementComponent::Init()
 
 	bulletPairCachingGhostObject->setUserPointer(this);
 
-	// bulletKinematicCharacterController_->setGravity(PhysicsUtils::FromVector3ToBtVector3(physicsWorld->GetGravity()));
+	bulletKinematicCharacterController_->setGravity(PhysicsUtils::FromVector3ToBtVector3(physicsWorld->GetGravity()));
 }
 
 void CharacterMovementComponent::PostInit()
@@ -207,7 +207,7 @@ float CharacterMovementComponent::GetStepHeight() const
 	{
 		return stepHeight_;
 	}
-	
+
 	return bulletKinematicCharacterController_->getStepHeight();
 }
 
