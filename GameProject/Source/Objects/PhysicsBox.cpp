@@ -37,13 +37,13 @@ void PhysicsBox::BeginGame()
 {
 	RigidBody::BeginGame();
 
-	DebugDrawer::DrawCollisionComponent(boxCollisionComponent_, Colorf::Yellow, 5.f, 1.f, this);
+	// DebugDrawer::DrawCollisionComponent(boxCollisionComponent_, Colorf::Yellow, 5.f, 1.f, this);
 	
 	btBoxShape* boxShape = (btBoxShape*)boxCollisionComponent_->GetBulletCollisionShape();
 
-	engine->GetPhysicsWorld()->GetPhysicsDebugger()->drawBox(
-		bulletCollisionObject_->getWorldTransform().getOrigin() - boxShape->getHalfExtentsWithoutMargin(),
-		bulletCollisionObject_->getWorldTransform().getOrigin() + boxShape->getHalfExtentsWithoutMargin(),
-		PhysicsUtils::FromVector3ToBtVector3(Vector3{ 1.f, 1.f, 1.f })
-	);
+	// engine->GetPhysicsWorld()->GetPhysicsDebugger()->drawBox(
+	// 	bulletCollisionObject_->getWorldTransform().getOrigin() - boxShape->getHalfExtentsWithoutMargin(),
+	// 	bulletCollisionObject_->getWorldTransform().getOrigin() + boxShape->getHalfExtentsWithoutMargin(),
+	// 	PhysicsUtils::FromVector3ToBtVector3(Vector3{ 1.f, 1.f, 1.f })
+	// );
 }

@@ -190,7 +190,7 @@ void FreeCameraController::DoSweepTest()
 
 	sweepCollisionComponent->SetRelativePosition(cameraPosition);
 	sweepCollisionComponent->SetRelativeRotation(cameraRotation);
-	DebugDrawer::DrawCollisionComponent(sweepCollisionComponent, Colorf::Blue, 10.f, 0.f);
+	// DebugDrawer::DrawCollisionComponent(sweepCollisionComponent, Colorf::Blue, 10.f, 0.f);
 
 	if (engine->GetPhysicsWorld()->SweepClosest(sweepData, raycastSingleResult))
 	{

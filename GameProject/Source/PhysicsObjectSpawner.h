@@ -17,9 +17,11 @@ public:
     virtual void Tick(float deltaTime) override;
 
     Vector3 GetRandomPosition();
+    Quaternion GetRandomRotation();
     void CreatePhysicsBox();
     void CreatePhysicsSphere();
     void CreateMonkey();
+    void CreateMultipleCollisionComponentObject();
     void ThrowCannonBall();
     void SpawnStaticBoxes();
 
