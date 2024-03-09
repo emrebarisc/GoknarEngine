@@ -53,7 +53,7 @@ public:
 	virtual void PlayerStep(PhysicsWorld* physicsWorld, float dt);
 	virtual void PlayerStep(btCollisionWorld* bulletCollisionWorld, float dt);
 
-	virtual void SetStepHeight(float h);
+	virtual void SetStepHeight(float stepHeight);
 	virtual float GetStepHeight() const;
 	virtual void SetFallSpeed(float fallSpeed);
 	virtual float GetFallSpeed() const;
@@ -116,6 +116,7 @@ private:
 	Character* ownerCharacter_{ nullptr };
 
 	float movementSpeed_{ 0.25f };
+	float stepHeight_{ 0.35f };
 };
 
 #endif

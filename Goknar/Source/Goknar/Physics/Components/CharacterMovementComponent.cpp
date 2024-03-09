@@ -65,7 +65,7 @@ void CharacterMovementComponent::Init()
 		new btKinematicCharacterController(
 			bulletPairCachingGhostObject,
 			(btConvexShape*)collisionComponent_->GetBulletCollisionShape(),
-			0.35f,
+			stepHeight_,
 			PhysicsUtils::FromVector3ToBtVector3(Vector3::UpVector));
 
 	PhysicsWorld* physicsWorld = engine->GetPhysicsWorld();
@@ -189,13 +189,25 @@ void CharacterMovementComponent::PlayerStep(btCollisionWorld* bulletCollisionWor
 	UpdateOwnerTransformation();
 }
 
-void CharacterMovementComponent::SetStepHeight(float h)
+void CharacterMovementComponent::SetStepHeight(float stepHeight)
 {
-	bulletKinematicCharacterController_->setStepHeight(h);
+	stepHeight_ = stepHeight;
+
+	if(!GetIsInitialized())
+	{
+		return;
+	}
+
+	bulletKinematicCharacterController_->setStepHeight(stepHeight);
 }
 
 float CharacterMovementComponent::GetStepHeight() const
 {
+	if(!GetIsInitialized())
+	{
+		return stepHeight_;
+	}
+	
 	return bulletKinematicCharacterController_->getStepHeight();
 }
 
