@@ -6,6 +6,7 @@
 #include "ArcherCharacter.h"
 #include "Objects/PhysicsBox.h"
 #include "Objects/PhysicsSphere.h"
+#include "Objects/MultipleCollisionComponentObject.h"
 #include "Objects/Monkey.h"
 #include "Objects/CannonBall.h"
 
@@ -104,7 +105,7 @@ void PhysicsObjectSpawner::Tick(float deltaTime)
         counter += 1.f;
         
         std::random_device randomDevice;
-        std::uniform_int_distribution<int> randomObjectDist(0, 2);
+        std::uniform_int_distribution<int> randomObjectDist(0, 3);
         int randomObjectInt = randomObjectDist(randomDevice);
 
         if(randomObjectInt == 0)
@@ -118,6 +119,10 @@ void PhysicsObjectSpawner::Tick(float deltaTime)
         else if(randomObjectInt == 2)
         {
             CreateMonkey();
+        }
+        else if(randomObjectInt == 3)
+        {
+            CreateMultipleCollisionComponentObject();
         }
     }
 
@@ -135,24 +140,46 @@ Vector3 PhysicsObjectSpawner::GetRandomPosition()
     return Vector3{ randomPositionX, randomPositionY, 10.f };
 }
 
+Quaternion PhysicsObjectSpawner::GetRandomRotation()
+{
+    std::random_device rd;
+    std::uniform_real_distribution<float> positionDistX(0.f, PI);
+    std::uniform_real_distribution<float> positionDistY(0.f, PI);
+    std::uniform_real_distribution<float> positionDistZ(0.f, PI);
+    float randomRotationX = positionDistX(rd);
+    float randomRotationY = positionDistY(rd);
+    float randomRotationZ = positionDistZ(rd);
+
+    return Quaternion::FromEulerRadians(Vector3{ randomRotationX, randomRotationY, randomRotationZ });
+}
+
 void PhysicsObjectSpawner::CreatePhysicsBox()
 {
     PhysicsBox* physicsBox = new PhysicsBox();
     physicsBox->SetWorldPosition(initialPosition_ + GetRandomPosition());
+    physicsBox->SetWorldRotation(GetRandomRotation());
 }
 
 void PhysicsObjectSpawner::CreatePhysicsSphere()
 {
     PhysicsSphere* physicsSphere = new PhysicsSphere();
     physicsSphere->SetWorldPosition(initialPosition_ + GetRandomPosition());
+    physicsSphere->SetWorldRotation(GetRandomRotation());
 }
 
 void PhysicsObjectSpawner::CreateMonkey()
 {
     Monkey* monkey = new Monkey();
     monkey->SetWorldPosition(initialPosition_ + GetRandomPosition());
+    monkey->SetWorldRotation(GetRandomRotation());
 }
 
+void PhysicsObjectSpawner::CreateMultipleCollisionComponentObject()
+{
+    MultipleCollisionComponentObject* multipleCollisionComponentObject = new MultipleCollisionComponentObject();
+    multipleCollisionComponentObject->SetWorldPosition(initialPosition_ + GetRandomPosition());
+    multipleCollisionComponentObject->SetWorldRotation(GetRandomRotation());
+}
 void PhysicsObjectSpawner::ThrowCannonBall()
 {
     CannonBall* cannonBall = new CannonBall();

@@ -88,15 +88,15 @@ void ArcherCharacter::BeginGame()
 	EquipBow(true);
 	btCapsuleShape* capsuleShape = (btCapsuleShape*)capsuleCollisionComponent_->GetBulletCollisionShape();
 
-	engine->GetPhysicsWorld()->GetPhysicsDebugger()->drawCapsule(
-		capsuleShape->getRadius(),
-		capsuleShape->getHalfHeight(),
-		capsuleShape->getUpAxis(),
-		GetBulletCollisionObject()->getWorldTransform(),
-		PhysicsUtils::FromVector3ToBtVector3(Vector3{1.f, 0.f, 0.f})
-	);
+	// engine->GetPhysicsWorld()->GetPhysicsDebugger()->drawCapsule(
+	// 	capsuleShape->getRadius(),
+	// 	capsuleShape->getHalfHeight(),
+	// 	capsuleShape->getUpAxis(),
+	// 	GetBulletCollisionObject()->getWorldTransform(),
+	// 	PhysicsUtils::FromVector3ToBtVector3(Vector3{1.f, 0.f, 0.f})
+	// );
 
-	DebugDrawer::DrawCollisionComponent(capsuleCollisionComponent_, Colorf::Blue, 1.f, 1.f, this);
+	// DebugDrawer::DrawCollisionComponent(capsuleCollisionComponent_, Colorf::Blue, 1.f, 1.f, this);
 }
 
 void ArcherCharacter::Tick(float deltaTime)
