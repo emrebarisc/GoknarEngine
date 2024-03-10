@@ -186,7 +186,6 @@ void FreeCameraController::DoSweepTest()
 	sweepData.fromRotation = cameraRotation;
 	sweepData.toPosition = cameraPosition + 1000.f * freeCamera_->GetWorldDirectionAtPixel(screenCoordinate);
 	sweepData.toRotation = cameraRotation;
-	sweepData.ccdPenetration = 1.f;
 
 	sweepCollisionComponent->SetRelativePosition(cameraPosition);
 	sweepCollisionComponent->SetRelativeRotation(cameraRotation);

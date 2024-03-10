@@ -70,5 +70,6 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "complex": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/home/baris/Desktop/Projects/GoknarEngine/Goknar/thirdparty/assimp/contrib/pugixml"
 }
