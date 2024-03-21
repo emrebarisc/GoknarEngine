@@ -114,10 +114,10 @@ Quaternion::Quaternion(Vector3 axis, float angle)
 {
     axis.Normalize();
     const float halfAngle = angle * 0.5f;
-    const float sinAngle = std::sin(halfAngle);
-    x = axis.x * sinAngle;
-    y = axis.y * sinAngle;
-    z = axis.z * sinAngle;
+    const float sinHalfAngle = std::sin(halfAngle);
+    x = axis.x * sinHalfAngle;
+    y = axis.y * sinHalfAngle;
+    z = axis.z * sinHalfAngle;
     w = std::cos(halfAngle);
 }
 
