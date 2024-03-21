@@ -86,22 +86,31 @@ void Component::SetPivotPoint(const Vector3& pivotPoint)
 	UpdateRelativeTransformationMatrix();
 }
 
-void Component::SetRelativePosition(const Vector3& position)
+void Component::SetRelativePosition(const Vector3& position, bool updateRelativeTransformationMatrix/* = true*/)
 {
 	relativePosition_ = position;
-	UpdateRelativeTransformationMatrix();
+	if (updateRelativeTransformationMatrix)
+	{
+		UpdateRelativeTransformationMatrix();
+	}
 }
 
-void Component::SetRelativeRotation(const Quaternion& rotation)
+void Component::SetRelativeRotation(const Quaternion& rotation, bool updateRelativeTransformationMatrix/* = true*/)
 {
 	relativeRotation_ = rotation;
-	UpdateRelativeTransformationMatrix();
+	if (updateRelativeTransformationMatrix)
+	{
+		UpdateRelativeTransformationMatrix();
+	}
 }
 
-void Component::SetRelativeScaling(const Vector3& scaling)
+void Component::SetRelativeScaling(const Vector3& scaling, bool updateRelativeTransformationMatrix/* = true*/)
 {
 	relativeScaling_ = scaling;
-	UpdateRelativeTransformationMatrix();
+	if (updateRelativeTransformationMatrix)
+	{
+		UpdateRelativeTransformationMatrix();
+	}
 }
 
 void Component::UpdateComponentToWorldTransformationMatrix()

@@ -28,19 +28,19 @@ public:
 		return pivotPoint_;
 	}
 
-	void SetRelativePosition(const Vector3& position);
+	virtual void SetRelativePosition(const Vector3& position, bool updateRelativeTransformationMatrix = true);
 	virtual const Vector3& GetRelativePosition() const
 	{
 		return relativePosition_;
 	}
 
-	void SetRelativeRotation(const Quaternion& rotation);
+	virtual void SetRelativeRotation(const Quaternion& rotation, bool updateRelativeTransformationMatrix = true);
 	virtual const Quaternion& GetRelativeRotation() const
 	{
 		return relativeRotation_;
 	}
 
-	void SetRelativeScaling(const Vector3& scaling);
+	virtual void SetRelativeScaling(const Vector3& scaling, bool updateRelativeTransformationMatrix = true);
 	virtual const Vector3& GetRelativeScaling() const
 	{
 		return relativeScaling_;
