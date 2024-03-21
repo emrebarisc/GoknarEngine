@@ -73,7 +73,6 @@ void Component::PreInit()
 
 void Component::Init()
 {
-	BeginGame();
 }
 
 void Component::PostInit()
