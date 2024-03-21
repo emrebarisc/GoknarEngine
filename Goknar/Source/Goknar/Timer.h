@@ -15,29 +15,43 @@ public:
 		onOperate_ = function;
 	}
 
-	int GetTicksPerSecond() const
+	float GetTicksPerSecond() const
 	{
 		return ticksPerSecond_;
 	}
 
-	void SetTicksPerSecond(int ticksPerSecond)
+	void SetTicksPerSecond(float ticksPerSecond)
 	{
 		ticksPerSecond_ = ticksPerSecond;
 		timeToRefreshTimeVariables_ = 1.f / ticksPerSecond;
 	}
 
+	void SetTimeToTick(float timeInSeconds)
+	{
+		ticksPerSecond_ = 1.f / timeInSeconds;
+		timeToRefreshTimeVariables_ = timeInSeconds;
+	}
+
 	virtual void SetIsActive(bool isActive) override;
+
+	virtual void Reset()
+	{
+		elapsedTime_ = 0.f;
+	}
 
 protected:
 	virtual void Operate()
 	{
-		onOperate_();
+		if (!onOperate_.isNull())
+		{
+			onOperate_();
+		}
 	}
 
 private:
 	Delegate<void()> onOperate_;
 
-	int ticksPerSecond_{ 30 };
+	float ticksPerSecond_{ 30.f };
 	float timeToRefreshTimeVariables_{ 1.f / ticksPerSecond_ };
 	float elapsedTime_{ 0.f };
 };
