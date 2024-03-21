@@ -173,10 +173,10 @@ void Quaternion::AddVector(const Vector3& vector)
 
 bool Quaternion::Equals(const Quaternion& other, float tolerance) const
 {
-    return  std::abs(x - other.x) <= tolerance &&
-            std::abs(y - other.y) <= tolerance &&
-            std::abs(z - other.z) <= tolerance &&
-            std::abs(w - other.w) <= tolerance;
+    return  GoknarMath::Abs(x - other.x) <= tolerance &&
+            GoknarMath::Abs(y - other.y) <= tolerance &&
+            GoknarMath::Abs(z - other.z) <= tolerance &&
+            GoknarMath::Abs(w - other.w) <= tolerance;
 }
 
 Vector3 Quaternion::ToEulerDegrees() const
