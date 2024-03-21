@@ -135,20 +135,29 @@ Quaternion Quaternion::FromEulerRadians(const Vector3& radians)
     );
 }
 
-Quaternion Quaternion::LookAt(const Vector3& source, const Vector3& destination)
+Quaternion Quaternion::FromTwoVectors(const Vector3& first, const Vector3& second)
 {
-    Vector3 forwardVector = (destination - source).GetNormalized();
+    GOKNAR_CORE_ASSERT(EPSILON < first.SquareLength() && EPSILON < second.SquareLength(), "source or destination cannot be zero in length!");
 
-    Vector3 rotAxis = Vector3::Cross(Vector3::ForwardVector, forwardVector);
-    float dot = Vector3::Dot(Vector3::ForwardVector, forwardVector);
+    // From http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final
+    float totalLength = GoknarMath::Sqrt(first.SquareLength() * second.SquareLength());
+    float realPart = totalLength + first.Dot(second);
+    Vector3 imaginaryPart;
 
-    Quaternion q;
-    q.x = rotAxis.x;
-    q.y = rotAxis.y;
-    q.z = rotAxis.z;
-    q.w = dot + 1.f;
+    if (realPart < SMALLER_EPSILON * totalLength)
+    {
+        // If first and second are exactly opposite, rotate 180 degrees
+        // around an arbitrary orthogonal axis. Axis normalisation
+        // can happen later, when we normalise the quaternion.
+        realPart = 0.f;
+        imaginaryPart = GoknarMath::Abs(first.z) < GoknarMath::Abs(first.x) ? Vector3(-first.y, first.x, 0.f) : Vector3(0.f, -first.z, first.y);
+    }
+    else
+    {
+        imaginaryPart = first.Cross(second);
+    }
 
-    return q.GetNormalized();
+    return Quaternion(imaginaryPart.x, imaginaryPart.y, imaginaryPart.z, realPart).GetNormalized();
 }
 
 void Quaternion::AddVector(const Vector3& vector)

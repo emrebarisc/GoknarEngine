@@ -52,7 +52,10 @@ public:
     static Quaternion FromEulerDegrees(const Vector3& degrees);
     static Quaternion FromEulerRadians(const Vector3& radians);
 
-    static Quaternion LookAt(const Vector3& from, const Vector3& to);
+    // Build a unit quaternion representing 
+    // the rotation from first to second.
+    // The input vectors need not be normalised.
+    static Quaternion FromTwoVectors(const Vector3& first, const Vector3& second);
 
     void AddVector(const Vector3& vector);
 
