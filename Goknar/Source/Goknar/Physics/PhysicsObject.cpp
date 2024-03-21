@@ -46,15 +46,37 @@ void PhysicsObject::SetIsActive(bool isActive)
 {
     ObjectBase::SetIsActive(isActive);
 
-    if(isActive)
+    constexpr int activeStateInActivation = ACTIVE_TAG;
+    constexpr int activeStateInDisactivation = DISABLE_SIMULATION;
+
+    constexpr int collisionFlagInActivation = !btCollisionObject::CF_NO_CONTACT_RESPONSE;
+    constexpr int collisionFlagInDisactivation = btCollisionObject::CF_NO_CONTACT_RESPONSE;
+
+    if (!GetIsInitialized())
     {
-        bulletCollisionObject_->setActivationState(ACTIVE_TAG);
-        bulletCollisionObject_->setCollisionFlags(bulletCollisionObject_->getCollisionFlags() & !btCollisionObject::CF_NO_CONTACT_RESPONSE);
-    }
+        if (isActive)
+        {
+            physicsObjectInitializationData_->activeState = activeStateInActivation;
+            physicsObjectInitializationData_->collisionFlag = collisionFlagInActivation;
+		}
+		else
+		{
+			physicsObjectInitializationData_->activeState = activeStateInDisactivation;
+            physicsObjectInitializationData_->collisionFlag = collisionFlagInDisactivation;
+        }
+	}
     else
     {
-        bulletCollisionObject_->setActivationState(DISABLE_SIMULATION);
-        bulletCollisionObject_->setCollisionFlags(bulletCollisionObject_->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+        if (isActive)
+        {
+            bulletCollisionObject_->setActivationState(activeStateInActivation);
+            bulletCollisionObject_->setCollisionFlags(bulletCollisionObject_->getCollisionFlags() & collisionFlagInActivation);
+        }
+        else
+        {
+            bulletCollisionObject_->setActivationState(activeStateInDisactivation);
+            bulletCollisionObject_->setCollisionFlags(bulletCollisionObject_->getCollisionFlags() | collisionFlagInDisactivation);
+        }
     }
 }
 
@@ -67,6 +89,20 @@ void PhysicsObject::SetupPhysicsObjectInitializationData()
     {
         bulletCollisionObject_->setCollisionFlags(physicsObjectInitializationData_->collisionFlag);
     }
+
+    if (0 <= physicsObjectInitializationData_->activeState)
+    {
+        bulletCollisionObject_->setActivationState(physicsObjectInitializationData_->activeState);
+
+        if (physicsObjectInitializationData_->activeState == ACTIVE_TAG)
+        {
+            bulletCollisionObject_->setCollisionFlags(bulletCollisionObject_->getCollisionFlags() & physicsObjectInitializationData_->collisionFlag);
+        }
+        else if (physicsObjectInitializationData_->activeState == DISABLE_SIMULATION)
+        {
+            bulletCollisionObject_->setCollisionFlags(bulletCollisionObject_->getCollisionFlags() | physicsObjectInitializationData_->collisionFlag);
+        }
+	}
 
     delete physicsObjectInitializationData_;
     physicsObjectInitializationData_ = nullptr;

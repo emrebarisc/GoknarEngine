@@ -44,7 +44,7 @@ void CollisionComponent::PreInit()
 {
 	Component::PreInit();
 
-	bulletCollisionShape_->setLocalScaling(PhysicsUtils::FromVector3ToBtVector3(worldScaling_));
+	UpdateTransformation();
 }
 
 void CollisionComponent::Init()

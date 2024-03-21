@@ -88,7 +88,7 @@ public:
 		{
 			OnOverlapEnd(otherObject, otherComponent);
 		}
-	}	
+	}
 
 	Delegate<OverlapBeginAlias> OnOverlapBegin;
 	Delegate<OverlapContinueAlias> OnOverlapContinue;

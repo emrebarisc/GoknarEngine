@@ -13,6 +13,7 @@ struct GOKNAR_API PhysicsObjectInitializationData
 	float ccdMotionThreshold{ 0.f };
 	float ccdSweptSphereRadius{ 0.f };
 	int collisionFlag{ -1 };
+	int activeState{ -1 };
 };
 
 class GOKNAR_API PhysicsObject : public ObjectBase
