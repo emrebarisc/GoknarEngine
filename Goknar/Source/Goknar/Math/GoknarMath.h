@@ -435,8 +435,7 @@ struct GOKNAR_API Vector3
 			return *this / this->Length();
 		}
 
-		GOKNAR_CORE_CHECK(false, "Division By Zero");
-		return *this;
+		return Vector3::ZeroVector;
 	}
 
 	static inline Vector3 GetNormalized(const Vector3& vec)
