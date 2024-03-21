@@ -130,9 +130,12 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
 {
 	dynamicsWorld_->stepSimulation(deltaTime);
 
-	for(PhysicsObject* physicsObject : physicsObjects_)
+	for (PhysicsObject* physicsObject : physicsObjects_)
 	{
-		physicsObject->PhysicsTick(deltaTime);
+		if (physicsObject->GetIsActive() && physicsObject->GetPhysicsTickEnabled())
+		{
+			physicsObject->PhysicsTick(deltaTime);
+		}
 	}
 
 	for(CharacterMovementComponent* characterMovementComponent : characterMovementComponents_)

@@ -75,6 +75,16 @@ public:
 		tag_ = tag;
 	}
 
+	void SetPhysicsTickEnabled(bool physicsTickEnabled)
+	{
+		physicsTickEnabled_ = physicsTickEnabled;
+	}
+
+	bool GetPhysicsTickEnabled() const
+	{
+		return physicsTickEnabled_;
+	}
+
 protected:
 	btCollisionObject* bulletCollisionObject_{ nullptr };
 
@@ -84,6 +94,8 @@ protected:
     CollisionMask collisionMask_{ CollisionMask::BlockAndOverlapAll };
 
 	std::string tag_{ "None" };
+
+	bool physicsTickEnabled_{ false };
 private:
 };
 
