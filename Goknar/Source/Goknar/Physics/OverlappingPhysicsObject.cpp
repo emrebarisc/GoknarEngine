@@ -22,10 +22,7 @@ OverlappingPhysicsObject::~OverlappingPhysicsObject()
 void OverlappingPhysicsObject::PreInit()
 {
     PhysicsObject::PreInit();
-}
-
-void OverlappingPhysicsObject::Init()
-{
+    
     CollisionComponent* collisionComponent = dynamic_cast<CollisionComponent*>(GetRootComponent());
     GOKNAR_ASSERT(collisionComponent != nullptr, "Root component of OverlappingPhysicsObject must be a CollisionComponent!");
 
@@ -42,6 +39,10 @@ void OverlappingPhysicsObject::Init()
 
     engine->GetPhysicsWorld()->AddPhysicsObject(this);
 
+}
+
+void OverlappingPhysicsObject::Init()
+{
     PhysicsObject::Init();
 }
 
