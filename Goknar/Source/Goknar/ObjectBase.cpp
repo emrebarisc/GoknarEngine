@@ -29,7 +29,7 @@ void ObjectBase::PreInit()
 {
 	if (isInitialized_)
 	{
-		GOKNAR_CORE_ERROR("ObjectBase::Init called more than once!");
+		GOKNAR_CORE_ASSERT("ObjectBase::Init called more than once!");
 		return;
 	}
 

@@ -32,10 +32,7 @@ void MultipleCollisionComponent::PreInit()
 void MultipleCollisionComponent::Init()
 {
 	CollisionComponent::Init();
-}
-
-void MultipleCollisionComponent::PostInit()
-{
+	
 	std::vector<CollisionComponent*>::const_iterator subCollisionComponentIterator = subCollisionComponents_->cbegin();
 
 	while(subCollisionComponentIterator != subCollisionComponents_->cend())
@@ -46,7 +43,10 @@ void MultipleCollisionComponent::PostInit()
 	}
 
 	delete subCollisionComponents_;
+}
 
+void MultipleCollisionComponent::PostInit()
+{
 	CollisionComponent::PostInit();
 }
 	

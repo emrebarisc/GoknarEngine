@@ -32,7 +32,7 @@ protected:
 private:
 	void AddCollisionComponentInner(CollisionComponent* collisionComponent);
 
-	btCompoundShape* bulletCompoundShape_;
+	btCompoundShape* bulletCompoundShape_{ nullptr };
 
 	std::vector<CollisionComponent*>* subCollisionComponents_{ new std::vector<CollisionComponent*>() };
 };

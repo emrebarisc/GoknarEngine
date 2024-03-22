@@ -208,11 +208,6 @@ void Engine::Run()
 	{
 		// Initialize dynamically created object and components /////
 
-		if (hasUninitializedObjects_)
-		{
-			PreInitObjects();
-		}
-
 		if(hasUninitializedComponents_)
 		{
 			PreInitComponents();
@@ -220,7 +215,7 @@ void Engine::Run()
 
 		if (hasUninitializedObjects_)
 		{
-			InitObjects();
+			PreInitObjects();
 		}
 
 		if(hasUninitializedComponents_)
@@ -230,7 +225,7 @@ void Engine::Run()
 
 		if (hasUninitializedObjects_)
 		{
-			PostInitObjects();
+			InitObjects();
 		}
 
 		if(hasUninitializedComponents_)
@@ -240,12 +235,17 @@ void Engine::Run()
 
 		if (hasUninitializedObjects_)
 		{
-			BeginGameObjects();
+			PostInitObjects();
 		}
 
 		if(hasUninitializedComponents_)
 		{
 			BeginGameComponents();
+		}
+
+		if (hasUninitializedObjects_)
+		{
+			BeginGameObjects();
 		}
 
 		////////////////////////////////////////////////////////////////////////////
@@ -303,14 +303,14 @@ void Engine::Run()
 
 void Engine::BeginGame()
 {
-	PreInitObjects();
 	PreInitComponents();
+	PreInitObjects();
 
-	InitObjects();
 	InitComponents();
+	InitObjects();
 	
-	PostInitObjects();
 	PostInitComponents();
+	PostInitObjects();
 	
 	BeginGameComponents();
 	BeginGameObjects();
