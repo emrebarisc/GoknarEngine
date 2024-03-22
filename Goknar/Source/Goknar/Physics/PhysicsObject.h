@@ -95,7 +95,7 @@ protected:
 
 	std::string tag_{ "None" };
 
-	bool physicsTickEnabled_{ false };
+	bool physicsTickEnabled_{ true };
 private:
 };
 
