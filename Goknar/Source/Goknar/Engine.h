@@ -122,7 +122,8 @@ public:
 	void RemoveFromTickableComponents(Component* component);
 	void RemoveFromComponentsToBeInitialized(Component* component);
 
-	void RegisterTimeDependentObject(TimeDependentObject* animatedMesh2D);
+	void RegisterTimeDependentObject(TimeDependentObject* timeDependentObject);
+	void RemoveTimeDependentObject(TimeDependentObject* timeDependentObject);
 
 	void SetApplication(Application* application);
 

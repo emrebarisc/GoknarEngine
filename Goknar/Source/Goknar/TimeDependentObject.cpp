@@ -10,3 +10,8 @@ TimeDependentObject::TimeDependentObject()
 {
 	engine->RegisterTimeDependentObject(this);
 }
+
+TimeDependentObject::~TimeDependentObject()
+{
+	engine->RemoveTimeDependentObject(this);
+}

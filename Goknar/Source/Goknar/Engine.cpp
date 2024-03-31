@@ -520,9 +520,23 @@ void Engine::AddToTickableObjects(ObjectBase* object)
 	tickableObjects_.push_back(object);
 }
 
-void Engine::RegisterTimeDependentObject(TimeDependentObject* animatedObject)
+void Engine::RegisterTimeDependentObject(TimeDependentObject* timeDependentObject)
 {
-	timeDependentObjects_.push_back(animatedObject);
+	timeDependentObjects_.push_back(timeDependentObject);
+}
+
+void Engine::RemoveTimeDependentObject(TimeDependentObject* timeDependentObject)
+{
+	size_t timeDependentObjectsSize = timeDependentObjects_.size();
+
+	for (size_t timeDependentObjectIndex = 0; timeDependentObjectIndex < timeDependentObjectsSize; timeDependentObjectIndex++)
+	{
+		if (timeDependentObjects_[timeDependentObjectIndex] == timeDependentObject)
+		{
+			timeDependentObjects_.erase(timeDependentObjects_.begin() + timeDependentObjectIndex);
+			return;
+		}
+	}
 }
 
 void Engine::RemoveFromTickableObjects(ObjectBase* object)

@@ -8,10 +8,7 @@
 class GOKNAR_API TimeDependentObject
 {
 public:
-	virtual ~TimeDependentObject()
-	{
-
-	}
+	virtual ~TimeDependentObject();
 
 	virtual void Tick(float deltaSecond) = 0;
 
