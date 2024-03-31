@@ -69,16 +69,16 @@ InputManager::~InputManager()
 
 void InputManager::PreInit()
 {
-	GLFWwindow *window = engine->GetWindowManager()->GetWindow();
+	window_ = engine->GetWindowManager()->GetWindow();
 
-	glfwSetKeyCallback(window, InputManager::KeyboardCallback);
-	glfwSetCursorPosCallback(window, InputManager::CursorPositionCallback);
-	glfwSetMouseButtonCallback(window, InputManager::MouseButtonCallback);
-	glfwSetScrollCallback(window, InputManager::ScrollCallback);
-	glfwSetCharCallback(window, InputManager::CharCallback);
+	glfwSetKeyCallback(window_, InputManager::KeyboardCallback);
+	glfwSetCursorPosCallback(window_, InputManager::CursorPositionCallback);
+	glfwSetMouseButtonCallback(window_, InputManager::MouseButtonCallback);
+	glfwSetScrollCallback(window_, InputManager::ScrollCallback);
+	glfwSetCharCallback(window_, InputManager::CharCallback);
 
 	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
-	SetCursorPosition(windowSize.x * 0.5, windowSize.y * 0.5, window);
+	SetCursorPosition(windowSize.x * 0.5, windowSize.y * 0.5, window_);
 }
 
 void InputManager::Init()
@@ -194,11 +194,11 @@ void InputManager::SetIsCursorVisible(bool isCursorVisible)
 {
 	if (isCursorVisible)
 	{
-		glfwSetInputMode(engine->GetWindowManager()->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	}
 	else
 	{
-		glfwSetInputMode(engine->GetWindowManager()->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+		glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 	}
 }
 

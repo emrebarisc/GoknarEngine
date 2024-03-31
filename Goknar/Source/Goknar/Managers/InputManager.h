@@ -291,8 +291,14 @@ public:
 	{
 		glfwGetCursorPos(window, &x, &y);
 	}
+	void GetCursorPosition(double& x, double& y)
+	{
+		glfwGetCursorPos(window_, &x, &y);
+	}
 
 private:
+	GLFWwindow* window_;
+
 	KeyboardEventMap* keyboardEvents_;
 
 	// Keyboard Delegates
