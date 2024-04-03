@@ -70,6 +70,12 @@ void ObjectBase::Destroy()
 
 void ObjectBase::SetRootComponent(Component* newRootComponent)
 {
+	if(newRootComponent->parent_)
+	{
+		newRootComponent->parent_->RemoveChild(newRootComponent);
+		newRootComponent->parent_ = nullptr;
+	}
+
 	std::vector<Component *>::iterator componentIterator = components_.begin();
 	for (; componentIterator != components_.end(); ++componentIterator)
 	{

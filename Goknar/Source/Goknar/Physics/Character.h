@@ -28,7 +28,6 @@ public:
 
 	virtual void UpdateWorldTransformationMatrix() override;
 
-
 	CapsuleCollisionComponent* GetCapsuleCollisionComponent() const
 	{
 		return capsuleCollisionComponent_;
