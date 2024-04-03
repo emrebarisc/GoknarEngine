@@ -25,15 +25,16 @@ void Component::Destroy()
 
 void Component::SetParent(ObjectBase* objectBase)
 {
-	parent_ = objectBase->GetRootComponent();
-	if (parent_)
-	{
-		parent_->children_.push_back(this);
-	}
+	SetParent(objectBase->GetRootComponent());
 }
 
 void Component::SetParent(Component* component)
 {
+	if(parent_)
+	{
+		parent_->RemoveChild(this);
+	}
+
 	parent_ = component;
 	if (parent_)
 	{
