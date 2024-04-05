@@ -1,8 +1,6 @@
 #ifndef __IPHYSICSWORLD_H__
 #define __IPHYSICSWORLD_H__
 
-#include <unordered_map>
-
 #include "Core.h"
 #include "Math/GoknarMath.h"
 #include "Physics/PhysicsTypes.h"
@@ -120,12 +118,6 @@ protected:
     
     typedef std::vector<CharacterMovementComponent*> CharacterMovementComponentVector;
     CharacterMovementComponentVector characterMovementComponents_;
-
-    typedef std::unordered_map<btCollisionObject const*, PhysicsObject*> PhysicsObjectMap;
-    PhysicsObjectMap physicsObjectMap_;
-
-    typedef std::vector<CollisionComponent*> OverlappingCollisionComponents;
-    OverlappingCollisionComponents overlappingCollisionComponents_;
 
 private:
     Vector3 gravity_{ Vector3{0.f, 0.f, -10.f} };

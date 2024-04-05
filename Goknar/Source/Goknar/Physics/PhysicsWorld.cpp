@@ -140,8 +140,6 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
 
 	for(CharacterMovementComponent* characterMovementComponent : characterMovementComponents_)
 	{
-		// characterMovementComponent->PreStep(dynamicsWorld_);
-		// characterMovementComponent->PlayerStep(dynamicsWorld_, deltaTime);
 		characterMovementComponent->UpdateOwnerTransformation();
 	}
 }
@@ -151,10 +149,10 @@ void PhysicsWorld::OnOverlappingCollisionBegin(btPersistentManifold* const& moni
 	const btCollisionObject* ghostObject1 = monifoldPointPtr->getBody0();
 	const btCollisionObject* ghostObject2 = monifoldPointPtr->getBody1();
 
-	PhysicsObject* collisionObject1 = physicsObjectMap_[ghostObject1];
-	PhysicsObject* collisionObject2 = physicsObjectMap_[ghostObject2];
+	PhysicsObject* collisionObject1 = (PhysicsObject*)ghostObject1->getUserPointer();
+	PhysicsObject* collisionObject2 = (PhysicsObject*)ghostObject2->getUserPointer();
 
-	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2);
+	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2, "Neither of the colliding bodies can be nullptr!");
 	
 	CollisionComponent* collisionComponent1 = dynamic_cast<CollisionComponent*>(collisionObject1->GetRootComponent());
 	CollisionComponent* collisionComponent2 = dynamic_cast<CollisionComponent*>(collisionObject2->GetRootComponent());
@@ -172,10 +170,10 @@ void PhysicsWorld::OnOverlappingCollisionBegin(btPersistentManifold* const& moni
 
 void PhysicsWorld::OnOverlappingCollisionContinue(btManifoldPoint& monifoldPoint, const btCollisionObject* ghostObject1, const btCollisionObject* ghostObject2)
 {
-	PhysicsObject* collisionObject1 = physicsObjectMap_[ghostObject1];
-	PhysicsObject* collisionObject2 = physicsObjectMap_[ghostObject2];
+	PhysicsObject* collisionObject1 = (PhysicsObject*)ghostObject1->getUserPointer();
+	PhysicsObject* collisionObject2 = (PhysicsObject*)ghostObject2->getUserPointer();
 
-	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2);
+	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2, "Neither of the colliding bodies can be nullptr!");
 
 	CollisionComponent* collisionComponent1 = dynamic_cast<CollisionComponent*>(collisionObject1->GetRootComponent());
 	CollisionComponent* collisionComponent2 = dynamic_cast<CollisionComponent*>(collisionObject2->GetRootComponent());
@@ -193,10 +191,10 @@ void PhysicsWorld::OnOverlappingCollisionContinue(btManifoldPoint& monifoldPoint
 
 void PhysicsWorld::OnOverlappingCollisionEnd(btPersistentManifold* const& manifold)
 {
-	PhysicsObject* collisionObject1 = physicsObjectMap_[manifold->getBody0()];
-	PhysicsObject* collisionObject2 = physicsObjectMap_[manifold->getBody1()];
+	PhysicsObject* collisionObject1 = (PhysicsObject*)manifold->getBody0()->getUserPointer();
+	PhysicsObject* collisionObject2 = (PhysicsObject*)manifold->getBody1()->getUserPointer();
 
-	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2);
+	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2, "Neither of the colliding bodies can be nullptr!");
 
 	CollisionComponent* collisionComponent1 = dynamic_cast<CollisionComponent*>(collisionObject1->GetRootComponent());
 	CollisionComponent* collisionComponent2 = dynamic_cast<CollisionComponent*>(collisionObject2->GetRootComponent());
@@ -210,8 +208,6 @@ void PhysicsWorld::OnOverlappingCollisionEnd(btPersistentManifold* const& manifo
 void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
 {
 	btRigidBody* bulletRigidBody = rigidBody->GetBulletRigidBody();
-	GOKNAR_ASSERT(physicsObjectMap_.find(bulletRigidBody) == physicsObjectMap_.end());
-	physicsObjectMap_[bulletRigidBody] = rigidBody;
 
 	dynamicsWorld_->addRigidBody(bulletRigidBody, (int)rigidBody->GetCollisionGroup(), (int)rigidBody->GetCollisionMask());
 	physicsObjects_.push_back(rigidBody);
@@ -220,10 +216,6 @@ void PhysicsWorld::AddRigidBody(RigidBody* rigidBody)
 void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 {
 	btRigidBody* bulletRigidBody = rigidBody->GetBulletRigidBody();
-
-	PhysicsObjectMap::const_iterator relativePhysicsObject = physicsObjectMap_.find(bulletRigidBody);
-	GOKNAR_ASSERT(relativePhysicsObject != physicsObjectMap_.end());
-	physicsObjectMap_.erase(relativePhysicsObject);
 
 	decltype(physicsObjects_.begin()) physicsObjectIterator = physicsObjects_.begin();
 	while(physicsObjectIterator != physicsObjects_.end())
@@ -242,21 +234,12 @@ void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 
 void PhysicsWorld::AddPhysicsObject(PhysicsObject* physicsObject)
 {
-	const btCollisionObject* bulletCollisionObject = dynamic_cast<const btCollisionObject*>(physicsObject->GetBulletCollisionObject());
-	GOKNAR_ASSERT(physicsObjectMap_.find(bulletCollisionObject) == physicsObjectMap_.end());
-
-	physicsObjectMap_[bulletCollisionObject] = physicsObject;
-
 	dynamicsWorld_->addCollisionObject(physicsObject->GetBulletCollisionObject(), (int)physicsObject->GetCollisionGroup(), (int)physicsObject->GetCollisionMask());
 }
 
 void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)
 {
 	btCollisionObject* bulletCollisionObject = physicsObject->GetBulletCollisionObject();
-
-	PhysicsObjectMap::const_iterator relativePhysicsObjectInMap = physicsObjectMap_.find(bulletCollisionObject);
-	GOKNAR_ASSERT(relativePhysicsObjectInMap != physicsObjectMap_.end());
-	physicsObjectMap_.erase(relativePhysicsObjectInMap);
 
 	decltype(physicsObjects_.begin()) physicsObjectIterator = physicsObjects_.begin();
 	while(physicsObjectIterator != physicsObjects_.end())
@@ -310,7 +293,7 @@ bool PhysicsWorld::RaycastClosest(const RaycastData& raycastData, RaycastSingleR
 
 	if(closestRayResultCallback.hasHit())
 	{
-		raycastClosest.hitObject = (*physicsObjectMap_.find(closestRayResultCallback.m_collisionObject)).second;
+		raycastClosest.hitObject = (PhysicsObject*)closestRayResultCallback.m_collisionObject->getUserPointer();
 		raycastClosest.hitFraction = closestRayResultCallback.m_closestHitFraction;
 		raycastClosest.hitPosition = PhysicsUtils::FromBtVector3ToVector3(closestRayResultCallback.m_hitPointWorld);
 		raycastClosest.hitNormal = PhysicsUtils::FromBtVector3ToVector3(closestRayResultCallback.m_hitNormalWorld);
@@ -340,7 +323,7 @@ bool PhysicsWorld::RaycastAll(const RaycastData& raycastData, RaycastAllResult& 
 		{
 			raycastAllResult.hitResults.emplace_back(
 				RaycastSingleResult(
-					(*physicsObjectMap_.find(allHitsRayResultCallback.m_collisionObjects[hitIndex])).second,
+					(PhysicsObject*)allHitsRayResultCallback.m_collisionObjects[hitIndex]->getUserPointer(),
 					PhysicsUtils::FromBtVector3ToVector3(allHitsRayResultCallback.m_hitPointWorld[hitIndex]),
 					PhysicsUtils::FromBtVector3ToVector3(allHitsRayResultCallback.m_hitNormalWorld[hitIndex]),
 					allHitsRayResultCallback.m_hitFractions[hitIndex]
@@ -375,7 +358,7 @@ bool PhysicsWorld::SweepClosest(const SweepData& sweepData, RaycastSingleResult&
 
 	if(closestResultCallback.hasHit())
 	{
-		result.hitObject = (*physicsObjectMap_.find(closestResultCallback.m_hitCollisionObject)).second;
+		result.hitObject = (PhysicsObject*)closestResultCallback.m_hitCollisionObject->getUserPointer();
 		result.hitFraction = closestResultCallback.m_closestHitFraction;
 		result.hitPosition = PhysicsUtils::FromBtVector3ToVector3(closestResultCallback.m_hitPointWorld);
 		result.hitNormal = PhysicsUtils::FromBtVector3ToVector3(closestResultCallback.m_hitNormalWorld);
