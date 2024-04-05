@@ -20,6 +20,17 @@ enum class GOKNAR_API CollisionGroup : unsigned char
     Character =                     0b00100000,
 
 	All =				            Default | AllBlock | AllOverlap | Character,
+
+    Custom0,
+    Custom1,
+    Custom2,
+    Custom3,
+    Custom4,
+    Custom5,
+    Custom6,
+    Custom7,
+    Custom8,
+    Custom9
 };  
 
 enum class GOKNAR_API CollisionMask : unsigned char
@@ -38,6 +49,17 @@ enum class GOKNAR_API CollisionMask : unsigned char
     OverlapAllExceptCharacter = OverlapWorldDynamic | OverlapWorldStatic,
 
     BlockAndOverlapAll = 		Default | BlockAll | OverlapAll,
+
+    Custom0 = (unsigned char)(CollisionGroup::Custom0),
+    Custom1 = (unsigned char)(CollisionGroup::Custom1),
+    Custom2 = (unsigned char)(CollisionGroup::Custom2),
+    Custom3 = (unsigned char)(CollisionGroup::Custom3),
+    Custom4 = (unsigned char)(CollisionGroup::Custom4),
+    Custom5 = (unsigned char)(CollisionGroup::Custom5),
+    Custom6 = (unsigned char)(CollisionGroup::Custom6),
+    Custom7 = (unsigned char)(CollisionGroup::Custom7),
+    Custom8 = (unsigned char)(CollisionGroup::Custom8),
+    Custom9 = (unsigned char)(CollisionGroup::Custom9)
 };
 
 enum class GOKNAR_API CollisionFlag

@@ -13,7 +13,7 @@ Character::Character() : OverlappingPhysicsObject()
     skeletalMeshComponent_ = AddSubComponent<SkeletalMeshComponent>();
 
     SetCollisionGroup(CollisionGroup::Character);
-    SetCollisionMask(CollisionMask::BlockAllExceptCharacter);
+    SetCollisionMask(CollisionMask::BlockAll);
     SetCollisionFlag(CollisionFlag::CharacterObject);
 }
 

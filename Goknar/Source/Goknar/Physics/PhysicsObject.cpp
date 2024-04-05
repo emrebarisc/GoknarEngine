@@ -28,6 +28,8 @@ void PhysicsObject::PreInit()
 void PhysicsObject::Init()
 {
     ObjectBase::Init();
+
+    bulletCollisionObject_->setUserPointer(this);
 }
 
 void PhysicsObject::PostInit()
