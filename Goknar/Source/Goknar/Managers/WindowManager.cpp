@@ -68,9 +68,14 @@ void WindowManager::PreInit()
 	}
 	else
 	{
-		GOKNAR_CORE_FATAL("Window could not be created.\n");
-		glfwTerminate();
-		exit(EXIT_FAILURE);
+		int code = glfwGetError(NULL);
+ 
+		if (code != GLFW_NO_ERROR)
+		{
+			GOKNAR_CORE_FATAL("GLFW error code : " + std::to_string(code));
+		}
+
+		GOKNAR_CORE_ASSERT(false, "Window could not be created.\n");
 	}
 	bool enableDebugContext = false;
 #ifdef GOKNAR_PLATFORM_WINDOWS
