@@ -126,12 +126,22 @@ Quaternion Quaternion::FromEulerDegrees(const Vector3& degrees)
     return FromEulerRadians(degrees * TO_RADIAN);
 }
 
+Quaternion Quaternion::FromEulerDegrees(float x, float y, float z)
+{
+    return FromEulerRadians(x * TO_RADIAN, y * TO_RADIAN, z * TO_RADIAN);
+}
+
 Quaternion Quaternion::FromEulerRadians(const Vector3& radians)
 {
+    return FromEulerRadians(radians.x, radians.y, radians.z);
+}
+
+Quaternion Quaternion::FromEulerRadians(float x, float y, float z)
+{
     return Quaternion(
-        fmodf(radians.x, TWO_PI),
-        fmodf(radians.y, TWO_PI),
-        fmodf(radians.z, TWO_PI)
+        fmodf(x, TWO_PI),
+        fmodf(y, TWO_PI),
+        fmodf(z, TWO_PI)
     );
 }
 

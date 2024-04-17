@@ -49,7 +49,9 @@ public:
                 GoknarMath::IsNanOrInf(w);
     }
 
+    static Quaternion FromEulerDegrees(float x, float y, float z);
     static Quaternion FromEulerDegrees(const Vector3& degrees);
+    static Quaternion FromEulerRadians(float x, float y, float z);
     static Quaternion FromEulerRadians(const Vector3& radians);
 
     // Build a unit quaternion representing 
