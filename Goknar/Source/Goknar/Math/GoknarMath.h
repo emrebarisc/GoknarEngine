@@ -141,6 +141,24 @@ public:
 	}
 
 	template<class T>
+	static inline T Tan(T value)
+	{
+		return std::tan(value);
+	}
+
+	template<class T>
+	static inline T Atan(T value)
+	{
+		return std::atan(value);
+	}
+
+	template<class T>
+	static inline T Atan2(T y, T x)
+	{
+		return std::atan2(y, x);
+	}
+
+	template<class T>
 	static inline T Sqrt(T value)
 	{
 		return std::sqrt(value);
