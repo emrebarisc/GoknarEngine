@@ -147,7 +147,7 @@ Quaternion Quaternion::FromEulerRadians(float x, float y, float z)
 
 Quaternion Quaternion::FromTwoVectors(const Vector3& first, const Vector3& second)
 {
-    GOKNAR_CORE_ASSERT(EPSILON < first.SquareLength() && EPSILON < second.SquareLength(), "source or destination cannot be zero in length!");
+    GOKNAR_CORE_ASSERT(SMALLER_EPSILON < first.SquareLength() && SMALLER_EPSILON < second.SquareLength(), "source or destination cannot be zero in length!");
 
     // From http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final
     float totalLength = GoknarMath::Sqrt(first.SquareLength() * second.SquareLength());
