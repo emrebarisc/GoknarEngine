@@ -169,6 +169,11 @@ public:
 		return std::floor(value);
 	}
 
+	static inline int FloorToInt(float value)
+	{
+		return (int)std::floor(value);
+	}
+
 	static inline float Frac(float value)
 	{
 		return value - Floor(value);
