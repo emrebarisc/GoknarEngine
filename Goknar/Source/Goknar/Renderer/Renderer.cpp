@@ -435,8 +435,7 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !opaqueSkeletalMeshInstance->GetIsCastingShadow()) continue;
 
-					// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
-					const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(opaqueSkeletalMeshInstance->GetMesh());
+					const SkeletalMesh* skeletalMesh = opaqueSkeletalMeshInstance->GetMesh();
 					opaqueSkeletalMeshInstance->Render(renderPassType);
 
 					int facePointCount = skeletalMesh->GetFaceCount() * 3;
@@ -448,8 +447,8 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !maskedSkeletalMeshInstance->GetIsCastingShadow()) continue;
 
-					// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
-					const SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(maskedSkeletalMeshInstance->GetMesh());
+		
+					const SkeletalMesh* skeletalMesh = maskedSkeletalMeshInstance->GetMesh();
 					maskedSkeletalMeshInstance->Render(renderPassType);
 
 					int facePointCount = skeletalMesh->GetFaceCount() * 3;
@@ -515,6 +514,7 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			if (!transparentStaticMeshInstance->GetIsRendered()) continue;
 			const MeshUnit* mesh = transparentStaticMeshInstance->GetMesh();
+			
 			transparentStaticMeshInstance->Render(RenderPassType::Forward);
 
 			int facePointCount = mesh->GetFaceCount() * 3;
@@ -525,7 +525,7 @@ void Renderer::Render(RenderPassType renderPassType)
 		for (SkeletalMeshInstance* transparentSkeletalMeshInstance : transparentSkeletalMeshInstances_)
 		{
 			if (!transparentSkeletalMeshInstance->GetIsRendered()) continue;
-			// TODO_Baris: Solve mesh instancing to return the exact class type and remove dynamic_cast here for performance
+
 			const SkeletalMesh* skeletalMesh = transparentSkeletalMeshInstance->GetMesh();
 			transparentSkeletalMeshInstance->Render(RenderPassType::Forward);
 
@@ -538,6 +538,7 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			if (!transparentDynamicMeshInstance->GetIsRendered()) continue;
 			const MeshUnit* mesh = transparentDynamicMeshInstance->GetMesh();
+
 			transparentDynamicMeshInstance->Render(RenderPassType::Forward);
 
 			int facePointCount = mesh->GetFaceCount() * 3;
