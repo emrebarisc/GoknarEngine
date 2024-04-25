@@ -8,6 +8,7 @@ class GOKNAR_API Audio : public Content
 {
 public:
 	Audio();
+	virtual ~Audio() = default;
 
 	virtual void PreInit() override;
 	virtual void Init() override;

@@ -25,7 +25,7 @@ class GOKNAR_API Shader
 {
 public:
 	Shader();
-	~Shader();
+	virtual ~Shader();
 
 	const std::string& GetVertexShaderScript() const
 	{

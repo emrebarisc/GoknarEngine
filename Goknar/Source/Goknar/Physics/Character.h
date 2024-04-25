@@ -13,7 +13,7 @@ class GOKNAR_API Character : public OverlappingPhysicsObject
 {
 public:
 	Character();
-	~Character();
+	virtual ~Character();
 
 	virtual void PreInit() override;
 	virtual void Init() override;

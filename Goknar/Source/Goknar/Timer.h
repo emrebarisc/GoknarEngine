@@ -6,7 +6,7 @@ class GOKNAR_API Timer : public TimeDependentObject
 {
 public:
 	Timer();
-	~Timer() {}
+	virtual ~Timer() {}
 
 	virtual void Tick(float deltaSecond) override;
 

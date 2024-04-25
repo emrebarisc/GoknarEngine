@@ -30,7 +30,7 @@ class GOKNAR_API IMaterialBase
 public:
 	IMaterialBase();
 	IMaterialBase(const IMaterialBase* other);
-	~IMaterialBase();
+	virtual ~IMaterialBase();
 
 	virtual void PreInit();
 	virtual void Init();

@@ -7,7 +7,7 @@ class GOKNAR_API Controller
 {
 public:
 	Controller();
-	~Controller();
+	virtual ~Controller();
 
 	virtual void BeginGame() {}
 	virtual void SetupInputs() = 0;

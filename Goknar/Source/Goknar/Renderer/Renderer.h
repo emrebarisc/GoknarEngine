@@ -39,7 +39,7 @@ class GOKNAR_API GeometryBufferData
 {
 public:
 	GeometryBufferData();
-	~GeometryBufferData();
+	virtual ~GeometryBufferData();
 
 	void Init();
 	void Bind();

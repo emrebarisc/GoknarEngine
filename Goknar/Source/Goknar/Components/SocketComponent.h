@@ -14,6 +14,7 @@ public:
 	{
 	}
 
+	virtual ~SocketComponent() = default;
 
 	virtual void Destroy() override;
 

@@ -34,7 +34,7 @@ class GOKNAR_API Framebuffer
 {
 public:
 	Framebuffer();
-	~Framebuffer();
+	virtual ~Framebuffer();
 
 	void PreInit();
 	void Init();

@@ -11,6 +11,7 @@ public:
 	Image();
 	Image(const std::string& path);
 	Image(const std::string& path, int width, int height, int channels, unsigned char* buffer);
+	virtual ~Image() = default;
 
 	virtual void PreInit() override;
 	virtual void Init() override;

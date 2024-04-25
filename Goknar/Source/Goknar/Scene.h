@@ -24,7 +24,7 @@ class GOKNAR_API Scene
 {
 public:
     Scene();
-    ~Scene();
+    virtual ~Scene();
 
     void PreInit();
     void Init();

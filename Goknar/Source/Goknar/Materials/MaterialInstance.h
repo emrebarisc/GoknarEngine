@@ -8,7 +8,7 @@ class Material;
 class GOKNAR_API MaterialInstance : public IMaterialBase
 {
 public:
-	~MaterialInstance();
+	virtual ~MaterialInstance();
 
 	static MaterialInstance* Create(Material* parent);
 

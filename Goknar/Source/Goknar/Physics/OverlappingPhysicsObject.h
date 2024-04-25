@@ -14,7 +14,7 @@ class GOKNAR_API OverlappingPhysicsObject : public PhysicsObject
 {
 public:
 	OverlappingPhysicsObject();
-	~OverlappingPhysicsObject();
+	virtual ~OverlappingPhysicsObject();
 
 	virtual void PreInit() override;
 	virtual void Init() override;

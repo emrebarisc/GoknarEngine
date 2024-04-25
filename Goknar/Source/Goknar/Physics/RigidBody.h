@@ -36,7 +36,7 @@ class GOKNAR_API RigidBody : public PhysicsObject
 {
 public:
 	RigidBody();
-	~RigidBody();
+	virtual ~RigidBody();
 
 	virtual void PreInit();
 	virtual void Init();

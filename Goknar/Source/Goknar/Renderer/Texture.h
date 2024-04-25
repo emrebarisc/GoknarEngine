@@ -167,7 +167,7 @@ public:
 	Texture(std::string imagePath);
 	Texture(Image* image);
 
-	~Texture();
+	virtual ~Texture();
 
 	void PreInit();
 	void Init();

@@ -13,7 +13,7 @@ class GOKNAR_API Material : public IMaterialBase
 public:
 	Material();
 	Material(const Material* parent);
-	~Material();
+	virtual ~Material();
 
 	void Build(MeshUnit* meshUnit);
 
