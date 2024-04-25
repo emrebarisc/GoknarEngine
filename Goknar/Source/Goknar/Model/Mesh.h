@@ -13,7 +13,7 @@ class GOKNAR_API Mesh
 {
 public:
 	Mesh();
-	~Mesh();
+	virtual ~Mesh();
 
 	void AddMesh(MeshUnit* meshUnit);
 
