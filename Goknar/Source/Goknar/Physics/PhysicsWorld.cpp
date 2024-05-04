@@ -22,26 +22,6 @@ PhysicsWorld::PhysicsWorld()
 
 PhysicsWorld::~PhysicsWorld()
 {
-	if (dynamicsWorld_)
-	{
-		int i;
-		for (i = dynamicsWorld_->getNumConstraints() - 1; i >= 0; i--)
-		{
-			dynamicsWorld_->removeConstraint(dynamicsWorld_->getConstraint(i));
-		}
-		for (i = dynamicsWorld_->getNumCollisionObjects() - 1; i >= 0; i--)
-		{
-			btCollisionObject* obj = dynamicsWorld_->getCollisionObjectArray()[i];
-			btRigidBody* body = btRigidBody::upcast(obj);
-			if (body && body->getMotionState())
-			{
-				delete body->getMotionState();
-			}
-			dynamicsWorld_->removeCollisionObject(obj);
-			delete obj;
-		}
-	}
-
 	delete dynamicsWorld_;
 	dynamicsWorld_ = nullptr;
 

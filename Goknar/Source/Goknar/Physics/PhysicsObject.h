@@ -20,7 +20,7 @@ class GOKNAR_API PhysicsObject : public ObjectBase
 {
 public:
 	PhysicsObject();
-	~PhysicsObject();
+	virtual ~PhysicsObject();
 
 	virtual void PreInit();
 	virtual void Init();

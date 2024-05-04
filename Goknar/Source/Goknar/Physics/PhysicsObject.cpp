@@ -17,6 +17,7 @@ PhysicsObject::PhysicsObject() : ObjectBase()
 PhysicsObject::~PhysicsObject()
 {
 	delete physicsObjectInitializationData_;
+    delete bulletCollisionObject_;
 }
 
 void PhysicsObject::PreInit()

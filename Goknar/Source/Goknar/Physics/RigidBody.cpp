@@ -59,6 +59,7 @@ void RigidBody::Init()
 
     bulletRigidBody_ = new btRigidBody(rigidBodyInfo);
     bulletCollisionObject_ = bulletRigidBody_;
+    delete bulletMotionState;
 
     engine->GetPhysicsWorld()->AddRigidBody(this);
 
