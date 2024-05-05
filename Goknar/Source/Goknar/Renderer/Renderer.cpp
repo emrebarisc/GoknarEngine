@@ -790,6 +790,53 @@ void Renderer::UpdateDynamicMeshVertex(const DynamicMesh* object, int vertexInde
 	glNamedBufferSubData(dynamicVertexBufferId_, object->GetRendererVertexOffset() + vertexIndex * sizeOfVertexData, sizeOfVertexData, &newVertexData);
 }
 
+void Renderer::PrepareSkeletalMeshInstancesForTheCurrentFrame()
+{
+		size_t meshInstanceCount = opaqueSkeletalMeshInstances_.size();
+		size_t meshInstanceIndex = 0;
+
+		for (; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			opaqueSkeletalMeshInstances_[meshInstanceIndex]->PrepareForTheCurrentFrame();
+		}
+
+		meshInstanceCount = maskedSkeletalMeshInstances_.size();
+		for (meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			maskedSkeletalMeshInstances_[meshInstanceIndex]->PrepareForTheCurrentFrame();
+		}
+
+		meshInstanceCount = transparentSkeletalMeshInstances_.size();
+		for (meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			transparentSkeletalMeshInstances_[meshInstanceIndex]->PrepareForTheCurrentFrame();
+		}
+}
+
+
+void Renderer::PrepareSkeletalMeshInstancesForTheNextFrame()
+{
+		size_t meshInstanceCount = opaqueSkeletalMeshInstances_.size();
+		size_t meshInstanceIndex = 0;
+
+		for (; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			opaqueSkeletalMeshInstances_[meshInstanceIndex]->PrepareForTheNextFrame();
+		}
+
+		meshInstanceCount = maskedSkeletalMeshInstances_.size();
+		for (meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			maskedSkeletalMeshInstances_[meshInstanceIndex]->PrepareForTheNextFrame();
+		}
+
+		meshInstanceCount = transparentSkeletalMeshInstances_.size();
+		for (meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
+		{
+			transparentSkeletalMeshInstances_[meshInstanceIndex]->PrepareForTheNextFrame();
+		}
+}
+
 void Renderer::BindShadowTextures(Shader* shader)
 {
 	shader->Use();

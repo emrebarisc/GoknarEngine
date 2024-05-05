@@ -48,12 +48,13 @@ public:
 	virtual void Render(RenderPassType renderPassType = RenderPassType::Forward) override;
 	virtual void SetMesh(SkeletalMesh* skeletalMesh) override;
 
-	void SetRenderOperations(RenderPassType renderPassType = RenderPassType::Forward);
-
 	void PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData = { false, {} }, const KeyframeData& keyframeData = {});
 
 	void AttachBoneToMatrixPointer(const std::string& boneName, const Matrix* matrix);
 	void RemoveBoneToMatrixPointer(const std::string& boneName);
+
+	void PrepareForTheCurrentFrame();
+	void PrepareForTheNextFrame();
 
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;
@@ -63,6 +64,8 @@ public:
 protected:
 
 private:
+	void SetRenderOperations(RenderPassType renderPassType = RenderPassType::Forward);
+
 	SkeletalMeshAnimation skeletalMeshAnimation_{};
 
 	std::vector<Matrix> boneTransformations_ {};

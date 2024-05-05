@@ -276,6 +276,8 @@ void Engine::Run()
 
 		application_->Run();
 		Tick(deltaTime_);
+		
+		renderer_->PrepareSkeletalMeshInstancesForTheCurrentFrame();
 
 		renderer_->GetShadowManager()->RenderShadowMaps();
 		
@@ -288,6 +290,8 @@ void Engine::Run()
 			renderer_->Render(RenderPassType::GeometryBuffer);
 			renderer_->Render(RenderPassType::Deferred);
 		}
+
+		renderer_->PrepareSkeletalMeshInstancesForTheNextFrame();
 
 #if GOKNAR_EDITOR
 		editor_->Tick(deltaTime_);

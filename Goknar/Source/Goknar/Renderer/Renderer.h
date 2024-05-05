@@ -119,6 +119,9 @@ public:
 
 	void UpdateDynamicMeshVertex(const DynamicMesh* object, int vertexIndex, const VertexData& newVertexData);
 
+	void PrepareSkeletalMeshInstancesForTheCurrentFrame();
+	void PrepareSkeletalMeshInstancesForTheNextFrame();
+
 	ShadowManager* GetShadowManager()
 	{
 		return shadowManager_;

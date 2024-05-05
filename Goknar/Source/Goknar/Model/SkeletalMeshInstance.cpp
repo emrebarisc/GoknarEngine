@@ -22,68 +22,8 @@ SkeletalMeshInstance::~SkeletalMeshInstance()
 {
 }
 
-void SkeletalMeshInstance::Render(RenderPassType renderPassType)
+void SkeletalMeshInstance::PrepareForTheCurrentFrame()
 {
-	PreRender(renderPassType);
-
-	if (skeletalMeshAnimation_.skeletalAnimation)
-	{
-		const float newElapsedTimeInSeconds = engine->GetElapsedTime() - skeletalMeshAnimation_.initialTimeInSeconds;
-
-		if (skeletalMeshAnimation_.elapsedTimeInSeconds == newElapsedTimeInSeconds)
-		{
-			SetRenderOperations(renderPassType);
-			return;
-		}
-
-		const float newKeyframeIndex = skeletalMeshAnimation_.skeletalAnimation->ticksPerSecond * newElapsedTimeInSeconds;
-
-		const float floorQuotient = std::floor(newKeyframeIndex / skeletalMeshAnimation_.skeletalAnimation->duration);
-		const float normalizedNewKeyframeIndex = newKeyframeIndex - (floorQuotient * skeletalMeshAnimation_.skeletalAnimation->duration);
-
-		const bool isAnimationLoopedThisFrame = normalizedNewKeyframeIndex < skeletalMeshAnimation_.animationTime;
-
-		if (!isAnimationLoopedThisFrame ||
-			(isAnimationLoopedThisFrame && !skeletalMeshAnimation_.playLoopData.playOnce))
-		{
-			skeletalMeshAnimation_.elapsedTimeInSeconds = newElapsedTimeInSeconds;
-			skeletalMeshAnimation_.animationTime = normalizedNewKeyframeIndex;
-
-			if (isAnimationLoopedThisFrame && skeletalMeshAnimation_.playLoopData.callback != nullptr)
-			{
-				skeletalMeshAnimation_.playLoopData.callback();
-			}
-		}
-		else
-		{
-			if (skeletalMeshAnimation_.playLoopData.callback != nullptr)
-			{
-				skeletalMeshAnimation_.playLoopData.callback();
-			}
-		}
-
-
-		// TODO: OPTIMIZE
-		const int currentKeyframe = (int)std::floor(skeletalMeshAnimation_.animationTime);
-		if (currentKeyframe != skeletalMeshAnimation_.currentKeyframe)
-		{
-			decltype(skeletalMeshAnimation_.keyframeData.keyframeCallbackMap)& keyframeCallbackMap = skeletalMeshAnimation_.keyframeData.keyframeCallbackMap;
-			
-			int keyframeIndex = skeletalMeshAnimation_.currentKeyframe;
-			while(keyframeIndex < currentKeyframe)
-			{
-				if (keyframeCallbackMap.find(keyframeIndex) != keyframeCallbackMap.end())
-				{
-					keyframeCallbackMap[keyframeIndex]();
-				}
-
-				keyframeIndex = (keyframeIndex + 1) % skeletalMeshAnimation_.skeletalAnimation->maxKeyframe;
-			}
-			
-			skeletalMeshAnimation_.currentKeyframe = currentKeyframe;
-		}
-	}
-
 	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
 
 	// TODO: Implement a proper multi threading
@@ -116,6 +56,98 @@ void SkeletalMeshInstance::Render(RenderPassType renderPassType)
 
 		++boneIdToAttachedMatrixPointerMapIterator;
 	}
+}
+
+void SkeletalMeshInstance::PrepareForTheNextFrame()
+{
+	if (skeletalMeshAnimation_.skeletalAnimation)
+	{
+		const float newElapsedTimeInSeconds = engine->GetElapsedTime() - skeletalMeshAnimation_.initialTimeInSeconds;
+
+		const float newKeyframeIndex = skeletalMeshAnimation_.skeletalAnimation->ticksPerSecond * newElapsedTimeInSeconds;
+
+		const float floorQuotient = std::floor(newKeyframeIndex / skeletalMeshAnimation_.skeletalAnimation->duration);
+		const float normalizedNewKeyframeIndex = newKeyframeIndex - (floorQuotient * skeletalMeshAnimation_.skeletalAnimation->duration);
+
+		const bool isAnimationLoopedThisFrame = normalizedNewKeyframeIndex < skeletalMeshAnimation_.animationTime;
+
+		if (!isAnimationLoopedThisFrame ||
+			(isAnimationLoopedThisFrame && !skeletalMeshAnimation_.playLoopData.playOnce))
+		{
+			skeletalMeshAnimation_.elapsedTimeInSeconds = newElapsedTimeInSeconds;
+			skeletalMeshAnimation_.animationTime = normalizedNewKeyframeIndex;
+
+			if (isAnimationLoopedThisFrame && skeletalMeshAnimation_.playLoopData.callback != nullptr)
+			{
+				skeletalMeshAnimation_.playLoopData.callback();
+			}
+		}
+		else
+		{
+			if (skeletalMeshAnimation_.playLoopData.callback != nullptr)
+			{
+				skeletalMeshAnimation_.playLoopData.callback();
+			}
+		}
+
+		// TODO: OPTIMIZE
+		const int currentKeyframe = (int)std::floor(skeletalMeshAnimation_.animationTime);
+		if (currentKeyframe != skeletalMeshAnimation_.currentKeyframe)
+		{
+			decltype(skeletalMeshAnimation_.keyframeData.keyframeCallbackMap)& keyframeCallbackMap = skeletalMeshAnimation_.keyframeData.keyframeCallbackMap;
+			
+			int keyframeIndex = skeletalMeshAnimation_.currentKeyframe;
+			while(keyframeIndex < currentKeyframe)
+			{
+				if (keyframeCallbackMap.find(keyframeIndex) != keyframeCallbackMap.end())
+				{
+					keyframeCallbackMap[keyframeIndex]();
+				}
+
+				keyframeIndex = (keyframeIndex + 1) % skeletalMeshAnimation_.skeletalAnimation->maxKeyframe;
+			}
+			
+			skeletalMeshAnimation_.currentKeyframe = currentKeyframe;
+		}
+	}
+
+	// mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
+
+	// // TODO: Implement a proper multi threading
+	// // Following std::for_each parallelizing causes game crash
+	// //std::for_each
+	// //(
+	// //	std::execution::par,
+	// //	std::begin(boneIdToAttachedMatrixPointerMap_),
+	// //	std::end(boneIdToAttachedMatrixPointerMap_),
+	// //	[&](const std::pair<int, const Matrix*>& pair)
+	// //	{
+	// //		const Matrix* matrix = pair.second;
+
+	// //		if (matrix)
+	// //		{
+	// //			boneTransformations_[pair.first] = parentComponent_->GetComponentToWorldTransformationMatrix().GetInverse() * *matrix;
+	// //		}
+	// //	}
+	// //);
+
+	// std::unordered_map<int, const Matrix*>::iterator boneIdToAttachedMatrixPointerMapIterator = boneIdToAttachedMatrixPointerMap_.begin();
+	// while (boneIdToAttachedMatrixPointerMapIterator != boneIdToAttachedMatrixPointerMap_.end())
+	// {
+	// 	const Matrix* matrix = boneIdToAttachedMatrixPointerMapIterator->second;
+
+	// 	if (matrix)
+	// 	{
+	// 		boneTransformations_[boneIdToAttachedMatrixPointerMapIterator->first] = parentComponent_->GetComponentToWorldTransformationMatrix().GetInverse() * *matrix;
+	// 	}
+
+	// 	++boneIdToAttachedMatrixPointerMapIterator;
+	// }
+}
+
+void SkeletalMeshInstance::Render(RenderPassType renderPassType)
+{
+	PreRender(renderPassType);
 
 	SetRenderOperations(renderPassType);
 }
