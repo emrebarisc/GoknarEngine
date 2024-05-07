@@ -298,6 +298,11 @@ void Engine::Run()
 #endif
 		windowManager_->Update();
 
+		if(hasObjectsOrComponentsPendingDestroy_)
+		{
+			DestroyAllPendingObjectAndComponents();
+		}
+
 		currentTimePoint = std::chrono::steady_clock::now();
 		deltaTime_ = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 
@@ -460,6 +465,41 @@ void Engine::Tick(float deltaTime)
 	}
 }
 
+void Engine::DestroyAllPendingObjectAndComponents()
+{	
+	std::vector<Component*>::iterator componentPendingDestroyIterator = componentsPendingDestroy_.begin();
+	for (; componentPendingDestroyIterator != componentsPendingDestroy_.end(); ++componentPendingDestroyIterator)
+	{
+		DestroyComponent(*componentPendingDestroyIterator);
+	}
+
+	componentsPendingDestroy_.clear();
+	
+	std::vector<ObjectBase*>::iterator objectPendingDestroyIterator = objectsPendingDestroy_.begin();
+	for (; objectPendingDestroyIterator != objectsPendingDestroy_.end(); ++objectPendingDestroyIterator)
+	{
+		DestroyObject(*objectPendingDestroyIterator);
+	}
+
+	objectsPendingDestroy_.clear();
+
+	hasObjectsOrComponentsPendingDestroy_ = false;
+}
+
+void Engine::DestroyComponent(Component* component)
+{
+	RemoveComponent(component);
+	if (component->GetIsTickable())
+	{
+		RemoveFromTickableComponents(component);
+	}
+	RemoveFromComponentsToBeInitialized(component);
+
+	component->DestroyInner();
+
+	delete component;
+}
+
 void Engine::DestroyObject(ObjectBase* object)
 {
 	RemoveObject(object);
@@ -469,6 +509,8 @@ void Engine::DestroyObject(ObjectBase* object)
 	}
 
 	RemoveFromObjectToBeInitialized(object);
+
+	object->DestroyInner();
 
 	delete object;
 }
@@ -580,16 +622,16 @@ void Engine::RegisterComponent(Component* component)
 	componentsToBeInitializedSize_++;
 }
 
-void Engine::DestroyComponent(Component* component)
+void Engine::AddObjectToDestroy(ObjectBase* object)
 {
-	RemoveComponent(component);
-	if (component->GetIsTickable())
-	{
-		RemoveFromTickableComponents(component);
-	}
-	RemoveFromComponentsToBeInitialized(component);
+	hasObjectsOrComponentsPendingDestroy_ = true;
+	objectsPendingDestroy_.emplace_back(object);
+}
 
-	delete component;
+void Engine::AddComponentToDestroy(Component* component)
+{
+	hasObjectsOrComponentsPendingDestroy_ = true;
+	componentsPendingDestroy_.emplace_back(component);
 }
 
 void Engine::RemoveComponent(Component* component)

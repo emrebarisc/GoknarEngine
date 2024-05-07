@@ -43,6 +43,7 @@ public:
 	}
 protected:
 	inline MeshComponent(Component* parent);
+	inline void DestroyInner() override;
 
 	MeshInstanceType* meshInstance_;
 private:
@@ -86,13 +87,19 @@ MeshComponent<MeshType, MeshInstanceType>::~MeshComponent()
 }
 
 template<class MeshType, class MeshInstanceType>
-void MeshComponent<MeshType, MeshInstanceType>::Destroy()
+void MeshComponent<MeshType, MeshInstanceType>::DestroyInner()
 {
+	Component::DestroyInner();
+	
 	if (meshInstance_)
 	{
 		meshInstance_->Destroy();
 	}
+}
 
+template<class MeshType, class MeshInstanceType>
+void MeshComponent<MeshType, MeshInstanceType>::Destroy()
+{
 	Component::Destroy();
 }
 

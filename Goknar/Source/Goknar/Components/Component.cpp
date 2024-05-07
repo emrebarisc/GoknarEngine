@@ -8,7 +8,8 @@ Component::Component(Component* parent) :
 	parent_(parent), 
 	isActive_(true),
 	isTickable_(false),
-	isInitialized_(false)
+	isInitialized_(false),
+	isPendingDestroy_(false)
 {
 	engine->RegisterComponent(this);
 }
@@ -20,7 +21,23 @@ Component::Component(ObjectBase* parentObjectBase) :
 
 void Component::Destroy()
 {
-	engine->DestroyComponent(this);
+	if(isPendingDestroy_)
+	{
+		return;
+	}
+
+	isPendingDestroy_ = true;
+	engine->AddComponentToDestroy(this);
+	
+	std::vector<Component*>::iterator childrenIterator = children_.begin();
+	for (; childrenIterator != children_.end(); ++childrenIterator)
+	{
+		(*childrenIterator)->Destroy();
+	}
+}
+
+void Component::DestroyInner()
+{
 }
 
 void Component::SetParent(ObjectBase* objectBase)

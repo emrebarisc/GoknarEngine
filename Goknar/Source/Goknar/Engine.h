@@ -110,14 +110,12 @@ public:
 	}
 	
 	void RegisterObject(ObjectBase *object);
-	void RemoveObject(ObjectBase* object);
 	void AddToTickableObjects(ObjectBase* object);
 	void RemoveFromTickableObjects(ObjectBase* object);
 	void RemoveFromObjectToBeInitialized(ObjectBase* object);
 	void DestroyAllObjectsAndComponents();
 
 	void RegisterComponent(Component* component);
-	void RemoveComponent(Component* component);
 	void AddToTickableComponents(Component* component);
 	void RemoveFromTickableComponents(Component* component);
 	void RemoveFromComponentsToBeInitialized(Component* component);
@@ -149,12 +147,20 @@ public:
 		return elapsedTime_;
 	}
 
-	void DestroyObject(ObjectBase* object);
-	void DestroyComponent(Component* component);
+	void AddObjectToDestroy(ObjectBase* object);
+	void AddComponentToDestroy(Component* component);
 
 	void Exit();
 
 private:
+	void DestroyAllPendingObjectAndComponents();
+
+	void DestroyObject(ObjectBase* object);
+	void RemoveObject(ObjectBase* object);
+
+	void DestroyComponent(Component* component);
+	void RemoveComponent(Component* component);
+
 	DebugDrawer* debugDrawer_{ nullptr };
 
 	InputManager* inputManager_;
@@ -177,6 +183,9 @@ private:
 	std::vector<Component*> registeredComponents_;
 	std::vector<Component*> tickableComponents_;
 
+	std::vector<ObjectBase*> objectsPendingDestroy_;
+	std::vector<Component*> componentsPendingDestroy_;
+
 	std::vector<TimeDependentObject*> timeDependentObjects_;
 
 	int objectsToBeInitializedSize_{ 0 };
@@ -188,6 +197,7 @@ private:
 
 	bool hasUninitializedObjects_{ false };
 	bool hasUninitializedComponents_{ false };
+	bool hasObjectsOrComponentsPendingDestroy_{ false };
 };
 
 #endif

@@ -9,6 +9,7 @@
 #include "Math/Matrix.h"
 
 class Component;
+class Engine;
 class SocketComponent;
 
 enum class SnappingRule : unsigned char
@@ -25,6 +26,7 @@ enum class SnappingRule : unsigned char
 
 class GOKNAR_API ObjectBase
 {
+	friend Engine;
 public:
     ObjectBase();
 	virtual ~ObjectBase();
@@ -168,6 +170,8 @@ protected:
 	Vector3 worldScaling_{ Vector3(1.f) };
 
 private:
+	virtual void DestroyInner();
+	
 	std::string name_{ "ObjectBase" };
 	std::vector<ObjectBase*> children_;
 	std::vector<Component*> components_;
@@ -179,9 +183,10 @@ private:
 	int totalComponentCount_;
 
 	unsigned int id_{ 0 };
-    unsigned int isTickable_ : 1;
-	unsigned int isActive_ : 1;
-	unsigned int isInitialized_ : 1;
+    unsigned char isTickable_ : 1;
+	unsigned char isActive_ : 1;
+	unsigned char isInitialized_ : 1;
+	unsigned char isPendingDestroy_ : 1;
 };
 
 template<class T>

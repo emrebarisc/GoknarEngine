@@ -14,7 +14,8 @@ ObjectBase::ObjectBase() :
 	totalComponentCount_(0),
 	isTickable_(false),
 	isActive_(true),
-	isInitialized_(false)
+	isInitialized_(false),
+	isPendingDestroy_(false)
 {
 	engine->RegisterObject(this);
 
@@ -47,11 +48,13 @@ void ObjectBase::PostInit()
 
 void ObjectBase::Destroy()
 {
-	// Detach from the socket component if any
-	if (parentSocket_)
+	if(isPendingDestroy_)
 	{
-		parentSocket_->RemoveObject(this);
+		return;
 	}
+	
+	isPendingDestroy_ = true;
+	engine->AddObjectToDestroy(this);
 
 	std::vector<ObjectBase*>::iterator childrenIterator = children_.begin();
 	for (; childrenIterator != children_.end(); ++childrenIterator)
@@ -64,7 +67,16 @@ void ObjectBase::Destroy()
 	{
 		components_[componentIndex]->Destroy();
 	}
-	engine->DestroyObject(this);
+}
+
+void ObjectBase::DestroyInner()
+{
+	// Detach from the socket component if any
+	if (parentSocket_)
+	{
+		parentSocket_->RemoveObject(this);
+	}
+	
 	engine->GetApplication()->GetMainScene()->RemoveObject(this);
 }
 

@@ -4,10 +4,12 @@
 #include "Goknar/Core.h"
 #include "Goknar/Math/Matrix.h"
 
+class Engine;
 class ObjectBase;
 
 class GOKNAR_API Component
 {
+	friend Engine;
 	friend ObjectBase;
 
 public:
@@ -140,6 +142,8 @@ public:
 protected:
 	Component(Component* parent);
 	Component(ObjectBase* parentObjectBase);
+	
+	virtual void DestroyInner();
 
 	inline virtual void UpdateRelativeTransformationMatrix()
 	{
@@ -194,6 +198,7 @@ protected:
 	unsigned char isActive_ : 1;
 	unsigned char isTickable_ : 1;
 	unsigned char isInitialized_ : 1;
+	unsigned char isPendingDestroy_ : 1;
 private:
 };
 #endif
