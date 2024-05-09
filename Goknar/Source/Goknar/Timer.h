@@ -1,3 +1,6 @@
+#ifndef __TIMER_H__
+#define __TIMER_H__
+
 #include "TimeDependentObject.h"
 
 #include "Delegates/Delegate.h"
@@ -55,3 +58,5 @@ private:
 	float timeToRefreshTimeVariables_{ 1.f / ticksPerSecond_ };
 	float elapsedTime_{ 0.f };
 };
+
+#endif
