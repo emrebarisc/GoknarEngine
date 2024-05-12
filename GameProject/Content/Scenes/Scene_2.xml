@@ -77,6 +77,10 @@
 	      <Name>SM_Axis</Name>
 	      <Path>Meshes/SM_Axis.fbx</Path>
 	    </StaticMesh>
+	    <StaticMesh id = "14">
+	      <Name>SM_Capsule</Name>
+	      <Path>Meshes/SM_Capsule.fbx</Path>
+	    </StaticMesh>
 	</Meshes>
 
 	<Objects>

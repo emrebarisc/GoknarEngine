@@ -5,6 +5,7 @@
 #include "Archer.h"
 #include "ArcherCharacter.h"
 #include "Objects/PhysicsBox.h"
+#include "Objects/PhysicsCapsule.h"
 #include "Objects/PhysicsSphere.h"
 #include "Objects/MultipleCollisionComponentObject.h"
 #include "Objects/Monkey.h"
@@ -105,7 +106,7 @@ void PhysicsObjectSpawner::Tick(float deltaTime)
         counter += 1.f;
         
         std::random_device randomDevice;
-        std::uniform_int_distribution<int> randomObjectDist(0, 3);
+        std::uniform_int_distribution<int> randomObjectDist(0, 4);
         int randomObjectInt = randomObjectDist(randomDevice);
 
         if(randomObjectInt == 0)
@@ -118,9 +119,13 @@ void PhysicsObjectSpawner::Tick(float deltaTime)
         }
         else if(randomObjectInt == 2)
         {
-            CreateMonkey();
+            CreatePhysicsCapsule();
         }
         else if(randomObjectInt == 3)
+        {
+            CreateMonkey();
+        }
+        else if(randomObjectInt == 4)
         {
             CreateMultipleCollisionComponentObject();
         }
@@ -165,6 +170,13 @@ void PhysicsObjectSpawner::CreatePhysicsSphere()
     PhysicsSphere* physicsSphere = new PhysicsSphere();
     physicsSphere->SetWorldPosition(initialPosition_ + GetRandomPosition());
     physicsSphere->SetWorldRotation(GetRandomRotation());
+}
+
+void PhysicsObjectSpawner::CreatePhysicsCapsule()
+{
+    PhysicsCapsule* physicsCapsule = new PhysicsCapsule();
+    physicsCapsule->SetWorldPosition(initialPosition_ + GetRandomPosition());
+    physicsCapsule->SetWorldRotation(GetRandomRotation());
 }
 
 void PhysicsObjectSpawner::CreateMonkey()

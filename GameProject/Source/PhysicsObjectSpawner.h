@@ -20,6 +20,7 @@ public:
     Quaternion GetRandomRotation();
     void CreatePhysicsBox();
     void CreatePhysicsSphere();
+    void CreatePhysicsCapsule();
     void CreateMonkey();
     void CreateMultipleCollisionComponentObject();
     void ThrowCannonBall();

@@ -37,7 +37,7 @@ void PhysicsBox::BeginGame()
 {
 	RigidBody::BeginGame();
 
-	// DebugDrawer::DrawCollisionComponent(boxCollisionComponent_, Colorf::Yellow, 5.f, 1.f, this);
+	DebugDrawer::DrawCollisionComponent(boxCollisionComponent_, Colorf::Yellow, 5.f, 0.5f);
 	
 	btBoxShape* boxShape = (btBoxShape*)boxCollisionComponent_->GetBulletCollisionShape();
 
