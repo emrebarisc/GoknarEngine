@@ -18,6 +18,7 @@ RigidBody::RigidBody() : PhysicsObject()
 RigidBody::~RigidBody()
 {
     delete rigidBodyInitializationData_;
+    delete bulletMotionState_;
 }
 
 void RigidBody::PreInit()
@@ -44,8 +45,8 @@ void RigidBody::Init()
     bulletTransform.setOrigin(PhysicsUtils::FromVector3ToBtVector3(worldPosition_));
     bulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(worldRotation_));
 
-    btDefaultMotionState* bulletMotionState = new btDefaultMotionState(bulletTransform);
-    btRigidBody::btRigidBodyConstructionInfo rigidBodyInfo(mass_, bulletMotionState, bulletCollisionShape, rigidBodyInitializationData_->localInertia);
+    bulletMotionState_ = new btDefaultMotionState(bulletTransform);
+    btRigidBody::btRigidBodyConstructionInfo rigidBodyInfo(mass_, bulletMotionState_, bulletCollisionShape, rigidBodyInitializationData_->localInertia);
 
     if (0.f <= rigidBodyInitializationData_->linearSleepingThreshold)
     {
@@ -59,7 +60,6 @@ void RigidBody::Init()
 
     bulletRigidBody_ = new btRigidBody(rigidBodyInfo);
     bulletCollisionObject_ = bulletRigidBody_;
-    delete bulletMotionState;
 
     engine->GetPhysicsWorld()->AddRigidBody(this);
 

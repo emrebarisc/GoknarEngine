@@ -9,6 +9,7 @@
 
 #include "LinearMath/btVector3.h"
 
+class btDefaultMotionState;
 class btRigidBody;
 
 struct GOKNAR_API RigidBodyInitializationData : public PhysicsObjectInitializationData
@@ -95,6 +96,7 @@ public:
 
 protected:
 	btRigidBody* bulletRigidBody_{ nullptr };
+	btDefaultMotionState* bulletMotionState_{ nullptr };
 
 private:
 	RigidBodyInitializationData* rigidBodyInitializationData_{ nullptr };
