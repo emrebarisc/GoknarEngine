@@ -96,7 +96,7 @@ void ArcherCharacter::BeginGame()
 	// 	PhysicsUtils::FromVector3ToBtVector3(Vector3{1.f, 0.f, 0.f})
 	// );
 
-	// DebugDrawer::DrawCollisionComponent(capsuleCollisionComponent_, Colorf::Blue, 1.f, 1.f, this);
+	// DebugDrawer::DrawCollisionComponent(capsuleCollisionComponent_, Colorf::Blue, 1.f, 1.f);
 }
 
 void ArcherCharacter::Tick(float deltaTime)

@@ -223,6 +223,8 @@ public:
     static Colorf Yellow;
     static Colorf Magenta;
     static Colorf Orange;
+    static Colorf Black;
+    static Colorf White;
 
     float r, g, b;
 private:
