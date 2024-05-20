@@ -6,7 +6,7 @@
 #include "Goknar/Physics/OverlappingPhysicsObject.h"
 
 class CapsuleCollisionComponent;
-class CharacterMovementComponent;
+class PhysicsMovementComponent;
 class SkeletalMeshComponent;
 
 class GOKNAR_API Character : public OverlappingPhysicsObject
@@ -33,7 +33,7 @@ public:
 		return capsuleCollisionComponent_;
 	}
 
-	CharacterMovementComponent* GetMovementComponent() const
+	PhysicsMovementComponent* GetMovementComponent() const
 	{
 		return movementComponent_;
 	}
@@ -45,7 +45,7 @@ public:
 
 protected:
 	CapsuleCollisionComponent* capsuleCollisionComponent_{ nullptr };
-	CharacterMovementComponent* movementComponent_{ nullptr };
+	PhysicsMovementComponent* movementComponent_{ nullptr };
 	SkeletalMeshComponent* skeletalMeshComponent_{ nullptr };
 
 private:

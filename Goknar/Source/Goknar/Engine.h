@@ -163,11 +163,11 @@ private:
 
 	DebugDrawer* debugDrawer_{ nullptr };
 
-	InputManager* inputManager_{ nullptr };
-	ResourceManager* resourceManager_{ nullptr };
-	ObjectManager* objectManager_{ nullptr };
-	Renderer* renderer_{ nullptr };
-	WindowManager* windowManager_{ nullptr };
+	InputManager* inputManager_;
+	ResourceManager* resourceManager_;
+	ObjectManager* objectManager_;
+	Renderer* renderer_;
+	WindowManager* windowManager_;
 	Editor* editor_{ nullptr };
 	CameraManager* cameraManager_;
 	Controller* controller_{ nullptr };

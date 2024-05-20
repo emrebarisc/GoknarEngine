@@ -12,7 +12,7 @@ class btGhostPairCallback;
 
 class Character;
 class CollisionComponent;
-class CharacterMovementComponent;
+class PhysicsMovementComponent;
 class OverlappingCollisionPairCallback;
 class PhysicsDebugger;
 class PhysicsObject;
@@ -81,8 +81,8 @@ public:
     virtual void AddPhysicsObject(PhysicsObject* physicsObject);
     virtual void RemovePhysicsObject(PhysicsObject* physicsObject);
     
-    virtual void AddCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent);
-    virtual void RemoveCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent);
+    virtual void AddPhysicsMovementComponent(PhysicsMovementComponent* physicsMovementComponent);
+    virtual void RemovePhysicsMovementComponent(PhysicsMovementComponent* physicsMovementComponent);
 
     virtual bool RaycastClosest(const RaycastData& raycastData, RaycastSingleResult& raycastClosest);
     virtual bool RaycastAll(const RaycastData& raycastData, RaycastAllResult& raycastClosest);
@@ -116,8 +116,8 @@ protected:
     typedef std::vector<PhysicsObject*> PhysicsObjectVector;
     PhysicsObjectVector physicsObjects_;
     
-    typedef std::vector<CharacterMovementComponent*> CharacterMovementComponentVector;
-    CharacterMovementComponentVector characterMovementComponents_;
+    typedef std::vector<PhysicsMovementComponent*> PhysicsMovementComponentVector;
+    PhysicsMovementComponentVector physicsMovementComponents_;
 
 private:
     Vector3 gravity_{ Vector3{0.f, 0.f, -10.f} };

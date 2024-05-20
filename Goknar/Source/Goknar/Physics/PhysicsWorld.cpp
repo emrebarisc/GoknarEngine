@@ -11,7 +11,7 @@
 #include "PhysicsWorld.h"
 #include "RigidBody.h"
 #include "Character.h"
-#include "Components/CharacterMovementComponent.h"
+#include "Components/PhysicsMovementComponent.h"
 #include "Components/CollisionComponent.h"
 #include "Components/OverlappingTypes.h"
 
@@ -118,9 +118,9 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
 		}
 	}
 
-	for(CharacterMovementComponent* characterMovementComponent : characterMovementComponents_)
+	for(PhysicsMovementComponent* physicsMovementComponent : physicsMovementComponents_)
 	{
-		characterMovementComponent->UpdateOwnerTransformation();
+		physicsMovementComponent->UpdateOwnerTransformation();
 	}
 }
 
@@ -236,27 +236,27 @@ void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)
 	dynamicsWorld_->removeCollisionObject(bulletCollisionObject);
 }
 
-void PhysicsWorld::AddCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent)
+void PhysicsWorld::AddPhysicsMovementComponent(PhysicsMovementComponent* physicsMovementComponent)
 {
-	characterMovementComponents_.push_back(characterMovementComponent);
-	dynamicsWorld_->addAction(characterMovementComponent->GetBulletKinematicCharacterController());
+	physicsMovementComponents_.push_back(physicsMovementComponent);
+	dynamicsWorld_->addAction(physicsMovementComponent->GetBulletKinematicCharacterController());
 }
 
-void PhysicsWorld::RemoveCharacterMovementComponent(CharacterMovementComponent* characterMovementComponent)
+void PhysicsWorld::RemovePhysicsMovementComponent(PhysicsMovementComponent* physicsMovementComponent)
 {
-	decltype(characterMovementComponents_.begin()) characterIterator = characterMovementComponents_.begin();
-	while(characterIterator != characterMovementComponents_.end())
+	decltype(physicsMovementComponents_.begin()) characterIterator = physicsMovementComponents_.begin();
+	while(characterIterator != physicsMovementComponents_.end())
 	{
-		if(*characterIterator == characterMovementComponent)
+		if(*characterIterator == physicsMovementComponent)
 		{
-			characterMovementComponents_.erase(characterIterator);
+			physicsMovementComponents_.erase(characterIterator);
 			break;
 		}
 
 		++characterIterator;
 	}
 
-	dynamicsWorld_->removeAction(characterMovementComponent->GetBulletKinematicCharacterController());
+	dynamicsWorld_->removeAction(physicsMovementComponent->GetBulletKinematicCharacterController());
 }
 
 bool PhysicsWorld::RaycastClosest(const RaycastData& raycastData, RaycastSingleResult& raycastClosest)

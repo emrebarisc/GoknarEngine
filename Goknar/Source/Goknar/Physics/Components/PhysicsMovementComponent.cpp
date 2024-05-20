@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "CharacterMovementComponent.h"
+#include "PhysicsMovementComponent.h"
 #include "Engine.h"
 #include "Physics/PhysicsUtils.h"
 #include "Physics/PhysicsWorld.h"
@@ -13,24 +13,24 @@
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #include "BulletDynamics/Character/btKinematicCharacterController.h"
 
-CharacterMovementComponent::CharacterMovementComponent(Component* parent) :
+PhysicsMovementComponent::PhysicsMovementComponent(Component* parent) :
 	Component(parent)
 {
 }
 
-CharacterMovementComponent::CharacterMovementComponent(ObjectBase* parentObjectBase) :
+PhysicsMovementComponent::PhysicsMovementComponent(ObjectBase* parentObjectBase) :
 	Component(parentObjectBase)
 {
 }
 
-CharacterMovementComponent::~CharacterMovementComponent()
+PhysicsMovementComponent::~PhysicsMovementComponent()
 {
 	delete bulletKinematicCharacterController_;
 }
 
-void CharacterMovementComponent::Destroy()
+void PhysicsMovementComponent::Destroy()
 {
-	engine->GetPhysicsWorld()->RemoveCharacterMovementComponent(this);
+	engine->GetPhysicsWorld()->RemovePhysicsMovementComponent(this);
 
 	delete bulletKinematicCharacterController_;
 	bulletKinematicCharacterController_ = nullptr;
@@ -38,18 +38,18 @@ void CharacterMovementComponent::Destroy()
 	Component::Destroy();
 }
 
-void CharacterMovementComponent::PreInit()
+void PhysicsMovementComponent::PreInit()
 {
 	Component::PreInit();
 }
 
-void CharacterMovementComponent::Init()
+void PhysicsMovementComponent::Init()
 {
 	Component::Init();
 
-	Character* ownerCharacter = dynamic_cast<Character*>(GetOwner());
-	GOKNAR_CORE_ASSERT(ownerCharacter, "CharacterMovementComponent can only be added to a Character object");
-	ownerCharacter_ = ownerCharacter;
+	OverlappingPhysicsObject* ownerPhysicsObject = dynamic_cast<OverlappingPhysicsObject*>(GetOwner());
+	GOKNAR_CORE_ASSERT(ownerPhysicsObject, "OverlappingPhysicsObjectMovementComponent can only be added to a OverlappingPhysicsObject object");
+	ownerPhysicsObject_ = ownerPhysicsObject;
 
 	GOKNAR_CORE_ASSERT
 	(
@@ -59,7 +59,7 @@ void CharacterMovementComponent::Init()
 		"Relative collision component can obly be a convex CollisionComponent"
 	);
 
-	btPairCachingGhostObject* bulletPairCachingGhostObject = (btPairCachingGhostObject*)ownerCharacter->GetBulletCollisionObject();
+	btPairCachingGhostObject* bulletPairCachingGhostObject = (btPairCachingGhostObject*)ownerPhysicsObject->GetBulletCollisionObject();
 
 	bulletKinematicCharacterController_ =
 		new btKinematicCharacterController(
@@ -69,127 +69,127 @@ void CharacterMovementComponent::Init()
 			PhysicsUtils::FromVector3ToBtVector3(Vector3::UpVector));
 
 	PhysicsWorld* physicsWorld = engine->GetPhysicsWorld();
-	physicsWorld->AddCharacterMovementComponent(this);
+	physicsWorld->AddPhysicsMovementComponent(this);
 
 	bulletPairCachingGhostObject->setUserPointer(this);
 
 	bulletKinematicCharacterController_->setGravity(PhysicsUtils::FromVector3ToBtVector3(physicsWorld->GetGravity()));
 }
 
-void CharacterMovementComponent::PostInit()
+void PhysicsMovementComponent::PostInit()
 {
 	Component::PostInit();
 }
 
-void CharacterMovementComponent::BeginGame()
+void PhysicsMovementComponent::BeginGame()
 {
 	Component::BeginGame();
 }
 
-void CharacterMovementComponent::TickComponent(float deltaTime)
+void PhysicsMovementComponent::TickComponent(float deltaTime)
 {
 	Component::TickComponent(deltaTime);
 }
 
-void CharacterMovementComponent::UpdateComponentToWorldTransformationMatrix()
+void PhysicsMovementComponent::UpdateComponentToWorldTransformationMatrix()
 {
 	Component::UpdateComponentToWorldTransformationMatrix();
 }
 
-void CharacterMovementComponent::SetMovementDirection(const Vector3& movementDirection)
+void PhysicsMovementComponent::SetMovementDirection(const Vector3& movementDirection)
 {
 	bulletKinematicCharacterController_->setWalkDirection(PhysicsUtils::FromVector3ToBtVector3(movementDirection * movementSpeed_));
 }
 
-void CharacterMovementComponent::SetMovementVelocityForGivenDuration(const Vector3& movementVelocity, float duration)
+void PhysicsMovementComponent::SetMovementVelocityForGivenDuration(const Vector3& movementVelocity, float duration)
 {
 	bulletKinematicCharacterController_->setVelocityForTimeInterval(PhysicsUtils::FromVector3ToBtVector3(movementVelocity), duration);
 }
 
-void CharacterMovementComponent::SetAngularVelocity(const Vector3& angularVelocity)
+void PhysicsMovementComponent::SetAngularVelocity(const Vector3& angularVelocity)
 {
 	bulletKinematicCharacterController_->setAngularVelocity(PhysicsUtils::FromVector3ToBtVector3(angularVelocity));
 }
 
-Vector3 CharacterMovementComponent::GetAngularVelocity() const
+Vector3 PhysicsMovementComponent::GetAngularVelocity() const
 {
 	return PhysicsUtils::FromBtVector3ToVector3(bulletKinematicCharacterController_->getAngularVelocity());
 }
 
-void CharacterMovementComponent::SetLinearVelocity(const Vector3& linearVelocity)
+void PhysicsMovementComponent::SetLinearVelocity(const Vector3& linearVelocity)
 {
 	bulletKinematicCharacterController_->setLinearVelocity(PhysicsUtils::FromVector3ToBtVector3(linearVelocity));
 }
 
-Vector3 CharacterMovementComponent::GetLinearVelocity(const Vector3& linearVelocity) const
+Vector3 PhysicsMovementComponent::GetLinearVelocity(const Vector3& linearVelocity) const
 {
 	return PhysicsUtils::FromBtVector3ToVector3(bulletKinematicCharacterController_->getLinearVelocity());
 }
 
-void CharacterMovementComponent::SetLinearDamping(float linearDamping)
+void PhysicsMovementComponent::SetLinearDamping(float linearDamping)
 {
 	bulletKinematicCharacterController_->setLinearDamping(linearDamping);
 }
 
-float CharacterMovementComponent::GetLinearDamping() const
+float PhysicsMovementComponent::GetLinearDamping() const
 {
 	return bulletKinematicCharacterController_->getLinearDamping();
 }
 
-void CharacterMovementComponent::SetAngularDamping(float angularDamping)
+void PhysicsMovementComponent::SetAngularDamping(float angularDamping)
 {
 	bulletKinematicCharacterController_->setAngularDamping(angularDamping);
 }
 
-float CharacterMovementComponent::GetAngularDamping() const
+float PhysicsMovementComponent::GetAngularDamping() const
 {
 	return bulletKinematicCharacterController_->getAngularDamping();
 }
 
-void CharacterMovementComponent::Reset(PhysicsWorld* physicsWorld)
+void PhysicsMovementComponent::Reset(PhysicsWorld* physicsWorld)
 {
 	bulletKinematicCharacterController_->reset(physicsWorld->GetBulletPhysicsWorld());
 }
 
-void CharacterMovementComponent::Warp(const Vector3& origin)
+void PhysicsMovementComponent::Warp(const Vector3& origin)
 {
 	bulletKinematicCharacterController_->warp(PhysicsUtils::FromVector3ToBtVector3(origin));
 }
 
-void CharacterMovementComponent::Update(PhysicsWorld* physicsWorld, float dt)
+void PhysicsMovementComponent::Update(PhysicsWorld* physicsWorld, float dt)
 {
 	Update(physicsWorld->GetBulletPhysicsWorld(), dt);
 }
 
-void CharacterMovementComponent::Update(btCollisionWorld* bulletCollisionWorld, float dt)
+void PhysicsMovementComponent::Update(btCollisionWorld* bulletCollisionWorld, float dt)
 {
 	bulletKinematicCharacterController_->updateAction(bulletCollisionWorld, dt);
 	UpdateOwnerTransformation();
 }
 
-void CharacterMovementComponent::PreStep(PhysicsWorld* physicsWorld)
+void PhysicsMovementComponent::PreStep(PhysicsWorld* physicsWorld)
 {
 	PreStep(physicsWorld->GetBulletPhysicsWorld());
 }
 
-void CharacterMovementComponent::PreStep(btCollisionWorld* bulletCollisionWorld)
+void PhysicsMovementComponent::PreStep(btCollisionWorld* bulletCollisionWorld)
 {
 	bulletKinematicCharacterController_->preStep(bulletCollisionWorld);
 	UpdateOwnerTransformation();
 }
 
-void CharacterMovementComponent::PlayerStep(PhysicsWorld* physicsWorld, float dt)
+void PhysicsMovementComponent::PlayerStep(PhysicsWorld* physicsWorld, float dt)
 {
 	PlayerStep(physicsWorld->GetBulletPhysicsWorld(), dt);
 }
 
-void CharacterMovementComponent::PlayerStep(btCollisionWorld* bulletCollisionWorld, float dt)
+void PhysicsMovementComponent::PlayerStep(btCollisionWorld* bulletCollisionWorld, float dt)
 {
 	bulletKinematicCharacterController_->playerStep(bulletCollisionWorld, dt);
 	UpdateOwnerTransformation();
 }
 
-void CharacterMovementComponent::SetStepHeight(float stepHeight)
+void PhysicsMovementComponent::SetStepHeight(float stepHeight)
 {
 	stepHeight_ = stepHeight;
 
@@ -201,7 +201,7 @@ void CharacterMovementComponent::SetStepHeight(float stepHeight)
 	bulletKinematicCharacterController_->setStepHeight(stepHeight);
 }
 
-float CharacterMovementComponent::GetStepHeight() const
+float PhysicsMovementComponent::GetStepHeight() const
 {
 	if(!GetIsInitialized())
 	{
@@ -211,94 +211,94 @@ float CharacterMovementComponent::GetStepHeight() const
 	return bulletKinematicCharacterController_->getStepHeight();
 }
 
-void CharacterMovementComponent::SetFallSpeed(float fallSpeed)
+void PhysicsMovementComponent::SetFallSpeed(float fallSpeed)
 {
 	bulletKinematicCharacterController_->setFallSpeed(fallSpeed);
 }
 
-float CharacterMovementComponent::GetFallSpeed() const
+float PhysicsMovementComponent::GetFallSpeed() const
 {
 	return bulletKinematicCharacterController_->getFallSpeed();
 }
 
-void CharacterMovementComponent::SetJumpSpeed(float jumpSpeed)
+void PhysicsMovementComponent::SetJumpSpeed(float jumpSpeed)
 {
 	bulletKinematicCharacterController_->setJumpSpeed(jumpSpeed);
 }
 
-float CharacterMovementComponent::GetJumpSpeed() const
+float PhysicsMovementComponent::GetJumpSpeed() const
 {
 	return bulletKinematicCharacterController_->getJumpSpeed();
 }
 
-void CharacterMovementComponent::SetMaxJumpHeight(float maxJumpHeight)
+void PhysicsMovementComponent::SetMaxJumpHeight(float maxJumpHeight)
 {
 	bulletKinematicCharacterController_->setMaxJumpHeight(maxJumpHeight);
 }
 
-bool CharacterMovementComponent::CanJump() const
+bool PhysicsMovementComponent::CanJump() const
 {
 	return bulletKinematicCharacterController_->canJump();
 }
 
-void CharacterMovementComponent::Jump(const Vector3& v)
+void PhysicsMovementComponent::Jump(const Vector3& v)
 {
 	bulletKinematicCharacterController_->jump(PhysicsUtils::FromVector3ToBtVector3(v));
 }
 
-void CharacterMovementComponent::ApplyImpulse(const Vector3& v)
+void PhysicsMovementComponent::ApplyImpulse(const Vector3& v)
 {
 	bulletKinematicCharacterController_->applyImpulse(PhysicsUtils::FromVector3ToBtVector3(v));
 }
 
-void CharacterMovementComponent::SetGravity(const Vector3& gravity)
+void PhysicsMovementComponent::SetGravity(const Vector3& gravity)
 {
 	bulletKinematicCharacterController_->setGravity(PhysicsUtils::FromVector3ToBtVector3(gravity));
 }
 
-Vector3 CharacterMovementComponent::GetGravity() const
+Vector3 PhysicsMovementComponent::GetGravity() const
 {
 	return PhysicsUtils::FromBtVector3ToVector3(bulletKinematicCharacterController_->getGravity());
 }
 
-void CharacterMovementComponent::SetMaxSlope(float slopeRadians)
+void PhysicsMovementComponent::SetMaxSlope(float slopeRadians)
 {
 	bulletKinematicCharacterController_->setMaxSlope(slopeRadians);
 }
 
-float CharacterMovementComponent::GetMaxSlope() const
+float PhysicsMovementComponent::GetMaxSlope() const
 {
 	return bulletKinematicCharacterController_->getMaxSlope();
 }
 
-void CharacterMovementComponent::SetMaxPenetrationDepth(float d)
+void PhysicsMovementComponent::SetMaxPenetrationDepth(float d)
 {
 	bulletKinematicCharacterController_->setMaxPenetrationDepth(d);
 }
 
-float CharacterMovementComponent::GetMaxPenetrationDepth() const
+float PhysicsMovementComponent::GetMaxPenetrationDepth() const
 {
 	return bulletKinematicCharacterController_->getMaxPenetrationDepth();
 }
 
-void CharacterMovementComponent::SetUseGhostSweepTest(bool useGhostObjectSweepTest)
+void PhysicsMovementComponent::SetUseGhostSweepTest(bool useGhostObjectSweepTest)
 {
 	bulletKinematicCharacterController_->setUseGhostSweepTest(useGhostObjectSweepTest);
 }
-bool CharacterMovementComponent::OnGround() const
+bool PhysicsMovementComponent::OnGround() const
 {
 	return bulletKinematicCharacterController_->onGround();
 }
 
-void CharacterMovementComponent::SetUpInterpolate(bool value)
+void PhysicsMovementComponent::SetUpInterpolate(bool value)
 {
 	bulletKinematicCharacterController_->setUpInterpolate(value);
 }
 
-void CharacterMovementComponent::UpdateOwnerTransformation()
+void PhysicsMovementComponent::UpdateOwnerTransformation()
 {
-	const btTransform& bulletWorldTransform = ownerCharacter_->GetBulletCollisionObject()->getWorldTransform();
+	const btTransform& bulletWorldTransform = ownerPhysicsObject_->GetBulletCollisionObject()->getWorldTransform();
 
-	ownerCharacter_->SetWorldPosition(PhysicsUtils::FromBtVector3ToVector3(bulletWorldTransform.getOrigin()), false);
-	ownerCharacter_->SetWorldRotation(PhysicsUtils::FromBtQuaternionToQuaternion(bulletWorldTransform.getRotation()));
+	ownerPhysicsObject_->SetWorldPosition(PhysicsUtils::FromBtVector3ToVector3(bulletWorldTransform.getOrigin()), false);
+	ownerPhysicsObject_->SetWorldRotation(PhysicsUtils::FromBtQuaternionToQuaternion(bulletWorldTransform.getRotation()));
 }

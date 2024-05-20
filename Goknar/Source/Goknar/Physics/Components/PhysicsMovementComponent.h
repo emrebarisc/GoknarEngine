@@ -1,5 +1,5 @@
-#ifndef __CHARACTERMOVEMENTCOMPONENT_H__
-#define __CHARACTERMOVEMENTCOMPONENT_H__
+#ifndef __PHYSICSMOVEMENTCOMPONENT_H__
+#define __PHYSICSMOVEMENTCOMPONENT_H__
 
 #include "Components/Component.h"
 #include "Physics/PhysicsTypes.h"
@@ -7,16 +7,16 @@
 class btCollisionWorld;
 class btKinematicCharacterController;
 
-class Character;
+class OverlappingPhysicsObject;
 class CollisionComponent;
 class PhysicsWorld;
 
-class GOKNAR_API CharacterMovementComponent : public Component
+class GOKNAR_API PhysicsMovementComponent : public Component
 {
 public:
-	CharacterMovementComponent(Component* parent);
-	CharacterMovementComponent(ObjectBase* parentObjectBase);
-	~CharacterMovementComponent();
+	PhysicsMovementComponent(Component* parent);
+	PhysicsMovementComponent(ObjectBase* parentObjectBase);
+	~PhysicsMovementComponent();
 
 	virtual void Destroy() override;
 
@@ -113,7 +113,7 @@ private:
 	btKinematicCharacterController* bulletKinematicCharacterController_{ nullptr };
 
 	CollisionComponent* collisionComponent_{ nullptr };
-	Character* ownerCharacter_{ nullptr };
+	OverlappingPhysicsObject* ownerPhysicsObject_{ nullptr };
 
 	float movementSpeed_{ 0.25f };
 	float stepHeight_{ 0.35f };

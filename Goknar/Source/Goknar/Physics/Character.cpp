@@ -5,7 +5,7 @@
 #include "Goknar/Components/SkeletalMeshComponent.h"
 #include "Goknar/Physics/PhysicsTypes.h"
 #include "Goknar/Physics/Components/CapsuleCollisionComponent.h"
-#include "Goknar/Physics/Components/CharacterMovementComponent.h"
+#include "Goknar/Physics/Components/PhysicsMovementComponent.h"
 
 Character::Character() : OverlappingPhysicsObject()
 {
@@ -28,7 +28,7 @@ void Character::PreInit()
 
     if (!movementComponent_)
     {
-        movementComponent_ = AddSubComponent<CharacterMovementComponent>();
+        movementComponent_ = AddSubComponent<PhysicsMovementComponent>();
     }
     movementComponent_->SetCollisionComponent(capsuleCollisionComponent_);
 }
