@@ -1,15 +1,42 @@
 #ifndef __PHYSICSMOVEMENTCOMPONENT_H__
 #define __PHYSICSMOVEMENTCOMPONENT_H__
 
+#include "Engine.h"
 #include "Components/Component.h"
 #include "Physics/PhysicsTypes.h"
+#include "Physics/PhysicsWorld.h"
 
 class btCollisionWorld;
 class btKinematicCharacterController;
 
 class OverlappingPhysicsObject;
 class CollisionComponent;
-class PhysicsWorld;
+
+struct GOKNAR_API PhysicsMovementComponentInitializationData
+{
+	Vector3 movementDirection{ Vector3::ZeroVector };
+	Vector3 angularVelocity{ Vector3::ZeroVector };
+	Vector3 linearVelocity{ Vector3::ZeroVector };
+	Vector3 gravity{ engine->GetPhysicsWorld()->GetGravity() };
+	Vector3 movementVelocityForGivenDuration{ Vector3::ZeroVector };
+	Vector3 impulse{ Vector3::ZeroVector };
+	float movementVelocityForGivenDurationDuration{ 0.f };
+	float linearDamping{ 0.f };
+	float angularDamping{ 0.f };
+	float stepHeight{ 0.1f };
+	float fallSpeed{ 55.f };
+	float jumpSpeed{ 10.f };
+	float maxJumpHeight{ 0.f };
+	float slopeRadians{ 0.f };
+	float maxPenetrationDepth{ 0.2f };
+	bool useGhostObjectSweepTest{ true };
+	bool upInterpolate{ false };
+	bool isVelocityForGivenDurationSet{ false };
+	bool isMovementDirectionSet{ false };
+	bool isLinearVelocitySet{ false };
+	bool isAngularVelocitySet{ false };
+	bool isImpulseSet{ false };
+};
 
 class GOKNAR_API PhysicsMovementComponent : public Component
 {
@@ -72,13 +99,13 @@ public:
 	virtual void SetMaxSlope(float slopeRadians);
 	virtual float GetMaxSlope() const;
 
-	virtual void SetMaxPenetrationDepth(float d);
+	virtual void SetMaxPenetrationDepth(float maxPenetrationDepth);
 	virtual float GetMaxPenetrationDepth() const;
 
 	virtual void SetUseGhostSweepTest(bool useGhostObjectSweepTest);
 
 	virtual bool OnGround() const;
-	virtual void SetUpInterpolate(bool value);
+	virtual void SetUpInterpolate(bool upInterpolate);
 
 	btKinematicCharacterController* GetBulletKinematicCharacterController() const
 	{
@@ -108,15 +135,17 @@ public:
 	}
 
 protected:
+	virtual void DestroyInner() override;
 
 private:
+	PhysicsMovementComponentInitializationData* initializationData_{ nullptr };
+
 	btKinematicCharacterController* bulletKinematicCharacterController_{ nullptr };
 
 	CollisionComponent* collisionComponent_{ nullptr };
 	OverlappingPhysicsObject* ownerPhysicsObject_{ nullptr };
 
 	float movementSpeed_{ 0.25f };
-	float stepHeight_{ 0.35f };
 };
 
 #endif

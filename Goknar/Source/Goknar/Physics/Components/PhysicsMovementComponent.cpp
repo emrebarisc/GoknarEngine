@@ -16,6 +16,7 @@
 PhysicsMovementComponent::PhysicsMovementComponent(Component* parent) :
 	Component(parent)
 {
+	initializationData_ = new PhysicsMovementComponentInitializationData();
 }
 
 PhysicsMovementComponent::PhysicsMovementComponent(ObjectBase* parentObjectBase) :
@@ -57,12 +58,14 @@ void PhysicsMovementComponent::Init()
 	GOKNAR_CORE_ASSERT(ownerPhysicsObject, "OverlappingPhysicsObjectMovementComponent can only be added to a OverlappingPhysicsObject object");
 	ownerPhysicsObject_ = ownerPhysicsObject;
 
+	collisionComponent_ = dynamic_cast<CollisionComponent*>(ownerPhysicsObject_->GetRootComponent());
+
 	GOKNAR_CORE_ASSERT
 	(
 		collisionComponent_ && 
 		dynamic_cast<CollisionComponent*>(collisionComponent_) && 
 		collisionComponent_->GetBulletCollisionShape()->isConvex(), 
-		"Relative collision component can obly be a convex CollisionComponent"
+		"Relative collision component can only be a convex CollisionComponent"
 	);
 
 	btPairCachingGhostObject* bulletPairCachingGhostObject = (btPairCachingGhostObject*)ownerPhysicsObject->GetBulletCollisionObject();
@@ -71,7 +74,7 @@ void PhysicsMovementComponent::Init()
 		new btKinematicCharacterController(
 			bulletPairCachingGhostObject,
 			(btConvexShape*)collisionComponent_->GetBulletCollisionShape(),
-			stepHeight_,
+			initializationData_->stepHeight,
 			PhysicsUtils::FromVector3ToBtVector3(Vector3::UpVector));
 
 	PhysicsWorld* physicsWorld = engine->GetPhysicsWorld();
@@ -79,7 +82,45 @@ void PhysicsMovementComponent::Init()
 
 	bulletPairCachingGhostObject->setUserPointer(this);
 
-	bulletKinematicCharacterController_->setGravity(PhysicsUtils::FromVector3ToBtVector3(physicsWorld->GetGravity()));
+	bulletKinematicCharacterController_->setGravity(PhysicsUtils::FromVector3ToBtVector3(initializationData_->gravity));
+
+	if (initializationData_->isVelocityForGivenDurationSet)
+	{
+		bulletKinematicCharacterController_->setVelocityForTimeInterval(PhysicsUtils::FromVector3ToBtVector3(initializationData_->movementVelocityForGivenDuration), initializationData_->movementVelocityForGivenDurationDuration);
+	}
+
+	if (initializationData_->isMovementDirectionSet)
+	{
+		bulletKinematicCharacterController_->setWalkDirection(PhysicsUtils::FromVector3ToBtVector3(initializationData_->movementDirection * movementSpeed_));
+	}
+
+	if (initializationData_->isLinearVelocitySet)
+	{
+		bulletKinematicCharacterController_->setLinearVelocity(PhysicsUtils::FromVector3ToBtVector3(initializationData_->linearVelocity));
+	}
+	
+	if (initializationData_->isAngularVelocitySet)
+	{
+		bulletKinematicCharacterController_->setAngularVelocity(PhysicsUtils::FromVector3ToBtVector3(initializationData_->angularVelocity));
+	}
+	
+	if (initializationData_->isImpulseSet)
+	{
+		bulletKinematicCharacterController_->applyImpulse(PhysicsUtils::FromVector3ToBtVector3(initializationData_->impulse));
+	}
+
+	bulletKinematicCharacterController_->setLinearDamping(initializationData_->linearDamping);
+	bulletKinematicCharacterController_->setAngularDamping(initializationData_->angularDamping);
+	bulletKinematicCharacterController_->setFallSpeed(initializationData_->fallSpeed);
+	bulletKinematicCharacterController_->setJumpSpeed(initializationData_->jumpSpeed);
+	bulletKinematicCharacterController_->setMaxJumpHeight(initializationData_->maxJumpHeight);
+	bulletKinematicCharacterController_->setMaxSlope(initializationData_->slopeRadians);
+	bulletKinematicCharacterController_->setMaxPenetrationDepth(initializationData_->maxPenetrationDepth);
+	bulletKinematicCharacterController_->setUseGhostSweepTest(initializationData_->useGhostObjectSweepTest);
+	bulletKinematicCharacterController_->setUpInterpolate(initializationData_->upInterpolate);
+	
+	delete initializationData_;
+	initializationData_ = nullptr;
 }
 
 void PhysicsMovementComponent::PostInit()
@@ -104,16 +145,38 @@ void PhysicsMovementComponent::UpdateComponentToWorldTransformationMatrix()
 
 void PhysicsMovementComponent::SetMovementDirection(const Vector3& movementDirection)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->isMovementDirectionSet = true;
+		initializationData_->movementDirection = movementDirection;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setWalkDirection(PhysicsUtils::FromVector3ToBtVector3(movementDirection * movementSpeed_));
 }
 
 void PhysicsMovementComponent::SetMovementVelocityForGivenDuration(const Vector3& movementVelocity, float duration)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->isVelocityForGivenDurationSet = true;
+		initializationData_->movementVelocityForGivenDuration = movementVelocity;
+		initializationData_->movementVelocityForGivenDurationDuration = duration;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setVelocityForTimeInterval(PhysicsUtils::FromVector3ToBtVector3(movementVelocity), duration);
 }
 
 void PhysicsMovementComponent::SetAngularVelocity(const Vector3& angularVelocity)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->isAngularVelocitySet = true;
+		initializationData_->angularVelocity = angularVelocity;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setAngularVelocity(PhysicsUtils::FromVector3ToBtVector3(angularVelocity));
 }
 
@@ -124,6 +187,13 @@ Vector3 PhysicsMovementComponent::GetAngularVelocity() const
 
 void PhysicsMovementComponent::SetLinearVelocity(const Vector3& linearVelocity)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->isLinearVelocitySet = true;
+		initializationData_->linearVelocity = linearVelocity;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setLinearVelocity(PhysicsUtils::FromVector3ToBtVector3(linearVelocity));
 }
 
@@ -134,6 +204,12 @@ Vector3 PhysicsMovementComponent::GetLinearVelocity(const Vector3& linearVelocit
 
 void PhysicsMovementComponent::SetLinearDamping(float linearDamping)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->linearDamping = linearDamping;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setLinearDamping(linearDamping);
 }
 
@@ -144,6 +220,12 @@ float PhysicsMovementComponent::GetLinearDamping() const
 
 void PhysicsMovementComponent::SetAngularDamping(float angularDamping)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->angularDamping = angularDamping;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setAngularDamping(angularDamping);
 }
 
@@ -197,10 +279,9 @@ void PhysicsMovementComponent::PlayerStep(btCollisionWorld* bulletCollisionWorld
 
 void PhysicsMovementComponent::SetStepHeight(float stepHeight)
 {
-	stepHeight_ = stepHeight;
-
 	if(!GetIsInitialized())
 	{
+		initializationData_->stepHeight = stepHeight;
 		return;
 	}
 
@@ -211,7 +292,7 @@ float PhysicsMovementComponent::GetStepHeight() const
 {
 	if(!GetIsInitialized())
 	{
-		return stepHeight_;
+		return initializationData_->stepHeight;
 	}
 
 	return bulletKinematicCharacterController_->getStepHeight();
@@ -219,6 +300,12 @@ float PhysicsMovementComponent::GetStepHeight() const
 
 void PhysicsMovementComponent::SetFallSpeed(float fallSpeed)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->fallSpeed = fallSpeed;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setFallSpeed(fallSpeed);
 }
 
@@ -229,6 +316,12 @@ float PhysicsMovementComponent::GetFallSpeed() const
 
 void PhysicsMovementComponent::SetJumpSpeed(float jumpSpeed)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->jumpSpeed = jumpSpeed;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setJumpSpeed(jumpSpeed);
 }
 
@@ -239,6 +332,12 @@ float PhysicsMovementComponent::GetJumpSpeed() const
 
 void PhysicsMovementComponent::SetMaxJumpHeight(float maxJumpHeight)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->maxJumpHeight = maxJumpHeight;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setMaxJumpHeight(maxJumpHeight);
 }
 
@@ -252,13 +351,26 @@ void PhysicsMovementComponent::Jump(const Vector3& v)
 	bulletKinematicCharacterController_->jump(PhysicsUtils::FromVector3ToBtVector3(v));
 }
 
-void PhysicsMovementComponent::ApplyImpulse(const Vector3& v)
+void PhysicsMovementComponent::ApplyImpulse(const Vector3& impulse)
 {
-	bulletKinematicCharacterController_->applyImpulse(PhysicsUtils::FromVector3ToBtVector3(v));
+	if (!GetIsInitialized())
+	{
+		initializationData_->isImpulseSet = true;
+		initializationData_->impulse = impulse;
+		return;
+	}
+
+	bulletKinematicCharacterController_->applyImpulse(PhysicsUtils::FromVector3ToBtVector3(impulse));
 }
 
 void PhysicsMovementComponent::SetGravity(const Vector3& gravity)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->gravity = gravity;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setGravity(PhysicsUtils::FromVector3ToBtVector3(gravity));
 }
 
@@ -269,6 +381,12 @@ Vector3 PhysicsMovementComponent::GetGravity() const
 
 void PhysicsMovementComponent::SetMaxSlope(float slopeRadians)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->slopeRadians = slopeRadians;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setMaxSlope(slopeRadians);
 }
 
@@ -277,9 +395,15 @@ float PhysicsMovementComponent::GetMaxSlope() const
 	return bulletKinematicCharacterController_->getMaxSlope();
 }
 
-void PhysicsMovementComponent::SetMaxPenetrationDepth(float d)
+void PhysicsMovementComponent::SetMaxPenetrationDepth(float maxPenetrationDepth)
 {
-	bulletKinematicCharacterController_->setMaxPenetrationDepth(d);
+	if (!GetIsInitialized())
+	{
+		initializationData_->maxPenetrationDepth = maxPenetrationDepth;
+		return;
+	}
+
+	bulletKinematicCharacterController_->setMaxPenetrationDepth(maxPenetrationDepth);
 }
 
 float PhysicsMovementComponent::GetMaxPenetrationDepth() const
@@ -289,6 +413,12 @@ float PhysicsMovementComponent::GetMaxPenetrationDepth() const
 
 void PhysicsMovementComponent::SetUseGhostSweepTest(bool useGhostObjectSweepTest)
 {
+	if (!GetIsInitialized())
+	{
+		initializationData_->useGhostObjectSweepTest = useGhostObjectSweepTest;
+		return;
+	}
+
 	bulletKinematicCharacterController_->setUseGhostSweepTest(useGhostObjectSweepTest);
 }
 bool PhysicsMovementComponent::OnGround() const
@@ -296,9 +426,15 @@ bool PhysicsMovementComponent::OnGround() const
 	return bulletKinematicCharacterController_->onGround();
 }
 
-void PhysicsMovementComponent::SetUpInterpolate(bool value)
+void PhysicsMovementComponent::SetUpInterpolate(bool upInterpolate)
 {
-	bulletKinematicCharacterController_->setUpInterpolate(value);
+	if (!GetIsInitialized())
+	{
+		initializationData_->upInterpolate = upInterpolate;
+		return;
+	}
+
+	bulletKinematicCharacterController_->setUpInterpolate(upInterpolate);
 }
 
 void PhysicsMovementComponent::UpdateOwnerTransformation()
