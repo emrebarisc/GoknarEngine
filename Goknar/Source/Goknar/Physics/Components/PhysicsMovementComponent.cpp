@@ -25,17 +25,23 @@ PhysicsMovementComponent::PhysicsMovementComponent(ObjectBase* parentObjectBase)
 
 PhysicsMovementComponent::~PhysicsMovementComponent()
 {
+	delete initializationData_;
 	delete bulletKinematicCharacterController_;
 }
 
 void PhysicsMovementComponent::Destroy()
+{
+	Component::Destroy();
+}
+
+void PhysicsMovementComponent::DestroyInner()
 {
 	engine->GetPhysicsWorld()->RemovePhysicsMovementComponent(this);
 
 	delete bulletKinematicCharacterController_;
 	bulletKinematicCharacterController_ = nullptr;
 
-	Component::Destroy();
+	Component::DestroyInner();
 }
 
 void PhysicsMovementComponent::PreInit()

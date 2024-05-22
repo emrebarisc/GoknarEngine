@@ -157,6 +157,7 @@ public:
 
 protected:
 	void AddComponent(Component* component);
+	virtual void DestroyInner();
 
 	virtual void SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix);
 	virtual void UpdateWorldTransformationMatrix();
@@ -170,7 +171,6 @@ protected:
 	Vector3 worldScaling_{ Vector3(1.f) };
 
 private:
-	virtual void DestroyInner();
 	
 	std::string name_{ "ObjectBase" };
 	std::vector<ObjectBase*> children_;

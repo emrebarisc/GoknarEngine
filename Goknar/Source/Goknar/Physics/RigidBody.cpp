@@ -75,8 +75,13 @@ void RigidBody::PostInit()
 
 void RigidBody::Destroy()
 {
-    engine->GetPhysicsWorld()->RemoveRigidBody(this);
     PhysicsObject::Destroy();
+}
+
+void RigidBody::DestroyInner()
+{
+    engine->GetPhysicsWorld()->RemoveRigidBody(this);
+    PhysicsObject::DestroyInner();
 }
 
 void RigidBody::BeginGame()

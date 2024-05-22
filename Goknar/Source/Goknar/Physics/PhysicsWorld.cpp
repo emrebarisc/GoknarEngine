@@ -215,6 +215,7 @@ void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 void PhysicsWorld::AddPhysicsObject(PhysicsObject* physicsObject)
 {
 	dynamicsWorld_->addCollisionObject(physicsObject->GetBulletCollisionObject(), (int)physicsObject->GetCollisionGroup(), (int)physicsObject->GetCollisionMask());
+	physicsObjects_.push_back(physicsObject);
 }
 
 void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)

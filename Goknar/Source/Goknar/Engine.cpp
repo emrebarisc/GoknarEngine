@@ -466,15 +466,7 @@ void Engine::Tick(float deltaTime)
 }
 
 void Engine::DestroyAllPendingObjectAndComponents()
-{	
-	std::vector<Component*>::iterator componentPendingDestroyIterator = componentsPendingDestroy_.begin();
-	for (; componentPendingDestroyIterator != componentsPendingDestroy_.end(); ++componentPendingDestroyIterator)
-	{
-		DestroyComponent(*componentPendingDestroyIterator);
-	}
-
-	componentsPendingDestroy_.clear();
-	
+{
 	std::vector<ObjectBase*>::iterator objectPendingDestroyIterator = objectsPendingDestroy_.begin();
 	for (; objectPendingDestroyIterator != objectsPendingDestroy_.end(); ++objectPendingDestroyIterator)
 	{
@@ -482,6 +474,14 @@ void Engine::DestroyAllPendingObjectAndComponents()
 	}
 
 	objectsPendingDestroy_.clear();
+
+	std::vector<Component*>::iterator componentPendingDestroyIterator = componentsPendingDestroy_.begin();
+	for (; componentPendingDestroyIterator != componentsPendingDestroy_.end(); ++componentPendingDestroyIterator)
+	{
+		DestroyComponent(*componentPendingDestroyIterator);
+	}
+
+	componentsPendingDestroy_.clear();
 
 	hasObjectsOrComponentsPendingDestroy_ = false;
 }

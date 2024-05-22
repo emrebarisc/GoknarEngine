@@ -86,6 +86,8 @@ public:
 	}
 
 protected:
+	virtual void DestroyInner() override;
+
 	btCollisionObject* bulletCollisionObject_{ nullptr };
 
 	PhysicsObjectInitializationData* physicsObjectInitializationData_{ nullptr };

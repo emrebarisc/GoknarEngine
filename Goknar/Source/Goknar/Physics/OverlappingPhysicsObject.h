@@ -29,6 +29,7 @@ public:
 
 	virtual void UpdateWorldTransformationMatrix() override;
 protected:
+	virtual void DestroyInner() override;
 
 private:
 };

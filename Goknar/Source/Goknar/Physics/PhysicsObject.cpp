@@ -45,6 +45,11 @@ void PhysicsObject::Destroy()
     ObjectBase::Destroy();
 }
 
+void PhysicsObject::DestroyInner()
+{
+    ObjectBase::DestroyInner();
+}
+
 void PhysicsObject::SetIsActive(bool isActive)
 {
     ObjectBase::SetIsActive(isActive);
