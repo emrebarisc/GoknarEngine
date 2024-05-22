@@ -442,7 +442,7 @@ void Engine::Tick(float deltaTime)
 {
 	for (ObjectBase* object : tickableObjects_)
 	{
-		if (object->GetIsInitialized() && object->GetIsActive())
+		if (object->GetIsInitialized() && object->GetIsActive() && object->GetIsTickEnabled())
 		{
 			object->Tick(deltaTime);
 		}
@@ -450,7 +450,7 @@ void Engine::Tick(float deltaTime)
 
 	for (Component* component : tickableComponents_)
 	{
-		if (component->GetIsInitialized() && component->GetIsActive())
+		if (component->GetIsInitialized() && component->GetIsActive() && component->GetIsTickEnabled())
 		{
 			component->TickComponent(deltaTime);
 		}

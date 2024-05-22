@@ -60,6 +60,16 @@ public:
 		return isTickable_; 
 	}
 
+	bool GetIsTickEnabled() const
+	{
+		return isTickEnabled_;
+	}
+
+	void SetIsTickEnabled(bool isTickEnabled)
+	{
+		isTickEnabled_ = isTickEnabled;
+	}
+
 	bool GetIsInitialized() const
 	{
 		return isInitialized_;
@@ -184,6 +194,7 @@ private:
 
 	unsigned int id_{ 0 };
     unsigned char isTickable_ : 1;
+    unsigned char isTickEnabled_ : 1;
 	unsigned char isActive_ : 1;
 	unsigned char isInitialized_ : 1;
 	unsigned char isPendingDestroy_ : 1;

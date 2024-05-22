@@ -98,6 +98,16 @@ public:
 
 	void SetIsTickable(bool isTickable);
 
+	bool GetIsTickEnabled() const
+	{
+		return isTickEnabled_;
+	}
+
+	void SetIsTickEnabled(bool isTickEnabled)
+	{
+		isTickEnabled_ = isTickEnabled;
+	}
+
 	virtual void Destroy();
 
 	void SetParent(ObjectBase* objectBase);
@@ -197,6 +207,7 @@ protected:
 
 	unsigned char isActive_ : 1;
 	unsigned char isTickable_ : 1;
+	unsigned char isTickEnabled_ : 1;
 	unsigned char isInitialized_ : 1;
 	unsigned char isPendingDestroy_ : 1;
 private:

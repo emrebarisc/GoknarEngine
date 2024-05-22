@@ -13,6 +13,7 @@
 ObjectBase::ObjectBase() :
 	totalComponentCount_(0),
 	isTickable_(false),
+	isTickEnabled_(true),
 	isActive_(true),
 	isInitialized_(false),
 	isPendingDestroy_(false)
