@@ -182,6 +182,11 @@ void PhysicsMovementComponent::SetAngularVelocity(const Vector3& angularVelocity
 
 Vector3 PhysicsMovementComponent::GetAngularVelocity() const
 {
+	if (!GetIsInitialized())
+	{
+		return initializationData_->angularVelocity;
+	}
+
 	return PhysicsUtils::FromBtVector3ToVector3(bulletKinematicCharacterController_->getAngularVelocity());
 }
 
@@ -197,8 +202,13 @@ void PhysicsMovementComponent::SetLinearVelocity(const Vector3& linearVelocity)
 	bulletKinematicCharacterController_->setLinearVelocity(PhysicsUtils::FromVector3ToBtVector3(linearVelocity));
 }
 
-Vector3 PhysicsMovementComponent::GetLinearVelocity(const Vector3& linearVelocity) const
+Vector3 PhysicsMovementComponent::GetLinearVelocity() const
 {
+	if (!GetIsInitialized())
+	{
+		return initializationData_->linearVelocity;
+	}
+
 	return PhysicsUtils::FromBtVector3ToVector3(bulletKinematicCharacterController_->getLinearVelocity());
 }
 
@@ -215,6 +225,11 @@ void PhysicsMovementComponent::SetLinearDamping(float linearDamping)
 
 float PhysicsMovementComponent::GetLinearDamping() const
 {
+	if (!GetIsInitialized())
+	{
+		return initializationData_->linearDamping;
+	}
+
 	return bulletKinematicCharacterController_->getLinearDamping();
 }
 
@@ -231,6 +246,11 @@ void PhysicsMovementComponent::SetAngularDamping(float angularDamping)
 
 float PhysicsMovementComponent::GetAngularDamping() const
 {
+	if (!GetIsInitialized())
+	{
+		return initializationData_->angularDamping;
+	}
+
 	return bulletKinematicCharacterController_->getAngularDamping();
 }
 
@@ -311,6 +331,11 @@ void PhysicsMovementComponent::SetFallSpeed(float fallSpeed)
 
 float PhysicsMovementComponent::GetFallSpeed() const
 {
+	if (!GetIsInitialized())
+	{
+		return initializationData_->fallSpeed;
+	}
+
 	return bulletKinematicCharacterController_->getFallSpeed();
 }
 
@@ -327,6 +352,11 @@ void PhysicsMovementComponent::SetJumpSpeed(float jumpSpeed)
 
 float PhysicsMovementComponent::GetJumpSpeed() const
 {
+	if (!GetIsInitialized())
+	{
+		return initializationData_->jumpSpeed;
+	}
+
 	return bulletKinematicCharacterController_->getJumpSpeed();
 }
 
@@ -376,6 +406,11 @@ void PhysicsMovementComponent::SetGravity(const Vector3& gravity)
 
 Vector3 PhysicsMovementComponent::GetGravity() const
 {
+	if (!GetIsInitialized())
+	{
+		return initializationData_->gravity;
+	}
+
 	return PhysicsUtils::FromBtVector3ToVector3(bulletKinematicCharacterController_->getGravity());
 }
 
@@ -392,6 +427,11 @@ void PhysicsMovementComponent::SetMaxSlope(float slopeRadians)
 
 float PhysicsMovementComponent::GetMaxSlope() const
 {
+	if (!GetIsInitialized())
+	{
+		return initializationData_->slopeRadians;
+	}
+
 	return bulletKinematicCharacterController_->getMaxSlope();
 }
 
@@ -408,6 +448,11 @@ void PhysicsMovementComponent::SetMaxPenetrationDepth(float maxPenetrationDepth)
 
 float PhysicsMovementComponent::GetMaxPenetrationDepth() const
 {
+	if (!GetIsInitialized())
+	{
+		return initializationData_->maxPenetrationDepth;
+	}
+
 	return bulletKinematicCharacterController_->getMaxPenetrationDepth();
 }
 

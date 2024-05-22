@@ -63,7 +63,7 @@ public:
 	virtual Vector3 GetAngularVelocity() const;
 
 	virtual void SetLinearVelocity(const Vector3& linearVelocity);
-	virtual Vector3 GetLinearVelocity(const Vector3& linearVelocity) const;
+	virtual Vector3 GetLinearVelocity() const;
 
 	virtual void SetLinearDamping(float linearDamping);
 	virtual float GetLinearDamping() const;
