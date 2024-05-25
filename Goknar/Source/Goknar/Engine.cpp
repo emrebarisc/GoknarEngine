@@ -4,30 +4,32 @@
 #include "Engine.h"
 
 #include "Application.h"
-#include "Managers/CameraManager.h"
-#include "Components/Component.h"
 #include "Controller.h"
-#include "Debug/DebugDrawer.h"
-#include "Editor/ImGuiEditor/ImGuiEditor.h"
-#include "Managers/InputManager.h"
 #include "Log.h"
 #include "ObjectBase.h"
+#include "Scene.h"
+#include "TimeDependentObject.h"
+#include "Components/Component.h"
+#include "Debug/DebugDrawer.h"
+#include "Managers/CameraManager.h"
+#include "Managers/InputManager.h"
 #include "Managers/ObjectIDManager.h"
 #include "Managers/ObjectManager.h"
-#include "Physics/PhysicsWorld.h"
 #include "Managers/ResourceManager.h"
+#include "Managers/WindowManager.h"
+#include "Physics/PhysicsWorld.h"
 #include "Renderer/Renderer.h"
-#include "Scene.h"
 #include "Renderer/Shader.h"
 #include "Renderer/ShaderBuilder.h"
-#include "Lights/ShadowManager/ShadowManager.h"
-#include "TimeDependentObject.h"
-#include "Managers/WindowManager.h"
+#include "UI/HUD.h"
 
-#include "Goknar/Lights/Light.h"
-#include "Goknar/Lights/DirectionalLight.h"
-#include "Goknar/Lights/PointLight.h"
-#include "Goknar/Lights/SpotLight.h"
+#include "Editor/ImGuiEditor/ImGuiEditor.h"
+
+#include "Lights/DirectionalLight.h"
+#include "Lights/Light.h"
+#include "Lights/PointLight.h"
+#include "Lights/SpotLight.h"
+#include "Lights/ShadowManager/ShadowManager.h"
 
 // OpenGL Libraries
 #include "GLFW/glfw3.h"
@@ -255,10 +257,6 @@ void Engine::Run()
 			deltaTime_ = 0.25f;
 		}
 
-		deltaTime_ *= timeScale_;
-
-		elapsedTime_ += deltaTime_;
-
 		{
 			static int frameCount = 0;
 			static float oneSecondCounter = 0.f;
@@ -271,6 +269,11 @@ void Engine::Run()
 				frameCount = 0;
 			}
 		}
+
+		const float unscaledDeltaTime = deltaTime_;
+		deltaTime_ *= timeScale_;
+
+		elapsedTime_ += deltaTime_;
 
 		physicsWorld_->PhysicsTick(deltaTime_);
 
@@ -296,6 +299,12 @@ void Engine::Run()
 #if GOKNAR_EDITOR
 		editor_->Tick(deltaTime_);
 #endif
+
+		if(HUD_)
+		{
+			HUD_->Tick(unscaledDeltaTime);
+		}
+
 		windowManager_->Update();
 
 		if(hasObjectsOrComponentsPendingDestroy_)

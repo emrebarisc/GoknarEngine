@@ -27,6 +27,8 @@ class SkeletalMesh;
 
 class PhysicsWorld;
 
+class HUD;
+
 // Global Engine variable
 GOKNAR_API extern class Engine *engine;
 
@@ -108,6 +110,16 @@ public:
 	{
 		return physicsWorld_;
 	}
+
+	inline void SetHUD(HUD* HUD)
+	{
+		HUD_ = HUD;
+	}
+
+	inline HUD* GetHUD() const
+	{
+		return HUD_;
+	}
 	
 	void RegisterObject(ObjectBase *object);
 	void AddToTickableObjects(ObjectBase* object);
@@ -172,6 +184,7 @@ private:
 	CameraManager* cameraManager_;
 	Controller* controller_{ nullptr };
 	PhysicsWorld* physicsWorld_{ nullptr };
+	HUD* HUD_{ nullptr };
 
 	Application* application_{ nullptr };
 

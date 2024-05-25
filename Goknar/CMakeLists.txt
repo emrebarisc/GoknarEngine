@@ -38,6 +38,7 @@ set(SUBDIRS
 	${SOURCE_DIR_NAME}/Goknar/Physics/Components
 	${SOURCE_DIR_NAME}/Goknar/Renderer
 	${SOURCE_DIR_NAME}/Goknar/Renderer/MaterialEditor
+	${SOURCE_DIR_NAME}/Goknar/UI
 )
 
 set(ENGINE_SOURCE)
