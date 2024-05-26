@@ -35,6 +35,7 @@ private:
 	void ToggleWindowSize();
 	void ToggleFreeCamera();
 
+	void ExitGame();
 	void DestroyPhysicsArcher();
 
 	void ToggleChest();

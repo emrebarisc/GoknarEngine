@@ -58,10 +58,6 @@ void FreeCameraController::BeginGame()
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_0, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::DoSweepTest, this));
 
 	inputManager->AddCursorDelegate(std::bind(&FreeCameraController::CursorMovement, this, std::placeholders::_1, std::placeholders::_2));
-
-	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
-	freeCamera_->SetImageWidth(windowSize.x);
-	freeCamera_->SetImageHeight(windowSize.y);
 }
 
 void FreeCameraController::CursorMovement(double x, double y)

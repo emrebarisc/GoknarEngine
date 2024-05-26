@@ -39,7 +39,7 @@ ArcherCharacter::ArcherCharacter() : Character()
 
 	capsuleCollisionComponent_->SetRadius(0.4f);
 	capsuleCollisionComponent_->SetHeight(1.5f);
-	capsuleCollisionComponent_->SetRelativePosition(Vector3{0.f, 0.f, -1.0f});
+	capsuleCollisionComponent_->SetCollisionGroup(CollisionGroup::Character);
 
 	//capsuleCollisionComponent_->OnOverlapBegin = Delegate<OverlapBeginAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapBegin>(this);
 	//capsuleCollisionComponent_->OnOverlapContinue = Delegate<OverlapContinueAlias>::create<ArcherCharacter, &ArcherCharacter::OnOverlapContinue>(this);
@@ -49,9 +49,9 @@ ArcherCharacter::ArcherCharacter() : Character()
 	skeletalMesh_->GetMaterial()->SetSpecularReflectance(Vector3{0.f});
 
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
-	skeletalMeshComponent_->SetRelativePosition(Vector3::ZeroVector);
 	skeletalMeshComponent_->SetRelativeScaling(Vector3{ 0.0125f });
 	skeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
+	skeletalMeshComponent_->SetRelativePosition(Vector3{ 0.f, 0.f, -1.f });
 	skeletalMeshComponent_->SetParent(capsuleCollisionComponent_);
 
 	SkeletalMeshInstance* skeletalMeshInstance = skeletalMeshComponent_->GetMeshInstance();
@@ -73,9 +73,11 @@ ArcherCharacter::ArcherCharacter() : Character()
 	bow_->AttachToSocket(leftHandSocket_);
 	bow_->SetIsActive(false);
 
-	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3{ 1.f, 0.f, 0.f }, Vector3{ 0.f, 0.f, 1.f }.GetNormalized());
-	thirdPersonCamera_->SetImageWidth(1920);
-	thirdPersonCamera_->SetImageHeight(1000);
+	thirdPersonCamera_ = new Camera(
+		Vector3::ZeroVector, 
+		Vector3{ 1.f, 0.f, 0.f }, 
+		Vector3{ 0.f, 0.f, 1.f });
+
 	thirdPersonCamera_->SetNearDistance(1.f);
 	thirdPersonCamera_->SetFarDistance(1000.f);
 	thirdPersonCamera_->SetFOV(45.f);
@@ -85,18 +87,19 @@ ArcherCharacter::ArcherCharacter() : Character()
 
 void ArcherCharacter::BeginGame()
 {
+	RaycastData raycastData;
+	raycastData.from = Vector3{0.f, 0.f, 1000.f};
+	raycastData.to = Vector3{0.f, 0.f, -1000.f};
+
+	RaycastSingleResult raycastResult;
+
+	engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult);
+
+	SetWorldPosition(raycastResult.hitPosition);
+
 	EquipBow(true);
-	btCapsuleShape* capsuleShape = (btCapsuleShape*)capsuleCollisionComponent_->GetBulletCollisionShape();
 
-	// engine->GetPhysicsWorld()->GetPhysicsDebugger()->drawCapsule(
-	// 	capsuleShape->getRadius(),
-	// 	capsuleShape->getHalfHeight(),
-	// 	capsuleShape->getUpAxis(),
-	// 	GetBulletCollisionObject()->getWorldTransform(),
-	// 	PhysicsUtils::FromVector3ToBtVector3(Vector3{1.f, 0.f, 0.f})
-	// );
-
-	// DebugDrawer::DrawCollisionComponent(capsuleCollisionComponent_, Colorf::Blue, 1.f, 1.f);
+	DebugDrawer::DrawCollisionComponent(capsuleCollisionComponent_, Colorf::Blue, 1.f, 1.f);
 }
 
 void ArcherCharacter::Tick(float deltaTime)

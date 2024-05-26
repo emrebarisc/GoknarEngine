@@ -1,13 +1,13 @@
 #ifndef __ARCHERCHARACTERMOVEMENTCOMPONENT_H__
 #define __ARCHERCHARACTERMOVEMENTCOMPONENT_H__
 
-#include "Goknar/Physics/Components/CharacterMovementComponent.h"
+#include "Goknar/Physics/Components/PhysicsMovementComponent.h"
 #include "Goknar/Math/InterpolatingValue.h"
 
 class ArcherCharacter;
 class Camera;
 
-class ArcherCharacterMovementComponent : public CharacterMovementComponent
+class ArcherCharacterMovementComponent : public PhysicsMovementComponent
 {
 public:
 	ArcherCharacterMovementComponent(Component* parent);

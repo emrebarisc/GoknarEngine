@@ -46,6 +46,8 @@ void ArcherCharacterController::SetupInputs()
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F5, INPUT_ACTION::G_PRESS, std::bind(&ArcherCharacterController::ToggleFullscreen, this));
 	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F6, INPUT_ACTION::G_PRESS, std::bind(&ArcherCharacterController::ToggleWindowSize, this));
 
+	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, std::bind(&ArcherCharacterController::ExitGame, this));
+
 	engine->GetInputManager()->AddKeyboardEvent(KEY_MAP::W, this, &ArcherCharacterController::MoveForward, &ArcherCharacterController::StopMovingForward);
 	engine->GetInputManager()->AddKeyboardEvent(KEY_MAP::S, this, &ArcherCharacterController::MoveBackward, &ArcherCharacterController::StopMovingBackward);
 	engine->GetInputManager()->AddKeyboardEvent(KEY_MAP::A, this, &ArcherCharacterController::MoveLeft, &ArcherCharacterController::StopMovingLeft);
@@ -119,6 +121,11 @@ void ArcherCharacterController::ToggleFreeCamera()
 	}
 	
 	isInFreeCamera_ = !isInFreeCamera_;
+}
+
+void ArcherCharacterController::ExitGame()
+{
+	engine->Exit();
 }
 
 void ArcherCharacterController::DestroyPhysicsArcher()

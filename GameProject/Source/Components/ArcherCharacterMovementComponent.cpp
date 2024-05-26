@@ -5,13 +5,13 @@
 #include "ArcherCharacter.h"
 
 ArcherCharacterMovementComponent::ArcherCharacterMovementComponent(Component* parent) :
-	CharacterMovementComponent(parent)
+	PhysicsMovementComponent(parent)
 {
 }
 
 void ArcherCharacterMovementComponent::PreInit()
 {
-	CharacterMovementComponent::PreInit();
+	PhysicsMovementComponent::PreInit();
 
 	ownerArcher_ = dynamic_cast<ArcherCharacter*>(GetOwner());
 	GOKNAR_CORE_ASSERT(ownerArcher_, "ArcherCharacterMovementComponent can only be added to an ArcherCharacter object");
@@ -24,22 +24,22 @@ void ArcherCharacterMovementComponent::PreInit()
 
 void ArcherCharacterMovementComponent::Init()
 {
-	CharacterMovementComponent::Init();
+	PhysicsMovementComponent::Init();
 }
 
 void ArcherCharacterMovementComponent::PostInit()
 {
-	CharacterMovementComponent::PostInit();
+	PhysicsMovementComponent::PostInit();
 }
 
 void ArcherCharacterMovementComponent::BeginGame()
 {
-	CharacterMovementComponent::BeginGame();
+	PhysicsMovementComponent::BeginGame();
 }
 
 void ArcherCharacterMovementComponent::TickComponent(float deltaTime)
 {
-	CharacterMovementComponent::TickComponent(deltaTime);
+	PhysicsMovementComponent::TickComponent(deltaTime);
 }
 
 void ArcherCharacterMovementComponent::AddMovementDirection(const Vector3& movementDirection)
