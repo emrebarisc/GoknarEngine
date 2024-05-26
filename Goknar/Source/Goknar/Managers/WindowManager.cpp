@@ -203,7 +203,11 @@ void WindowManager::SetVSync(bool isEnable)
 void WindowManager::SetIsInFullscreen(bool isInFullscreen)
 {
 	isInFullscreen_ = isInFullscreen;
-	HandleFullscreenState();
+
+	if(mainMonitor_)
+	{
+		HandleFullscreenState();
+	}
 }
 
 void WindowManager::HandleFullscreenState()
