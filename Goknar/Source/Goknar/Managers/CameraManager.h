@@ -25,6 +25,8 @@ public:
 		return cameras_;
 	}
 
+	void HandleNewlyAddedCameras();
+
 	void SetActiveCamera(Camera* camera);
 
 	Camera* GetActiveCamera() const
@@ -38,6 +40,9 @@ private:
 	Camera* activeCamera_;
 
 	std::vector<Camera*> cameras_;
+	std::vector<Camera*> camerasToAddNextFrame_;
+
+	int camerasToAddNextFrameCount_;
 };
 
 #endif

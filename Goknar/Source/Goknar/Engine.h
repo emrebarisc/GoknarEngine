@@ -173,6 +173,8 @@ private:
 	void DestroyComponent(Component* component);
 	void RemoveComponent(Component* component);
 
+	void RegisterTimeDependentObjects();
+
 	DebugDrawer* debugDrawer_{ nullptr };
 
 	InputManager* inputManager_;
@@ -200,9 +202,11 @@ private:
 	std::vector<Component*> componentsPendingDestroy_;
 
 	std::vector<TimeDependentObject*> timeDependentObjects_;
+	std::vector<TimeDependentObject*> timeDependentObjectsToRegisterForNextFrame_;
 
 	int objectsToBeInitializedSize_{ 0 };
 	int componentsToBeInitializedSize_{ 0 };
+	int timeDependentObjectsToBeRegisteredSize_{ 0 };
 
 	float timeScale_{ 1.f };
 	float deltaTime_{ 0.f };

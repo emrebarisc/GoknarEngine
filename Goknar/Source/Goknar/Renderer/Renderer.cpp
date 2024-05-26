@@ -386,175 +386,180 @@ void Renderer::Render(RenderPassType renderPassType)
 		}
 	}
 
-	bool isShadowRender = 
-		renderPassType == RenderPassType::Shadow || 
-		renderPassType == RenderPassType::PointLightShadow;
-
-	if (renderPassType != RenderPassType::Deferred)
+	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+	
+	if (activeCamera)
 	{
-		// Static MeshUnit Instances
+		bool isShadowRender = 
+			renderPassType == RenderPassType::Shadow || 
+			renderPassType == RenderPassType::PointLightShadow;
+
+		if(renderPassType != RenderPassType::Deferred)
 		{
-			if (0 < totalStaticMeshCount_)
+			// Static MeshUnit Instances
 			{
-				BindStaticVBO();
-
-				for (StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
+				if (0 < totalStaticMeshCount_)
 				{
-					if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
-					if (isShadowRender && !opaqueStaticMeshInstance->GetIsCastingShadow()) continue;
+					BindStaticVBO();
 
-					const MeshUnit* mesh = opaqueStaticMeshInstance->GetMesh();
-					opaqueStaticMeshInstance->Render(renderPassType);
+					for (StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
+					{
+						if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
+						if (isShadowRender && !opaqueStaticMeshInstance->GetIsCastingShadow()) continue;
 
-					int facePointCount = mesh->GetFaceCount() * 3;
-					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+						const MeshUnit* mesh = opaqueStaticMeshInstance->GetMesh();
+						opaqueStaticMeshInstance->Render(renderPassType);
+
+						int facePointCount = mesh->GetFaceCount() * 3;
+						glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+					}
+
+					for (StaticMeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
+					{
+						if (!maskedStaticMeshInstance->GetIsRendered()) continue;
+						if (isShadowRender && !maskedStaticMeshInstance->GetIsCastingShadow()) continue;
+
+						const MeshUnit* mesh = maskedStaticMeshInstance->GetMesh();
+						maskedStaticMeshInstance->Render(renderPassType);
+
+						int facePointCount = mesh->GetFaceCount() * 3;
+						glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+					}
 				}
+			}
 
-				for (StaticMeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
+			// Skeletal MeshUnit Instances
+			{
+				if (0 < totalSkeletalMeshCount_)
 				{
-					if (!maskedStaticMeshInstance->GetIsRendered()) continue;
-					if (isShadowRender && !maskedStaticMeshInstance->GetIsCastingShadow()) continue;
+					BindSkeletalVBO();
 
-					const MeshUnit* mesh = maskedStaticMeshInstance->GetMesh();
-					maskedStaticMeshInstance->Render(renderPassType);
+					for (SkeletalMeshInstance* opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
+					{
+						if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
+						if (isShadowRender && !opaqueSkeletalMeshInstance->GetIsCastingShadow()) continue;
 
-					int facePointCount = mesh->GetFaceCount() * 3;
-					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+						const SkeletalMesh* skeletalMesh = opaqueSkeletalMeshInstance->GetMesh();
+						opaqueSkeletalMeshInstance->Render(renderPassType);
+
+						int facePointCount = skeletalMesh->GetFaceCount() * 3;
+						glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
+					}
+
+					for (SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
+					{
+						if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
+						if (isShadowRender && !maskedSkeletalMeshInstance->GetIsCastingShadow()) continue;
+
+			
+						const SkeletalMesh* skeletalMesh = maskedSkeletalMeshInstance->GetMesh();
+						maskedSkeletalMeshInstance->Render(renderPassType);
+
+						int facePointCount = skeletalMesh->GetFaceCount() * 3;
+						glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
+					}
+				}
+			}
+
+			// Dynamic MeshUnit Instances
+			{
+				if (0 < totalDynamicMeshCount_)
+				{
+					BindDynamicVBO();
+
+					for (DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
+					{
+						if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
+						if (isShadowRender && !opaqueDynamicMeshInstance->GetIsCastingShadow()) continue;
+
+						const MeshUnit* mesh = opaqueDynamicMeshInstance->GetMesh();
+						opaqueDynamicMeshInstance->Render(renderPassType);
+
+						int facePointCount = mesh->GetFaceCount() * 3;
+						glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+					}
+
+					for (DynamicMeshInstance* maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
+					{
+						if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
+						if (isShadowRender && !maskedDynamicMeshInstance->GetIsCastingShadow()) continue;
+
+						const MeshUnit* mesh = maskedDynamicMeshInstance->GetMesh();
+						maskedDynamicMeshInstance->Render(renderPassType);
+
+						int facePointCount = mesh->GetFaceCount() * 3;
+						glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+					}
 				}
 			}
 		}
-
-		// Skeletal MeshUnit Instances
+		else
 		{
-			if (0 < totalSkeletalMeshCount_)
+			deferredRenderingData_->BindGBufferDepth();
+		}
+			
+		if (renderPassType == RenderPassType::Forward ||
+			renderPassType == RenderPassType::Deferred)
+		{
+			SortTransparentInstances();
+
+			glEnable(GL_BLEND);
+			glDepthMask(GL_FALSE);
+
+			BindStaticVBO();
+
+			for (StaticMeshInstance* transparentStaticMeshInstance : transparentStaticMeshInstances_)
 			{
-				BindSkeletalVBO();
+				if (!transparentStaticMeshInstance->GetIsRendered()) continue;
+				const MeshUnit* mesh = transparentStaticMeshInstance->GetMesh();
+				
+				transparentStaticMeshInstance->Render(RenderPassType::Forward);
 
-				for (SkeletalMeshInstance* opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
-				{
-					if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
-					if (isShadowRender && !opaqueSkeletalMeshInstance->GetIsCastingShadow()) continue;
+				int facePointCount = mesh->GetFaceCount() * 3;
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+			}
 
-					const SkeletalMesh* skeletalMesh = opaqueSkeletalMeshInstance->GetMesh();
-					opaqueSkeletalMeshInstance->Render(renderPassType);
+			BindSkeletalVBO();
+			for (SkeletalMeshInstance* transparentSkeletalMeshInstance : transparentSkeletalMeshInstances_)
+			{
+				if (!transparentSkeletalMeshInstance->GetIsRendered()) continue;
 
-					int facePointCount = skeletalMesh->GetFaceCount() * 3;
-					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
-				}
+				const SkeletalMesh* skeletalMesh = transparentSkeletalMeshInstance->GetMesh();
+				transparentSkeletalMeshInstance->Render(RenderPassType::Forward);
 
-				for (SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
-				{
-					if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
-					if (isShadowRender && !maskedSkeletalMeshInstance->GetIsCastingShadow()) continue;
+				int facePointCount = skeletalMesh->GetFaceCount() * 3;
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
+			}
 
-		
-					const SkeletalMesh* skeletalMesh = maskedSkeletalMeshInstance->GetMesh();
-					maskedSkeletalMeshInstance->Render(renderPassType);
+			BindDynamicVBO();
+			for (DynamicMeshInstance* transparentDynamicMeshInstance : transparentDynamicMeshInstances_)
+			{
+				if (!transparentDynamicMeshInstance->GetIsRendered()) continue;
+				const MeshUnit* mesh = transparentDynamicMeshInstance->GetMesh();
 
-					int facePointCount = skeletalMesh->GetFaceCount() * 3;
-					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
-				}
+				transparentDynamicMeshInstance->Render(RenderPassType::Forward);
+
+				int facePointCount = mesh->GetFaceCount() * 3;
+				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
+			}
+			glDepthMask(GL_TRUE);
+			glDisable(GL_BLEND);
+
+			// After finishing transparent object rendering
+			// Use deferred rendering shader again if doing deferred rendering
+			// Otherwise it causes crash on setting g-buffer debug on
+			// And wishing to visualize g-buffers on deferred rendering mesh
+			if(renderPassType == RenderPassType::Deferred)
+			{
+				deferredRenderingData_->deferredRenderingMeshShader->Use();
 			}
 		}
-
-		// Dynamic MeshUnit Instances
-		{
-			if (0 < totalDynamicMeshCount_)
-			{
-				BindDynamicVBO();
-
-				for (DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
-				{
-					if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
-					if (isShadowRender && !opaqueDynamicMeshInstance->GetIsCastingShadow()) continue;
-
-					const MeshUnit* mesh = opaqueDynamicMeshInstance->GetMesh();
-					opaqueDynamicMeshInstance->Render(renderPassType);
-
-					int facePointCount = mesh->GetFaceCount() * 3;
-					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
-				}
-
-				for (DynamicMeshInstance* maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
-				{
-					if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
-					if (isShadowRender && !maskedDynamicMeshInstance->GetIsCastingShadow()) continue;
-
-					const MeshUnit* mesh = maskedDynamicMeshInstance->GetMesh();
-					maskedDynamicMeshInstance->Render(renderPassType);
-
-					int facePointCount = mesh->GetFaceCount() * 3;
-					glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
-				}
-			}
-		}
-	}
-	else
-	{
-		deferredRenderingData_->BindGBufferDepth();
 	}
 
 	if (renderPassType == RenderPassType::GeometryBuffer)
 	{
 		deferredRenderingData_->UnbindGeometryBuffer();
 		return;
-	}
-
-	if (renderPassType == RenderPassType::Forward ||
-		renderPassType == RenderPassType::Deferred)
-	{
-		SortTransparentInstances();
-
-		glEnable(GL_BLEND);
-		glDepthMask(GL_FALSE);
-
-		BindStaticVBO();
-
-		for (StaticMeshInstance* transparentStaticMeshInstance : transparentStaticMeshInstances_)
-		{
-			if (!transparentStaticMeshInstance->GetIsRendered()) continue;
-			const MeshUnit* mesh = transparentStaticMeshInstance->GetMesh();
-			
-			transparentStaticMeshInstance->Render(RenderPassType::Forward);
-
-			int facePointCount = mesh->GetFaceCount() * 3;
-			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
-		}
-
-		BindSkeletalVBO();
-		for (SkeletalMeshInstance* transparentSkeletalMeshInstance : transparentSkeletalMeshInstances_)
-		{
-			if (!transparentSkeletalMeshInstance->GetIsRendered()) continue;
-
-			const SkeletalMesh* skeletalMesh = transparentSkeletalMeshInstance->GetMesh();
-			transparentSkeletalMeshInstance->Render(RenderPassType::Forward);
-
-			int facePointCount = skeletalMesh->GetFaceCount() * 3;
-			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)skeletalMesh->GetVertexStartingIndex(), skeletalMesh->GetBaseVertex());
-		}
-
-		BindDynamicVBO();
-		for (DynamicMeshInstance* transparentDynamicMeshInstance : transparentDynamicMeshInstances_)
-		{
-			if (!transparentDynamicMeshInstance->GetIsRendered()) continue;
-			const MeshUnit* mesh = transparentDynamicMeshInstance->GetMesh();
-
-			transparentDynamicMeshInstance->Render(RenderPassType::Forward);
-
-			int facePointCount = mesh->GetFaceCount() * 3;
-			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)mesh->GetVertexStartingIndex(), mesh->GetBaseVertex());
-		}
-		glDepthMask(GL_TRUE);
-		glDisable(GL_BLEND);
-
-		// After finishing transparent object rendering
-		// Use deferred rendering shader again if doing deferred rendering
-		// Otherwise it causes crash on setting g-buffer debug on
-		// And wishing to visualize g-buffers on deferred rendering mesh
-		if(renderPassType == RenderPassType::Deferred)
-		{
-			deferredRenderingData_->deferredRenderingMeshShader->Use();
-		}
 	}
 }
 
@@ -1138,6 +1143,8 @@ void GeometryBufferData::GenerateBuffers()
 	worldPositionTexture->SetHeight(bufferHeight);
 	worldPositionTexture->SetGenerateMipmap(false);
 	worldPositionTexture->PreInit();
+	worldPositionTexture->Init();
+	worldPositionTexture->PostInit();
 	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT0, worldPositionTexture);
 
 	worldNormalTexture = new Texture();
@@ -1306,12 +1313,18 @@ void DeferredRenderingData::OnWindowSizeChange(int x, int y)
 	decltype(materials.begin()) materialIteration = materials.begin();
 	for (; materialIteration < materials.end(); ++materialIteration)
 	{
-		BindGeometryBufferTextures((*materialIteration)->GetShader(RenderPassType::GeometryBuffer));
+		Shader* shader = (*materialIteration)->GetShader(RenderPassType::GeometryBuffer);
+		if(shader)
+		{
+			BindGeometryBufferTextures(shader);
+		}
 	}
 }
 
 void DeferredRenderingData::BindGeometryBufferTextures(Shader* shader)
 {
+	shader->Use();
+	
 	geometryBufferData->worldPositionTexture->Bind(shader);
 	geometryBufferData->worldNormalTexture->Bind(shader);
 	geometryBufferData->diffuseTexture->Bind(shader);

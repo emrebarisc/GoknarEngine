@@ -5,6 +5,7 @@
 #include "Components/Component.h"
 #include "Physics/PhysicsTypes.h"
 #include "Physics/PhysicsWorld.h"
+#include "Math/GoknarMath.h"
 
 class btCollisionWorld;
 class btKinematicCharacterController;
@@ -27,7 +28,7 @@ struct GOKNAR_API PhysicsMovementComponentInitializationData
 	float fallSpeed{ 55.f };
 	float jumpSpeed{ 10.f };
 	float maxJumpHeight{ 0.f };
-	float slopeRadians{ 0.f };
+	float slopeRadians{ RADIAN_TO_DEGREE(45.f) };
 	float maxPenetrationDepth{ 0.2f };
 	bool useGhostObjectSweepTest{ true };
 	bool upInterpolate{ false };

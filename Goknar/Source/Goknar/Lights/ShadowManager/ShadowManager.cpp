@@ -58,36 +58,39 @@ void ShadowManager::RenderShadowMaps()
 		pointLight->RenderShadowMap();
 	}
 
-	const std::vector<DirectionalLight*> staticDirectionalLights = mainScene->GetStaticDirectionalLights();
-	size_t staticDirectionalLightCount = staticDirectionalLights.size();
-	for (size_t i = 0; i < staticDirectionalLightCount; i++)
+	if(mainCamera)
 	{
-		cameraManager->SetActiveCamera(mainCamera);
-
-		DirectionalLight* directionalLight = staticDirectionalLights[i];
-		if (!directionalLight->GetIsShadowEnabled())
+		const std::vector<DirectionalLight*> staticDirectionalLights = mainScene->GetStaticDirectionalLights();
+		size_t staticDirectionalLightCount = staticDirectionalLights.size();
+		for (size_t i = 0; i < staticDirectionalLightCount; i++)
 		{
-			continue;
+			cameraManager->SetActiveCamera(mainCamera);
+
+			DirectionalLight* directionalLight = staticDirectionalLights[i];
+			if (!directionalLight->GetIsShadowEnabled())
+			{
+				continue;
+			}
+
+			currentlyRenderingLight_ = directionalLight;
+			directionalLight->RenderShadowMap();
 		}
 
-		currentlyRenderingLight_ = directionalLight;
-		directionalLight->RenderShadowMap();
-	}
-
-	const std::vector<DirectionalLight*> dynamicDirectionalLights = mainScene->GetDynamicDirectionalLights();
-	size_t dynamicDirectionalLightCount = dynamicDirectionalLights.size();
-	for (size_t i = 0; i < dynamicDirectionalLightCount; i++)
-	{
-		cameraManager->SetActiveCamera(mainCamera);
-
-		DirectionalLight* directionalLight = dynamicDirectionalLights[i];
-		if (!directionalLight->GetIsShadowEnabled())
+		const std::vector<DirectionalLight*> dynamicDirectionalLights = mainScene->GetDynamicDirectionalLights();
+		size_t dynamicDirectionalLightCount = dynamicDirectionalLights.size();
+		for (size_t i = 0; i < dynamicDirectionalLightCount; i++)
 		{
-			continue;
-		}
+			cameraManager->SetActiveCamera(mainCamera);
 
-		currentlyRenderingLight_ = directionalLight;
-		directionalLight->RenderShadowMap();
+			DirectionalLight* directionalLight = dynamicDirectionalLights[i];
+			if (!directionalLight->GetIsShadowEnabled())
+			{
+				continue;
+			}
+
+			currentlyRenderingLight_ = directionalLight;
+			directionalLight->RenderShadowMap();
+		}
 	}
 
 	const std::vector<SpotLight*> staticSpotLights = mainScene->GetStaticSpotLights();

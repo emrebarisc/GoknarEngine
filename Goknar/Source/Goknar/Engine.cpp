@@ -307,6 +307,13 @@ void Engine::Run()
 
 		windowManager_->Update();
 
+		if(0 < timeDependentObjectsToBeRegisteredSize_)
+		{
+			RegisterTimeDependentObjects();
+		}
+
+		cameraManager_->HandleNewlyAddedCameras();
+
 		if(hasObjectsOrComponentsPendingDestroy_)
 		{
 			DestroyAllPendingObjectAndComponents();
@@ -575,9 +582,30 @@ void Engine::AddToTickableObjects(ObjectBase* object)
 	tickableObjects_.push_back(object);
 }
 
+void Engine::RegisterTimeDependentObjects()
+{
+	if (timeDependentObjects_.empty())
+	{
+		timeDependentObjects_ = std::move(timeDependentObjectsToRegisterForNextFrame_);
+	}
+	else
+	{
+		timeDependentObjects_.reserve(timeDependentObjects_.size() + timeDependentObjectsToBeRegisteredSize_);
+
+		std::move(
+			std::begin(timeDependentObjectsToRegisterForNextFrame_), 
+			std::end(timeDependentObjectsToRegisterForNextFrame_), 
+			std::back_inserter(timeDependentObjects_));
+	}
+
+	timeDependentObjectsToRegisterForNextFrame_.clear();
+	timeDependentObjectsToBeRegisteredSize_ = 0;
+}
+
 void Engine::RegisterTimeDependentObject(TimeDependentObject* timeDependentObject)
 {
-	timeDependentObjects_.push_back(timeDependentObject);
+	timeDependentObjectsToRegisterForNextFrame_.push_back(timeDependentObject);
+	++timeDependentObjectsToBeRegisteredSize_;
 }
 
 void Engine::RemoveTimeDependentObject(TimeDependentObject* timeDependentObject)

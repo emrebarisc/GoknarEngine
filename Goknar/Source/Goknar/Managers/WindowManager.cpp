@@ -40,10 +40,10 @@ void WindowManager::PreInit()
 	const int glfwResult = glfwInit();
 	GOKNAR_CORE_ASSERT(glfwResult, "GLFW failed to initialize");
 
-	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+	// const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 
-	windowWidth_ = activeCamera->GetImageWidth();
-	windowHeight_ = activeCamera->GetImageHeight();
+	// windowWidth_ = activeCamera->GetImageWidth();
+	// windowHeight_ = activeCamera->GetImageHeight();
 
 	mainMonitor_ = glfwGetPrimaryMonitor();
 
@@ -87,8 +87,6 @@ void WindowManager::PreInit()
 
 	SetMSAA(MSAAValue_);
 
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, std::bind(&WindowManager::CloseWindow, this));
-	
 	glfwSetFramebufferSizeCallback(mainWindow_, FrameBufferSizeCallback);
 }
 
@@ -98,6 +96,7 @@ void WindowManager::Init()
 
 void WindowManager::PostInit()
 {
+	SetWindowSize_Impl(windowWidth_, windowHeight_);
 }
 
 bool WindowManager::GetWindowShouldBeClosed()
@@ -118,30 +117,27 @@ void WindowManager::CloseWindow()
 void WindowManager::SetWindowWidth(int w)
 {
 	windowWidth_ = w;
-	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
-	if (activeCamera && activeCamera->GetCameraType() == CameraType::Scene)
-	{
-		activeCamera->SetImageWidth(windowWidth_);
-		UpdateViewport();
-		UpdateWindow();
-	}
+	HandleWindowSizeChange();
 }
 
 void WindowManager::SetWindowHeight(int h)
 {
 	windowHeight_ = h;
-	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
-	if (activeCamera && activeCamera->GetCameraType() == CameraType::Scene)
-	{
-		activeCamera->SetImageHeight(windowHeight_);
-		UpdateViewport();
-		UpdateWindow();
-	}
+	HandleWindowSizeChange();
 }
 
 void WindowManager::SetWindowSize(int w, int h)
 {
-	glfwSetWindowSize(mainWindow_, w, h);
+	windowWidth_ = w;
+	windowHeight_ = h;
+	HandleWindowSizeChange();
+}
+
+void WindowManager::HandleWindowSizeChange()
+{
+	UpdateViewport();
+	UpdateWindow();
+	glfwSetWindowSize(mainWindow_, windowWidth_, windowHeight_);
 }
 
 void WindowManager::SetWindowSize_Impl(int w, int h)
@@ -204,14 +200,18 @@ void WindowManager::SetVSync(bool isEnable)
 	glfwSwapInterval(isEnable ? 1 : 0);
 }
 
+void WindowManager::SetIsInFullscreen(bool isInFullscreen)
+{
+	isInFullscreen_ = isInFullscreen;
+	HandleFullscreenState();
+}
+
 void WindowManager::HandleFullscreenState()
 {
 	GLFWmonitor* monitor = nullptr;
 
 	int positionX = 0;
 	int positionY = 0; // Small value to show window title bar on non-fullscreen mode
-	float w = windowWidth_;
-	float h = windowHeight_;
 	float refreshRate = GLFW_DONT_CARE;
 
 	if (isInFullscreen_)
@@ -219,18 +219,15 @@ void WindowManager::HandleFullscreenState()
 		monitor = mainMonitor_;
 
 		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-		w = mode->width;
-		h = mode->height;
 		refreshRate = mode->refreshRate;
 	}
 
-	glfwSetWindowMonitor(mainWindow_, monitor, positionX, positionY, w, h, refreshRate);
+	glfwSetWindowMonitor(mainWindow_, monitor, positionX, positionY, windowWidth_, windowHeight_, refreshRate);
 }
 
 void WindowManager::ToggleFullscreen()
 {
 	SetIsInFullscreen(!isInFullscreen_);
-	HandleFullscreenState();
 }
 
 void WindowManager::Update()

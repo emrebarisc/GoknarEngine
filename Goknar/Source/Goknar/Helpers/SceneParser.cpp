@@ -96,13 +96,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			stream >> x >> y >> z;
 			camera->SetPosition(Vector3(x, y, z));
 
-			child = element->FirstChildElement("ImageResolution");
-			stream << child->GetText() << std::endl;
-			int width, height;
-			stream >> width >> height;
-			camera->SetImageWidth(width);
-			camera->SetImageHeight(height);
-
 			child = element->FirstChildElement("NearDistance");
 			if (child)
 			{

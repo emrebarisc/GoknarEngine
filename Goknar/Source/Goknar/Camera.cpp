@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Engine.h"
 #include "Managers/CameraManager.h"
+#include "Managers/WindowManager.h"
 #include "Math/GoknarMath.h"
 #include "Math/Matrix.h"
 
@@ -14,9 +15,13 @@
 
 Camera::Camera()
 {
-	engine->GetCameraManager()->AddCamera(this);
-
+	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
+	SetImageWidth(windowSize.x);
+	SetImageHeight(windowSize.y);
+	
 	Update();
+
+	engine->GetCameraManager()->AddCamera(this);
 }
 
 Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) : 

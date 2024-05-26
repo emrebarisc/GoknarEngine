@@ -41,10 +41,7 @@ public:
 	void SetOpenGLProfile(int profile1, int profile2);
 	void SetVSync(bool isEnable);
 
-	void SetIsInFullscreen(bool isInFullscreen)
-	{
-		isInFullscreen_ = isInFullscreen;
-	}
+	void SetIsInFullscreen(bool isInFullscreen);
 
 	bool GetIsInFullscreen() const
 	{
@@ -61,6 +58,8 @@ public:
 	{
 		return Vector2i(windowWidth_, windowHeight_);
 	}
+
+	void HandleWindowSizeChange();
 
 	void AddWindowSizeCallback(const Delegate<void(int, int)>& callback)
 	{

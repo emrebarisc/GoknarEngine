@@ -158,8 +158,6 @@ void Texture::PreInit()
 
 	delete[] buffer_;
 	buffer_ = nullptr;
-
-	isInitialized_ = true;
 }
 
 void Texture::Init()
@@ -168,6 +166,7 @@ void Texture::Init()
 
 void Texture::PostInit()
 {
+	isInitialized_ = true;
 }
 
 void Texture::Bind(const Shader* shader) const
