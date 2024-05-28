@@ -36,6 +36,11 @@ Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) 
 	Update();
 }
 
+Camera::~Camera()
+{
+	engine->GetCameraManager()->RemoveCamera(this);
+}
+
 void Camera::Init()
 {
 	// Set up the right vector and make forward and up vector perpenticular in case they are not
@@ -156,6 +161,15 @@ void Camera::LookAt()
 						upVector_);
 
 	UpdateViewProjectionMatrix();
+}
+
+Vector2i Camera::GetScreenPositionOfWorldPosition(const Vector3& worldPosition)
+{
+	Vector4 screenPosition = viewProjectionMatrix_ * Vector4{ worldPosition, 1.f };
+	screenPosition /= screenPosition.w;
+	screenPosition = screenPosition * 0.5f + Vector4{ 0.5f, 0.5f, 0.5f, 0.f };
+
+	return Vector2i{ (int)(screenPosition.x * imageWidth_), (int)(screenPosition.y * imageHeight_) };
 }
 
 Vector3 Camera::GetWorldDirectionAtPixel(const Vector2i& pixelCoordinate)

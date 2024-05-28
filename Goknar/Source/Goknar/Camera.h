@@ -42,10 +42,7 @@ public:
 		}
 	}
 
-	virtual ~Camera()
-	{
-
-	}
+	virtual ~Camera();
 
 	void Init();
 	void Update();
@@ -79,6 +76,7 @@ public:
 		LookAt();
 	}
 
+	Vector2i GetScreenPositionOfWorldPosition(const Vector3& worldPosition);
 	Vector3 GetWorldDirectionAtPixel(const Vector2i& pixelCoordinate);
 
 	Vector3 GetPosition() const
