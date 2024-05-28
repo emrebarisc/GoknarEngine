@@ -15,6 +15,8 @@ Character::Character() : OverlappingPhysicsObject()
     SetCollisionGroup(CollisionGroup::Character);
     SetCollisionMask(CollisionMask::BlockAll);
     SetCollisionFlag(CollisionFlag::CharacterObject);
+
+    SetName("Character");
 }
 
 Character::~Character()
