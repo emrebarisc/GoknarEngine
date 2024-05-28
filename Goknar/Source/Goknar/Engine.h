@@ -116,6 +116,9 @@ public:
 	void RemoveFromTickableObjects(ObjectBase* object);
 	void RemoveFromObjectToBeInitialized(ObjectBase* object);
 	void DestroyAllObjectsAndComponents();
+	
+	template<class T>
+	std::vector<T*> GetObjectsOfType() const;
 
 	void RegisterComponent(Component* component);
 	void AddToTickableComponents(Component* component);
@@ -205,5 +208,26 @@ private:
 	bool hasUninitializedComponents_{ false };
 	bool hasObjectsOrComponentsPendingDestroy_{ false };
 };
+
+template<class T = ObjectBase>
+std::vector<T*> Engine::GetObjectsOfType() const
+{
+	std::vector<T*> result;
+
+	std::vector<ObjectBase*>::const_iterator registeredObjectsIterator = registeredObjects_.cbegin();
+
+	while (registeredObjectsIterator != registeredObjects_.cend())
+	{
+		T* requiredTypeObject = dynamic_cast<T*>(*registeredObjectsIterator);
+		if (requiredTypeObject && !requiredTypeObject->isPendingDestroy_)
+		{
+			result.push_back(requiredTypeObject);
+		}
+
+		++registeredObjectsIterator;
+	}
+
+	return result;
+}
 
 #endif
