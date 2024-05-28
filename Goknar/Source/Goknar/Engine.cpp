@@ -471,22 +471,22 @@ void Engine::Tick(float deltaTime)
 
 void Engine::DestroyAllPendingObjectAndComponents()
 {
-	std::vector<ObjectBase*>::iterator objectPendingDestroyIterator = objectsPendingDestroy_.begin();
-	for (; objectPendingDestroyIterator != objectsPendingDestroy_.end(); ++objectPendingDestroyIterator)
+	// Destroy objects and components using indexed for loop
+	// calculating size at every iteration
+	// in order to handle newly pending objects and components
+	// added in other object or component's destroy call
+	for(int objectIndex = 0; objectIndex < objectsPendingDestroy_.size(); ++objectIndex)
 	{
-		DestroyObject(*objectPendingDestroyIterator);
+		DestroyObject(objectsPendingDestroy_[objectIndex]);
+	}
+
+	for(int componentIndex = 0; componentIndex < componentsPendingDestroy_.size(); ++componentIndex)
+	{
+		DestroyComponent(componentsPendingDestroy_[componentIndex]);
 	}
 
 	objectsPendingDestroy_.clear();
-
-	std::vector<Component*>::iterator componentPendingDestroyIterator = componentsPendingDestroy_.begin();
-	for (; componentPendingDestroyIterator != componentsPendingDestroy_.end(); ++componentPendingDestroyIterator)
-	{
-		DestroyComponent(*componentPendingDestroyIterator);
-	}
-
 	componentsPendingDestroy_.clear();
-
 	hasObjectsOrComponentsPendingDestroy_ = false;
 }
 
@@ -524,7 +524,7 @@ void Engine::DestroyAllObjectsAndComponents()
 	std::vector<Component*>::iterator registeredComponentsIterator = registeredComponents_.begin();
 	for (; registeredComponentsIterator != registeredComponents_.end(); ++registeredComponentsIterator)
 	{
-		delete *registeredComponentsIterator;
+		(*registeredComponentsIterator)->Destroy();
 	}
 	registeredComponents_.clear();
 	tickableComponents_.clear();
@@ -533,7 +533,7 @@ void Engine::DestroyAllObjectsAndComponents()
 	std::vector<ObjectBase*>::iterator registeredObjectsIterator = registeredObjects_.begin();
 	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
 	{
-		delete *registeredObjectsIterator;
+		(*registeredObjectsIterator)->Destroy();
 	}
 
 	registeredObjects_.clear();
