@@ -83,8 +83,6 @@ Engine::~Engine()
 	delete ObjectIDManager::GetInstance();
 	delete ShaderBuilder::GetInstance();
 
-	delete controller_;
-
 	delete windowManager_;
 }
 
@@ -133,11 +131,6 @@ void Engine::PreInit() const
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Object Manager Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
-
-	if (controller_)
-	{
-		controller_->SetupInputs();
-	}
 
 #if GOKNAR_EDITOR
 	editor_->PreInit();
@@ -339,11 +332,6 @@ void Engine::BeginGame()
 	
 	BeginGameComponents();
 	BeginGameObjects();
-
-	if (controller_)
-	{
-		controller_->BeginGame();
-	}
 }
 
 void Engine::PreInitObjects()

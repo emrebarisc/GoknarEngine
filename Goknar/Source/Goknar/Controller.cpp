@@ -4,18 +4,29 @@
 
 #include "Engine.h"
 
-Controller::Controller()
+Controller::Controller() : 
+	ObjectBase()
 {
-	if (!engine->GetController())
-	{
-		engine->SetController(this);
-	}
+	SetName("Controller");
 }
 
 Controller::~Controller()
 {
-	if (engine->GetController() == this)
-	{
-		engine->SetController(nullptr);
-	}
+}
+
+void Controller::PreInit()
+{
+	ObjectBase::PreInit();
+}
+
+void Controller::Init()
+{
+	ObjectBase::Init();
+}
+
+void Controller::PostInit()
+{
+	SetupInputs();
+
+	ObjectBase::PostInit();
 }

@@ -91,16 +91,6 @@ public:
 		return application_;
 	}
 
-	inline Controller* GetController()
-	{
-		return controller_;
-	}
-
-	inline void SetController(Controller* controller)
-	{
-		controller_ = controller;
-	}
-
 	inline ResourceManager* GetResourceManager() const
 	{
 		return resourceManager_;
@@ -184,7 +174,6 @@ private:
 	WindowManager* windowManager_;
 	Editor* editor_{ nullptr };
 	CameraManager* cameraManager_;
-	Controller* controller_{ nullptr };
 	PhysicsWorld* physicsWorld_{ nullptr };
 	HUD* HUD_{ nullptr };
 
