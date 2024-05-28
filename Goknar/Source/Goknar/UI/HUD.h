@@ -7,6 +7,7 @@ class GOKNAR_API HUD : public ObjectBase
 {
 public:
 	HUD();
+    virtual ~HUD();
 
     virtual void PreInit() override;
     virtual void Init() override;

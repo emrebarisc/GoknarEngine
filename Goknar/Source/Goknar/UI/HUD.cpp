@@ -1,10 +1,20 @@
 #include "HUD.h"
 
+#include "Engine.h"
 #include "Math/GoknarMath.h"
 
 HUD::HUD() : ObjectBase()
 {
     SetIsTickable(false);
+    SetName("HUD");
+}
+
+HUD::~HUD() 
+{
+    if(engine->GetHUD() == this)
+    {
+        engine->SetHUD(nullptr);
+    }
 }
 
 void HUD::PreInit()
