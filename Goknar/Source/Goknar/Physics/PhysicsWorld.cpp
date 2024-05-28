@@ -245,16 +245,16 @@ void PhysicsWorld::AddPhysicsMovementComponent(PhysicsMovementComponent* physics
 
 void PhysicsWorld::RemovePhysicsMovementComponent(PhysicsMovementComponent* physicsMovementComponent)
 {
-	decltype(physicsMovementComponents_.begin()) characterIterator = physicsMovementComponents_.begin();
-	while(characterIterator != physicsMovementComponents_.end())
+	decltype(physicsMovementComponents_.cbegin()) physicsMovementComponentIterator = physicsMovementComponents_.cbegin();
+	while(physicsMovementComponentIterator != physicsMovementComponents_.cend())
 	{
-		if(*characterIterator == physicsMovementComponent)
+		if(*physicsMovementComponentIterator == physicsMovementComponent)
 		{
-			physicsMovementComponents_.erase(characterIterator);
+			physicsMovementComponents_.erase(physicsMovementComponentIterator);
 			break;
 		}
 
-		++characterIterator;
+		++physicsMovementComponentIterator;
 	}
 
 	dynamicsWorld_->removeAction(physicsMovementComponent->GetBulletKinematicCharacterController());
