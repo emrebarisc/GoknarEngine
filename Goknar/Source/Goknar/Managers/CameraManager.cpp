@@ -61,6 +61,31 @@ void CameraManager::AddCamera(Camera* camera)
 	++camerasToAddNextFrameCount_;
 }
 
+void CameraManager::RemoveCamera(Camera* camera)
+{
+	std::vector<Camera*>::const_iterator camerasToAddNextFrameIterator = camerasToAddNextFrame_.cbegin();
+	while(camerasToAddNextFrameIterator != camerasToAddNextFrame_.cend())
+	{
+		if(camera == *camerasToAddNextFrameIterator)
+		{
+		camerasToAddNextFrame_.erase(camerasToAddNextFrameIterator);
+		--camerasToAddNextFrameCount_;
+		}
+		++camerasToAddNextFrameIterator;
+	}
+
+	std::vector<Camera*>::const_iterator camerasIterator = cameras_.cbegin();
+	while(camerasIterator != cameras_.cend())
+	{
+		if(camera == *camerasIterator)
+		{
+			cameras_.erase(camerasIterator);
+			break;
+		}
+		++camerasIterator;
+	}
+}
+
 void CameraManager::SetActiveCamera(Camera* camera)
 {
 	activeCamera_ = camera;
