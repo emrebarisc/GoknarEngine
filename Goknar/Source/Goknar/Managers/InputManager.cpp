@@ -34,11 +34,7 @@ void InputManager::KeyboardEvent::OnPressed()
 {
 	if(latestAction_ != INPUT_ACTION::G_PRESS)
 	{
-		if(pressedCallback_)
-		{
-			pressedCallback_();
-		}
-
+		pressedCallback_();
 		latestAction_ = INPUT_ACTION::G_PRESS;
 	}
 }
@@ -47,11 +43,7 @@ void InputManager::KeyboardEvent::OnReleased()
 {
 	if(latestAction_ != INPUT_ACTION::G_RELEASE)
 	{
-		if(releasedCallback_)
-		{
-			releasedCallback_();
-		}
-
+		releasedCallback_();
 		latestAction_ = INPUT_ACTION::G_RELEASE;
 	}
 }
@@ -91,36 +83,41 @@ void InputManager::PostInit()
 
 void InputManager::KeyboardCallback(GLFWwindow *window, int key, int scanCode, int action, int mod)
 {
-	for(const KeyboardListener& keyboardListener : engine->GetInputManager()->keyboardListeners_)
+	InputManager* inputManager = engine->GetInputManager();
+
+	if(!inputManager->keyboardListeners_.isNull())
 	{
-		keyboardListener(key, scanCode, action, mod);
+		inputManager->keyboardListeners_(key, scanCode, action, mod);
 	}
 
 	switch (action)
 	{
 		case GLFW_PRESS:
 		{
-			for (const KeyboardDelegate& pressedKeyDelegate : engine->GetInputManager()->pressedKeyDelegates_[key])
+			if(	inputManager->pressedKeyDelegates_.find(key) != inputManager->pressedKeyDelegates_.end() && 
+				!inputManager->pressedKeyDelegates_[key].isNull())
 			{
-				pressedKeyDelegate();
+				inputManager->pressedKeyDelegates_[key]();
 			}
-		
+			
 			break;
 		}
 		case GLFW_RELEASE:
 		{
-			for (const KeyboardDelegate& releasedKeyDelegate : engine->GetInputManager()->releasedKeyDelegates_[key])
+			if(	inputManager->releasedKeyDelegates_.find(key) != inputManager->releasedKeyDelegates_.end() && 
+				!inputManager->releasedKeyDelegates_[key].isNull())
 			{
-				releasedKeyDelegate();
+				inputManager->releasedKeyDelegates_[key]();
 			}
 
 			break;
 		}
 		case GLFW_REPEAT:
 		{
-			for (const KeyboardDelegate& repeatedKeyDelegate : engine->GetInputManager()->repeatedKeyDelegates_[key])
+			if(	inputManager->repeatedKeyDelegates_.find(key) != inputManager->repeatedKeyDelegates_.end() && 
+				!inputManager->repeatedKeyDelegates_[key].isNull())
 			{
-				repeatedKeyDelegate();
+				inputManager->repeatedKeyDelegates_[key]();
 			}
 
 			break;
@@ -132,41 +129,44 @@ void InputManager::KeyboardCallback(GLFWwindow *window, int key, int scanCode, i
 
 void InputManager::CursorPositionCallback(GLFWwindow* window, double xPosition, double yPosition)
 {
-	for (const CursorPositionDelegate& cursorDelegate : engine->GetInputManager()->cursorDelegates_)
+	InputManager* inputManager = engine->GetInputManager();
+	if(!inputManager->cursorDelegates_.isNull())
 	{
-		cursorDelegate(xPosition, yPosition);
+		inputManager->cursorDelegates_(xPosition, yPosition);
 	}
 }
 
 void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
+	InputManager* inputManager = engine->GetInputManager();
+
 	switch (action)
 	{
 	case GLFW_PRESS:
 	{
-		for (const MouseDelegate& pressedMouseDelegate : engine->GetInputManager()->pressedMouseDelegates_[button])
+		if( inputManager->pressedMouseDelegates_.find(button) != inputManager->pressedMouseDelegates_.end() &&
+			!inputManager->pressedMouseDelegates_[button].isNull())
 		{
-			pressedMouseDelegate();
+			inputManager->pressedMouseDelegates_[button]();
 		}
-
 		break;
 	}
 	case GLFW_RELEASE:
 	{
-		for (const MouseDelegate& releasedMouseDelegate : engine->GetInputManager()->releasedMouseDelegates_[button])
+		if( inputManager->releasedMouseDelegates_.find(button) != inputManager->releasedMouseDelegates_.end() &&
+			!inputManager->releasedMouseDelegates_[button].isNull())
 		{
-			releasedMouseDelegate();
+			inputManager->releasedMouseDelegates_[button]();
 		}
-
 		break;
 	}
 	case GLFW_REPEAT:
 	{
-		for (const MouseDelegate& repeatedMouseDelegate : engine->GetInputManager()->repeatedMouseDelegates_[button])
+		if( inputManager->repeatedMouseDelegates_.find(button) != inputManager->repeatedMouseDelegates_.end() &&
+			!inputManager->repeatedMouseDelegates_[button].isNull())
 		{
-			repeatedMouseDelegate();
+			inputManager->repeatedMouseDelegates_[button]();
 		}
-
 		break;
 	}
 	default:
@@ -176,17 +176,19 @@ void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int actio
 
 void InputManager::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 {
-	for (const ScrollDelegate& scrollDelegate : engine->GetInputManager()->scrollDelegates_)
+	InputManager* inputManager = engine->GetInputManager();
+	if(!inputManager->scrollDelegates_.isNull())
 	{
-		scrollDelegate(xOffset, yOffset);
+		inputManager->scrollDelegates_(xOffset, yOffset);
 	}
 }
 
 void InputManager::CharCallback(GLFWwindow * window, unsigned int codePoint)
 {
-	for (const CharDelegate& charDelegate : engine->GetInputManager()->charDelegates_)
+	InputManager* inputManager = engine->GetInputManager();
+	if(!inputManager->charDelegates_.isNull())
 	{
-		charDelegate(codePoint);
+		inputManager->charDelegates_(codePoint);
 	}
 }
 
@@ -210,4 +212,45 @@ void InputManager::SetCursorPosition(float x, float y, GLFWwindow* window)
 	}
 
 	glfwSetCursorPos(window, x, y);
+}
+
+void InputManager::AddKeyboardEvent(KEY_MAP keyCode, const KeyboardDelegate& pressedCallback, const KeyboardDelegate& releasedCallback)
+{
+	std::unique_ptr<InputManager::KeyboardEvent> keyboardEvent = 
+		std::make_unique<InputManager::KeyboardEvent>(keyCode, pressedCallback, releasedCallback);
+
+	if(keyboardEvents_->find(keyCode) == keyboardEvents_->end())
+	{
+		AddKeyboardInputDelegate(keyCode, INPUT_ACTION::G_PRESS, pressedCallback);
+
+		AddKeyboardInputDelegate(keyCode, INPUT_ACTION::G_RELEASE, releasedCallback);
+
+		keyboardEvents_->insert(std::pair<KEY_MAP, KeyboardEvents>(keyCode, KeyboardEvents()));
+	}
+
+	keyboardEvents_->at(keyCode).push_back(std::move(keyboardEvent));
+}
+
+void InputManager::RemoveKeyboardEvent(KEY_MAP keyCode, const KeyboardDelegate& pressedCallback, const KeyboardDelegate& releasedCallback)
+{
+	if(keyboardEvents_->find(keyCode) == keyboardEvents_->end())
+	{
+		return;
+	}
+
+	KeyboardEvents& keyboardEvents = keyboardEvents_->at(keyCode);
+
+	decltype(keyboardEvents.cbegin()) keyboardEventsIterator = keyboardEvents.cbegin();
+	while(keyboardEventsIterator != keyboardEvents.cend())
+	{
+		const std::unique_ptr<KeyboardEvent>& keyboardEvent = *keyboardEventsIterator;
+
+		if(keyboardEvent->GetPressedCallback() == pressedCallback && keyboardEvent->GetReleasedCallback() == releasedCallback)
+		{
+			keyboardEvents.erase(keyboardEventsIterator);
+			break;
+		}
+
+		++keyboardEventsIterator;
+	}
 }

@@ -8,6 +8,8 @@
 #include "GLFW/glfw3.h"
 
 #include "Goknar/Core.h"
+#include "Goknar/Delegates/Delegate.h"
+#include "Goknar/Delegates/MulticastDelegate.h"
 
 struct GLFWwindow;
 
@@ -170,23 +172,23 @@ enum class GOKNAR_API KEY_MAP : int
 	LAST = MENU
 };
 
-typedef std::function<void()> KeyboardDelegate;
-typedef std::vector < KeyboardDelegate > KeyboardDelegateVector;
+typedef Delegate<void()> KeyboardDelegate;
+typedef MulticastDelegate<void()> KeyboardDelegates;
 
-typedef std::function<void(int, int, int, int)> KeyboardListener;
-typedef std::vector < KeyboardListener > KeyboardListenerVector;
+typedef Delegate<void(int, int, int, int)> KeyboardListener;
+typedef MulticastDelegate<void(int, int, int, int)> KeyboardListeners;
 
-typedef std::function<void()> MouseDelegate;
-typedef std::vector < MouseDelegate > MouseDelegateVector;
+typedef Delegate<void()> MouseDelegate;
+typedef MulticastDelegate<void()> MouseDelegates;
 
-typedef std::function<void(double, double)> CursorPositionDelegate;
-typedef std::vector < CursorPositionDelegate > CursorDelegateVector;
+typedef Delegate<void(double, double)> CursorPositionDelegate;
+typedef MulticastDelegate<void(double, double)> CursorDelegates;
 
-typedef std::function<void(double, double)> ScrollDelegate;
-typedef std::vector < ScrollDelegate > ScrollDelegateVector;
+typedef Delegate<void(double, double)> ScrollDelegate;
+typedef MulticastDelegate<void(double, double)> ScrollDelegates;
 
-typedef std::function<void(unsigned int)> CharDelegate;
-typedef std::vector < CharDelegate > CharDelegateVector;
+typedef Delegate<void(unsigned int)> CharDelegate;
+typedef MulticastDelegate<void(unsigned int)> CharDelegates;
 
 class GOKNAR_API InputManager
 {
@@ -199,7 +201,18 @@ private:
 		~KeyboardEvent();
 
 		void OnPressed();
-		void OnReleased();	
+		void OnReleased();
+
+		KeyboardDelegate GetPressedCallback() const
+		{ 
+			return pressedCallback_;
+		}
+		
+		KeyboardDelegate GetReleasedCallback() const
+		{ 
+			return releasedCallback_;
+		}
+		
 	protected:
 
 	private:
@@ -210,8 +223,8 @@ private:
 	};
 
 	typedef std::unique_ptr<KeyboardEvent> KeyboardEventPointer;
-	typedef std::vector<KeyboardEventPointer> KeyboardEventVector;
-	typedef std::unordered_map< KEY_MAP, KeyboardEventVector > KeyboardEventMap;
+	typedef std::vector<KeyboardEventPointer> KeyboardEvents;
+	typedef std::unordered_map< KEY_MAP, KeyboardEvents > KeyboardEventMap;
 
 public:
 	InputManager();
@@ -227,29 +240,51 @@ public:
 	static inline void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset);
 	static inline void CharCallback(GLFWwindow *window, unsigned int codePoint);
 
-	template<typename Class>
-	void AddKeyboardEvent(KEY_MAP keyCode, Class* owner, void (Class::* pressedCallback)(void), void (Class::* releasedCallback)(void));
+	void AddKeyboardEvent(KEY_MAP keyCode, const KeyboardDelegate& pressedCallback, const KeyboardDelegate& releasedCallback);
+	void RemoveKeyboardEvent(KEY_MAP keyCode, const KeyboardDelegate& pressedCallback, const KeyboardDelegate& releasedCallback);
 
-	void AddKeyboardInputDelegate(KEY_MAP keyCode, INPUT_ACTION inputAction, const KeyboardDelegate &binderFunction)
+	void AddKeyboardInputDelegate(KEY_MAP keyCode, INPUT_ACTION inputAction, const KeyboardDelegate& binderFunction)
 	{
 		switch (inputAction)
 		{
 			case INPUT_ACTION::G_PRESS: 
-				pressedKeyDelegates_[(int)keyCode].push_back(binderFunction);
+				pressedKeyDelegates_[(int)keyCode] += binderFunction;
 				break;
 			case INPUT_ACTION::G_RELEASE:
-				releasedKeyDelegates_[(int)keyCode].push_back(binderFunction);
+				releasedKeyDelegates_[(int)keyCode] += binderFunction;
 				break;
 			case INPUT_ACTION::G_REPEAT:
-				repeatedKeyDelegates_[(int)keyCode].push_back(binderFunction);
+				repeatedKeyDelegates_[(int)keyCode] += binderFunction;
 				break;
 			default: ;
 		}
 	}
 
-	void AddKeyboardListener(const KeyboardListener &keyboardListener)
+	void RemoveKeyboardInputDelegate(KEY_MAP keyCode, INPUT_ACTION inputAction, const KeyboardDelegate& binderFunction)
 	{
-		keyboardListeners_.push_back(keyboardListener);
+		switch (inputAction)
+		{
+			case INPUT_ACTION::G_PRESS: 
+				pressedKeyDelegates_[(int)keyCode] -= binderFunction;
+				break;
+			case INPUT_ACTION::G_RELEASE:
+				releasedKeyDelegates_[(int)keyCode] -= binderFunction;
+				break;
+			case INPUT_ACTION::G_REPEAT:
+				repeatedKeyDelegates_[(int)keyCode] -= binderFunction;
+				break;
+			default: ;
+		}
+	}
+
+	void AddKeyboardListener(const KeyboardListener& keyboardListener)
+	{
+		keyboardListeners_ += keyboardListener;
+	}
+
+	void RemoveKeyboardListener(const KeyboardListener& keyboardListener)
+	{
+		keyboardListeners_ -= keyboardListener;
 	}
 
 	void AddMouseInputDelegate(MOUSE_MAP keyCode, INPUT_ACTION inputAction, const MouseDelegate& binderFunction)
@@ -257,13 +292,30 @@ public:
 		switch (inputAction)
 		{
 		case INPUT_ACTION::G_PRESS:
-			pressedMouseDelegates_[(int)keyCode].push_back(binderFunction);
+			pressedMouseDelegates_[(int)keyCode] += binderFunction;
 			break;
 		case INPUT_ACTION::G_RELEASE:
-			releasedMouseDelegates_[(int)keyCode].push_back(binderFunction);
+			releasedMouseDelegates_[(int)keyCode] += binderFunction;
 			break;
 		case INPUT_ACTION::G_REPEAT:
-			repeatedMouseDelegates_[(int)keyCode].push_back(binderFunction);
+			repeatedMouseDelegates_[(int)keyCode] += binderFunction;
+			break;
+		default:;
+		}
+	}
+
+	void RemoveMouseInputDelegate(MOUSE_MAP keyCode, INPUT_ACTION inputAction, const MouseDelegate& binderFunction)
+	{
+		switch (inputAction)
+		{
+		case INPUT_ACTION::G_PRESS:
+			pressedMouseDelegates_[(int)keyCode] -= binderFunction;
+			break;
+		case INPUT_ACTION::G_RELEASE:
+			releasedMouseDelegates_[(int)keyCode] -= binderFunction;
+			break;
+		case INPUT_ACTION::G_REPEAT:
+			repeatedMouseDelegates_[(int)keyCode] -= binderFunction;
 			break;
 		default:;
 		}
@@ -271,17 +323,32 @@ public:
 
 	void AddCursorDelegate(const CursorPositionDelegate &cursorDelegate)
 	{
-		cursorDelegates_.push_back(cursorDelegate);
+		cursorDelegates_ += cursorDelegate;
+	}
+
+	void RemoveCursorDelegate(const CursorPositionDelegate &cursorDelegate)
+	{
+		cursorDelegates_ -= cursorDelegate;
 	}
 
 	void AddScrollDelegate(const ScrollDelegate &scrollDelegate)
 	{
-		scrollDelegates_.push_back(scrollDelegate);
+		scrollDelegates_ += scrollDelegate;
+	}
+
+	void RemoveScrollDelegate(const ScrollDelegate &scrollDelegate)
+	{
+		scrollDelegates_ -= scrollDelegate;
 	}
 
 	void AddCharDelegate(const CharDelegate &charDelegate)
 	{
-		charDelegates_.push_back(charDelegate);
+		charDelegates_ += charDelegate;
+	}
+
+	void RemoveCharDelegate(const CharDelegate &charDelegate)
+	{
+		charDelegates_ -= charDelegate;
 	}
 
 	void SetIsCursorVisible(bool isCursorVisible);
@@ -302,58 +369,25 @@ private:
 	KeyboardEventMap* keyboardEvents_;
 
 	// Keyboard Delegates
-	std::unordered_map< int, KeyboardDelegateVector > pressedKeyDelegates_;
-	std::unordered_map< int, KeyboardDelegateVector > repeatedKeyDelegates_;
-	std::unordered_map< int, KeyboardDelegateVector > releasedKeyDelegates_;
+	std::unordered_map< int, KeyboardDelegates > pressedKeyDelegates_;
+	std::unordered_map< int, KeyboardDelegates > repeatedKeyDelegates_;
+	std::unordered_map< int, KeyboardDelegates > releasedKeyDelegates_;
 
-	KeyboardListenerVector keyboardListeners_;
+	KeyboardListeners keyboardListeners_;
 
 	// Mouse Delegates
-	std::unordered_map< int, MouseDelegateVector > pressedMouseDelegates_;
-	std::unordered_map< int, MouseDelegateVector > repeatedMouseDelegates_;
-	std::unordered_map< int, MouseDelegateVector > releasedMouseDelegates_;
+	std::unordered_map< int, MouseDelegates > pressedMouseDelegates_;
+	std::unordered_map< int, MouseDelegates > repeatedMouseDelegates_;
+	std::unordered_map< int, MouseDelegates > releasedMouseDelegates_;
 
 	// Cursor Delegates
-	CursorDelegateVector cursorDelegates_;
+	CursorDelegates cursorDelegates_;
 
 	// Scroll Delegates
-	ScrollDelegateVector scrollDelegates_;
+	ScrollDelegates scrollDelegates_;
 
 	// Char Delegates
-	CharDelegateVector charDelegates_;
+	CharDelegates charDelegates_;
 };
 
-template<typename Class>
-void InputManager::AddKeyboardEvent(KEY_MAP keyCode, Class* owner, void (Class::* pressedCallback)(void), void (Class::* releasedCallback)(void))
-{
-	std::unique_ptr<InputManager::KeyboardEvent> keyboardEvent = 
-		std::make_unique<InputManager::KeyboardEvent>(keyCode, std::bind(pressedCallback, owner), std::bind(releasedCallback, owner));
-
-	if(keyboardEvents_->find(keyCode) == keyboardEvents_->end())
-	{
-		AddKeyboardInputDelegate(keyCode, INPUT_ACTION::G_PRESS, 
-			[this, keyCode]()
-			{
-				KeyboardEventVector& keyboardEvents = this->keyboardEvents_->at(keyCode);
-				for(KeyboardEventPointer& keyboardEventPointer : keyboardEvents)
-				{
-					keyboardEventPointer->OnPressed();
-				}
-			});
-
-		AddKeyboardInputDelegate(keyCode, INPUT_ACTION::G_RELEASE,
-			[this, keyCode]()
-			{
-				KeyboardEventVector& keyboardEvents = this->keyboardEvents_->at(keyCode);
-				for(KeyboardEventPointer& keyboardEventPointer : keyboardEvents)
-				{
-					keyboardEventPointer->OnReleased();
-				}
-			});
-
-		keyboardEvents_->insert(std::pair<KEY_MAP, KeyboardEventVector>(keyCode, KeyboardEventVector()));
-	}
-
-	keyboardEvents_->at(keyCode).push_back(std::move(keyboardEvent));
-}
 #endif

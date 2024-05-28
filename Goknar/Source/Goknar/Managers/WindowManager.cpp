@@ -137,6 +137,7 @@ void WindowManager::HandleWindowSizeChange()
 {
 	UpdateViewport();
 	UpdateWindow();
+	
 	glfwSetWindowSize(mainWindow_, windowWidth_, windowHeight_);
 }
 
@@ -218,12 +219,18 @@ void WindowManager::HandleFullscreenState()
 	int positionY = 0; // Small value to show window title bar on non-fullscreen mode
 	float refreshRate = GLFW_DONT_CARE;
 
+	const GLFWvidmode* mode = glfwGetVideoMode(mainMonitor_);
+
 	if (isInFullscreen_)
 	{
 		monitor = mainMonitor_;
 
-		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 		refreshRate = mode->refreshRate;
+	}
+	else
+	{		
+		positionX = GoknarMath::Max(0, GoknarMath::FloorToInt((mode->width - windowWidth_) * 0.5f));
+		positionY = GoknarMath::Max(0, GoknarMath::FloorToInt((mode->height - windowHeight_) * 0.5f));
 	}
 
 	glfwSetWindowMonitor(mainWindow_, monitor, positionX, positionY, windowWidth_, windowHeight_, refreshRate);
