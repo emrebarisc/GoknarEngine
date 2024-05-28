@@ -657,6 +657,82 @@ struct GOKNAR_API Vector4
 
 	Vector4 operator*(const Matrix &rhs) const;
 
+	inline Vector4 operator-() const
+	{
+		return Vector4(-x, -y, -z, -w);
+	}
+
+	inline Vector4 operator-(const Vector4& rhs) const
+	{
+		return Vector4(x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w);
+	}
+
+	inline Vector4 operator+(const Vector4& rhs) const
+	{
+		return Vector4(x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w);
+	}
+
+	inline void operator+=(const Vector4& rhs)
+	{
+		x = x + rhs.x;
+		y = y + rhs.y;
+		z = z + rhs.z;
+		w = w + rhs.w;
+	}
+
+	inline void operator-=(const Vector4& rhs)
+	{
+		x = x - rhs.x;
+		y = y - rhs.y;
+		z = z - rhs.z;
+		w = w - rhs.w;
+	}
+
+	inline Vector4 operator*(float val) const
+	{
+		return Vector4(x * val, y * val, z * val, w * val);
+	}
+
+	inline Vector4 operator/(float val) const
+	{
+		return Vector4(x / val, y / val, z / val, w / val);
+	}
+
+	inline void operator*=(float val)
+	{
+		x *= val;
+		y *= val;
+		z *= val;
+		w *= val;
+	}
+
+	inline void operator/=(float val)
+	{
+		x /= val;
+		y /= val;
+		z /= val;
+		w /= val;
+	}
+
+	inline friend Vector4 operator*(float val, const Vector4& rhs)
+	{
+		return Vector4(rhs.x * val, rhs.y * val, rhs.z * val, rhs.w * val);
+	}
+
+	inline Vector4 operator*(const Vector4& rhs) const
+	{
+		return Vector4(x * rhs.x, y * rhs.y, z * rhs.z, w * rhs.w);
+	}
+
+	inline Vector4& operator*=(const Vector4& rhs)
+	{
+		x *= rhs.x;
+		y *= rhs.y;
+		z *= rhs.z;
+		w *= rhs.w;
+		return *this;
+	}
+
 	inline friend std::ostream& operator<<(std::ostream& out, const Vector4& val)
 	{
 		return out << "[" << val.x << ", " << val.y << ", " << val.z << ", " << val.w << "]";
