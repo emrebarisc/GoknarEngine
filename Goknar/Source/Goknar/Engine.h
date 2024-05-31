@@ -158,6 +158,8 @@ public:
 	void Exit();
 
 private:
+	void ClearMemory();
+
 	void DestroyAllPendingObjectAndComponents();
 
 	void DestroyObject(ObjectBase* object);

@@ -70,7 +70,7 @@ Engine::~Engine()
 #if GOKNAR_EDITOR
 	delete editor_;
 #endif
-	DestroyAllObjectsAndComponents();
+	ClearMemory();
 
 	delete debugDrawer_;
 
@@ -469,6 +469,30 @@ void Engine::Tick(float deltaTime)
 	}
 }
 
+void Engine::ClearMemory()
+{
+	std::vector<Component*>::iterator registeredComponentsIterator = registeredComponents_.begin();
+	for (; registeredComponentsIterator != registeredComponents_.end(); ++registeredComponentsIterator)
+	{
+		delete *registeredComponentsIterator;
+	}
+	registeredComponents_.clear();
+	tickableComponents_.clear();
+	componentsToBeInitialized_.clear();
+
+	std::vector<ObjectBase*>::iterator registeredObjectsIterator = registeredObjects_.begin();
+	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
+	{
+		delete *registeredObjectsIterator;
+	}
+
+	registeredObjects_.clear();
+	tickableObjects_.clear();
+	objectsToBeInitialized_.clear();
+
+	application_->GetMainScene()->ClearObjects();
+}
+
 void Engine::DestroyAllPendingObjectAndComponents()
 {
 	// Destroy objects and components using indexed for loop
@@ -535,10 +559,6 @@ void Engine::DestroyAllObjectsAndComponents()
 	{
 		(*registeredObjectsIterator)->Destroy();
 	}
-
-	registeredObjects_.clear();
-	tickableObjects_.clear();
-	objectsToBeInitialized_.clear();
 
 	application_->GetMainScene()->ClearObjects();
 }
