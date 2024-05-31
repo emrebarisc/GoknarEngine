@@ -117,7 +117,7 @@ public:
 	void RemoveFromObjectToBeInitialized(ObjectBase* object);
 	void DestroyAllObjectsAndComponents();
 	
-	template<class T>
+	template<class T = ObjectBase>
 	std::vector<T*> GetObjectsOfType() const;
 
 	void RegisterComponent(Component* component);
@@ -209,7 +209,7 @@ private:
 	bool hasObjectsOrComponentsPendingDestroy_{ false };
 };
 
-template<class T = ObjectBase>
+template<class T>
 std::vector<T*> Engine::GetObjectsOfType() const
 {
 	std::vector<T*> result;
