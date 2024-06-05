@@ -32,6 +32,8 @@ ArcherCharacterController::ArcherCharacterController(ArcherCharacter* archer) :
 	toggleToggleFreeCameraDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::ToggleFreeCamera>(this);
 	onScrollMoveDelegate_ = Delegate<void(double, double)>::create<ArcherCharacterController, &ArcherCharacterController::OnScrollMove>(this);
 	onCursorMoveDelegate_ = Delegate<void(double, double)>::create<ArcherCharacterController, &ArcherCharacterController::OnCursorMove>(this);
+
+	exitGameDelegate_ = Delegate<void()>::create<Engine, &Engine::Exit>(engine);
 }
 
 ArcherCharacterController::~ArcherCharacterController()
@@ -84,6 +86,7 @@ void ArcherCharacterController::BindInputDelegates()
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, stopMovingRightDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::F1, INPUT_ACTION::G_RELEASE, toggleDebugDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::F2, INPUT_ACTION::G_RELEASE, toggleToggleFreeCameraDelegate_);
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, exitGameDelegate_);
 
 	inputManager->AddScrollDelegate(onScrollMoveDelegate_);
 	inputManager->AddCursorDelegate(onCursorMoveDelegate_);
@@ -103,6 +106,7 @@ void ArcherCharacterController::UnbindInputDelegates()
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, stopMovingRightDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::F1, INPUT_ACTION::G_RELEASE, toggleDebugDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::F2, INPUT_ACTION::G_RELEASE, toggleToggleFreeCameraDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, exitGameDelegate_);
 
 	inputManager->RemoveScrollDelegate(onScrollMoveDelegate_);
 	inputManager->RemoveCursorDelegate(onCursorMoveDelegate_);

@@ -67,6 +67,7 @@ private:
 	Delegate<void()> stopMovingRightDelegate_;
 	Delegate<void()> toggleDebugDelegate_;
 	Delegate<void()> toggleToggleFreeCameraDelegate_;
+	Delegate<void()> exitGameDelegate_;
 
 	Delegate<void(double, double)> onScrollMoveDelegate_;
 	Delegate<void(double, double)> onCursorMoveDelegate_;
