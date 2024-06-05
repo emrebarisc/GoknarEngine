@@ -8,6 +8,15 @@
 class MeshUnit;
 class MaterialInstance;
 
+struct GOKNAR_API MaterialInitializationData
+{
+	std::string baseColor{ "" };
+	std::string normal{ "" };
+	std::string uv{ "" };
+	std::string positionOffset{ "" };
+	int boneCount{ 0 };
+};
+
 class GOKNAR_API Material : public IMaterialBase
 {
 public:
@@ -55,6 +64,11 @@ public:
 		}
 	}
 
+	MaterialInitializationData* GetInitializationData() const
+	{
+		return initializationData_;
+	}
+
 protected:
 
 
@@ -62,6 +76,8 @@ private:
 	std::vector<MaterialInstance*> derivedMaterialInstances_;
 
 	std::unordered_map<RenderPassType, Shader*> renderPassTypeShaderMap_;
+
+	MaterialInitializationData* initializationData_{ new MaterialInitializationData() };
 };
 
 #endif

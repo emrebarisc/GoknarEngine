@@ -17,23 +17,60 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace MATERIAL
 	{
-		extern const char* AMBIENT;
-		extern const char* DIFFUSE;
-		extern const char* SPECULAR;
 		extern const char* PHONG_EXPONENT;
 		extern const char* TRANSLUCENCY;
+
+		extern const char* BASE_COLOR;
+		extern const char* METALLIC;
+		extern const char* SPECULAR;
+		extern const char* ROUGHNESS;
+		extern const char* EMMISIVE_COLOR;
+		extern const char* AMBIENT_OCCLUSION;
 	}
 
 	inline namespace LIGHT
 	{
 		extern const char* LIGHT_INTENSITY;
 		extern const char* LIGHT_INTENSITY_PREFIX;
+		extern const char* CURRENT_LIGHT_INTENSITY;
 
 		extern const char* IS_CASTING_SHADOW;
 
 		extern const char* DIRECTIONAL_LIGHT;
 		extern const char* POINT_LIGHT;
 		extern const char* SPOT_LIGHT;
+
+		extern const char* DIRECTIONAL_LIGHT_UNIFORM_NAME;
+		extern const char* POINT_LIGHT_UNIFORM_NAME;
+		extern const char* SPOT_LIGHT_UNIFORM_NAME;
+
+		extern const char* DIRECTIONAL_LIGHT_SHADOW_MAP_UNIFORM_NAME;
+		extern const char* POINT_LIGHT_SHADOW_MAP_UNIFORM_NAME;
+		extern const char* SPOT_LIGHT_SHADOW_MAP_UNIFORM_NAME;
+
+		extern const char* DIRECTIONAL_LIGHT_SHADOW_MAP_ARRAY_NAME;
+		extern const char* POINT_LIGHT_SHADOW_MAP_ARRAY_NAME;
+		extern const char* SPOT_LIGHT_SHADOW_MAP_ARRAY_NAME;
+
+		extern const char* DIRECTIONAL_LIGHT_STRUCT_NAME;
+		extern const char* POINT_LIGHT_STRUCT_NAME;
+		extern const char* SPOT_LIGHT_STRUCT_NAME;
+
+		extern const char* DIRECTIONAL_LIGHT_ARRAY_NAME;
+		extern const char* POINT_LIGHT_ARRAY_NAME;
+		extern const char* SPOT_LIGHT_ARRAY_NAME;
+
+		extern const char* DIRECTIONAL_LIGHT_VIEW_MATRIX_ARRAY_NAME;
+		extern const char* POINT_LIGHT_VIEW_MATRIX_ARRAY_NAME;
+		extern const char* SPOT_LIGHT_VIEW_MATRIX_ARRAY_NAME;
+
+		extern const char* MAX_DIRECTIONAL_LIGHT_COUNT_MACRO;
+		extern const char* MAX_POINT_LIGHT_COUNT_MACRO;
+		extern const char* MAX_SPOT_LIGHT_COUNT_MACRO;
+
+		extern const char* DIRECTIONAL_LIGHT_COUNT_IN_USE_VARIABLE;
+		extern const char* POINT_LIGHT_COUNT_IN_USE_VARIABLE;
+		extern const char* SPOT_LIGHT_COUNT_IN_USE_VARIABLE;
 	}
 
 	inline namespace LIGHT_KEYWORDS
@@ -51,10 +88,13 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace SHADOW
 	{
+		extern const char* FRAGMENT_TO_LIGHT_VECTOR;
 		extern const char* FRAGMENT_TO_LIGHT_VECTOR_PREFIX;
+		extern const char* SHADOW_MAP;
 		extern const char* SHADOW_MAP_PREFIX;
 		extern const char* VIEW_MATRIX_PREFIX;
 
+		extern const char* SHADOW_VALUE;
 		extern const char* SHADOW_VALUE_PREFIX;
 
 		extern const char* POINT_LIGHT_VIEW_MATRICES_ARRAY;
@@ -110,6 +150,10 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* VERTEX_NORMAL;
 		extern const char* BONE_IDS;
 		extern const char* WEIGHTS;
+
+		extern const char* DIRECTIONAL_LIGHT_SPACE_FRAGMENT_POSITIONS;
+		extern const char* POINT_LIGHT_SPACE_FRAGMENT_POSITIONS;
+		extern const char* SPOT_LIGHT_SPACE_FRAGMENT_POSITIONS;
 	}
 
 	inline namespace GBUFFER
@@ -123,6 +167,11 @@ inline namespace SHADER_VARIABLE_NAMES
 	inline namespace FRAGMENT_SHADER_OUTS
 	{
 		extern const char* FRAGMENT_COLOR;
+	}
+
+	inline namespace CALCULATIONS
+	{
+		extern const char* FINAL_BASE_COLOR;
 	}
 }
 

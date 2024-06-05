@@ -124,6 +124,7 @@ Renderer::~Renderer()
 void Renderer::PreInit()
 {
 	shadowManager_ = new ShadowManager();
+	shadowManager_->PreInit();
 
 	if (mainRenderType_ == RenderPassType::Deferred)
 	{
@@ -158,10 +159,12 @@ void Renderer::PreInit()
 
 void Renderer::Init()
 {
+	shadowManager_->Init();
 }
 
 void Renderer::PostInit()
 {
+	shadowManager_->PostInit();
 }
 
 void Renderer::SetStaticBufferData()

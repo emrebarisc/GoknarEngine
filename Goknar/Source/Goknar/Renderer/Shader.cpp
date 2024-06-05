@@ -23,11 +23,11 @@
 
 void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
 {
-	GEint isCompiled = 0;
+	GEint isCompiled = GL_FALSE;
 	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &isCompiled);
 	if (isCompiled == GL_FALSE)
 	{
-		GEint maxLength = 0;
+		GEint maxLength = 4096;
 		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &maxLength);
 
 		GEchar* logMessage = new GEchar[maxLength + (GEint)1];
@@ -43,11 +43,12 @@ void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
 
 void ExitOnProgramError(GEuint programId, const char* errorMessage)
 {
-	GLint isLinked = 0;
+	GLint isLinked = GL_FALSE;
 	glGetProgramiv(programId, GL_LINK_STATUS, &isLinked);
+
 	if (isLinked == GL_FALSE)
 	{
-		GLint maxLength = 0;
+		GLint maxLength = 4096;
 		glGetShaderiv(programId, GL_INFO_LOG_LENGTH, &maxLength);
 
 		GLchar* logMessage = new GLchar[maxLength + (GEint)1];

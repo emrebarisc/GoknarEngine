@@ -7,7 +7,10 @@
 #include "Goknar/Contents/Image.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
+#include "Goknar/Renderer/ShaderBuilderNew.h"
 #include "Goknar/Renderer/ShaderTypes.h"
+#include "Goknar/Model/SkeletalMesh.h"
+#include "Goknar/Lights/ShadowManager/ShadowManager.h"
 
 Material::Material() :
 	IMaterialBase()
@@ -31,10 +34,20 @@ Material::~Material()
 	delete renderPassTypeShaderMap_[RenderPassType::GeometryBuffer];
 	delete renderPassTypeShaderMap_[RenderPassType::Shadow];
 	delete renderPassTypeShaderMap_[RenderPassType::PointLightShadow];
+
+	delete initializationData_;
 }
 
 void Material::Build(MeshUnit* meshUnit)
 {
+	int ownerMeshBoneCount = 0;
+	if (SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(meshUnit))
+	{
+		ownerMeshBoneCount = skeletalMesh->GetBoneSize();
+	}
+
+	initializationData_->boneCount = ownerMeshBoneCount;
+
 	RenderPassType mainRenderPassType = engine->GetRenderer()->GetMainRenderType();
 	
 	Shader* gBufferShader = nullptr;
@@ -65,7 +78,13 @@ void Material::Build(MeshUnit* meshUnit)
 
 	if (forwardRenderingShader->GetShaderType() == ShaderType::Scene)
 	{
-		ShaderBuilder::GetInstance()->BuildShader(meshUnit, this);
+		//ShaderBuilder::GetInstance()->BuildShader(meshUnit, this);
+
+		std::string vertexShader = ShaderBuilderNew::GetInstance()->ForwardRender_GetVertexShaderScript(initializationData_, forwardRenderingShader);
+		forwardRenderingShader->SetVertexShaderScript(vertexShader);
+
+		std::string fragmentShader = ShaderBuilderNew::GetInstance()->ForwardRender_GetFragmentShaderScript(initializationData_, forwardRenderingShader);
+		forwardRenderingShader->SetFragmentShaderScript(fragmentShader);
 	}
 
 	Shader* shadowShader = new Shader();
@@ -134,4 +153,9 @@ void Material::PostInit()
 	{
 		derivedMaterialInstance->PostInit();
 	}
+
+	engine->GetRenderer()->GetShadowManager()->BindLightUniforms(renderPassTypeShaderMap_[RenderPassType::Forward]);
+
+	delete initializationData_;
+	initializationData_ = nullptr;
 }

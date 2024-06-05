@@ -243,7 +243,7 @@ void main()
 				fragmentShaderMain += "\tif (" + textureColorVariable + ".a < 0.5f) discard;\n";
 			}
 
-			fragmentShaderMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + " = vec4(" + textureColorVariable + "); \n";
+			fragmentShaderMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR) + " = vec4(" + textureColorVariable + "); \n";
 		}
 	}
 
@@ -367,7 +367,7 @@ in vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ";\n";
 	else
 	{
 		fragmentShaderUniforms += GetMaterialDiffuseVariable();
-		insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + " = " + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + ".xyz; \n";
+		insideMain += std::string("\t") + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + " = " + SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR + ".xyz; \n";
 	}
 
 	fragmentShaderUniforms += "uniform vec3 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR) + ";\n";
@@ -430,7 +430,7 @@ in vec2 )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + ";";
 
 	fragmentShader += R"(
 vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
-vec4 )" + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + R"(;
+vec4 )" + SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR + R"(;
 vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"(;
 vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(;
 float )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"(;
@@ -471,7 +471,7 @@ void main()
 		return;
 	}
 
-	)" + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
+	)" + SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
 	
 	)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = vec4(texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz, 1.f);
 
@@ -575,9 +575,9 @@ void ShaderBuilder::FS_BuildSceneForwardRendering()
 
 	const Vector3& sceneAmbientLight = scene->GetAmbientLight();
 	fragmentShaderOutsideMain_ += "vec3 sceneAmbient = vec3(" + std::to_string(sceneAmbientLight.x / 255.f) + ", " + std::to_string(sceneAmbientLight.y / 255.f) + ", " + std::to_string(sceneAmbientLight.z / 255.f) + ");\n";
-	fragmentShaderInsideMainBegin_ += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = sceneAmbient * " + SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT + ";\n";
+	fragmentShaderInsideMainBegin_ += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = sceneAmbient * " + SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION + ";\n";
 
-	fragmentShaderInsideMainEnd_ += "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " = vec4(" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY + ", 1.f) * " + SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE + ";";
+	fragmentShaderInsideMainEnd_ += "\t" + std::string(SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR) + " = vec4(" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY + ", 1.f) * " + SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR + ";";
 
 	uniforms_ = lightUniforms_;
 
@@ -978,7 +978,7 @@ std::string ShaderBuilder::GetMaterialVariables()
 {
 	std::string materialVariableText = "// Base Material Variables\n";
 	materialVariableText += "uniform vec3 ";
-	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT;
+	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION;
 	materialVariableText += ";\n";
 
 	materialVariableText += "uniform vec3 ";
@@ -997,12 +997,12 @@ std::string ShaderBuilder::GetMaterialVariables()
 
 std::string ShaderBuilder::GetMaterialDiffuseVariable()
 {
-	return "uniform vec4 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";\n";
+	return "uniform vec4 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR) + ";\n";
 }
 
 std::string ShaderBuilder::GetTextureDiffuseVariable()
 {
-	return "vec4 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE) + ";\n";
+	return "vec4 " + std::string(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR) + ";\n";
 }
 
 std::string ShaderBuilder::GetPointLightUniformTexts(const std::string& lightVariableName)

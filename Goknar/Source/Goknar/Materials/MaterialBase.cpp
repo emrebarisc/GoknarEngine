@@ -93,8 +93,8 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 
 	if (renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::GeometryBuffer)
 	{
-		shader->SetVector4(SHADER_VARIABLE_NAMES::MATERIAL::DIFFUSE, diffuseReflectance_);
-		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT, ambientReflectance_);
+		shader->SetVector4(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR, diffuseReflectance_);
+		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION, ambientReflectance_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, phongExponent_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY, translucency_);

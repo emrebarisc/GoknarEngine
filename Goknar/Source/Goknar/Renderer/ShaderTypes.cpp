@@ -18,21 +18,54 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace MATERIAL
 	{
-		const char* AMBIENT = "ambientReflectance";
-		const char* DIFFUSE = "diffuseReflectance";
-		const char* SPECULAR = "specularReflectance";
 		const char* PHONG_EXPONENT = "phongExponent";
 		const char* TRANSLUCENCY = "translucency";
+
+		const char* BASE_COLOR = "baseColor";
+		const char* METALLIC = "metallic";
+		const char* SPECULAR = "specular";
+		const char* ROUGHNESS = "roughness";
+		const char* EMMISIVE_COLOR = "emmisiveColor";
+		const char* AMBIENT_OCCLUSION = "ambientOcclusion";
 	}
 
 	inline namespace LIGHT
 	{
 		const char* LIGHT_INTENSITY = "lightIntensity";
 		const char* LIGHT_INTENSITY_PREFIX = "lightIntensity_";
+		const char* CURRENT_LIGHT_INTENSITY = "currentLightIntensity";
 
 		const char* DIRECTIONAL_LIGHT = "DirectionalLight";
 		const char* POINT_LIGHT = "PointLight";
 		const char* SPOT_LIGHT = "SpotLight";
+
+		const char* DIRECTIONAL_LIGHT_UNIFORM_NAME = "DirectionalLightUniform";
+		const char* POINT_LIGHT_UNIFORM_NAME = "PointLightUniform";
+		const char* SPOT_LIGHT_UNIFORM_NAME = "SpotLightUniform";
+
+		const char* DIRECTIONAL_LIGHT_STRUCT_NAME = "DirectionalLight";
+		const char* POINT_LIGHT_STRUCT_NAME = "PointLight";
+		const char* SPOT_LIGHT_STRUCT_NAME = "SpotLight";
+		
+		const char* DIRECTIONAL_LIGHT_SHADOW_MAP_UNIFORM_NAME = "directionalLightShadowMaps";
+		const char* POINT_LIGHT_SHADOW_MAP_UNIFORM_NAME = "pointLightShadowMaps";
+		const char* SPOT_LIGHT_SHADOW_MAP_UNIFORM_NAME = "spotLightShadowMaps";
+
+		const char* MAX_DIRECTIONAL_LIGHT_COUNT_MACRO = "MAX_DIRECTIONAL_LIGHT_COUNT";
+		const char* MAX_POINT_LIGHT_COUNT_MACRO = "MAX_POINT_LIGHT_COUNT";
+		const char* MAX_SPOT_LIGHT_COUNT_MACRO = "MAX_SPOT_LIGHT_COUNT";
+
+		const char* DIRECTIONAL_LIGHT_COUNT_IN_USE_VARIABLE = "directionalLightCount";
+		const char* POINT_LIGHT_COUNT_IN_USE_VARIABLE = "pointLightCount";
+		const char* SPOT_LIGHT_COUNT_IN_USE_VARIABLE = "spotLightCount";
+
+		const char* DIRECTIONAL_LIGHT_ARRAY_NAME = "directionalLights";
+		const char* POINT_LIGHT_ARRAY_NAME = "pointLights";
+		const char* SPOT_LIGHT_ARRAY_NAME = "spotLights";
+
+		const char* DIRECTIONAL_LIGHT_VIEW_MATRIX_ARRAY_NAME = "directionalLightViewMatrixArray";
+		const char* POINT_LIGHT_VIEW_MATRIX_ARRAY_NAME = "pointLightViewMatrixArray";
+		const char* SPOT_LIGHT_VIEW_MATRIX_ARRAY_NAME = "spotLightViewMatrixArray";
 	}
 
 	inline namespace LIGHT_KEYWORDS
@@ -50,9 +83,12 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace SHADOW
 	{
+		const char* FRAGMENT_TO_LIGHT_VECTOR = "fragmentToLightVector";
 		const char* FRAGMENT_TO_LIGHT_VECTOR_PREFIX = "fragmentToLightVector_";
+		const char* SHADOW_MAP = "shadowMap";
 		const char* SHADOW_MAP_PREFIX = "shadowMap_";
 		const char* VIEW_MATRIX_PREFIX = "lightViewMatrix_";
+		const char* SHADOW_VALUE = "shadowValue";
 		const char* SHADOW_VALUE_PREFIX = "shadowValue_";
 
 		const char* POINT_LIGHT_VIEW_MATRICES_ARRAY = "viewMatrices";
@@ -108,6 +144,10 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* VERTEX_NORMAL = "vertexNormal";
 		const char* BONE_IDS = "outBoneIDs";
 		const char* WEIGHTS = "outWeights";
+
+		const char* DIRECTIONAL_LIGHT_SPACE_FRAGMENT_POSITIONS = "directionalLightSpaceFragmentPositions";
+		const char* POINT_LIGHT_SPACE_FRAGMENT_POSITIONS = "pointLightSpaceFragmentPositions";
+		const char* SPOT_LIGHT_SPACE_FRAGMENT_POSITIONS = "spotLightSpaceFragmentPositions";
 	}
 
 	inline namespace GBUFFER
@@ -121,5 +161,10 @@ inline namespace SHADER_VARIABLE_NAMES
 	inline namespace FRAGMENT_SHADER_OUTS
 	{
 		const char* FRAGMENT_COLOR = "fragmentColor";
+	}
+
+	inline namespace CALCULATIONS
+	{
+		const char* FINAL_BASE_COLOR = "finalBaseColor";
 	}
 }
