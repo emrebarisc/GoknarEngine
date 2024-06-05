@@ -24,6 +24,7 @@ Terrain::Terrain() : RigidBody()
 	SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{0.f, 0.f, 90.f}));
 
 	SetCollisionGroup(CollisionGroup::WorldStaticBlock);
+	SetCollisionMask(CollisionMask::BlockAll);
 
 	SetName("Terrain");
 }

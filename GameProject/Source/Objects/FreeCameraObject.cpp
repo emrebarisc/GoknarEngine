@@ -4,7 +4,7 @@
 
 FreeCameraObject::FreeCameraObject() : ObjectBase()
 {
-	freeCameraController_ = AddSubComponent<FreeCameraController>();
+	freeCameraController_ = new FreeCameraController();
 }
 
 void FreeCameraObject::BeginGame()

@@ -7,11 +7,11 @@
 class ArcherCharacter;
 class Camera;
 
-class ArcherCharacterMovementComponent : public PhysicsMovementComponent
+class ArcherPhysicsMovementComponent : public PhysicsMovementComponent
 {
 public:
-	ArcherCharacterMovementComponent(Component* parent);
-	~ArcherCharacterMovementComponent()
+	ArcherPhysicsMovementComponent(Component* parent);
+	~ArcherPhysicsMovementComponent()
 	{
 
 	}

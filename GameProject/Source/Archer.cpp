@@ -58,6 +58,10 @@ Archer::Archer() :
 	bow_->SetIsActive(false);
 
 	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3{ 1.f, 0.f, 0.f }, Vector3{ 0.f, 0.f, 1.f }.GetNormalized());
+	//thirdPersonCamera_->SetImageWidth(1920);
+	//thirdPersonCamera_->SetImageHeight(1080);
+	thirdPersonCamera_->SetImageWidth(1600);
+	thirdPersonCamera_->SetImageHeight(900);
 	thirdPersonCamera_->SetNearDistance(1.f);
 	thirdPersonCamera_->SetFarDistance(1000.f);
 	thirdPersonCamera_->SetFOV(45.f);

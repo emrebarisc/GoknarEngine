@@ -19,8 +19,7 @@
 #include "Goknar/Physics/RigidBody.h"
 #include "Goknar/Physics/Components/BoxCollisionComponent.h"
 
-FreeCameraController::FreeCameraController(Component* parent) :
-	Component(parent),
+FreeCameraController::FreeCameraController() :
 	isRotatingTheCamera_(false),
 	isMovingCameraIn2D_(false),
 	freeCamera_(new Camera(Vector3::ZeroVector, Vector3::ForwardVector, Vector3::UpVector))
@@ -28,36 +27,60 @@ FreeCameraController::FreeCameraController(Component* parent) :
 	movementSpeed_ = 50.f;
 	previousCursorPositionForRotating_ = Vector2(0.f, 0.f);
 	previousCursorPositionFor2DMovement_ = Vector2(0.f, 0.f);
+
+	onMouseRightClickPressedDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::OnMouseRightClickPressed>(this);
+	onMouseRightClickReleasedDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveRightListener>(this);
+	onMouseMiddleClickPressedDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::OnMouseRightClickReleased>(this);
+	onMouseMiddleClickReleasedDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveRightListener>(this);
+
+	moveLeftDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveLeftListener>(this);
+	moveRightDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveRightListener>(this);
+	moveForwardDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveForwardListener>(this);
+	moveBackwardDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveBackwardListener>(this);
+	moveUpDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveUpListener>(this);
+	moveDownDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveDownListener>(this);
+
+	doRaycastClosestTestDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveDownListener>(this);
+	doRaycastAllTestDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveDownListener>(this);
+	doSweepTestDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveDownListener>(this);
+
+	onScrollMoveDelegate_ = Delegate<void(double, double)>::create<FreeCameraController, &FreeCameraController::ScrollListener>(this);
+	onCursorMoveDelegate_ = Delegate<void(double, double)>::create<FreeCameraController, &FreeCameraController::CursorMovement>(this);
 }
 
 FreeCameraController::~FreeCameraController()
 {
+	UnbindInputDelegates();
 }
 
 void FreeCameraController::BeginGame()
 {
-	InputManager* inputManager = engine->GetInputManager();
+	if (GetIsActive())
+	{
+		BindInputDelegates();
+	}
 
-	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::OnMouseRightClickPressed, this));
-	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_RELEASE, std::bind(&FreeCameraController::OnMouseRightClickReleased, this));
+	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
+	freeCamera_->SetImageWidth(windowSize.x);
+	freeCamera_->SetImageHeight(windowSize.y);
+}
 
-	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_MIDDLE, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::OnMouseMiddleClickPressed, this));
-	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_MIDDLE, INPUT_ACTION::G_RELEASE, std::bind(&FreeCameraController::OnMouseMiddleClickReleased, this));
+void FreeCameraController::SetupInputs()
+{
+}
 
-	inputManager->AddScrollDelegate(std::bind(&FreeCameraController::ScrollListener, this, std::placeholders::_1, std::placeholders::_2));
+void FreeCameraController::SetIsActive(bool isActive)
+{
+	Controller::SetIsActive(isActive);
 
-	inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT, INPUT_ACTION::G_REPEAT, std::bind(&FreeCameraController::MoveLeftListener, this));
-	inputManager->AddKeyboardInputDelegate(KEY_MAP::RIGHT, INPUT_ACTION::G_REPEAT, std::bind(&FreeCameraController::MoveRightListener, this));
-	inputManager->AddKeyboardInputDelegate(KEY_MAP::UP, INPUT_ACTION::G_REPEAT, std::bind(&FreeCameraController::MoveForwardListener, this));
-	inputManager->AddKeyboardInputDelegate(KEY_MAP::DOWN, INPUT_ACTION::G_REPEAT, std::bind(&FreeCameraController::MoveBackwardListener, this));
-	inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT_CONTROL, INPUT_ACTION::G_REPEAT, std::bind(&FreeCameraController::MoveDownListener, this));
-	inputManager->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_REPEAT, std::bind(&FreeCameraController::MoveUpListener, this));
-
-	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_8, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::DoRaycastClosestTest, this));
-	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_9, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::DoRaycastAllTest, this));
-	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_0, INPUT_ACTION::G_PRESS, std::bind(&FreeCameraController::DoSweepTest, this));
-
-	inputManager->AddCursorDelegate(std::bind(&FreeCameraController::CursorMovement, this, std::placeholders::_1, std::placeholders::_2));
+	if (isActive)
+	{
+		BindInputDelegates();
+	}
+	else
+	{
+		UnbindInputDelegates();
+	}
 }
 
 void FreeCameraController::CursorMovement(double x, double y)
@@ -232,4 +255,53 @@ void FreeCameraController::MoveRight(float multiplier/* = 1.f*/)
 void FreeCameraController::MoveUp(float multiplier/* = 1.f*/)
 {
 	freeCamera_->MoveUpward(engine->GetDeltaTime() * multiplier);
+}
+
+void FreeCameraController::BindInputDelegates()
+{
+	InputManager* inputManager = engine->GetInputManager();
+
+	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_PRESS, onMouseRightClickPressedDelegate_);
+	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_RELEASE, onMouseRightClickReleasedDelegate_);
+	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_MIDDLE, INPUT_ACTION::G_PRESS, onMouseMiddleClickPressedDelegate_);
+	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_MIDDLE, INPUT_ACTION::G_RELEASE, onMouseMiddleClickReleasedDelegate_);
+
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT, INPUT_ACTION::G_REPEAT, moveLeftDelegate_);
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::RIGHT, INPUT_ACTION::G_REPEAT, moveRightDelegate_);
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::UP, INPUT_ACTION::G_REPEAT, moveForwardDelegate_);
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::DOWN, INPUT_ACTION::G_REPEAT, moveBackwardDelegate_);
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_REPEAT, moveUpDelegate_);
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT_CONTROL, INPUT_ACTION::G_REPEAT, moveDownDelegate_);
+
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_8, INPUT_ACTION::G_PRESS, doRaycastClosestTestDelegate_);
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_9, INPUT_ACTION::G_PRESS, doRaycastAllTestDelegate_);
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_0, INPUT_ACTION::G_PRESS, doSweepTestDelegate_);
+
+	inputManager->AddCursorDelegate(onScrollMoveDelegate_);
+	inputManager->AddScrollDelegate(onCursorMoveDelegate_);
+
+}
+
+void FreeCameraController::UnbindInputDelegates()
+{
+	InputManager* inputManager = engine->GetInputManager();
+
+	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_PRESS, onMouseRightClickPressedDelegate_);
+	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_RELEASE, onMouseRightClickReleasedDelegate_);
+	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_MIDDLE, INPUT_ACTION::G_PRESS, onMouseMiddleClickPressedDelegate_);
+	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_MIDDLE, INPUT_ACTION::G_RELEASE, onMouseMiddleClickReleasedDelegate_);
+
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT, INPUT_ACTION::G_REPEAT, moveLeftDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::RIGHT, INPUT_ACTION::G_REPEAT, moveRightDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::UP, INPUT_ACTION::G_REPEAT, moveForwardDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::DOWN, INPUT_ACTION::G_REPEAT, moveBackwardDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_REPEAT, moveUpDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_CONTROL, INPUT_ACTION::G_REPEAT, moveDownDelegate_);
+
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::NUM_8, INPUT_ACTION::G_PRESS, doRaycastClosestTestDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::NUM_9, INPUT_ACTION::G_PRESS, doRaycastAllTestDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::NUM_0, INPUT_ACTION::G_PRESS, doSweepTestDelegate_);
+
+	inputManager->RemoveCursorDelegate(onScrollMoveDelegate_);
+	inputManager->RemoveScrollDelegate(onCursorMoveDelegate_);
 }

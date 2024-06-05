@@ -2,6 +2,7 @@
 #define __GAMECONTROLLER_H__
 
 #include "Goknar/Controller.h"
+#include "Delegates/Delegate.h"
 
 class Camera;
 
@@ -12,10 +13,7 @@ class ArcherGameController : public Controller
 {
 public:
 	ArcherGameController(Archer* archer_);
-	~ArcherGameController()
-	{
-
-	}
+	~ArcherGameController();
 
 	void BeginGame() override;
 
@@ -52,6 +50,18 @@ private:
 	void StopMovingRight();
 
 	void ToggleDebug();
+
+	Delegate<void()> moveForwardDelegate_;
+	Delegate<void()> stopMovingForwardDelegate_;
+	Delegate<void()> moveBackwardDelegate_;
+	Delegate<void()> stopMovingBackwardDelegate_;
+	Delegate<void()> moveLeftDelegate_;
+	Delegate<void()> stopMovingLeftDelegate_;
+	Delegate<void()> moveRightDelegate_;
+	Delegate<void()> stopMovingRightDelegate_;
+
+	Delegate<void(double, double)> onScrollMoveDelegate_;
+	Delegate<void(double, double)> onCursorMoveDelegate_;
 
 	Camera* thirdPersonCamera_{ nullptr };
 

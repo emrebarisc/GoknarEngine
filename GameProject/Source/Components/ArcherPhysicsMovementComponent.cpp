@@ -1,48 +1,48 @@
-#include "ArcherCharacterMovementComponent.h"
+#include "ArcherPhysicsMovementComponent.h"
 
 #include "Goknar/Camera.h"
 
 #include "ArcherCharacter.h"
 
-ArcherCharacterMovementComponent::ArcherCharacterMovementComponent(Component* parent) :
+ArcherPhysicsMovementComponent::ArcherPhysicsMovementComponent(Component* parent) :
 	PhysicsMovementComponent(parent)
 {
 }
 
-void ArcherCharacterMovementComponent::PreInit()
+void ArcherPhysicsMovementComponent::PreInit()
 {
 	PhysicsMovementComponent::PreInit();
 
 	ownerArcher_ = dynamic_cast<ArcherCharacter*>(GetOwner());
-	GOKNAR_CORE_ASSERT(ownerArcher_, "ArcherCharacterMovementComponent can only be added to an ArcherCharacter object");
+	GOKNAR_CORE_ASSERT(ownerArcher_, "ArcherPhysicsMovementComponent can only be added to an ArcherCharacter object");
 
 	thirdPersonCamera_ = ownerArcher_->GetThirdPersonCamera();
 	
 	movementDirection_.speed = 8.f;
-	movementDirection_.OnInterpolation = Delegate<void()>::create<ArcherCharacterMovementComponent, &ArcherCharacterMovementComponent::OnMovementDirectionInterpolated>(this);
+	movementDirection_.OnInterpolation = Delegate<void()>::create<ArcherPhysicsMovementComponent, &ArcherPhysicsMovementComponent::OnMovementDirectionInterpolated>(this);
 }
 
-void ArcherCharacterMovementComponent::Init()
+void ArcherPhysicsMovementComponent::Init()
 {
 	PhysicsMovementComponent::Init();
 }
 
-void ArcherCharacterMovementComponent::PostInit()
+void ArcherPhysicsMovementComponent::PostInit()
 {
 	PhysicsMovementComponent::PostInit();
 }
 
-void ArcherCharacterMovementComponent::BeginGame()
+void ArcherPhysicsMovementComponent::BeginGame()
 {
 	PhysicsMovementComponent::BeginGame();
 }
 
-void ArcherCharacterMovementComponent::TickComponent(float deltaTime)
+void ArcherPhysicsMovementComponent::TickComponent(float deltaTime)
 {
 	PhysicsMovementComponent::TickComponent(deltaTime);
 }
 
-void ArcherCharacterMovementComponent::AddMovementDirection(const Vector3& movementDirection)
+void ArcherPhysicsMovementComponent::AddMovementDirection(const Vector3& movementDirection)
 {
 	Vector3 newMovementDirection = movementDirection_.destination + movementDirection;
 
@@ -66,7 +66,7 @@ void ArcherCharacterMovementComponent::AddMovementDirection(const Vector3& movem
 	movementDirection_ = newMovementDirection;
 }
 
-void ArcherCharacterMovementComponent::OnMovementDirectionInterpolated()
+void ArcherPhysicsMovementComponent::OnMovementDirectionInterpolated()
 {
 	Vector3 movementVectorThisFrame = movementDirection_.current;
 
@@ -97,7 +97,7 @@ void ArcherCharacterMovementComponent::OnMovementDirectionInterpolated()
 	SetMovementDirection(movementVectorThisFrame);
 }
 
-void ArcherCharacterMovementComponent::OnMovementRotationInterpolated()
+void ArcherPhysicsMovementComponent::OnMovementRotationInterpolated()
 {
 
 }

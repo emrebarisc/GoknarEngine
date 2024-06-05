@@ -19,6 +19,33 @@ ArcherGameController::ArcherGameController(Archer* archer) :
 	Controller(),
 	archer_(archer)
 {
+	moveForwardDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::MoveForward>(this);
+	stopMovingForwardDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::StopMovingForward>(this);
+	moveBackwardDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::MoveBackward>(this);
+	stopMovingBackwardDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::StopMovingBackward>(this);
+	moveLeftDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::MoveLeft>(this);
+	stopMovingLeftDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::StopMovingLeft>(this);
+	moveRightDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::MoveRight>(this);
+	stopMovingRightDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::StopMovingRight>(this);
+	onScrollMoveDelegate_ = Delegate<void(double, double)>::create<ArcherGameController, &ArcherGameController::OnScrollMove>(this);
+	onCursorMoveDelegate_ = Delegate<void(double, double)>::create<ArcherGameController, &ArcherGameController::OnCursorMove>(this);
+}
+
+ArcherGameController::~ArcherGameController()
+{
+	//InputManager* inputManager = engine->GetInputManager();
+
+	//inputManager->RemoveKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_PRESS, moveForwardDelegate_);
+	//inputManager->RemoveKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_RELEASE, stopMovingForwardDelegate_);
+	//inputManager->RemoveKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_PRESS, moveBackwardDelegate_);
+	//inputManager->RemoveKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_RELEASE, stopMovingBackwardDelegate_);
+	//inputManager->RemoveKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_PRESS, moveLeftDelegate_);
+	//inputManager->RemoveKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_RELEASE, stopMovingLeftDelegate_);
+	//inputManager->RemoveKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_PRESS, moveRightDelegate_);
+	//inputManager->RemoveKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, stopMovingRightDelegate_);
+
+	//inputManager->RemoveScrollDelegate(onScrollMoveDelegate_);
+	//inputManager->RemoveCursorDelegate(onCursorMoveDelegate_);
 }
 
 void ArcherGameController::BeginGame()
@@ -26,32 +53,25 @@ void ArcherGameController::BeginGame()
 	archerMovementComponent_ = archer_->GetMovementComponent();
 	thirdPersonCamera_ = archer_->GetThirdPersonCamera();
 
-	engine->GetInputManager()->SetIsCursorVisible(false);
+	//InputManager* inputManager = engine->GetInputManager();
+
+	//inputManager->SetIsCursorVisible(false);
+
+	//inputManager->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_PRESS, moveForwardDelegate_);
+	//inputManager->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_RELEASE, stopMovingForwardDelegate_);
+	//inputManager->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_PRESS, moveBackwardDelegate_);
+	//inputManager->AddKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_RELEASE, stopMovingBackwardDelegate_);
+	//inputManager->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_PRESS, moveLeftDelegate_);
+	//inputManager->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_RELEASE, stopMovingLeftDelegate_);
+	//inputManager->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_PRESS, moveRightDelegate_);
+	//inputManager->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, stopMovingRightDelegate_);
+
+	//inputManager->AddScrollDelegate(onScrollMoveDelegate_);
+	//inputManager->AddCursorDelegate(onCursorMoveDelegate_);
 }
 
 void ArcherGameController::SetupInputs()
 {
-	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::DrawBow, this));
-	engine->GetInputManager()->AddMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_RELEASE, std::bind(&ArcherGameController::LooseBow, this));
-
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::NUM_1, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::EquipBow, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::G, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::DropBow, this));
-	
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F5, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleFullscreen, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F6, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleWindowSize, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::E, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleChest, this));
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::Q, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::DestroyArcher, this));
-
-	engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::F1, INPUT_ACTION::G_PRESS, std::bind(&ArcherGameController::ToggleDebug, this));
-
-	engine->GetInputManager()->AddKeyboardEvent(KEY_MAP::W, this, &ArcherGameController::MoveForward, &ArcherGameController::StopMovingForward);
-	engine->GetInputManager()->AddKeyboardEvent(KEY_MAP::S, this, &ArcherGameController::MoveBackward, &ArcherGameController::StopMovingBackward);
-	engine->GetInputManager()->AddKeyboardEvent(KEY_MAP::A, this, &ArcherGameController::MoveLeft, &ArcherGameController::StopMovingLeft);
-	engine->GetInputManager()->AddKeyboardEvent(KEY_MAP::D, this, &ArcherGameController::MoveRight, &ArcherGameController::StopMovingRight);
-	
-	engine->GetInputManager()->AddScrollDelegate(std::bind(&ArcherGameController::OnScrollMove, this, std::placeholders::_1, std::placeholders::_2));
-
-	engine->GetInputManager()->AddCursorDelegate(std::bind(&ArcherGameController::OnCursorMove, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void ArcherGameController::OnCursorMove(double x, double y)

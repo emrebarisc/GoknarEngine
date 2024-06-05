@@ -7,20 +7,19 @@
 class Camera;
 
 class ArcherCharacter;
-class ArcherCharacterMovementComponent;
+class ArcherPhysicsMovementComponent;
 
 class ArcherCharacterController : public Controller
 {
 public:
 	ArcherCharacterController(ArcherCharacter* archer_);
-	~ArcherCharacterController()
-	{
-
-	}
+	~ArcherCharacterController();
 
 	void BeginGame() override;
 
 	void SetupInputs() override;
+
+	virtual void SetIsActive(bool isActive) override;
 
 	void SetPhysicsArcher(ArcherCharacter* a)
 	{
@@ -28,6 +27,9 @@ public:
 	}
 
 private:
+	void BindInputDelegates();
+	void UnbindInputDelegates();
+
 	void OnCursorMove(double x, double y);
 	void OnScrollMove(double x, double y);
 
@@ -35,7 +37,6 @@ private:
 	void ToggleWindowSize();
 	void ToggleFreeCamera();
 
-	void ExitGame();
 	void DestroyPhysicsArcher();
 
 	void ToggleChest();
@@ -56,6 +57,19 @@ private:
 
 	void ToggleDebug();
 
+	Delegate<void()> moveForwardDelegate_;
+	Delegate<void()> stopMovingForwardDelegate_;
+	Delegate<void()> moveBackwardDelegate_;
+	Delegate<void()> stopMovingBackwardDelegate_;
+	Delegate<void()> moveLeftDelegate_;
+	Delegate<void()> stopMovingLeftDelegate_;
+	Delegate<void()> moveRightDelegate_;
+	Delegate<void()> stopMovingRightDelegate_;
+	Delegate<void()> toggleDebugDelegate_;
+	Delegate<void()> toggleToggleFreeCameraDelegate_;
+
+	Delegate<void(double, double)> onScrollMoveDelegate_;
+	Delegate<void(double, double)> onCursorMoveDelegate_;
 
 	InterpolatingValue<Vector3> movementVector_;
 	InterpolatingValue<float> movementRotation_;
@@ -63,7 +77,7 @@ private:
 	Camera* thirdPersonCamera_{ nullptr };
 
 	ArcherCharacter* archer_{ nullptr };
-	ArcherCharacterMovementComponent* archerMovementComponent_{ nullptr };
+	ArcherPhysicsMovementComponent* archerMovementComponent_{ nullptr };
 
 	bool isDebugging_{ false };
 	bool isInFreeCamera_{ false };

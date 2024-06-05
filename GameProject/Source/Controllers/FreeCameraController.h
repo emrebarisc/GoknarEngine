@@ -1,23 +1,27 @@
 #ifndef __FREECAMERACONTROLLER_H__
 #define __FREECAMERACONTROLLER_H__
 
-#include <Goknar/Components/Component.h>
+#include "Goknar/Controller.h"
+#include "Goknar/Delegates/Delegate.h"
 #include "Goknar/Math/GoknarMath.h"
 
 class Camera;
 
-class FreeCameraController : public Component
+class FreeCameraController : public Controller
 {
 public:
-	FreeCameraController(Component* parent);
+	FreeCameraController();
 	~FreeCameraController();
 
 	void BeginGame() override;
+	void SetupInputs() override;
 
 	Camera* GetFreeCamera() const
 	{
 		return freeCamera_;
 	}
+
+	virtual void SetIsActive(bool isActive) override;
 
 private:
 	void CursorMovement(double x, double y);
@@ -75,6 +79,28 @@ private:
 	void MoveForward(float multiplier = 1.f);
 	void MoveRight(float multiplier = 1.f);
 	void MoveUp(float multiplier = 1.f);
+
+	void BindInputDelegates();
+	void UnbindInputDelegates();
+
+	Delegate<void()> onMouseRightClickPressedDelegate_;
+	Delegate<void()> onMouseRightClickReleasedDelegate_;
+	Delegate<void()> onMouseMiddleClickPressedDelegate_;
+	Delegate<void()> onMouseMiddleClickReleasedDelegate_;
+
+	Delegate<void()> moveLeftDelegate_;
+	Delegate<void()> moveRightDelegate_;
+	Delegate<void()> moveForwardDelegate_;
+	Delegate<void()> moveBackwardDelegate_;
+	Delegate<void()> moveUpDelegate_;
+	Delegate<void()> moveDownDelegate_;
+
+	Delegate<void()> doRaycastClosestTestDelegate_;
+	Delegate<void()> doRaycastAllTestDelegate_;
+	Delegate<void()> doSweepTestDelegate_;
+
+	Delegate<void(double, double)> onScrollMoveDelegate_;
+	Delegate<void(double, double)> onCursorMoveDelegate_;
 
 	Camera* freeCamera_;
 
