@@ -47,9 +47,9 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* POINT_LIGHT_STRUCT_NAME = "PointLight";
 		const char* SPOT_LIGHT_STRUCT_NAME = "SpotLight";
 		
-		const char* DIRECTIONAL_LIGHT_SHADOW_MAP_UNIFORM_NAME = "directionalLightShadowMaps";
-		const char* POINT_LIGHT_SHADOW_MAP_UNIFORM_NAME = "pointLightShadowMaps";
-		const char* SPOT_LIGHT_SHADOW_MAP_UNIFORM_NAME = "spotLightShadowMaps";
+		const char* DIRECTIONAL_LIGHT_SHADOW_MAP_ARRAY_NAME = "directionalLightShadowMaps";
+		const char* POINT_LIGHT_SHADOW_MAP_ARRAY_NAME = "pointLightShadowMaps";
+		const char* SPOT_LIGHT_SHADOW_MAP_ARRAY_NAME = "spotLightShadowMaps";
 
 		const char* MAX_DIRECTIONAL_LIGHT_COUNT_MACRO = "MAX_DIRECTIONAL_LIGHT_COUNT";
 		const char* MAX_POINT_LIGHT_COUNT_MACRO = "MAX_POINT_LIGHT_COUNT";
@@ -62,6 +62,10 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* DIRECTIONAL_LIGHT_ARRAY_NAME = "directionalLights";
 		const char* POINT_LIGHT_ARRAY_NAME = "pointLights";
 		const char* SPOT_LIGHT_ARRAY_NAME = "spotLights";
+
+		const char* DIRECTIONAL_LIGHT_VIEW_MATRIX_UNIFORM_NAME = "DirectionalLightViewMatrixUniformBuffer";
+		const char* POINT_LIGHT_VIEW_MATRIX_UNIFORM_NAME = "PointLightViewMatrixUniformBuffer";
+		const char* SPOT_LIGHT_VIEW_MATRIX_UNIFORM_NAME = "SpotLightViewMatrixUniformBuffer";
 
 		const char* DIRECTIONAL_LIGHT_VIEW_MATRIX_ARRAY_NAME = "directionalLightViewMatrixArray";
 		const char* POINT_LIGHT_VIEW_MATRIX_ARRAY_NAME = "pointLightViewMatrixArray";

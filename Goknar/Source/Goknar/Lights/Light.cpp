@@ -17,13 +17,6 @@ Light::~Light()
 
 void Light::SetShaderUniforms(const Shader* shader)
 {
-	if (mobility_ == LightMobility::Dynamic)
-	{
-		shader->SetVector3((name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION).c_str(), position_);
-		shader->SetVector3((name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY).c_str(), color_ * intensity_);
-	}
-
-	shader->SetBool((name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW).c_str(), isShadowEnabled_);
 }
 
 void Light::PreInit()

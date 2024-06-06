@@ -11,6 +11,7 @@
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"
+#include "Goknar/Lights/ShadowManager/ShadowManager.h"
 
 DirectionalLight::DirectionalLight() : Light()
 {
@@ -72,22 +73,7 @@ void DirectionalLight::PostInit()
 
 void DirectionalLight::SetShaderUniforms(const Shader* shader)
 {
-	if (mobility_ == LightMobility::Dynamic)
-	{
-		std::string directionName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION;
-		shader->SetVector3(directionName.c_str(), direction_);
-
-		std::string radianceName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY;
-		shader->SetVector3(radianceName.c_str(), color_ * intensity_);
-
-		std::string isCastingShadowName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW;
-		shader->SetInt(isCastingShadowName.c_str(), isShadowEnabled_);
-	}
-
-	if (isShadowEnabled_)
-	{
-		shader->SetMatrix((SHADER_VARIABLE_NAMES::SHADOW::VIEW_MATRIX_PREFIX + name_).c_str(), biasedShadowViewProjectionMatrix_);
-	}
+	Light::SetShaderUniforms(shader);
 }
 
 void DirectionalLight::SetShadowRenderPassShaderUniforms(const Shader* shader)

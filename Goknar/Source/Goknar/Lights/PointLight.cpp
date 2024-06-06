@@ -78,18 +78,10 @@ void PointLight::RenderShadowMap()
 void PointLight::SetShaderUniforms(const Shader* shader)
 {
 	Light::SetShaderUniforms(shader);
-
-	if (GetLightMobility() == LightMobility::Dynamic)
-	{
-		std::string radiusName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS;
-		shader->SetFloat(radiusName.c_str(), radius_);
-	}
 }
 
 void PointLight::SetShadowRenderPassShaderUniforms(const Shader* shader)
 {
-	shader->SetVector3(SHADER_VARIABLE_NAMES::SHADOW::LIGHT_POSITION, position_);
-	shader->SetFloat(SHADER_VARIABLE_NAMES::SHADOW::LIGHT_RADIUS, radius_);
 	shader->SetMatrixVector(SHADER_VARIABLE_NAMES::SHADOW::POINT_LIGHT_VIEW_MATRICES_ARRAY, viewMatrixVector_);
 }
 

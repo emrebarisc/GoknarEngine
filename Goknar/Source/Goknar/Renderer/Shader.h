@@ -111,6 +111,7 @@ public:
 
 	void SetBool(const char* name, bool value) const;
 	void SetInt(const char* name, int value) const;
+	void SetIntVector(const char* name, const std::vector<int>& values) const;
 	void SetFloat(const char* name, float value) const;
 	void SetMatrix(const char* name, const Matrix& matrix) const;
 	void SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector) const;

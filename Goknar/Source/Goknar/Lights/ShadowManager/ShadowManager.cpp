@@ -30,24 +30,51 @@ ShadowManager::~ShadowManager()
 
 void ShadowManager::PreInit()
 {
-	glGenBuffers(1, &directionalLightUniformBufferId_);
-	glBindBuffer(GL_UNIFORM_BUFFER, directionalLightUniformBufferId_);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(DirectionalLightBufferInfo), NULL, GL_STATIC_DRAW);
+	{
+		glGenBuffers(1, &directionalLightUniformBufferId_);
+		glBindBuffer(GL_UNIFORM_BUFFER, directionalLightUniformBufferId_);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(DirectionalLightBufferInfo), NULL, GL_DYNAMIC_DRAW);
 
-	//glBindBufferRange(GL_UNIFORM_BUFFER, DIRECTIONAL_LIGHT_UNIFORM_BIND_INDEX, directionalLightUniformBufferId_, 0, 32);
-	glBindBufferBase(GL_UNIFORM_BUFFER, DIRECTIONAL_LIGHT_UNIFORM_BIND_INDEX, directionalLightUniformBufferId_);
+		glBindBufferBase(GL_UNIFORM_BUFFER, DIRECTIONAL_LIGHT_UNIFORM_BIND_INDEX, directionalLightUniformBufferId_);
 
-	//glGenBuffers(1, &pointLightUniformBufferId_);
-	//glBindBuffer(GL_UNIFORM_BUFFER, pointLightUniformBufferId_);
-	////glBufferData(GL_UNIFORM_BUFFER, 152, NULL, GL_STATIC_DRAW); // allocate 152 bytes of memory
-	//glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	//glGenBuffers(1, &spotLightUniformBufferId_);
-	//glBindBuffer(GL_UNIFORM_BUFFER, spotLightUniformBufferId_);
-	////glBufferData(GL_UNIFORM_BUFFER, 152, NULL, GL_STATIC_DRAW); // allocate 152 bytes of memory
-	//glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		glGenBuffers(1, &directionalLightViewMatrixUniformBufferId_);
+		glBindBuffer(GL_UNIFORM_BUFFER, directionalLightViewMatrixUniformBufferId_);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(Matrix), NULL, GL_DYNAMIC_DRAW);
 
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		glBindBufferBase(GL_UNIFORM_BUFFER, DIRECTIONAL_LIGHT_VIEW_MATRIX_UNIFORM_BIND_INDEX, directionalLightViewMatrixUniformBufferId_);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+
+	{
+		glGenBuffers(1, &pointLightUniformBufferId_);
+		glBindBuffer(GL_UNIFORM_BUFFER, pointLightUniformBufferId_);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(PointLightBufferInfo), NULL, GL_DYNAMIC_DRAW);
+
+		glBindBufferBase(GL_UNIFORM_BUFFER, POINT_LIGHT_UNIFORM_BIND_INDEX, pointLightUniformBufferId_);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+
+	{
+		glGenBuffers(1, &spotLightUniformBufferId_);
+		glBindBuffer(GL_UNIFORM_BUFFER, spotLightUniformBufferId_);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(SpotLightBufferInfo), NULL, GL_DYNAMIC_DRAW);
+
+		glBindBufferBase(GL_UNIFORM_BUFFER, SPOT_LIGHT_UNIFORM_BIND_INDEX, spotLightUniformBufferId_);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		glGenBuffers(1, &spotLightViewMatrixUniformBufferId_);
+		glBindBuffer(GL_UNIFORM_BUFFER, spotLightViewMatrixUniformBufferId_);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(Matrix), NULL, GL_DYNAMIC_DRAW);
+
+		glBindBufferBase(GL_UNIFORM_BUFFER, SPOT_LIGHT_VIEW_MATRIX_UNIFORM_BIND_INDEX, spotLightViewMatrixUniformBufferId_);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
 
 	EXIT_ON_GL_ERROR("ShadowManager::PreInit");
 }
@@ -60,17 +87,25 @@ void ShadowManager::PostInit()
 {
 	Scene* mainScene = engine->GetApplication()->GetMainScene();
 
-	const std::vector<DirectionalLight*> staticDirectionalLights = mainScene->GetStaticDirectionalLights();
+	const std::vector<DirectionalLight*> staticDirectionalLights = mainScene->GetDirectionalLights();
 
-	directionalLightBufferInfo.directionalLightInfo[0].direction = staticDirectionalLights[0]->GetDirection();
-	directionalLightBufferInfo.directionalLightInfo[0].intensity = staticDirectionalLights[0]->GetIntensity();
-	directionalLightBufferInfo.directionalLightInfo[0].isCastingShadow = staticDirectionalLights[0]->GetIsShadowEnabled();
+	int directionalLightIndex = 0;
+	std::vector<DirectionalLight*>::const_iterator directionalLightIterator = staticDirectionalLights.cbegin();
+	while (directionalLightIterator != staticDirectionalLights.cend())
+	{
+		directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].direction = staticDirectionalLights[directionalLightIndex]->GetDirection();
+		directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].intensity = staticDirectionalLights[directionalLightIndex]->GetIntensity();
+		directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].isCastingShadow = staticDirectionalLights[directionalLightIndex]->GetIsShadowEnabled();
+
+		staticDirectionalLights[directionalLightIndex]->SetUniformBufferIndex(directionalLightIndex);
+
+		++directionalLightIndex;
+		++directionalLightIterator;
+	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, directionalLightUniformBufferId_);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(directionalLightBufferInfo.directionalLightInfo), &directionalLightBufferInfo);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	glBindBuffer(GL_UNIFORM_BUFFER, directionalLightUniformBufferId_);
 	int directionalLightCount = 1;
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(directionalLightBufferInfo.directionalLightInfo), sizeof(int), &directionalLightCount);
 
@@ -89,25 +124,11 @@ void ShadowManager::RenderShadowMaps()
 	// Only draw the depth buffer
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-	const std::vector<PointLight*> staticPointLights = mainScene->GetStaticPointLights();
-	size_t staticPointLightCount = staticPointLights.size();
+	const std::vector<PointLight*> pointLights = mainScene->GetPointLights();
+	size_t staticPointLightCount = pointLights.size();
 	for (size_t i = 0; i < staticPointLightCount; i++)
 	{
-		PointLight* pointLight = staticPointLights[i];
-		if (!pointLight->GetIsShadowEnabled())
-		{
-			continue;
-		}
-
-		currentlyRenderingLight_ = pointLight;
-		pointLight->RenderShadowMap();
-	}
-
-	const std::vector<PointLight*> dynamicPointLights = mainScene->GetDynamicPointLights();
-	size_t dynamicPointLightCount = dynamicPointLights.size();
-	for (size_t i = 0; i < dynamicPointLightCount; i++)
-	{
-		PointLight* pointLight = dynamicPointLights[i];
+		PointLight* pointLight = pointLights[i];
 		if (!pointLight->GetIsShadowEnabled())
 		{
 			continue;
@@ -119,29 +140,13 @@ void ShadowManager::RenderShadowMaps()
 
 	if(mainCamera)
 	{
-		const std::vector<DirectionalLight*> staticDirectionalLights = mainScene->GetStaticDirectionalLights();
-		size_t staticDirectionalLightCount = staticDirectionalLights.size();
+		const std::vector<DirectionalLight*> directionalLights = mainScene->GetDirectionalLights();
+		size_t staticDirectionalLightCount = directionalLights.size();
 		for (size_t i = 0; i < staticDirectionalLightCount; i++)
 		{
 			cameraManager->SetActiveCamera(mainCamera);
 
-			DirectionalLight* directionalLight = staticDirectionalLights[i];
-			if (!directionalLight->GetIsShadowEnabled())
-			{
-				continue;
-			}
-
-			currentlyRenderingLight_ = directionalLight;
-			directionalLight->RenderShadowMap();
-		}
-
-		const std::vector<DirectionalLight*> dynamicDirectionalLights = mainScene->GetDynamicDirectionalLights();
-		size_t dynamicDirectionalLightCount = dynamicDirectionalLights.size();
-		for (size_t i = 0; i < dynamicDirectionalLightCount; i++)
-		{
-			cameraManager->SetActiveCamera(mainCamera);
-
-			DirectionalLight* directionalLight = dynamicDirectionalLights[i];
+			DirectionalLight* directionalLight = directionalLights[i];
 			if (!directionalLight->GetIsShadowEnabled())
 			{
 				continue;
@@ -152,25 +157,11 @@ void ShadowManager::RenderShadowMaps()
 		}
 	}
 
-	const std::vector<SpotLight*> staticSpotLights = mainScene->GetStaticSpotLights();
-	size_t staticSpotLightCount = staticSpotLights.size();
+	const std::vector<SpotLight*> spotLights = mainScene->GetSpotLights();
+	size_t staticSpotLightCount = spotLights.size();
 	for (size_t i = 0; i < staticSpotLightCount; i++)
 	{
-		SpotLight* spotLight = staticSpotLights[i];
-		if (!spotLight->GetIsShadowEnabled())
-		{
-			continue;
-		}
-
-		currentlyRenderingLight_ = spotLight;
-		spotLight->RenderShadowMap();
-	}
-
-	const std::vector<SpotLight*> dynamicSpotLights = mainScene->GetDynamicSpotLights();
-	size_t dynamicSpotLightCount = dynamicSpotLights.size();
-	for (size_t i = 0; i < dynamicSpotLightCount; i++)
-	{
-		SpotLight* spotLight = dynamicSpotLights[i];
+		SpotLight* spotLight = spotLights[i];
 		if (!spotLight->GetIsShadowEnabled())
 		{
 			continue;
@@ -182,6 +173,8 @@ void ShadowManager::RenderShadowMaps()
 
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	cameraManager->SetActiveCamera(mainCamera);
+
+	BindShadowViewProjectionMatrices();
 
 	EXIT_ON_GL_ERROR("ShadowManager::RenderShadowMaps");
 }
@@ -198,18 +191,19 @@ void ShadowManager::SetShadowRenderPassShaderUniforms(const Shader* shader) cons
 
 void ShadowManager::BindLightUniforms(Shader* shader)
 {
-	shader->Use();
-	unsigned int shaderId = shader->GetProgramId();
+}
 
-	unsigned int uniformBlockIndexDirectionalLights = glGetUniformBlockIndex(shaderId, SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_UNIFORM_NAME);
-	glUniformBlockBinding(shaderId, uniformBlockIndexDirectionalLights, DIRECTIONAL_LIGHT_UNIFORM_BIND_INDEX);
+void ShadowManager::BindShadowViewProjectionMatrices()
+{
+	EXIT_ON_GL_ERROR("ShadowManager::BindShadowViewProjectionMatrices");
+	Scene* mainScene = engine->GetApplication()->GetMainScene();
+	const std::vector<DirectionalLight*> staticDirectionalLights = mainScene->GetDirectionalLights();
+	glBindBuffer(GL_UNIFORM_BUFFER, directionalLightViewMatrixUniformBufferId_);
+	for (int directionalLightIndex = 0; directionalLightIndex < staticDirectionalLights.size(); ++directionalLightIndex)
+	{
+		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix) * directionalLightIndex, sizeof(Matrix), &staticDirectionalLights[directionalLightIndex]->GetBiasedShadowViewProjectionMatrix());
+	}
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	unsigned int uniformBlockIndexPointLights = glGetUniformBlockIndex(shaderId, SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_UNIFORM_NAME);
-	glUniformBlockBinding(shaderId, uniformBlockIndexPointLights, POINT_LIGHT_UNIFORM_BIND_INDEX);
-
-	unsigned int uniformBlockIndexSpotLights = glGetUniformBlockIndex(shaderId, SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_UNIFORM_NAME);
-	glUniformBlockBinding(shaderId, uniformBlockIndexSpotLights, SPOT_LIGHT_UNIFORM_BIND_INDEX);
-	EXIT_ON_GL_ERROR("ShadowManager::BindLightUniforms");
-
-	shader->Unbind();
+	EXIT_ON_GL_ERROR("ShadowManager::BindShadowViewProjectionMatrices");
 }

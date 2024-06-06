@@ -135,13 +135,22 @@ public:
 		return shadowMapFramebuffer_;
 	}
 
+	int GetUniformBufferIndex() const
+	{
+		return uniformBufferIndex_;
+	}
+
+	void SetUniformBufferIndex(int uniformBufferIndex)
+	{
+		uniformBufferIndex_ = uniformBufferIndex;
+	}
+
 	virtual void SetShaderUniforms(const Shader* shader);
 
 	virtual void RenderShadowMap() = 0;
 	virtual void SetShadowRenderPassShaderUniforms(const Shader* shader) = 0;
 
 protected:
-
 	Vector3 position_{ Vector3::ZeroVector };
 	Vector3 color_{ Vector3{ 1.f } };
 
@@ -152,6 +161,7 @@ protected:
 	std::string name_{ "" };
 
 	int id_{ 0 };
+	int uniformBufferIndex_{ -1 };
 
 	int shadowWidth_{ 1024 };
 	int shadowHeight_{ 1024 };

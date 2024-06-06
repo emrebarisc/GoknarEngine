@@ -105,38 +105,23 @@ public:
 
 	void AddPointLight(PointLight* pointLight);
 
-	const std::vector<PointLight*>& GetStaticPointLights() const
+	const std::vector<PointLight*>& GetPointLights() const
 	{
-		return staticPointLights_;
-	}
-
-	const std::vector<PointLight*>& GetDynamicPointLights() const
-	{
-		return dynamicPointLights_;
+		return pointLights_;
 	}
 
 	void AddDirectionalLight(DirectionalLight* directionalLight);
 
-	const std::vector<DirectionalLight*>& GetStaticDirectionalLights() const
+	const std::vector<DirectionalLight*>& GetDirectionalLights() const
 	{
-		return staticDirectionalLights_;
-	}
-
-	const std::vector<DirectionalLight*>& GetDynamicDirectionalLights() const
-	{
-		return dynamicDirectionalLights_;
+		return directionalLights_;
 	}
 
 	void AddSpotLight(SpotLight* spotLight);
 
-	const std::vector<SpotLight*>& GetStaticSpotLights() const
+	const std::vector<SpotLight*>& GetSpotLights() const
 	{
-		return staticSpotLights_;
-	}
-
-	const std::vector<SpotLight*>& GetDynamicSpotLights() const
-	{
-		return dynamicSpotLights_;
+		return spotLights_;
 	}
 
 	void AddTexture(Texture* texture)
@@ -181,13 +166,9 @@ private:
     std::vector<DynamicMesh*> dynamicMeshes_;
 	std::vector<ObjectBase*> objects_;
 
-	std::vector<PointLight*> staticPointLights_;
-	std::vector<DirectionalLight*> staticDirectionalLights_;
-	std::vector<SpotLight*> staticSpotLights_;
-
-	std::vector<PointLight*> dynamicPointLights_;
-	std::vector<DirectionalLight*> dynamicDirectionalLights_;
-	std::vector<SpotLight*> dynamicSpotLights_;
+	std::vector<PointLight*> pointLights_;
+	std::vector<DirectionalLight*> directionalLights_;
+	std::vector<SpotLight*> spotLights_;
 
 	Vector3 ambientLight_;
 

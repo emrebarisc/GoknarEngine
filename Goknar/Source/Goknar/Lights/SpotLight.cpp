@@ -112,23 +112,6 @@ void SpotLight::SetCoverageAngle(float coverageAngleInDegrees)
 void SpotLight::SetShaderUniforms(const Shader* shader)
 {
 	Light::SetShaderUniforms(shader);
-
-	if (mobility_ == LightMobility::Dynamic)
-	{
-		std::string directionName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION;
-		shader->SetVector3(directionName.c_str(), direction_);
-
-		std::string coverageAngleName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::COVERAGE_ANGLE;
-		shader->SetFloat(coverageAngleName.c_str(), coverageAngle_);
-
-		std::string falloffAngleName = name_ + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::FALLOFF_ANGLE;
-		shader->SetFloat(falloffAngleName.c_str(), falloffAngle_);
-	}
-
-	if (isShadowEnabled_)
-	{
-		shader->SetMatrix((SHADER_VARIABLE_NAMES::SHADOW::VIEW_MATRIX_PREFIX + name_).c_str(), biasedShadowViewProjectionMatrix_);
-	}
 }
 
 void SpotLight::SetShadowRenderPassShaderUniforms(const Shader* shader)

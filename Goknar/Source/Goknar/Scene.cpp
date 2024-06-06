@@ -45,34 +45,19 @@ Scene::~Scene()
 		delete texture;
 	}
 
-	for (auto staticPointLight : staticPointLights_)
+	for (auto pointLight : pointLights_)
 	{
-		delete staticPointLight;
+		delete pointLight;
 	}
 
-	for (auto staticDirectionalLight : staticDirectionalLights_)
+	for (auto directionalLight : directionalLights_)
 	{
-		delete staticDirectionalLight;
+		delete directionalLight;
 	}
 
-	for (auto staticSpotLight : staticSpotLights_)
+	for (auto spotLight : spotLights_)
 	{
-		delete staticSpotLight;
-	}
-
-	for (auto dynamicDirectionalLight : dynamicDirectionalLights_)
-	{
-		delete dynamicDirectionalLight;
-	}
-
-	for (auto dynamicPointLight : dynamicPointLights_)
-	{
-		delete dynamicPointLight;
-	}
-
-	for (auto dynamicSpotLight : dynamicSpotLights_)
-	{
-		delete dynamicSpotLight;
+		delete spotLight;
 	}
 
 	for (auto object : objects_)
@@ -83,34 +68,19 @@ Scene::~Scene()
 
 void Scene::PreInit()
 {
-	for (auto staticPointLight : staticPointLights_)
+	for (auto pointLight : pointLights_)
 	{
-		staticPointLight->PreInit();
+		pointLight->PreInit();
 	}
 
-	for (auto staticDirectionalLight : staticDirectionalLights_)
+	for (auto directionalLight : directionalLights_)
 	{
-		staticDirectionalLight->PreInit();
+		directionalLight->PreInit();
 	}
 
-	for (auto staticSpotLight : staticSpotLights_)
+	for (auto spotLight : spotLights_)
 	{
-		staticSpotLight->PreInit();
-	}
-
-	for (auto dynamicDirectionalLight : dynamicDirectionalLights_)
-	{
-		dynamicDirectionalLight->PreInit();
-	}
-
-	for (auto dynamicPointLight : dynamicPointLights_)
-	{
-		dynamicPointLight->PreInit();
-	}
-
-	for (auto dynamicSpotLight : dynamicSpotLights_)
-	{
-		dynamicSpotLight->PreInit();
+		spotLight->PreInit();
 	}
 
 	for (Texture* texture : textures_)
@@ -121,34 +91,19 @@ void Scene::PreInit()
 
 void Scene::Init()
 {
-	for (auto staticPointLight : staticPointLights_)
+	for (auto pointLight : pointLights_)
 	{
-		staticPointLight->Init();
+		pointLight->Init();
 	}
 
-	for (auto staticDirectionalLight : staticDirectionalLights_)
+	for (auto directionalLight : directionalLights_)
 	{
-		staticDirectionalLight->Init();
+		directionalLight->Init();
 	}
 
-	for (auto staticSpotLight : staticSpotLights_)
+	for (auto spotLight : spotLights_)
 	{
-		staticSpotLight->Init();
-	}
-
-	for (auto dynamicDirectionalLight : dynamicDirectionalLights_)
-	{
-		dynamicDirectionalLight->Init();
-	}
-
-	for (auto dynamicPointLight : dynamicPointLights_)
-	{
-		dynamicPointLight->Init();
-	}
-
-	for (auto dynamicSpotLight : dynamicSpotLights_)
-	{
-		dynamicSpotLight->Init();
+		spotLight->Init();
 	}
 
 	for (Texture* texture : textures_)
@@ -159,34 +114,19 @@ void Scene::Init()
 
 void Scene::PostInit()
 {
-	for (auto staticPointLight : staticPointLights_)
+	for (auto pointLight : pointLights_)
 	{
-		staticPointLight->PostInit();
+		pointLight->PostInit();
 	}
 
-	for (auto staticDirectionalLight : staticDirectionalLights_)
+	for (auto directionalLight : directionalLights_)
 	{
-		staticDirectionalLight->PostInit();
+		directionalLight->PostInit();
 	}
 
-	for (auto staticSpotLight : staticSpotLights_)
+	for (auto spotLight : spotLights_)
 	{
-		staticSpotLight->PostInit();
-	}
-
-	for (auto dynamicDirectionalLight : dynamicDirectionalLights_)
-	{
-		dynamicDirectionalLight->PostInit();
-	}
-
-	for (auto dynamicPointLight : dynamicPointLights_)
-	{
-		dynamicPointLight->PostInit();
-	}
-
-	for (auto dynamicSpotLight : dynamicSpotLights_)
-	{
-		dynamicSpotLight->PostInit();
+		spotLight->PostInit();
 	}
 
 	for (Texture* texture : textures_)
@@ -259,41 +199,15 @@ void Scene::DeleteDynamicMesh(DynamicMesh* dynamicMesh)
 
 void Scene::AddPointLight(PointLight* pointLight)
 {
-	switch (pointLight->GetLightMobility())
-	{
-	case LightMobility::Static:
-		staticPointLights_.push_back(pointLight);
-		break;
-	case LightMobility::Dynamic:
-		dynamicPointLights_.push_back(pointLight);
-		break;
-	}
-
+	pointLights_.push_back(pointLight);
 }
 
 void Scene::AddDirectionalLight(DirectionalLight* directionalLight)
 {
-	switch (directionalLight->GetLightMobility())
-	{
-	case LightMobility::Static:
-		staticDirectionalLights_.push_back(directionalLight);
-		break;
-	case LightMobility::Dynamic:
-		dynamicDirectionalLights_.push_back(directionalLight);
-		break;
-	}
+	directionalLights_.push_back(directionalLight);
 }
-
 
 void Scene::AddSpotLight(SpotLight* spotLight)
 {
-	switch (spotLight->GetLightMobility())
-	{
-	case LightMobility::Static:
-		staticSpotLights_.push_back(spotLight);
-		break;
-	case LightMobility::Dynamic:
-		dynamicSpotLights_.push_back(spotLight);
-		break;
-	}
+	spotLights_.push_back(spotLight);
 }

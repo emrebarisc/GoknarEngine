@@ -200,6 +200,18 @@ void Shader::SetInt(const char* name, int value) const
 	glUniform1i(uniformLocation, value);
 }
 
+void Shader::SetIntVector(const char* name, const std::vector<int>& values) const
+{
+	int size = values.size();
+	if (size == 0)
+	{
+		return;
+	}
+
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniform1iv(uniformLocation, size, &values[0]);
+}
+
 void Shader::SetFloat(const char* name, float value) const
 {
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
@@ -214,8 +226,14 @@ void Shader::SetMatrix(const char* name, const Matrix& matrix) const
 
 void Shader::SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector) const
 {
+	int size = matrixVector.size();
+	if (size == 0)
+	{
+		return;
+	}
+
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
-	glUniformMatrix4fv(uniformLocation, matrixVector.size(), GL_FALSE, &matrixVector[0].m[0]);
+	glUniformMatrix4fv(uniformLocation, size, GL_FALSE, &matrixVector[0].m[0]);
 }
 
 void Shader::SetVector3(const char* name, const Vector3& vector) const
