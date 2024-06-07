@@ -20,7 +20,6 @@ struct GOKNAR_API MaterialInitializationData
 	ShaderFunctionAndResult fragmentNormal;
 	ShaderFunctionAndResult vertexNormal;
 	ShaderFunctionAndResult uv;
-	ShaderFunctionAndResult vertexRelativePosition;
 	ShaderFunctionAndResult vertexPositionOffset;
 	std::string vertexShaderFunctions{ "" };
 	std::string fragmentShaderFunctions{ "" };

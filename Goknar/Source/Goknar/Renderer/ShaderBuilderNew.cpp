@@ -819,7 +819,7 @@ std::string ShaderBuilderNew::VS_GetSkeletalMeshWeightCalculation() const
 
 std::string ShaderBuilderNew::VS_GetMain(MaterialInitializationData* initializationData, const std::string& vertexShaderModelMatrixVariable) const
 {
-	std::string vsMain = VS_GetPosition(initializationData);
+	std::string vsMain = VS_GetPosition();
 	vsMain += VS_GetPositionOffset(initializationData);
 
 	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + vertexShaderModelMatrixVariable + ";\n";
@@ -837,27 +837,9 @@ std::string ShaderBuilderNew::VS_GetMain(MaterialInitializationData* initializat
 	return vsMain;
 }
 
-std::string ShaderBuilderNew::VS_GetPosition(MaterialInitializationData* initializationData) const
+std::string ShaderBuilderNew::VS_GetPosition() const
 {
-	std::string result = "";
-
-	if (!initializationData->vertexRelativePosition.calculation.empty())
-	{
-		result += initializationData->vertexRelativePosition.calculation + "\n";
-	}
-
-	result += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " = ";
-
-	if (!initializationData->vertexRelativePosition.result.empty())
-	{
-		result += initializationData->vertexRelativePosition.result + "\n";
-	}
-	else
-	{
-		result += std::string(SHADER_VARIABLE_NAMES::VERTEX::POSITION) + ";\n";
-	}
-
-	return result;
+	return "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " = " + std::string(SHADER_VARIABLE_NAMES::VERTEX::POSITION) + ";\n";
 }
 
 std::string ShaderBuilderNew::VS_GetPositionOffset(MaterialInitializationData* initializationData) const

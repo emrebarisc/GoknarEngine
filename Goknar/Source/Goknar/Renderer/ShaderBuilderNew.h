@@ -63,7 +63,7 @@ private:
 	std::string VS_GetLightOutputs() const;
 	std::string VS_GetSkeletalMeshWeightCalculation() const;
 	std::string VS_GetMain(MaterialInitializationData* initializationData, const std::string& vertexShaderModelMatrixVariable) const;
-	std::string VS_GetPosition(MaterialInitializationData* initializationData) const;
+	std::string VS_GetPosition() const;
 	std::string VS_GetPositionOffset(MaterialInitializationData* initializationData) const;
 	std::string VS_GetUV(MaterialInitializationData* initializationData) const;
 	std::string VS_GetLightSpaceFragmentPositionCalculations() const;
