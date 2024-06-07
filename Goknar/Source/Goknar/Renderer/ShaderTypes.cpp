@@ -14,6 +14,8 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* UV = "uv";
 		const char* BONE_IDS = "boneIDs";
 		const char* WEIGHTS = "weights";
+
+		const char* MODIFIED_POSITION = "modifiedPosition";
 	}
 
 	inline namespace MATERIAL

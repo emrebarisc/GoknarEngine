@@ -45,10 +45,10 @@ struct GOKNAR_API SweepData
 struct GOKNAR_API RaycastSingleResult
 {
     RaycastSingleResult(){}
-    RaycastSingleResult(PhysicsObject* object, const Vector3& position, const Vector3& normal, float fraction) :
+    RaycastSingleResult(PhysicsObject* object, const Vector3& position, const Vector3& fragmentNormal, float fraction) :
         hitObject(object),
         hitPosition(position),
-        hitNormal(normal),
+        hitNormal(fragmentNormal),
         hitFraction(fraction)
     {}
 

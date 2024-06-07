@@ -49,6 +49,17 @@ std::string ShaderBuilderNew::ForwardRender_GetVertexShaderScript(MaterialInitia
 
 	vertexShader += VS_GetLightShadowViewMatrixUniforms();
 	vertexShader += VS_GetLightOutputs();
+
+	if (!initializationData->vertexShaderFunctions.empty())
+	{
+		vertexShader += initializationData->vertexShaderFunctions;
+	}
+
+	if (!initializationData->vertexShaderUniforms.empty())
+	{
+		vertexShader += initializationData->vertexShaderUniforms;
+	}
+
 	vertexShader += R"(
 void main()
 {
@@ -57,8 +68,8 @@ void main()
 	{
 		vertexShader += VS_GetSkeletalMeshWeightCalculation();
 	}
-	vertexShader += VS_GetMain(vertexShaderModelMatrixVariable);
-	vertexShader += VS_GetVertexNormalText();
+	vertexShader += VS_GetMain(initializationData, vertexShaderModelMatrixVariable);
+	vertexShader += VS_GetVertexNormalText(initializationData);
 	vertexShader += R"(
 }
 )";
@@ -80,6 +91,16 @@ std::string ShaderBuilderNew::ForwardRender_GetFragmentShaderScript(MaterialInit
 	fragmentShader += FS_GetDirectionalLightColorFunction();
 	fragmentShader += FS_GetPointLightColorFunction();
 	fragmentShader += FS_GetSpotLightColorFunction();
+
+	if (!initializationData->fragmentShaderFunctions.empty())
+	{
+		fragmentShader += initializationData->fragmentShaderFunctions;
+	}
+
+	if (!initializationData->fragmentShaderFunctions.empty())
+	{
+		fragmentShader += initializationData->fragmentShaderFunctions;
+	}
 
 	fragmentShader += R"(
 void main()
@@ -468,15 +489,15 @@ std::string ShaderBuilderNew::FS_GetShaderTextureUniforms(MaterialInitialization
 		switch (texture->GetTextureUsage())
 		{
 		case TextureUsage::Diffuse:
-			if (initializationData->baseColor.empty())
+			if (initializationData->baseColor.result.empty())
 			{
-				initializationData->baseColor = FS_GetDiffuseTextureSampling(texture->GetName());
+				initializationData->baseColor.result = FS_GetDiffuseTextureSampling(texture->GetName());
 			}
 			break;
 		case TextureUsage::Normal:
-			if (initializationData->normal.empty())
+			if (initializationData->fragmentNormal.result.empty())
 			{
-				initializationData->normal = FS_GetNormalTextureSampling(texture->GetName());
+				initializationData->fragmentNormal.result = FS_GetNormalTextureSampling(texture->GetName());
 			}
 			break;
 		default:
@@ -613,11 +634,18 @@ std::string ShaderBuilderNew::FS_GetLightCalculationIterators() const
 
 std::string ShaderBuilderNew::FS_InitializeBaseColor(MaterialInitializationData* initializationData) const
 {
-	std::string result = std::string("\tvec4 ") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + " = ";
+	std::string result = "";
 
-	if (!initializationData->baseColor.empty())
+	if (!initializationData->baseColor.calculation.empty())
 	{
-		return result + initializationData->baseColor;
+		result += initializationData->baseColor.calculation + "\n";
+	}
+	
+	result += std::string("\tvec4 ") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + " = ";
+
+	if (!initializationData->baseColor.result.empty())
+	{
+		return result + initializationData->baseColor.result;
 	}
 
 	return result + SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR + ";";
@@ -789,13 +817,14 @@ std::string ShaderBuilderNew::VS_GetSkeletalMeshWeightCalculation() const
 	return weightCalculation;
 }
 
-std::string ShaderBuilderNew::VS_GetMain(const std::string& vertexShaderModelMatrixVariable) const
+std::string ShaderBuilderNew::VS_GetMain(MaterialInitializationData* initializationData, const std::string& vertexShaderModelMatrixVariable) const
 {
-	std::string vsMain = R"(
-	)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + vertexShaderModelMatrixVariable + R"(;
-	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"( = vec4(position, 1.f) * )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";" + R"(
-	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE + R"( = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + " * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + R"(;
-	)";
+	std::string vsMain = VS_GetPosition(initializationData);
+	vsMain += VS_GetPositionOffset(initializationData);
+
+	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + vertexShaderModelMatrixVariable + ";\n";
+	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = vec4()" + SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION + R"(, 1.f)* )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";\n";
+	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"( = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + " * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
 
 	vsMain += VS_GetLightSpaceFragmentPositionCalculations();
 
@@ -803,9 +832,68 @@ std::string ShaderBuilderNew::VS_GetMain(const std::string& vertexShaderModelMat
 	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"(;
 )";
 
-	vsMain += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = vec2(" + SHADER_VARIABLE_NAMES::VERTEX::UV + ".x, 1.f - " + SHADER_VARIABLE_NAMES::VERTEX::UV + ".y); \n";
+	vsMain += VS_GetUV(initializationData);
 
 	return vsMain;
+}
+
+std::string ShaderBuilderNew::VS_GetPosition(MaterialInitializationData* initializationData) const
+{
+	std::string result = "";
+
+	if (!initializationData->vertexRelativePosition.calculation.empty())
+	{
+		result += initializationData->vertexRelativePosition.calculation + "\n";
+	}
+
+	result += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " = ";
+
+	if (!initializationData->vertexRelativePosition.result.empty())
+	{
+		result += initializationData->vertexRelativePosition.result + "\n";
+	}
+	else
+	{
+		result += std::string(SHADER_VARIABLE_NAMES::VERTEX::POSITION) + ";\n";
+	}
+
+	return result;
+}
+
+std::string ShaderBuilderNew::VS_GetPositionOffset(MaterialInitializationData* initializationData) const
+{
+	std::string result = "";
+
+	if (!initializationData->vertexPositionOffset.result.empty())
+	{
+		result += initializationData->vertexPositionOffset.calculation + "\n";
+		result += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " += " + initializationData->vertexPositionOffset.result + ";\n";
+	}
+
+	return result;
+}
+
+std::string ShaderBuilderNew::VS_GetUV(MaterialInitializationData* initializationData) const
+{
+	std::string result = "";
+
+	if (!initializationData->uv.calculation.empty())
+	{
+		result += initializationData->uv.calculation;
+	}
+
+	result += std::string("\t") + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = ";
+
+	if (!initializationData->uv.result.empty())
+	{
+		result += initializationData->uv.result;
+	}
+	else
+	{
+		result += std::string("vec2(") + SHADER_VARIABLE_NAMES::VERTEX::UV + ".x, 1.f - " + SHADER_VARIABLE_NAMES::VERTEX::UV + ".y); \n";
+	}
+
+	return std::string();
 }
 
 std::string ShaderBuilderNew::VS_GetLightSpaceFragmentPositionCalculations() const
@@ -827,11 +915,29 @@ std::string ShaderBuilderNew::VS_GetLightSpaceFragmentPositionCalculations() con
 )";
 }
 
-std::string ShaderBuilderNew::VS_GetVertexNormalText() const
+std::string ShaderBuilderNew::VS_GetVertexNormalText(MaterialInitializationData* initializationData) const
 {
-	std::string vertexNormalText = "\n\t";
+	std::string vertexNormalText = "";
+
+	if (!initializationData->vertexNormal.calculation.empty())
+	{
+		vertexNormalText += initializationData->vertexNormal.calculation + "\n";
+	}
+	
+	vertexNormalText  += "\n\t";
 	vertexNormalText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
-	vertexNormalText += " = normalize(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::NORMAL) + " * transpose(inverse(mat3(" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX + "))));\n";
+	vertexNormalText += " = normalize(";
+	
+	if (!initializationData->vertexNormal.result.empty())
+	{
+		vertexNormalText += initializationData->vertexNormal.result;
+	}
+	else
+	{
+		vertexNormalText += SHADER_VARIABLE_NAMES::VERTEX::NORMAL;
+	}
+	
+	vertexNormalText += " * transpose(inverse(mat3(" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "))));\n";
 
 	return vertexNormalText;
 }

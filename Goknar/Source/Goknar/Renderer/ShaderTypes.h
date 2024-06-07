@@ -13,6 +13,8 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* UV;
 		extern const char* BONE_IDS;
 		extern const char* WEIGHTS;
+
+		extern const char* MODIFIED_POSITION;
 	}
 
 	inline namespace MATERIAL

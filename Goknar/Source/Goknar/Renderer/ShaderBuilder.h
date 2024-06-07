@@ -14,9 +14,9 @@ class Scene;
 
 class GOKNAR_API ShaderBuilder
 {
-public:
 	friend Engine;
 
+public:
 	static ShaderBuilder* GetInstance()
 	{
 		if (instance_ == nullptr)

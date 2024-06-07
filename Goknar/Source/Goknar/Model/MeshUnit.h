@@ -45,15 +45,15 @@ public:
 class GOKNAR_API VertexData
 {
 public:
-	VertexData() : position(Vector3::ZeroVector), normal(Vector3::ZeroVector), color(Vector4::ZeroVector), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& p) : position(p), normal(Vector3::ZeroVector), color(Vector4::ZeroVector), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& pos, const Vector3& n) : position(pos), normal(n), color(Vector4(1.f)), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& pos, const Vector3& n, const Vector4& c) : position(pos), normal(n), color(c), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& pos, const Vector3& n, const Vector4& c, const Vector2& uvCoord) : position(pos), normal(n), color(c), uv(uvCoord) { }
+	VertexData() : position(Vector3::ZeroVector), fragmentNormal(Vector3::ZeroVector), color(Vector4::ZeroVector), uv(Vector2::ZeroVector) { }
+	VertexData(const Vector3& p) : position(p), fragmentNormal(Vector3::ZeroVector), color(Vector4::ZeroVector), uv(Vector2::ZeroVector) { }
+	VertexData(const Vector3& pos, const Vector3& n) : position(pos), fragmentNormal(n), color(Vector4(1.f)), uv(Vector2::ZeroVector) { }
+	VertexData(const Vector3& pos, const Vector3& n, const Vector4& c) : position(pos), fragmentNormal(n), color(c), uv(Vector2::ZeroVector) { }
+	VertexData(const Vector3& pos, const Vector3& n, const Vector4& c, const Vector2& uvCoord) : position(pos), fragmentNormal(n), color(c), uv(uvCoord) { }
 
 	Vector4 color;
 	Vector3 position;
-	Vector3 normal;
+	Vector3 fragmentNormal;
 	Vector2 uv;
 };
 
@@ -111,7 +111,7 @@ public:
 
 	void SetVertexNormal(int index, const Vector3& n)
 	{
-		vertices_->at(index).normal = n;
+		vertices_->at(index).fragmentNormal = n;
 	}
 
 	void SetVertexUV(int index, const Vector2& uv)

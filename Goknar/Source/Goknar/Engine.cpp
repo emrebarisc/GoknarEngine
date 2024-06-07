@@ -21,6 +21,7 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
 #include "Renderer/ShaderBuilder.h"
+#include "Renderer/ShaderBuilderNew.h"
 #include "UI/HUD.h"
 
 #include "Editor/ImGuiEditor/ImGuiEditor.h"
@@ -82,6 +83,7 @@ Engine::~Engine()
 	// Delete singletons
 	delete ObjectIDManager::GetInstance();
 	delete ShaderBuilder::GetInstance();
+	delete ShaderBuilderNew::GetInstance();
 
 	delete windowManager_;
 }

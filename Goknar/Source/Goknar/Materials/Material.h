@@ -8,12 +8,51 @@
 class MeshUnit;
 class MaterialInstance;
 
+struct GOKNAR_API ShaderFunctionAndResult
+{
+	std::string calculation{ "" };
+	std::string result{ "" };
+};
+
 struct GOKNAR_API MaterialInitializationData
 {
-	std::string baseColor{ "" };
-	std::string normal{ "" };
-	std::string uv{ "" };
-	std::string positionOffset{ "" };
+	ShaderFunctionAndResult baseColor;
+	ShaderFunctionAndResult fragmentNormal;
+	ShaderFunctionAndResult vertexNormal;
+	ShaderFunctionAndResult uv;
+	ShaderFunctionAndResult vertexRelativePosition;
+	ShaderFunctionAndResult vertexPositionOffset;
+	std::string vertexShaderFunctions{ "" };
+	std::string fragmentShaderFunctions{ "" };
+	std::string vertexShaderUniforms{ "" };
+	std::string fragmentShaderUniforms{ "" };
+
+	void AddVertexShaderFunction(const std::string& function)
+	{
+		vertexShaderFunctions += "\n";
+		vertexShaderFunctions += function;
+		vertexShaderFunctions += "\n";
+	}
+
+	void AddFragmentShaderFunction(const std::string& function)
+	{
+		fragmentShaderFunctions += "\n";
+		fragmentShaderFunctions += function;
+		fragmentShaderFunctions += "\n";
+	}
+
+	void AddVertexShaderUniform(const std::string& uniform)
+	{
+		vertexShaderUniforms += uniform;
+		vertexShaderUniforms += "\n";
+	}
+
+	void AddFragmentShaderUniform(const std::string& uniform)
+	{
+		fragmentShaderUniforms += uniform;
+		fragmentShaderUniforms += "\n";
+	}
+
 	int boneCount{ 0 };
 };
 
