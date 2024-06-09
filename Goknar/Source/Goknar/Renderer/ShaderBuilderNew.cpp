@@ -645,10 +645,19 @@ std::string ShaderBuilderNew::FS_InitializeBaseColor(MaterialInitializationData*
 
 	if (!initializationData->baseColor.result.empty())
 	{
-		return result + initializationData->baseColor.result;
+		result += initializationData->baseColor.result;
+	}
+	else
+	{
+		result += std::string(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR) + ";";
 	}
 
-	return result + SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR + ";";
+	if (initializationData->owner->GetBlendModel() == MaterialBlendModel::Masked)
+	{
+		result += "\tif (" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR) + ".a < 0.5f) discard;\n";
+	}
+
+	return result;
 }
 
 std::string ShaderBuilderNew::FS_GetFinalColorCalculation() const

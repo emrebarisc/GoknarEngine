@@ -6,6 +6,7 @@
 #include "MaterialBase.h"
 
 class MeshUnit;
+class Material;
 class MaterialInstance;
 
 struct GOKNAR_API ShaderFunctionAndResult
@@ -16,6 +17,10 @@ struct GOKNAR_API ShaderFunctionAndResult
 
 struct GOKNAR_API MaterialInitializationData
 {
+	MaterialInitializationData() = delete;
+	MaterialInitializationData(const Material* ownerMaterial) : owner(ownerMaterial) {}
+
+	const Material* owner;
 	ShaderFunctionAndResult baseColor;
 	ShaderFunctionAndResult fragmentNormal;
 	ShaderFunctionAndResult vertexNormal;
@@ -115,7 +120,7 @@ private:
 
 	std::unordered_map<RenderPassType, Shader*> renderPassTypeShaderMap_;
 
-	MaterialInitializationData* initializationData_{ new MaterialInitializationData() };
+	MaterialInitializationData* initializationData_{ new MaterialInitializationData( this ) };
 };
 
 #endif
