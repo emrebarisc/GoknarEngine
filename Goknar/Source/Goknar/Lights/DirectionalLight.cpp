@@ -11,7 +11,7 @@
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"
-#include "Goknar/Lights/ShadowManager/ShadowManager.h"
+#include "Goknar/Lights/LightManager/LightManager.h"
 
 DirectionalLight::DirectionalLight() : Light()
 {

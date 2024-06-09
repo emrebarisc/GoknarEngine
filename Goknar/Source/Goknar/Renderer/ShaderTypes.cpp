@@ -97,7 +97,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* SHADOW_VALUE = "shadowValue";
 		const char* SHADOW_VALUE_PREFIX = "shadowValue_";
 
-		const char* POINT_LIGHT_VIEW_MATRICES_ARRAY = "viewMatrices";
+		const char* POINT_LIGHT_VIEW_MATRICES_ARRAY = "pointLightViewMatrices";
 
 		const char* SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_POSITION = "pointLightPosition";
 		const char* SHADOW_MAP_FRAGMENT_SHADER_POINT_LIGHT_RADIUS = "pointLightRadius";

@@ -28,7 +28,7 @@ set(SUBDIRS
 	${SOURCE_DIR_NAME}/Goknar/Helpers
 	${SOURCE_DIR_NAME}/Goknar/IO
 	${SOURCE_DIR_NAME}/Goknar/Lights
-	${SOURCE_DIR_NAME}/Goknar/Lights/ShadowManager
+	${SOURCE_DIR_NAME}/Goknar/Lights/LightManager
 	${SOURCE_DIR_NAME}/Goknar/Managers
 	${SOURCE_DIR_NAME}/Goknar/Materials
 	${SOURCE_DIR_NAME}/Goknar/Math

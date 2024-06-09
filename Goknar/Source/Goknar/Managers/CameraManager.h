@@ -21,6 +21,7 @@ public:
 
 	void AddCamera(Camera* camera);
 	void RemoveCamera(Camera* camera);
+	void DestroyCamera(Camera* camera);
 	
 	const std::vector<Camera*>& GetCameras() const
 	{
@@ -41,8 +42,8 @@ protected:
 private:
 	Camera* activeCamera_;
 
-	std::vector<Camera*> cameras_;
-	std::vector<Camera*> camerasToAddNextFrame_;
+	std::vector<Camera*> cameras_{};
+	std::vector<Camera*> camerasToAddNextFrame_{};
 
 	int camerasToAddNextFrameCount_;
 };

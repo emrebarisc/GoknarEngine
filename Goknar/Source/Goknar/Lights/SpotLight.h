@@ -67,6 +67,11 @@ public:
 		biasedShadowViewProjectionMatrix_ = shadowBiasMatrix_ * shadowMapRenderCamera_->GetViewProjectionMatrix();
 	}
 
+	const Matrix& GetBiasedShadowViewProjectionMatrix() const
+	{
+		return biasedShadowViewProjectionMatrix_;
+	}
+
 	virtual void SetIsShadowEnabled(bool isShadowEnabled) override;
 
 	void RenderShadowMap() override;

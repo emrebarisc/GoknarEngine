@@ -6,6 +6,8 @@
 
 #include "Goknar/Log.h"
 
+class CameraManager;
+
 enum class GOKNAR_API CameraProjection : unsigned char
 {
 	Orthographic,
@@ -20,6 +22,8 @@ enum class GOKNAR_API CameraType : unsigned char
 
 class GOKNAR_API Camera
 {
+	friend CameraManager;
+
 public:
 	Camera();
 	Camera(const Vector3& position, const Vector3& forward, const Vector3& up);
@@ -41,8 +45,6 @@ public:
 			viewMatrix_ = rhs->viewMatrix_;
 		}
 	}
-
-	virtual ~Camera();
 
 	void Init();
 	void Update();
@@ -257,7 +259,10 @@ public:
 		LookAt();
 	}
 
+	virtual void Destroy();
+
 protected:
+	virtual ~Camera();
 
 private:
 	void LookAt();

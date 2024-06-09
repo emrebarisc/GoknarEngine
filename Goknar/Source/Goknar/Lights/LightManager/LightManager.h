@@ -19,11 +19,11 @@ constexpr unsigned int MAX_DIRECTIONAL_LIGHT_COUNT = 4;
 constexpr unsigned int MAX_POINT_LIGHT_COUNT = 16;
 constexpr unsigned int MAX_SPOT_LIGHT_COUNT = 8;
 
-class ShadowManager
+class LightManager
 {
 public:
-	ShadowManager();
-	~ShadowManager();
+	LightManager();
+	~LightManager();
 
 	void PreInit();
 	void Init();
@@ -47,7 +47,7 @@ private:
 		public:
 			Vector3 direction{ -1.f, -1.f, -1.f };
 			int isCastingShadow{ false };
-			Vector3 intensity{ 0.f, 0.f, 0.f };
+			Vector3 intensity{ 1.f, 1.f, 1.f };
 			float padding;
 		};
 		DirectionalLightInfo directionalLightInfo[MAX_DIRECTIONAL_LIGHT_COUNT];
@@ -60,7 +60,10 @@ private:
 		class PointLightInfo
 		{
 		public:
-
+			Vector3 position{ 0.f, 0.f, 0.f};
+			float radius{ 0.f };
+			Vector3 intensity{ 1.f, 1.f, 1.f };
+			int isCastingShadow{ false };
 		};
 		PointLightInfo pointLightInfo[MAX_POINT_LIGHT_COUNT];
 		int pointLightCount{ 0 };
@@ -72,22 +75,30 @@ private:
 		class SpotLightInfo
 		{
 		public:
-
+			Vector3 position;
+			float coverageAngle;
+			Vector3 direction;
+			float falloffAngle;
+			Vector3 intensity;
+			int isCastingShadow;
 		};
 		SpotLightInfo spotLightInfo[MAX_SPOT_LIGHT_COUNT];
 		int spotLightCount{ 0 };
 	} spotLightBufferInfo;
 
-	Light* currentlyRenderingLight_;
+	void UpdateAllDirectionalLightDataOnGPU();
+	void UpdateAllPointLightDataOnGPU();
+	void UpdateAllSpotLightDataOnGPU();
 
-	GEuint directionalLightUniformBufferId_;
-	GEuint directionalLightViewMatrixUniformBufferId_;
+	Light* currentlyRenderingLight_{ nullptr };
 
-	GEuint pointLightUniformBufferId_;
-	GEuint pointLightViewMatrixUniformBufferId_;
+	GEuint directionalLightUniformBufferId_{ 0 };
+	GEuint directionalLightViewMatrixUniformBufferId_{ 0 };
 
-	GEuint spotLightUniformBufferId_;
-	GEuint spotLightViewMatrixUniformBufferId_;
+	GEuint pointLightUniformBufferId_{ 0 };
+
+	GEuint spotLightUniformBufferId_{ 0 };
+	GEuint spotLightViewMatrixUniformBufferId_{ 0 };
 };
 
 #endif

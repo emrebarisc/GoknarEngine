@@ -22,7 +22,7 @@ LightController::LightController()
 	spotLight1_->SetPosition(spotLight1Position);
 	spotLight1_->SetDirection((centerPosition_ - spotLight1Position).GetNormalized());
 	spotLight1_->SetColor(Vector3(1.f, 0.2f, 0.2f));
-	spotLight1_->SetIntensity(100.f);
+	spotLight1_->SetIntensity(1000.f);
 	spotLight1_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight1_);
 
@@ -32,7 +32,7 @@ LightController::LightController()
 	spotLight2_->SetPosition(spotLight2Position);
 	spotLight2_->SetDirection((centerPosition_ - spotLight2Position).GetNormalized());
 	spotLight2_->SetColor(Vector3(0.2f, 1.f, 0.2f));
-	spotLight2_->SetIntensity(100.f);
+	spotLight2_->SetIntensity(1000.f);
 	spotLight2_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight2_);
 
@@ -42,7 +42,7 @@ LightController::LightController()
 	spotLight3_->SetPosition(spotLight3Position);
 	spotLight3_->SetDirection((centerPosition_ - spotLight3Position).GetNormalized());
 	spotLight3_->SetColor(Vector3(1.f, 1.0f, 0.2f));
-	spotLight3_->SetIntensity(100.f);
+	spotLight3_->SetIntensity(1000.f);
 	spotLight3_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight3_);
 
@@ -52,7 +52,7 @@ LightController::LightController()
 	spotLight4_->SetPosition(spotLight4Position);
 	spotLight4_->SetDirection((centerPosition_ - spotLight4Position).GetNormalized());
 	spotLight4_->SetColor(Vector3(0.2f, 0.2f, 1.0f));
-	spotLight4_->SetIntensity(100.f);
+	spotLight4_->SetIntensity(1000.f);
 	spotLight4_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight4_);
 
@@ -62,7 +62,7 @@ LightController::LightController()
 	spotLight5_->SetPosition(spotLight5Position);
 	spotLight5_->SetDirection((centerPosition_ - spotLight5Position).GetNormalized());
 	spotLight5_->SetColor(Vector3(1.f, 0.75f, 0.75f));
-	spotLight5_->SetIntensity(50.f);
+	spotLight5_->SetIntensity(500.f);
 	spotLight5_->SetIsShadowEnabled(true);
 	scene->AddSpotLight(spotLight5_);
 
@@ -81,7 +81,7 @@ LightController::LightController()
 
 	// 		PointLight* pointLight = new PointLight();
 	// 		pointLight->SetPosition(position);
-	// 		pointLight->SetIntensity(10.f);
+	// 		pointLight->SetIntensity(100.f);
 	// 		pointLight->SetIsShadowEnabled(false);
 	// 		pointLight->SetLightMobility(LightMobility::Static);
 	// 		scene->AddPointLight(pointLight);

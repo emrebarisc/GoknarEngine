@@ -7,7 +7,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Renderer.h"
-#include "Goknar/Lights/ShadowManager/ShadowManager.h"
+#include "Goknar/Lights/LightManager/LightManager.h"
 
 #include "Goknar/Managers/WindowManager.h"
 
@@ -101,7 +101,7 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 	}
 	else if (renderPassType == RenderPassType::Shadow || renderPassType == RenderPassType::PointLightShadow)
 	{
-		engine->GetRenderer()->GetShadowManager()->SetShadowRenderPassShaderUniforms(shader);
+		engine->GetRenderer()->GetLightManager()->SetShadowRenderPassShaderUniforms(shader);
 	}
 
 	if (renderPassType == RenderPassType::Forward)

@@ -82,17 +82,21 @@ void PointLight::SetShaderUniforms(const Shader* shader)
 
 void PointLight::SetShadowRenderPassShaderUniforms(const Shader* shader)
 {
+	shader->SetVector3(SHADER_VARIABLE_NAMES::SHADOW::LIGHT_POSITION, position_);
+	shader->SetFloat(SHADER_VARIABLE_NAMES::SHADOW::LIGHT_RADIUS, radius_);
 	shader->SetMatrixVector(SHADER_VARIABLE_NAMES::SHADOW::POINT_LIGHT_VIEW_MATRICES_ARRAY, viewMatrixVector_);
 }
 
 void PointLight::SetPosition(const Vector3& position)
 {
+	Light::SetPosition(position);
+
+	shadowMapRenderCamera_->SetPosition(position);
+
 	if (isShadowEnabled_)
 	{
 		UpdateShadowViewProjectionMatrices();
 	}
-
-	Light::SetPosition(position);
 }
 
 void PointLight::SetIsShadowEnabled(bool isShadowEnabled)
@@ -110,6 +114,8 @@ void PointLight::UpdateShadowViewProjectionMatrices()
 	{
 		return;
 	}
+
+	viewMatrixVector_.clear();
 
 	shadowMapRenderCamera_->SetVectors(Vector3{ 1.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 0.0f, -1.0f }, Vector3{ 0.0f, -1.0f, 0.0f });
 	viewMatrixVector_.push_back(shadowMapRenderCamera_->GetViewProjectionMatrix());

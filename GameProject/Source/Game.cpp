@@ -44,16 +44,16 @@ Game::Game() : Application()
 
 	// archer_ = new Archer();
 	physicsArcher_ = new ArcherCharacter();
-	physicsArcher_->SetWorldPosition(Vector3{0.f, 0.f, 0.f});
-	// physicsArcher_->SetWorldPosition(Vector3{-20.f, -10.f, 30.f});
-	// dancer_ = new Dancer();
-	// lightController_ = new LightController();
+	physicsArcher_->SetWorldPosition( Vector3{ 0.f, 0.f, 0.f } );
+	// physicsArcher_->SetWorldPosition(Vector3{ -20.f, -10.f, 30.f });
+	dancer_ = new Dancer();
+	lightController_ = new LightController();
 	sun_ = new Sun();
-	randomGrassSpawner_ = new RandomGrassSpawner();
-	// fire_ = new Fire();
+	// randomGrassSpawner_ = new RandomGrassSpawner();
+	fire_ = new Fire();
 	materialSphereSpawner_ = new MaterialSphereSpawner();
 
-	physicsObjectSpawner_ = new PhysicsObjectSpawner();
+	//physicsObjectSpawner_ = new PhysicsObjectSpawner();
 
 	//MeshUnit* floorStaticMesh = engine->GetResourceManager()->GetContent<MeshUnit>("Meshes/SM_Floor.fbx");
 	//if (floorStaticMesh)

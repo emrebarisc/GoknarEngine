@@ -13,7 +13,7 @@
 class DynamicMesh;
 class StaticMesh;
 class SkeletalMesh;
-class ShadowManager;
+class LightManager;
 
 class Texture;
 class Framebuffer;
@@ -122,9 +122,9 @@ public:
 	void PrepareSkeletalMeshInstancesForTheCurrentFrame();
 	void PrepareSkeletalMeshInstancesForTheNextFrame();
 
-	ShadowManager* GetShadowManager()
+	LightManager* GetLightManager()
 	{
-		return shadowManager_;
+		return lightManager_;
 	}
 
 	void BindShadowTextures(Shader* shader);
@@ -174,7 +174,7 @@ private:
 	std::vector<DynamicMeshInstance*> maskedDynamicMeshInstances_;
 	std::vector<DynamicMeshInstance*> transparentDynamicMeshInstances_;
 
-	ShadowManager* shadowManager_{ nullptr };
+	LightManager* lightManager_{ nullptr };
 
 	DeferredRenderingData* deferredRenderingData_{ nullptr };
 

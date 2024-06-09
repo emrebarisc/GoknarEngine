@@ -36,9 +36,13 @@ Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) 
 	Update();
 }
 
+void Camera::Destroy()
+{
+	engine->GetCameraManager()->DestroyCamera(this);
+}
+
 Camera::~Camera()
 {
-	engine->GetCameraManager()->RemoveCamera(this);
 }
 
 void Camera::Init()

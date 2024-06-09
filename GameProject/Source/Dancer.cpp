@@ -11,6 +11,7 @@
 #include "Managers/ResourceManager.h"
 #include "Model/SkeletalMesh.h"
 #include "Model/SkeletalMeshInstance.h"
+#include "Physics/PhysicsWorld.h"
 
 Dancer::Dancer() : ObjectBase()
 {
@@ -25,7 +26,16 @@ Dancer::Dancer() : ObjectBase()
 
 void Dancer::BeginGame()
 {
-	SetWorldPosition(Vector3{ 40.f, 40.f, 0.f });
+	RaycastData raycastData;
+	raycastData.from = Vector3{ -40.f, 40.f, 1000.f };
+	raycastData.to = Vector3{ -40.f, 40.f, -1000.f };
+
+	RaycastSingleResult raycastResult;
+
+	if (engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult))
+	{
+		SetWorldPosition(raycastResult.hitPosition);
+	}
 }
 
 void Dancer::Tick(float deltaTime)

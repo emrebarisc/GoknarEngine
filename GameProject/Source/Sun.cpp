@@ -9,7 +9,7 @@
 Sun::Sun() :
 	ObjectBase()
 {
-	SetIsTickable(false);
+	SetIsTickable(true);
 
 	sunLight_ = new DirectionalLight();
 	sunLight_->SetColor(Vector3(1.0f, 0.99f, 0.83f));

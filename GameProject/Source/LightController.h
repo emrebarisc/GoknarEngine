@@ -19,7 +19,7 @@ private:
 	SpotLight* spotLight4_;
 	SpotLight* spotLight5_;
 
-	Vector3 centerPosition_{ Vector3{40.f, 40.f, 0.f} };
+	Vector3 centerPosition_{ Vector3{-40.f, 40.f, 0.f} };
 
 	float angle_;
 	float radius_;

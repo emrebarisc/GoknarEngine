@@ -30,7 +30,7 @@
 #include "Lights/Light.h"
 #include "Lights/PointLight.h"
 #include "Lights/SpotLight.h"
-#include "Lights/ShadowManager/ShadowManager.h"
+#include "Lights/LightManager/LightManager.h"
 
 // OpenGL Libraries
 #include "GLFW/glfw3.h"
@@ -277,7 +277,7 @@ void Engine::Run()
 		
 		renderer_->PrepareSkeletalMeshInstancesForTheCurrentFrame();
 
-		renderer_->GetShadowManager()->RenderShadowMaps();
+		renderer_->GetLightManager()->RenderShadowMaps();
 		
 		if (renderer_->GetMainRenderType() == RenderPassType::Forward)
 		{

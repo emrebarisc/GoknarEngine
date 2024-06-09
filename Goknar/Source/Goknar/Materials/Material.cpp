@@ -10,7 +10,7 @@
 #include "Goknar/Renderer/ShaderBuilderNew.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Model/SkeletalMesh.h"
-#include "Goknar/Lights/ShadowManager/ShadowManager.h"
+#include "Goknar/Lights/LightManager/LightManager.h"
 
 Material::Material() :
 	IMaterialBase()
@@ -154,7 +154,7 @@ void Material::PostInit()
 		derivedMaterialInstance->PostInit();
 	}
 
-	engine->GetRenderer()->GetShadowManager()->BindLightUniforms(renderPassTypeShaderMap_[RenderPassType::Forward]);
+	engine->GetRenderer()->GetLightManager()->BindLightUniforms(renderPassTypeShaderMap_[RenderPassType::Forward]);
 
 	delete initializationData_;
 	initializationData_ = nullptr;

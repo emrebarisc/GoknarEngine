@@ -90,6 +90,13 @@ void CameraManager::RemoveCamera(Camera* camera)
 		SetActiveCamera(nullptr);
 	}
 }
+
+void CameraManager::DestroyCamera(Camera* camera)
+{
+	RemoveCamera(camera);
+	delete camera;
+}
+
 void CameraManager::SetActiveCamera(Camera* camera)
 {
 	activeCamera_ = camera;

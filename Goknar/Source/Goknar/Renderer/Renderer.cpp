@@ -19,7 +19,7 @@
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
-#include "Goknar/Lights/ShadowManager/ShadowManager.h"
+#include "Goknar/Lights/LightManager/LightManager.h"
 
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/StaticMesh.h"
@@ -59,14 +59,14 @@ Renderer::Renderer() :
 	totalStaticMeshCount_(0),
 	totalSkeletalMeshCount_(0),
 	totalDynamicMeshCount_(0),
-	shadowManager_(nullptr),
+	lightManager_(nullptr),
 	removeStaticDataFromMemoryAfterTransferingToGPU_(false)
 {
 }
 
 Renderer::~Renderer()
 {
-	delete shadowManager_;
+	delete lightManager_;
 	delete deferredRenderingData_;
 
 	EXIT_ON_GL_ERROR("Renderer::~Renderer");
@@ -123,8 +123,8 @@ Renderer::~Renderer()
 
 void Renderer::PreInit()
 {
-	shadowManager_ = new ShadowManager();
-	shadowManager_->PreInit();
+	lightManager_ = new LightManager();
+	lightManager_->PreInit();
 
 	if (mainRenderType_ == RenderPassType::Deferred)
 	{
@@ -159,12 +159,12 @@ void Renderer::PreInit()
 
 void Renderer::Init()
 {
-	shadowManager_->Init();
+	lightManager_->Init();
 }
 
 void Renderer::PostInit()
 {
-	shadowManager_->PostInit();
+	lightManager_->PostInit();
 }
 
 void Renderer::SetStaticBufferData()
@@ -847,10 +847,11 @@ void Renderer::PrepareSkeletalMeshInstancesForTheNextFrame()
 
 void Renderer::BindShadowTextures(Shader* shader)
 {
+	Scene* scene = engine->GetApplication()->GetMainScene();
+
 	shader->Use();
 
 	std::vector<int> directionalLightTextureIndices;
-	Scene* scene = engine->GetApplication()->GetMainScene();
 	const std::vector<DirectionalLight*>& directionalLights = scene->GetDirectionalLights();
 	size_t directionalLightCount = directionalLights.size();
 	for (size_t i = 0; i < directionalLightCount; i++)
@@ -859,8 +860,8 @@ void Renderer::BindShadowTextures(Shader* shader)
 		if (directionalLight->GetIsShadowEnabled())
 		{
 			Texture* shadowTexture = directionalLight->GetShadowMapTexture();
-			shadowTexture->Bind(shader);
 			directionalLightTextureIndices.push_back(shadowTexture->GetRendererTextureId());
+			shadowTexture->Bind(shader);
 		}
 	}
 	shader->SetIntVector(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_SHADOW_MAP_ARRAY_NAME, directionalLightTextureIndices);
@@ -874,8 +875,8 @@ void Renderer::BindShadowTextures(Shader* shader)
 		if (pointLight->GetIsShadowEnabled())
 		{
 			Texture* shadowTexture = pointLight->GetShadowMapTexture();
-			shadowTexture->Bind(shader);
 			pointLightTextureIndices.push_back(shadowTexture->GetRendererTextureId());
+			shadowTexture->Bind(shader);
 		}
 	}
 	shader->SetIntVector(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_SHADOW_MAP_ARRAY_NAME, pointLightTextureIndices);
@@ -889,8 +890,8 @@ void Renderer::BindShadowTextures(Shader* shader)
 		if (spotLight->GetIsShadowEnabled())
 		{
 			Texture* shadowTexture = spotLight->GetShadowMapTexture();
-			shadowTexture->Bind(shader);
 			spotLightTextureIndices.push_back(shadowTexture->GetRendererTextureId());
+			shadowTexture->Bind(shader);
 		}
 	}
 	shader->SetIntVector(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_SHADOW_MAP_ARRAY_NAME, spotLightTextureIndices);
@@ -908,46 +909,26 @@ void Renderer::BindGeometryBufferTextures(Shader* shader)
 void Renderer::SetLightUniforms(Shader* shader)
 {
 	Scene* scene = engine->GetApplication()->GetMainScene();
-	const std::vector<DirectionalLight*>& staticDirectionalLights = scene->GetDirectionalLights();
-	size_t staticDirectionalLightCount = staticDirectionalLights.size();
-	for (size_t i = 0; i < staticDirectionalLightCount; i++)
+
+	const std::vector<DirectionalLight*>& directionalLights = scene->GetDirectionalLights();
+	size_t directionalLightCount = directionalLights.size();
+	for (size_t i = 0; i < directionalLightCount; i++)
 	{
-		staticDirectionalLights[i]->SetShaderUniforms(shader);
+		directionalLights[i]->SetShaderUniforms(shader);
 	}
 
-	const std::vector<DirectionalLight*>& dynamicDirectionalLights = scene->GetDirectionalLights();
-	size_t dynamicDirectionalLightCount = dynamicDirectionalLights.size();
-	for (size_t i = 0; i < dynamicDirectionalLightCount; i++)
+	const std::vector<PointLight*>& pointLights = scene->GetPointLights();
+	size_t pointLightCount = pointLights.size();
+	for (size_t i = 0; i < pointLightCount; i++)
 	{
-		dynamicDirectionalLights[i]->SetShaderUniforms(shader);
+		pointLights[i]->SetShaderUniforms(shader);
 	}
 
-	const std::vector<PointLight*>& staticPointLights = scene->GetPointLights();
-	size_t staticPointLightCount = staticPointLights.size();
-	for (size_t i = 0; i < staticPointLightCount; i++)
+	const std::vector<SpotLight*>& spotLights = scene->GetSpotLights();
+	size_t spotLightCount = spotLights.size();
+	for (size_t i = 0; i < spotLightCount; i++)
 	{
-		staticPointLights[i]->SetShaderUniforms(shader);
-	}
-
-	const std::vector<PointLight*>& dynamicPointLights = scene->GetPointLights();
-	size_t dynamicPointLightCount = dynamicPointLights.size();
-	for (size_t i = 0; i < dynamicPointLightCount; i++)
-	{
-		dynamicPointLights[i]->SetShaderUniforms(shader);
-	}
-
-	const std::vector<SpotLight*>& staticSpotLights = scene->GetSpotLights();
-	size_t staticSpotLightCount = staticSpotLights.size();
-	for (size_t i = 0; i < staticSpotLightCount; i++)
-	{
-		staticSpotLights[i]->SetShaderUniforms(shader);
-	}
-
-	const std::vector<SpotLight*>& dynamicSpotLights = scene->GetSpotLights();
-	size_t dynamicSpotLightCount = dynamicSpotLights.size();
-	for (size_t i = 0; i < dynamicSpotLightCount; i++)
-	{
-		dynamicSpotLights[i]->SetShaderUniforms(shader);
+		spotLights[i]->SetShaderUniforms(shader);
 	}
 }
 
