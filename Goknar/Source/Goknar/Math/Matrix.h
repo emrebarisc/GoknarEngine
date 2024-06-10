@@ -669,7 +669,7 @@ public:
 	{
 		float cosAngle = cos(angle);
 		float sinAngle = sin(angle);
-		float oneMinusCosAngle = 1 - cosAngle;
+		float oneMinusCosAngle = 1.f - cosAngle;
 
 		return Matrix(cosAngle + axis.x * axis.x * oneMinusCosAngle,				axis.x * axis.y * oneMinusCosAngle - axis.z * sinAngle,		axis.x * axis.z * oneMinusCosAngle + axis.y * sinAngle,		0.f,
 					  axis.y * axis.x * oneMinusCosAngle + axis.z * sinAngle,		cosAngle + axis.y * axis.y * oneMinusCosAngle,				axis.y * axis.z * oneMinusCosAngle - axis.x * sinAngle,		0.f,

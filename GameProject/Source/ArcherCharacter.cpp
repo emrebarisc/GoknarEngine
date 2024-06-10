@@ -8,6 +8,7 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Materials/MaterialBase.h"
 
+#include "Goknar/Components/CameraComponent.h"
 #include "Goknar/Components/SkeletalMeshComponent.h"
 #include "Goknar/Components/SocketComponent.h"
 #include "Goknar/Debug/DebugDrawer.h"
@@ -73,12 +74,14 @@ ArcherCharacter::ArcherCharacter() : Character()
 	bow_->AttachToSocket(leftHandSocket_);
 	bow_->SetIsActive(false);
 
-	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3{ 1.f, 0.f, 0.f }, Vector3{ 0.f, 0.f, 1.f }.GetNormalized());
-	thirdPersonCamera_->SetImageWidth(1920);
-	thirdPersonCamera_->SetImageHeight(1000);
-	thirdPersonCamera_->SetNearDistance(1.f);
-	thirdPersonCamera_->SetFarDistance(1000.f);
-	thirdPersonCamera_->SetFOV(45.f);
+	thirdPersonCameraComponent_ = AddSubComponent<CameraComponent>();
+
+	Camera* thirdPersonCamera = thirdPersonCameraComponent_->GetCamera();
+
+	thirdPersonCamera = new Camera(Vector3::ZeroVector, Vector3{ 1.f, 0.f, 0.f }, Vector3{ 0.f, 0.f, 1.f }.GetNormalized());
+	thirdPersonCamera->SetNearDistance(1.f);
+	thirdPersonCamera->SetFarDistance(1000.f);
+	thirdPersonCamera->SetFOV(45.f);
 
 	controller_ = new ArcherCharacterController(this);
 
@@ -94,7 +97,6 @@ void ArcherCharacter::BeginGame()
 
 void ArcherCharacter::Tick(float deltaTime)
 {
-	thirdPersonCamera_->SetPosition(GetWorldPosition() + Vector3(0.f, 0.f, 2.f) + thirdPersonCamera_->GetForwardVector() * -4.f * thirdPersonCameraDistance_);
 }
 
 void ArcherCharacter::OnOverlapBegin(PhysicsObject* otherObject, class CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3&  hitNormal)

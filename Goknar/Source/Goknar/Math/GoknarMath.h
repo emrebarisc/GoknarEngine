@@ -590,7 +590,7 @@ struct GOKNAR_API Vector3
 		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + "]";
 	}
 
-	inline void Clamp(int min, int max)
+	inline void Clamp(float min, float max)
 	{
 		x = mathClamp(x, min, max);
 		y = mathClamp(y, min, max);

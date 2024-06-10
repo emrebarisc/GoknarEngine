@@ -4,7 +4,7 @@
 #include "Goknar/Controller.h"
 #include "Goknar/Math/InterpolatingValue.h"
 
-class Camera;
+class CameraComponent;
 
 class ArcherCharacter;
 class ArcherPhysicsMovementComponent;
@@ -55,6 +55,10 @@ private:
 	void MoveRight();
 	void StopMovingRight();
 
+	void SetNewCameraPosition();
+	void IncreaseThirdPersonCameraDistance();
+	void DecreaseThirdPersonCameraDistance();
+
 	void ToggleDebug();
 
 	Delegate<void()> moveForwardDelegate_;
@@ -68,6 +72,10 @@ private:
 	Delegate<void()> toggleDebugDelegate_;
 	Delegate<void()> toggleToggleFreeCameraDelegate_;
 	Delegate<void()> exitGameDelegate_;
+	Delegate<void()> dropBowDelegate_;
+	Delegate<void()> equipBowDelegate_;
+	Delegate<void()> drawBowDelegate_;
+	Delegate<void()> looseBowDelegate_;
 
 	Delegate<void(double, double)> onScrollMoveDelegate_;
 	Delegate<void(double, double)> onCursorMoveDelegate_;
@@ -75,10 +83,13 @@ private:
 	InterpolatingValue<Vector3> movementVector_;
 	InterpolatingValue<float> movementRotation_;
 
-	Camera* thirdPersonCamera_{ nullptr };
+	CameraComponent* thirdPersonCameraComponent_{ nullptr };
 
 	ArcherCharacter* archer_{ nullptr };
 	ArcherPhysicsMovementComponent* archerMovementComponent_{ nullptr };
+
+	float thirdPersonCameraDistance_{ 1.f };
+	float cameraRotationSpeed_{ 1.f };
 
 	bool isDebugging_{ false };
 	bool isInFreeCamera_{ false };

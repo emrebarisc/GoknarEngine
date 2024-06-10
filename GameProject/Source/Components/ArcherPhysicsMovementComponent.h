@@ -5,7 +5,7 @@
 #include "Goknar/Math/InterpolatingValue.h"
 
 class ArcherCharacter;
-class Camera;
+class CameraComponent;
 
 class ArcherPhysicsMovementComponent : public PhysicsMovementComponent
 {
@@ -33,7 +33,7 @@ private:
 	InterpolatingValue<float> movementRotation_;
 
 	ArcherCharacter* ownerArcher_{ nullptr };
-	Camera* thirdPersonCamera_{ nullptr };
+	CameraComponent* thirdPersonCameraComponent_{ nullptr };
 };
 
 #endif

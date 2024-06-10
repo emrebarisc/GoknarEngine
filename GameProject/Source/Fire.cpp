@@ -40,7 +40,10 @@ void Fire::Tick(float deltaTime)
 	float scaledTime = engine->GetElapsedTime() * 2.f;
 	float sinValue = sin(scaledTime);
 	float cosValue = cos(scaledTime);
-	fireLight_->SetIntensity(fireIntensity_ * (0.9f + tan(cos(scaledTime)) * tan(cos(GoknarMath::Pow(scaledTime, 1.25f))) * 0.1f));
+
+	float multiplier = (0.9f + tan(cos(scaledTime)) * tan(cos(GoknarMath::Pow(scaledTime, 1.25f))) * 0.1f);
+
+	fireLight_->SetIntensity(fireIntensity_ * multiplier);
 }
 
 void Fire::SetWorldPosition(const Vector3& position, bool updateWorldTransformationMatrix)

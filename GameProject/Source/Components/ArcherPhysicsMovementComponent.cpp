@@ -1,6 +1,6 @@
 #include "ArcherPhysicsMovementComponent.h"
 
-#include "Goknar/Camera.h"
+#include "Goknar/Components/CameraComponent.h"
 
 #include "ArcherCharacter.h"
 
@@ -16,7 +16,7 @@ void ArcherPhysicsMovementComponent::PreInit()
 	ownerArcher_ = dynamic_cast<ArcherCharacter*>(GetOwner());
 	GOKNAR_CORE_ASSERT(ownerArcher_, "ArcherPhysicsMovementComponent can only be added to an ArcherCharacter object");
 
-	thirdPersonCamera_ = ownerArcher_->GetThirdPersonCamera();
+	thirdPersonCameraComponent_ = ownerArcher_->GetThirdPersonCameraComponent();
 	
 	movementDirection_.speed = 8.f;
 	movementDirection_.OnInterpolation = Delegate<void()>::create<ArcherPhysicsMovementComponent, &ArcherPhysicsMovementComponent::OnMovementDirectionInterpolated>(this);
@@ -74,13 +74,13 @@ void ArcherPhysicsMovementComponent::OnMovementDirectionInterpolated()
 	{
 		Vector3 normalizedMovementVector = movementDirection_.current.GetNormalized();
 
-		Vector3 cameraForwardVector = thirdPersonCamera_->GetForwardVector();
+		Vector3 cameraForwardVector = thirdPersonCameraComponent_->GetForwardVector();
 		Vector3 cameraForwardVector2D = Vector3(cameraForwardVector.x, cameraForwardVector.y, 0.f).GetNormalized();
 
-		Vector3 cameraLeftVector = thirdPersonCamera_->GetLeftVector();
+		Vector3 cameraLeftVector = thirdPersonCameraComponent_->GetLeftVector();
 		Vector3 cameraLeftVector2D = Vector3(cameraLeftVector.x, cameraLeftVector.y, 0.f).GetNormalized();
 
-		movementVectorThisFrame = normalizedMovementVector.x * cameraForwardVector2D - normalizedMovementVector.y * cameraLeftVector2D;
+		movementVectorThisFrame = normalizedMovementVector.x * cameraForwardVector2D + normalizedMovementVector.y * cameraLeftVector2D;
 
 		Vector3 lookAtVector = movementVectorThisFrame.GetNormalized();
 		lookAtVector.RotateVector(Vector3::UpVector * movementRotation_.current);

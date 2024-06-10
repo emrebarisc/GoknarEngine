@@ -69,23 +69,17 @@ void Camera::Update()
 
 void Camera::MoveForward(float value)
 {
-	position_ += forwardVector_ * value;
-
-	LookAt();
+	SetPosition(position_ + forwardVector_ * value);
 }
 
 void Camera::MoveUpward(float value)
 {
-	position_ += upVector_ * value;
-
-	LookAt();
+	SetPosition(position_ + upVector_ * value);
 }
 
 void Camera::MoveRight(float value)
 {
-	position_ += leftVector_ * value;
-
-	LookAt();
+	SetPosition(position_ + leftVector_ * value);
 }
 
 void Camera::Yaw(float value)

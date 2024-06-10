@@ -72,10 +72,14 @@ public:
 		return viewProjectionMatrix_;
 	}
 
-	void SetPosition(const Vector3& position)
+	void SetPosition(const Vector3& position, bool updateViewMatrix = true)
 	{
 		position_ = position;
-		LookAt();
+
+		if (updateViewMatrix)
+		{
+			LookAt();
+		}
 	}
 
 	Vector2i GetScreenPositionOfWorldPosition(const Vector3& worldPosition);
@@ -86,16 +90,19 @@ public:
 		return position_;
 	}
 
-	void SetForwardVector(const Vector3& forwardVector)
+	void SetForwardVector(const Vector3& forwardVector, bool updateViewMatrix = true)
 	{
 		Vector3 normalizedForwardVector = forwardVector.GetNormalized();
-		if (EPSILON < Vector3::Distance(forwardVector_, normalizedForwardVector))
+		if (SMALLER_EPSILON < Vector3::Distance(forwardVector_, normalizedForwardVector))
 		{
 			forwardVector_ = normalizedForwardVector;
 			leftVector_ = forwardVector_.Cross(upVector_);
 			upVector_ = leftVector_.Cross(forwardVector_);
 
-			LookAt();
+			if (updateViewMatrix)
+			{
+				LookAt();
+			}
 		}
 	}
 
@@ -104,15 +111,18 @@ public:
 		return forwardVector_;
 	}
 
-	void SetUpVector(const Vector3& upVector)
+	void SetUpVector(const Vector3& upVector, bool updateViewMatrix = true)
 	{
-		if (EPSILON < Vector3::Distance(upVector_, upVector))
+		if (SMALLER_EPSILON < Vector3::Distance(upVector_, upVector))
 		{
 			upVector_ = upVector;
 			forwardVector_ = upVector_.Cross(leftVector_);
 			leftVector_ = forwardVector_.Cross(upVector_);
 
-			LookAt();
+			if (updateViewMatrix)
+			{
+				LookAt();
+			}
 		}
 	}
 
@@ -121,15 +131,18 @@ public:
 		return upVector_;
 	}
 
-	void SetLeftVector(const Vector3& leftVector)
+	void SetLeftVector(const Vector3& leftVector, bool updateViewMatrix = true)
 	{
-		if (EPSILON < Vector3::Distance(leftVector_, leftVector))
+		if (SMALLER_EPSILON < Vector3::Distance(leftVector_, leftVector))
 		{
 			leftVector_ = leftVector;
 			forwardVector_ = upVector_.Cross(leftVector_);
 			upVector_ = leftVector_.Cross(forwardVector_);
 
-			LookAt();
+			if (updateViewMatrix)
+			{
+				LookAt();
+			}
 		}
 	}
 
@@ -250,13 +263,16 @@ public:
 		return cameraType_;
 	}
 
-	void SetVectors(Vector3 forward, Vector3 left, Vector3 up)
+	void SetVectors(Vector3 forward, Vector3 left, Vector3 up, bool updateViewMatrix = true)
 	{
 		forwardVector_ = forward;
 		leftVector_ = left;
 		upVector_ = up;
 
-		LookAt();
+		if (updateViewMatrix)
+		{
+			LookAt();
+		}
 	}
 
 	virtual void Destroy();

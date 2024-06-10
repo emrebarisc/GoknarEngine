@@ -3,6 +3,7 @@
 // Engine includes
 #include "Goknar/Camera.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Components/CameraComponent.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Managers/InputManager.h"
 #include "Goknar/Managers/WindowManager.h"
@@ -30,6 +31,12 @@ ArcherCharacterController::ArcherCharacterController(ArcherCharacter* archer) :
 	stopMovingRightDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::StopMovingRight>(this);
 	toggleDebugDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::ToggleDebug>(this);
 	toggleToggleFreeCameraDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::ToggleFreeCamera>(this);
+
+	dropBowDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::DropBow>(this);
+	equipBowDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::EquipBow>(this);
+	drawBowDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::DrawBow>(this);
+	looseBowDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::LooseBow>(this);
+
 	onScrollMoveDelegate_ = Delegate<void(double, double)>::create<ArcherCharacterController, &ArcherCharacterController::OnScrollMove>(this);
 	onCursorMoveDelegate_ = Delegate<void(double, double)>::create<ArcherCharacterController, &ArcherCharacterController::OnCursorMove>(this);
 
@@ -44,12 +51,14 @@ ArcherCharacterController::~ArcherCharacterController()
 void ArcherCharacterController::BeginGame()
 {
 	archerMovementComponent_ = dynamic_cast<ArcherPhysicsMovementComponent*>(archer_->GetMovementComponent());
-	thirdPersonCamera_ = archer_->GetThirdPersonCamera();
 
 	if (GetIsActive())
 	{
 		BindInputDelegates();
 	}
+
+	thirdPersonCameraComponent_ = archer_->GetThirdPersonCameraComponent();
+	SetNewCameraPosition();
 }
 
 void ArcherCharacterController::SetupInputs()
@@ -63,6 +72,8 @@ void ArcherCharacterController::SetIsActive(bool isActive)
 	if (isActive)
 	{
 		BindInputDelegates();
+		engine->GetCameraManager()->SetActiveCamera(thirdPersonCameraComponent_->GetCamera());
+		engine->GetInputManager()->SetIsCursorVisible(false);
 	}
 	else
 	{
@@ -88,6 +99,11 @@ void ArcherCharacterController::BindInputDelegates()
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::F2, INPUT_ACTION::G_RELEASE, toggleToggleFreeCameraDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, exitGameDelegate_);
 
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::G, INPUT_ACTION::G_PRESS, dropBowDelegate_);
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_1, INPUT_ACTION::G_PRESS, equipBowDelegate_);
+	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_PRESS, drawBowDelegate_);
+	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_RELEASE, looseBowDelegate_);
+
 	inputManager->AddScrollDelegate(onScrollMoveDelegate_);
 	inputManager->AddCursorDelegate(onCursorMoveDelegate_);
 }
@@ -108,41 +124,73 @@ void ArcherCharacterController::UnbindInputDelegates()
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::F2, INPUT_ACTION::G_RELEASE, toggleToggleFreeCameraDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, exitGameDelegate_);
 
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::G, INPUT_ACTION::G_PRESS, dropBowDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::NUM_1, INPUT_ACTION::G_PRESS, equipBowDelegate_);
+	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_PRESS, drawBowDelegate_);
+	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_RELEASE, looseBowDelegate_);
+
 	inputManager->RemoveScrollDelegate(onScrollMoveDelegate_);
 	inputManager->RemoveCursorDelegate(onCursorMoveDelegate_);
 }
 
 void ArcherCharacterController::OnCursorMove(double x, double y)
 {
-	if(isInFreeCamera_) return;
-
 	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
 	Vector2 windowCenter = windowSize * 0.5f;
-	Vector2 currentCursorPosition{(float)x, (float)y};
+	Vector2 currentCursorPosition{ (float)x, (float)y };
 
-	Vector2 cursorMovementVector = (currentCursorPosition - windowCenter) / 1000.f;
+	Vector2 cursorMovementVector = (windowCenter - currentCursorPosition) / 1000.f;
 
-	thirdPersonCamera_->RotateAbout(Vector3::UpVector, -cursorMovementVector.x);
+	Vector3 forwardVector = thirdPersonCameraComponent_->GetForwardVector();
 
-	if ((thirdPersonCamera_->GetForwardVector().z < 0.25f && 0.f < cursorMovementVector.y) ||
-		(-0.9f < thirdPersonCamera_->GetForwardVector().z && cursorMovementVector.y < 0.f))
+	Vector3 newForwardVector = forwardVector.RotateVectorAroundAxis(Vector3::UpVector, cursorMovementVector.x);
+	Vector3 newLeftVector = Vector3::Cross(Vector3::UpVector, newForwardVector);
+
+	if ((forwardVector.z < 0.25f && 0.f < cursorMovementVector.y) ||
+		(-0.9f < forwardVector.z && cursorMovementVector.y < 0.f))
 	{
-		thirdPersonCamera_->Pitch(cursorMovementVector.y);
+		newForwardVector = newForwardVector.RotateVectorAroundAxis(thirdPersonCameraComponent_->GetLeftVector(), -cursorMovementVector.y);
 	}
+
+	thirdPersonCameraComponent_->SetRelativeRotation(newForwardVector.GetRotationNormalized());
+
+	SetNewCameraPosition();
 
 	engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
 }
 
 void ArcherCharacterController::OnScrollMove(double x, double y)
 {
-	if(isInFreeCamera_) return;
 	if (0 < y)
 	{
-		archer_->DecreaseThirdPersonCameraDistance();
+		DecreaseThirdPersonCameraDistance();
 	}
 	else if (y < 0)
 	{
-		archer_->IncreaseThirdPersonCameraDistance();
+		IncreaseThirdPersonCameraDistance();
+	}
+}
+
+void ArcherCharacterController::SetNewCameraPosition()
+{
+	thirdPersonCameraComponent_->SetRelativePosition(Vector3(0.f, 0.f, 2.f) + thirdPersonCameraComponent_->GetCamera()->GetForwardVector() * -4.f * thirdPersonCameraDistance_);
+}
+
+void ArcherCharacterController::IncreaseThirdPersonCameraDistance()
+{
+	if (thirdPersonCameraDistance_ < 5.f)
+	{
+		thirdPersonCameraDistance_ += 0.25f;
+		SetNewCameraPosition();
+	}
+}
+
+void ArcherCharacterController::DecreaseThirdPersonCameraDistance()
+{
+	if (0.25f < thirdPersonCameraDistance_)
+	{
+		thirdPersonCameraDistance_ -= 0.25f;
+		SetNewCameraPosition();
 	}
 }
 
@@ -162,17 +210,6 @@ void ArcherCharacterController::ToggleWindowSize()
 void ArcherCharacterController::ToggleFreeCamera()
 {
 	Game* game = dynamic_cast<Game*>(engine->GetApplication());
-
-	if(isInFreeCamera_)
-	{
-		engine->GetCameraManager()->SetActiveCamera(archer_->GetThirdPersonCamera());
-		engine->GetInputManager()->SetIsCursorVisible(false);
-	}
-	else
-	{	
-		engine->GetCameraManager()->SetActiveCamera(game->GetFreeCameraObject()->GetFreeCameraController()->GetFreeCamera());
-		engine->GetInputManager()->SetIsCursorVisible(true);
-	}
 	
 	isInFreeCamera_ = !isInFreeCamera_;
 }
@@ -188,77 +225,61 @@ void ArcherCharacterController::ToggleChest()
 
 void ArcherCharacterController::DropBow()
 {
-	if(isInFreeCamera_) return;
-
 	archer_->HandleDropBowInput();
 }
 
 void ArcherCharacterController::EquipBow()
 {
-	if(isInFreeCamera_) return;
-
 	archer_->HandleEquipBowInput();
 }
 
 void ArcherCharacterController::DrawBow()
 {
-	if(isInFreeCamera_) return;
-
 	archer_->HandleDrawBowInput();
 }
 
 void ArcherCharacterController::LooseBow()
 {
-	if(isInFreeCamera_) return;
-
 	archer_->HandleLooseBowInput();
 }
 
 void ArcherCharacterController::MoveForward()
-{
-	if(isInFreeCamera_) return;
+{	
 	archerMovementComponent_->AddMovementDirection(Vector3::ForwardVector);
 }
 
 void ArcherCharacterController::StopMovingForward()
-{
-	if(isInFreeCamera_) return;
+{	
 	archerMovementComponent_->AddMovementDirection(-Vector3::ForwardVector);
 }
 
 void ArcherCharacterController::MoveBackward()
 {
-	if (isInFreeCamera_) return;
 	archerMovementComponent_->AddMovementDirection(-Vector3::ForwardVector);
 }
 
 void ArcherCharacterController::StopMovingBackward()
 {
-	if (isInFreeCamera_) return;
 	archerMovementComponent_->AddMovementDirection(Vector3::ForwardVector);
 }
 
 void ArcherCharacterController::MoveLeft()
 {
-	if (isInFreeCamera_) return;
 	archerMovementComponent_->AddMovementDirection(Vector3::LeftVector);
 }
 
 void ArcherCharacterController::StopMovingLeft()
 {
-	if (isInFreeCamera_) return;
 	archerMovementComponent_->AddMovementDirection(-Vector3::LeftVector);
 }
 
 void ArcherCharacterController::MoveRight()
 {
-	if (isInFreeCamera_) return;
 	archerMovementComponent_->AddMovementDirection(-Vector3::LeftVector);
 }
 
 void ArcherCharacterController::StopMovingRight()
 {
-	if (isInFreeCamera_) return;
 	archerMovementComponent_->AddMovementDirection(Vector3::LeftVector);
 }
 

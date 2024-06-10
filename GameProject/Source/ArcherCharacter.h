@@ -3,6 +3,7 @@
 #include "Goknar/Physics/Character.h"
 
 class Camera;
+class CameraComponent;
 class SkeletalMesh;
 
 class ArcherCharacterController;
@@ -32,25 +33,9 @@ public:
 		return controller_;
 	}
 
-	Camera* GetThirdPersonCamera() const
+	CameraComponent* GetThirdPersonCameraComponent() const
 	{
-		return thirdPersonCamera_;
-	}
-
-	void IncreaseThirdPersonCameraDistance()
-	{
-		if (thirdPersonCameraDistance_ < 5.f)
-		{
-			thirdPersonCameraDistance_ += 0.25f;
-		}
-	}
-	
-	void DecreaseThirdPersonCameraDistance()
-	{
-		if (0.25f < thirdPersonCameraDistance_)
-		{
-			thirdPersonCameraDistance_ -= 0.25f;
-		}
+		return thirdPersonCameraComponent_;
 	}
 
 	void Idle();
@@ -89,6 +74,7 @@ private:
 	SkeletalMesh* skeletalMesh_{ nullptr };
 
 	Camera* thirdPersonCamera_{ nullptr };
+	CameraComponent* thirdPersonCameraComponent_{ nullptr };
 
 	ArcherCharacterController* controller_{ nullptr };
 	
@@ -98,8 +84,6 @@ private:
 	SocketComponent* leftHandSocket_{ nullptr };
 	SocketComponent* rightHandSocket_{ nullptr };
 	SocketComponent* bowStringSocket_{ nullptr };
-
-	float thirdPersonCameraDistance_{ 1.f };
 
 	bool isBowEquiped_{ false };
 	bool isTorchEquiped_{ false };
