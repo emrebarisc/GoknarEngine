@@ -84,7 +84,8 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 	{
 		glEnable(GL_CULL_FACE);
 	}
-	else if (shadingModel_ == MaterialShadingModel::TwoSided)
+	else if (	shadingModel_ == MaterialShadingModel::TwoSided && 
+				(renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::GeometryBuffer))
 	{
 		glDisable(GL_CULL_FACE);
 	}

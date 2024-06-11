@@ -650,8 +650,8 @@ void Renderer::AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh)
 
 void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
 {
-	MaterialBlendModel materialShadingModel = skeletalMeshInstance->GetMaterial()->GetBlendModel();
-	switch (materialShadingModel)
+	MaterialBlendModel materialBlendModel = skeletalMeshInstance->GetMaterial()->GetBlendModel();
+	switch (materialBlendModel)
 	{
 	case MaterialBlendModel::Opaque:
 		opaqueSkeletalMeshInstances_.push_back(skeletalMeshInstance);
