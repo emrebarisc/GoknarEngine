@@ -84,7 +84,7 @@ void PointLight::SetShadowRenderPassShaderUniforms(const Shader* shader)
 {
 	shader->SetVector3(SHADER_VARIABLE_NAMES::SHADOW::LIGHT_POSITION, position_);
 	shader->SetFloat(SHADER_VARIABLE_NAMES::SHADOW::LIGHT_RADIUS, radius_);
-	shader->SetMatrixVector(SHADER_VARIABLE_NAMES::SHADOW::POINT_LIGHT_VIEW_MATRICES_ARRAY, viewMatrixVector_);
+	shader->SetMatrixArray(SHADER_VARIABLE_NAMES::SHADOW::POINT_LIGHT_VIEW_MATRICES_ARRAY, &viewMatrices_[0], 6);
 }
 
 void PointLight::SetPosition(const Vector3& position)
@@ -115,23 +115,21 @@ void PointLight::UpdateShadowViewProjectionMatrices()
 		return;
 	}
 
-	viewMatrixVector_.clear();
-
 	shadowMapRenderCamera_->SetVectors(Vector3{ 1.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 0.0f, -1.0f }, Vector3{ 0.0f, -1.0f, 0.0f });
-	viewMatrixVector_.push_back(shadowMapRenderCamera_->GetViewProjectionMatrix());
+	viewMatrices_[0] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 
 	shadowMapRenderCamera_->SetVectors(Vector3{ -1.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 1.0f }, Vector3{ 0.0f,-1.0f, 0.0f });
-	viewMatrixVector_.push_back(shadowMapRenderCamera_->GetViewProjectionMatrix());
+	viewMatrices_[1] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 
 	shadowMapRenderCamera_->SetVectors(Vector3{ 0.0f, 1.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 1.0f });
-	viewMatrixVector_.push_back(shadowMapRenderCamera_->GetViewProjectionMatrix());
+	viewMatrices_[2] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 
 	shadowMapRenderCamera_->SetVectors(Vector3{ 0.0f,-1.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 0.0f,-1.0f });
-	viewMatrixVector_.push_back(shadowMapRenderCamera_->GetViewProjectionMatrix());
+	viewMatrices_[3] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 
 	shadowMapRenderCamera_->SetVectors(Vector3{ 0.0f, 0.0f, 1.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, Vector3{ 0.0f,-1.0f, 0.0f });
-	viewMatrixVector_.push_back(shadowMapRenderCamera_->GetViewProjectionMatrix());
+	viewMatrices_[4] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 
 	shadowMapRenderCamera_->SetVectors(Vector3{ 0.0f, 0.0f,-1.0f }, Vector3{ -1.0f, 0.0f, 0.0f }, Vector3{ 0.0f,-1.0f, 0.0f });
-	viewMatrixVector_.push_back(shadowMapRenderCamera_->GetViewProjectionMatrix());
+	viewMatrices_[5] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 }

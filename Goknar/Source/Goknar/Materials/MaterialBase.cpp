@@ -104,7 +104,7 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 		engine->GetRenderer()->GetLightManager()->SetShadowRenderPassShaderUniforms(shader);
 	}
 
-	if (renderPassType == RenderPassType::Forward)
+	if (renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::Deferred)
 	{
 		engine->GetRenderer()->SetLightUniforms(shader);
 	}

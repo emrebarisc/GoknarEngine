@@ -152,7 +152,6 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* WEIGHTS = "outWeights";
 
 		const char* DIRECTIONAL_LIGHT_SPACE_FRAGMENT_POSITIONS = "directionalLightSpaceFragmentPositions";
-		const char* POINT_LIGHT_SPACE_FRAGMENT_POSITIONS = "pointLightSpaceFragmentPositions";
 		const char* SPOT_LIGHT_SPACE_FRAGMENT_POSITIONS = "spotLightSpaceFragmentPositions";
 	}
 

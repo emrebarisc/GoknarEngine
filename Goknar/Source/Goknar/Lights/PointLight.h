@@ -50,7 +50,7 @@ protected:
 private:
     void UpdateShadowViewProjectionMatrices();
 
-    std::vector<Matrix> viewMatrixVector_;
+    Matrix viewMatrices_[6];
     float radius_{ 100.f };
 };
 

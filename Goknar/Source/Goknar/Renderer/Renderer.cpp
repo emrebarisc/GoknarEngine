@@ -35,6 +35,7 @@
 #include "Goknar/IO/IOManager.h"
 
 #include "Goknar/Renderer/Shader.h"
+#include "Goknar/Renderer/ShaderBuilderNew.h"
 
 #define VERTEX_COLOR_LOCATION 0
 #define VERTEX_POSITION_LOCATION 1
@@ -1218,8 +1219,8 @@ void DeferredRenderingData::Init()
 	deferredRenderingMesh->PreInit();
 
 	deferredRenderingMeshShader = new Shader();
-	deferredRenderingMeshShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->GetVertexShaderScript_DeferredPass());
-	deferredRenderingMeshShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_DeferredPass());
+	deferredRenderingMeshShader->SetVertexShaderScript(ShaderBuilderNew::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
+	deferredRenderingMeshShader->SetFragmentShaderScript(ShaderBuilderNew::GetInstance()->DeferredRenderPass_GetFragmentShaderScript());
 
 #if defined(GOKNAR_BUILD_DEBUG)
 	IOManager::WriteFile((ContentDir + "DeferredRendering.vert").c_str(), deferredRenderingMeshShader->GetVertexShaderScript().c_str());

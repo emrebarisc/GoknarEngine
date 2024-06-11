@@ -49,7 +49,7 @@ Game::Game() : Application()
 	dancer_ = new Dancer();
 	lightController_ = new LightController();
 	sun_ = new Sun();
-	randomGrassSpawner_ = new RandomGrassSpawner();
+	//randomGrassSpawner_ = new RandomGrassSpawner();
 	fire_ = new Fire();
 	materialSphereSpawner_ = new MaterialSphereSpawner();
 

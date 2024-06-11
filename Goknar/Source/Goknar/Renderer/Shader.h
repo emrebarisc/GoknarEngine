@@ -115,6 +115,7 @@ public:
 	void SetFloat(const char* name, float value) const;
 	void SetMatrix(const char* name, const Matrix& matrix) const;
 	void SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector) const;
+	void SetMatrixArray(const char* name, const Matrix* matrixArray, int size) const;
 	void SetVector3(const char* name, const Vector3& vector) const;
 	void SetVector4(const char* name, const Vector4& vector) const;
 

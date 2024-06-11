@@ -72,31 +72,50 @@ void Material::Build(MeshUnit* meshUnit)
 	if(gBufferShader)
 	{
 		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer] = gBufferShader;
-		gBufferShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_GeometryBufferPass(meshUnit));
-		gBufferShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_GeometryBufferPass(this));
+
+		std::string vertexShader = ShaderBuilderNew::GetInstance()->GeometryBufferPass_GetVertexShaderScript(initializationData_, forwardRenderingShader);
+		gBufferShader->SetVertexShaderScript(vertexShader);
+
+		std::string fragmentShader = ShaderBuilderNew::GetInstance()->GeometryBufferPass_GetFragmentShaderScript(initializationData_, forwardRenderingShader);
+		gBufferShader->SetFragmentShaderScript(fragmentShader);
 	}
 
 	if (forwardRenderingShader->GetShaderType() == ShaderType::Scene)
 	{
-		//ShaderBuilder::GetInstance()->BuildShader(meshUnit, this);
-
-		std::string vertexShader = ShaderBuilderNew::GetInstance()->ForwardRender_GetVertexShaderScript(initializationData_, forwardRenderingShader);
+		std::string vertexShader = ShaderBuilderNew::GetInstance()->ForwardRenderPass_GetVertexShaderScript(initializationData_, forwardRenderingShader);
 		forwardRenderingShader->SetVertexShaderScript(vertexShader);
 
-		std::string fragmentShader = ShaderBuilderNew::GetInstance()->ForwardRender_GetFragmentShaderScript(initializationData_, forwardRenderingShader);
+		std::string fragmentShader = ShaderBuilderNew::GetInstance()->ForwardRenderPass_GetFragmentShaderScript(initializationData_, forwardRenderingShader);
 		forwardRenderingShader->SetFragmentShaderScript(fragmentShader);
 	}
 
-	Shader* shadowShader = new Shader();
-	shadowShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_ShadowPass(meshUnit));
-	shadowShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_ShadowPass());
-	renderPassTypeShaderMap_[RenderPassType::Shadow] = shadowShader;
+	{
+		Shader* shadowShader = new Shader();
 
-	Shader* pointLightShadowShader = new Shader();
-	pointLightShadowShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->BuildVertexShader_PointLightShadowPass(meshUnit));
-	pointLightShadowShader->SetGeometryShaderScript(ShaderBuilder::GetInstance()->GetGeometryShaderScript_PointLightShadowPass());
-	pointLightShadowShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->GetFragmentShaderScript_PointLightShadowPass());
-	renderPassTypeShaderMap_[RenderPassType::PointLightShadow] = pointLightShadowShader;
+		std::string shadowPassVertexShader = ShaderBuilderNew::GetInstance()->ShadowPass_GetVertexShaderScript(initializationData_, shadowShader);
+		shadowShader->SetVertexShaderScript(shadowPassVertexShader);
+
+		std::string shadowPassFragmentShader = ShaderBuilderNew::GetInstance()->ShadowPass_GetFragmentShaderScript(initializationData_, shadowShader);
+		shadowShader->SetFragmentShaderScript(shadowPassFragmentShader);
+
+		renderPassTypeShaderMap_[RenderPassType::Shadow] = shadowShader;
+	}
+
+	{
+		Shader* pointLightShadowShader = new Shader();
+
+		std::string pointLightShadowPassVertexShader = ShaderBuilderNew::GetInstance()->PointShadowPass_GetVertexShaderScript(initializationData_, pointLightShadowShader);
+		pointLightShadowShader->SetVertexShaderScript(pointLightShadowPassVertexShader);
+
+		std::string pointLightShadowPassGeometryShader = ShaderBuilderNew::GetInstance()->PointShadowPass_GetGeometryShaderScript(initializationData_, pointLightShadowShader);
+		pointLightShadowShader->SetGeometryShaderScript(pointLightShadowPassGeometryShader);
+
+		std::string pointLightShadowPassFragmentShader = ShaderBuilderNew::GetInstance()->PointShadowPass_GetFragmentShaderScript(initializationData_, pointLightShadowShader);
+		pointLightShadowShader->SetFragmentShaderScript(pointLightShadowPassFragmentShader);
+
+		renderPassTypeShaderMap_[RenderPassType::PointLightShadow] = pointLightShadowShader;
+	}
+
 }
 
 void Material::PreInit()

@@ -23,119 +23,366 @@ ShaderBuilderNew::~ShaderBuilderNew()
 {
 }
 
-std::string ShaderBuilderNew::ForwardRender_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
-{	
-	std::string vertexShader = "#version " + shaderVersion_ + "\n\n";
-	vertexShader += VS_GetMainLayouts();
-
-	const bool isSkeletalMesh = 0 < initializationData->boneCount;
-
-	std::string vertexShaderModelMatrixVariable = std::string(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX);
-
-	if (isSkeletalMesh)
-	{
-		vertexShader += VS_GetSkeletalMeshLayouts();
-		vertexShaderModelMatrixVariable = std::string(SHADER_VARIABLE_NAMES::POSITIONING::BONE_TRANSFORMATION_MATRIX) + " * " + vertexShaderModelMatrixVariable;
-		vertexShader += VS_GetSkeletalMeshVariables();
-		vertexShader += VS_GetSkeletalMeshUniforms(initializationData->boneCount);
-	}
-
-	vertexShader += VS_GetUniforms();
-
-	vertexShader += FS_GetDirectionalLightStruct();
-	vertexShader += FS_GetPointLightStruct();
-	vertexShader += FS_GetSpotLightStruct();
-	vertexShader += FS_GetLightArrayUniforms();
-
-	vertexShader += VS_GetLightShadowViewMatrixUniforms();
-	vertexShader += VS_GetLightOutputs();
-
-	if (!initializationData->vertexShaderFunctions.empty())
-	{
-		vertexShader += initializationData->vertexShaderFunctions;
-	}
-
-	if (!initializationData->vertexShaderUniforms.empty())
-	{
-		vertexShader += initializationData->vertexShaderUniforms;
-	}
-
-	vertexShader += R"(
-void main()
-{
-)";
-	if (isSkeletalMesh)
-	{
-		vertexShader += VS_GetSkeletalMeshWeightCalculation();
-	}
-	vertexShader += VS_GetMain(initializationData, vertexShaderModelMatrixVariable);
-	vertexShader += VS_GetVertexNormalText(initializationData);
-	vertexShader += R"(
-}
-)";
-	return vertexShader;
-}
-
-std::string ShaderBuilderNew::ForwardRender_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilderNew::General_FS_GetScript(const FragmentShaderInitializationData& fragmentShaderInitializationData) const
 {
 	std::string fragmentShader = "#version " + shaderVersion_ + "\n\n";
-	fragmentShader += FS_GetMaterialVariables();
-	fragmentShader += FS_GetDirectionalLightStruct();
-	fragmentShader += FS_GetPointLightStruct();
-	fragmentShader += FS_GetSpotLightStruct();
-	fragmentShader += FS_GetLightArrayUniforms();
-	fragmentShader += FS_GetShadowMapUniforms();
-	fragmentShader += FS_GetShaderTextureUniforms(initializationData, shader);
-	fragmentShader += FS_GetLightSpaceFragmentPositions();
+	fragmentShader += General_FS_GetMaterialVariables(fragmentShaderInitializationData);
+	fragmentShader += fragmentShaderInitializationData.outputVariables;
 
-	fragmentShader += FS_GetDirectionalLightColorFunction();
-	fragmentShader += FS_GetPointLightColorFunction();
-	fragmentShader += FS_GetSpotLightColorFunction();
+	bool includeLightOperations =
+		fragmentShaderInitializationData.renderPassType == RenderPassType::Forward ||
+		fragmentShaderInitializationData.renderPassType == RenderPassType::Deferred;
 
-	if (!initializationData->fragmentShaderFunctions.empty())
+	if (fragmentShaderInitializationData.renderPassType == RenderPassType::Deferred)
 	{
-		fragmentShader += initializationData->fragmentShaderFunctions;
+		fragmentShader += DeferredRenderPass_GetGBufferTextureUniforms();
+		fragmentShader += DeferredRenderPass_GetGBufferVariables();
+		fragmentShader += VS_GetLightShadowViewMatrixUniforms();
 	}
 
-	if (!initializationData->fragmentShaderFunctions.empty())
+	if (includeLightOperations)
 	{
-		fragmentShader += initializationData->fragmentShaderFunctions;
+		fragmentShader += FS_GetDirectionalLightStruct();
+		fragmentShader += FS_GetPointLightStruct();
+		fragmentShader += FS_GetSpotLightStruct();
+
+		fragmentShader += FS_GetLightArrayUniforms();
+		fragmentShader += FS_GetShadowMapUniforms();
+		fragmentShader += FS_GetLightSpaceFragmentPositions(fragmentShaderInitializationData);
+
+		fragmentShader += FS_GetDirectionalLightColorFunction();
+		fragmentShader += FS_GetPointLightColorFunction();
+		fragmentShader += FS_GetSpotLightColorFunction();
+	}
+
+	fragmentShader += General_FS_GetShaderTextureUniforms(fragmentShaderInitializationData.materialInitializationData, fragmentShaderInitializationData.shader);
+
+	if (fragmentShaderInitializationData.materialInitializationData && !fragmentShaderInitializationData.materialInitializationData->fragmentShaderFunctions.empty())
+	{
+		fragmentShader += fragmentShaderInitializationData.materialInitializationData->fragmentShaderFunctions;
+	}
+
+	if (fragmentShaderInitializationData.materialInitializationData && !fragmentShaderInitializationData.materialInitializationData->fragmentShaderUniforms.empty())
+	{
+		fragmentShader += fragmentShaderInitializationData.materialInitializationData->fragmentShaderUniforms;
 	}
 
 	fragmentShader += R"(
 void main()
 {
 )";
-	fragmentShader += FS_InitializeBaseColor(initializationData);
-	fragmentShader += "\t vec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = vec3(0.f);\n";;
-	fragmentShader += FS_GetLightCalculationIterators();
-	fragmentShader += FS_GetFinalColorCalculation();
+	if (fragmentShaderInitializationData.renderPassType == RenderPassType::Forward ||
+		fragmentShaderInitializationData.renderPassType == RenderPassType::GeometryBuffer)
+	{
+		fragmentShader += FS_InitializeBaseColor(fragmentShaderInitializationData.materialInitializationData);
+	}
+	else if(fragmentShaderInitializationData.renderPassType == RenderPassType::Deferred)
+	{
+		fragmentShader += DeferredRenderPass_GetGBufferVariableAssignments();
+		fragmentShader += VS_GetLightSpaceFragmentPositionCalculations();
+	}
+
+	if (includeLightOperations)
+	{
+		fragmentShader += "\t vec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = vec3(0.f);\n";;
+		fragmentShader += FS_GetLightCalculationIterators();
+	}
+	fragmentShader += fragmentShaderInitializationData.outputVariableAssignments;
 	fragmentShader += R"(
 })";
 
 	return fragmentShader;
 }
 
-std::string ShaderBuilderNew::FS_GetMaterialVariables() const
+std::string ShaderBuilderNew::General_VS_GetScript(const VertexShaderInitializationData& vertexShaderInitializationData) const
 {
+	std::string vertexShader = "#version " + shaderVersion_ + "\n\n";
+	vertexShader += VS_GetMainLayouts();
 
+	std::string vertexShaderModelMatrixVariable = std::string(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX);
+
+	if (0 < vertexShaderInitializationData.materialInitializationData->boneCount)
+	{
+		vertexShader += VS_GetSkeletalMeshLayouts();
+		vertexShaderModelMatrixVariable = std::string(SHADER_VARIABLE_NAMES::POSITIONING::BONE_TRANSFORMATION_MATRIX) + " * " + vertexShaderModelMatrixVariable;
+		vertexShader += VS_GetSkeletalMeshVariables();
+		vertexShader += VS_GetSkeletalMeshUniforms(vertexShaderInitializationData.materialInitializationData->boneCount);
+	}
+
+	vertexShader += VS_GetUniforms();
+
+	bool includeLightOperations = vertexShaderInitializationData.renderPassType == RenderPassType::Forward;
+
+	if (includeLightOperations)
+	{
+		vertexShader += FS_GetDirectionalLightStruct();
+		vertexShader += FS_GetPointLightStruct();
+		vertexShader += FS_GetSpotLightStruct();
+		vertexShader += FS_GetLightArrayUniforms();
+
+		vertexShader += VS_GetLightShadowViewMatrixUniforms();
+		vertexShader += VS_GetLightOutputs();
+	}
+
+	if (!vertexShaderInitializationData.materialInitializationData->vertexShaderFunctions.empty())
+	{
+		vertexShader += vertexShaderInitializationData.materialInitializationData->vertexShaderFunctions;
+	}
+
+	if (!vertexShaderInitializationData.materialInitializationData->vertexShaderUniforms.empty())
+	{
+		vertexShader += vertexShaderInitializationData.materialInitializationData->vertexShaderUniforms;
+	}
+
+	vertexShader += R"(
+void main()
+{
+)";
+	if (0 < vertexShaderInitializationData.materialInitializationData->boneCount)
+	{
+		vertexShader += VS_GetSkeletalMeshWeightCalculation();
+	}
+	vertexShader += VS_GetMain(vertexShaderInitializationData, vertexShaderModelMatrixVariable);
+	vertexShader += VS_GetVertexNormalText(vertexShaderInitializationData.materialInitializationData);
+	vertexShader += R"(
+}
+)";
+
+	return vertexShader;
+}
+
+std::string ShaderBuilderNew::ForwardRenderPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	VertexShaderInitializationData vertexShaderInitializationData;
+	vertexShaderInitializationData.materialInitializationData = initializationData;
+	vertexShaderInitializationData.shader = shader;
+	vertexShaderInitializationData.renderPassType = RenderPassType::Forward;
+	return General_VS_GetScript(vertexShaderInitializationData);
+}
+
+std::string ShaderBuilderNew::ForwardRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	std::string outputVariables = FS_GetOutputVariables();
+	std::string outputVariableAssignments = FS_GetOutputVariableAssignments();
+
+	FragmentShaderInitializationData fragmentShaderInitializationData(outputVariables, outputVariableAssignments);
+	fragmentShaderInitializationData.materialInitializationData = initializationData;
+	fragmentShaderInitializationData.shader = shader;
+	fragmentShaderInitializationData.renderPassType = RenderPassType::Forward;
+	return General_FS_GetScript(fragmentShaderInitializationData);
+}
+
+std::string ShaderBuilderNew::GeometryBufferPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	VertexShaderInitializationData vertexShaderInitializationData;
+	vertexShaderInitializationData.materialInitializationData = initializationData;
+	vertexShaderInitializationData.shader = shader;
+	vertexShaderInitializationData.renderPassType = RenderPassType::GeometryBuffer;
+	return General_VS_GetScript(vertexShaderInitializationData);
+}
+
+std::string ShaderBuilderNew::GeometryBufferPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	std::string outputVariables = GeometryBufferPass_GetOutputVariables();
+	std::string outputVariableAssignments = GeometryBufferPass_GetOutputVariableAssignments();
+
+	FragmentShaderInitializationData fragmentShaderInitializationData(outputVariables, outputVariableAssignments);
+	fragmentShaderInitializationData.materialInitializationData = initializationData;
+	fragmentShaderInitializationData.shader = shader;
+	fragmentShaderInitializationData.renderPassType = RenderPassType::GeometryBuffer;
+	return General_FS_GetScript(fragmentShaderInitializationData);
+}
+
+std::string ShaderBuilderNew::ShadowPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	VertexShaderInitializationData vertexShaderInitializationData;
+	vertexShaderInitializationData.materialInitializationData = initializationData;
+	vertexShaderInitializationData.shader = shader;
+	vertexShaderInitializationData.renderPassType = RenderPassType::Shadow;
+	return General_VS_GetScript(vertexShaderInitializationData);
+}
+
+std::string ShaderBuilderNew::ShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	std::string shadowPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
+	shadowPassFragmentShader += R"(
+void main()
+{
+})";
+	return shadowPassFragmentShader;
+}
+
+std::string ShaderBuilderNew::PointShadowPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	VertexShaderInitializationData vertexShaderInitializationData;
+	vertexShaderInitializationData.materialInitializationData = initializationData;
+	vertexShaderInitializationData.shader = shader;
+	vertexShaderInitializationData.renderPassType = RenderPassType::PointLightShadow;
+	return General_VS_GetScript(vertexShaderInitializationData);
+}
+
+std::string ShaderBuilderNew::PointShadowPass_GetGeometryShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	std::string pointShadowPassGeometryShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
+	pointShadowPassGeometryShader += R"(
+layout (triangles) in;
+layout (triangle_strip, max_vertices=18) out;
+
+uniform mat4 )" + std::string(SHADER_VARIABLE_NAMES::SHADOW::POINT_LIGHT_VIEW_MATRICES_ARRAY) + R"([6];
+
+out vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
+
+void main()
+{
+	for(int face = 0; face < 6; ++face)
+	{
+		gl_Layer = face;
+		for(int i = 0; i < 3; ++i)
+		{
+			)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = gl_in[i].gl_Position;
+			gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " * " + SHADER_VARIABLE_NAMES::SHADOW::POINT_LIGHT_VIEW_MATRICES_ARRAY + R"([face];
+			EmitVertex();
+		}    
+		EndPrimitive();
+	}
+} 
+)";
+	return pointShadowPassGeometryShader;
+}
+
+std::string ShaderBuilderNew::PointShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	std::string shadowPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
+	shadowPassFragmentShader += R"(
+
+in vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
+
+uniform vec3 )" + SHADER_VARIABLE_NAMES::SHADOW::LIGHT_POSITION + R"(;
+uniform float )" + SHADER_VARIABLE_NAMES::SHADOW::LIGHT_RADIUS + R"(;
+
+void main()
+{
+	float lightDistance = length()" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"(.xyz - )" + SHADER_VARIABLE_NAMES::SHADOW::LIGHT_POSITION + R"();
+    lightDistance /= )" + SHADER_VARIABLE_NAMES::SHADOW::LIGHT_RADIUS + R"(;
+	gl_FragDepth = lightDistance;
+})";
+	return shadowPassFragmentShader;
+}
+
+std::string ShaderBuilderNew::DeferredRenderPass_GetVertexShaderScript()
+{
+	return 
+		R"(#version )" + std::string(DEFAULT_SHADER_VERSION) + "\n" +
+		VS_GetMainLayouts() + 
+		R"(
+out vec2 )" + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + R"(;
+
+void main()
+{
+	gl_Position = vec4()" + SHADER_VARIABLE_NAMES::VERTEX::POSITION + R"(, 1.f);
+	)" + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + R"( = 0.5f * gl_Position.xy + vec2(0.5f);
+})";
+}
+
+std::string ShaderBuilderNew::DeferredRenderPass_GetFragmentShaderScript()
+{
+	std::string outputVariables = FS_GetOutputVariables();
+	std::string outputVariableAssignments = FS_GetOutputVariableAssignments();
+
+	FragmentShaderInitializationData fragmentShaderInitializationData(outputVariables, outputVariableAssignments);
+	fragmentShaderInitializationData.renderPassType = RenderPassType::Deferred;
+	return General_FS_GetScript(fragmentShaderInitializationData);
+}
+
+std::string ShaderBuilderNew::FS_GetOutputVariables() const
+{
+	std::string output = "\n// Base Material Variables\n";
+
+	output += "out vec4 ";
+	output += SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR;
+	output += ";\n\n\n";
+
+	return output;
+}
+
+std::string ShaderBuilderNew::FS_GetOutputVariableAssignments() const
+{
+	return std::string("\t") + SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR + " = vec4(" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY + ", 1.f) * " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + ";";;
+}
+
+std::string ShaderBuilderNew::GeometryBufferPass_GetOutputVariables() const
+{
+	std::string variables = R"(
+
+layout(location = 0) out vec3 )" + std::string(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION) + R"(;
+layout(location = 1) out vec4 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
+layout(location = 2) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(;
+layout(location = 3) out vec4 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(;
+
+)";
+
+	return variables;
+}
+
+std::string ShaderBuilderNew::GeometryBufferPass_GetOutputVariableAssignments() const
+{
+	std::string assignments = 
+R"(
+	)" + std::string(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG) + " = vec4(" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + ", " + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"();
+	)" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"(.xyz;
+	)" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + " = vec4(" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ", " + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"();
+	)" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + " = " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.xyz;
+)";
+	return assignments;
+}
+
+std::string ShaderBuilderNew::DeferredRenderPass_GetGBufferTextureUniforms() const
+{
+	return R"(
+uniform sampler2D )" + std::string(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION) + R"(;
+uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
+uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(;
+uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(;
+)";
+}
+
+std::string ShaderBuilderNew::DeferredRenderPass_GetGBufferVariables() const
+{
+	return R"(
+vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
+vec4 )" + SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR + R"(;
+vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"(;
+vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(;
+float )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"(;
+float )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
+)";
+}
+
+std::string ShaderBuilderNew::DeferredRenderPass_GetGBufferVariableAssignments() const
+{
+	return R"(
+	vec4 )" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR) + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
+
+	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"( = vec4(texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz, 1.f);
+
+	vec4 fragmentNormalAndPhongExponent = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
+	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(= fragmentNormalAndPhongExponent.xyz;
+	)" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"(= pow(2.f, fragmentNormalAndPhongExponent.a);
+
+	vec4 specularAndTranslucency = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
+	)" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( = specularAndTranslucency.xyz;
+	)" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"( = specularAndTranslucency.a;
+)";
+}
+
+std::string ShaderBuilderNew::General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const
+{
 	std::string materialVariableText = "\n// Base Material Variables\n";
 
-	materialVariableText += "out vec4 ";
-	materialVariableText += SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR;
-	materialVariableText += ";\n\n\n";
-
 	materialVariableText += "//---------------------------------PBR------------------------------------\n";
-	materialVariableText += "uniform vec4 ";
-	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR;
-	materialVariableText += ";\n";
 
 	materialVariableText += "uniform vec3 ";
 	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::EMMISIVE_COLOR;
-	materialVariableText += ";\n";
-
-	materialVariableText += "uniform vec3 ";
-	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR;
 	materialVariableText += ";\n";
 
 	materialVariableText += "uniform float ";
@@ -151,14 +398,6 @@ std::string ShaderBuilderNew::FS_GetMaterialVariables() const
 	materialVariableText += ";\n";
 	materialVariableText += "//------------------------------------------------------------------------";
 	materialVariableText += "\n\n\n";
-
-	materialVariableText += "uniform float ";
-	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT;
-	materialVariableText += ";\n\n";
-
-	materialVariableText += "uniform float ";
-	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY;
-	materialVariableText += ";\n";
 	materialVariableText += "//------------------------------------------------------------------------";
 	materialVariableText += "\n\n\n";
 
@@ -171,31 +410,56 @@ std::string ShaderBuilderNew::FS_GetMaterialVariables() const
 	materialVariableText += ";\n";
 
 	materialVariableText += "in vec4 ";
-	materialVariableText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE;
-	materialVariableText += ";\n";
-
-	materialVariableText += "in vec4 ";
 	materialVariableText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE;
-	materialVariableText += ";\n";
-
-	materialVariableText += "in vec3 ";
-	materialVariableText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
 	materialVariableText += ";\n";
 
 	materialVariableText += "in vec2 ";
 	materialVariableText += SHADER_VARIABLE_NAMES::TEXTURE::UV;
 	materialVariableText += ";\n";
 
+	if( fragmentShaderInitializationData.renderPassType == RenderPassType::Forward ||
+		fragmentShaderInitializationData.renderPassType == RenderPassType::GeometryBuffer)
+	{
+		materialVariableText += "in vec4 ";
+		materialVariableText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE;
+		materialVariableText += ";\n";
+
+		materialVariableText += "uniform vec4 ";
+		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR;
+		materialVariableText += ";\n";
+
+		materialVariableText += "uniform vec3 ";
+		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR;
+		materialVariableText += ";\n";
+
+		materialVariableText += "in vec3 ";
+		materialVariableText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
+		materialVariableText += ";\n";
+
+		materialVariableText += "uniform float ";
+		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT;
+		materialVariableText += ";\n\n";
+
+		materialVariableText += "uniform float ";
+		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY;
+		materialVariableText += ";\n";
+	}
+
 	return materialVariableText;
 }
 
-std::string ShaderBuilderNew::FS_GetLightSpaceFragmentPositions() const
+std::string ShaderBuilderNew::FS_GetLightSpaceFragmentPositions(const FragmentShaderInitializationData& fragmentShaderInitializationData) const
 {
+	std::string variableTypes = "in vec4 ";
+	if (fragmentShaderInitializationData.renderPassType == RenderPassType::Deferred)
+	{
+		variableTypes = "vec4 ";
+	}
+
 	std::string lightSpaceFragmentPositions = "";
 
-	lightSpaceFragmentPositions += "in vec4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::DIRECTIONAL_LIGHT_SPACE_FRAGMENT_POSITIONS) + "[" + std::to_string(MAX_DIRECTIONAL_LIGHT_COUNT) + "];\n";
-	lightSpaceFragmentPositions += "in vec4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::POINT_LIGHT_SPACE_FRAGMENT_POSITIONS) + "[" + std::to_string(MAX_POINT_LIGHT_COUNT) + "];\n";
-	lightSpaceFragmentPositions += "in vec4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::SPOT_LIGHT_SPACE_FRAGMENT_POSITIONS) + "[" + std::to_string(MAX_SPOT_LIGHT_COUNT) + "];\n";
+	lightSpaceFragmentPositions += variableTypes + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::DIRECTIONAL_LIGHT_SPACE_FRAGMENT_POSITIONS) + "[" + std::to_string(MAX_DIRECTIONAL_LIGHT_COUNT) + "];\n";
+	lightSpaceFragmentPositions += variableTypes + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::SPOT_LIGHT_SPACE_FRAGMENT_POSITIONS) + "[" + std::to_string(MAX_SPOT_LIGHT_COUNT) + "];\n";
 
 	return lightSpaceFragmentPositions;
 }
@@ -475,8 +739,13 @@ uniform sampler2DShadow )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGH
 )";
 }
 
-std::string ShaderBuilderNew::FS_GetShaderTextureUniforms(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilderNew::General_FS_GetShaderTextureUniforms(MaterialInitializationData* initializationData, const Shader* shader) const
 {
+	if (!shader)
+	{
+		return "";
+	}
+
 	std::string uniforms = "";
 
 	const std::vector<const Texture*>* textures = shader->GetTextures();
@@ -489,15 +758,15 @@ std::string ShaderBuilderNew::FS_GetShaderTextureUniforms(MaterialInitialization
 		switch (texture->GetTextureUsage())
 		{
 		case TextureUsage::Diffuse:
-			if (initializationData->baseColor.result.empty())
+			if (initializationData && initializationData->baseColor.result.empty())
 			{
-				initializationData->baseColor.result = FS_GetDiffuseTextureSampling(texture->GetName());
+				initializationData->baseColor.result = General_FS_GetDiffuseTextureSampling(texture->GetName());
 			}
 			break;
 		case TextureUsage::Normal:
-			if (initializationData->fragmentNormal.result.empty())
+			if (initializationData && initializationData->fragmentNormal.result.empty())
 			{
-				initializationData->fragmentNormal.result = FS_GetNormalTextureSampling(texture->GetName());
+				initializationData->fragmentNormal.result = General_FS_GetNormalTextureSampling(texture->GetName());
 			}
 			break;
 		default:
@@ -512,12 +781,12 @@ std::string ShaderBuilderNew::FS_GetShaderTextureUniforms(MaterialInitialization
 	return uniforms;
 }
 
-std::string ShaderBuilderNew::FS_GetDiffuseTextureSampling(const std::string& textureName) const
+std::string ShaderBuilderNew::General_FS_GetDiffuseTextureSampling(const std::string& textureName) const
 {
 	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + "); ");
 }
 
-std::string ShaderBuilderNew::FS_GetNormalTextureSampling(const std::string& textureName) const
+std::string ShaderBuilderNew::General_FS_GetNormalTextureSampling(const std::string& textureName) const
 {
 	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ") * 0.5f + vec4(0.5f); ");
 }
@@ -636,14 +905,14 @@ std::string ShaderBuilderNew::FS_InitializeBaseColor(MaterialInitializationData*
 {
 	std::string result = "";
 
-	if (!initializationData->baseColor.calculation.empty())
+	if (initializationData && !initializationData->baseColor.calculation.empty())
 	{
 		result += initializationData->baseColor.calculation + "\n";
 	}
 	
 	result += std::string("\tvec4 ") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + " = ";
 
-	if (!initializationData->baseColor.result.empty())
+	if (initializationData && !initializationData->baseColor.result.empty())
 	{
 		result += initializationData->baseColor.result;
 	}
@@ -652,17 +921,12 @@ std::string ShaderBuilderNew::FS_InitializeBaseColor(MaterialInitializationData*
 		result += std::string(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR) + ";";
 	}
 
-	if (initializationData->owner->GetBlendModel() == MaterialBlendModel::Masked)
+	if (initializationData && initializationData->owner->GetBlendModel() == MaterialBlendModel::Masked)
 	{
 		result += "\tif (" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR) + ".a < 0.5f) discard;\n";
 	}
 
 	return result;
-}
-
-std::string ShaderBuilderNew::FS_GetFinalColorCalculation() const
-{
-	return std::string("\t") + SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR + " = vec4(" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY + ", 1.f) * " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + ";";
 }
 
 std::string ShaderBuilderNew::VS_GetMainLayouts() const
@@ -794,7 +1058,6 @@ std::string ShaderBuilderNew::VS_GetLightOutputs() const
 	return R"(
 
 out vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::DIRECTIONAL_LIGHT_SPACE_FRAGMENT_POSITIONS) + "[" + std::to_string(MAX_DIRECTIONAL_LIGHT_COUNT) + "]" + R"(;
-out vec4 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::POINT_LIGHT_SPACE_FRAGMENT_POSITIONS + "[" + std::to_string(MAX_POINT_LIGHT_COUNT) + "]" + R"(;
 out vec4 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::SPOT_LIGHT_SPACE_FRAGMENT_POSITIONS + "[" + std::to_string(MAX_SPOT_LIGHT_COUNT) + "]" + R"(;
 
 )";
@@ -826,22 +1089,25 @@ std::string ShaderBuilderNew::VS_GetSkeletalMeshWeightCalculation() const
 	return weightCalculation;
 }
 
-std::string ShaderBuilderNew::VS_GetMain(MaterialInitializationData* initializationData, const std::string& vertexShaderModelMatrixVariable) const
+std::string ShaderBuilderNew::VS_GetMain(const VertexShaderInitializationData& vertexShaderInitializationData, const std::string& vertexShaderModelMatrixVariable) const
 {
 	std::string vsMain = VS_GetPosition();
-	vsMain += VS_GetPositionOffset(initializationData);
+	vsMain += VS_GetPositionOffset(vertexShaderInitializationData.materialInitializationData);
 
 	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + vertexShaderModelMatrixVariable + ";\n";
 	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = vec4()" + SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION + R"(, 1.f)* )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";\n";
 	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"( = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + " * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
 
-	vsMain += VS_GetLightSpaceFragmentPositionCalculations();
+	if (vertexShaderInitializationData.renderPassType == RenderPassType::Forward)
+	{
+		vsMain += VS_GetLightSpaceFragmentPositionCalculations();
+	}
 
 	vsMain += R"(
 	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"(;
 )";
 
-	vsMain += VS_GetUV(initializationData);
+	vsMain += VS_GetUV(vertexShaderInitializationData.materialInitializationData);
 
 	return vsMain;
 }

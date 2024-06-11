@@ -236,6 +236,17 @@ void Shader::SetMatrixVector(const char* name, const std::vector<Matrix>& matrix
 	glUniformMatrix4fv(uniformLocation, size, GL_FALSE, &matrixVector[0].m[0]);
 }
 
+void Shader::SetMatrixArray(const char* name, const Matrix* matrixArray, int size) const
+{
+	if (size == 0)
+	{
+		return;
+	}
+
+	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	glUniformMatrix4fv(uniformLocation, size, GL_FALSE, &matrixArray->m[0]);
+}
+
 void Shader::SetVector3(const char* name, const Vector3& vector) const
 {
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
