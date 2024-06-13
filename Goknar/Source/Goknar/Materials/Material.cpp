@@ -73,10 +73,10 @@ void Material::Build(MeshUnit* meshUnit)
 	{
 		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer] = gBufferShader;
 
-		std::string vertexShader = ShaderBuilderNew::GetInstance()->GeometryBufferPass_GetVertexShaderScript(initializationData_, forwardRenderingShader);
+		std::string vertexShader = ShaderBuilderNew::GetInstance()->GeometryBufferPass_GetVertexShaderScript(initializationData_, gBufferShader);
 		gBufferShader->SetVertexShaderScript(vertexShader);
 
-		std::string fragmentShader = ShaderBuilderNew::GetInstance()->GeometryBufferPass_GetFragmentShaderScript(initializationData_, forwardRenderingShader);
+		std::string fragmentShader = ShaderBuilderNew::GetInstance()->GeometryBufferPass_GetFragmentShaderScript(initializationData_, gBufferShader);
 		gBufferShader->SetFragmentShaderScript(fragmentShader);
 	}
 
