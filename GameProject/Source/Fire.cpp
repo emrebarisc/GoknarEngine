@@ -15,7 +15,7 @@ Fire::Fire() :
 	fireLight_ = new PointLight();
 	fireLight_->SetColor(Vector3{ 0.7605246901512146f, 0.09758714586496353f, 0.015996338799595833f });
 	fireLight_->SetIntensity(fireIntensity_);
-	fireLight_->SetRadius(100.f);
+	fireLight_->SetRadius(25.f);
 	fireLight_->SetIsShadowEnabled(true);
 	fireLight_->SetLightMobility(LightMobility::Dynamic);
 	engine->GetApplication()->GetMainScene()->AddPointLight(fireLight_);
@@ -31,7 +31,7 @@ void Fire::BeginGame()
 
 	if (engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult))
 	{
-		SetWorldPosition(raycastResult.hitPosition + Vector3{ 0.f, 0.f, 2.f });
+		SetWorldPosition(raycastResult.hitPosition + Vector3{ 0.f, 0.f, 3.f });
 	}
 }
 
