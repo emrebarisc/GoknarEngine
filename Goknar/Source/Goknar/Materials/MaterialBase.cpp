@@ -80,12 +80,16 @@ void IMaterialBase::Use(RenderPassType renderPassType) const
 
 void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix) const
 {
-	if (shadingModel_ == MaterialShadingModel::Default)
+	bool cullBackFaces = 
+		shadingModel_ == MaterialShadingModel::Default && 
+		(	renderPassType == RenderPassType::Forward ||
+			renderPassType == RenderPassType::GeometryBuffer);
+
+	if (cullBackFaces)
 	{
 		glEnable(GL_CULL_FACE);
 	}
-	else if (	shadingModel_ == MaterialShadingModel::TwoSided && 
-				(renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::GeometryBuffer))
+	else
 	{
 		glDisable(GL_CULL_FACE);
 	}

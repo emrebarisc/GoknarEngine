@@ -244,7 +244,7 @@ void Shader::SetMatrixArray(const char* name, const Matrix* matrixArray, int siz
 	}
 
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
-	glUniformMatrix4fv(uniformLocation, size, GL_FALSE, &matrixArray->m[0]);
+	glUniformMatrix4fv(uniformLocation, size, GL_FALSE, &matrixArray[0].m[0]);
 }
 
 void Shader::SetVector3(const char* name, const Vector3& vector) const

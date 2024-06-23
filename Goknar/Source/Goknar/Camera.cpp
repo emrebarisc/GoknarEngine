@@ -24,11 +24,11 @@ Camera::Camera()
 	engine->GetCameraManager()->AddCamera(this);
 }
 
-Camera::Camera(const Vector3& position, const Vector3& gaze, const Vector3& up) : 
+Camera::Camera(const Vector3& position, const Vector3& forward, const Vector3& up) : 
 	Camera()
 {
 	position_ = position;
-	forwardVector_ = gaze;
+	forwardVector_ = forward;
 	upVector_ = up;
 	leftVector_ = forwardVector_.Cross(upVector_);
 	projection_ = CameraProjection::Perspective;

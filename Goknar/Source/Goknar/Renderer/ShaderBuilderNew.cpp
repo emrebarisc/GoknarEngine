@@ -143,7 +143,6 @@ void main()
 		vertexShader += VS_GetSkeletalMeshWeightCalculation();
 	}
 	vertexShader += VS_GetMain(vertexShaderInitializationData, vertexShaderModelMatrixVariable);
-	vertexShader += VS_GetVertexNormalText(vertexShaderInitializationData.materialInitializationData);
 	vertexShader += R"(
 }
 )";
@@ -1096,18 +1095,34 @@ std::string ShaderBuilderNew::VS_GetMain(const VertexShaderInitializationData& v
 
 	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + vertexShaderModelMatrixVariable + ";\n";
 	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = vec4()" + SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION + R"(, 1.f)* )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";\n";
-	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"( = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + " * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
+	
+	bool isPointLightShadowPass = vertexShaderInitializationData.renderPassType == RenderPassType::PointLightShadow;
+	
+	if (!isPointLightShadowPass)
+	{
+		vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"( = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + " * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
+	}
 
 	if (vertexShaderInitializationData.renderPassType == RenderPassType::Forward)
 	{
 		vsMain += VS_GetLightSpaceFragmentPositionCalculations();
 	}
 
-	vsMain += R"(
-	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"(;
-)";
+	if (!isPointLightShadowPass)
+	{
+		vsMain += VS_GetUV(vertexShaderInitializationData.materialInitializationData);
+		vsMain += VS_GetVertexNormalText(vertexShaderInitializationData.materialInitializationData);
 
-	vsMain += VS_GetUV(vertexShaderInitializationData.materialInitializationData);
+		vsMain += R"(
+	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"(;
+	)";
+	}
+	else
+	{
+		vsMain += R"(
+	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
+	)";	
+	}
 
 	return vsMain;
 }

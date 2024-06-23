@@ -18,10 +18,7 @@ public:
         radius_ = 25.f;
     }
 
-    virtual ~PointLight() override
-    {
-        
-    }
+    virtual ~PointLight() override;
 
     void PreInit() override;
     void Init() override;
@@ -48,9 +45,11 @@ public:
 protected:
 
 private:
+    void AllocateViewMatrices();
+    void DeallocateViewMatrices();
     void UpdateShadowViewProjectionMatrices();
 
-    Matrix viewMatrices_[6];
+    Matrix* viewMatrices_{ nullptr };
     float radius_{ 100.f };
 };
 

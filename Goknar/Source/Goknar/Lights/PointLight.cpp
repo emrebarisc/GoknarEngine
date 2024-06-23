@@ -12,6 +12,11 @@
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"
 
+PointLight::~PointLight()
+{
+	DeallocateViewMatrices();
+}
+
 void PointLight::PreInit()
 {
 	if (isShadowEnabled_)
@@ -46,6 +51,7 @@ void PointLight::PreInit()
 		shadowMapRenderCamera_->SetFOV(90.f);
 		shadowMapRenderCamera_->SetPosition(position_);
 
+		AllocateViewMatrices();
 		UpdateShadowViewProjectionMatrices();
 	}
 
@@ -84,52 +90,98 @@ void PointLight::SetShadowRenderPassShaderUniforms(const Shader* shader)
 {
 	shader->SetVector3(SHADER_VARIABLE_NAMES::SHADOW::LIGHT_POSITION, position_);
 	shader->SetFloat(SHADER_VARIABLE_NAMES::SHADOW::LIGHT_RADIUS, radius_);
-	shader->SetMatrixArray(SHADER_VARIABLE_NAMES::SHADOW::POINT_LIGHT_VIEW_MATRICES_ARRAY, &viewMatrices_[0], 6);
+	shader->SetMatrixArray(SHADER_VARIABLE_NAMES::SHADOW::POINT_LIGHT_VIEW_MATRICES_ARRAY, viewMatrices_, 6);
 }
 
 void PointLight::SetPosition(const Vector3& position)
 {
 	Light::SetPosition(position);
 
-	shadowMapRenderCamera_->SetPosition(position);
-
 	if (isShadowEnabled_)
 	{
+		shadowMapRenderCamera_->SetPosition(position);
 		UpdateShadowViewProjectionMatrices();
 	}
 }
 
 void PointLight::SetIsShadowEnabled(bool isShadowEnabled)
 {
-	Light::SetIsShadowEnabled(isShadowEnabled);
-	if (isShadowEnabled && shadowMapRenderCamera_)
-	{
-		shadowMapRenderCamera_->SetPosition(position_);
-	}
-}
-
-void PointLight::UpdateShadowViewProjectionMatrices()
-{
-	if (!shadowMapRenderCamera_)
+	if (isShadowEnabled_ == isShadowEnabled)
 	{
 		return;
 	}
 
-	shadowMapRenderCamera_->SetVectors(Vector3{ 1.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 0.0f, -1.0f }, Vector3{ 0.0f, -1.0f, 0.0f });
+	Light::SetIsShadowEnabled(isShadowEnabled);
+	if (isShadowEnabled)
+	{
+		AllocateViewMatrices();
+
+		if (shadowMapRenderCamera_)
+		{
+			shadowMapRenderCamera_->SetPosition(position_);
+			UpdateShadowViewProjectionMatrices();
+		}
+	}
+	else
+	{
+		DeallocateViewMatrices();
+	}
+}
+
+void PointLight::AllocateViewMatrices()
+{
+	if (!viewMatrices_)
+	{
+		viewMatrices_ = new Matrix[6];
+	}
+}
+
+void PointLight::DeallocateViewMatrices()
+{
+	delete[] viewMatrices_;
+}
+
+void PointLight::UpdateShadowViewProjectionMatrices()
+{
+	shadowMapRenderCamera_->SetVectors(
+		Vector3{ 1.f, 0.f, 0.f }, 
+		Vector3{ 0.f, 0.f, -1.f }, 
+		Vector3{ 0.f, -1.f, 0.f },
+		true);
 	viewMatrices_[0] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 
-	shadowMapRenderCamera_->SetVectors(Vector3{ -1.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 1.0f }, Vector3{ 0.0f,-1.0f, 0.0f });
+	shadowMapRenderCamera_->SetVectors(
+		Vector3{ -1.f, 0.f, 0.f },
+		Vector3{ 0.f, 0.f, 1.f },
+		Vector3{ 0.f, -1.f, 0.f },
+		true);
 	viewMatrices_[1] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 
-	shadowMapRenderCamera_->SetVectors(Vector3{ 0.0f, 1.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 0.0f, 1.0f });
+	shadowMapRenderCamera_->SetVectors(
+		Vector3{ 0.f, 1.f, 0.f },
+		Vector3{ 1.f, 0.f, 0.f },
+		Vector3{ 0.f, 0.f, 1.f },
+		true);
 	viewMatrices_[2] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 
-	shadowMapRenderCamera_->SetVectors(Vector3{ 0.0f,-1.0f, 0.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, Vector3{ 0.0f, 0.0f,-1.0f });
+	shadowMapRenderCamera_->SetVectors(
+		Vector3{ 0.f,-1.f, 0.f },
+		Vector3{ 1.f, 0.f, 0.f },
+		Vector3{ 0.f, 0.f,-1.f },
+		true);
 	viewMatrices_[3] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 
-	shadowMapRenderCamera_->SetVectors(Vector3{ 0.0f, 0.0f, 1.0f }, Vector3{ 1.0f, 0.0f, 0.0f }, Vector3{ 0.0f,-1.0f, 0.0f });
+	shadowMapRenderCamera_->SetVectors(
+		Vector3{ 0.f, 0.f, 1.f },
+		Vector3{ 1.f, 0.f, 0.f },
+		Vector3{ 0.f,-1.f, 0.f },
+		true);
 	viewMatrices_[4] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 
-	shadowMapRenderCamera_->SetVectors(Vector3{ 0.0f, 0.0f,-1.0f }, Vector3{ -1.0f, 0.0f, 0.0f }, Vector3{ 0.0f,-1.0f, 0.0f });
+	shadowMapRenderCamera_->SetVectors(
+		Vector3{ 0.f, 0.f,-1.f },
+		Vector3{ -1.f, 0.f, 0.f },
+		Vector3{ 0.f,-1.f, 0.f },
+		true);
 	viewMatrices_[5] = shadowMapRenderCamera_->GetViewProjectionMatrix();
 }
