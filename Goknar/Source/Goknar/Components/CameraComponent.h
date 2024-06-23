@@ -35,6 +35,8 @@ protected:
 	virtual void UpdateChildrenComponentToWorldTransformations();
 
 private:
+	virtual void DestroyInner() override;
+
 	Camera* camera_{ nullptr };
 
 	bool cameraFollowsComponentRotation_{ false };

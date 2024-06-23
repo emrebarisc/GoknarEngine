@@ -15,6 +15,12 @@ void CameraComponent::Destroy()
 	Component::Destroy();
 }
 
+void CameraComponent::DestroyInner()
+{
+	Component::DestroyInner();
+	camera_->Destroy();
+}
+
 void CameraComponent::UpdateComponentToWorldTransformationMatrix()
 {
 	Component::UpdateComponentToWorldTransformationMatrix();
