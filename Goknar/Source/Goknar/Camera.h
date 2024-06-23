@@ -275,6 +275,18 @@ public:
 		}
 	}
 
+	void SetVectors(Vector3 forward, Vector3 up, bool updateViewMatrix = true)
+	{
+		forwardVector_ = forward;
+		upVector_ = up;
+		leftVector_ = forward.Cross(up);
+
+		if (updateViewMatrix)
+		{
+			LookAt();
+		}
+	}
+
 	virtual void Destroy();
 
 protected:

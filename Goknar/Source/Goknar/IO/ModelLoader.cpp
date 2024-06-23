@@ -470,7 +470,6 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 						}
 					}
 
-					engine->GetResourceManager()->AddMaterial(material);
 					staticMesh->SetMaterial(material);
 				}
 			}

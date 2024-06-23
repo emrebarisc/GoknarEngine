@@ -75,6 +75,7 @@ ArcherCharacter::ArcherCharacter() : Character()
 	bow_->SetIsActive(false);
 
 	thirdPersonCameraComponent_ = AddSubComponent<CameraComponent>();
+	thirdPersonCameraComponent_->SetCameraFollowsComponentRotation(true);
 
 	Camera* thirdPersonCamera = thirdPersonCameraComponent_->GetCamera();
 

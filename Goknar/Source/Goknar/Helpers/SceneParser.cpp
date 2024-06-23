@@ -623,7 +623,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			stream >> phongExponent;
 			material->SetPhongExponent(phongExponent);
 
-			resourceManager->AddMaterial(material);
 			element = element->NextSiblingElement("Material");
 		}
 		stream.clear();

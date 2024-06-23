@@ -9,12 +9,14 @@
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderBuilderNew.h"
 #include "Goknar/Renderer/ShaderTypes.h"
+#include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Lights/LightManager/LightManager.h"
 
 Material::Material() :
 	IMaterialBase()
 {
+	engine->GetResourceManager()->AddMaterial(this);
 }
 
 Material::Material(const Material* other) :

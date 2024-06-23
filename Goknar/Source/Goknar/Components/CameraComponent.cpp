@@ -19,8 +19,12 @@ void CameraComponent::UpdateComponentToWorldTransformationMatrix()
 {
 	Component::UpdateComponentToWorldTransformationMatrix();
 
-	camera_->SetPosition(worldPosition_, false);
-	camera_->SetVectors(GetForwardVector(), GetLeftVector(), GetUpVector(), true);
+	camera_->SetPosition(worldPosition_);
+
+	if (cameraFollowsComponentRotation_)
+	{
+		camera_->SetVectors(GetForwardVector(), GetLeftVector(), GetUpVector());
+	}
 }
 
 void CameraComponent::UpdateChildrenComponentToWorldTransformations()
