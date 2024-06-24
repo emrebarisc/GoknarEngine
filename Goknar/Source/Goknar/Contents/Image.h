@@ -52,10 +52,22 @@ public:
 		return channels_;
 	}
 
+	const std::string& GetName() const
+	{
+		return name_;
+	}
+
+	void SetName(const std::string& name)
+	{
+		name_ = name;
+	}
+
 private:
 	Texture* generatedTexture_;
 
 	unsigned char* buffer_;
+
+	std::string name_;
 
 	int width_;
 	int height_;

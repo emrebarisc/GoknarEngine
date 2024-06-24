@@ -47,14 +47,22 @@ void Image::PreInit()
 	// For now a texture is generated for every image
 	// Will be changed to generating texture atlases
 	generatedTexture_ = new Texture(this);
+	
+	if (!name_.empty())
+	{
+		generatedTexture_->SetName(name_);
+	}
+
 	generatedTexture_->PreInit();
 	engine->GetApplication()->GetMainScene()->AddTexture(generatedTexture_);
 }
 
 void Image::Init()
 {
+	generatedTexture_->Init();
 }
 
 void Image::PostInit()
 {
+	generatedTexture_->PostInit();
 }
