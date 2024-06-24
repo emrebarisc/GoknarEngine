@@ -400,6 +400,14 @@ std::string ShaderBuilderNew::General_FS_GetMaterialVariables(const FragmentShad
 	materialVariableText += "//------------------------------------------------------------------------";
 	materialVariableText += "\n\n\n";
 
+	materialVariableText += "uniform float ";
+	materialVariableText += SHADER_VARIABLE_NAMES::TIMING::DELTA_TIME;
+	materialVariableText += ";\n";
+
+	materialVariableText += "uniform float ";
+	materialVariableText += SHADER_VARIABLE_NAMES::TIMING::ELAPSED_TIME;
+	materialVariableText += ";\n\n";
+
 	materialVariableText += "uniform vec3 ";
 	materialVariableText += SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION;
 	materialVariableText += ";\n";
