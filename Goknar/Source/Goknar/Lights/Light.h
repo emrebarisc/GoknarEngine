@@ -60,6 +60,16 @@ public:
 		return intensity_;
 	}
 
+	void SetShadowIntensity(float shadowIntensity)
+	{
+		shadowIntensity_ = shadowIntensity;
+	}
+
+	float GetShadowIntensity() const
+	{
+		return shadowIntensity_;
+	}
+
 	LightMobility GetLightMobility() const
 	{
 		return mobility_;
@@ -167,6 +177,7 @@ protected:
 	int shadowHeight_{ 1024 };
 
 	float intensity_{ 1.f };
+	float shadowIntensity_{ 0.1f };
 
 	bool isShadowEnabled_{ false };
 

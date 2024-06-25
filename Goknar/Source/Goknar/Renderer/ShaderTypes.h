@@ -85,6 +85,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* INTENSITY;
 		extern const char* RADIUS;
 		extern const char* DIRECTION;
+		extern const char* SHADOW_INTENSITY;
 		extern const char* COVERAGE_ANGLE;
 		extern const char* FALLOFF_ANGLE;
 

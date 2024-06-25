@@ -46,9 +46,9 @@ private:
 		{
 		public:
 			Vector3 direction{ -1.f, -1.f, -1.f };
-			int isCastingShadow{ false };
+			float shadowIntensity{ 0.1f };
 			Vector3 intensity{ 1.f, 1.f, 1.f };
-			float padding;
+			int isCastingShadow{ false };
 		};
 		DirectionalLightInfo directionalLightInfo[MAX_DIRECTIONAL_LIGHT_COUNT];
 		int directionalLightCount{ 0 };
@@ -64,6 +64,8 @@ private:
 			float radius{ 0.f };
 			Vector3 intensity{ 1.f, 1.f, 1.f };
 			int isCastingShadow{ false };
+			float shadowIntensity{ 0.1f };
+			Vector3 padding{ Vector3::ZeroVector };
 		};
 		PointLightInfo pointLightInfo[MAX_POINT_LIGHT_COUNT];
 		int pointLightCount{ 0 };
@@ -80,7 +82,9 @@ private:
 			Vector3 direction;
 			float falloffAngle;
 			Vector3 intensity;
+			float shadowIntensity{ 0.1f };
 			int isCastingShadow;
+			Vector3 padding{ Vector3::ZeroVector };
 		};
 		SpotLightInfo spotLightInfo[MAX_SPOT_LIGHT_COUNT];
 		int spotLightCount{ 0 };

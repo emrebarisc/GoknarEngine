@@ -15,6 +15,7 @@ Fire::Fire() :
 	fireLight_ = new PointLight();
 	fireLight_->SetColor(Vector3{ 0.7605246901512146f, 0.09758714586496353f, 0.015996338799595833f });
 	fireLight_->SetIntensity(fireIntensity_);
+	fireLight_->SetShadowIntensity(0.1f);
 	fireLight_->SetRadius(25.f);
 	fireLight_->SetIsShadowEnabled(true);
 	fireLight_->SetLightMobility(LightMobility::Dynamic);
@@ -24,8 +25,8 @@ Fire::Fire() :
 void Fire::BeginGame()
 {
 	RaycastData raycastData;
-	raycastData.from = Vector3{ 10.f, 0.f, 1000.f };
-	raycastData.to = Vector3{ 10.f, 0.f, -1000.f };
+	raycastData.from = Vector3{ -40.f, 40.f, 1000.f };
+	raycastData.to = Vector3{ -40.f, 40.f, -1000.f };
 
 	RaycastSingleResult raycastResult;
 

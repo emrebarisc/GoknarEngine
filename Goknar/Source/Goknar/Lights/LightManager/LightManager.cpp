@@ -103,6 +103,7 @@ void LightManager::UpdateAllDirectionalLightDataOnGPU()
 		directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].direction = directionalLights[directionalLightIndex]->GetDirection();
 		directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].intensity = directionalLights[directionalLightIndex]->GetIntensity() * directionalLights[directionalLightIndex]->GetColor();
 		directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].isCastingShadow = directionalLights[directionalLightIndex]->GetIsShadowEnabled();
+		directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].shadowIntensity = directionalLights[directionalLightIndex]->GetShadowIntensity();
 
 		directionalLights[directionalLightIndex]->SetUniformBufferIndex(directionalLightIndex);
 
@@ -134,6 +135,7 @@ void LightManager::UpdateAllPointLightDataOnGPU()
 		pointLightBufferInfo.pointLightInfo[pointLightIndex].radius = pointLights[pointLightIndex]->GetRadius();
 		pointLightBufferInfo.pointLightInfo[pointLightIndex].intensity = pointLights[pointLightIndex]->GetIntensity() * pointLights[pointLightIndex]->GetColor();
 		pointLightBufferInfo.pointLightInfo[pointLightIndex].isCastingShadow = pointLights[pointLightIndex]->GetIsShadowEnabled();
+		pointLightBufferInfo.pointLightInfo[pointLightIndex].shadowIntensity = pointLights[pointLightIndex]->GetShadowIntensity();
 
 		pointLights[pointLightIndex]->SetUniformBufferIndex(pointLightIndex);
 
@@ -167,6 +169,7 @@ void LightManager::UpdateAllSpotLightDataOnGPU()
 		spotLightBufferInfo.spotLightInfo[spotLightIndex].falloffAngle = spotLights[spotLightIndex]->GetFalloffAngle();
 		spotLightBufferInfo.spotLightInfo[spotLightIndex].intensity = spotLights[spotLightIndex]->GetIntensity() * spotLights[spotLightIndex]->GetColor();
 		spotLightBufferInfo.spotLightInfo[spotLightIndex].isCastingShadow = spotLights[spotLightIndex]->GetIsShadowEnabled();
+		spotLightBufferInfo.spotLightInfo[spotLightIndex].shadowIntensity = spotLights[spotLightIndex]->GetShadowIntensity();
 
 		spotLights[spotLightIndex]->SetUniformBufferIndex(spotLightIndex);
 

@@ -76,15 +76,16 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace LIGHT_KEYWORDS
 	{
-		const char* POSITION = "Position";
-		const char* INTENSITY = "Intensity";
-		const char* RADIUS = "Radius";
-		const char* DIRECTION = "Direction";
-		const char* COVERAGE_ANGLE = "CoverageAngle";
-		const char* FALLOFF_ANGLE = "FalloffAngle";
+		const char* POSITION = "position";
+		const char* INTENSITY = "intensity";
+		const char* RADIUS = "radius";
+		const char* DIRECTION = "direction";
+		const char* SHADOW_INTENSITY = "shadowIntensity";
+		const char* COVERAGE_ANGLE = "coverageAngle";
+		const char* FALLOFF_ANGLE = "falloffAngle";
 
-		const char* IS_CASTING_SHADOW = "IsCastingShadow";
-		const char* CALCULATE_LIGHT_ADDITION = "CalculateFullLightAddition";
+		const char* IS_CASTING_SHADOW = "isCastingShadow";
+		const char* CALCULATE_LIGHT_ADDITION = "calculateFullLightAddition";
 	}
 
 	inline namespace SHADOW
