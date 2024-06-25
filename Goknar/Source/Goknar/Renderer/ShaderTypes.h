@@ -154,6 +154,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* FRAGMENT_POSITION_SCREEN_SPACE;
 		extern const char* FRAGMENT_POSITION_LIGHT_SPACE_PREFIX;
 		extern const char* VERTEX_NORMAL;
+		extern const char* VERTEX_COLOR;
 		extern const char* BONE_IDS;
 		extern const char* WEIGHTS;
 

@@ -148,6 +148,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* FRAGMENT_POSITION_SCREEN_SPACE = "fragmentPositionScreenSpace";
 		const char* FRAGMENT_POSITION_LIGHT_SPACE_PREFIX = "fragmentPositionLightSpace_";
 		const char* VERTEX_NORMAL = "vertexNormal";
+		const char* VERTEX_COLOR = "vertexColor";
 		const char* BONE_IDS = "outBoneIDs";
 		const char* WEIGHTS = "outWeights";
 

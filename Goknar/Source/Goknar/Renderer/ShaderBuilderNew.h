@@ -117,6 +117,7 @@ private:
 	std::string VS_GetUV(MaterialInitializationData* initializationData) const;
 	std::string VS_GetLightSpaceFragmentPositionCalculations() const;
 	std::string VS_GetVertexNormalText(MaterialInitializationData* initializationData) const;
+	std::string VS_GetVertexColorText() const;
 
 	std::string shaderVersion_{ DEFAULT_SHADER_VERSION };
 };

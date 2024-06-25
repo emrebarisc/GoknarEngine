@@ -342,11 +342,11 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				aiVector3D& vertexRelativePosition = assimpMesh->mVertices[vertexIndex];
 				aiVector3D& fragmentNormal = assimpMesh->mNormals[vertexIndex];
 
-				Vector4 vertexColor = Vector4::ZeroVector;
-				if (assimpMesh->HasVertexColors(vertexIndex))
+				Vector4 vertexColor = Vector4(1.f);
+				if (assimpMesh->HasVertexColors(0))
 				{
-					aiColor4D* color = assimpMesh->mColors[vertexIndex];
-					vertexColor = Vector4(color->r / 255, color->g / 255, color->b / 255, color->a / 255);
+					aiColor4D color = assimpMesh->mColors[0][vertexIndex];
+					vertexColor = Vector4(color.r, color.g, color.b, color.a);
 				}
 
 				Vector2 vertexUV = Vector2::ZeroVector;

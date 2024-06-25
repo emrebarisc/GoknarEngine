@@ -443,6 +443,10 @@ std::string ShaderBuilderNew::General_FS_GetMaterialVariables(const FragmentShad
 		materialVariableText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
 		materialVariableText += ";\n";
 
+		materialVariableText += "in vec4 ";
+		materialVariableText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR;
+		materialVariableText += ";\n";
+
 		materialVariableText += "uniform float ";
 		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT;
 		materialVariableText += ";\n\n";
@@ -1038,6 +1042,10 @@ std::string ShaderBuilderNew::VS_GetUniforms() const
 	uniforms += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
 	uniforms += ";\n";
 
+	uniforms += "out vec4 ";
+	uniforms += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR;
+	uniforms += ";\n";
+
 	uniforms += "out vec2 ";
 	uniforms += SHADER_VARIABLE_NAMES::TEXTURE::UV;
 	uniforms += ";\n";
@@ -1120,6 +1128,7 @@ std::string ShaderBuilderNew::VS_GetMain(const VertexShaderInitializationData& v
 	{
 		vsMain += VS_GetUV(vertexShaderInitializationData.materialInitializationData);
 		vsMain += VS_GetVertexNormalText(vertexShaderInitializationData.materialInitializationData);
+		vsMain += VS_GetVertexColorText();
 
 		vsMain += R"(
 	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"(;
@@ -1204,7 +1213,7 @@ std::string ShaderBuilderNew::VS_GetVertexNormalText(MaterialInitializationData*
 		vertexNormalText += initializationData->vertexNormal.calculation + "\n";
 	}
 	
-	vertexNormalText  += "\n\t";
+	vertexNormalText += "\n\t";
 	vertexNormalText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
 	vertexNormalText += " = normalize(";
 	
@@ -1220,4 +1229,17 @@ std::string ShaderBuilderNew::VS_GetVertexNormalText(MaterialInitializationData*
 	vertexNormalText += " * transpose(inverse(mat3(" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "))));\n";
 
 	return vertexNormalText;
+}
+
+std::string ShaderBuilderNew::VS_GetVertexColorText() const
+{
+	std::string vertexColorText = "";
+
+	vertexColorText += "\n\t";
+	vertexColorText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR;
+	vertexColorText += " = ";
+	vertexColorText += SHADER_VARIABLE_NAMES::VERTEX::COLOR;
+	vertexColorText += ";\n";
+
+	return vertexColorText;
 }
