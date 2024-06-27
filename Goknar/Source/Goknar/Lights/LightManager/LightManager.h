@@ -5,8 +5,12 @@
 #include "Math/GoknarMath.h"
 
 class IMaterialBase;
-class Light;
 class Shader;
+
+class Light;
+class DirectionalLight;
+class PointLight;
+class SpotLight;
 
 #define DIRECTIONAL_LIGHT_UNIFORM_BIND_INDEX 0
 #define POINT_LIGHT_UNIFORM_BIND_INDEX 1
@@ -35,6 +39,13 @@ public:
 	void BindLightUniforms(Shader* shader);
 
 	void BindShadowViewProjectionMatrices();
+
+	void OnDirectionalLightAdded(DirectionalLight* directionalLight);
+	void OnDirectionalLightRemoved(DirectionalLight* directionalLight);
+	void OnPointLightAdded(PointLight* pointLight);
+	void OnPointLightRemoved(PointLight* pointLight);
+	void OnSpotLightAdded(SpotLight* spotLight);
+	void OnSpotLightRemoved(SpotLight* spotLight);
 
 protected:
 
@@ -103,6 +114,8 @@ private:
 
 	GEuint spotLightUniformBufferId_{ 0 };
 	GEuint spotLightViewMatrixUniformBufferId_{ 0 };
+
+	bool isInitialized_{ false };
 };
 
 #endif

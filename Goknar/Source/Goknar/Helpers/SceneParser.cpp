@@ -276,7 +276,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				pointLight->SetShadowHeight(y);
 			}
 
-			scene->AddPointLight(pointLight);
 			element = element->NextSiblingElement("PointLight");
 
 			stream.clear();
@@ -347,7 +346,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				directionalLight->SetShadowHeight(y);
 			}
 
-			scene->AddDirectionalLight(directionalLight);
 			element = element->NextSiblingElement("DirectionalLight");
 
 			stream.clear();
@@ -439,7 +437,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				spotLight->SetShadowHeight(y);
 			}
 
-			scene->AddSpotLight(spotLight);
 			element = element->NextSiblingElement("SpotLight");
 		}
 		stream.clear();
@@ -733,10 +730,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream.clear();
 			}
 
-			if (!loadedWithFile && 0 < mesh->GetVertexCount())
-			{
-				scene->AddStaticMesh(mesh);
-			}
 			element = element->NextSiblingElement("StaticMesh");
 		}
 		stream.clear();
@@ -1061,7 +1054,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			}
 			stream.clear();
 
-			scene->AddObject(object);
 			element = element->NextSiblingElement("DynamicMeshObject");
 
 		}

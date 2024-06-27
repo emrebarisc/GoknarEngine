@@ -13,6 +13,11 @@ Light::~Light()
 {
 	delete shadowMapTexture_;
 	delete shadowMapFramebuffer_;
+
+	if (shadowMapRenderCamera_)
+	{
+		shadowMapRenderCamera_->Destroy();
+	}
 }
 
 void Light::SetShaderUniforms(const Shader* shader)

@@ -13,10 +13,7 @@ class GOKNAR_API DirectionalLight : public Light
 {
 public:
 	DirectionalLight();
-	virtual ~DirectionalLight() override
-    {
-        
-    }
+	virtual ~DirectionalLight() override;
 
 	void PreInit() override;
 	void Init() override;

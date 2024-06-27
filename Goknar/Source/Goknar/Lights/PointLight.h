@@ -10,13 +10,7 @@
 class GOKNAR_API PointLight : public Light
 {
 public:
-    PointLight() : Light()
-    {
-		id_ = ObjectIDManager::GetInstance()->GetAndIncreasePointLightID();
-		name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT) + std::to_string(id_);
-
-        radius_ = 25.f;
-    }
+    PointLight();
 
     virtual ~PointLight() override;
 

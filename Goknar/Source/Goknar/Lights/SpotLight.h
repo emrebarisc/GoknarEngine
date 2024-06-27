@@ -14,10 +14,7 @@ class GOKNAR_API SpotLight : public Light
 public:
 	SpotLight();
 	SpotLight(float coverage, float falloff);
-	virtual ~SpotLight() override
-    {
-        
-    }
+	virtual ~SpotLight() override;
 
 	void PreInit() override;
 	void Init() override;

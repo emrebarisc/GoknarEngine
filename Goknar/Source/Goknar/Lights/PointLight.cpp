@@ -2,8 +2,10 @@
 
 #include "PointLight.h"
 
+#include "Goknar/Application.h"
 #include "Goknar/Camera.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Scene.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Renderer/Framebuffer.h"
 #include "Goknar/Renderer/Renderer.h"
@@ -12,9 +14,21 @@
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"
 
+PointLight::PointLight() : Light()
+{
+	id_ = ObjectIDManager::GetInstance()->GetAndIncreasePointLightID();
+	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT) + std::to_string(id_);
+
+	radius_ = 25.f;
+
+	engine->GetApplication()->GetMainScene()->AddPointLight(this);
+}
+
 PointLight::~PointLight()
 {
 	DeallocateViewMatrices();
+
+	engine->GetApplication()->GetMainScene()->RemovePointLight(this);
 }
 
 void PointLight::PreInit()

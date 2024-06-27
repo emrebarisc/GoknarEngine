@@ -2,8 +2,10 @@
 
 #include "SpotLight.h"
 
+#include "Goknar/Application.h"
 #include "Goknar/Camera.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Scene.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Renderer/Framebuffer.h"
 #include "Goknar/Renderer/Renderer.h"
@@ -16,12 +18,19 @@ SpotLight::SpotLight() : Light(), coverageAngle_(0.f), falloffAngle_(0.f)
 {
 	id_ = ObjectIDManager::GetInstance()->GetAndIncreaseSpotLightID();
 	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT) + std::to_string(id_);
+
+	engine->GetApplication()->GetMainScene()->AddSpotLight(this);
 }
 
 SpotLight::SpotLight(float coverage, float falloff) : SpotLight()
 {
 	coverageAngle_ = DEGREE_TO_RADIAN(coverage);
 	falloffAngle_ = DEGREE_TO_RADIAN(falloff);
+}
+
+SpotLight::~SpotLight()
+{
+	engine->GetApplication()->GetMainScene()->RemoveSpotLight(this);
 }
 
 void SpotLight::PreInit()

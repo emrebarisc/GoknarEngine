@@ -2,8 +2,10 @@
 
 #include "DirectionalLight.h"
 
+#include "Goknar/Application.h"
 #include "Goknar/Camera.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Scene.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Renderer/Framebuffer.h"
 #include "Goknar/Renderer/Renderer.h"
@@ -17,6 +19,13 @@ DirectionalLight::DirectionalLight() : Light()
 {
 	id_ = ObjectIDManager::GetInstance()->GetAndIncreaseDirectionalLightID();
 	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT) + std::to_string(id_);
+
+	engine->GetApplication()->GetMainScene()->AddDirectionalLight(this);
+}
+
+DirectionalLight::~DirectionalLight()
+{
+	engine->GetApplication()->GetMainScene()->RemoveDirectionalLight(this);
 }
 
 void DirectionalLight::PreInit()

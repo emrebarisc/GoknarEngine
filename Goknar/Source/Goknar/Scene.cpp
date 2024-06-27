@@ -7,7 +7,9 @@
 #include "Goknar/ObjectBase.h"
 #include "Goknar/Helpers/SceneParser.h"
 #include "Goknar/Materials/Material.h"
+#include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Texture.h"
+#include "Goknar/Lights/LightManager/LightManager.h"
 
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/StaticMesh.h"
@@ -25,44 +27,9 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-	for (auto staticMesh : staticMeshes_)
-	{
-		delete staticMesh;
-	}
-
-	for (auto dynamicMesh : dynamicMeshes_)
-	{
-		delete dynamicMesh;
-	}
-
-	for (auto skeletalMesh : skeletalMeshes_)
-	{
-		delete skeletalMesh;
-	}
-
 	for (auto texture : textures_)
 	{
 		delete texture;
-	}
-
-	for (auto pointLight : pointLights_)
-	{
-		delete pointLight;
-	}
-
-	for (auto directionalLight : directionalLights_)
-	{
-		delete directionalLight;
-	}
-
-	for (auto spotLight : spotLights_)
-	{
-		delete spotLight;
-	}
-
-	for (auto object : objects_)
-	{
-		delete object;
 	}
 }
 
@@ -140,74 +107,98 @@ void Scene::ReadSceneData(const std::string& filePath)
     SceneParser::Parse(this, ContentDir + filePath);
 }
 
-// TODO: TEST
-void Scene::DeleteStaticMesh(StaticMesh* staticMesh)
+void Scene::AddDirectionalLight(DirectionalLight* directionalLight)
 {
-	bool found = false;
+	directionalLights_.push_back(directionalLight);
 
-	size_t staticMeshCount = staticMeshes_.size();
-	for (size_t staticMeshIndex = 0; staticMeshIndex < staticMeshCount; staticMeshIndex++)
+	LightManager* lightManager = engine->GetRenderer()->GetLightManager();
+	if (lightManager)
 	{
-		if (staticMeshes_[staticMeshIndex] == staticMesh)
-		{
-			staticMeshes_.erase(staticMeshes_.begin() + staticMeshIndex);
-			found = true;
-			break;
-		}
+		lightManager->OnDirectionalLightAdded(directionalLight);
 	}
-
-	GOKNAR_ASSERT(!found, "Destroyed StaticMesh is not found in the scene!");
 }
 
-// TODO: TEST
-void Scene::DeleteSkeletalMesh(SkeletalMesh* skeletalMesh)
+void Scene::RemoveDirectionalLight(DirectionalLight* directionalLight)
 {
-	bool found = false;
-
-	size_t skeletalMeshCount = skeletalMeshes_.size();
-	for (size_t skeletalMeshIndex = 0; skeletalMeshIndex < skeletalMeshCount; skeletalMeshIndex++)
+	std::vector<DirectionalLight*>::const_iterator directionalLightIterator = directionalLights_.cbegin();
+	while (directionalLightIterator != directionalLights_.cend())
 	{
-		if (skeletalMeshes_[skeletalMeshIndex] == skeletalMesh)
+		if (*directionalLightIterator == directionalLight)
 		{
-			skeletalMeshes_.erase(skeletalMeshes_.begin() + skeletalMeshIndex);
-			found = true;
+			directionalLights_.erase(directionalLightIterator);
 			break;
 		}
+
+		++directionalLightIterator;
 	}
 
-	GOKNAR_ASSERT(!found, "Destroyed SkeletalMesh is not found in the scene!");
-}
-
-// TODO: TEST
-void Scene::DeleteDynamicMesh(DynamicMesh* dynamicMesh)
-{
-	bool found = false;
-
-	size_t dynamicMeshCount = dynamicMeshes_.size();
-	for (size_t dynamicMeshIndex = 0; dynamicMeshIndex < dynamicMeshCount; dynamicMeshIndex++)
+	LightManager* lightManager = engine->GetRenderer()->GetLightManager();
+	if (lightManager)
 	{
-		if (dynamicMeshes_[dynamicMeshIndex] == dynamicMesh)
-		{
-			dynamicMeshes_.erase(dynamicMeshes_.begin() + dynamicMeshIndex);
-			found = true;
-			break;
-		}
+		lightManager->OnDirectionalLightRemoved(directionalLight);
 	}
-
-	GOKNAR_ASSERT(!found, "Destroyed StaticMesh is not found in the scene!");
 }
 
 void Scene::AddPointLight(PointLight* pointLight)
 {
 	pointLights_.push_back(pointLight);
+
+	LightManager* lightManager = engine->GetRenderer()->GetLightManager();
+	if (lightManager)
+	{
+		lightManager->OnPointLightAdded(pointLight);
+	}
 }
 
-void Scene::AddDirectionalLight(DirectionalLight* directionalLight)
+void Scene::RemovePointLight(PointLight* pointLight)
 {
-	directionalLights_.push_back(directionalLight);
+	std::vector<PointLight*>::const_iterator pointLightIterator = pointLights_.cbegin();
+	while (pointLightIterator != pointLights_.cend())
+	{
+		if (*pointLightIterator == pointLight)
+		{
+			pointLights_.erase(pointLightIterator);
+			break;
+		}
+
+		++pointLightIterator;
+	}
+
+	LightManager* lightManager = engine->GetRenderer()->GetLightManager();
+	if (lightManager)
+	{
+		lightManager->OnPointLightRemoved(pointLight);
+	}
 }
 
 void Scene::AddSpotLight(SpotLight* spotLight)
 {
 	spotLights_.push_back(spotLight);
+
+	LightManager* lightManager = engine->GetRenderer()->GetLightManager();
+	if (lightManager)
+	{
+		lightManager->OnSpotLightAdded(spotLight);
+	}
+}
+
+void Scene::RemoveSpotLight(SpotLight* spotLight)
+{
+	std::vector<SpotLight*>::const_iterator spotLightIterator = spotLights_.cbegin();
+	while (spotLightIterator != spotLights_.cend())
+	{
+		if (*spotLightIterator == spotLight)
+		{
+			spotLights_.erase(spotLightIterator);
+			break;
+		}
+
+		++spotLightIterator;
+	}
+
+	LightManager* lightManager = engine->GetRenderer()->GetLightManager();
+	if (lightManager)
+	{
+		lightManager->OnSpotLightRemoved(spotLight);
+	}
 }

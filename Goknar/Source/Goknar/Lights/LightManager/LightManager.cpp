@@ -88,6 +88,8 @@ void LightManager::PostInit()
 	UpdateAllDirectionalLightDataOnGPU();
 	UpdateAllPointLightDataOnGPU();
 	UpdateAllSpotLightDataOnGPU();
+
+	isInitialized_ = true;
 }
 
 void LightManager::UpdateAllDirectionalLightDataOnGPU()
@@ -291,4 +293,70 @@ void LightManager::BindShadowViewProjectionMatrices()
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	EXIT_ON_GL_ERROR("LightManager::BindShadowViewProjectionMatrices");
+}
+
+void LightManager::OnDirectionalLightAdded(DirectionalLight* directionalLight)
+{
+	if (!isInitialized_)
+	{
+		return;
+	}
+
+	//TODO: Temporarily update all corresponding light data
+	UpdateAllDirectionalLightDataOnGPU();
+}
+
+void LightManager::OnDirectionalLightRemoved(DirectionalLight* directionalLight)
+{
+	if (!isInitialized_)
+	{
+		return;
+	}
+
+	//TODO: Temporarily update all corresponding light data
+	UpdateAllDirectionalLightDataOnGPU();
+}
+
+void LightManager::OnPointLightAdded(PointLight* pointLight)
+{
+	if (!isInitialized_)
+	{
+		return;
+	}
+
+	//TODO: Temporarily update all corresponding light data
+	UpdateAllPointLightDataOnGPU();
+}
+
+void LightManager::OnPointLightRemoved(PointLight* pointLight)
+{
+	if (!isInitialized_)
+	{
+		return;
+	}
+
+	//TODO: Temporarily update all corresponding light data
+	UpdateAllPointLightDataOnGPU();
+}
+
+void LightManager::OnSpotLightAdded(SpotLight* spotLight)
+{
+	if (!isInitialized_)
+	{
+		return;
+	}
+
+	//TODO: Temporarily update all corresponding light data
+	UpdateAllSpotLightDataOnGPU();
+}
+
+void LightManager::OnSpotLightRemoved(SpotLight* spotLight)
+{
+	if (!isInitialized_)
+	{
+		return;
+	}
+
+	//TODO: Temporarily update all corresponding light data
+	UpdateAllSpotLightDataOnGPU();
 }

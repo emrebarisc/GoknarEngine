@@ -34,8 +34,6 @@ void ObjectBase::PreInit()
 		GOKNAR_CORE_ASSERT("ObjectBase::Init called more than once!");
 		return;
 	}
-
-	engine->GetApplication()->GetMainScene()->AddObject(this);
 }
 
 void ObjectBase::Init()
@@ -77,8 +75,6 @@ void ObjectBase::DestroyInner()
 	{
 		parentSocket_->RemoveObject(this);
 	}
-	
-	engine->GetApplication()->GetMainScene()->RemoveObject(this);
 }
 
 void ObjectBase::SetRootComponent(Component* newRootComponent)
