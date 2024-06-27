@@ -65,20 +65,22 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+	ClearMemory();
+
+	delete application_;
+
 	delete physicsWorld_;
 	delete renderer_;
 	delete cameraManager_;
 #if GOKNAR_EDITOR
 	delete editor_;
 #endif
-	ClearMemory();
 
 	delete debugDrawer_;
 
 	delete objectManager_;
 	delete resourceManager_;
 	delete inputManager_;
-	delete application_;
 
 	// Delete singletons
 	delete ObjectIDManager::GetInstance();
@@ -491,8 +493,6 @@ void Engine::ClearMemory()
 	registeredObjects_.clear();
 	tickableObjects_.clear();
 	objectsToBeInitialized_.clear();
-
-	application_->GetMainScene()->ClearObjects();
 }
 
 void Engine::DestroyAllPendingObjectAndComponents()
@@ -561,8 +561,6 @@ void Engine::DestroyAllObjectsAndComponents()
 	{
 		(*registeredObjectsIterator)->Destroy();
 	}
-
-	application_->GetMainScene()->ClearObjects();
 }
 
 void Engine::RegisterObject(ObjectBase* object)
