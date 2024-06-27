@@ -22,7 +22,7 @@ public:
 
 	bool GetCameraFollowsComponentRotation() const
 	{
-		cameraFollowsComponentRotation_;
+		return cameraFollowsComponentRotation_;
 	}
 
 	void SetCameraFollowsComponentRotation(bool cameraFollowsComponent)
