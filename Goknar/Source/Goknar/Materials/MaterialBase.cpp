@@ -12,9 +12,10 @@
 #include "Goknar/Managers/WindowManager.h"
 
 IMaterialBase::IMaterialBase() :  
-	diffuseReflectance_(Vector4::ZeroVector), 
+	baseColor_(Vector4::ZeroVector), 
 	ambientReflectance_(Vector3::ZeroVector),
 	specularReflectance_(Vector3::ZeroVector),
+	emmisiveColor_(Vector3::ZeroVector),
 	blendModel_(MaterialBlendModel::Opaque),
 	shadingModel_(MaterialShadingModel::Default),
 	phongExponent_(1.f)
@@ -29,8 +30,9 @@ IMaterialBase::IMaterialBase(const IMaterialBase* other)
 	}
 
 	ambientReflectance_ = other->ambientReflectance_;
-	diffuseReflectance_ = other->diffuseReflectance_;
+	baseColor_ = other->baseColor_;
 	specularReflectance_ = other->specularReflectance_;
+	emmisiveColor_ = other->emmisiveColor_;
 	blendModel_ = other->blendModel_;
 	shadingModel_ = other->shadingModel_;
 	phongExponent_ = other->phongExponent_;
@@ -98,9 +100,10 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 
 	if (renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::GeometryBuffer)
 	{
-		shader->SetVector4(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR, diffuseReflectance_);
+		shader->SetVector4(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR, baseColor_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION, ambientReflectance_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);
+		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::EMMISIVE_COLOR, emmisiveColor_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, phongExponent_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY, translucency_);
 	}

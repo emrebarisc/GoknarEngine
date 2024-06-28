@@ -595,7 +595,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 				Vector3 diffuseReflectance;
 				stream >> diffuseReflectance.x >> diffuseReflectance.y >> diffuseReflectance.z;
-				material->SetDiffuseReflectance(diffuseReflectance);
+				material->SetBaseColor(diffuseReflectance);
 			}
 
 			child = element->FirstChildElement("SpecularReflectance");

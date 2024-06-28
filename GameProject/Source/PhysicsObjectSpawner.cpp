@@ -35,7 +35,7 @@ PhysicsObjectSpawner::PhysicsObjectSpawner()
         StaticMeshInstance* wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
         Material* wallMaterial = wallStaticMeshInstance->GetMesh()->GetMaterial();
         MaterialInstance* groundMaterialInstance = MaterialInstance::Create(wallMaterial);
-        groundMaterialInstance->SetDiffuseReflectance(Vector3{ 0.f, 1.f, 0.f });
+        groundMaterialInstance->SetBaseColor(Vector3{ 0.f, 1.f, 0.f });
 
         wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
 
@@ -45,7 +45,7 @@ PhysicsObjectSpawner::PhysicsObjectSpawner()
         wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 0.f }));
         wall->SetMass(0.f);
         groundMaterialInstance = MaterialInstance::Create(wallMaterial);
-        groundMaterialInstance->SetDiffuseReflectance(Vector3{ 0.f, 0.f, 1.f });
+        groundMaterialInstance->SetBaseColor(Vector3{ 0.f, 0.f, 1.f });
         groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
         wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
         wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
@@ -56,7 +56,7 @@ PhysicsObjectSpawner::PhysicsObjectSpawner()
         wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 0.f }));
         wall->SetMass(0.f);
         groundMaterialInstance = MaterialInstance::Create(wallMaterial);
-        groundMaterialInstance->SetDiffuseReflectance(Vector3{ 1.f, 1.f, 0.f });
+        groundMaterialInstance->SetBaseColor(Vector3{ 1.f, 1.f, 0.f });
         groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
         wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
         wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
@@ -67,7 +67,7 @@ PhysicsObjectSpawner::PhysicsObjectSpawner()
         wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
         wall->SetMass(0.f);
         groundMaterialInstance = MaterialInstance::Create(wallMaterial);
-        groundMaterialInstance->SetDiffuseReflectance(Vector3{ 1.f, 0.f, 1.f });
+        groundMaterialInstance->SetBaseColor(Vector3{ 1.f, 0.f, 1.f });
         groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
         wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
         wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
@@ -78,7 +78,7 @@ PhysicsObjectSpawner::PhysicsObjectSpawner()
         wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
         wall->SetMass(0.f);
         groundMaterialInstance = MaterialInstance::Create(wallMaterial);
-        groundMaterialInstance->SetDiffuseReflectance(Vector3{ 1.f, 1.f, 1.f });
+        groundMaterialInstance->SetBaseColor(Vector3{ 1.f, 1.f, 1.f });
         groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
         wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
         wallStaticMeshInstance->SetMaterial(groundMaterialInstance);

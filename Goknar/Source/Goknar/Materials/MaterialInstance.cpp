@@ -16,7 +16,7 @@ MaterialInstance::MaterialInstance(Material* parent) :
 
 MaterialInstance::~MaterialInstance()
 {
-	//parentMaterial_->RemoveDerivedMaterialInstance(this);
+	parentMaterial_->RemoveDerivedMaterialInstance(this);
 }
 
 MaterialInstance* MaterialInstance::Create(Material* parent)

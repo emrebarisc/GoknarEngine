@@ -17,7 +17,7 @@ CannonBall::CannonBall() : RigidBody()
 	staticMeshComponent_->SetParent(sphereCollisionComponent_);
 
     MaterialInstance* materialInstance = MaterialInstance::Create(halfRadiusSphereStaticMesh->GetMaterial());
-	materialInstance->SetDiffuseReflectance(Vector3{0.f, 1.f, 0.f});
+	materialInstance->SetBaseColor(Vector3{0.f, 1.f, 0.f});
 	staticMeshComponent_->GetMeshInstance()->SetMaterial(materialInstance);
 
 	// overlappingCollisionComponent_ = AddSubComponent<SphereCollisionComponent>();

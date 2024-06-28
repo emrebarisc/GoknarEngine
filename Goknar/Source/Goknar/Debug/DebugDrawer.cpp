@@ -37,7 +37,7 @@ void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Color
 
 	StaticMeshInstance* lineMeshInstance = lineStaticMeshComponent->GetMeshInstance();
 	MaterialInstance* materialInstance = MaterialInstance::Create(lineMesh_->GetMaterial());
-	materialInstance->SetDiffuseReflectance(color.ToVector4());
+	materialInstance->SetBaseColor(color.ToVector4());
 	lineMeshInstance->SetMaterial(materialInstance);
 	lineMeshInstance->SetIsCastingShadow(false);
 

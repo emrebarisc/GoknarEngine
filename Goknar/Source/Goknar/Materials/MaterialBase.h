@@ -52,19 +52,19 @@ public:
 		ambientReflectance_ = ambientReflectance;
 	}
 
-	const Vector4& GetDiffuseReflectance() const
+	const Vector4& GetBaseColor() const
 	{
-		return diffuseReflectance_;
+		return baseColor_;
 	}
 
-	void SetDiffuseReflectance(const Vector3& diffuseReflectance)
+	void SetBaseColor(const Vector3& diffuseReflectance)
 	{
-		diffuseReflectance_ = Vector4(diffuseReflectance, 1.f);
+		baseColor_ = Vector4(diffuseReflectance, 1.f);
 	}
 
-	void SetDiffuseReflectance(const Vector4& diffuseReflectance)
+	void SetBaseColor(const Vector4& diffuseReflectance)
 	{
-		diffuseReflectance_ = diffuseReflectance;
+		baseColor_ = diffuseReflectance;
 	}
 
 	const Vector3& GetSpecularReflectance() const
@@ -75,6 +75,16 @@ public:
 	void SetSpecularReflectance(const Vector3& specularReflectance)
 	{
 		specularReflectance_ = specularReflectance;
+	}
+
+	const Vector3& GetEmmisiveColor() const
+	{
+		return emmisiveColor_;
+	}
+
+	void SetEmmisiveColor(const Vector3& emmisiveColor)
+	{
+		emmisiveColor_ = emmisiveColor;
 	}
 
 	float GetPhongExponent() const
@@ -137,9 +147,10 @@ public:
 protected:
 	std::vector<const Image*> textureImages_;
 
-	Vector4 diffuseReflectance_{ Vector4::ZeroVector };
+	Vector4 baseColor_{ Vector4::ZeroVector };
 	Vector3 ambientReflectance_{ Vector3::ZeroVector };
 	Vector3 specularReflectance_{ Vector3::ZeroVector };
+	Vector3 emmisiveColor_{ Vector3::ZeroVector };
 
 	std::string name_{ "" };
 

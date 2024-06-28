@@ -24,7 +24,6 @@ LightController::LightController()
 	spotLight1_->SetColor(Vector3(1.f, 0.2f, 0.2f));
 	spotLight1_->SetIntensity(1000.f);
 	spotLight1_->SetIsShadowEnabled(true);
-	scene->AddSpotLight(spotLight1_);
 
 	Vector3 spotLight2Position = centerPosition_ + Vector3(10.f, -10.f, 10.f);
 	spotLight2_ = new SpotLight(15.f, 5.f);
@@ -34,7 +33,6 @@ LightController::LightController()
 	spotLight2_->SetColor(Vector3(0.2f, 1.f, 0.2f));
 	spotLight2_->SetIntensity(1000.f);
 	spotLight2_->SetIsShadowEnabled(true);
-	scene->AddSpotLight(spotLight2_);
 
 	Vector3 spotLight3Position = centerPosition_ + Vector3(-10.f, 10.f, 10.f);
 	spotLight3_ = new SpotLight(15.f, 5.f);
@@ -44,7 +42,6 @@ LightController::LightController()
 	spotLight3_->SetColor(Vector3(1.f, 1.0f, 0.2f));
 	spotLight3_->SetIntensity(1000.f);
 	spotLight3_->SetIsShadowEnabled(true);
-	scene->AddSpotLight(spotLight3_);
 
 	Vector3 spotLight4Position = centerPosition_ + Vector3(10.f, 10.f, 10.f);
 	spotLight4_ = new SpotLight(15.f, 5.f);
@@ -54,7 +51,6 @@ LightController::LightController()
 	spotLight4_->SetColor(Vector3(0.2f, 0.2f, 1.0f));
 	spotLight4_->SetIntensity(1000.f);
 	spotLight4_->SetIsShadowEnabled(true);
-	scene->AddSpotLight(spotLight4_);
 
 	Vector3 spotLight5Position = centerPosition_ + Vector3(10.f, -10.f, 10.f);
 	spotLight5_ = new SpotLight(20.f, 5.f);
@@ -64,7 +60,6 @@ LightController::LightController()
 	spotLight5_->SetColor(Vector3(1.f, 0.75f, 0.75f));
 	spotLight5_->SetIntensity(500.f);
 	spotLight5_->SetIsShadowEnabled(true);
-	scene->AddSpotLight(spotLight5_);
 
 
 	float xInitial = -20.f;
@@ -84,7 +79,6 @@ LightController::LightController()
 	// 		pointLight->SetIntensity(100.f);
 	// 		pointLight->SetIsShadowEnabled(false);
 	// 		pointLight->SetLightMobility(LightMobility::Static);
-	// 		scene->AddPointLight(pointLight);
 
 	// 		ObjectBase* boxObject = new ObjectBase();
 	// 		boxObject->SetWorldPosition(position - Vector3{0.f, 0.f, z});

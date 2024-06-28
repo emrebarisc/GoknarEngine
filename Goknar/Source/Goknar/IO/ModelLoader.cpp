@@ -391,7 +391,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 					material->SetAmbientReflectance(Vector3(1.f, 1.f, 1.f));
 
 					assimpMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, value);
-					material->SetDiffuseReflectance(Vector3(value.r, value.g, value.b));
+					material->SetBaseColor(Vector3(value.r, value.g, value.b));
 
 					assimpMaterial->Get(AI_MATKEY_COLOR_SPECULAR, value);
 					material->SetSpecularReflectance(Vector3(value.r, value.g, value.b));

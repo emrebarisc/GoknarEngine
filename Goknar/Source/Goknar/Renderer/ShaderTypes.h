@@ -170,6 +170,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* OUT_NORMAL;
 		extern const char* OUT_DIFFUSE;
 		extern const char* OUT_SPECULAR_PHONG;
+		extern const char* OUT_EMMISIVE_COLOR;
 	}
 
 	inline namespace FRAGMENT_SHADER_OUTS
@@ -180,6 +181,7 @@ inline namespace SHADER_VARIABLE_NAMES
 	inline namespace CALCULATIONS
 	{
 		extern const char* FINAL_BASE_COLOR;
+		extern const char* FINAL_EMMISIVE_COLOR;
 	}
 }
 

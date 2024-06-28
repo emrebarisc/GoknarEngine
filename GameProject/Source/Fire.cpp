@@ -19,14 +19,13 @@ Fire::Fire() :
 	fireLight_->SetRadius(25.f);
 	fireLight_->SetIsShadowEnabled(true);
 	fireLight_->SetLightMobility(LightMobility::Dynamic);
-	engine->GetApplication()->GetMainScene()->AddPointLight(fireLight_);
 }
 
 void Fire::BeginGame()
 {
 	RaycastData raycastData;
-	raycastData.from = Vector3{ -40.f, 40.f, 1000.f };
-	raycastData.to = Vector3{ -40.f, 40.f, -1000.f };
+	raycastData.from = Vector3{ 0.f, 40.f, 1000.f };
+	raycastData.to = Vector3{ 0.f, 40.f, -1000.f };
 
 	RaycastSingleResult raycastResult;
 

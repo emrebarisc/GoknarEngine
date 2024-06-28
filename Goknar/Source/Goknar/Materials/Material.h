@@ -22,6 +22,7 @@ struct GOKNAR_API MaterialInitializationData
 
 	const Material* owner;
 	ShaderFunctionAndResult baseColor;
+	ShaderFunctionAndResult emmisiveColor;
 	ShaderFunctionAndResult fragmentNormal;
 	ShaderFunctionAndResult vertexNormal;
 	ShaderFunctionAndResult uv;

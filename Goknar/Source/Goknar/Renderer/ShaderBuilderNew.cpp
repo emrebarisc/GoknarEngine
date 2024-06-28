@@ -75,6 +75,7 @@ void main()
 		fragmentShaderInitializationData.renderPassType == RenderPassType::GeometryBuffer)
 	{
 		fragmentShader += FS_InitializeBaseColor(fragmentShaderInitializationData.materialInitializationData);
+		fragmentShader += FS_InitializeEmmisiveColor(fragmentShaderInitializationData.materialInitializationData);
 	}
 	else if(fragmentShaderInitializationData.renderPassType == RenderPassType::Deferred)
 	{
@@ -84,7 +85,7 @@ void main()
 
 	if (includeLightOperations)
 	{
-		fragmentShader += "\t vec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = vec3(0.f);\n";;
+		fragmentShader += "\t vec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + "; \n";;
 		fragmentShader += FS_GetLightCalculationIterators();
 	}
 	fragmentShader += fragmentShaderInitializationData.outputVariableAssignments;
@@ -317,6 +318,7 @@ layout(location = 0) out vec3 )" + std::string(SHADER_VARIABLE_NAMES::GBUFFER::O
 layout(location = 1) out vec4 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
 layout(location = 2) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(;
 layout(location = 3) out vec4 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(;
+layout(location = 4) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMMISIVE_COLOR + R"(;
 
 )";
 
@@ -331,6 +333,7 @@ R"(
 	)" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"(.xyz;
 	)" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + " = vec4(" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ", " + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"();
 	)" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + " = " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.xyz;
+	)" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMMISIVE_COLOR + " = " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + R"(;
 )";
 	return assignments;
 }
@@ -342,6 +345,7 @@ uniform sampler2D )" + std::string(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION)
 uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
 uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(;
 uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(;
+uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMMISIVE_COLOR + R"(;
 )";
 }
 
@@ -350,6 +354,7 @@ std::string ShaderBuilderNew::DeferredRenderPass_GetGBufferVariables() const
 	return R"(
 vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
 vec4 )" + SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR + R"(;
+vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::EMMISIVE_COLOR + R"(;
 vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"(;
 vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(;
 float )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"(;
@@ -371,6 +376,8 @@ std::string ShaderBuilderNew::DeferredRenderPass_GetGBufferVariableAssignments()
 	vec4 specularAndTranslucency = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
 	)" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( = specularAndTranslucency.xyz;
 	)" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"( = specularAndTranslucency.a;
+
+	vec3 )" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMMISIVE_COLOR + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz;
 )";
 }
 
@@ -379,10 +386,6 @@ std::string ShaderBuilderNew::General_FS_GetMaterialVariables(const FragmentShad
 	std::string materialVariableText = "\n// Base Material Variables\n";
 
 	materialVariableText += "//---------------------------------PBR------------------------------------\n";
-
-	materialVariableText += "uniform vec3 ";
-	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::EMMISIVE_COLOR;
-	materialVariableText += ";\n";
 
 	materialVariableText += "uniform float ";
 	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::METALLIC;
@@ -437,6 +440,10 @@ std::string ShaderBuilderNew::General_FS_GetMaterialVariables(const FragmentShad
 
 		materialVariableText += "uniform vec3 ";
 		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR;
+		materialVariableText += ";\n";
+
+		materialVariableText += "uniform vec3 ";
+		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::EMMISIVE_COLOR;
 		materialVariableText += ";\n";
 
 		materialVariableText += "in vec3 ";
@@ -928,7 +935,7 @@ std::string ShaderBuilderNew::FS_InitializeBaseColor(MaterialInitializationData*
 		result += initializationData->baseColor.calculation + "\n";
 	}
 	
-	result += std::string("\tvec4 ") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + " = ";
+	result += std::string("\n\tvec4 ") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + " = ";
 
 	if (initializationData && !initializationData->baseColor.result.empty())
 	{
@@ -942,6 +949,29 @@ std::string ShaderBuilderNew::FS_InitializeBaseColor(MaterialInitializationData*
 	if (initializationData && initializationData->owner->GetBlendModel() == MaterialBlendModel::Masked)
 	{
 		result += "\tif (" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR) + ".a < 0.5f) discard;\n";
+	}
+
+	return result;
+}
+
+std::string ShaderBuilderNew::FS_InitializeEmmisiveColor(MaterialInitializationData* initializationData) const
+{
+	std::string result = "";
+
+	if (initializationData && !initializationData->emmisiveColor.calculation.empty())
+	{
+		result += initializationData->emmisiveColor.calculation + "\n";
+	}
+	
+	result += std::string("\n\tvec3 ") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + " = ";
+
+	if (initializationData && !initializationData->emmisiveColor.result.empty())
+	{
+		result += initializationData->emmisiveColor.result;
+	}
+	else
+	{
+		result += std::string(SHADER_VARIABLE_NAMES::MATERIAL::EMMISIVE_COLOR) + ";";
 	}
 
 	return result;

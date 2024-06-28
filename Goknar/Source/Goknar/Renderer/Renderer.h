@@ -48,12 +48,13 @@ public:
 	void GenerateBuffers();
 	void BindGBufferDepth();
 
-	Framebuffer* geometryFrameBuffer;
+	Framebuffer* geometryFrameBuffer{ nullptr };
 
-	Texture* worldPositionTexture;
-	Texture* worldNormalTexture;
-	Texture* diffuseTexture;
-	Texture* specularTexture;
+	Texture* worldPositionTexture{ nullptr };
+	Texture* worldNormalTexture{ nullptr };
+	Texture* diffuseTexture{ nullptr };
+	Texture* specularTexture{ nullptr };
+	Texture* emmisiveColorTexture{ nullptr };
 
 	unsigned int depthRenderbuffer{ 0 };
 
