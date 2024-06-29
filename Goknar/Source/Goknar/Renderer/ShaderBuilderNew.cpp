@@ -979,9 +979,9 @@ std::string ShaderBuilderNew::FS_InitializeEmmisiveColor(MaterialInitializationD
 
 std::string ShaderBuilderNew::VS_GetMainLayouts() const
 {
-	std::string layouts = "";
+	std::string layouts = "\n\n";
 
-	layouts += "\n\n\nlayout(location = 0) in vec4 ";
+	layouts += "layout(location = 0) in vec4 ";
 	layouts += SHADER_VARIABLE_NAMES::VERTEX::COLOR;
 	layouts += ";\n";
 
@@ -1002,7 +1002,7 @@ std::string ShaderBuilderNew::VS_GetMainLayouts() const
 
 std::string ShaderBuilderNew::VS_GetSkeletalMeshLayouts() const
 {
-	std::string layouts = "";
+	std::string layouts = "\n\n";
 
 	layouts += "layout(location = 4) in ivec4 ";
 	layouts += SHADER_VARIABLE_NAMES::VERTEX::BONE_IDS;
@@ -1018,7 +1018,7 @@ std::string ShaderBuilderNew::VS_GetSkeletalMeshLayouts() const
 
 std::string ShaderBuilderNew::VS_GetSkeletalMeshVariables() const
 {
-	std::string variables = "";
+	std::string variables = "\n\n";
 
 	variables += "#define ";
 	variables += SHADER_VARIABLE_NAMES::SKELETAL_MESH::MAX_BONE_SIZE_MACRO;
@@ -1031,7 +1031,7 @@ std::string ShaderBuilderNew::VS_GetSkeletalMeshVariables() const
 
 std::string ShaderBuilderNew::VS_GetSkeletalMeshUniforms(int boneCount) const
 {
-	std::string uniforms = "";
+	std::string uniforms = "\n\n";
 
 	uniforms += "uniform mat4 ";
 	uniforms += SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES;
@@ -1045,7 +1045,7 @@ std::string ShaderBuilderNew::VS_GetSkeletalMeshUniforms(int boneCount) const
 
 std::string ShaderBuilderNew::VS_GetUniforms() const
 {
-	std::string uniforms = "";
+	std::string uniforms = "\n\n";
 
 	uniforms += "uniform mat4 ";
 	uniforms += SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX;
