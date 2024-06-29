@@ -27,6 +27,21 @@ Scene::Scene()
 
 Scene::~Scene()
 {
+	for (auto pointLight : pointLights_)
+	{
+		delete pointLight;
+	}
+
+	for (auto directionalLight : directionalLights_)
+	{
+		delete directionalLight;
+	}
+
+	for (auto spotLight : spotLights_)
+	{
+		delete spotLight;
+	}
+
 	for (auto texture : textures_)
 	{
 		delete texture;
