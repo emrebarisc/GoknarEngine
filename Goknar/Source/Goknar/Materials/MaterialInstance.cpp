@@ -16,7 +16,6 @@ MaterialInstance::MaterialInstance(Material* parent) :
 
 MaterialInstance::~MaterialInstance()
 {
-	parentMaterial_->RemoveDerivedMaterialInstance(this);
 }
 
 MaterialInstance* MaterialInstance::Create(Material* parent)
@@ -42,4 +41,9 @@ void MaterialInstance::PostInit()
 Shader* MaterialInstance::GetShader(RenderPassType renderPassType) const
 {
 	return parentMaterial_->GetShader(renderPassType);
+}
+
+void MaterialInstance::Destroy()
+{
+	parentMaterial_->RemoveDerivedMaterialInstance(this);
 }

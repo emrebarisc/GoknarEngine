@@ -8,6 +8,7 @@ class Fire : public ObjectBase
 {
 public:
 	Fire();
+	~Fire();
 
 	virtual void BeginGame() override;
 	virtual void Tick(float deltaTime) override;

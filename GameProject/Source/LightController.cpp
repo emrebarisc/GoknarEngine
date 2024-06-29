@@ -93,6 +93,15 @@ LightController::LightController()
 	rotationSpeed_ = 2.f;
 }
 
+LightController::~LightController()
+{
+	delete spotLight1_;
+	delete spotLight2_;
+	delete spotLight3_;
+	delete spotLight4_;
+	delete spotLight5_;
+}
+
 void LightController::BeginGame()
 {
 }

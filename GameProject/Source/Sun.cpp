@@ -20,6 +20,11 @@ Sun::Sun() :
 	sunLight_->SetShadowHeight(4096);
 }
 
+Sun::~Sun()
+{
+	delete sunLight_;
+}
+
 void Sun::BeginGame()
 {
 	sunLight_->SetDirection(sunLightDirection_);

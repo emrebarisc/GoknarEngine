@@ -8,6 +8,7 @@ class LightController : public ObjectBase
 {
 public:
 	LightController();
+	~LightController();
 
 	void BeginGame();
 	void Tick(float deltaTime);

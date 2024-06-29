@@ -8,6 +8,7 @@ class Sun : public ObjectBase
 {
 public:
 	Sun();
+	~Sun();
 
 	virtual void BeginGame() override;
 	virtual void Tick(float deltaTime) override;

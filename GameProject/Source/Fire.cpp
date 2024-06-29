@@ -21,6 +21,11 @@ Fire::Fire() :
 	fireLight_->SetLightMobility(LightMobility::Dynamic);
 }
 
+Fire::~Fire()
+{
+	delete fireLight_;
+}
+
 void Fire::BeginGame()
 {
 	RaycastData raycastData;

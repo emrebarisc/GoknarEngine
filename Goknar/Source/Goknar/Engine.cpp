@@ -65,11 +65,12 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+	delete physicsWorld_;
+
 	ClearMemory();
 
 	delete application_;
 
-	delete physicsWorld_;
 	delete renderer_;
 	delete cameraManager_;
 #if GOKNAR_EDITOR
@@ -475,6 +476,16 @@ void Engine::Tick(float deltaTime)
 
 void Engine::ClearMemory()
 {
+	std::vector<ObjectBase*>::iterator registeredObjectsIterator = registeredObjects_.begin();
+	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
+	{
+		delete* registeredObjectsIterator;
+	}
+
+	registeredObjects_.clear();
+	tickableObjects_.clear();
+	objectsToBeInitialized_.clear();
+
 	std::vector<Component*>::iterator registeredComponentsIterator = registeredComponents_.begin();
 	for (; registeredComponentsIterator != registeredComponents_.end(); ++registeredComponentsIterator)
 	{
@@ -483,16 +494,6 @@ void Engine::ClearMemory()
 	registeredComponents_.clear();
 	tickableComponents_.clear();
 	componentsToBeInitialized_.clear();
-
-	std::vector<ObjectBase*>::iterator registeredObjectsIterator = registeredObjects_.begin();
-	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
-	{
-		delete *registeredObjectsIterator;
-	}
-
-	registeredObjects_.clear();
-	tickableObjects_.clear();
-	objectsToBeInitialized_.clear();
 }
 
 void Engine::DestroyAllPendingObjectAndComponents()

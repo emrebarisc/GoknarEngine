@@ -7,9 +7,8 @@ class Material;
 
 class GOKNAR_API MaterialInstance : public IMaterialBase
 {
+	friend Material;
 public:
-	virtual ~MaterialInstance();
-
 	static MaterialInstance* Create(Material* parent);
 
 	virtual void PreInit() override;
@@ -18,10 +17,13 @@ public:
 
 	virtual Shader* GetShader(RenderPassType renderPassType) const override;
 
+	virtual void Destroy();
+
 protected:
 	MaterialInstance();
 	MaterialInstance(Material* parent);
 	MaterialInstance(const MaterialInstance&) = delete;
+	virtual ~MaterialInstance();
 
 	const MaterialInstance& operator =(const MaterialInstance&) = delete;
 
