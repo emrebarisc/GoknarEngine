@@ -5,7 +5,7 @@
 #include "Goknar/Math/GoknarMath.h"
 #include "Goknar/Renderer/Types.h"
 
-class Framebuffer;
+class FrameBuffer;
 class Shader;
 class Texture;
 
@@ -140,9 +140,9 @@ public:
 		return shadowMapRenderCamera_;
 	}
 
-	Framebuffer* GetShadowMapFramebuffer()
+	FrameBuffer* GetShadowMapFrameBuffer()
 	{
-		return shadowMapFramebuffer_;
+		return shadowMapFrameBuffer_;
 	}
 
 	int GetUniformBufferIndex() const
@@ -165,7 +165,7 @@ protected:
 	Vector3 color_{ Vector3{ 1.f } };
 
 	Camera* shadowMapRenderCamera_{ nullptr };
-	Framebuffer* shadowMapFramebuffer_{ nullptr };
+	FrameBuffer* shadowMapFrameBuffer_{ nullptr };
 	Texture* shadowMapTexture_{ nullptr };
 
 	std::string name_{ "" };

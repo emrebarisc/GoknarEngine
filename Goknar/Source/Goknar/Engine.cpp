@@ -277,22 +277,8 @@ void Engine::Run()
 
 		application_->Run();
 		Tick(deltaTime_);
-		
-		renderer_->PrepareSkeletalMeshInstancesForTheCurrentFrame();
 
-		renderer_->GetLightManager()->RenderShadowMaps();
-		
-		if (renderer_->GetMainRenderType() == RenderPassType::Forward)
-		{
-			renderer_->Render(RenderPassType::Forward);
-		}
-		else if (renderer_->GetMainRenderType() == RenderPassType::Deferred)
-		{
-			renderer_->Render(RenderPassType::GeometryBuffer);
-			renderer_->Render(RenderPassType::Deferred);
-		}
-
-		renderer_->PrepareSkeletalMeshInstancesForTheNextFrame();
+		renderer_->RenderCurrentFrame();
 
 #if GOKNAR_EDITOR
 		editor_->Tick(deltaTime_);

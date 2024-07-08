@@ -89,6 +89,7 @@ enum class TextureInternalFormat
 	DEPTH_32 = GL_DEPTH_COMPONENT32,
 	DEPTH_32F = GL_DEPTH_COMPONENT32F,
 	DEPTH_STENCIL = GL_DEPTH_STENCIL,
+	DEPTH24_STENCIL8 = GL_DEPTH24_STENCIL8,
 	RED = GL_RED,
 	RG = GL_RG,
 	RGB = GL_RGB,
@@ -178,7 +179,7 @@ public:
 
 	bool LoadTextureImage();
 
-	void ReadFromFramebuffer(GEuint framebuffer);
+	void ReadFromFrameBuffer(GEuint framebuffer);
 	void Save(std::string path);
 
 	GEuint GetRendererTextureId()

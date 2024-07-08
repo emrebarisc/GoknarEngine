@@ -48,9 +48,14 @@ public:
 		return textureID_++;
 	}
 
-	int GetAndIncreaseFramebufferID()
+	int GetAndIncreaseFrameBufferID()
 	{
 		return framebufferID_++;
+	}
+
+	int GetAndIncreaseRenderBufferID()
+	{
+		return renderbufferID_++;
 	}
 
 private:
@@ -61,7 +66,8 @@ private:
 		spotLightID_(0),
 		materialID_(0),
 		textureID_(0),
-		framebufferID_(0)
+		framebufferID_(0),
+		renderbufferID_(0)
 	{}
 
 	static ObjectIDManager* instance_;
@@ -73,6 +79,7 @@ private:
 	int materialID_;
 	int textureID_;
 	int framebufferID_;
+	int renderbufferID_;
 };
 
 #endif

@@ -4,16 +4,17 @@
 #include "Goknar/Core.h"
 #include "Types.h"
 
+class RenderBuffer;
 class Texture;
 
-enum class FramebufferBindTarget
+enum class FrameBufferBindTarget
 {
 	DRAW_FRAMEBUFFER = GL_DRAW_FRAMEBUFFER,
 	READ_FRAMEBUFFER = GL_READ_FRAMEBUFFER,
 	FRAMEBUFFER = GL_FRAMEBUFFER
 };
 
-enum class FramebufferAttachment
+enum class FrameBufferAttachment
 {
 	COLOR_ATTACHMENT0 = GL_COLOR_ATTACHMENT0,
 	COLOR_ATTACHMENT1 = GL_COLOR_ATTACHMENT1,
@@ -30,28 +31,28 @@ enum class FramebufferAttachment
 	STENCIL_ATTACHMENT = GL_STENCIL_ATTACHMENT
 };
 
-class GOKNAR_API Framebuffer
+class GOKNAR_API FrameBuffer
 {
 public:
-	Framebuffer();
-	virtual ~Framebuffer();
+	FrameBuffer();
+	virtual ~FrameBuffer();
 
 	void PreInit();
 	void Init();
 	void PostInit();
 
 	void Bind() const;
-	void Bind(FramebufferBindTarget bindTarget) const;
+	void Bind(FrameBufferBindTarget bindTarget) const;
 	void Unbind();
 
 	void DrawBuffers();
 
-	GEuint GetRendererFramebufferId()
+	GEuint GetRendererFrameBufferId()
 	{
-		return rendererFramebufferId_;
+		return rendererFrameBufferId_;
 	}
 
-	GEuint GetFramebufferObjectId() const
+	GEuint GetFrameBufferObjectId() const
 	{
 		return objectId_;
 	}
@@ -66,19 +67,24 @@ public:
 		name_ = name;
 	}
 
-	FramebufferBindTarget GetFrameBufferBindTarget() const
+	FrameBufferBindTarget GetFrameBufferBindTarget() const
 	{
-		return framebufferBindTarget_;
+		return frameBufferBindTarget_;
 	}
 
-	void SetFramebufferBindTarget(FramebufferBindTarget framebufferBindTarget)
+	void SetFrameBufferBindTarget(FrameBufferBindTarget framebufferBindTarget)
 	{
-		framebufferBindTarget_ = framebufferBindTarget;
+		frameBufferBindTarget_ = framebufferBindTarget;
 	}
 
-	void AddAttachment(FramebufferAttachment framebufferAttachment, Texture* textureTarget)
+	void AddTextureAttachment(FrameBufferAttachment framebufferAttachment, Texture* textureTarget)
 	{
-		attachments.push_back({ framebufferAttachment, textureTarget });
+		textureAttachments_.push_back({ framebufferAttachment, textureTarget });
+	}
+
+	void AddRenderBufferAttachment(RenderBuffer* renderBufferAttachment)
+	{
+		renderBufferAttachments_.push_back(renderBufferAttachment);
 	}
 
 	void Attach();
@@ -86,13 +92,18 @@ public:
 protected:
 
 private:
+	void AttachTextures();
+	void AttachRenderBuffers();
+	void CheckStatus();
+
 	std::string name_{ "" };
 
-	GEuint rendererFramebufferId_{ 0 };
+	GEuint rendererFrameBufferId_{ 0 };
 
-	FramebufferBindTarget framebufferBindTarget_{ FramebufferBindTarget::FRAMEBUFFER };
+	FrameBufferBindTarget frameBufferBindTarget_{ FrameBufferBindTarget::FRAMEBUFFER };
 
-	std::vector<std::pair<FramebufferAttachment, Texture*>> attachments;
+	std::vector<std::pair<FrameBufferAttachment, Texture*>> textureAttachments_;
+	std::vector<RenderBuffer*> renderBufferAttachments_;
 
 	int objectId_{ 0 };
 

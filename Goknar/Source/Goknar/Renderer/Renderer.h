@@ -16,12 +16,14 @@ class SkeletalMesh;
 class LightManager;
 
 class Texture;
-class Framebuffer;
+class FrameBuffer;
 class Shader;
 
 class DynamicMeshInstance;
 class StaticMeshInstance;
 class SkeletalMeshInstance;
+
+class PostProcessingEffect;
 
 enum class GOKNAR_API RenderPassType : unsigned int
 {
@@ -48,7 +50,7 @@ public:
 	void GenerateBuffers();
 	void BindGBufferDepth();
 
-	Framebuffer* geometryFrameBuffer{ nullptr };
+	FrameBuffer* geometryFrameBuffer{ nullptr };
 
 	Texture* worldPositionTexture{ nullptr };
 	Texture* worldNormalTexture{ nullptr };
@@ -104,6 +106,7 @@ public:
 	void Init();
 	void PostInit();
 
+	void RenderCurrentFrame();
 	void Render(RenderPassType renderPassType);
 
 	void AddStaticMeshToRenderer(StaticMesh* object);
@@ -147,6 +150,26 @@ public:
 		return deferredRenderingData_;
 	}
 
+	void AddPostProcessingEffect(const PostProcessingEffect* postProcessingEffect)
+	{
+		postProcessingEffects_.push_back(postProcessingEffect);
+	}
+
+	void RemovePostProcessingEffect(const PostProcessingEffect* postProcessingEffect)
+	{
+		std::vector<const PostProcessingEffect*>::const_iterator postProcessingEffectIterator = postProcessingEffects_.cbegin();
+		while (postProcessingEffectIterator != postProcessingEffects_.cend())
+		{
+			if (postProcessingEffect == *postProcessingEffectIterator)
+			{
+				postProcessingEffects_.erase(postProcessingEffectIterator);
+				break;
+			}
+		}
+	}
+
+	void RenderStaticMesh(StaticMesh* staticMesh);
+
 private:
 	void BindStaticVBO();
 	void BindSkeletalVBO();
@@ -178,6 +201,8 @@ private:
 	LightManager* lightManager_{ nullptr };
 
 	DeferredRenderingData* deferredRenderingData_{ nullptr };
+
+	std::vector<const PostProcessingEffect*> postProcessingEffects_;
 
 	unsigned int totalStaticMeshVertexSize_;
 	unsigned int totalStaticMeshFaceSize_;

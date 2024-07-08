@@ -3,7 +3,8 @@
 #include "Renderer.h"
 
 #include "Texture.h"
-#include "Framebuffer.h"
+#include "FrameBuffer.h"
+#include "RenderBuffer.h"
 
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
@@ -36,6 +37,7 @@
 
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilderNew.h"
+#include "Goknar/Renderer/PostProcessing.h"
 
 #define VERTEX_COLOR_LOCATION 0
 #define VERTEX_POSITION_LOCATION 1
@@ -122,8 +124,76 @@ Renderer::~Renderer()
 	}
 }
 
+
+static FrameBuffer testFrameBuffer;
+static Texture postProcessingTestTexture;
+static PostProcessingEffect postProcessingEffect;
+static Shader postProcessingShader;
+static bool isInitializedBuffers = false;
+
 void Renderer::PreInit()
 {
+
+	if (!isInitializedBuffers)
+	{
+		postProcessingTestTexture.SetName("postProcessingTest");
+		postProcessingTestTexture.SetTextureDataType(TextureDataType::DYNAMIC);
+		postProcessingTestTexture.SetTextureFormat(TextureFormat::RGB);
+		postProcessingTestTexture.SetTextureInternalFormat(TextureInternalFormat::RGB);
+		postProcessingTestTexture.SetTextureMinFilter(TextureMinFilter::NEAREST);
+		postProcessingTestTexture.SetTextureMagFilter(TextureMagFilter::NEAREST);
+		postProcessingTestTexture.SetWidth(engine->GetWindowManager()->GetWindowSize().x);
+		postProcessingTestTexture.SetHeight(engine->GetWindowManager()->GetWindowSize().y);
+		postProcessingTestTexture.SetGenerateMipmap(false);
+		postProcessingTestTexture.SetTextureType(TextureType::FLOAT);
+		postProcessingTestTexture.PreInit();
+		postProcessingTestTexture.Init();
+		postProcessingTestTexture.PostInit();
+		testFrameBuffer.AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT0, &postProcessingTestTexture);
+
+		testFrameBuffer.PreInit();
+		testFrameBuffer.Init();
+		testFrameBuffer.PostInit();
+		testFrameBuffer.Bind();
+		testFrameBuffer.Attach();
+
+		testFrameBuffer.DrawBuffers();
+
+		postProcessingShader.SetVertexShaderScript(ShaderBuilderNew::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
+		postProcessingShader.SetFragmentShaderScript(R"(
+#version 440 core
+
+out vec4 fragmentColor;
+
+in mat4 finalModelMatrix;
+in vec4 fragmentPositionScreenSpace;
+in vec2 textureUV;
+
+uniform sampler2D postProcessingTest;
+
+void main()
+{
+	vec4 textureColor = texture(postProcessingTest, textureUV);
+	float grayValue = (textureColor.r + textureColor.g + textureColor.b) / 3.f;
+	fragmentColor = vec4(vec3(grayValue), 1.0);
+}
+)");
+		postProcessingShader.PreInit();
+		postProcessingShader.Init();
+		postProcessingShader.PostInit();
+		postProcessingEffect.SetShader(&postProcessingShader);
+
+		postProcessingShader.Use();
+		postProcessingTestTexture.Bind(&postProcessingShader);
+		postProcessingShader.Unbind();
+
+		postProcessingEffect.PreInit();
+		postProcessingEffect.Init();
+		postProcessingEffect.PostInit();
+
+		isInitializedBuffers = true;
+	}
+
 	lightManager_ = new LightManager();
 	lightManager_->PreInit();
 
@@ -344,6 +414,32 @@ void Renderer::SetBufferData()
 	if (0 < totalStaticMeshCount_) SetStaticBufferData();
 	if (0 < totalSkeletalMeshCount_) SetSkeletalBufferData();
 	if (0 < totalDynamicMeshCount_) SetDynamicBufferData();
+}
+
+void Renderer::RenderCurrentFrame()
+{
+	PrepareSkeletalMeshInstancesForTheCurrentFrame();
+
+	GetLightManager()->RenderShadowMaps();
+
+	if (GetMainRenderType() == RenderPassType::Forward)
+	{
+		testFrameBuffer.Bind();
+		Render(RenderPassType::Forward);
+	}
+	else if (GetMainRenderType() == RenderPassType::Deferred)
+	{
+		testFrameBuffer.Bind();
+		Render(RenderPassType::GeometryBuffer);
+		testFrameBuffer.Bind();
+		Render(RenderPassType::Deferred);
+	}
+
+	testFrameBuffer.Unbind();
+
+	postProcessingEffect.Render();
+
+	PrepareSkeletalMeshInstancesForTheNextFrame();
 }
 
 void Renderer::Render(RenderPassType renderPassType)
@@ -933,6 +1029,14 @@ void Renderer::SetLightUniforms(Shader* shader)
 	}
 }
 
+void Renderer::RenderStaticMesh(StaticMesh* staticMesh)
+{
+	BindStaticVBO();
+
+	int facePointCount = staticMesh->GetFaceCount() * 3;
+	glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)staticMesh->GetVertexStartingIndex(), staticMesh->GetBaseVertex());
+}
+
 void Renderer::BindStaticVBO()
 {
 	glBindBuffer(GL_ARRAY_BUFFER, staticVertexBufferId_);
@@ -1051,8 +1155,11 @@ void Renderer::SortTransparentInstances()
 		cameraDistanceSorter);
 }
 
-GeometryBufferData::GeometryBufferData()
+GeometryBufferData::GeometryBufferData() :
+	bufferWidth(engine->GetWindowManager()->GetWindowSize().x),
+	bufferHeight(engine->GetWindowManager()->GetWindowSize().y)
 {
+
 }
 
 GeometryBufferData::~GeometryBufferData()
@@ -1090,7 +1197,7 @@ void GeometryBufferData::Unbind()
 
 void GeometryBufferData::GenerateBuffers()
 {
-	geometryFrameBuffer = new Framebuffer();
+	geometryFrameBuffer = new FrameBuffer();
 
 	worldPositionTexture = new Texture();
 	worldPositionTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION);
@@ -1105,7 +1212,7 @@ void GeometryBufferData::GenerateBuffers()
 	worldPositionTexture->PreInit();
 	worldPositionTexture->Init();
 	worldPositionTexture->PostInit();
-	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT0, worldPositionTexture);
+	geometryFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT0, worldPositionTexture);
 
 	worldNormalTexture = new Texture();
 	worldNormalTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL);
@@ -1120,7 +1227,7 @@ void GeometryBufferData::GenerateBuffers()
 	worldNormalTexture->PreInit();
 	worldNormalTexture->Init();
 	worldNormalTexture->PostInit();
-	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT1, worldNormalTexture);
+	geometryFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT1, worldNormalTexture);
 
 	diffuseTexture = new Texture();
 	diffuseTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE);
@@ -1136,7 +1243,7 @@ void GeometryBufferData::GenerateBuffers()
 	diffuseTexture->PreInit();
 	diffuseTexture->Init();
 	diffuseTexture->PostInit();
-	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT2, diffuseTexture);
+	geometryFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT2, diffuseTexture);
 
 	specularTexture = new Texture();
 	specularTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG);
@@ -1152,7 +1259,7 @@ void GeometryBufferData::GenerateBuffers()
 	specularTexture->PreInit();
 	specularTexture->Init();
 	specularTexture->PostInit();
-	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT3, specularTexture);
+	geometryFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT3, specularTexture);
 
 	emmisiveColorTexture = new Texture();
 	emmisiveColorTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMMISIVE_COLOR);
@@ -1168,7 +1275,7 @@ void GeometryBufferData::GenerateBuffers()
 	emmisiveColorTexture->PreInit();
 	emmisiveColorTexture->Init();
 	emmisiveColorTexture->PostInit();
-	geometryFrameBuffer->AddAttachment(FramebufferAttachment::COLOR_ATTACHMENT4, emmisiveColorTexture);
+	geometryFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT4, emmisiveColorTexture);
 
 	geometryFrameBuffer->PreInit();
 	geometryFrameBuffer->Init();
@@ -1209,7 +1316,7 @@ void GeometryBufferData::OnWindowSizeChange(int width, int height)
 
 void GeometryBufferData::BindGBufferDepth()
 {
-	geometryFrameBuffer->Bind(FramebufferBindTarget::READ_FRAMEBUFFER);
+	geometryFrameBuffer->Bind(FrameBufferBindTarget::READ_FRAMEBUFFER);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBlitFramebuffer(0, 0, bufferWidth, bufferHeight, 
 						0, 0, bufferWidth, bufferHeight,

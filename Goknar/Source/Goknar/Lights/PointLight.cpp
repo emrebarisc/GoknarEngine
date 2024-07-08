@@ -7,7 +7,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Managers/CameraManager.h"
-#include "Goknar/Renderer/Framebuffer.h"
+#include "Goknar/Renderer/FrameBuffer.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
@@ -35,7 +35,7 @@ void PointLight::PreInit()
 {
 	if (isShadowEnabled_)
 	{
-		shadowMapFramebuffer_ = new Framebuffer();
+		shadowMapFrameBuffer_ = new FrameBuffer();
 
 		shadowMapTexture_ = new Texture();
 		shadowMapTexture_->SetName(SHADER_VARIABLE_NAMES::SHADOW::SHADOW_MAP_PREFIX + name_);
@@ -87,12 +87,12 @@ void PointLight::RenderShadowMap()
 	CameraManager* cameraManager = engine->GetCameraManager();
 	cameraManager->SetActiveCamera(shadowMapRenderCamera_);
 
-	shadowMapFramebuffer_->Bind();
+	shadowMapFrameBuffer_->Bind();
 
 	Renderer* renderer = engine->GetRenderer();
 	renderer->Render(RenderPassType::PointLightShadow);
 
-	shadowMapFramebuffer_->Unbind();
+	shadowMapFrameBuffer_->Unbind();
 }
 
 void PointLight::SetShaderUniforms(const Shader* shader)

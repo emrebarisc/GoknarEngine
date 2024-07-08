@@ -7,7 +7,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Managers/CameraManager.h"
-#include "Goknar/Renderer/Framebuffer.h"
+#include "Goknar/Renderer/FrameBuffer.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
@@ -37,7 +37,7 @@ void SpotLight::PreInit()
 {
 	if (isShadowEnabled_)
 	{
-		shadowMapFramebuffer_ = new Framebuffer();
+		shadowMapFrameBuffer_ = new FrameBuffer();
 
 		shadowMapTexture_ = new Texture();
 		shadowMapTexture_->SetName(SHADER_VARIABLE_NAMES::SHADOW::SHADOW_MAP_PREFIX + name_);
@@ -140,12 +140,12 @@ void SpotLight::SetIsShadowEnabled(bool isShadowEnabled)
 void SpotLight::RenderShadowMap()
 {
 	engine->GetCameraManager()->SetActiveCamera(shadowMapRenderCamera_);
-	shadowMapFramebuffer_->Bind();
+	shadowMapFrameBuffer_->Bind();
 
 	Renderer* renderer = engine->GetRenderer();
 	renderer->Render(RenderPassType::Shadow);
 
-	shadowMapFramebuffer_->Unbind();
+	shadowMapFrameBuffer_->Unbind();
 
 	EXIT_ON_GL_ERROR("SpotLight::RenderShadowMap");
 }

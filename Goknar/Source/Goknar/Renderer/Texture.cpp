@@ -34,6 +34,12 @@ Texture::Texture(Image* image) :
 	height_ = image->GetHeight();
 	channels_ = image->GetChannels();
 	textureUsage_ = image->GetTextureUsage();
+
+	const std::string& imageName = image->GetName();
+	if (!imageName.empty())
+	{
+		name_ = imageName;
+	}
 }
 
 Texture::~Texture()
@@ -42,7 +48,7 @@ Texture::~Texture()
 	delete[] buffer_;
 }
 
-void Texture::ReadFromFramebuffer(GEuint framebuffer)
+void Texture::ReadFromFrameBuffer(GEuint framebuffer)
 {
 	if (channels_ == 0)
 	{
