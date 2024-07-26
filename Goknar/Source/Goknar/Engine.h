@@ -12,7 +12,6 @@ class Application;
 class CameraManager;
 class Component;
 class Controller;
-class Editor;
 class InputManager;
 class ObjectBase;
 class ObjectManager;
@@ -75,11 +74,6 @@ public:
 	void AddStaticMeshToRenderer(StaticMesh* staticMesh);
 	void AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh);
 	void AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh);
-
-	inline Editor* GetEditor() const
-	{
-		return editor_;
-	}
 
 	inline CameraManager* GetCameraManager() const
 	{
@@ -177,7 +171,6 @@ private:
 	ObjectManager* objectManager_;
 	Renderer* renderer_;
 	WindowManager* windowManager_;
-	Editor* editor_{ nullptr };
 	CameraManager* cameraManager_;
 	PhysicsWorld* physicsWorld_{ nullptr };
 	HUD* HUD_{ nullptr };

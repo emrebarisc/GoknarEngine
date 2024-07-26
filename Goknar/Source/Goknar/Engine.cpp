@@ -24,8 +24,6 @@
 #include "Renderer/ShaderBuilderNew.h"
 #include "UI/HUD.h"
 
-#include "Editor/ImGuiEditor/ImGuiEditor.h"
-
 #include "Lights/DirectionalLight.h"
 #include "Lights/Light.h"
 #include "Lights/PointLight.h"
@@ -52,9 +50,6 @@ Engine::Engine()
 	objectManager_ = new ObjectManager();
 	renderer_ = new Renderer();
 	physicsWorld_ = new PhysicsWorld();
-#if GOKNAR_EDITOR
-	editor_ = new ImGuiEditor();
-#endif
 	cameraManager_ = new CameraManager();
 
 	debugDrawer_ = new DebugDrawer();
@@ -73,9 +68,6 @@ Engine::~Engine()
 
 	delete renderer_;
 	delete cameraManager_;
-#if GOKNAR_EDITOR
-	delete editor_;
-#endif
 
 	delete debugDrawer_;
 
@@ -137,14 +129,6 @@ void Engine::PreInit() const
 	GOKNAR_CORE_INFO("Object Manager Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
-#if GOKNAR_EDITOR
-	editor_->PreInit();
-	currentTimePoint = std::chrono::steady_clock::now();
-	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Editor Initialization: {} s.", elapsedTime);
-	lastFrameTimePoint = currentTimePoint;
-#endif
-
 	physicsWorld_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
@@ -170,10 +154,6 @@ void Engine::Init() const
 
 	cameraManager_->Init();
 
-#if GOKNAR_EDITOR
-	editor_->PreInit();
-#endif
-
 	physicsWorld_->Init();
 
 	renderer_->Init();
@@ -190,10 +170,6 @@ void Engine::PostInit() const
 	resourceManager_->PostInit();
 
 	cameraManager_->PostInit();
-
-#if GOKNAR_EDITOR
-	editor_->PostInit();
-#endif
 
 	physicsWorld_->PostInit();
 
@@ -279,10 +255,6 @@ void Engine::Run()
 		Tick(deltaTime_);
 
 		renderer_->RenderCurrentFrame();
-
-#if GOKNAR_EDITOR
-		editor_->Tick(deltaTime_);
-#endif
 
 		if(HUD_)
 		{
