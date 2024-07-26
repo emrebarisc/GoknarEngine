@@ -23,7 +23,6 @@ set(SUBDIRS
 	${SOURCE_DIR_NAME}/Goknar/Debug
 	${SOURCE_DIR_NAME}/Goknar/Delegates
 	${SOURCE_DIR_NAME}/Goknar/Editor
-	${SOURCE_DIR_NAME}/Goknar/Editor/ImGuiEditor
 	${SOURCE_DIR_NAME}/Goknar/Geometry
 	${SOURCE_DIR_NAME}/Goknar/Helpers
 	${SOURCE_DIR_NAME}/Goknar/IO
