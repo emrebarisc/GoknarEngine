@@ -27,19 +27,19 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-	for (auto pointLight : pointLights_)
+	while (0 < pointLights_.size())
 	{
-		delete pointLight;
+		delete pointLights_[0];
 	}
 
-	for (auto directionalLight : directionalLights_)
+	while (0 < directionalLights_.size())
 	{
-		delete directionalLight;
+		delete directionalLights_[0];
 	}
 
-	for (auto spotLight : spotLights_)
+	while (0 < spotLights_.size())
 	{
-		delete spotLight;
+		delete spotLights_[0];
 	}
 
 	for (auto texture : textures_)
