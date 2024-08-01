@@ -1077,7 +1077,7 @@ void Renderer::SetAttribPointers()
 	glVertexAttribPointer(VERTEX_NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
 
 	// Vertex UV
-	offset += sizeof(VertexData::fragmentNormal);
+	offset += sizeof(VertexData::normal);
 	glEnableVertexAttribArray(VERTEX_UV_LOCATION);
 	glVertexAttribPointer(VERTEX_UV_LOCATION, 2, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
 }
@@ -1100,7 +1100,7 @@ void Renderer::SetAttribPointersForSkeletalMesh()
 	// Vertex normal
 	glEnableVertexAttribArray(VERTEX_NORMAL_LOCATION);
 	glVertexAttribPointer(VERTEX_NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
-	offset += sizeof(VertexData::fragmentNormal);
+	offset += sizeof(VertexData::normal);
 
 	// Vertex UV
 	glEnableVertexAttribArray(VERTEX_UV_LOCATION);

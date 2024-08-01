@@ -340,7 +340,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 			for(unsigned int vertexIndex = 0; vertexIndex < assimpMesh->mNumVertices; ++vertexIndex)
 			{
 				aiVector3D& vertexRelativePosition = assimpMesh->mVertices[vertexIndex];
-				aiVector3D& fragmentNormal = assimpMesh->mNormals[vertexIndex];
+				aiVector3D& normal = assimpMesh->mNormals[vertexIndex];
 
 				Vector4 vertexColor = Vector4(1.f);
 				if (assimpMesh->HasVertexColors(0))
@@ -360,7 +360,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				staticMesh->AddVertexData(
 					VertexData(
 						Vector3(vertexRelativePosition.x, vertexRelativePosition.y, vertexRelativePosition.z),
-						Vector3(fragmentNormal.x, fragmentNormal.y, fragmentNormal.z),
+						Vector3(normal.x, normal.y, normal.z),
 						vertexColor,
 						vertexUV
 					)

@@ -687,11 +687,11 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				{
 					stream << child->GetText() << std::endl;
 					int normalIndex = 0;
-					Vector3 fragmentNormal;
-					while (!(stream >> fragmentNormal.x).eof())
+					Vector3 normal;
+					while (!(stream >> normal.x).eof())
 					{
-						stream >> fragmentNormal.y >> fragmentNormal.z;
-						mesh->SetVertexNormal(normalIndex++, fragmentNormal);
+						stream >> normal.y >> normal.z;
+						mesh->SetVertexNormal(normalIndex++, normal);
 					}
 				}
 				stream.clear();
