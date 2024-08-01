@@ -29,7 +29,7 @@ void CameraComponent::UpdateComponentToWorldTransformationMatrix()
 
 	if (cameraFollowsComponentRotation_)
 	{
-		camera_->SetVectors(GetForwardVector(), GetLeftVector(), GetUpVector());
+		camera_->SetVectors(GetWorldForwardVector(), GetWorldLeftVector(), GetWorldUpVector());
 	}
 }
 

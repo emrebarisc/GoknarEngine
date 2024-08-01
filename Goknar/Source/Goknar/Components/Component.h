@@ -68,22 +68,40 @@ public:
 		return relativeTransformationMatrix_;
 	}
 
-	Vector3 GetForwardVector()
+	Vector3 GetRelativeForwardVector()
 	{
 		const Matrix& relativeTransformationMatrix = GetRelativeTransformationMatrix();
 		return Vector3(relativeTransformationMatrix[0], relativeTransformationMatrix[4], relativeTransformationMatrix[8]).GetNormalized();
 	}
 
-	Vector3 GetLeftVector()
+	Vector3 GetRelativeLeftVector()
 	{
 		const Matrix& relativeTransformationMatrix = GetRelativeTransformationMatrix();
 		return Vector3(relativeTransformationMatrix[1], relativeTransformationMatrix[5], relativeTransformationMatrix[9]).GetNormalized();
 	}
 
-	Vector3 GetUpVector()
+	Vector3 GetRelativeUpVector()
 	{
 		const Matrix& relativeTransformationMatrix = GetRelativeTransformationMatrix();
 		return Vector3(relativeTransformationMatrix[2], relativeTransformationMatrix[6], relativeTransformationMatrix[10]).GetNormalized();
+	}
+
+	Vector3 GetWorldForwardVector()
+	{
+		const Matrix& worldTransformationMatrix = GetComponentToWorldTransformationMatrix();
+		return Vector3(worldTransformationMatrix[0], worldTransformationMatrix[4], worldTransformationMatrix[8]).GetNormalized();
+	}
+
+	Vector3 GetWorldLeftVector()
+	{
+		const Matrix& worldTransformationMatrix = GetComponentToWorldTransformationMatrix();
+		return Vector3(worldTransformationMatrix[1], worldTransformationMatrix[5], worldTransformationMatrix[9]).GetNormalized();
+	}
+
+	Vector3 GetWorldUpVector()
+	{
+		const Matrix& worldTransformationMatrix = GetComponentToWorldTransformationMatrix();
+		return Vector3(worldTransformationMatrix[2], worldTransformationMatrix[6], worldTransformationMatrix[10]).GetNormalized();
 	}
 
 	bool GetIsInitialized() const
