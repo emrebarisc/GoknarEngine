@@ -125,74 +125,74 @@ Renderer::~Renderer()
 }
 
 
-static FrameBuffer testFrameBuffer;
-static Texture postProcessingTestTexture;
-static PostProcessingEffect postProcessingEffect;
-static Shader postProcessingShader;
-static bool isInitializedBuffers = false;
+//static FrameBuffer testFrameBuffer;
+//static Texture postProcessingTestTexture;
+//static PostProcessingEffect postProcessingEffect;
+//static Shader postProcessingShader;
+//static bool isInitializedBuffers = false;
 
 void Renderer::PreInit()
 {
 
-	if (!isInitializedBuffers)
-	{
-		postProcessingTestTexture.SetName("postProcessingTest");
-		postProcessingTestTexture.SetTextureDataType(TextureDataType::DYNAMIC);
-		postProcessingTestTexture.SetTextureFormat(TextureFormat::RGB);
-		postProcessingTestTexture.SetTextureInternalFormat(TextureInternalFormat::RGB);
-		postProcessingTestTexture.SetTextureMinFilter(TextureMinFilter::NEAREST);
-		postProcessingTestTexture.SetTextureMagFilter(TextureMagFilter::NEAREST);
-		postProcessingTestTexture.SetWidth(engine->GetWindowManager()->GetWindowSize().x);
-		postProcessingTestTexture.SetHeight(engine->GetWindowManager()->GetWindowSize().y);
-		postProcessingTestTexture.SetGenerateMipmap(false);
-		postProcessingTestTexture.SetTextureType(TextureType::FLOAT);
-		postProcessingTestTexture.PreInit();
-		postProcessingTestTexture.Init();
-		postProcessingTestTexture.PostInit();
-		testFrameBuffer.AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT0, &postProcessingTestTexture);
-
-		testFrameBuffer.PreInit();
-		testFrameBuffer.Init();
-		testFrameBuffer.PostInit();
-		testFrameBuffer.Bind();
-		testFrameBuffer.Attach();
-
-		testFrameBuffer.DrawBuffers();
-
-		postProcessingShader.SetVertexShaderScript(ShaderBuilderNew::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
-		postProcessingShader.SetFragmentShaderScript(R"(
-#version 440 core
-
-out vec4 fragmentColor;
-
-in mat4 finalModelMatrix;
-in vec4 fragmentPositionScreenSpace;
-in vec2 textureUV;
-
-uniform sampler2D postProcessingTest;
-
-void main()
-{
-	vec4 textureColor = texture(postProcessingTest, textureUV);
-	float grayValue = (textureColor.r + textureColor.g + textureColor.b) / 3.f;
-	fragmentColor = vec4(vec3(grayValue), 1.0);
-}
-)");
-		postProcessingShader.PreInit();
-		postProcessingShader.Init();
-		postProcessingShader.PostInit();
-		postProcessingEffect.SetShader(&postProcessingShader);
-
-		postProcessingShader.Use();
-		postProcessingTestTexture.Bind(&postProcessingShader);
-		postProcessingShader.Unbind();
-
-		postProcessingEffect.PreInit();
-		postProcessingEffect.Init();
-		postProcessingEffect.PostInit();
-
-		isInitializedBuffers = true;
-	}
+//	if (!isInitializedBuffers)
+//	{
+//		postProcessingTestTexture.SetName("postProcessingTest");
+//		postProcessingTestTexture.SetTextureDataType(TextureDataType::DYNAMIC);
+//		postProcessingTestTexture.SetTextureFormat(TextureFormat::RGB);
+//		postProcessingTestTexture.SetTextureInternalFormat(TextureInternalFormat::RGB);
+//		postProcessingTestTexture.SetTextureMinFilter(TextureMinFilter::NEAREST);
+//		postProcessingTestTexture.SetTextureMagFilter(TextureMagFilter::NEAREST);
+//		postProcessingTestTexture.SetWidth(engine->GetWindowManager()->GetWindowSize().x);
+//		postProcessingTestTexture.SetHeight(engine->GetWindowManager()->GetWindowSize().y);
+//		postProcessingTestTexture.SetGenerateMipmap(false);
+//		postProcessingTestTexture.SetTextureType(TextureType::FLOAT);
+//		postProcessingTestTexture.PreInit();
+//		postProcessingTestTexture.Init();
+//		postProcessingTestTexture.PostInit();
+//		testFrameBuffer.AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT0, &postProcessingTestTexture);
+//
+//		testFrameBuffer.PreInit();
+//		testFrameBuffer.Init();
+//		testFrameBuffer.PostInit();
+//		testFrameBuffer.Bind();
+//		testFrameBuffer.Attach();
+//
+//		testFrameBuffer.DrawBuffers();
+//
+//		postProcessingShader.SetVertexShaderScript(ShaderBuilderNew::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
+//		postProcessingShader.SetFragmentShaderScript(R"(
+//#version 440 core
+//
+//out vec4 fragmentColor;
+//
+//in mat4 finalModelMatrix;
+//in vec4 fragmentPositionScreenSpace;
+//in vec2 textureUV;
+//
+//uniform sampler2D postProcessingTest;
+//
+//void main()
+//{
+//	vec4 textureColor = texture(postProcessingTest, textureUV);
+//	float grayValue = (textureColor.r + textureColor.g + textureColor.b) / 3.f;
+//	fragmentColor = vec4(vec3(grayValue), 1.0);
+//}
+//)");
+//		postProcessingShader.PreInit();
+//		postProcessingShader.Init();
+//		postProcessingShader.PostInit();
+//		postProcessingEffect.SetShader(&postProcessingShader);
+//
+//		postProcessingShader.Use();
+//		postProcessingTestTexture.Bind(&postProcessingShader);
+//		postProcessingShader.Unbind();
+//
+//		postProcessingEffect.PreInit();
+//		postProcessingEffect.Init();
+//		postProcessingEffect.PostInit();
+//
+//		isInitializedBuffers = true;
+//	}
 
 	lightManager_ = new LightManager();
 	lightManager_->PreInit();
@@ -424,20 +424,20 @@ void Renderer::RenderCurrentFrame()
 
 	if (GetMainRenderType() == RenderPassType::Forward)
 	{
-		testFrameBuffer.Bind();
+		//testFrameBuffer.Bind();
 		Render(RenderPassType::Forward);
 	}
 	else if (GetMainRenderType() == RenderPassType::Deferred)
 	{
-		testFrameBuffer.Bind();
+		//testFrameBuffer.Bind();
 		Render(RenderPassType::GeometryBuffer);
-		testFrameBuffer.Bind();
+		//testFrameBuffer.Bind();
 		Render(RenderPassType::Deferred);
 	}
 
-	testFrameBuffer.Unbind();
+	//testFrameBuffer.Unbind();
 
-	postProcessingEffect.Render();
+	//postProcessingEffect.Render();
 
 	PrepareSkeletalMeshInstancesForTheNextFrame();
 }
