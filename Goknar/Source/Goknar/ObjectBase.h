@@ -123,6 +123,11 @@ public:
 		return name_ + std::to_string(id_);
 	}
 
+	std::string GetNameWithoutId() const
+	{
+		return name_;
+	}
+
 	void SetName(const std::string& name)
 	{
 		name_ = name;
@@ -143,6 +148,11 @@ public:
 	
 	template<class T>
 	std::vector<T*> GetComponentsOfType();
+
+	const std::vector<Component*>& GetComponents() const
+	{
+		return components_;
+	}
 
 	void AttachToSocket(SocketComponent* socketComponent);
 	void RemoveFromSocket(SocketComponent* socketComponent);

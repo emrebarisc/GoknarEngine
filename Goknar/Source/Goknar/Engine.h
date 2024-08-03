@@ -122,6 +122,11 @@ public:
 	void RegisterTimeDependentObject(TimeDependentObject* timeDependentObject);
 	void RemoveTimeDependentObject(TimeDependentObject* timeDependentObject);
 
+	const std::vector<ObjectBase*>& GetRegisteredObjects() const
+	{
+		return registeredObjects_;
+	}
+
 	void SetApplication(Application* application);
 
 	void SetShaderEngineVariables(Shader* shader);

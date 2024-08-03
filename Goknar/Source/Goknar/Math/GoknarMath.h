@@ -585,11 +585,6 @@ struct GOKNAR_API Vector3
 		return out;
 	}
 
-	inline std::string ToString() const
-	{
-		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + "]";
-	}
-
 	inline void Clamp(float min, float max)
 	{
 		x = mathClamp(x, min, max);
@@ -615,6 +610,11 @@ struct GOKNAR_API Vector3
 	Vector3 RotatePointAroundAxis(const Vector3& axis, float angle);
 	Vector3 RotateVectorAroundAxis(const Vector3& axis, float angle);
 	Vector3 Scale(const Vector3& scale, bool isPositionVector = true) const;
+
+	inline std::string ToString() const
+	{
+		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + "]";
+	}
 
 	static const Vector3 ZeroVector;
 	static const Vector3 ForwardVector;
