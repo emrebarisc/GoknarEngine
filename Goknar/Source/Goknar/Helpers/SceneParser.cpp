@@ -797,48 +797,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 		while (element)
 		{
 			object = new ObjectBase();
-			StaticMeshComponent* staticMeshComponent = object->AddSubComponent<StaticMeshComponent>();
-
-			child = element->FirstChildElement("PivotPoint");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 pivotPoint;
-				stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
-				staticMeshComponent->SetPivotPoint(pivotPoint);
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("RelativePosition");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativePosition;
-				stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
-				staticMeshComponent->SetRelativePosition(relativePosition);
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("RelativeRotation");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativeRotation;
-				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-				staticMeshComponent->SetRelativeRotation(Quaternion::FromEulerDegrees(relativeRotation));
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("RelativeScaling");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativeScaling;
-				stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
-				staticMeshComponent->SetRelativeScaling(relativeScaling);
-			}
-			stream.clear();
-
 			child = element->FirstChildElement("Name");
 			if (child)
 			{
@@ -859,7 +817,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			}
 			stream.clear();
 
-			child = element->FirstChildElement("WorldRotation");
+			child = element->FirstChildElement("EulerWorldRotation");
 			if (child)
 			{
 				stream << child->GetText() << std::endl;
@@ -878,112 +836,36 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				object->SetWorldScaling(worldScaling);
 			}
 			stream.clear();
+
+			child = element->FirstChildElement("Components");
+			if (child)
+			{
+				tinyxml2::XMLElement* componentElement = child->FirstChildElement("StaticMeshComponent");
+				while (componentElement)
+				{
+					StaticMeshComponent* staticMeshComponent = object->AddSubComponent<StaticMeshComponent>();
+
+					tinyxml2::XMLElement* dataElement = componentElement->FirstChildElement("MeshPath");
+					if (dataElement)
+					{
+						stream << dataElement->GetText() << std::endl;
+						std::string meshPath;
+						stream >> meshPath;
+						StaticMesh* staticMesh = engine->GetResourceManager()->GetContent<StaticMesh>(meshPath);
+						if (staticMesh)
+						{
+							staticMeshComponent->SetMesh(staticMesh);
+						}
+					}
+					stream.clear();
+
+					ParseComponentValues(staticMeshComponent, componentElement);
+
+					componentElement = componentElement->NextSiblingElement("StaticMeshComponent");
+				}
+			}
+
 			element = element->NextSiblingElement("Object");
-
-		}
-		stream.clear();
-	}
-
-	//Get Static Objects
-	element = root->FirstChildElement("Objects");
-	if (element)
-	{
-		element = element->FirstChildElement("StaticMeshObject");
-		ObjectBase* object = nullptr;
-		while (element)
-		{
-			object = new ObjectBase();
-			StaticMeshComponent* staticMeshComponent = object->AddSubComponent<StaticMeshComponent>();
-
-			child = element->FirstChildElement("Mesh");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				std::string meshPath;
-				stream >> meshPath;
-				staticMeshComponent->SetMesh(dynamic_cast<StaticMesh*>(engine->GetResourceManager()->GetResourceContainer()->GetContent<StaticMesh>(ContentDir + meshPath)));
-			}
-
-			child = element->FirstChildElement("Name");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				std::string name;
-				stream >> name;
-				object->SetName(name);
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("PivotPoint");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 pivotPoint;
-				stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
-				staticMeshComponent->SetPivotPoint(pivotPoint);
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("RelativePosition");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativePosition;
-				stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
-				staticMeshComponent->SetRelativePosition(relativePosition);
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("RelativeRotation");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativeRotation;
-				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-				staticMeshComponent->SetRelativeRotation(Quaternion::FromEulerDegrees(relativeRotation));
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("RelativeScaling");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativeScaling;
-				stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
-				staticMeshComponent->SetRelativeScaling(relativeScaling);
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("WorldPosition");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldPosition;
-				stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
-				object->SetWorldPosition(worldPosition);
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("WorldRotation");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldRotation;
-				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-				object->SetWorldRotation(Quaternion::FromEulerDegrees(worldRotation));
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("WorldScaling");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldScaling;
-				stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
-				object->SetWorldScaling(worldScaling);
-			}
-			stream.clear();
-			element = element->NextSiblingElement("StaticMeshObject");
 
 		}
 		stream.clear();
@@ -1007,6 +889,51 @@ void SceneParser::SaveScene(Scene* scene, const std::string& filePath)
 	rootElement->InsertEndChild(subElement);
 
 	sceneXML.SaveFile(filePath.c_str());
+}
+
+void SceneParser::ParseComponentValues(Component* component, tinyxml2::XMLElement* componentElement)
+{
+	std::stringstream stream;
+
+	tinyxml2::XMLElement* dataElement = componentElement->FirstChildElement("PivotPoint");
+	if (dataElement)
+	{
+		stream << dataElement->GetText() << std::endl;
+		Vector3 pivotPoint;
+		stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
+		component->SetPivotPoint(pivotPoint);
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("RelativePosition");
+	if (dataElement)
+	{
+		stream << dataElement->GetText() << std::endl;
+		Vector3 relativePosition;
+		stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
+		component->SetRelativePosition(relativePosition);
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("EulerRelativeRotation");
+	if (dataElement)
+	{
+		stream << dataElement->GetText() << std::endl;
+		Vector3 relativeRotation;
+		stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
+		component->SetRelativeRotation(Quaternion::FromEulerDegrees(relativeRotation));
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("RelativeScaling");
+	if (dataElement)
+	{
+		stream << dataElement->GetText() << std::endl;
+		Vector3 relativeScaling;
+		stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
+		component->SetRelativeScaling(relativeScaling);
+	}
+	stream.clear();
 }
 
 void SceneParser::GetXMLElement_DirectionalLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene)
@@ -1136,6 +1063,11 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 	const std::vector<ObjectBase*>& registeredObjects = engine->GetRegisteredObjects();
 	for (ObjectBase* object : registeredObjects)
 	{
+		if (object->GetName().find("__Editor__") != std::string::npos)
+		{
+			continue;
+		}
+
 		tinyxml2::XMLElement* objectElement = xmlDocument.NewElement("Object");
 
 		tinyxml2::XMLElement* objectNameElement = xmlDocument.NewElement("Name");
@@ -1165,9 +1097,29 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
 {
 	const std::vector<Component*>& components = objectBase->GetComponents();
-	for (const Component* component : components)
+	for (Component* component : components)
 	{
-		tinyxml2::XMLElement* componentElement = xmlDocument.NewElement("Component");
+		if (component == nullptr)
+		{
+			continue;
+		}
+
+		tinyxml2::XMLElement* componentElement;
+
+		StaticMeshComponent* staticMeshComponent = dynamic_cast<StaticMeshComponent*>(component);
+		if (staticMeshComponent)
+		{
+			componentElement = xmlDocument.NewElement("StaticMeshComponent");
+		}
+		else
+		{
+			componentElement = xmlDocument.NewElement("Component");
+		}
+
+		if (staticMeshComponent)
+		{
+			GetXMLElement_StaticMeshComponent(staticMeshComponent, xmlDocument, componentElement);
+		}
 
 		tinyxml2::XMLElement* componentRelativePositionElement = xmlDocument.NewElement("RelativePosition");
 		componentRelativePositionElement->SetText(Serialize(component->GetRelativePosition()).c_str());
@@ -1187,6 +1139,9 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 
 void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* const staticMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
 {
+	tinyxml2::XMLElement* staticMeshComponentMeshPathElement = xmlDocument.NewElement("MeshPath"); 
+	staticMeshComponentMeshPathElement->SetText(staticMeshComponent->GetMeshInstance()->GetMesh()->GetPath().substr(ContentDir.size()).c_str());
+	parentElement->InsertEndChild(staticMeshComponentMeshPathElement);
 }
 
 std::string SceneParser::Serialize(const Vector3& vector)

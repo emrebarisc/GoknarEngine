@@ -6,6 +6,7 @@
 
 #include "TinyXML/include/tinyxml2.h"
 
+class Component;
 class ObjectBase;
 class Scene;
 class StaticMeshComponent;
@@ -17,6 +18,8 @@ public:
 	static void SaveScene(Scene* scene, const std::string& filePath);
 
 private:
+	static void ParseComponentValues(Component* component, tinyxml2::XMLElement* componentElement);
+
 	static void GetXMLElement_DirectionalLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene);
 	static void GetXMLElement_SpotLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene);
 	static void GetXMLElement_PointLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene);
