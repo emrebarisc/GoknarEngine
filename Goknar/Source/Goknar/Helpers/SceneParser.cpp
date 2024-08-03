@@ -236,6 +236,14 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream << child->GetText() << std::endl;
 			}
 
+			bool shadowIntensityElementFound = false;
+			child = element->FirstChildElement("ShadowIntensity");
+			if (child)
+			{
+				shadowIntensityElementFound = true;
+				stream << child->GetText() << std::endl;
+			}
+
 			bool shadowMapResolutionElementFound = false;
 			child = element->FirstChildElement("ShadowMapResolution");
 			if (child)
@@ -265,6 +273,13 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				bool isCastingShadow = false;
 				stream >> isCastingShadow;
 				pointLight->SetIsShadowEnabled(isCastingShadow);
+			}
+
+			if (shadowIntensityElementFound)
+			{
+				float shadowIntensity = 0.f;
+				stream >> shadowIntensity;
+				pointLight->SetShadowIntensity(shadowIntensity);
 			}
 
 			if (shadowMapResolutionElementFound)
@@ -777,6 +792,102 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 	element = root->FirstChildElement("Objects");
 	if (element)
 	{
+		element = element->FirstChildElement("Object");
+		ObjectBase* object = nullptr;
+		while (element)
+		{
+			object = new ObjectBase();
+			StaticMeshComponent* staticMeshComponent = object->AddSubComponent<StaticMeshComponent>();
+
+			child = element->FirstChildElement("PivotPoint");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 pivotPoint;
+				stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
+				staticMeshComponent->SetPivotPoint(pivotPoint);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("RelativePosition");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 relativePosition;
+				stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
+				staticMeshComponent->SetRelativePosition(relativePosition);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("RelativeRotation");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 relativeRotation;
+				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
+				staticMeshComponent->SetRelativeRotation(Quaternion::FromEulerDegrees(relativeRotation));
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("RelativeScaling");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 relativeScaling;
+				stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
+				staticMeshComponent->SetRelativeScaling(relativeScaling);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("Name");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string name;
+				stream >> name;
+				object->SetName(name);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("WorldPosition");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 worldPosition;
+				stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
+				object->SetWorldPosition(worldPosition);
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("WorldRotation");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 worldRotation;
+				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
+				object->SetWorldRotation(Quaternion::FromEulerDegrees(worldRotation));
+			}
+			stream.clear();
+
+			child = element->FirstChildElement("WorldScaling");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				Vector3 worldScaling;
+				stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
+				object->SetWorldScaling(worldScaling);
+			}
+			stream.clear();
+			element = element->NextSiblingElement("Object");
+
+		}
+		stream.clear();
+	}
+
+	//Get Static Objects
+	element = root->FirstChildElement("Objects");
+	if (element)
+	{
 		element = element->FirstChildElement("StaticMeshObject");
 		ObjectBase* object = nullptr;
 		while (element)
@@ -792,6 +903,16 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream >> meshPath;
 				staticMeshComponent->SetMesh(dynamic_cast<StaticMesh*>(engine->GetResourceManager()->GetResourceContainer()->GetContent<StaticMesh>(ContentDir + meshPath)));
 			}
+
+			child = element->FirstChildElement("Name");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				std::string name;
+				stream >> name;
+				object->SetName(name);
+			}
+			stream.clear();
 
 			child = element->FirstChildElement("PivotPoint");
 			if (child)
@@ -867,197 +988,208 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 		}
 		stream.clear();
 	}
+}
 
-	//Get Skeletal Objects
-	element = root->FirstChildElement("Objects");
-	if (element)
+void SceneParser::SaveScene(Scene* scene, const std::string& filePath)
+{
+	tinyxml2::XMLDocument sceneXML;
+	tinyxml2::XMLNode* rootElement = sceneXML.NewElement("Scene");
+	sceneXML.InsertFirstChild(rootElement);
+
+	tinyxml2::XMLElement* subElement = sceneXML.NewElement("Lights");
+	GetXMLElement_DirectionalLights(sceneXML, subElement, scene);
+	GetXMLElement_PointLights(sceneXML, subElement, scene);
+	GetXMLElement_SpotLights(sceneXML, subElement, scene);
+	rootElement->InsertEndChild(subElement);
+
+	subElement = sceneXML.NewElement("Objects");
+	GetXMLElement_Objects(sceneXML, subElement);
+	rootElement->InsertEndChild(subElement);
+
+	sceneXML.SaveFile(filePath.c_str());
+}
+
+void SceneParser::GetXMLElement_DirectionalLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene)
+{
+	for (auto directionalLight : scene->GetDirectionalLights())
 	{
-		element = element->FirstChildElement("SkeletalMeshObject");
-		ObjectBase* object = nullptr;
-		while (element)
-		{
-			object = new ObjectBase();
-			SkeletalMeshComponent* skeletalMeshComponent = object->AddSubComponent<SkeletalMeshComponent>();
+		tinyxml2::XMLElement* directionalLightElement = xmlDocument.NewElement("DirectionalLight");
 
-			child = element->FirstChildElement("PivotPoint");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 pivotPoint;
-				stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
-				skeletalMeshComponent->SetPivotPoint(pivotPoint);
-			}
-			stream.clear();
+		tinyxml2::XMLElement* directionalLightDirectionElement = xmlDocument.NewElement("Direction");
+		directionalLightDirectionElement->SetText(Serialize(directionalLight->GetDirection()).c_str());
+		directionalLightElement->InsertEndChild(directionalLightDirectionElement);
 
-			child = element->FirstChildElement("RelativePosition");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativePosition;
-				stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
-				skeletalMeshComponent->SetRelativePosition(relativePosition);
-			}
-			stream.clear();
+		tinyxml2::XMLElement* directionalLightColorElement = xmlDocument.NewElement("Color");
+		directionalLightColorElement->SetText(Serialize(directionalLight->GetColor()).c_str());
+		directionalLightElement->InsertEndChild(directionalLightColorElement);
 
-			child = element->FirstChildElement("RelativeRotation");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativeRotation;
-				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-				skeletalMeshComponent->SetRelativeRotation(Quaternion::FromEulerDegrees(relativeRotation));
-			}
-			stream.clear();
+		tinyxml2::XMLElement* directionalLightIntensityElement = xmlDocument.NewElement("Intensity");
+		directionalLightIntensityElement->SetText(directionalLight->GetIntensity());
+		directionalLightElement->InsertEndChild(directionalLightIntensityElement);
 
-			child = element->FirstChildElement("RelativeScaling");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativeScaling;
-				stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
-				skeletalMeshComponent->SetRelativeScaling(relativeScaling);
-			}
-			stream.clear();
+		tinyxml2::XMLElement* directionalLightIsCastingShadowElement = xmlDocument.NewElement("IsCastingShadow");
+		directionalLightIsCastingShadowElement->SetText(directionalLight->GetIsShadowEnabled() ? "1" : "0");
+		directionalLightElement->InsertEndChild(directionalLightIsCastingShadowElement);
 
-			child = element->FirstChildElement("Mesh");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				std::string meshPath;
-				stream >> meshPath;
-				skeletalMeshComponent->SetMesh(dynamic_cast<SkeletalMesh*>(engine->GetResourceManager()->GetResourceContainer()->GetContent<StaticMesh>(ContentDir + meshPath)));
-			}
+		tinyxml2::XMLElement* directionalLightShadowIntensityElement = xmlDocument.NewElement("ShadowIntensity");
+		directionalLightShadowIntensityElement->SetText(directionalLight->GetShadowIntensity());
+		directionalLightElement->InsertEndChild(directionalLightShadowIntensityElement);
 
-			child = element->FirstChildElement("WorldPosition");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldPosition;
-				stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
-				object->SetWorldPosition(worldPosition);
-			}
-			stream.clear();
+		tinyxml2::XMLElement* directionalLightShadowMapResolutionElement = xmlDocument.NewElement("ShadowMapResolution");
+		directionalLightShadowMapResolutionElement->SetText((std::to_string(directionalLight->GetShadowWidth()) + " " + std::to_string(directionalLight->GetShadowHeight())).c_str());
+		directionalLightElement->InsertEndChild(directionalLightShadowMapResolutionElement);
 
-			child = element->FirstChildElement("WorldRotation");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldRotation;
-				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-				object->SetWorldRotation(Quaternion::FromEulerDegrees(worldRotation));
-			}
-			stream.clear();
-
-			child = element->FirstChildElement("WorldScaling");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldScaling;
-				stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
-				object->SetWorldScaling(worldScaling);
-			}
-			stream.clear();
-			element = element->NextSiblingElement("SkeletalMeshObject");
-
-		}
-		stream.clear();
+		parentElement->InsertEndChild(directionalLightElement);
 	}
+}
 
-	//Get Dynamic Objects
-	element = root->FirstChildElement("Objects");
-	if(element)
+void SceneParser::GetXMLElement_SpotLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene)
+{
+	for (auto spotLight : scene->GetSpotLights())
 	{
-		// DynamicMeshObject
-		element = element->FirstChildElement("DynamicMeshObject");
-		ObjectBase* object = nullptr;
-		while (element)
-		{
-			object = new ObjectBase();
-			DynamicMeshComponent* dynamicMeshComponent = object->AddSubComponent<DynamicMeshComponent>();
+		tinyxml2::XMLElement* spotLightElement = xmlDocument.NewElement("SpotLight");
 
-			child = element->FirstChildElement("PivotPoint");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 pivotPoint;
-				stream >> pivotPoint.x >> pivotPoint.y >> pivotPoint.z;
-				dynamicMeshComponent->SetPivotPoint(pivotPoint);
-			}
-			stream.clear();
+		tinyxml2::XMLElement* spotLightPositionElement = xmlDocument.NewElement("Position");
+		spotLightPositionElement->SetText(Serialize(spotLight->GetPosition()).c_str());
+		spotLightElement->InsertEndChild(spotLightPositionElement);
 
-			child = element->FirstChildElement("RelativePosition");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativePosition;
-				stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
-				dynamicMeshComponent->SetRelativePosition(relativePosition);
-			}
-			stream.clear();
+		tinyxml2::XMLElement* spotLightDirectionElement = xmlDocument.NewElement("Direction");
+		spotLightDirectionElement->SetText(Serialize(spotLight->GetDirection()).c_str());
+		spotLightElement->InsertEndChild(spotLightDirectionElement);
 
-			child = element->FirstChildElement("RelativeRotation");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativeRotation;
-				stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-				dynamicMeshComponent->SetRelativeRotation(Quaternion::FromEulerDegrees(relativeRotation));
-			}
-			stream.clear();
+		tinyxml2::XMLElement* spotLightColorElement = xmlDocument.NewElement("Color");
+		spotLightColorElement->SetText(Serialize(spotLight->GetColor()).c_str());
+		spotLightElement->InsertEndChild(spotLightColorElement);
 
-			child = element->FirstChildElement("RelativeScaling");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 relativeScaling;
-				stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
-				dynamicMeshComponent->SetRelativeScaling(relativeScaling);
-			}
-			stream.clear();
+		tinyxml2::XMLElement* spotLightIntensityElement = xmlDocument.NewElement("Intensity");
+		spotLightIntensityElement->SetText(spotLight->GetIntensity());
+		spotLightElement->InsertEndChild(spotLightIntensityElement);
 
-			child = element->FirstChildElement("Mesh");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				std::string meshPath;
-				stream >> meshPath;
-				dynamicMeshComponent->SetMesh(dynamic_cast<DynamicMesh*>(engine->GetResourceManager()->GetResourceContainer()->GetContent<StaticMesh>(ContentDir + meshPath)));
-			}
+		tinyxml2::XMLElement* spotLightCoverageAngleElement = xmlDocument.NewElement("CoverageAngle");
+		spotLightCoverageAngleElement->SetText(spotLight->GetCoverageAngle());
+		spotLightElement->InsertEndChild(spotLightCoverageAngleElement);
 
-			child = element->FirstChildElement("WorldPosition");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldPosition;
-				stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
-				object->SetWorldPosition(worldPosition);
-			}
-			stream.clear();
+		tinyxml2::XMLElement* spotLightFalloffAngleElement = xmlDocument.NewElement("FalloffAngle");
+		spotLightFalloffAngleElement->SetText(spotLight->GetFalloffAngle());
+		spotLightElement->InsertEndChild(spotLightFalloffAngleElement);
 
-			child = element->FirstChildElement("WorldRotation");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldRotation;
-				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-				object->SetWorldRotation(Quaternion::FromEulerDegrees(worldRotation));
-			}
-			stream.clear();
+		tinyxml2::XMLElement* spotLightRadiusElement = xmlDocument.NewElement("Radius");
+		spotLightRadiusElement->SetText(spotLight->GetRadius());
+		spotLightElement->InsertEndChild(spotLightRadiusElement);
 
-			child = element->FirstChildElement("WorldScaling");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldScaling;
-				stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
-				object->SetWorldScaling(worldScaling);
-			}
-			stream.clear();
+		tinyxml2::XMLElement* spotLightIsCastingShadowElement = xmlDocument.NewElement("IsCastingShadow");
+		spotLightIsCastingShadowElement->SetText(spotLight->GetIsShadowEnabled() ? "1" : "0");
+		spotLightElement->InsertEndChild(spotLightIsCastingShadowElement);
 
-			element = element->NextSiblingElement("DynamicMeshObject");
+		tinyxml2::XMLElement* spotLightShadowIntensityElement = xmlDocument.NewElement("ShadowIntensity");
+		spotLightShadowIntensityElement->SetText(spotLight->GetShadowIntensity());
+		spotLightElement->InsertEndChild(spotLightShadowIntensityElement);
 
-		}
-		stream.clear();
+		tinyxml2::XMLElement* spotLightShadowMapResolutionElement = xmlDocument.NewElement("ShadowMapResolution");
+		spotLightShadowMapResolutionElement->SetText((std::to_string(spotLight->GetShadowWidth()) + " " + std::to_string(spotLight->GetShadowHeight())).c_str());
+		spotLightElement->InsertEndChild(spotLightShadowMapResolutionElement);
 
+		parentElement->InsertEndChild(spotLightElement);
 	}
+}
+
+void SceneParser::GetXMLElement_PointLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene)
+{
+	for (auto pointLight : scene->GetPointLights())
+	{
+		tinyxml2::XMLElement* pointLightElement = xmlDocument.NewElement("PointLight");
+
+		tinyxml2::XMLElement* pointLightPositionElement = xmlDocument.NewElement("Position");
+		pointLightPositionElement->SetText(Serialize(pointLight->GetPosition()).c_str());
+		pointLightElement->InsertEndChild(pointLightPositionElement);
+
+		tinyxml2::XMLElement* pointLightColorElement = xmlDocument.NewElement("Color");
+		pointLightColorElement->SetText(Serialize(pointLight->GetColor()).c_str());
+		pointLightElement->InsertEndChild(pointLightColorElement);
+
+		tinyxml2::XMLElement* pointLightIntensityElement = xmlDocument.NewElement("Intensity");
+		pointLightIntensityElement->SetText(pointLight->GetIntensity());
+		pointLightElement->InsertEndChild(pointLightIntensityElement);
+
+		tinyxml2::XMLElement* pointLightRadiusElement = xmlDocument.NewElement("Radius");
+		pointLightRadiusElement->SetText(pointLight->GetRadius());
+		pointLightElement->InsertEndChild(pointLightRadiusElement);
+
+		tinyxml2::XMLElement* pointLightIsCastingShadowElement = xmlDocument.NewElement("IsCastingShadow");
+		pointLightIsCastingShadowElement->SetText(pointLight->GetIsShadowEnabled() ? "1" : "0");
+		pointLightElement->InsertEndChild(pointLightIsCastingShadowElement);
+
+		tinyxml2::XMLElement* pointLightShadowIntensityElement = xmlDocument.NewElement("ShadowIntensity");
+		pointLightShadowIntensityElement->SetText(pointLight->GetShadowIntensity());
+		pointLightElement->InsertEndChild(pointLightShadowIntensityElement);
+
+		tinyxml2::XMLElement* pointLightShadowMapResolutionElement = xmlDocument.NewElement("ShadowMapResolution");
+		pointLightShadowMapResolutionElement->SetText((std::to_string(pointLight->GetShadowWidth()) + " " + std::to_string(pointLight->GetShadowHeight())).c_str());
+		pointLightElement->InsertEndChild(pointLightShadowMapResolutionElement);
+
+		parentElement->InsertEndChild(pointLightElement);
+	}
+}
+
+void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+	const std::vector<ObjectBase*>& registeredObjects = engine->GetRegisteredObjects();
+	for (ObjectBase* object : registeredObjects)
+	{
+		tinyxml2::XMLElement* objectElement = xmlDocument.NewElement("Object");
+
+		tinyxml2::XMLElement* objectNameElement = xmlDocument.NewElement("Name");
+		objectNameElement->SetText(object->GetNameWithoutId().c_str());
+		objectElement->InsertEndChild(objectNameElement);
+
+		tinyxml2::XMLElement* objectWorldPositionElement = xmlDocument.NewElement("WorldPosition");
+		objectWorldPositionElement->SetText(Serialize(object->GetWorldPosition()).c_str());
+		objectElement->InsertEndChild(objectWorldPositionElement);
+
+		tinyxml2::XMLElement* objectEulerWorldRotationElement = xmlDocument.NewElement("EulerWorldRotation");
+		objectEulerWorldRotationElement->SetText(Serialize(object->GetWorldRotation().ToEulerDegrees()).c_str());
+		objectElement->InsertEndChild(objectEulerWorldRotationElement);
+
+		tinyxml2::XMLElement* objectWorldScalingElement = xmlDocument.NewElement("WorldScaling");
+		objectWorldScalingElement->SetText(Serialize(object->GetWorldScaling()).c_str());
+		objectElement->InsertEndChild(objectWorldScalingElement);
+
+		tinyxml2::XMLElement* componentsElement = xmlDocument.NewElement("Components");
+		GetXMLElement_Components(object, xmlDocument, componentsElement);
+		objectElement->InsertEndChild(componentsElement);
+		
+		parentElement->InsertEndChild(objectElement);
+	}
+}
+
+void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+	const std::vector<Component*>& components = objectBase->GetComponents();
+	for (const Component* component : components)
+	{
+		tinyxml2::XMLElement* componentElement = xmlDocument.NewElement("Component");
+
+		tinyxml2::XMLElement* componentRelativePositionElement = xmlDocument.NewElement("RelativePosition");
+		componentRelativePositionElement->SetText(Serialize(component->GetRelativePosition()).c_str());
+		componentElement->InsertEndChild(componentRelativePositionElement);
+
+		tinyxml2::XMLElement* componentEulerRelativeRotationElement = xmlDocument.NewElement("EulerRelativeRotation");
+		componentEulerRelativeRotationElement->SetText(Serialize(component->GetRelativeRotation().ToEulerDegrees()).c_str());
+		componentElement->InsertEndChild(componentEulerRelativeRotationElement);
+
+		tinyxml2::XMLElement* componentRelativeScalingElement = xmlDocument.NewElement("RelativeScaling");
+		componentRelativeScalingElement->SetText(Serialize(component->GetRelativeScaling()).c_str());
+		componentElement->InsertEndChild(componentRelativeScalingElement);
+
+		parentElement->InsertEndChild(componentElement);
+	}
+}
+
+void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* const staticMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+}
+
+std::string SceneParser::Serialize(const Vector3& vector)
+{
+	return std::to_string(vector.x) + " " + std::to_string(vector.y) + " " + std::to_string(vector.z);
 }
