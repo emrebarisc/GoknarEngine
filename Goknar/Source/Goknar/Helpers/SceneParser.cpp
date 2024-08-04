@@ -1107,6 +1107,7 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 		tinyxml2::XMLElement* componentElement;
 
 		StaticMeshComponent* staticMeshComponent = dynamic_cast<StaticMeshComponent*>(component);
+
 		if (staticMeshComponent)
 		{
 			componentElement = xmlDocument.NewElement("StaticMeshComponent");

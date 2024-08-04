@@ -109,7 +109,6 @@ int IMeshInstance<MeshType>::lastComponentId_ = 0;
 template<class MeshType>
 inline void IMeshInstance<MeshType>::PreInit()
 {
-	AddMeshInstanceToRenderer();
 }
 
 template<class MeshType>
@@ -149,7 +148,12 @@ inline IMaterialBase* IMeshInstance<MeshType>::GetMaterial()
 		return material_;
 	}
 
-	return mesh_->GetMaterial();
+	if (mesh_)
+	{
+		return mesh_->GetMaterial();
+	}
+
+	return nullptr;
 }
 
 template<class MeshType>
@@ -181,18 +185,28 @@ inline void IMeshInstance<MeshType>::Render(RenderPassType renderPassType)
 template<class MeshType>
 inline void IMeshInstance<MeshType>::SetMesh(MeshType* mesh)
 {
-	if(mesh_ != nullptr)
+	bool wasMeshNull = mesh_ == nullptr;
+
+	if(!wasMeshNull)
 	{
 		RemoveMeshInstanceFromRenderer();
 	}
 
 	mesh_ = mesh;
+
+	if (mesh_)
+	{
+		AddMeshInstanceToRenderer();
+	}
 }
 
 template<class MeshType>
 inline void IMeshInstance<MeshType>::Destroy()
 {
-	RemoveMeshInstanceFromRenderer();
+	if (mesh_)
+	{
+		RemoveMeshInstanceFromRenderer();
+	}
 	delete this;
 }
 
