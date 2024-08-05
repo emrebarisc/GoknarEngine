@@ -155,6 +155,7 @@ void PointLight::AllocateViewMatrices()
 void PointLight::DeallocateViewMatrices()
 {
 	delete[] viewMatrices_;
+	viewMatrices_ = nullptr;
 }
 
 void PointLight::UpdateShadowViewProjectionMatrices()
