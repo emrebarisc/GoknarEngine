@@ -18,68 +18,75 @@ public:
 	{
 	}
 
-	int GetAndIncreaseObjectBaseID()
+	int GetAndIncreaseObjectBaseGUID()
 	{
-		return objectBaseID_++;
+		return objectBaseGUID_++;
+	}
+	
+	int GetAndIncreaseComponentID()
+	{
+		return componentGUID_++;
 	}
 
-	int GetAndIncreasePointLightID()
+	int GetAndIncreasePointLightGUID()
 	{
-		return pointLightID_++;
+		return pointLightGUID_++;
 	}
 
-	int GetAndIncreaseDirectionalLightID()
+	int GetAndIncreaseDirectionalLightGUID()
 	{
-		return directionalLightID_++;
+		return directionalLightGUID_++;
 	}
 
-	int GetAndIncreaseSpotLightID()
+	int GetAndIncreaseSpotLightGUID()
 	{
-		return spotLightID_++;
+		return spotLightGUID_++;
 	}
 
-	int GetAndIncreaseMaterialID()
+	int GetAndIncreaseMaterialGUID()
 	{
-		return materialID_++;
+		return materialGUID_++;
 	}
 
-	int GetAndIncreaseTextureID()
+	int GetAndIncreaseTextureGUID()
 	{
-		return textureID_++;
+		return textureGUID_++;
 	}
 
-	int GetAndIncreaseFrameBufferID()
+	int GetAndIncreaseFrameBufferGUID()
 	{
-		return framebufferID_++;
+		return framebufferGUID_++;
 	}
 
-	int GetAndIncreaseRenderBufferID()
+	int GetAndIncreaseRenderBufferGUID()
 	{
-		return renderbufferID_++;
+		return renderbufferGUID_++;
 	}
 
 private:
 	ObjectIDManager() :
-		objectBaseID_(0),
-		pointLightID_(0),
-		directionalLightID_(0),
-		spotLightID_(0),
-		materialID_(0),
-		textureID_(0),
-		framebufferID_(0),
-		renderbufferID_(0)
+		objectBaseGUID_(0),
+		componentGUID_(0),
+		pointLightGUID_(0),
+		directionalLightGUID_(0),
+		spotLightGUID_(0),
+		materialGUID_(0),
+		textureGUID_(0),
+		framebufferGUID_(0),
+		renderbufferGUID_(0)
 	{}
 
 	static ObjectIDManager* instance_;
 
-	int objectBaseID_;
-	int pointLightID_;
-	int directionalLightID_;
-	int spotLightID_;
-	int materialID_;
-	int textureID_;
-	int framebufferID_;
-	int renderbufferID_;
+	int objectBaseGUID_;
+	int componentGUID_;
+	int pointLightGUID_;
+	int directionalLightGUID_;
+	int spotLightGUID_;
+	int materialGUID_;
+	int textureGUID_;
+	int framebufferGUID_;
+	int renderbufferGUID_;
 };
 
 #endif

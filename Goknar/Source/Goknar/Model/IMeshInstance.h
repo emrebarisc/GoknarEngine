@@ -39,14 +39,14 @@ public:
 		return parentComponent_;
 	}
 
-	inline int GetComponentId() const
+	inline int GetInstanceID() const
 	{
-		return componentId_;
+		return instanceID_;
 	}
 
-	inline void SetComponentId(int componentId)
+	inline void SetInstanceID(int instanceID)
 	{
-		componentId_ = componentId;
+		instanceID_ = instanceID;
 	}
 
 	inline virtual void SetMesh(MeshType* mesh);
@@ -95,7 +95,7 @@ protected:
 	MaterialInstance* material_{ nullptr };
 private:
 
-	int componentId_{ lastComponentId_++ };
+	int instanceID_{ lastComponentId_++ };
 
 	static int lastComponentId_;
 

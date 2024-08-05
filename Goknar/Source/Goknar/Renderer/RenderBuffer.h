@@ -67,9 +67,9 @@ public:
 		return rendererRenderBufferId_;
 	}
 
-	GEuint GetRenderBufferObjectId() const
+	GEuint GetGUID() const
 	{
-		return objectId_;
+		return GUID_;
 	}
 
 	const std::string& GetName() const
@@ -123,7 +123,7 @@ private:
 	RenderBufferAttachment renderBufferAttachment_{ RenderBufferAttachment::COLOR_ATTACHMENT0 };
 	RenderBufferInternalType renderBufferInternalType_{ RenderBufferInternalType::RGB };
 
-	int objectId_{ 0 };
+	int GUID_{ 0 };
 
 	int width_{ 1920 };
 	int height_{ 1080 };

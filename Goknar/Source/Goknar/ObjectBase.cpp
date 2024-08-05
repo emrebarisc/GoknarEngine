@@ -20,7 +20,7 @@ ObjectBase::ObjectBase() :
 {
 	engine->RegisterObject(this);
 
-	id_ = ObjectIDManager::GetInstance()->GetAndIncreaseObjectBaseID();
+	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreaseObjectBaseGUID();
 }
 
 ObjectBase::~ObjectBase()

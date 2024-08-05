@@ -16,10 +16,12 @@
 
 PointLight::PointLight() : Light()
 {
-	id_ = ObjectIDManager::GetInstance()->GetAndIncreasePointLightID();
-	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT) + std::to_string(id_);
+	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreasePointLightGUID();
+	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT) + std::to_string(GUID_);
 
 	radius_ = 25.f;
+
+	shadowIntensity_ = 0.f;
 
 	engine->GetApplication()->GetMainScene()->AddPointLight(this);
 }

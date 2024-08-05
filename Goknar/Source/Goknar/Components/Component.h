@@ -167,6 +167,11 @@ public:
 		return componentToWorldTransformationMatrix_;
 	}
 
+	unsigned int GetGUID()
+	{
+		return GUID_;
+	}
+
 protected:
 	Component(Component* parent);
 	Component(ObjectBase* parentObjectBase);
@@ -222,6 +227,8 @@ protected:
 
 	ObjectBase* owner_{ nullptr };
 	Component* parent_{ nullptr };
+
+	unsigned int GUID_{ 0 };
 
 	unsigned char isActive_ : 1;
 	unsigned char isTickable_ : 1;

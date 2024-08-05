@@ -17,8 +17,8 @@
 
 Texture::Texture()
 {
-	objectId_ = ObjectIDManager::GetInstance()->GetAndIncreaseTextureID();
-	name_ = std::string("texture" + std::to_string(objectId_));
+	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreaseTextureGUID();
+	name_ = std::string("texture" + std::to_string(GUID_));
 }
 
 Texture::Texture(std::string imagePath) : Texture()

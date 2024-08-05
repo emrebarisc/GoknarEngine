@@ -18,8 +18,8 @@
 
 FrameBuffer::FrameBuffer()
 {
-	objectId_ = ObjectIDManager::GetInstance()->GetAndIncreaseFrameBufferID();
-	name_ = std::string("framebuffer" + std::to_string(objectId_));
+	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreaseFrameBufferGUID();
+	name_ = std::string("framebuffer" + std::to_string(GUID_));
 }
 
 FrameBuffer::~FrameBuffer()

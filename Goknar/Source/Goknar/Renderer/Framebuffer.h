@@ -52,9 +52,9 @@ public:
 		return rendererFrameBufferId_;
 	}
 
-	GEuint GetFrameBufferObjectId() const
+	GEuint GetGUID() const
 	{
-		return objectId_;
+		return GUID_;
 	}
 
 	const std::string& GetName() const
@@ -105,7 +105,7 @@ private:
 	std::vector<std::pair<FrameBufferAttachment, Texture*>> textureAttachments_;
 	std::vector<RenderBuffer*> renderBufferAttachments_;
 
-	int objectId_{ 0 };
+	int GUID_{ 0 };
 
 	bool isInitialized_{ false };
 };

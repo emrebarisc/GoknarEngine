@@ -241,9 +241,9 @@ public:
 		return imagePath_;
 	}
 
-	GEuint GetTextureObjectId() const
+	GEuint GetGUID() const
 	{
-		return objectId_;
+		return GUID_;
 	}
 
 	const std::string& GetName() const
@@ -431,10 +431,10 @@ protected:
 private:
 	void UpdateSizeOnGPU();
 
-	std::string name_;
+	std::string name_{ "" };
 	std::string imagePath_{ "" };
 	const unsigned char* buffer_{ nullptr };
-	GEuint rendererTextureId_;
+	GEuint rendererTextureId_{ 0 };
 
 	TextureBindTarget textureBindTarget_{ TextureBindTarget::TEXTURE_2D};
 	TextureImageTarget textureImageTarget_{ TextureImageTarget::TEXTURE_2D };
@@ -453,10 +453,10 @@ private:
 
 	TextureUsage textureUsage_{ TextureUsage::Diffuse };
 
-	int objectId_;
-	int width_;
-	int height_;
-	int channels_;
+	int GUID_{ 0 };
+	int width_{ 0 };
+	int height_{ 0 };
+	int channels_{ 0 };
 
 	bool isInitialized_{ false };
 	bool generateMipmap_{ true };

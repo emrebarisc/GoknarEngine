@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "Engine.h"
 #include "ObjectBase.h"
+#include "Managers/ObjectIDManager.h"
 
 Component::Component(Component* parent) :
 	parent_(parent), 
@@ -13,6 +14,7 @@ Component::Component(Component* parent) :
 	isPendingDestroy_(false)
 {
 	engine->RegisterComponent(this);
+	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreaseComponentID();
 }
 
 Component::Component(ObjectBase* parentObjectBase) :

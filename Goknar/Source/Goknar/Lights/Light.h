@@ -90,14 +90,9 @@ public:
 		name_ = name;
 	}
 	
-	int GetID() const
+	int GetGUID() const
 	{
-		return id_;
-	}
-
-	void SetID(int id)
-	{
-		id_ = id;
+		return GUID_;
 	}
 
 	bool GetIsShadowEnabled() const
@@ -170,7 +165,7 @@ protected:
 
 	std::string name_{ "" };
 
-	int id_{ 0 };
+	int GUID_{ 0 };
 	int uniformBufferIndex_{ -1 };
 
 	int shadowWidth_{ 1024 };

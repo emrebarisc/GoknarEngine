@@ -17,8 +17,8 @@
 
 RenderBuffer::RenderBuffer()
 {
-	objectId_ = ObjectIDManager::GetInstance()->GetAndIncreaseRenderBufferID();
-	name_ = std::string("renderbuffer" + std::to_string(objectId_));
+	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreaseRenderBufferGUID();
+	name_ = std::string("renderbuffer" + std::to_string(GUID_));
 }
 
 RenderBuffer::~RenderBuffer()

@@ -120,7 +120,7 @@ public:
 
 	std::string GetName() const
 	{
-		return name_ + std::to_string(id_);
+		return name_ + std::to_string(GUID_);
 	}
 
 	std::string GetNameWithoutId() const
@@ -175,6 +175,11 @@ public:
 	Vector3 GetRelativeDirectionInWorldSpace(const Vector3& relativeDirection);
 	Vector3 GetWorldDirectionInRelativeSpace(const Vector3& directionInWorldSpace);
 
+	int GetGUID() const
+	{
+		return GUID_;
+	}
+
 protected:
 	void AddComponent(Component* component);
 	virtual void DestroyInner();
@@ -202,7 +207,7 @@ private:
 
 	int totalComponentCount_;
 
-	unsigned int id_{ 0 };
+	unsigned int GUID_{ 0 };
     unsigned char isTickable_ : 1;
     unsigned char isTickEnabled_ : 1;
 	unsigned char isActive_ : 1;
