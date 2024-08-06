@@ -89,6 +89,7 @@ void PhysicsWorld::PreInit()
 
 	dynamicsWorld_ = new btDiscreteDynamicsWorld(dispatcher_, broadphase_, solver_, collisionConfiguration_);
 	dynamicsWorld_->setGravity(PhysicsUtils::FromVector3ToBtVector3(gravity_));
+	dynamicsWorld_->setDebugDrawer(physicsDebugger_);
 
 	//dynamicsWorld_->getDispatchInfo().m_allowedCcdPenetration = 0.04f;
 
@@ -134,8 +135,8 @@ void PhysicsWorld::OnOverlappingCollisionBegin(btPersistentManifold* const& moni
 
 	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2, "Neither of the colliding bodies can be nullptr!");
 	
-	CollisionComponent* collisionComponent1 = dynamic_cast<CollisionComponent*>(collisionObject1->GetRootComponent());
-	CollisionComponent* collisionComponent2 = dynamic_cast<CollisionComponent*>(collisionObject2->GetRootComponent());
+	CollisionComponent* collisionComponent1 = collisionObject1->GetCollisionComponent();
+	CollisionComponent* collisionComponent2 = collisionObject2->GetCollisionComponent();
 
 	GOKNAR_CORE_ASSERT(collisionComponent1 && collisionComponent2);
 
@@ -155,8 +156,8 @@ void PhysicsWorld::OnOverlappingCollisionContinue(btManifoldPoint& monifoldPoint
 
 	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2, "Neither of the colliding bodies can be nullptr!");
 
-	CollisionComponent* collisionComponent1 = dynamic_cast<CollisionComponent*>(collisionObject1->GetRootComponent());
-	CollisionComponent* collisionComponent2 = dynamic_cast<CollisionComponent*>(collisionObject2->GetRootComponent());
+	CollisionComponent* collisionComponent1 = collisionObject1->GetCollisionComponent();
+	CollisionComponent* collisionComponent2 = collisionObject2->GetCollisionComponent();
 
 	GOKNAR_CORE_ASSERT(collisionComponent1 && collisionComponent2);
 
@@ -176,8 +177,8 @@ void PhysicsWorld::OnOverlappingCollisionEnd(btPersistentManifold* const& manifo
 
 	GOKNAR_CORE_ASSERT(collisionObject1 && collisionObject2, "Neither of the colliding bodies can be nullptr!");
 
-	CollisionComponent* collisionComponent1 = dynamic_cast<CollisionComponent*>(collisionObject1->GetRootComponent());
-	CollisionComponent* collisionComponent2 = dynamic_cast<CollisionComponent*>(collisionObject2->GetRootComponent());
+	CollisionComponent* collisionComponent1 = collisionObject1->GetCollisionComponent();
+	CollisionComponent* collisionComponent2 = collisionObject2->GetCollisionComponent();
 
 	GOKNAR_CORE_ASSERT(collisionComponent1 && collisionComponent2);
 

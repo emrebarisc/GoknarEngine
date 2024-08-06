@@ -22,11 +22,8 @@ OverlappingPhysicsObject::~OverlappingPhysicsObject()
 void OverlappingPhysicsObject::PreInit()
 {
     PhysicsObject::PreInit();
-    
-    CollisionComponent* collisionComponent = dynamic_cast<CollisionComponent*>(GetRootComponent());
-    GOKNAR_ASSERT(collisionComponent != nullptr, "Root component of OverlappingPhysicsObject must be a CollisionComponent!");
 
-    btCollisionShape* bulletCollisionShape = collisionComponent->GetBulletCollisionShape();
+    btCollisionShape* bulletCollisionShape = collisionComponent_->GetBulletCollisionShape();
     GOKNAR_ASSERT(bulletCollisionShape != nullptr);
 
     bulletCollisionObject_ = new btPairCachingGhostObject();

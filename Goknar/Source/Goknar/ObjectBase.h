@@ -24,11 +24,19 @@ enum class SnappingRule : unsigned char
 	KeepWorldAll =						KeepWorldPosition | KeepWorldRotation | KeepWorldScaling
 };
 
+struct GOKNAR_API ObjectInitializer
+{
+	ObjectInitializer() = default;
+	ObjectInitializer(bool initOnConstr) : setForInitializeOnConstructor(initOnConstr) {}
+
+	bool setForInitializeOnConstructor{ true };
+};
+
 class GOKNAR_API ObjectBase
 {
 	friend Engine;
 public:
-    ObjectBase();
+	ObjectBase(const ObjectInitializer& objectInitializer = ObjectInitializer());
 	virtual ~ObjectBase();
 
 	virtual void PreInit();
@@ -181,7 +189,7 @@ public:
 	}
 
 protected:
-	void AddComponent(Component* component);
+	virtual void AddComponent(Component* component);
 	virtual void DestroyInner();
 
 	virtual void SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix);
@@ -196,7 +204,6 @@ protected:
 	Vector3 worldScaling_{ Vector3(1.f) };
 
 private:
-	
 	std::string name_{ "ObjectBase" };
 	std::vector<ObjectBase*> children_;
 	std::vector<Component*> components_;

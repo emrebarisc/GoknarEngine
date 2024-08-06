@@ -188,7 +188,7 @@ void DebugDrawer::DrawCapsule(	const Vector3& position, const Quaternion& rotati
 
 void DebugDrawer::DrawCollisionComponent(BoxCollisionComponent* boxCollisionComponent, const Colorf& color, float thickness, float time)
 {
-	DrawBox(Vector3::ZeroVector, Quaternion::Identity, boxCollisionComponent->GetHalfSize(), color, thickness, time, boxCollisionComponent->GetOwner());
+	DrawBox(Vector3::ZeroVector, Quaternion::Identity, boxCollisionComponent->GetHalfSize() * boxCollisionComponent->GetRelativeScaling(), color, thickness, time, boxCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawCollisionComponent(CapsuleCollisionComponent* capsuleCollisionComponent, const Colorf& color, float thickness, float time)

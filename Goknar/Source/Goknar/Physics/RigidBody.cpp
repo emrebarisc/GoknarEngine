@@ -13,6 +13,7 @@
 RigidBody::RigidBody() : PhysicsObject()
 {
     rigidBodyInitializationData_ = new RigidBodyInitializationData();
+    SetName("Rigidbody");
 }
 
 RigidBody::~RigidBody()
@@ -28,10 +29,9 @@ void RigidBody::PreInit()
 
 void RigidBody::Init()
 {
-    CollisionComponent* collisionComponent = dynamic_cast<CollisionComponent*>(GetRootComponent());
-    GOKNAR_ASSERT(collisionComponent != nullptr);
+    GOKNAR_ASSERT(collisionComponent_ != nullptr, "No collision component attached to RigidBody but is trying to init");
 
-    btCollisionShape* bulletCollisionShape = collisionComponent->GetBulletCollisionShape();
+    btCollisionShape* bulletCollisionShape = collisionComponent_->GetBulletCollisionShape();
     GOKNAR_ASSERT(bulletCollisionShape != nullptr);
 
     bool isDynamic = (mass_ != 0.f);
@@ -149,6 +149,11 @@ void RigidBody::SetupRigidBodyInitializationData()
 
 void RigidBody::SetMass(float mass)
 {
+    if (mass_ == mass)
+    {
+        return;
+    }
+
     mass_ = mass;
 
     if (!GetIsInitialized())
@@ -194,6 +199,7 @@ void RigidBody::SetWorldPosition(const Vector3& worldPosition, bool updateWorldT
         return;
     }
 
+    bulletRigidBody_->activate();
     btTransform newBulletTransform = bulletRigidBody_->getCenterOfMassTransform();
     newBulletTransform.setOrigin(PhysicsUtils::FromVector3ToBtVector3(worldPosition));
     bulletRigidBody_->setCenterOfMassTransform(newBulletTransform);
@@ -208,6 +214,7 @@ void RigidBody::SetWorldRotation(const Quaternion& worldRotation, bool updateWor
         return;
     }
 
+    bulletRigidBody_->activate();
     btTransform newBulletTransform = bulletRigidBody_->getCenterOfMassTransform();
     newBulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(worldRotation));
     bulletRigidBody_->setCenterOfMassTransform(newBulletTransform);
@@ -217,7 +224,10 @@ void RigidBody::SetIsActive(bool isActive)
 {
     PhysicsObject::SetIsActive(isActive);
 
-    //bulletRigidBody_->setActivationState(isActive ? : );
+    if (isActive)
+    {
+        bulletRigidBody_->activate();
+    }
 }
 
 void RigidBody::SetLinearVelocity(const Vector3& velocity)

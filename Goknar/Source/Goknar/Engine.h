@@ -110,6 +110,7 @@ public:
 	void RemoveFromTickableObjects(ObjectBase* object);
 	void RemoveFromObjectToBeInitialized(ObjectBase* object);
 	void DestroyAllObjectsAndComponents();
+	void AddToObjectsToBeInitialized(ObjectBase* object);
 	
 	template<class T = ObjectBase>
 	std::vector<T*> GetObjectsOfType() const;
@@ -118,6 +119,7 @@ public:
 	void AddToTickableComponents(Component* component);
 	void RemoveFromTickableComponents(Component* component);
 	void RemoveFromComponentsToBeInitialized(Component* component);
+	void AddToComponentsToBeInitialized(Component* component);
 
 	void RegisterTimeDependentObject(TimeDependentObject* timeDependentObject);
 	void RemoveTimeDependentObject(TimeDependentObject* timeDependentObject);

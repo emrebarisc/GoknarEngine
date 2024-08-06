@@ -7,6 +7,7 @@
 #include "Goknar/Physics/PhysicsTypes.h"
 
 class btCollisionObject;
+class CollisionComponent;
 
 struct GOKNAR_API PhysicsObjectInitializationData
 {
@@ -85,10 +86,17 @@ public:
 		return physicsTickEnabled_;
 	}
 
+	CollisionComponent* GetCollisionComponent() const
+	{
+		return collisionComponent_;
+	}
+
 protected:
+	virtual void AddComponent(Component* component) override;
 	virtual void DestroyInner() override;
 
 	btCollisionObject* bulletCollisionObject_{ nullptr };
+	CollisionComponent* collisionComponent_{ nullptr };
 
 	PhysicsObjectInitializationData* physicsObjectInitializationData_{ nullptr };
 

@@ -522,12 +522,16 @@ void Engine::DestroyAllObjectsAndComponents()
 	}
 }
 
-void Engine::RegisterObject(ObjectBase* object)
+void Engine::AddToObjectsToBeInitialized(ObjectBase* object)
 {
 	hasUninitializedObjects_ = true;
 	objectsToBeInitialized_.push_back(object);
-	registeredObjects_.push_back(object);
 	objectsToBeInitializedSize_++;
+}
+
+void Engine::RegisterObject(ObjectBase* object)
+{
+	registeredObjects_.push_back(object);
 }
 
 void Engine::RemoveObject(ObjectBase* object)
@@ -620,10 +624,8 @@ void Engine::RemoveFromObjectToBeInitialized(ObjectBase* object)
 
 void Engine::RegisterComponent(Component* component)
 {
-	hasUninitializedComponents_ = true;
-	componentsToBeInitialized_.push_back(component);
 	registeredComponents_.push_back(component);
-	componentsToBeInitializedSize_++;
+	AddToComponentsToBeInitialized(component);
 }
 
 void Engine::AddObjectToDestroy(ObjectBase* object)
@@ -684,6 +686,13 @@ void Engine::RemoveFromComponentsToBeInitialized(Component* component)
 			return;
 		}
 	}
+}
+
+void Engine::AddToComponentsToBeInitialized(Component* component)
+{
+	hasUninitializedComponents_ = true;
+	componentsToBeInitialized_.push_back(component);
+	componentsToBeInitializedSize_++;
 }
 
 void Engine::Exit()

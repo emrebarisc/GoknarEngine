@@ -25,7 +25,7 @@ public:
 	void SetHalfSize(const Vector3& halfSize);
 
 protected:
-	Vector3 halfSize_{ Vector3{1.f} };
+	Vector3 halfSize_{ Vector3{0.5f} };
 private:
 };
 

@@ -6,10 +6,12 @@
 #include "Physics/PhysicsUtils.h"
 #include "Physics/PhysicsWorld.h"
 #include "Physics/RigidBody.h"
+#include "Physics/Components/CollisionComponent.h"
 
 #include "btBulletDynamicsCommon.h"
 
-PhysicsObject::PhysicsObject() : ObjectBase()
+PhysicsObject::PhysicsObject() : 
+    ObjectBase(ObjectInitializer(false))
 {
     physicsObjectInitializationData_ = new PhysicsObjectInitializationData();
 }
@@ -23,7 +25,6 @@ PhysicsObject::~PhysicsObject()
 void PhysicsObject::PreInit()
 {
     ObjectBase::PreInit();
-
 }
 
 void PhysicsObject::Init()
@@ -43,6 +44,21 @@ void PhysicsObject::PostInit()
 void PhysicsObject::Destroy()
 {
     ObjectBase::Destroy();
+}
+
+void PhysicsObject::AddComponent(Component* component)
+{
+    ObjectBase::AddComponent(component);
+
+    if (!collisionComponent_)
+    {
+        // Take the first collision component as the main one
+        if (CollisionComponent* collisionComponent = dynamic_cast<CollisionComponent*>(component))
+        {
+            collisionComponent_ = collisionComponent;
+            engine->AddToObjectsToBeInitialized(this);
+        }
+    }
 }
 
 void PhysicsObject::DestroyInner()

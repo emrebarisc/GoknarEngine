@@ -10,7 +10,7 @@
 #include "Goknar/Components/SocketComponent.h"
 #include "Goknar/Managers/ObjectIDManager.h"
 
-ObjectBase::ObjectBase() :
+ObjectBase::ObjectBase(const ObjectInitializer& objectInitializer) :
 	totalComponentCount_(0),
 	isTickable_(false),
 	isTickEnabled_(true),
@@ -19,6 +19,11 @@ ObjectBase::ObjectBase() :
 	isPendingDestroy_(false)
 {
 	engine->RegisterObject(this);
+
+	if (objectInitializer.setForInitializeOnConstructor)
+	{
+		engine->AddToObjectsToBeInitialized(this);
+	}
 
 	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreaseObjectBaseGUID();
 }
@@ -74,6 +79,11 @@ void ObjectBase::DestroyInner()
 	if (parentSocket_)
 	{
 		parentSocket_->RemoveObject(this);
+	}
+
+	if (parent_)
+	{
+		parent_->RemoveChild(this);
 	}
 }
 

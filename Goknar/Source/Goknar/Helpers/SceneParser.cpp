@@ -32,6 +32,11 @@
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
 
+#include "Goknar/Physics/RigidBody.h"
+#include "Goknar/Physics/Components/BoxCollisionComponent.h"
+#include "Goknar/Physics/Components/CapsuleCollisionComponent.h"
+#include "Goknar/Physics/Components/SphereCollisionComponent.h"
+
 #include "tinyxml2.h"
 
 void SceneParser::Parse(Scene* scene, const std::string& filePath)
@@ -64,7 +69,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 	}
 
 	//Get BackgroundColor
-	auto element = root->FirstChildElement("BackgroundColor");
+	tinyxml2::XMLElement* element = root->FirstChildElement("BackgroundColor");
 	if (element)
 	{
 		stream << element->GetText() << std::endl;
@@ -792,81 +797,27 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 	element = root->FirstChildElement("Objects");
 	if (element)
 	{
-		element = element->FirstChildElement("Object");
-		ObjectBase* object = nullptr;
-		while (element)
+		tinyxml2::XMLElement* objectElement = element->FirstChildElement("Object");
+
+		while (objectElement)
 		{
-			object = new ObjectBase();
-			child = element->FirstChildElement("Name");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				std::string name;
-				stream >> name;
-				object->SetName(name);
-			}
-			stream.clear();
+			ObjectBase* object = new ObjectBase();
 
-			child = element->FirstChildElement("WorldPosition");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldPosition;
-				stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
-				object->SetWorldPosition(worldPosition);
-			}
-			stream.clear();
+			ParseObjectBase(object, objectElement);
 
-			child = element->FirstChildElement("EulerWorldRotation");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldRotation;
-				stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-				object->SetWorldRotation(Quaternion::FromEulerDegrees(worldRotation));
-			}
-			stream.clear();
+			objectElement = objectElement->NextSiblingElement("Object");
+		}
+		stream.clear();
 
-			child = element->FirstChildElement("WorldScaling");
-			if (child)
-			{
-				stream << child->GetText() << std::endl;
-				Vector3 worldScaling;
-				stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
-				object->SetWorldScaling(worldScaling);
-			}
-			stream.clear();
+		tinyxml2::XMLElement* rigidBodyElement = element->FirstChildElement("RigidBody");
 
-			child = element->FirstChildElement("Components");
-			if (child)
-			{
-				tinyxml2::XMLElement* componentElement = child->FirstChildElement("StaticMeshComponent");
-				while (componentElement)
-				{
-					StaticMeshComponent* staticMeshComponent = object->AddSubComponent<StaticMeshComponent>();
+		while (rigidBodyElement)
+		{
+			RigidBody* object = new RigidBody();
 
-					tinyxml2::XMLElement* dataElement = componentElement->FirstChildElement("MeshPath");
-					if (dataElement)
-					{
-						stream << dataElement->GetText() << std::endl;
-						std::string meshPath;
-						stream >> meshPath;
-						StaticMesh* staticMesh = engine->GetResourceManager()->GetContent<StaticMesh>(meshPath);
-						if (staticMesh)
-						{
-							staticMeshComponent->SetMesh(staticMesh);
-						}
-					}
-					stream.clear();
+			ParseRigidBody(object, rigidBodyElement);
 
-					ParseComponentValues(staticMeshComponent, componentElement);
-
-					componentElement = componentElement->NextSiblingElement("StaticMeshComponent");
-				}
-			}
-
-			element = element->NextSiblingElement("Object");
-
+			rigidBodyElement = rigidBodyElement->NextSiblingElement("RigidBody");
 		}
 		stream.clear();
 	}
@@ -934,6 +885,196 @@ void SceneParser::ParseComponentValues(Component* component, tinyxml2::XMLElemen
 		component->SetRelativeScaling(relativeScaling);
 	}
 	stream.clear();
+}
+
+void SceneParser::ParseStaticMeshComponentValues(StaticMeshComponent* staticMeshComponent, tinyxml2::XMLElement* componentElement)
+{
+	std::stringstream stream;
+
+	tinyxml2::XMLElement* dataElement = componentElement->FirstChildElement("MeshPath");
+	if (dataElement)
+	{
+		stream << dataElement->GetText() << std::endl;
+		std::string meshPath;
+		stream >> meshPath;
+		StaticMesh* staticMesh = engine->GetResourceManager()->GetContent<StaticMesh>(meshPath);
+		if (staticMesh)
+		{
+			staticMeshComponent->SetMesh(staticMesh);
+		}
+	}
+	stream.clear();
+}
+
+void SceneParser::ParseBoxCollisionComponentValues(BoxCollisionComponent* boxCollisionComponent, tinyxml2::XMLElement* componentElement)
+{
+	std::stringstream stream;
+
+	tinyxml2::XMLElement* dataElement = componentElement->FirstChildElement("HalfSize");
+	if (dataElement)
+	{
+		stream << dataElement->GetText() << std::endl;
+		Vector3 halfSize;
+		stream >> halfSize.x >> halfSize.y >> halfSize.z;
+		boxCollisionComponent->SetHalfSize(halfSize);
+	}
+	stream.clear();
+}
+
+void SceneParser::ParseCapsuleCollisionComponentValues(CapsuleCollisionComponent* capsuleCollisionComponent, tinyxml2::XMLElement* componentElement)
+{
+	std::stringstream stream;
+
+	tinyxml2::XMLElement* dataElement = componentElement->FirstChildElement("Radius");
+	if (dataElement)
+	{
+		stream << dataElement->GetText() << std::endl;
+		float radius;
+		stream >> radius;
+		capsuleCollisionComponent->SetRadius(radius);
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("Height");
+	if (dataElement)
+	{
+		stream << dataElement->GetText() << std::endl;
+		float height;
+		stream >> height;
+		capsuleCollisionComponent->SetHeight(height);
+	}
+	stream.clear();
+}
+
+void SceneParser::ParseSphereCollisionComponentValues(SphereCollisionComponent* sphereCollisionComponent, tinyxml2::XMLElement* componentElement)
+{
+	std::stringstream stream;
+
+	tinyxml2::XMLElement* dataElement = componentElement->FirstChildElement("Radius");
+	if (dataElement)
+	{
+		stream << dataElement->GetText() << std::endl;
+		float radius;
+		stream >> radius;
+		sphereCollisionComponent->SetRadius(radius);
+	}
+	stream.clear();
+}
+
+void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* objectElement)
+{
+	std::stringstream stream;
+
+	tinyxml2::XMLElement* child = objectElement->FirstChildElement("Name");
+
+	if (child)
+	{
+		stream << child->GetText() << std::endl;
+		std::string name;
+		stream >> name;
+		object->SetName(name);
+	}
+	stream.clear();
+
+	child = objectElement->FirstChildElement("WorldPosition");
+	if (child)
+	{
+		stream << child->GetText() << std::endl;
+		Vector3 worldPosition;
+		stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
+		object->SetWorldPosition(worldPosition);
+	}
+	stream.clear();
+
+	child = objectElement->FirstChildElement("EulerWorldRotation");
+	if (child)
+	{
+		stream << child->GetText() << std::endl;
+		Vector3 worldRotation;
+		stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
+		object->SetWorldRotation(Quaternion::FromEulerDegrees(worldRotation));
+	}
+	stream.clear();
+
+	child = objectElement->FirstChildElement("WorldScaling");
+	if (child)
+	{
+		stream << child->GetText() << std::endl;
+		Vector3 worldScaling;
+		stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
+		object->SetWorldScaling(worldScaling);
+	}
+	stream.clear();
+
+	child = objectElement->FirstChildElement("Components");
+	if (child)
+	{
+		tinyxml2::XMLElement* componentElement = child->FirstChildElement("StaticMeshComponent");
+		while (componentElement)
+		{
+			StaticMeshComponent* staticMeshComponent = object->AddSubComponent<StaticMeshComponent>();
+			ParseStaticMeshComponentValues(staticMeshComponent, componentElement);
+
+			ParseComponentValues(staticMeshComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("StaticMeshComponent");
+		}
+	}
+}
+
+void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* objectElement)
+{
+	ParseObjectBase(rigidBody, objectElement);
+
+	std::stringstream stream;
+
+	tinyxml2::XMLElement* child = objectElement->FirstChildElement("Mass");
+
+	if (child)
+	{
+		stream << child->GetText() << std::endl;
+		float mass;
+		stream >> mass;
+		rigidBody->SetMass(mass);
+	}
+	stream.clear();
+
+	child = objectElement->FirstChildElement("Components");
+	if (child)
+	{
+		tinyxml2::XMLElement* componentElement = child->FirstChildElement("BoxCollisionComponent");
+		while (componentElement)
+		{
+			BoxCollisionComponent* boxCollisionComponent = rigidBody->AddSubComponent<BoxCollisionComponent>();
+			ParseBoxCollisionComponentValues(boxCollisionComponent, componentElement);
+
+			ParseComponentValues(boxCollisionComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("BoxCollisionComponent");
+		}
+
+		componentElement = child->FirstChildElement("CapsuleCollisionComponent");
+		while (componentElement)
+		{
+			CapsuleCollisionComponent* capsuleCollisionComponent = rigidBody->AddSubComponent<CapsuleCollisionComponent>();
+			ParseCapsuleCollisionComponentValues(capsuleCollisionComponent, componentElement);
+
+			ParseComponentValues(capsuleCollisionComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("CapsuleCollisionComponent");
+		}
+
+		componentElement = child->FirstChildElement("SphereCollisionComponent");
+		while (componentElement)
+		{
+			SphereCollisionComponent* sphereCollisionComponent = rigidBody->AddSubComponent<SphereCollisionComponent>();
+			ParseSphereCollisionComponentValues(sphereCollisionComponent, componentElement);
+
+			ParseComponentValues(sphereCollisionComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("SphereCollisionComponent");
+		}
+	}
 }
 
 void SceneParser::GetXMLElement_DirectionalLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene)
@@ -1068,7 +1209,11 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 			continue;
 		}
 
-		tinyxml2::XMLElement* objectElement = xmlDocument.NewElement("Object");
+		RigidBody* rigidBody = dynamic_cast<RigidBody*>(object);
+
+		std::string objectTypeString = rigidBody ? "RigidBody" : "Object";
+
+		tinyxml2::XMLElement* objectElement = xmlDocument.NewElement(objectTypeString.c_str());
 
 		tinyxml2::XMLElement* objectNameElement = xmlDocument.NewElement("Name");
 		objectNameElement->SetText(object->GetNameWithoutId().c_str());
@@ -1085,6 +1230,13 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 		tinyxml2::XMLElement* objectWorldScalingElement = xmlDocument.NewElement("WorldScaling");
 		objectWorldScalingElement->SetText(Serialize(object->GetWorldScaling()).c_str());
 		objectElement->InsertEndChild(objectWorldScalingElement);
+
+		if (rigidBody)
+		{
+			tinyxml2::XMLElement* rigidBodyMassElement = xmlDocument.NewElement("Mass");
+			rigidBodyMassElement->SetText(rigidBody->GetMass());
+			objectElement->InsertEndChild(rigidBodyMassElement);
+		}
 
 		tinyxml2::XMLElement* componentsElement = xmlDocument.NewElement("Components");
 		GetXMLElement_Components(object, xmlDocument, componentsElement);
@@ -1106,20 +1258,29 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 
 		tinyxml2::XMLElement* componentElement;
 
-		StaticMeshComponent* staticMeshComponent = dynamic_cast<StaticMeshComponent*>(component);
-
-		if (staticMeshComponent)
+		if (StaticMeshComponent* staticMeshComponent = dynamic_cast<StaticMeshComponent*>(component))
 		{
 			componentElement = xmlDocument.NewElement("StaticMeshComponent");
+			GetXMLElement_StaticMeshComponent(staticMeshComponent, xmlDocument, componentElement);
+		}
+		else if (BoxCollisionComponent* boxCollisionComponent = dynamic_cast<BoxCollisionComponent*>(component))
+		{
+			componentElement = xmlDocument.NewElement("BoxCollisionComponent");
+			GetXMLElement_BoxCollisionComponent(boxCollisionComponent, xmlDocument, componentElement);
+		}
+		else if (CapsuleCollisionComponent* capsuleCollisionComponent = dynamic_cast<CapsuleCollisionComponent*>(component))
+		{
+			componentElement = xmlDocument.NewElement("CapsuleCollisionComponent");
+			GetXMLElement_CapsuleCollisionComponent(capsuleCollisionComponent, xmlDocument, componentElement);
+		}
+		else if (SphereCollisionComponent* sphereCollisionComponent = dynamic_cast<SphereCollisionComponent*>(component))
+		{
+			componentElement = xmlDocument.NewElement("SphereCollisionComponent");
+			GetXMLElement_SphereCollisionComponent(sphereCollisionComponent, xmlDocument, componentElement);
 		}
 		else
 		{
 			componentElement = xmlDocument.NewElement("Component");
-		}
-
-		if (staticMeshComponent)
-		{
-			GetXMLElement_StaticMeshComponent(staticMeshComponent, xmlDocument, componentElement);
 		}
 
 		tinyxml2::XMLElement* componentRelativePositionElement = xmlDocument.NewElement("RelativePosition");
@@ -1143,6 +1304,31 @@ void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* c
 	tinyxml2::XMLElement* staticMeshComponentMeshPathElement = xmlDocument.NewElement("MeshPath"); 
 	staticMeshComponentMeshPathElement->SetText(staticMeshComponent->GetMeshInstance()->GetMesh()->GetPath().substr(ContentDir.size()).c_str());
 	parentElement->InsertEndChild(staticMeshComponentMeshPathElement);
+}
+
+void SceneParser::GetXMLElement_BoxCollisionComponent(const BoxCollisionComponent* const boxCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+	tinyxml2::XMLElement* boxCollisionComponentHalfSizeElement = xmlDocument.NewElement("HalfSize");
+	boxCollisionComponentHalfSizeElement->SetText(Serialize(boxCollisionComponent->GetHalfSize()).c_str());
+	parentElement->InsertEndChild(boxCollisionComponentHalfSizeElement);
+}
+
+void SceneParser::GetXMLElement_CapsuleCollisionComponent(const CapsuleCollisionComponent* const capsuleCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+	tinyxml2::XMLElement* capsuleCollisionComponentRadiusElement = xmlDocument.NewElement("Radius");
+	capsuleCollisionComponentRadiusElement->SetText(capsuleCollisionComponent->GetRadius());
+	parentElement->InsertEndChild(capsuleCollisionComponentRadiusElement);
+
+	tinyxml2::XMLElement* capsuleCollisionComponentHeightElement = xmlDocument.NewElement("Height");
+	capsuleCollisionComponentHeightElement->SetText(capsuleCollisionComponent->GetHeight());
+	parentElement->InsertEndChild(capsuleCollisionComponentHeightElement);
+}
+
+void SceneParser::GetXMLElement_SphereCollisionComponent(const SphereCollisionComponent* const sphereCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+	tinyxml2::XMLElement* sphereCollisionComponentRadiusElement = xmlDocument.NewElement("Radius");
+	sphereCollisionComponentRadiusElement->SetText(sphereCollisionComponent->GetRadius());
+	parentElement->InsertEndChild(sphereCollisionComponentRadiusElement);
 }
 
 std::string SceneParser::Serialize(const Vector3& vector)
