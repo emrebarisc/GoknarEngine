@@ -17,7 +17,7 @@
 SpotLight::SpotLight() : Light(), coverageAngle_(0.f), falloffAngle_(0.f)
 {
 	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreaseSpotLightGUID();
-	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT) + std::to_string(GUID_);
+	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT);
 
 	engine->GetApplication()->GetMainScene()->AddSpotLight(this);
 }

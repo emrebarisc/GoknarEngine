@@ -128,7 +128,7 @@ public:
 
 	std::string GetName() const
 	{
-		return name_ + std::to_string(GUID_);
+		return std::to_string(GUID_) + "_" + name_;
 	}
 
 	std::string GetNameWithoutId() const

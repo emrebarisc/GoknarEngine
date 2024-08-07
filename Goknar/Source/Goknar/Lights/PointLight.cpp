@@ -17,7 +17,7 @@
 PointLight::PointLight() : Light()
 {
 	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreasePointLightGUID();
-	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT) + std::to_string(GUID_);
+	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT);
 
 	radius_ = 25.f;
 

@@ -80,9 +80,9 @@ public:
 		mobility_ = mobility;
 	}
 
-	const std::string& GetName() const
+	std::string GetName() const
 	{
-		return name_;
+		return std::to_string(GUID_) + "_" + name_;
 	}
 
 	void SetName(const std::string& name)

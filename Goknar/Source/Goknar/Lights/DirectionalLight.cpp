@@ -18,7 +18,7 @@
 DirectionalLight::DirectionalLight() : Light()
 {
 	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreaseDirectionalLightGUID();
-	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT) + std::to_string(GUID_);
+	name_ = std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT);
 
 	engine->GetApplication()->GetMainScene()->AddDirectionalLight(this);
 }
