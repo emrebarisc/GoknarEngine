@@ -54,6 +54,11 @@ public:
     static Quaternion FromEulerRadians(float x, float y, float z);
     static Quaternion FromEulerRadians(const Vector3& radians);
 
+    ////////
+    //
+    // IF YOU CAN, DO NOT USE IT
+    // DOES NOT WORK AS NEEDED IN MOST CASES
+    // 
     // Build a unit quaternion representing 
     // the rotation from first to second.
     // The input vectors need not be normalised.

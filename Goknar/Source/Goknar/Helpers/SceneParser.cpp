@@ -6,31 +6,35 @@
 #include <stdexcept>
 
 #include "Goknar/Camera.h"
-#include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
-#include "Goknar/Components/MeshComponent.h"
-#include "Goknar/IO/ModelLoader.h"
 #include "Goknar/ObjectBase.h"
-#include "Goknar/Materials/MaterialBase.h"
-#include "Goknar/Renderer/Shader.h"
-#include "Goknar/Renderer/Texture.h"
 
+#include "Goknar/Components/MeshComponent.h"
+#include "Goknar/Components/DynamicMeshComponent.h"
+#include "Goknar/Components/StaticMeshComponent.h"
+#include "Goknar/Components/SkeletalMeshComponent.h"
 
+#include "Goknar/Factories/DynamicObjectFactory.h"
+
+#include "Goknar/IO/ModelLoader.h"
+
+#include "Goknar/Lights/DirectionalLight.h"
+#include "Goknar/Lights/PointLight.h"
+#include "Goknar/Lights/SpotLight.h"
+
+#include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Managers/ResourceManager.h"
+
+#include "Goknar/Materials/MaterialBase.h"
 
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/MeshUnit.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Model/SkeletalMesh.h"
 
-#include "Goknar/Components/DynamicMeshComponent.h"
-#include "Goknar/Components/StaticMeshComponent.h"
-#include "Goknar/Components/SkeletalMeshComponent.h"
-
-#include "Goknar/Lights/DirectionalLight.h"
-#include "Goknar/Lights/PointLight.h"
-#include "Goknar/Lights/SpotLight.h"
+#include "Goknar/Renderer/Shader.h"
+#include "Goknar/Renderer/Texture.h"
 
 #include "Goknar/Physics/RigidBody.h"
 #include "Goknar/Physics/Components/BoxCollisionComponent.h"
@@ -797,29 +801,29 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 	element = root->FirstChildElement("Objects");
 	if (element)
 	{
-		tinyxml2::XMLElement* objectElement = element->FirstChildElement("Object");
+		DynamicObjectFactory* dynamicObjectFactory = DynamicObjectFactory::GetInstance();
+		const auto& factoryObjects = dynamicObjectFactory->GetObjectMap();
 
-		while (objectElement)
+		for (const auto& factoryObject : factoryObjects)
 		{
-			ObjectBase* object = new ObjectBase();
+			const std::string& objectFactoryName = factoryObject.first;
+			tinyxml2::XMLElement* objectElement = element->FirstChildElement(objectFactoryName.c_str());
+			while (objectElement)
+			{
+				ObjectBase* object = factoryObject.second();
+				object->SetName(objectFactoryName);
 
-			ParseObjectBase(object, objectElement);
+				ParseObjectBase(object, objectElement);
 
-			objectElement = objectElement->NextSiblingElement("Object");
+				if (RigidBody* rigidBody = dynamic_cast<RigidBody*>(object))
+				{
+					ParseRigidBody(rigidBody, objectElement);
+				}
+
+				objectElement = objectElement->NextSiblingElement(objectFactoryName.c_str());
+			}
+			stream.clear();
 		}
-		stream.clear();
-
-		tinyxml2::XMLElement* rigidBodyElement = element->FirstChildElement("RigidBody");
-
-		while (rigidBodyElement)
-		{
-			RigidBody* object = new RigidBody();
-
-			ParseRigidBody(object, rigidBodyElement);
-
-			rigidBodyElement = rigidBodyElement->NextSiblingElement("RigidBody");
-		}
-		stream.clear();
 	}
 }
 
@@ -1024,8 +1028,6 @@ void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* obje
 
 void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* objectElement)
 {
-	ParseObjectBase(rigidBody, objectElement);
-
 	std::stringstream stream;
 
 	tinyxml2::XMLElement* child = objectElement->FirstChildElement("Mass");
@@ -1211,7 +1213,7 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 
 		RigidBody* rigidBody = dynamic_cast<RigidBody*>(object);
 
-		std::string objectTypeString = rigidBody ? "RigidBody" : "Object";
+		std::string objectTypeString = rigidBody ? "RigidBody" : "ObjectBase";
 
 		tinyxml2::XMLElement* objectElement = xmlDocument.NewElement(objectTypeString.c_str());
 
