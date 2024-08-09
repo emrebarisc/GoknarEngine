@@ -210,6 +210,12 @@ ResourceType ResourceManagerUtils::GetResourceType(const std::string& path)
 {
 	std::string extension = GetExtension(path);
 
+	std::transform(
+		extension.begin(),
+		extension.end(),
+		extension.begin(),
+		[](unsigned char c) { return std::tolower(c); });
+
 	if (extension == "jpg" || extension == "png")
 	{
 		return ResourceType::Image;

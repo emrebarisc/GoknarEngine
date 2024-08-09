@@ -31,10 +31,12 @@ public:
 
     ObjectBase* Create(const std::string& className)
     {
-        auto it = objectMap_.find(className);
-        if (it != objectMap_.end()) {
-            return it->second();
+        const auto& objectIterator = objectMap_.find(className);
+        if (objectIterator != objectMap_.end())
+        {
+            return objectIterator->second();
         }
+
         return nullptr;
     }
 
