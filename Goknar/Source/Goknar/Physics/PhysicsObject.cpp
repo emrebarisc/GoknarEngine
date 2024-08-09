@@ -2,13 +2,13 @@
 
 #include "PhysicsObject.h"
 
+#include "btBulletDynamicsCommon.h"
+
 #include "Engine.h"
 #include "Physics/PhysicsUtils.h"
 #include "Physics/PhysicsWorld.h"
 #include "Physics/RigidBody.h"
 #include "Physics/Components/CollisionComponent.h"
-
-#include "btBulletDynamicsCommon.h"
 
 PhysicsObject::PhysicsObject() : 
     ObjectBase(ObjectInitializer(false))
