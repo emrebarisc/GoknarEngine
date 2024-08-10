@@ -63,7 +63,9 @@ void ObjectBase::Destroy()
 	std::vector<ObjectBase*>::iterator childrenIterator = children_.begin();
 	for (; childrenIterator != children_.end(); ++childrenIterator)
 	{
-		(*childrenIterator)->Destroy();
+		ObjectBase* child = *childrenIterator;
+		child->Destroy();
+		child->parent_ = nullptr;
 	}
 
 	int componentSize = components_.size();
