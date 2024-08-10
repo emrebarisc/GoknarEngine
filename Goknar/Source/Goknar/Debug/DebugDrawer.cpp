@@ -45,7 +45,7 @@ void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Color
 
 	line->SetWorldScaling(Vector3{ endToStart.Length(), thickness, thickness }, false);
 	line->SetWorldPosition(start, false);
-	line->SetWorldRotation(Quaternion::FromTwoVectors(Vector3::ForwardVector, endToStart));
+	line->SetWorldRotation(Quaternion::FromTwoVectors(start, end));
 
 	line->SetParent(owner);
 }

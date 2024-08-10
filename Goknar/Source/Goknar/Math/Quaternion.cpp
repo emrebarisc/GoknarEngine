@@ -148,29 +148,7 @@ Quaternion Quaternion::FromEulerRadians(float x, float y, float z)
 Quaternion Quaternion::FromTwoVectors(const Vector3& first, const Vector3& second)
 {
     Vector3 difference = second - first;
-    return difference.GetRotationNormalized();
-
-    //GOKNAR_CORE_ASSERT(SMALLER_EPSILON < first.SquareLength() && SMALLER_EPSILON < second.SquareLength(), "source or destination cannot be zero in length!");
-
-    //// From http://lolengine.net/blog/2014/02/24/quaternion-from-two-vectors-final
-    //float totalLength = GoknarMath::Sqrt(first.SquareLength() * second.SquareLength());
-    //float realPart = totalLength + first.Dot(second);
-    //Vector3 imaginaryPart;
-
-    //if (realPart < SMALLER_EPSILON * totalLength)
-    //{
-    //    // If first and second are exactly opposite, rotate 180 degrees
-    //    // around an arbitrary orthogonal axis. Axis normalisation
-    //    // can happen later, when we normalise the quaternion.
-    //    realPart = 0.f;
-    //    imaginaryPart = GoknarMath::Abs(first.z) < GoknarMath::Abs(first.x) ? Vector3(-first.y, first.x, 0.f) : Vector3(0.f, -first.z, first.y);
-    //}
-    //else
-    //{
-    //    imaginaryPart = first.Cross(second);
-    //}
-
-    //return Quaternion(imaginaryPart.x, imaginaryPart.y, imaginaryPart.z, realPart).GetNormalized();
+    return difference.GetNormalized().GetRotationNormalized();
 }
 
 void Quaternion::AddVector(const Vector3& vector)
