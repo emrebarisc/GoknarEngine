@@ -82,6 +82,21 @@ public:
 		return dynamic_cast<T*>(contentPathMap_[path]);
 	}
 
+	const std::vector<Image*>& GetImageArray() const
+	{
+		return imageArray_;
+	}
+
+	const std::vector<MeshUnit*>& GetMeshArray() const
+	{
+		return meshArray_;
+	}
+
+	const std::vector<Audio*>& GetAudioArray() const
+	{
+		return audioArray_;
+	}
+
 protected:
 
 private:

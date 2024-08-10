@@ -650,7 +650,45 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 	}
 
 	//Get Static Meshes
-	element = root->FirstChildElement("Meshes");
+	element = root->FirstChildElement("Assets");
+	if (element)
+	{
+		element = element->FirstChildElement("Mesh");
+		while (element)
+		{
+			MeshUnit* mesh = nullptr;
+			int materialId = -1;
+			child = element->FirstChildElement("Material");
+			if (child)
+			{
+				stream << child->GetText() << std::endl;
+				stream >> materialId;
+			}
+
+			child = element->FirstChildElement("Path");
+			if (child)
+			{
+				std::string modelFilePath;
+				stream << child->GetText() << std::endl;
+				stream >> modelFilePath;
+
+				mesh = engine->GetResourceManager()->GetContent<StaticMesh>(modelFilePath);
+				if (mesh != nullptr)
+				{
+					if (0 <= materialId)
+					{
+						mesh->SetMaterial(resourceManager->GetMaterial(materialId));
+					}
+				}
+				stream.clear();
+			}
+			element = element->NextSiblingElement("Mesh");
+		}
+		stream.clear();
+	}
+
+	//Get Static Meshes
+	element = root->FirstChildElement("Assets");
 	if (element)
 	{
 		element = element->FirstChildElement("StaticMesh");
@@ -760,7 +798,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 	}
 
 	//Get Skeletal Meshes
-	element = root->FirstChildElement("Meshes");
+	element = root->FirstChildElement("Assets");
 	if (element)
 	{
 		element = element->FirstChildElement("SkeletalMesh");
@@ -833,7 +871,11 @@ void SceneParser::SaveScene(Scene* scene, const std::string& filePath)
 	tinyxml2::XMLNode* rootElement = sceneXML.NewElement("Scene");
 	sceneXML.InsertFirstChild(rootElement);
 
-	tinyxml2::XMLElement* subElement = sceneXML.NewElement("Lights");
+	tinyxml2::XMLElement* subElement = sceneXML.NewElement("Assets");
+	GetXMLElement_Meshes(sceneXML, subElement);
+	rootElement->InsertEndChild(subElement);
+
+	subElement = sceneXML.NewElement("Lights");
 	GetXMLElement_DirectionalLights(sceneXML, subElement, scene);
 	GetXMLElement_PointLights(sceneXML, subElement, scene);
 	GetXMLElement_SpotLights(sceneXML, subElement, scene);
@@ -1076,6 +1118,36 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 
 			componentElement = componentElement->NextSiblingElement("SphereCollisionComponent");
 		}
+	}
+}
+
+void SceneParser::GetXMLElement_Meshes(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+	const ResourceManager* resourceManager = engine->GetResourceManager();
+	const std::vector<MeshUnit*>& meshArray = resourceManager->GetResourceContainer()->GetMeshArray();
+
+	int meshCount = meshArray.size();
+
+	for (int meshIndex = 0; meshIndex < meshCount; ++meshIndex)
+	{
+		MeshUnit* mesh = meshArray[meshIndex];
+		std::string fullPath = mesh->GetPath();
+
+#ifdef ENGINE_CONTENT_DIR
+		if (fullPath.find(EngineContentDir) != std::string::npos)
+		{
+			continue;
+		}
+#endif
+
+		tinyxml2::XMLElement* meshElement = xmlDocument.NewElement("Mesh");
+		tinyxml2::XMLElement* pathElement = xmlDocument.NewElement("Path");
+
+		std::string path = fullPath.substr(ContentDir.size());
+		pathElement->SetText(path.c_str());
+
+		meshElement->InsertEndChild(pathElement);
+		parentElement->InsertEndChild(meshElement);
 	}
 }
 

@@ -31,6 +31,8 @@ private:
 	static void ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* objectElement);
 	static void ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* objectElement);
 
+	static void GetXMLElement_Meshes(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
+
 	static void GetXMLElement_DirectionalLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene);
 	static void GetXMLElement_SpotLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene);
 	static void GetXMLElement_PointLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene);
