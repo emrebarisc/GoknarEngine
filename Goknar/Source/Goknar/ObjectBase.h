@@ -177,6 +177,10 @@ public:
 		children_.push_back(child);
 	}
 	void RemoveChild(ObjectBase* child);
+	const std::vector<ObjectBase*>& GetChildren() const
+	{
+		return children_;
+	}
 
 	Vector3 GetRelativePositionInWorldSpace(const Vector3& relativePosition);
 	Vector3 GetWorldPositionInRelativeSpace(const Vector3& positionInWorldSpace);
