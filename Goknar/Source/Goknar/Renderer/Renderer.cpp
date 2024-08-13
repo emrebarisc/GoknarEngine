@@ -77,53 +77,7 @@ Renderer::~Renderer()
 	glDeleteBuffers(1, &staticVertexBufferId_);
 	glDeleteBuffers(1, &skeletalVertexBufferId_);
 	glDeleteBuffers(1, &staticIndexBufferId_);
-
-	for (StaticMeshInstance* opaqueStaticMeshInstance : opaqueStaticMeshInstances_)
-	{
-		delete opaqueStaticMeshInstance;
-	}
-
-	for (StaticMeshInstance* maskedStaticMeshInstance : maskedStaticMeshInstances_)
-	{
-		delete maskedStaticMeshInstance;
-	}
-
-	for (StaticMeshInstance* transparentStaticMeshInstance : transparentStaticMeshInstances_)
-	{
-		delete transparentStaticMeshInstance;
-	}
-
-	for (SkeletalMeshInstance* opaqueSkeletalMeshInstance : opaqueSkeletalMeshInstances_)
-	{
-		delete opaqueSkeletalMeshInstance;
-	}
-
-	for (SkeletalMeshInstance* maskedSkeletalMeshInstance : maskedSkeletalMeshInstances_)
-	{
-		delete maskedSkeletalMeshInstance;
-	}
-
-	for (SkeletalMeshInstance* transparentSkeletalMeshInstance : transparentSkeletalMeshInstances_)
-	{
-		delete transparentSkeletalMeshInstance;
-	}
-
-	for (DynamicMeshInstance* opaqueDynamicMeshInstance : opaqueDynamicMeshInstances_)
-	{
-		delete opaqueDynamicMeshInstance;
-	}
-
-	for (DynamicMeshInstance* maskedDynamicMeshInstance : maskedDynamicMeshInstances_)
-	{
-		delete maskedDynamicMeshInstance;
-	}
-
-	for (DynamicMeshInstance* transparentDynamicMeshInstance : transparentDynamicMeshInstances_)
-	{
-		delete transparentDynamicMeshInstance;
-	}
 }
-
 
 //static FrameBuffer testFrameBuffer;
 //static Texture postProcessingTestTexture;
@@ -436,7 +390,6 @@ void Renderer::RenderCurrentFrame()
 	}
 
 	//testFrameBuffer.Unbind();
-
 	//postProcessingEffect.Render();
 
 	PrepareSkeletalMeshInstancesForTheNextFrame();
