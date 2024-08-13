@@ -173,12 +173,15 @@ Vector2i Camera::GetScreenPositionOfWorldPosition(const Vector3& worldPosition)
 Vector3 Camera::GetWorldDirectionAtPixel(const Vector2i& pixelCoordinate)
 {
 	Vector3 m = position_ + (forwardVector_ * nearDistance_);
-	Vector3 q = m + leftVector_ * nearPlane_.x + upVector_ * nearPlane_.w;
+	Vector3 q = m - leftVector_ * nearPlane_.x + upVector_ * nearPlane_.w;
 
-	float sv = (nearPlane_.w - nearPlane_.z) * (pixelCoordinate.y + 0.5f) / imageHeight_;
-	float su = (nearPlane_.y - nearPlane_.x) * (pixelCoordinate.x + 0.5f) / imageWidth_;
-	Vector3 s = q + (leftVector_ * su) - (upVector_ * sv);
-	Vector3 direction = s - position_;
+	float su, sv;
+	Vector3 s, ray, d;
 
-	return direction;
+	sv = (nearPlane_.w - nearPlane_.z) * (pixelCoordinate.y + 0.5f) / imageHeight_;
+	su = (nearPlane_.y - nearPlane_.x) * (pixelCoordinate.x + 0.5f) / imageWidth_;
+	s = q + (-leftVector_ * su) - (upVector_ * sv);
+	d = s - position_;
+
+	return d;
 }
