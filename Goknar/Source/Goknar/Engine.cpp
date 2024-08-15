@@ -61,9 +61,9 @@ Engine::Engine()
 
 Engine::~Engine()
 {
-	delete physicsWorld_;
-
 	ClearMemory();
+
+	delete physicsWorld_;
 
 	delete application_;
 
@@ -439,7 +439,8 @@ void Engine::ClearMemory()
 	std::vector<ObjectBase*>::iterator registeredObjectsIterator = registeredObjects_.begin();
 	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
 	{
-		delete* registeredObjectsIterator;
+		(*registeredObjectsIterator)->DestroyInner();
+		delete *registeredObjectsIterator;
 	}
 
 	registeredObjects_.clear();
@@ -449,6 +450,7 @@ void Engine::ClearMemory()
 	std::vector<Component*>::iterator registeredComponentsIterator = registeredComponents_.begin();
 	for (; registeredComponentsIterator != registeredComponents_.end(); ++registeredComponentsIterator)
 	{
+		(*registeredComponentsIterator)->DestroyInner();
 		delete *registeredComponentsIterator;
 	}
 	registeredComponents_.clear();
