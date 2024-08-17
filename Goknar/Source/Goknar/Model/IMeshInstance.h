@@ -101,6 +101,7 @@ private:
 
 	bool isRendered_{ true };
 	bool isCastingShadow_{ true };
+	bool isInitialized_{ false };
 };
 
 template<class MeshType>
@@ -123,6 +124,7 @@ inline void IMeshInstance<MeshType>::Init()
 template<class MeshType>
 inline void IMeshInstance<MeshType>::PostInit()
 {
+	isInitialized_ = true;
 }
 
 template<class MeshType>
@@ -195,6 +197,13 @@ inline void IMeshInstance<MeshType>::SetMesh(MeshType* mesh)
 	}
 
 	mesh_ = mesh;
+
+	if (isInitialized_)
+	{
+		PreInit();
+		Init();
+		PostInit();
+	}
 }
 
 template<class MeshType>
