@@ -1155,6 +1155,26 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 	}
 	stream.clear();
 
+	child = objectElement->FirstChildElement("CollisionGroup");
+	if (child)
+	{
+		stream << child->GetText() << std::endl;
+		int collisionGroupInt;
+		stream >> collisionGroupInt;
+		rigidBody->SetCollisionGroup((CollisionGroup)collisionGroupInt);
+	}
+	stream.clear();
+
+	child = objectElement->FirstChildElement("CollisionMask");
+	if (child)
+	{
+		stream << child->GetText() << std::endl;
+		int collisionMaskInt;
+		stream >> collisionMaskInt;
+		rigidBody->SetCollisionMask((CollisionMask)collisionMaskInt);
+	}
+	stream.clear();
+
 	child = objectElement->FirstChildElement("Components");
 	if (child)
 	{
@@ -1404,6 +1424,14 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 			tinyxml2::XMLElement* rigidBodyMassElement = xmlDocument.NewElement("Mass");
 			rigidBodyMassElement->SetText(rigidBody->GetMass());
 			objectElement->InsertEndChild(rigidBodyMassElement);
+			
+			tinyxml2::XMLElement* rigidBodyCollisionGroupElement = xmlDocument.NewElement("CollisionGroup");
+			rigidBodyCollisionGroupElement->SetText((int)rigidBody->GetCollisionGroup());
+			objectElement->InsertEndChild(rigidBodyCollisionGroupElement);
+			
+			tinyxml2::XMLElement* rigidBodyCollisionMaskElement = xmlDocument.NewElement("CollisionMask");
+			rigidBodyCollisionMaskElement->SetText((int)rigidBody->GetCollisionMask());
+			objectElement->InsertEndChild(rigidBodyCollisionMaskElement);
 		}
 
 		tinyxml2::XMLElement* componentsElement = xmlDocument.NewElement("Components");
