@@ -55,7 +55,11 @@ void OverlappingPhysicsObject::Destroy()
 
 void OverlappingPhysicsObject::DestroyInner()
 {
-    engine->GetPhysicsWorld()->RemovePhysicsObject(this);
+    PhysicsWorld* physicsWorld = engine->GetPhysicsWorld();
+    if(physicsWorld)
+    {
+        physicsWorld->RemovePhysicsObject(this);
+    }
     PhysicsObject::DestroyInner();
 }
 

@@ -36,7 +36,7 @@
 
 #define GOKNAR_EDITOR false
 
-GOKNAR_API Engine *engine;
+GOKNAR_API Engine* engine;
 
 Engine::Engine()
 {
@@ -61,20 +61,31 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+	delete physicsWorld_;
+	physicsWorld_ = nullptr;
+
 	ClearMemory();
 
-	delete physicsWorld_;
-
 	delete application_;
+	application_ = nullptr;
 
 	delete renderer_;
+	renderer_ = nullptr;
+
 	delete cameraManager_;
+	cameraManager_ = nullptr;
 
 	delete debugDrawer_;
+	debugDrawer_ = nullptr;
 
 	delete objectManager_;
+	objectManager_ = nullptr;
+
 	delete resourceManager_;
+	resourceManager_ = nullptr;
+
 	delete inputManager_;
+	inputManager_ = nullptr;
 
 	// Delete singletons
 	delete ObjectIDManager::GetInstance();
@@ -83,6 +94,7 @@ Engine::~Engine()
 	delete DynamicObjectFactory::GetInstance();
 
 	delete windowManager_;
+	windowManager_ = nullptr;
 }
 
 void Engine::PreInit() const
@@ -186,7 +198,7 @@ void Engine::Run()
 	{
 		// Initialize dynamically created object and components /////
 
-		if(hasUninitializedComponents_)
+		if (hasUninitializedComponents_)
 		{
 			PreInitComponents();
 		}
@@ -196,7 +208,7 @@ void Engine::Run()
 			PreInitObjects();
 		}
 
-		if(hasUninitializedComponents_)
+		if (hasUninitializedComponents_)
 		{
 			InitComponents();
 		}
@@ -206,7 +218,7 @@ void Engine::Run()
 			InitObjects();
 		}
 
-		if(hasUninitializedComponents_)
+		if (hasUninitializedComponents_)
 		{
 			PostInitComponents();
 		}
@@ -216,7 +228,7 @@ void Engine::Run()
 			PostInitObjects();
 		}
 
-		if(hasUninitializedComponents_)
+		if (hasUninitializedComponents_)
 		{
 			BeginGameComponents();
 		}
@@ -228,7 +240,7 @@ void Engine::Run()
 
 		////////////////////////////////////////////////////////////////////////////
 
-		if(0.25f < deltaTime_)
+		if (0.25f < deltaTime_)
 		{
 			deltaTime_ = 0.25f;
 		}
@@ -258,21 +270,21 @@ void Engine::Run()
 
 		renderer_->RenderCurrentFrame();
 
-		if(HUD_)
+		if (HUD_)
 		{
 			HUD_->Tick(unscaledDeltaTime);
 		}
 
 		windowManager_->Update();
 
-		if(0 < timeDependentObjectsToBeRegisteredSize_)
+		if (0 < timeDependentObjectsToBeRegisteredSize_)
 		{
 			RegisterTimeDependentObjects();
 		}
 
 		cameraManager_->HandleNewlyAddedCameras();
 
-		if(hasObjectsOrComponentsPendingDestroy_)
+		if (hasObjectsOrComponentsPendingDestroy_)
 		{
 			DestroyAllPendingObjectAndComponents();
 		}
@@ -291,10 +303,10 @@ void Engine::BeginGame()
 
 	InitComponents();
 	InitObjects();
-	
+
 	PostInitComponents();
 	PostInitObjects();
-	
+
 	BeginGameComponents();
 	BeginGameObjects();
 }
@@ -342,9 +354,9 @@ void Engine::BeginGameObjects()
 {
 	std::vector<ObjectBase*> objectsToBeInitialized;
 	std::swap(objectsToBeInitialized, objectsToBeInitialized_);
-	
+
 	int objectsToBeInitializedSizeBeforeBeginGame = objectsToBeInitializedSize_;
-	
+
 	decltype(objectsToBeInitialized_.begin()) objectsToBeInitializedIterator = objectsToBeInitialized_.begin();
 
 	for (int objectToBeInitializedIndex = 0; objectToBeInitializedIndex < objectsToBeInitializedSizeBeforeBeginGame; ++objectToBeInitializedIndex)
@@ -390,12 +402,12 @@ void Engine::PostInitComponents()
 }
 
 void Engine::BeginGameComponents()
-{	
+{
 	std::vector<Component*> componentsToBeInitialized;
 	std::swap(componentsToBeInitialized, componentsToBeInitialized_);
-	
+
 	int componentsToBeInitializedSizeBeforeBeginGame = componentsToBeInitializedSize_;
-	
+
 	decltype(componentsToBeInitialized_.begin()) componentsToBeInitializedIterator = componentsToBeInitialized_.begin();
 
 	for (int objectToBeInitializedIndex = 0; objectToBeInitializedIndex < componentsToBeInitializedSizeBeforeBeginGame; ++objectToBeInitializedIndex)
@@ -451,7 +463,7 @@ void Engine::ClearMemory()
 	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
 	{
 		(*registeredObjectsIterator)->DestroyInner();
-		delete *registeredObjectsIterator;
+		delete* registeredObjectsIterator;
 		*registeredObjectsIterator = nullptr;
 	}
 
@@ -466,12 +478,12 @@ void Engine::DestroyAllPendingObjectAndComponents()
 	// calculating size at every iteration
 	// in order to handle newly pending objects and components
 	// added in other object or component's destroy call
-	for(int objectIndex = 0; objectIndex < objectsPendingDestroy_.size(); ++objectIndex)
+	for (int objectIndex = 0; objectIndex < objectsPendingDestroy_.size(); ++objectIndex)
 	{
 		DestroyObject(objectsPendingDestroy_[objectIndex]);
 	}
 
-	for(int componentIndex = 0; componentIndex < componentsPendingDestroy_.size(); ++componentIndex)
+	for (int componentIndex = 0; componentIndex < componentsPendingDestroy_.size(); ++componentIndex)
 	{
 		DestroyComponent(componentsPendingDestroy_[componentIndex]);
 	}
@@ -570,8 +582,8 @@ void Engine::RegisterTimeDependentObjects()
 		timeDependentObjects_.reserve(timeDependentObjects_.size() + timeDependentObjectsToBeRegisteredSize_);
 
 		std::move(
-			std::begin(timeDependentObjectsToRegisterForNextFrame_), 
-			std::end(timeDependentObjectsToRegisterForNextFrame_), 
+			std::begin(timeDependentObjectsToRegisterForNextFrame_),
+			std::end(timeDependentObjectsToRegisterForNextFrame_),
 			std::back_inserter(timeDependentObjects_));
 	}
 

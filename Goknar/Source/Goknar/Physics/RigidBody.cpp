@@ -80,7 +80,11 @@ void RigidBody::Destroy()
 
 void RigidBody::DestroyInner()
 {
-    engine->GetPhysicsWorld()->RemoveRigidBody(this);
+    PhysicsWorld* physicsWorld = engine->GetPhysicsWorld();
+    if(physicsWorld)
+    {
+        physicsWorld->RemoveRigidBody(this);
+    }
     PhysicsObject::DestroyInner();
 }
 

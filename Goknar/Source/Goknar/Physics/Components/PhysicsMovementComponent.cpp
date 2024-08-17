@@ -37,7 +37,11 @@ void PhysicsMovementComponent::Destroy()
 
 void PhysicsMovementComponent::DestroyInner()
 {
-	engine->GetPhysicsWorld()->RemovePhysicsMovementComponent(this);
+	PhysicsWorld* physicsWorld = engine->GetPhysicsWorld();
+	if (physicsWorld)
+	{
+		physicsWorld->RemovePhysicsMovementComponent(this);
+	}
 
 	delete bulletKinematicCharacterController_;
 	bulletKinematicCharacterController_ = nullptr;
