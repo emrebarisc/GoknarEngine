@@ -198,6 +198,11 @@ void PhysicsWorld::RemoveRigidBody(RigidBody* rigidBody)
 {
 	btRigidBody* bulletRigidBody = rigidBody->GetBulletRigidBody();
 
+	if (!bulletRigidBody)
+	{
+		return;
+	}
+
 	decltype(physicsObjects_.begin()) physicsObjectIterator = physicsObjects_.begin();
 	while(physicsObjectIterator != physicsObjects_.end())
 	{
@@ -223,6 +228,11 @@ void PhysicsWorld::RemovePhysicsObject(PhysicsObject* physicsObject)
 {
 	btCollisionObject* bulletCollisionObject = physicsObject->GetBulletCollisionObject();
 
+	if (!bulletCollisionObject)
+	{
+		return;
+	}
+
 	decltype(physicsObjects_.begin()) physicsObjectIterator = physicsObjects_.begin();
 	while(physicsObjectIterator != physicsObjects_.end())
 	{
@@ -246,6 +256,11 @@ void PhysicsWorld::AddPhysicsMovementComponent(PhysicsMovementComponent* physics
 
 void PhysicsWorld::RemovePhysicsMovementComponent(PhysicsMovementComponent* physicsMovementComponent)
 {
+	if (!physicsMovementComponent)
+	{
+		return;
+	}
+
 	decltype(physicsMovementComponents_.cbegin()) physicsMovementComponentIterator = physicsMovementComponents_.cbegin();
 	while(physicsMovementComponentIterator != physicsMovementComponents_.cend())
 	{

@@ -883,12 +883,12 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				ObjectBase* object = factoryObject.second();
 				object->SetName(objectFactoryName);
 
-				ParseObjectBase(object, objectElement);
-
 				if (RigidBody* rigidBody = dynamic_cast<RigidBody*>(object))
 				{
 					ParseRigidBody(rigidBody, objectElement);
 				}
+
+				ParseObjectBase(object, objectElement);
 
 				objectElement = objectElement->NextSiblingElement(objectFactoryName.c_str());
 			}
@@ -1137,61 +1137,6 @@ void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* obje
 
 			componentElement = componentElement->NextSiblingElement("StaticMeshComponent");
 		}
-
-		componentElement = child->FirstChildElement("BoxCollisionComponent");
-		while (componentElement)
-		{
-			BoxCollisionComponent* boxCollisionComponent = object->AddSubComponent<BoxCollisionComponent>();
-			ParseBoxCollisionComponentValues(boxCollisionComponent, componentElement);
-
-			ParseComponentValues(boxCollisionComponent, componentElement);
-
-			componentElement = componentElement->NextSiblingElement("BoxCollisionComponent");
-		}
-
-		componentElement = child->FirstChildElement("SphereCollisionComponent");
-		while (componentElement)
-		{
-			SphereCollisionComponent* sphereCollisionComponent = object->AddSubComponent<SphereCollisionComponent>();
-			ParseSphereCollisionComponentValues(sphereCollisionComponent, componentElement);
-
-			ParseComponentValues(sphereCollisionComponent, componentElement);
-
-			componentElement = componentElement->NextSiblingElement("SphereCollisionComponent");
-		}
-
-		componentElement = child->FirstChildElement("CapsuleCollisionComponent");
-		while (componentElement)
-		{
-			CapsuleCollisionComponent* capsuleCollisionComponent = object->AddSubComponent<CapsuleCollisionComponent>();
-			ParseCapsuleCollisionComponentValues(capsuleCollisionComponent, componentElement);
-
-			ParseComponentValues(capsuleCollisionComponent, componentElement);
-
-			componentElement = componentElement->NextSiblingElement("CapsuleCollisionComponent");
-		}
-
-		componentElement = child->FirstChildElement("MovingTriangleMeshCollisionComponent");
-		while (componentElement)
-		{
-			MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent = object->AddSubComponent<MovingTriangleMeshCollisionComponent>();
-			ParseMovingTriangleMeshCollisionComponentValues(movingTriangleMeshCollisionComponent, componentElement);
-
-			ParseComponentValues(movingTriangleMeshCollisionComponent, componentElement);
-
-			componentElement = componentElement->NextSiblingElement("MovingTriangleMeshCollisionComponent");
-		}
-
-		componentElement = child->FirstChildElement("NonMovingTriangleMeshCollisionComponent");
-		while (componentElement)
-		{
-			NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent = object->AddSubComponent<NonMovingTriangleMeshCollisionComponent>();
-			ParseNonMovingTriangleMeshCollisionComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
-
-			ParseComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
-
-			componentElement = componentElement->NextSiblingElement("NonMovingTriangleMeshCollisionComponent");
-		}
 	}
 }
 
@@ -1224,6 +1169,17 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 			componentElement = componentElement->NextSiblingElement("BoxCollisionComponent");
 		}
 
+		componentElement = child->FirstChildElement("SphereCollisionComponent");
+		while (componentElement)
+		{
+			SphereCollisionComponent* sphereCollisionComponent = rigidBody->AddSubComponent<SphereCollisionComponent>();
+			ParseSphereCollisionComponentValues(sphereCollisionComponent, componentElement);
+
+			ParseComponentValues(sphereCollisionComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("SphereCollisionComponent");
+		}
+
 		componentElement = child->FirstChildElement("CapsuleCollisionComponent");
 		while (componentElement)
 		{
@@ -1235,15 +1191,26 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 			componentElement = componentElement->NextSiblingElement("CapsuleCollisionComponent");
 		}
 
-		componentElement = child->FirstChildElement("SphereCollisionComponent");
+		componentElement = child->FirstChildElement("MovingTriangleMeshCollisionComponent");
 		while (componentElement)
 		{
-			SphereCollisionComponent* sphereCollisionComponent = rigidBody->AddSubComponent<SphereCollisionComponent>();
-			ParseSphereCollisionComponentValues(sphereCollisionComponent, componentElement);
+			MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent = rigidBody->AddSubComponent<MovingTriangleMeshCollisionComponent>();
+			ParseMovingTriangleMeshCollisionComponentValues(movingTriangleMeshCollisionComponent, componentElement);
 
-			ParseComponentValues(sphereCollisionComponent, componentElement);
+			ParseComponentValues(movingTriangleMeshCollisionComponent, componentElement);
 
-			componentElement = componentElement->NextSiblingElement("SphereCollisionComponent");
+			componentElement = componentElement->NextSiblingElement("MovingTriangleMeshCollisionComponent");
+		}
+
+		componentElement = child->FirstChildElement("NonMovingTriangleMeshCollisionComponent");
+		while (componentElement)
+		{
+			NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent = rigidBody->AddSubComponent<NonMovingTriangleMeshCollisionComponent>();
+			ParseNonMovingTriangleMeshCollisionComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
+
+			ParseComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("NonMovingTriangleMeshCollisionComponent");
 		}
 	}
 }
