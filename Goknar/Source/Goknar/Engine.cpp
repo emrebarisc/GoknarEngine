@@ -436,24 +436,26 @@ void Engine::Tick(float deltaTime)
 
 void Engine::ClearMemory()
 {
+	std::vector<Component*>::iterator registeredComponentsIterator = registeredComponents_.begin();
+	for (; registeredComponentsIterator != registeredComponents_.end(); ++registeredComponentsIterator)
+	{
+		delete* registeredComponentsIterator;
+		*registeredComponentsIterator = nullptr;
+	}
+	registeredComponents_.clear();
+	tickableComponents_.clear();
+	componentsToBeInitialized_.clear();
+
 	std::vector<ObjectBase*>::iterator registeredObjectsIterator = registeredObjects_.begin();
 	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
 	{
-		delete* registeredObjectsIterator;
+		delete *registeredObjectsIterator;
+		*registeredObjectsIterator = nullptr;
 	}
 
 	registeredObjects_.clear();
 	tickableObjects_.clear();
 	objectsToBeInitialized_.clear();
-
-	std::vector<Component*>::iterator registeredComponentsIterator = registeredComponents_.begin();
-	for (; registeredComponentsIterator != registeredComponents_.end(); ++registeredComponentsIterator)
-	{
-		delete *registeredComponentsIterator;
-	}
-	registeredComponents_.clear();
-	tickableComponents_.clear();
-	componentsToBeInitialized_.clear();
 }
 
 void Engine::DestroyAllPendingObjectAndComponents()
