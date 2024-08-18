@@ -4,6 +4,7 @@
 #include "Core.h"
 
 #include "Color.h"
+#include "ObjectBase.h"
 #include "Math/GoknarMath.h"
 
 class BoxCollisionComponent;
@@ -11,6 +12,13 @@ class CapsuleCollisionComponent;
 class SphereCollisionComponent;
 class ObjectBase;
 class StaticMesh;
+
+class GOKNAR_API DebugObject : public ObjectBase
+{
+public:
+	DebugObject() : ObjectBase() {}
+	~DebugObject() = default;
+};
 
 class GOKNAR_API DebugDrawer
 {

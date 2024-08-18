@@ -31,7 +31,7 @@ DebugDrawer::~DebugDrawer()
 
 void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
-	ObjectBase* line = new ObjectBase();
+	DebugObject* line = new DebugObject();
 	StaticMeshComponent* lineStaticMeshComponent = line->AddSubComponent<StaticMeshComponent>();
 	lineStaticMeshComponent->SetMesh(lineMesh_);
 
@@ -52,7 +52,7 @@ void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Color
 
 void DebugDrawer::DrawCircle(const Vector3& position, const Quaternion& rotation, float radius, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
-	ObjectBase* circle = new ObjectBase();
+	DebugObject* circle = new DebugObject();
 
 	float angleStep = 0.39269908169f;
 	for (float angle = 0.f; angle < TWO_PI; angle += angleStep)
@@ -69,7 +69,7 @@ void DebugDrawer::DrawCircle(const Vector3& position, const Quaternion& rotation
 
 void DebugDrawer::DrawSphere(const Vector3& position, const Quaternion& rotation, float radius, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
-	ObjectBase* sphere = new ObjectBase();
+	DebugObject* sphere = new DebugObject();
 
 	Matrix rotationMatrix = rotation.GetMatrix();
 	Vector3 up = rotationMatrix.GetUpVector();
@@ -89,9 +89,9 @@ void DebugDrawer::DrawSphere(const Vector3& position, const Quaternion& rotation
 
 void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, const Vector3& halfSize, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
-	ObjectBase* box = new ObjectBase();
+	DebugObject* box = new DebugObject();
 
-	Vector4 rotatedHalfSize = rotation.GetMatrix() * Vector4{ halfSize, 0.f };
+	Vector4 rotatedHalfSize = rotation.GetMatrix() * Vector4 { halfSize, 0.f };
 
 	Matrix rotationMatrix = rotation.GetMatrix();
 	Vector3 forwardVector = halfSize * rotationMatrix.GetForwardVector();
@@ -107,7 +107,7 @@ void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, c
 		{ position - forwardVector - leftVector + upVector },
 		{ position + forwardVector - leftVector + upVector },
 		{ position - forwardVector + leftVector + upVector },
-		{ position + forwardVector + leftVector + upVector } 
+		{ position + forwardVector + leftVector + upVector }
 	};
 
 	DrawLine(corners[0], corners[1], color, thickness, -1.f, box);
@@ -131,11 +131,11 @@ void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, c
 	box->SetParent(owner, SnappingRule::None);
 }
 
-void DebugDrawer::DrawCapsule(	const Vector3& position, const Quaternion& rotation, 
-								float radius, float height, const Colorf& color, 
-								float thickness/* = 1.f*/, float time/* = -1.f*/, ObjectBase* owner/* = nullptr*/)
+void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotation,
+	float radius, float height, const Colorf& color,
+	float thickness/* = 1.f*/, float time/* = -1.f*/, ObjectBase* owner/* = nullptr*/)
 {
-	ObjectBase* capsule = new ObjectBase();
+	DebugObject* capsule = new DebugObject();
 
 	int stepDegrees = 30;
 
