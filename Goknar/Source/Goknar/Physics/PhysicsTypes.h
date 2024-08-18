@@ -36,30 +36,30 @@ enum class GOKNAR_API CollisionGroup : unsigned int
 enum class GOKNAR_API CollisionMask : unsigned int
 {
     Default =              		    0b00000001,
-    BlockWorldStatic = 			    (unsigned char)(CollisionGroup::WorldStaticBlock),
-    BlockWorldDynamic = 		    (unsigned char)(CollisionGroup::WorldDynamicBlock),
-    BlockCharacter = 			    (unsigned char)(CollisionGroup::Character),
+    BlockWorldStatic = 			    (unsigned int)(CollisionGroup::WorldStaticBlock),
+    BlockWorldDynamic = 		    (unsigned int)(CollisionGroup::WorldDynamicBlock),
+    BlockCharacter = 			    (unsigned int)(CollisionGroup::Character),
     BlockAll = 					    BlockWorldDynamic | BlockWorldStatic | BlockCharacter,
     BlockAllExceptCharacter =       BlockWorldDynamic | BlockWorldStatic,
 
-    OverlapWorldDynamic = 		    (unsigned char)(CollisionGroup::WorldDynamicOverlap),
-    OverlapWorldStatic = 		    (unsigned char)(CollisionGroup::WorldStaticOverlap),
-    OverlapCharacter = 		        (unsigned char)(CollisionGroup::Character),
+    OverlapWorldDynamic = 		    (unsigned int)(CollisionGroup::WorldDynamicOverlap),
+    OverlapWorldStatic = 		    (unsigned int)(CollisionGroup::WorldStaticOverlap),
+    OverlapCharacter = 		        (unsigned int)(CollisionGroup::Character),
     OverlapAll = 				    OverlapWorldDynamic | OverlapWorldStatic | OverlapCharacter,
     OverlapAllExceptCharacter =     OverlapWorldDynamic | OverlapWorldStatic,
 
     BlockAndOverlapAll = 		    Default | BlockAll | OverlapAll,
 
-    Custom0 =                       (unsigned char)(CollisionGroup::Custom0),
-    Custom1 =                       (unsigned char)(CollisionGroup::Custom1),
-    Custom2 =                       (unsigned char)(CollisionGroup::Custom2),
-    Custom3 =                       (unsigned char)(CollisionGroup::Custom3),
-    Custom4 =                       (unsigned char)(CollisionGroup::Custom4),
-    Custom5 =                       (unsigned char)(CollisionGroup::Custom5),
-    Custom6 =                       (unsigned char)(CollisionGroup::Custom6),
-    Custom7 =                       (unsigned char)(CollisionGroup::Custom7),
-    Custom8 =                       (unsigned char)(CollisionGroup::Custom8),
-    Custom9 =                       (unsigned char)(CollisionGroup::Custom9)
+    Custom0 =                       (unsigned int)(CollisionGroup::Custom0),
+    Custom1 =                       (unsigned int)(CollisionGroup::Custom1),
+    Custom2 =                       (unsigned int)(CollisionGroup::Custom2),
+    Custom3 =                       (unsigned int)(CollisionGroup::Custom3),
+    Custom4 =                       (unsigned int)(CollisionGroup::Custom4),
+    Custom5 =                       (unsigned int)(CollisionGroup::Custom5),
+    Custom6 =                       (unsigned int)(CollisionGroup::Custom6),
+    Custom7 =                       (unsigned int)(CollisionGroup::Custom7),
+    Custom8 =                       (unsigned int)(CollisionGroup::Custom8),
+    Custom9 =                       (unsigned int)(CollisionGroup::Custom9)
 };
 
 enum class GOKNAR_API CollisionFlag
