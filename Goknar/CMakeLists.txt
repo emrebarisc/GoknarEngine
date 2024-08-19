@@ -17,6 +17,7 @@ set(SUBDIRS
 	${SOURCE_DIR_NAME}
 	${SOURCE_DIR_NAME}/Goknar
 	${SOURCE_DIR_NAME}/Goknar/Components
+	${SOURCE_DIR_NAME}/Goknar/Components/LightComponents
 	#${SOURCE_DIR_NAME}/Goknar/Components/2D
 	${SOURCE_DIR_NAME}/Goknar/Contents
 	${SOURCE_DIR_NAME}/Goknar/Containers
