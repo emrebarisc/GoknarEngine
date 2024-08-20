@@ -91,6 +91,7 @@ private:
 	std::string General_FS_GetShaderTextureUniforms(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string General_FS_GetDiffuseTextureSampling(const std::string& textureName) const;
 	std::string General_FS_GetNormalTextureSampling(const std::string& textureName) const;
+	std::string General_FS_GetEmmisiveTextureSampling(const std::string& textureName) const;
 
 	std::string FS_GetLightCalculationIterators() const;
 
