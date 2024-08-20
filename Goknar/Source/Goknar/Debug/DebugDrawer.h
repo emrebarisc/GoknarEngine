@@ -10,6 +10,7 @@
 class BoxCollisionComponent;
 class CapsuleCollisionComponent;
 class SphereCollisionComponent;
+class MovingTriangleMeshCollisionComponent;
 class ObjectBase;
 class StaticMesh;
 
@@ -37,10 +38,13 @@ public:
 								 float minTh, float maxTh, float minPs, float maxPs, const Colorf& color, 
 								 float stepDegrees = float(10.f), bool drawCenter = true, 
 								 float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
+	static void DrawTriangle(	const Vector3& position1, const Vector3& position2, const Vector3& position3, 
+								const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
 
 	static void DrawCollisionComponent(BoxCollisionComponent* boxCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
 	static void DrawCollisionComponent(CapsuleCollisionComponent* capsuleCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
 	static void DrawCollisionComponent(SphereCollisionComponent* sphereCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
+	static void DrawCollisionComponent(MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
 
 protected:
 
