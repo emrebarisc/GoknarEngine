@@ -41,10 +41,10 @@ public:
 	static void DrawTriangle(	const Vector3& position1, const Vector3& position2, const Vector3& position3, 
 								const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
 
-	static void DrawCollisionComponent(BoxCollisionComponent* boxCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
-	static void DrawCollisionComponent(CapsuleCollisionComponent* capsuleCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
-	static void DrawCollisionComponent(SphereCollisionComponent* sphereCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
-	static void DrawCollisionComponent(MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
+	static void DrawCollisionComponent(const BoxCollisionComponent* boxCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
+	static void DrawCollisionComponent(const CapsuleCollisionComponent* capsuleCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
+	static void DrawCollisionComponent(const SphereCollisionComponent* sphereCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
+	static void DrawCollisionComponent(const MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
 
 protected:
 
