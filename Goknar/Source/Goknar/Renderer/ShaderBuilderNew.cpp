@@ -790,6 +790,12 @@ std::string ShaderBuilderNew::General_FS_GetShaderTextureUniforms(MaterialInitia
 				initializationData->fragmentNormal.result = General_FS_GetNormalTextureSampling(texture->GetName());
 			}
 			break;
+		case TextureUsage::Emmisive:
+			if (initializationData && initializationData->fragmentNormal.result.empty())
+			{
+				initializationData->emmisiveColor.result = General_FS_GetEmmisiveTextureSampling(texture->GetName());
+			}
+			break;
 		default:
 			break;
 		}
@@ -810,6 +816,11 @@ std::string ShaderBuilderNew::General_FS_GetDiffuseTextureSampling(const std::st
 std::string ShaderBuilderNew::General_FS_GetNormalTextureSampling(const std::string& textureName) const
 {
 	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ") * 0.5f + vec4(0.5f); ");
+}
+
+std::string ShaderBuilderNew::General_FS_GetEmmisiveTextureSampling(const std::string& textureName) const
+{
+	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ").xyz; ");
 }
 
 std::string ShaderBuilderNew::FS_GetLightCalculationIterators() const

@@ -16,6 +16,7 @@
 #include "Physics/Components/BoxCollisionComponent.h"
 #include "Physics/Components/CapsuleCollisionComponent.h"
 #include "Physics/Components/SphereCollisionComponent.h"
+#include "Physics/Components/MovingTriangleMeshCollisionComponent.h"
 
 StaticMesh* DebugDrawer::lineMesh_ = nullptr;
 
@@ -204,6 +205,29 @@ void DebugDrawer::DrawCollisionComponent(SphereCollisionComponent* sphereCollisi
 	DrawSphere(Vector3::ZeroVector, Quaternion::Identity, sphereCollisionComponent->GetRadius(), color, thickness, time, sphereCollisionComponent->GetOwner());
 }
 
+void DebugDrawer::DrawCollisionComponent(MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness, float time)
+{
+	DebugObject* collisionObject = new DebugObject();
+	collisionObject->SetName("DebugObject_TriangleMeshCollisionComponent");
+
+	const MeshUnit* mesh = movingTriangleMeshCollisionComponent->GetMesh();
+
+	const VertexArray* vertexArray = mesh->GetVerticesPointer();
+	int vertexCount = vertexArray->size();
+
+	const FaceArray* faceArray = mesh->GetFacesPointer();
+	int faceCount = faceArray->size();
+
+	for (int faceIndex = 0; faceIndex < faceCount; ++faceIndex)
+	{
+		const Face& face = faceArray->at(faceIndex);
+		DrawTriangle(vertexArray->at(face.vertexIndices[0]).position, vertexArray->at(face.vertexIndices[1]).position, vertexArray->at(face.vertexIndices[2]).position,
+			color, thickness, time, collisionObject);
+	}
+
+	collisionObject->SetParent(movingTriangleMeshCollisionComponent->GetOwner());
+}
+
 void DebugDrawer::DrawSpherePatch(const Vector3& center, const Vector3& up, const Vector3& forward, float radius,
 								 float minTh, float maxTh, float minPs, float maxPs, const Colorf& color, 
 								 float stepDegrees/* = 10.f*/, bool drawCenter/* = true*/, 
@@ -312,4 +336,10 @@ void DebugDrawer::DrawSpherePatch(const Vector3& center, const Vector3& up, cons
 		pvA = pvB;
 		pvB = pT;
 	}
+}
+
+void DebugDrawer::DrawTriangle(const Vector3& position1, const Vector3& position2, const Vector3& position3, const Colorf& color, float thickness, float time, ObjectBase* owner)
+{
+	DrawLine(position1, position2, color, thickness, time, owner);
+	DrawLine(position2, position3, color, thickness, time, owner);
 }
