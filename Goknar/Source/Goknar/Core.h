@@ -75,4 +75,7 @@
 	} \
 }
 
+#define REGISTER_CLASS(className) \
+    DynamicObjectFactory::GetInstance()->RegisterClass(#className, []() -> className* { return new className(); }); \
+
 #endif

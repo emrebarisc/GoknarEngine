@@ -1,6 +1,7 @@
 #pragma once
 
 /*	CORE		*/
+#include "Goknar/Core.h"
 #include "Goknar/Engine.h"
 /*	*************	*/
 
