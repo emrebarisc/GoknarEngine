@@ -34,6 +34,9 @@ Texture::Texture(Image* image) :
 	height_ = image->GetHeight();
 	channels_ = image->GetChannels();
 	textureUsage_ = image->GetTextureUsage();
+	textureWrappingR_ = image->GetTextureWrappingR();
+	textureWrappingT_ = image->GetTextureWrappingT();
+	textureWrappingS_ = image->GetTextureWrappingS();
 
 	const std::string& imageName = image->GetName();
 	if (!imageName.empty())

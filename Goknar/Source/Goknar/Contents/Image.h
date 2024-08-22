@@ -32,6 +32,36 @@ public:
 		return textureUsage_;
 	}
 
+	void SetTextureWrappingR(TextureWrapping textureWrappingR)
+	{
+		textureWrappingR_ = textureWrappingR;
+	}
+
+	TextureWrapping GetTextureWrappingR() const
+	{
+		return textureWrappingR_;
+	}
+
+	void SetTextureWrappingT(TextureWrapping textureWrappingT)
+	{
+		textureWrappingT_ = textureWrappingT;
+	}
+
+	TextureWrapping GetTextureWrappingT() const
+	{
+		return textureWrappingT_;
+	}
+
+	void SetTextureWrappingS(TextureWrapping textureWrappingS)
+	{
+		textureWrappingS_ = textureWrappingS;
+	}
+
+	TextureWrapping GetTextureWrappingS() const
+	{
+		return textureWrappingS_;
+	}
+
 	Texture* GetGeneratedTexture() const
 	{
 		return generatedTexture_;
@@ -74,6 +104,9 @@ private:
 	int channels_;
 
 	TextureUsage textureUsage_;
+	TextureWrapping textureWrappingR_{ TextureWrapping::REPEAT };
+	TextureWrapping textureWrappingT_{ TextureWrapping::REPEAT };
+	TextureWrapping textureWrappingS_{ TextureWrapping::REPEAT };
 };
 
 #endif 
