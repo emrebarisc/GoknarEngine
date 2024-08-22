@@ -1252,6 +1252,11 @@ void GeometryBufferData::GenerateBuffers()
 
 void GeometryBufferData::OnWindowSizeChange(int width, int height)
 {
+	if (width <= 0 || height <= 0)
+	{
+		return;
+	}
+
 	delete worldPositionTexture;
 	delete worldNormalTexture;
 	delete diffuseTexture;
