@@ -49,13 +49,13 @@ struct GOKNAR_API MaterialInitializationData
 	void AddVertexShaderUniform(const std::string& uniform)
 	{
 		vertexShaderUniforms += uniform;
-		vertexShaderUniforms += "\n";
+		vertexShaderUniforms += ";\n";
 	}
 
 	void AddFragmentShaderUniform(const std::string& uniform)
 	{
 		fragmentShaderUniforms += uniform;
-		fragmentShaderUniforms += "\n";
+		fragmentShaderUniforms += ";\n";
 	}
 
 	int boneCount{ 0 };
