@@ -118,7 +118,7 @@ void DirectionalLight::RenderShadowMap()
 	Vector3 mainCameraForwardVector = mainCamera->GetForwardVector();
 	Vector3 mainCameraPosition = mainCamera->GetPosition();
 	Vector3 position{ mainCameraPosition.x, mainCameraPosition.y, mainCameraPosition.z };
-	shadowMapRenderCamera_->SetPosition(position + 25.f * mainCameraForwardVector - 10.f * shadowCameraForwardVector);
+	shadowMapRenderCamera_->SetPosition(position + 15.f * mainCameraForwardVector - 10.f * shadowCameraForwardVector);
 	UpdateBiasedShadowMatrix();
 	//shadowMapRenderCamera->SetPosition(Vector3{ 20.f, 0.f, 0.f } - shadowMapRenderCamera_->GetForwardVector() * 25.f);
 
