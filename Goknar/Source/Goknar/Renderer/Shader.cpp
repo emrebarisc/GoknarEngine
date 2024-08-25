@@ -169,8 +169,8 @@ void Shader::Init()
 
 void Shader::PostInit()
 {
-	vertexShaderScript_.clear();
-	fragmentShaderScript_.clear();
+	//vertexShaderScript_.clear();
+	//fragmentShaderScript_.clear();
 }
 
 void Shader::Bind() const
@@ -190,12 +190,14 @@ void Shader::Use() const
 
 void Shader::SetBool(const char* name, bool value) const
 {
+	Use();
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
 	glUniform1i(uniformLocation, (int)value);
 }
 
 void Shader::SetInt(const char* name, int value) const
 {
+	Use();
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
 	glUniform1i(uniformLocation, value);
 }
@@ -208,18 +210,21 @@ void Shader::SetIntVector(const char* name, const std::vector<int>& values) cons
 		return;
 	}
 
+	Use();
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
 	glUniform1iv(uniformLocation, size, &values[0]);
 }
 
 void Shader::SetFloat(const char* name, float value) const
 {
+	Use();
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
 	glUniform1f(uniformLocation, value);
 }
 
 void Shader::SetMatrix(const char* name, const Matrix& matrix) const
 {
+	Use();
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
 	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix.m[0]);
 }
@@ -232,6 +237,7 @@ void Shader::SetMatrixVector(const char* name, const std::vector<Matrix>& matrix
 		return;
 	}
 
+	Use();
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
 	glUniformMatrix4fv(uniformLocation, size, GL_FALSE, &matrixVector[0].m[0]);
 }
@@ -243,18 +249,21 @@ void Shader::SetMatrixArray(const char* name, const Matrix* matrixArray, int siz
 		return;
 	}
 
+	Use();
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
 	glUniformMatrix4fv(uniformLocation, size, GL_FALSE, &matrixArray[0].m[0]);
 }
 
 void Shader::SetVector3(const char* name, const Vector3& vector) const
 {
+	Use();
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
 	glUniform3fv(uniformLocation, 1, &vector.x);
 }
 
 void Shader::SetVector4(const char* name, const Vector4& vector) const
 {
+	Use();
 	GEint uniformLocation = glGetUniformLocation(programId_, name);
 	glUniform4fv(uniformLocation, 1, &vector.x);
 }
