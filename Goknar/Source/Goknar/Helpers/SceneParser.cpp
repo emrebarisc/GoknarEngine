@@ -33,6 +33,8 @@
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Model/SkeletalMesh.h"
 
+#include "Goknar/Debug/DebugDrawer.h"
+
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Texture.h"
 
@@ -1408,6 +1410,11 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 	for (ObjectBase* object : registeredObjects)
 	{
 		if (object->GetName().find("__Editor__") != std::string::npos)
+		{
+			continue;
+		}
+
+		if (dynamic_cast<DebugObject*>(object))
 		{
 			continue;
 		}
