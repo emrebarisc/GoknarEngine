@@ -1269,6 +1269,11 @@ void SceneParser::GetXMLElement_DirectionalLights(tinyxml2::XMLDocument& xmlDocu
 {
 	for (auto directionalLight : scene->GetDirectionalLights())
 	{
+		if (directionalLight->GetName().find("__Editor__") != std::string::npos)
+		{
+			continue;
+		}
+
 		tinyxml2::XMLElement* directionalLightElement = xmlDocument.NewElement("DirectionalLight");
 
 		tinyxml2::XMLElement* directionalLightDirectionElement = xmlDocument.NewElement("Direction");
@@ -1303,6 +1308,11 @@ void SceneParser::GetXMLElement_SpotLights(tinyxml2::XMLDocument& xmlDocument, t
 {
 	for (auto spotLight : scene->GetSpotLights())
 	{
+		if (spotLight->GetName().find("__Editor__") != std::string::npos)
+		{
+			continue;
+		}
+
 		tinyxml2::XMLElement* spotLightElement = xmlDocument.NewElement("SpotLight");
 
 		tinyxml2::XMLElement* spotLightPositionElement = xmlDocument.NewElement("Position");
@@ -1353,6 +1363,11 @@ void SceneParser::GetXMLElement_PointLights(tinyxml2::XMLDocument& xmlDocument, 
 {
 	for (auto pointLight : scene->GetPointLights())
 	{
+		if (pointLight->GetName().find("__Editor__") != std::string::npos)
+		{
+			continue;
+		}
+
 		tinyxml2::XMLElement* pointLightElement = xmlDocument.NewElement("PointLight");
 
 		tinyxml2::XMLElement* pointLightPositionElement = xmlDocument.NewElement("Position");
