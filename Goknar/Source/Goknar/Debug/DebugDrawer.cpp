@@ -22,7 +22,9 @@ StaticMesh* DebugDrawer::lineMesh_ = nullptr;
 
 DebugDrawer::DebugDrawer()
 {
+#ifdef GOKNAR_BUILD_DEBUG
 	lineMesh_ = engine->GetResourceManager()->GetEngineContent<StaticMesh>("Debug/Meshes/SM_Line.fbx");
+#endif
 }
 
 DebugDrawer::~DebugDrawer()
@@ -32,6 +34,7 @@ DebugDrawer::~DebugDrawer()
 
 void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
+#ifdef GOKNAR_BUILD_DEBUG
 	DebugObject* line = new DebugObject();
 	StaticMeshComponent* lineStaticMeshComponent = line->AddSubComponent<StaticMeshComponent>();
 	lineStaticMeshComponent->SetMesh(lineMesh_);
@@ -49,6 +52,7 @@ void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Color
 	line->SetWorldRotation(Quaternion::FromTwoVectors(start, end));
 
 	line->SetParent(owner);
+#endif
 }
 
 void DebugDrawer::DrawCircle(const Vector3& position, const Quaternion& rotation, float radius, const Colorf& color, float thickness, float time, ObjectBase* owner)
