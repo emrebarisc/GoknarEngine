@@ -141,7 +141,7 @@ void ArcherCharacterController::OnCursorMove(double x, double y)
 
 	Vector2 cursorMovementVector = (windowCenter - currentCursorPosition) / 1000.f;
 
-	Vector3 forwardVector = thirdPersonCameraComponent_->GetForwardVector();
+	Vector3 forwardVector = thirdPersonCameraComponent_->GetRelativeForwardVector();
 
 	Vector3 newForwardVector = forwardVector.RotateVectorAroundAxis(Vector3::UpVector, cursorMovementVector.x);
 	Vector3 newLeftVector = Vector3::Cross(Vector3::UpVector, newForwardVector);
@@ -149,7 +149,7 @@ void ArcherCharacterController::OnCursorMove(double x, double y)
 	if ((forwardVector.z < 0.25f && 0.f < cursorMovementVector.y) ||
 		(-0.9f < forwardVector.z && cursorMovementVector.y < 0.f))
 	{
-		newForwardVector = newForwardVector.RotateVectorAroundAxis(thirdPersonCameraComponent_->GetLeftVector(), -cursorMovementVector.y);
+		newForwardVector = newForwardVector.RotateVectorAroundAxis(thirdPersonCameraComponent_->GetRelativeLeftVector(), -cursorMovementVector.y);
 	}
 
 	thirdPersonCameraComponent_->SetRelativeRotation(newForwardVector.GetRotationNormalized());

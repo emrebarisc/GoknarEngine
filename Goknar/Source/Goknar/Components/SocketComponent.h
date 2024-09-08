@@ -42,6 +42,11 @@ public:
 
 	void RemoveObject(ObjectBase* object)
 	{
+		if (isPendingDestroy_)
+		{
+			return;
+		}
+
 		std::vector<ObjectBase*>::iterator attachedObjectsIterator = attachedObjects_.begin();
 		for (; attachedObjectsIterator != attachedObjects_.end(); ++attachedObjectsIterator)
 		{

@@ -4,15 +4,15 @@
 
 void SocketComponent::Destroy()
 {
-	std::vector<Component*>::iterator childrenIterator = children_.begin();
-	for (; childrenIterator != children_.end(); ++childrenIterator)
-	{
-		Component* child = *childrenIterator;
-
-		child->GetOwner()->RemoveFromSocket(this);
-	}
-
 	Component::Destroy();
+
+	std::vector<ObjectBase*>::const_iterator attachedObjectIterator = attachedObjects_.cbegin();
+	while (attachedObjectIterator != attachedObjects_.cend())
+	{
+		(*attachedObjectIterator)->RemoveFromSocket(this);
+		++attachedObjectIterator;
+	}
+	attachedObjects_.clear();
 }
 
 void SocketComponent::SetIsActive(bool isActive)
