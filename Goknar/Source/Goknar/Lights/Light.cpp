@@ -4,7 +4,7 @@
 
 #include "Goknar/Camera.h"
 #include "Goknar/Log.h"
-#include "Goknar/Renderer/FrameBuffer.h"
+#include "Goknar/Renderer/Framebuffer.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"

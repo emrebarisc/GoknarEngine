@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "FrameBuffer.h"
+#include "Framebuffer.h"
 
 #include "glad/glad.h"
 

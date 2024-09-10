@@ -3,7 +3,7 @@
 #include "Renderer.h"
 
 #include "Texture.h"
-#include "FrameBuffer.h"
+#include "Framebuffer.h"
 #include "RenderBuffer.h"
 
 #include "Goknar/Application.h"
