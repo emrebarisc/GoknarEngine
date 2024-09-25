@@ -8,6 +8,8 @@
 
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 
+#include "Debug/DebugDrawer.h"
+
 Monkey::Monkey() : RigidBody()
 {
 	StaticMesh* monkeyCollisionStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_MonkeyCollision.fbx");
@@ -28,4 +30,10 @@ Monkey::Monkey() : RigidBody()
 	SetCollisionMask(CollisionMask::BlockAll);
 
 	SetName("Monkey");
+}
+
+void Monkey::BeginGame()
+{
+	RigidBody::BeginGame();
+	DebugDrawer::DrawCollisionComponent(collisionComponent_, Colorf::Magenta, 5.f, 0.5f);
 }

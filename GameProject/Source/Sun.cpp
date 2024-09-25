@@ -18,6 +18,7 @@ Sun::Sun() :
 	sunLight_->SetLightMobility(LightMobility::Dynamic);
 	sunLight_->SetShadowWidth(4096);
 	sunLight_->SetShadowHeight(4096);
+	sunLight_->SetShadowBiasValue(0.0005f);
 }
 
 Sun::~Sun()
