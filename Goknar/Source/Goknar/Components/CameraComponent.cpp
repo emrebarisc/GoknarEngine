@@ -31,6 +31,10 @@ void CameraComponent::UpdateComponentToWorldTransformationMatrix()
 	{
 		camera_->SetVectors(GetWorldForwardVector(), GetWorldLeftVector(), GetWorldUpVector());
 	}
+	else
+	{
+		camera_->SetVectors(GetRelativeForwardVector(), GetRelativeLeftVector(), GetRelativeUpVector());
+	}
 }
 
 void CameraComponent::UpdateChildrenComponentToWorldTransformations()
