@@ -61,7 +61,7 @@ void DirectionalLight::PreInit()
 		{
 			0.5f, 0.f, 0.f, 0.5f,
 			0.f, 0.5f, 0.f, 0.5f,
-			0.f, 0.f, 0.5f, 0.5f - 0.00001f,
+			0.f, 0.f, 0.5f, 0.5f - shadowBiasValue_,
 			0.f, 0.f, 0.f, 1.f
 		};
 		UpdateBiasedShadowMatrix();
