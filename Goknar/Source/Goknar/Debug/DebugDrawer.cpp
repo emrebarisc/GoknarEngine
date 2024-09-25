@@ -17,6 +17,7 @@
 #include "Physics/Components/CapsuleCollisionComponent.h"
 #include "Physics/Components/SphereCollisionComponent.h"
 #include "Physics/Components/MovingTriangleMeshCollisionComponent.h"
+#include "Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 
 StaticMesh* DebugDrawer::lineMesh_ = nullptr;
 
@@ -193,20 +194,20 @@ void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotatio
 
 void DebugDrawer::DrawCollisionComponent(const BoxCollisionComponent* boxCollisionComponent, const Colorf& color, float thickness, float time)
 {
-	DrawBox(Vector3::ZeroVector, Quaternion::Identity, boxCollisionComponent->GetHalfSize() * boxCollisionComponent->GetRelativeScaling(), color, thickness, time, boxCollisionComponent->GetOwner());
+	DrawBox(boxCollisionComponent->GetRelativePosition(), Quaternion::Identity, boxCollisionComponent->GetHalfSize() * boxCollisionComponent->GetRelativeScaling(), color, thickness, time, boxCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawCollisionComponent(const CapsuleCollisionComponent* capsuleCollisionComponent, const Colorf& color, float thickness, float time)
 {
 	DrawCapsule(
-		Vector3::ZeroVector, Quaternion::Identity,
+		capsuleCollisionComponent->GetRelativePosition(), Quaternion::Identity,
 		capsuleCollisionComponent->GetRadius(), capsuleCollisionComponent->GetHeight(),
 		color, thickness, time, capsuleCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawCollisionComponent(const SphereCollisionComponent* sphereCollisionComponent, const Colorf& color, float thickness, float time)
 {
-	DrawSphere(Vector3::ZeroVector, Quaternion::Identity, sphereCollisionComponent->GetRadius(), color, thickness, time, sphereCollisionComponent->GetOwner());
+	DrawSphere(sphereCollisionComponent->GetRelativePosition(), Quaternion::Identity, sphereCollisionComponent->GetRadius(), color, thickness, time, sphereCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawCollisionComponent(const MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness, float time)
@@ -215,24 +216,47 @@ void DebugDrawer::DrawCollisionComponent(const MovingTriangleMeshCollisionCompon
 	collisionObject->SetName("DebugObject_TriangleMeshCollisionComponent");
 
 	const MeshUnit* mesh = movingTriangleMeshCollisionComponent->GetMesh();
+	DrawMeshUnit(mesh, color, thickness, time, collisionObject);
 
-	const VertexArray* vertexArray = mesh->GetVerticesPointer();
+	collisionObject->SetWorldPosition(movingTriangleMeshCollisionComponent->GetRelativePosition());
+	collisionObject->SetWorldRotation(movingTriangleMeshCollisionComponent->GetRelativeRotation());
+	collisionObject->SetWorldScaling(movingTriangleMeshCollisionComponent->GetRelativeScaling());
+
+	collisionObject->SetParent(movingTriangleMeshCollisionComponent->GetOwner(), SnappingRule::None);
+}
+
+void DebugDrawer::DrawCollisionComponent(const NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent, const Colorf& color, float thickness, float time)
+{
+	DebugObject* collisionObject = new DebugObject();
+	collisionObject->SetName("DebugObject_TriangleMeshCollisionComponent");
+
+	const MeshUnit* mesh = nonMovingTriangleMeshCollisionComponent->GetMesh();
+	DrawMeshUnit(mesh, color, thickness, time, collisionObject);
+
+	collisionObject->SetWorldPosition(nonMovingTriangleMeshCollisionComponent->GetRelativePosition());
+	collisionObject->SetWorldRotation(nonMovingTriangleMeshCollisionComponent->GetRelativeRotation());
+	collisionObject->SetWorldScaling(nonMovingTriangleMeshCollisionComponent->GetRelativeScaling());
+
+	collisionObject->SetParent(nonMovingTriangleMeshCollisionComponent->GetOwner(), SnappingRule::None);
+}
+
+void DebugDrawer::DrawMeshUnit(const MeshUnit* meshUnit, const Colorf& color, float thickness, float time, ObjectBase* owner)
+{
+	const VertexArray* vertexArray = meshUnit->GetVerticesPointer();
 	int vertexCount = vertexArray->size();
 
-	const FaceArray* faceArray = mesh->GetFacesPointer();
+	const FaceArray* faceArray = meshUnit->GetFacesPointer();
 	int faceCount = faceArray->size();
 
 	for (int faceIndex = 0; faceIndex < faceCount; ++faceIndex)
 	{
 		const Face& face = faceArray->at(faceIndex);
 		DrawTriangle(
-			vertexArray->at(face.vertexIndices[0]).position, 
-			vertexArray->at(face.vertexIndices[1]).position, 
+			vertexArray->at(face.vertexIndices[0]).position,
+			vertexArray->at(face.vertexIndices[1]).position,
 			vertexArray->at(face.vertexIndices[2]).position,
-			color, thickness, time, collisionObject);
+			color, thickness, time, owner);
 	}
-
-	collisionObject->SetParent(movingTriangleMeshCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawSpherePatch(const Vector3& center, const Vector3& up, const Vector3& forward, float radius,

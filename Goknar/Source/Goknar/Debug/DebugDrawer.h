@@ -11,6 +11,9 @@ class BoxCollisionComponent;
 class CapsuleCollisionComponent;
 class SphereCollisionComponent;
 class MovingTriangleMeshCollisionComponent;
+class NonMovingTriangleMeshCollisionComponent;
+
+class MeshUnit;
 class ObjectBase;
 class StaticMesh;
 
@@ -45,6 +48,9 @@ public:
 	static void DrawCollisionComponent(const CapsuleCollisionComponent* capsuleCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
 	static void DrawCollisionComponent(const SphereCollisionComponent* sphereCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
 	static void DrawCollisionComponent(const MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
+	static void DrawCollisionComponent(const NonMovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
+
+	static void DrawMeshUnit(const MeshUnit* meshUnit, const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
 
 protected:
 
