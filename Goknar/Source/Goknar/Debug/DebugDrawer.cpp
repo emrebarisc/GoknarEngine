@@ -134,7 +134,7 @@ void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, c
 	DrawLine(corners[3], corners[7], color, thickness, -1.f, box);
 
 	box->SetName("DebugBox");
-	box->SetParent(owner, SnappingRule::None);
+	box->SetParent(owner);
 }
 
 void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotation,
