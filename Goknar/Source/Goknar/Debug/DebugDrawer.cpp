@@ -100,9 +100,9 @@ void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, c
 	Vector4 rotatedHalfSize = rotation.GetMatrix() * Vector4 { halfSize, 0.f };
 
 	Matrix rotationMatrix = rotation.GetMatrix();
-	Vector3 forwardVector = halfSize * rotationMatrix.GetForwardVector();
-	Vector3 leftVector = halfSize * rotationMatrix.GetLeftVector();
-	Vector3 upVector = halfSize * rotationMatrix.GetUpVector();
+	Vector3 forwardVector = halfSize * rotationMatrix.GetForwardVector().GetNormalized();
+	Vector3 leftVector = halfSize * rotationMatrix.GetLeftVector().GetNormalized();
+	Vector3 upVector = halfSize * rotationMatrix.GetUpVector().GetNormalized();
 
 	Vector3 corners[8] =
 	{
@@ -116,22 +116,22 @@ void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, c
 		{ position + forwardVector + leftVector + upVector }
 	};
 
-	DrawLine(corners[0], corners[1], color, thickness, -1.f, box);
-	DrawLine(corners[0], corners[2], color, thickness, -1.f, box);
+	DrawLine(corners[0], corners[1], color, thickness, time, box);
+	DrawLine(corners[0], corners[2], color, thickness, time, box);
 
-	DrawLine(corners[3], corners[1], color, thickness, -1.f, box);
-	DrawLine(corners[3], corners[2], color, thickness, -1.f, box);
+	DrawLine(corners[3], corners[1], color, thickness, time, box);
+	DrawLine(corners[3], corners[2], color, thickness, time, box);
 
-	DrawLine(corners[4], corners[5], color, thickness, -1.f, box);
-	DrawLine(corners[4], corners[6], color, thickness, -1.f, box);
+	DrawLine(corners[4], corners[5], color, thickness, time, box);
+	DrawLine(corners[4], corners[6], color, thickness, time, box);
 
-	DrawLine(corners[7], corners[5], color, thickness, -1.f, box);
-	DrawLine(corners[7], corners[6], color, thickness, -1.f, box);
+	DrawLine(corners[7], corners[5], color, thickness, time, box);
+	DrawLine(corners[7], corners[6], color, thickness, time, box);
 
-	DrawLine(corners[0], corners[4], color, thickness, -1.f, box);
-	DrawLine(corners[1], corners[5], color, thickness, -1.f, box);
-	DrawLine(corners[2], corners[6], color, thickness, -1.f, box);
-	DrawLine(corners[3], corners[7], color, thickness, -1.f, box);
+	DrawLine(corners[0], corners[4], color, thickness, time, box);
+	DrawLine(corners[1], corners[5], color, thickness, time, box);
+	DrawLine(corners[2], corners[6], color, thickness, time, box);
+	DrawLine(corners[3], corners[7], color, thickness, time, box);
 
 	box->SetName("DebugBox");
 	box->SetParent(owner);
@@ -189,12 +189,12 @@ void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotatio
 	}
 
 	capsule->SetName("DebugCapsule");
-	capsule->SetParent(owner, SnappingRule::None);
+	capsule->SetParent(owner);
 }
 
 void DebugDrawer::DrawCollisionComponent(const BoxCollisionComponent* boxCollisionComponent, const Colorf& color, float thickness, float time)
 {
-	DrawBox(boxCollisionComponent->GetRelativePosition(), Quaternion::Identity, boxCollisionComponent->GetHalfSize() * boxCollisionComponent->GetRelativeScaling(), color, thickness, time, boxCollisionComponent->GetOwner());
+	DrawBox(boxCollisionComponent->GetWorldPosition(), Quaternion::Identity, boxCollisionComponent->GetHalfSize() * boxCollisionComponent->GetWorldScaling(), color, thickness, time, boxCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawCollisionComponent(const CapsuleCollisionComponent* capsuleCollisionComponent, const Colorf& color, float thickness, float time)
@@ -218,9 +218,9 @@ void DebugDrawer::DrawCollisionComponent(const MovingTriangleMeshCollisionCompon
 	const MeshUnit* mesh = movingTriangleMeshCollisionComponent->GetMesh();
 	DrawMeshUnit(mesh, color, thickness, time, collisionObject);
 
-	collisionObject->SetWorldPosition(movingTriangleMeshCollisionComponent->GetRelativePosition());
-	collisionObject->SetWorldRotation(movingTriangleMeshCollisionComponent->GetRelativeRotation());
-	collisionObject->SetWorldScaling(movingTriangleMeshCollisionComponent->GetRelativeScaling());
+	collisionObject->SetWorldPosition(movingTriangleMeshCollisionComponent->GetWorldPosition());
+	collisionObject->SetWorldRotation(movingTriangleMeshCollisionComponent->GetWorldRotation());
+	collisionObject->SetWorldScaling(movingTriangleMeshCollisionComponent->GetWorldScaling());
 
 	collisionObject->SetParent(movingTriangleMeshCollisionComponent->GetOwner());
 }
@@ -233,9 +233,9 @@ void DebugDrawer::DrawCollisionComponent(const NonMovingTriangleMeshCollisionCom
 	const MeshUnit* mesh = nonMovingTriangleMeshCollisionComponent->GetMesh();
 	DrawMeshUnit(mesh, color, thickness, time, collisionObject);
 
-	collisionObject->SetWorldPosition(nonMovingTriangleMeshCollisionComponent->GetRelativePosition());
-	collisionObject->SetWorldRotation(nonMovingTriangleMeshCollisionComponent->GetRelativeRotation());
-	collisionObject->SetWorldScaling(nonMovingTriangleMeshCollisionComponent->GetRelativeScaling());
+	collisionObject->SetWorldPosition(nonMovingTriangleMeshCollisionComponent->GetWorldPosition());
+	collisionObject->SetWorldRotation(nonMovingTriangleMeshCollisionComponent->GetWorldRotation());
+	collisionObject->SetWorldScaling(nonMovingTriangleMeshCollisionComponent->GetWorldScaling());
 
 	collisionObject->SetParent(nonMovingTriangleMeshCollisionComponent->GetOwner());
 }
@@ -326,15 +326,15 @@ void DebugDrawer::DrawSpherePatch(const Vector3& center, const Vector3& up, cons
 			pvB[j] = center + cth * cps * iv + cth * sps * jv + sth * kv;
 			if (i)
 			{
-				DrawLine(pvA[j], pvB[j], color, thickness, -1.f, owner);
+				DrawLine(pvA[j], pvB[j], color, thickness, time, owner);
 			}
 			else if (drawS)
 			{
-				DrawLine(spole, pvB[j], color, thickness, -1.f, owner);
+				DrawLine(spole, pvB[j], color, thickness, time, owner);
 			}
 			if (j)
 			{
-				DrawLine(pvB[j - 1], pvB[j], color, thickness, -1.f, owner);
+				DrawLine(pvB[j - 1], pvB[j], color, thickness, time, owner);
 			}
 			else
 			{
@@ -342,7 +342,7 @@ void DebugDrawer::DrawSpherePatch(const Vector3& center, const Vector3& up, cons
 			}
 			if ((i == (n_hor - 1)) && drawN)
 			{
-				DrawLine(npole, pvB[j], color, thickness, -1.f, owner);
+				DrawLine(npole, pvB[j], color, thickness, time, owner);
 			}
 
 			if (drawCenter)
@@ -351,14 +351,14 @@ void DebugDrawer::DrawSpherePatch(const Vector3& center, const Vector3& up, cons
 				{
 					if (j == (n_vert - 1))
 					{
-						DrawLine(arcStart, pvB[j], color, thickness, -1.f, owner);
+						DrawLine(arcStart, pvB[j], color, thickness, time, owner);
 					}
 				}
 				else
 				{
 					if (((!i) || (i == (n_hor - 1))) && ((!j) || (j == (n_vert - 1))))
 					{
-						DrawLine(center, pvB[j], color, thickness, -1.f, owner);
+						DrawLine(center, pvB[j], color, thickness, time, owner);
 					}
 				}
 			}
