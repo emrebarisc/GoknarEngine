@@ -191,9 +191,19 @@ Vector3 Vector3::Rotate(const Vector3& rotation, bool isPositionVector/* = true*
 	return result;
 }
 
+Vector3 Vector3::RotatePoint(const Quaternion& quaterionRotation) const
+{
+	return quaterionRotation.GetMatrix() * Vector4 { *this, 1.f };
+}
+
 Vector3 Vector3::RotatePoint(const Vector3& rotation) const
 {
 	return Rotate(rotation, true);
+}
+
+Vector3 Vector3::RotateVector(const Quaternion& quaterionRotation) const
+{
+	return quaterionRotation.GetMatrix() * Vector4 { *this, 0.f };
 }
 
 Vector3 Vector3::RotateVector(const Vector3& rotation) const
