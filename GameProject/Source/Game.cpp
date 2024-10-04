@@ -42,16 +42,13 @@ Game::Game() : Application()
 
 	lastFrameTimePoint = currentTimePoint;
 
-	// archer_ = new Archer();
-	physicsArcher_ = new ArcherCharacter();
+	sun_ = new Sun();
 	//dancer_ = new Dancer();
 	//lightController_ = new LightController();
-	sun_ = new Sun();
 	//randomGrassSpawner_ = new RandomGrassSpawner();
 	//fire_ = new Fire();
 	//materialSphereSpawner_ = new MaterialSphereSpawner();
 
-	physicsObjectSpawner_ = new PhysicsObjectSpawner();
 
 	//MeshUnit* floorStaticMesh = engine->GetResourceManager()->GetContent<MeshUnit>("Meshes/SM_Floor.fbx");
 	//if (floorStaticMesh)
@@ -59,9 +56,12 @@ Game::Game() : Application()
 	//	floorStaticMesh->GetMaterial()->SetShadingModel(MaterialShadingModel::TwoSided);
 	//}
 
+	physicsArcher_ = new ArcherCharacter();
 	freeCameraObject_ = new FreeCameraObject();
 
-	terrain = new Terrain();
+	physicsObjectSpawner_ = new PhysicsObjectSpawner();
+
+	//terrain = new Terrain();
 
 	engine->GetWindowManager()->SetWindowSize(1920, 1080);
 	engine->GetWindowManager()->SetIsInFullscreen(false);

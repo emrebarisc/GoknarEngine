@@ -10,6 +10,7 @@
 #include "Objects/MultipleCollisionComponentObject.h"
 #include "Objects/Monkey.h"
 #include "Objects/CannonBall.h"
+#include "Physics/PhysicsWorld.h"
 
 #include "Engine.h"
 #include "Game.h"
@@ -21,68 +22,15 @@ PhysicsObjectSpawner::PhysicsObjectSpawner()
 {
     SetIsTickable(true);
 
-    /*{
-        PhysicsBox* wall = new PhysicsBox();
-        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-        wall->SetWorldPosition(Vector3{ 0.f, 0.f, -20.f });
-        wall->SetMass(0.f);
+    floor = new PhysicsBox();
+    floor->SetMass(0.f);
+    floor->SetWorldScaling({ 100.f, 100.f, 0.1f });
+    Material* material = dynamic_cast<Material*>(floor->GetStaticMeshComponent()->GetMeshInstance()->GetMaterial());
+    MaterialInstance* newMaterial = MaterialInstance::Create(material);
 
-        wall = new PhysicsBox();
-        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-        wall->SetWorldPosition(Vector3{ 0.f, 0.f, 20.f });
-        wall->SetMass(0.f);
-        StaticMeshComponent* groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
-        StaticMeshInstance* wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
-        Material* wallMaterial = wallStaticMeshInstance->GetMesh()->GetMaterial();
-        MaterialInstance* groundMaterialInstance = MaterialInstance::Create(wallMaterial);
-        groundMaterialInstance->SetBaseColor(Vector3{ 0.f, 1.f, 0.f });
+    newMaterial->SetBaseColor(Vector4{ 0.9f, 0.9f, 0.9f, 1.f });
 
-        wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
-
-        wall = new PhysicsBox();
-        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-        wall->SetWorldPosition(Vector3{ 0.f, -20.f, 0.f });
-        wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 0.f }));
-        wall->SetMass(0.f);
-        groundMaterialInstance = MaterialInstance::Create(wallMaterial);
-        groundMaterialInstance->SetBaseColor(Vector3{ 0.f, 0.f, 1.f });
-        groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
-        wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
-        wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
-
-        wall = new PhysicsBox();
-        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-        wall->SetWorldPosition(Vector3{ 0.f, 20.f, 0.f });
-        wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 0.f }));
-        wall->SetMass(0.f);
-        groundMaterialInstance = MaterialInstance::Create(wallMaterial);
-        groundMaterialInstance->SetBaseColor(Vector3{ 1.f, 1.f, 0.f });
-        groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
-        wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
-        wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
-
-        wall = new PhysicsBox();
-        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-        wall->SetWorldPosition(Vector3{ -20.f, 0.f, 0.f });
-        wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
-        wall->SetMass(0.f);
-        groundMaterialInstance = MaterialInstance::Create(wallMaterial);
-        groundMaterialInstance->SetBaseColor(Vector3{ 1.f, 0.f, 1.f });
-        groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
-        wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
-        wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
-
-        wall = new PhysicsBox();
-        wall->SetWorldScaling(Vector3{ 20.f, 20.f, 0.25f });
-        wall->SetWorldPosition(Vector3{ 20.f, 0.f, 0.f });
-        wall->SetWorldRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
-        wall->SetMass(0.f);
-        groundMaterialInstance = MaterialInstance::Create(wallMaterial);
-        groundMaterialInstance->SetBaseColor(Vector3{ 1.f, 1.f, 1.f });
-        groundBoxStaticMeshComponent = wall->GetStaticMeshComponent();
-        wallStaticMeshInstance = groundBoxStaticMeshComponent->GetMeshInstance();
-        wallStaticMeshInstance->SetMaterial(groundMaterialInstance);
-    }*/
+    floor->GetStaticMeshComponent()->GetMeshInstance()->SetMaterial(newMaterial);
 }
 
 PhysicsObjectSpawner::~PhysicsObjectSpawner()
@@ -94,11 +42,71 @@ void PhysicsObjectSpawner::BeginGame()
     //engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, [this]() { CreatePhysicsBox(); });
     engine->GetInputManager()->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, [this]() { ThrowCannonBall(); });
 
-    // SpawnStaticBoxes();
+    RaycastData raycastData;
+    raycastData.from = Vector3(0.f, -8.f, 1000.f);
+    raycastData.to = raycastData.from - Vector3(0.f, 0.f, 2000.f);
+
+    RaycastSingleResult raycastResult;
+
+    engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult);
+    physicsBox = new PhysicsBox();
+    physicsBox->SetWorldPosition(raycastResult.hitPosition + Vector3(0.f, 0.f, 2.f));
+    physicsBox->SetLinearFactor(Vector3::ZeroVector);
+
+    raycastData.from = Vector3(0.f, -4.f, 1000.f);
+    raycastData.to = raycastData.from - Vector3(0.f, 0.f, 2000.f);
+    engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult);
+    PhysicsSphere* physicsSphere = new PhysicsSphere();
+    physicsSphere->SetWorldPosition(raycastResult.hitPosition + Vector3(0.f, 0.f, 2.f));
+    physicsSphere->SetLinearFactor(Vector3::ZeroVector);
+
+    raycastData.from = Vector3(0.f, 0.f, 1000.f);
+    raycastData.to = raycastData.from - Vector3(0.f, 0.f, 2000.f);
+    engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult);
+    PhysicsCapsule* physicsCapsule = new PhysicsCapsule();
+    physicsCapsule->SetWorldPosition(raycastResult.hitPosition + Vector3(0.f, 0.f, 2.f));
+    physicsCapsule->SetLinearFactor(Vector3::ZeroVector);
+
+    raycastData.from = Vector3(0.f, 4.f, 1000.f);
+    raycastData.to = raycastData.from - Vector3(0.f, 0.f, 2000.f);
+    engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult);
+    Monkey* monkey = new Monkey();
+    monkey->SetWorldPosition(raycastResult.hitPosition + Vector3(0.f, 0.f, 2.f));
+    monkey->SetLinearFactor(Vector3::ZeroVector);
+
+    raycastData.from = Vector3(0.f, 8.f, 1000.f);
+    raycastData.to = raycastData.from - Vector3(0.f, 0.f, 2000.f);
+    engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult);
+    MultipleCollisionComponentObject* multiple = new MultipleCollisionComponentObject();
+    multiple->SetWorldPosition(raycastResult.hitPosition + Vector3(0.f, 0.f, 4.f));
+    multiple->SetLinearFactor(Vector3::ZeroVector);
+
+
+    raycastData.from = Vector3(-8.f, 8.f, 1000.f);
+    raycastData.to = raycastData.from - Vector3(0.f, 0.f, 2000.f);
+    engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult);
+    floatingBox = new PhysicsBox();
+    floatingBox->SetWorldPosition(raycastResult.hitPosition);
+    floatingBox->SetWorldScaling(Vector3(4.f, 4.f, 0.1f));
+    floatingBox->SetLinearFactor(Vector3::ZeroVector);
+    floatingBox->SetAngularFactor(Vector3::ZeroVector);
+    Material* material = dynamic_cast<Material*>(floatingBox->GetStaticMeshComponent()->GetMeshInstance()->GetMaterial());
+    MaterialInstance* floatingBoxMaterial = MaterialInstance::Create(material);
+
+    floatingBoxMaterial->SetBaseColor(Vector4{ 0.f, 1.f, 1.f, 1.f });
+
+    floatingBox->GetStaticMeshComponent()->GetMeshInstance()->SetMaterial(floatingBoxMaterial);
 }
 
 void PhysicsObjectSpawner::Tick(float deltaTime)
 {
+    physicsBox->SetWorldRotation(Quaternion::FromEulerDegrees({ engine->GetElapsedTime() * 4.f }));
+    physicsBox->SetWorldScaling(Vector3{ GoknarMath::Sin(engine->GetElapsedTime()) * 0.5f + 1.f });
+
+    const Vector3 floatingBoxWorldPosition = floatingBox->GetWorldPosition();
+    floatingBox->SetWorldPosition(Vector3{ floatingBoxWorldPosition.x, floatingBoxWorldPosition.y, -1.f + (GoknarMath::Cos(engine->GetElapsedTime()) * 0.5f + 1.f) * 2.f });
+    return;
+
     static float counter = 1.f;
 
     if(counter < 0.f)
@@ -109,26 +117,28 @@ void PhysicsObjectSpawner::Tick(float deltaTime)
         std::uniform_int_distribution<int> randomObjectDist(0, 4);
         int randomObjectInt = randomObjectDist(randomDevice);
 
-        if(randomObjectInt == 0)
-        {
-            CreatePhysicsBox();
-        }
-        else if(randomObjectInt == 1)
-        {
-            CreatePhysicsSphere();
-        }
-        else if(randomObjectInt == 2)
-        {
-            CreatePhysicsCapsule();
-        }
-        else if(randomObjectInt == 3)
-        {
-            CreateMonkey();
-        }
-        else if(randomObjectInt == 4)
-        {
-            CreateMultipleCollisionComponentObject();
-        }
+        CreatePhysicsSphere();
+
+        //if(randomObjectInt == 0)
+        //{
+        //    CreatePhysicsBox();
+        //}
+        //else if(randomObjectInt == 1)
+        //{
+        //    CreatePhysicsSphere();
+        //}
+        //else if(randomObjectInt == 2)
+        //{
+        //    CreatePhysicsCapsule();
+        //}
+        //else if(randomObjectInt == 3)
+        //{
+        //    CreateMonkey();
+        //}
+        //else if(randomObjectInt == 4)
+        //{
+        //    CreateMultipleCollisionComponentObject();
+        //}
     }
 
     counter -= deltaTime;

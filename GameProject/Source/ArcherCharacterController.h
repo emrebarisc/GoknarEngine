@@ -26,6 +26,11 @@ public:
 		archer_ = a;
 	}
 
+	const CameraComponent* GetThirdPersonCameraComponent() const
+	{
+		return thirdPersonCameraComponent_;
+	}
+
 private:
 	void BindInputDelegates();
 	void UnbindInputDelegates();

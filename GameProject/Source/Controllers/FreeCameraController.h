@@ -5,21 +5,16 @@
 #include "Goknar/Delegates/Delegate.h"
 #include "Goknar/Math/GoknarMath.h"
 
-class Camera;
+class FreeCameraObject;
 
 class FreeCameraController : public Controller
 {
 public:
-	FreeCameraController();
+	FreeCameraController(FreeCameraObject* freeCameraObject);
 	~FreeCameraController();
 
 	void BeginGame() override;
 	void SetupInputs() override;
-
-	Camera* GetFreeCamera() const
-	{
-		return freeCamera_;
-	}
 
 	virtual void SetIsActive(bool isActive) override;
 
@@ -35,10 +30,6 @@ private:
 	{
 		isRotatingTheCamera_ = false;
 	}
-
-	void DoRaycastClosestTest();
-	void DoRaycastAllTest();
-	void DoSweepTest();
 
 	void OnMouseMiddleClickPressed();
 	void OnMouseMiddleClickReleased()
@@ -58,12 +49,12 @@ private:
 
 	void MoveRightListener()
 	{
-		MoveRight(movementSpeed_);
+		MoveLeft(-movementSpeed_);
 	}
 
 	void MoveLeftListener()
 	{
-		MoveRight(-movementSpeed_);
+		MoveLeft(movementSpeed_);
 	}
 
 	void MoveUpListener()
@@ -77,7 +68,7 @@ private:
 	}
 
 	void MoveForward(float multiplier = 1.f);
-	void MoveRight(float multiplier = 1.f);
+	void MoveLeft(float multiplier = 1.f);
 	void MoveUp(float multiplier = 1.f);
 
 	void BindInputDelegates();
@@ -95,20 +86,15 @@ private:
 	Delegate<void()> moveUpDelegate_;
 	Delegate<void()> moveDownDelegate_;
 
-	Delegate<void()> doRaycastClosestTestDelegate_;
-	Delegate<void()> doRaycastAllTestDelegate_;
-	Delegate<void()> doSweepTestDelegate_;
-
 	Delegate<void(double, double)> onScrollMoveDelegate_;
 	Delegate<void(double, double)> onCursorMoveDelegate_;
-
-	Camera* freeCamera_;
 
 	Vector2 previousCursorPositionForRotating_;
 	Vector2 previousCursorPositionFor2DMovement_;
 
 	float movementSpeed_;
 
+	FreeCameraObject* freeCameraObject_;
 	bool isRotatingTheCamera_;
 	bool isMovingCameraIn2D_;
 };

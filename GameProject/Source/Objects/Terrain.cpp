@@ -34,4 +34,6 @@ Terrain::Terrain() : RigidBody()
 void Terrain::BeginGame()
 {
 	RigidBody::BeginGame();
+
+	//DebugDrawer::DrawCollisionComponent(collisionComponent_, Colorf::Black, 4.f);
 }

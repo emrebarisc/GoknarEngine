@@ -19,6 +19,7 @@ Sun::Sun() :
 	sunLight_->SetShadowWidth(4096);
 	sunLight_->SetShadowHeight(4096);
 	sunLight_->SetShadowBiasValue(0.0005f);
+	sunLight_->SetShadowIntensity(0.5f);
 }
 
 Sun::~Sun()
