@@ -78,12 +78,12 @@ void DebugDrawer::DrawSphere(const Vector3& position, const Quaternion& rotation
 	DebugObject* sphere = new DebugObject();
 
 	Matrix rotationMatrix = rotation.GetMatrix();
-	Vector3 up = rotationMatrix.GetUpVector();
-	Vector3 axis = rotationMatrix.GetForwardVector();
-	float minTh = -SIMD_HALF_PI;
-	float maxTh = SIMD_HALF_PI;
-	float minPs = -SIMD_HALF_PI;
-	float maxPs = SIMD_HALF_PI;
+	Vector3 up = rotationMatrix.GetUpVector().GetNormalized();
+	Vector3 axis = rotationMatrix.GetForwardVector().GetNormalized();
+	float minTh = -HALF_PI;
+	float maxTh = HALF_PI;
+	float minPs = -HALF_PI;
+	float maxPs = HALF_PI;
 	float stepDegrees = 30.f;
 
 	DrawSpherePatch(position, up, axis, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, time, sphere);
@@ -298,11 +298,11 @@ void DebugDrawer::DrawSpherePatch(const Vector3& center, const Vector3& up, cons
 	bool isClosed = false;
 	if (minPs > maxPs)
 	{
-		minPs = -SIMD_PI + step;
-		maxPs = SIMD_PI;
+		minPs = -PI + step;
+		maxPs = PI;
 		isClosed = true;
 	}
-	else if ((maxPs - minPs) >= SIMD_PI * float(2.f))
+	else if ((maxPs - minPs) >= PI * float(2.f))
 	{
 		isClosed = true;
 	}
