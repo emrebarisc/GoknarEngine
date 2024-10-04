@@ -90,7 +90,7 @@ void DebugDrawer::DrawSphere(const Vector3& position, const Quaternion& rotation
 	DrawSpherePatch(position, up, -axis, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, time, sphere);
 
 	sphere->SetName("DebugSphere");
-	sphere->SetParent(owner, SnappingRule::None);
+	sphere->SetParent(owner);
 }
 
 void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, const Vector3& halfSize, const Colorf& color, float thickness, float time, ObjectBase* owner)
@@ -222,7 +222,7 @@ void DebugDrawer::DrawCollisionComponent(const MovingTriangleMeshCollisionCompon
 	collisionObject->SetWorldRotation(movingTriangleMeshCollisionComponent->GetRelativeRotation());
 	collisionObject->SetWorldScaling(movingTriangleMeshCollisionComponent->GetRelativeScaling());
 
-	collisionObject->SetParent(movingTriangleMeshCollisionComponent->GetOwner(), SnappingRule::None);
+	collisionObject->SetParent(movingTriangleMeshCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawCollisionComponent(const NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent, const Colorf& color, float thickness, float time)
@@ -237,7 +237,7 @@ void DebugDrawer::DrawCollisionComponent(const NonMovingTriangleMeshCollisionCom
 	collisionObject->SetWorldRotation(nonMovingTriangleMeshCollisionComponent->GetRelativeRotation());
 	collisionObject->SetWorldScaling(nonMovingTriangleMeshCollisionComponent->GetRelativeScaling());
 
-	collisionObject->SetParent(nonMovingTriangleMeshCollisionComponent->GetOwner(), SnappingRule::None);
+	collisionObject->SetParent(nonMovingTriangleMeshCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawMeshUnit(const MeshUnit* meshUnit, const Colorf& color, float thickness, float time, ObjectBase* owner)
