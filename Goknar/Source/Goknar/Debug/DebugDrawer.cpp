@@ -65,7 +65,7 @@ void DebugDrawer::DrawCircle(const Vector3& position, const Quaternion& rotation
 	{
 		Vector3 start = Vector3{ radius * cosf(angle), radius * sinf(angle), 0.f };
 		Vector3 end = Vector3{ radius * cosf(angle + angleStep), radius * sinf(angle + angleStep), 0.f };
-		DrawLine(start, end, color, thickness, -1.f, circle);
+		DrawLine(start, end, color, thickness, time, circle);
 	}
 
 	circle->SetWorldPosition(position, false);
@@ -86,8 +86,8 @@ void DebugDrawer::DrawSphere(const Vector3& position, const Quaternion& rotation
 	float maxPs = SIMD_HALF_PI;
 	float stepDegrees = 30.f;
 
-	DrawSpherePatch(position, up, axis, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, -1.f, sphere);
-	DrawSpherePatch(position, up, -axis, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, -1.f, sphere);
+	DrawSpherePatch(position, up, axis, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, time, sphere);
+	DrawSpherePatch(position, up, -axis, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, time, sphere);
 
 	sphere->SetName("DebugSphere");
 	sphere->SetParent(owner, SnappingRule::None);
@@ -164,7 +164,7 @@ void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotatio
 		float minPs = -HALF_PI;
 		float maxPs = HALF_PI;
 
-		DrawSpherePatch(center, up, forward, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, -1.f, capsule);
+		DrawSpherePatch(center, up, forward, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, time, capsule);
 	}
 
 	{
@@ -175,7 +175,7 @@ void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotatio
 		float maxTh = HALF_PI;
 		float minPs = -HALF_PI;
 		float maxPs = HALF_PI;
-		DrawSpherePatch(center, up, forward, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, -1.f, capsule);
+		DrawSpherePatch(center, up, forward, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, time, capsule);
 	}
 
 	for (int i = 0; i < 360; i += stepDegrees)
@@ -183,9 +183,9 @@ void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotatio
 		capEnd.x = capStart.x = GoknarMath::Sin(i * TO_RADIAN) * radius;
 		capEnd.y = capStart.y = GoknarMath::Cos(i * TO_RADIAN) * radius;
 		DrawLine(
-			position + rotationMatrix * Vector4{ capStart, 1.f }, 
-			position + rotationMatrix * Vector4{ capEnd, 1.f }, 
-			color, thickness, -1.f, capsule);
+			position + rotationMatrix * Vector4{ capStart, 1.f },
+			position + rotationMatrix * Vector4{ capEnd, 1.f },
+			color, thickness, time, capsule);
 	}
 
 	capsule->SetName("DebugCapsule");
@@ -200,14 +200,14 @@ void DebugDrawer::DrawCollisionComponent(const BoxCollisionComponent* boxCollisi
 void DebugDrawer::DrawCollisionComponent(const CapsuleCollisionComponent* capsuleCollisionComponent, const Colorf& color, float thickness, float time)
 {
 	DrawCapsule(
-		capsuleCollisionComponent->GetRelativePosition(), Quaternion::Identity,
+		capsuleCollisionComponent->GetWorldPosition(), Quaternion::Identity,
 		capsuleCollisionComponent->GetRadius(), capsuleCollisionComponent->GetHeight(),
 		color, thickness, time, capsuleCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawCollisionComponent(const SphereCollisionComponent* sphereCollisionComponent, const Colorf& color, float thickness, float time)
 {
-	DrawSphere(sphereCollisionComponent->GetRelativePosition(), Quaternion::Identity, sphereCollisionComponent->GetRadius(), color, thickness, time, sphereCollisionComponent->GetOwner());
+	DrawSphere(sphereCollisionComponent->GetWorldPosition(), Quaternion::Identity, sphereCollisionComponent->GetRadius(), color, thickness, time, sphereCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawCollisionComponent(const MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness, float time)
