@@ -140,6 +140,11 @@ void PhysicsWorld::OnOverlappingCollisionBegin(btPersistentManifold* const& moni
 
 	GOKNAR_CORE_ASSERT(collisionComponent1 && collisionComponent2);
 
+	if (!collisionComponent1->GetIsActive() || !collisionComponent2->GetIsActive())
+	{
+		return;
+	}
+
 	Vector3 worldPositionOnA = PhysicsUtils::FromBtVector3ToVector3(monifoldPointPtr->getContactPoint(0).getPositionWorldOnA());
 	Vector3 hitNormal = PhysicsUtils::FromBtVector3ToVector3(monifoldPointPtr->getContactPoint(0).m_normalWorldOnB);
 
@@ -161,6 +166,11 @@ void PhysicsWorld::OnOverlappingCollisionContinue(btManifoldPoint& monifoldPoint
 
 	GOKNAR_CORE_ASSERT(collisionComponent1 && collisionComponent2);
 
+	if (!collisionComponent1->GetIsActive() || !collisionComponent2->GetIsActive())
+	{
+		return;
+	}
+
 	Vector3 worldPositionOnA = PhysicsUtils::FromBtVector3ToVector3(monifoldPoint.getPositionWorldOnA());
 	Vector3 hitNormal = PhysicsUtils::FromBtVector3ToVector3(monifoldPoint.m_normalWorldOnB);
 
@@ -181,6 +191,11 @@ void PhysicsWorld::OnOverlappingCollisionEnd(btPersistentManifold* const& manifo
 	CollisionComponent* collisionComponent2 = collisionObject2->GetCollisionComponent();
 
 	GOKNAR_CORE_ASSERT(collisionComponent1 && collisionComponent2);
+
+	if (!collisionComponent1->GetIsActive() || !collisionComponent2->GetIsActive())
+	{
+		return;
+	}
 
 	collisionComponent1->OverlapEnd(collisionObject2, collisionComponent2);
 	collisionComponent2->OverlapEnd(collisionObject1, collisionComponent1);
