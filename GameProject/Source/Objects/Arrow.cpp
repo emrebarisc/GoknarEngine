@@ -51,7 +51,7 @@ void Arrow::BeginGame()
 {
 	ObjectBase::BeginGame();
 
-	DebugDrawer::DrawCollisionComponent(overlappingCollisionComponent_, Colorf::Orange, 1.f);
+	//DebugDrawer::DrawCollisionComponent(overlappingCollisionComponent_, Colorf::Orange, 1.f);
 }
 
 void Arrow::Shoot()

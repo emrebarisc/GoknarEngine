@@ -30,5 +30,5 @@ void PhysicsSphere::BeginGame()
 {
 	ObjectBase::BeginGame();
 
-	DebugDrawer::DrawCollisionComponent(sphereCollisionComponent_, Colorf::Red, 5.f, 0.5f);
+	//DebugDrawer::DrawCollisionComponent(sphereCollisionComponent_, Colorf::Red, 5.f, 0.5f);
 }

@@ -7,9 +7,12 @@
 #include "Components/CameraComponent.h"
 #include "Controllers/FreeCameraController.h"
 
+#include "Arrow.h"
+
 FreeCameraObject::FreeCameraObject() : ObjectBase()
 {
 	SetIsTickable(true);
+	SetIsTickEnabled(false);
 
 	cameraComponent_ = AddSubComponent<CameraComponent>();
 	cameraComponent_->SetCameraFollowsComponentRotation(true);
@@ -22,6 +25,18 @@ FreeCameraObject::FreeCameraObject() : ObjectBase()
 void FreeCameraObject::SetFollowObject(ObjectBase* followObject)
 {
 	SetWorldRotation(Vector3{ 1.f, 1.f, -1.f }.GetRotationNormalized());
+
+	if (dynamic_cast<Arrow*>(followObject))
+	{
+		SetIsTickEnabled(false);
+		SetWorldPosition(followObject->GetWorldPosition() - Vector3{ 1.f, 1.f, -1.f } * 4.f);
+		SetParent(followObject);
+	}
+	else
+	{
+		SetIsTickEnabled(true);
+	}
+
 	followObject_ = followObject;
 }
 

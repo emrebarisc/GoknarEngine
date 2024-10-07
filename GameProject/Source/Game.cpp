@@ -61,7 +61,7 @@ Game::Game() : Application()
 
 	physicsObjectSpawner_ = new PhysicsObjectSpawner();
 
-	//terrain = new Terrain();
+	terrain = new Terrain();
 
 	engine->GetWindowManager()->SetWindowSize(1920, 1080);
 	engine->GetWindowManager()->SetIsInFullscreen(false);
