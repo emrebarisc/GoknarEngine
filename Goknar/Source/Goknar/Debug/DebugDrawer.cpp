@@ -69,7 +69,7 @@ void DebugDrawer::DrawCircle(const Vector3& position, const Quaternion& rotation
 	}
 
 	circle->SetWorldPosition(position, false);
-	circle->SetWorldRotation(rotation, false);
+	circle->SetWorldRotation(rotation);
 	circle->SetParent(owner);
 }
 
@@ -96,8 +96,6 @@ void DebugDrawer::DrawSphere(const Vector3& position, const Quaternion& rotation
 void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, const Vector3& halfSize, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
 	DebugObject* box = new DebugObject();
-
-	Vector4 rotatedHalfSize = rotation.GetMatrix() * Vector4 { halfSize, 0.f };
 
 	Matrix rotationMatrix = rotation.GetMatrix();
 	Vector3 forwardVector = halfSize * rotationMatrix.GetForwardVector().GetNormalized();
@@ -147,34 +145,26 @@ void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotatio
 
 	float halfHeight = height * 0.5f;
 
-	Vector3 capStart(0.f, 0.f, 0.f);
-	capStart.z = -halfHeight;
+	Vector3 capStart(0.f, 0.f, -halfHeight);
+	Vector3 capEnd(0.f, 0.f, halfHeight);
 
-	Vector3 capEnd(0.f, 0.f, 0.f);
-	capEnd.z = halfHeight;
+	const float minTh = -HALF_PI;
+	const float maxTh = HALF_PI;
+	const float minPs = -HALF_PI;
+	const float maxPs = HALF_PI;
 
-	Matrix rotationMatrix = rotation.GetMatrix();
+	const Matrix rotationMatrix = rotation.GetMatrix();
+
+	const Vector3 up = rotationMatrix.GetUpVector();
+	const Vector3 forward = rotationMatrix.GetForwardVector();
 
 	{
-		Vector3 center = position + capStart;
-		Vector3 up = rotationMatrix.GetForwardVector();
-		Vector3 forward = -rotationMatrix.GetUpVector();
-		float minTh = -HALF_PI;
-		float maxTh = HALF_PI;
-		float minPs = -HALF_PI;
-		float maxPs = HALF_PI;
-
+		Vector3 center = position - halfHeight * up;
 		DrawSpherePatch(center, up, forward, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, time, capsule);
 	}
 
 	{
-		Vector3 center = position + capEnd;
-		Vector3 up = rotationMatrix.GetForwardVector();
-		Vector3 forward = rotationMatrix.GetUpVector();
-		float minTh = -HALF_PI;
-		float maxTh = HALF_PI;
-		float minPs = -HALF_PI;
-		float maxPs = HALF_PI;
+		Vector3 center = position + halfHeight * up;
 		DrawSpherePatch(center, up, forward, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, time, capsule);
 	}
 
@@ -194,20 +184,20 @@ void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotatio
 
 void DebugDrawer::DrawCollisionComponent(const BoxCollisionComponent* boxCollisionComponent, const Colorf& color, float thickness, float time)
 {
-	DrawBox(boxCollisionComponent->GetWorldPosition(), Quaternion::Identity, boxCollisionComponent->GetHalfSize() * boxCollisionComponent->GetWorldScaling(), color, thickness, time, boxCollisionComponent->GetOwner());
+	DrawBox(boxCollisionComponent->GetWorldPosition(), boxCollisionComponent->GetWorldRotation(), boxCollisionComponent->GetHalfSize() * boxCollisionComponent->GetWorldScaling(), color, thickness, time, boxCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawCollisionComponent(const CapsuleCollisionComponent* capsuleCollisionComponent, const Colorf& color, float thickness, float time)
 {
 	DrawCapsule(
-		capsuleCollisionComponent->GetWorldPosition(), Quaternion::Identity,
+		capsuleCollisionComponent->GetWorldPosition(), capsuleCollisionComponent->GetWorldRotation(),
 		capsuleCollisionComponent->GetRadius(), capsuleCollisionComponent->GetHeight(),
 		color, thickness, time, capsuleCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawCollisionComponent(const SphereCollisionComponent* sphereCollisionComponent, const Colorf& color, float thickness, float time)
 {
-	DrawSphere(sphereCollisionComponent->GetWorldPosition(), Quaternion::Identity, sphereCollisionComponent->GetRadius(), color, thickness, time, sphereCollisionComponent->GetOwner());
+	DrawSphere(sphereCollisionComponent->GetWorldPosition(), sphereCollisionComponent->GetWorldRotation(), sphereCollisionComponent->GetRadius(), color, thickness, time, sphereCollisionComponent->GetOwner());
 }
 
 void DebugDrawer::DrawCollisionComponent(const MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness, float time)
