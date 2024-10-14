@@ -56,7 +56,7 @@ Game::Game() : Application()
 	//	floorStaticMesh->GetMaterial()->SetShadingModel(MaterialShadingModel::TwoSided);
 	//}
 
-	physicsArcher_ = new ArcherCharacter();
+	//physicsArcher_ = new ArcherCharacter();
 	freeCameraObject_ = new FreeCameraObject();
 
 	physicsObjectSpawner_ = new PhysicsObjectSpawner();
