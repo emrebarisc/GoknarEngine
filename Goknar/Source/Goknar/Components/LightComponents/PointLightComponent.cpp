@@ -29,8 +29,5 @@ void PointLightComponent::UpdateComponentToWorldTransformationMatrix()
 {
 	Component::UpdateComponentToWorldTransformationMatrix();
 
-	Vector3 lightPosition = worldRotation_.GetMatrix() * relativeRotation_.GetMatrix() * Vector4 { relativePosition_, 1.f };
-	lightPosition = worldPosition_ - relativePosition_ + lightPosition;
-
-	pointLight_->SetPosition(lightPosition);
+	pointLight_->SetPosition(worldPosition_);
 }
