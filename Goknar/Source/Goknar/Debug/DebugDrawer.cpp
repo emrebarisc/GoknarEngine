@@ -33,7 +33,7 @@ DebugDrawer::~DebugDrawer()
 
 }
 
-void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Colorf& color, float thickness, float time, ObjectBase* owner)
+void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Colorf& color, float thickness, float time, ObjectBase* owner, SnappingRule snappingRule)
 {
 #ifdef GOKNAR_BUILD_DEBUG
 	DebugObject* line = new DebugObject();
@@ -52,7 +52,7 @@ void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Color
 	line->SetWorldPosition(start, false);
 	line->SetWorldRotation(Quaternion::FromTwoVectors(start, end));
 
-	line->SetParent(owner);
+	line->SetParent(owner, snappingRule);
 #endif
 }
 
@@ -71,6 +71,7 @@ void DebugDrawer::DrawCircle(const Vector3& position, const Quaternion& rotation
 	circle->SetWorldPosition(position, false);
 	circle->SetWorldRotation(rotation);
 	circle->SetParent(owner);
+	circle->SetName("DebugObject_Circle");
 }
 
 void DebugDrawer::DrawSphere(const Vector3& position, const Quaternion& rotation, float radius, const Colorf& color, float thickness, float time, ObjectBase* owner)
@@ -78,18 +79,19 @@ void DebugDrawer::DrawSphere(const Vector3& position, const Quaternion& rotation
 	DebugObject* sphere = new DebugObject();
 
 	Matrix rotationMatrix = rotation.GetMatrix();
-	Vector3 up = rotationMatrix.GetUpVector().GetNormalized();
-	Vector3 axis = rotationMatrix.GetForwardVector().GetNormalized();
+
+	Vector3 up = rotationMatrix.GetUpVector();
+	Vector3 forward = rotationMatrix.GetForwardVector();
+
 	float minTh = -HALF_PI;
 	float maxTh = HALF_PI;
-	float minPs = -HALF_PI;
-	float maxPs = HALF_PI;
+	float minPs = -PI;
+	float maxPs = PI;
 	float stepDegrees = 30.f;
 
-	DrawSpherePatch(position, up, axis, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, time, sphere);
-	DrawSpherePatch(position, up, -axis, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, time, sphere);
+	DrawSpherePatch(position, up, forward, radius, minTh, maxTh, minPs, maxPs, color, stepDegrees, false, thickness, time, sphere);
 
-	sphere->SetName("DebugSphere");
+	sphere->SetName("DebugObject_DebugSphere");
 	sphere->SetParent(owner);
 }
 
@@ -98,9 +100,10 @@ void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, c
 	DebugObject* box = new DebugObject();
 
 	Matrix rotationMatrix = rotation.GetMatrix();
-	Vector3 forwardVector = halfSize * rotationMatrix.GetForwardVector().GetNormalized();
-	Vector3 leftVector = halfSize * rotationMatrix.GetLeftVector().GetNormalized();
-	Vector3 upVector = halfSize * rotationMatrix.GetUpVector().GetNormalized();
+
+	Vector3 forwardVector = rotationMatrix * Vector4(halfSize.x, 0.f, 0.f, 1.f);
+	Vector3 leftVector = rotationMatrix * Vector4(0.f, halfSize.y, 0.f, 1.f);
+	Vector3 upVector = rotationMatrix * Vector4(0.f, 0.f, halfSize.z, 1.f);
 
 	Vector3 corners[8] =
 	{
@@ -116,33 +119,29 @@ void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, c
 
 	DrawLine(corners[0], corners[1], color, thickness, time, box);
 	DrawLine(corners[0], corners[2], color, thickness, time, box);
-
 	DrawLine(corners[3], corners[1], color, thickness, time, box);
 	DrawLine(corners[3], corners[2], color, thickness, time, box);
-
 	DrawLine(corners[4], corners[5], color, thickness, time, box);
 	DrawLine(corners[4], corners[6], color, thickness, time, box);
-
 	DrawLine(corners[7], corners[5], color, thickness, time, box);
 	DrawLine(corners[7], corners[6], color, thickness, time, box);
-
 	DrawLine(corners[0], corners[4], color, thickness, time, box);
 	DrawLine(corners[1], corners[5], color, thickness, time, box);
 	DrawLine(corners[2], corners[6], color, thickness, time, box);
 	DrawLine(corners[3], corners[7], color, thickness, time, box);
 
-	box->SetName("DebugBox");
+	box->SetName("DebugObject_DebugBox");
 	box->SetParent(owner);
 }
 
 void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotation,
 	float radius, float height, const Colorf& color,
-	float thickness/* = 1.f*/, float time/* = -1.f*/, ObjectBase* owner/* = nullptr*/)
+	float thickness/* = 1.f*/, float time/* = -1.f*/,
+	ObjectBase* owner/* = nullptr*/)
 {
 	DebugObject* capsule = new DebugObject();
 
 	int stepDegrees = 30;
-
 	float halfHeight = height * 0.5f;
 
 	Vector3 capStart(0.f, 0.f, -halfHeight);
@@ -150,11 +149,10 @@ void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotatio
 
 	const float minTh = -HALF_PI;
 	const float maxTh = HALF_PI;
-	const float minPs = -HALF_PI;
-	const float maxPs = HALF_PI;
+	const float minPs = -PI;
+	const float maxPs = PI;
 
 	const Matrix rotationMatrix = rotation.GetMatrix();
-
 	const Vector3 up = rotationMatrix.GetUpVector();
 	const Vector3 forward = rotationMatrix.GetForwardVector();
 
@@ -172,13 +170,14 @@ void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotatio
 	{
 		capEnd.x = capStart.x = GoknarMath::Sin(i * TO_RADIAN) * radius;
 		capEnd.y = capStart.y = GoknarMath::Cos(i * TO_RADIAN) * radius;
+
 		DrawLine(
 			position + rotationMatrix * Vector4{ capStart, 1.f },
 			position + rotationMatrix * Vector4{ capEnd, 1.f },
 			color, thickness, time, capsule);
 	}
 
-	capsule->SetName("DebugCapsule");
+	capsule->SetName("DebugObject_Capsule");
 	capsule->SetParent(owner);
 }
 
@@ -250,13 +249,14 @@ void DebugDrawer::DrawMeshUnit(const MeshUnit* meshUnit, const Colorf& color, fl
 }
 
 void DebugDrawer::DrawSpherePatch(const Vector3& center, const Vector3& up, const Vector3& forward, float radius,
-								 float minTh, float maxTh, float minPs, float maxPs, const Colorf& color, 
-								 float stepDegrees/* = 10.f*/, bool drawCenter/* = true*/, 
-								 float thickness/* = 1.f*/, float time/* = -1.f*/, ObjectBase* owner/* = nullptr*/)
+	float minTh, float maxTh, float minPs, float maxPs, const Colorf& color,
+	float stepDegrees/* = 10.f*/, bool drawCenter/* = true*/,
+	float thickness/* = 1.f*/, float time/* = -1.f*/,
+	ObjectBase* owner/* = nullptr*/)
 {
 	Vector3 vA[74];
 	Vector3 vB[74];
-	Vector3 *pvA = vA, *pvB = vB, *pT;
+	Vector3* pvA = vA, * pvB = vB, * pT;
 	Vector3 npole = center + up * radius;
 	Vector3 spole = center - up * radius;
 	Vector3 arcStart;
