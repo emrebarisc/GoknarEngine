@@ -129,12 +129,12 @@ Vector3 Vector3::GetOrthonormalBasis() const
 	return secondCrossed.GetNormalized();
 }
 
-Quaternion Vector3::GetRotation()
+Quaternion Vector3::GetRotation() const
 {
 	return Quaternion(-atan2(z, sqrt(x * x + y * y)) * TO_RADIAN, atan2(y, x) * TO_RADIAN, 0.f);
 }
 
-Quaternion Vector3::GetRotationNormalized()
+Quaternion Vector3::GetRotationNormalized() const
 {
 	return Quaternion(0.f, -atan2(z, sqrt(x * x + y * y)),  atan2(y, x));
 }

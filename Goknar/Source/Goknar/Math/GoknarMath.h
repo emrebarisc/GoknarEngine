@@ -597,8 +597,8 @@ struct GOKNAR_API Vector3
 
 	Vector3 GetOrthonormalBasis() const;
 
-	Quaternion GetRotation();
-	Quaternion GetRotationNormalized();
+	Quaternion GetRotation() const;
+	Quaternion GetRotationNormalized() const;
 
 	/*
 	*	Transformations
