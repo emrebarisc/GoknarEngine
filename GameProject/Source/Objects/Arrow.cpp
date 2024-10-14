@@ -61,6 +61,7 @@ void Arrow::Shoot()
 	Game* game = dynamic_cast<Game*>(engine->GetApplication());
 	engine->GetCameraManager()->SetActiveCamera(game->GetFreeCameraObject()->GetCameraComponent()->GetCamera());
 	game->GetFreeCameraObject()->SetFollowObject(this);
+	
 }
 
 void Arrow::OnOverlapBegin(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)
@@ -70,12 +71,15 @@ void Arrow::OnOverlapBegin(PhysicsObject* otherObject, CollisionComponent* other
 		return;
 	}
 
-	SetParent(otherObject, SnappingRule::KeepWorldAll);
+	SetParent(otherObject);
 	overlappingCollisionComponent_->SetIsActive(false);
 	movementComponent_->SetIsActive(false);
 
 	Game* game = dynamic_cast<Game*>(engine->GetApplication());
-	game->GetFreeCameraObject()->SetFollowObject(otherObject);
+	game->GetFreeCameraObject()->SetFollowObject(nullptr);
+	game->GetFreeCameraObject()->SetWorldRotation((-hitNormal).GetRotationNormalized());
+	game->GetFreeCameraObject()->SetWorldPosition(hitPosition);
+	game->GetFreeCameraObject()->SetParent(this);
 }
 
 void Arrow::OnOverlapContinue(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)

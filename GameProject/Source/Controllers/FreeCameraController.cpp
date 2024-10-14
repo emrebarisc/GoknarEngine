@@ -139,21 +139,21 @@ void FreeCameraController::MoveForward(float multiplier/* = 1.f*/)
 {
 	freeCameraObject_->SetWorldPosition(
 		freeCameraObject_->GetWorldPosition() +
-		freeCameraObject_->GetForwardVector() * 0.025f * multiplier);
+		freeCameraObject_->GetCameraComponent()->GetWorldForwardVector() * 0.025f * multiplier);
 }
 
 void FreeCameraController::MoveLeft(float multiplier/* = 1.f*/)
 {
 	freeCameraObject_->SetWorldPosition(
 		freeCameraObject_->GetWorldPosition() +
-		freeCameraObject_->GetLeftVector() * 0.025f * multiplier);
+		freeCameraObject_->GetCameraComponent()->GetWorldLeftVector() * 0.025f * multiplier);
 }
 
 void FreeCameraController::MoveUp(float multiplier/* = 1.f*/)
 {
 	freeCameraObject_->SetWorldPosition(
 		freeCameraObject_->GetWorldPosition() +
-		freeCameraObject_->GetUpVector() * 0.025f * multiplier);
+		freeCameraObject_->GetCameraComponent()->GetWorldUpVector() * 0.025f * multiplier);
 }
 
 void FreeCameraController::BindInputDelegates()

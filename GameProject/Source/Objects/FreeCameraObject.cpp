@@ -16,6 +16,7 @@ FreeCameraObject::FreeCameraObject() : ObjectBase()
 
 	cameraComponent_ = AddSubComponent<CameraComponent>();
 	cameraComponent_->SetCameraFollowsComponentRotation(true);
+	cameraComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 0.f, 0.f, 45.f }));
 	SetRootComponent(cameraComponent_);
 
 	freeCameraController_ = new FreeCameraController(this);
