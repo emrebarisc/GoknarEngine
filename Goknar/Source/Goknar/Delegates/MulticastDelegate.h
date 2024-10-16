@@ -67,7 +67,7 @@ public:
 
 	template <typename LAMBDA> // template instantiation is not neededm, will be deduced/inferred:
 	MulticastDelegate& operator +=(const LAMBDA & lambda) {
-		Delegate<RET(PARAMS...)> d = Delegate<RET(PARAMS...)>::template create<LAMBDA>(lambda);
+		Delegate<RET(PARAMS...)> d = Delegate<RET(PARAMS...)>::template Create<LAMBDA>(lambda);
 		return *this += d;
 	} //operator +=
 

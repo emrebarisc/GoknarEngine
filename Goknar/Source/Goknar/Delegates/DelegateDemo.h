@@ -64,14 +64,14 @@ public:
 		dlambda = lambda; // template instantiation deduced (inferred)
 		double lambdaResult = dlambda(1, 'a');
 		printf("lambda result: %g, captured: %d\n", lambdaResult, touchPoint);
-		auto d1 = Delegate<double(unsigned long, char)>::create<DelegateSample, &DelegateSample::A>(&sample);
-		auto dcompare = Delegate<double(unsigned long, char)>::create<DelegateSample, &DelegateSample::A>(&sample);
+		auto d1 = Delegate<double(unsigned long, char)>::Create<DelegateSample, &DelegateSample::A>(&sample);
+		auto dcompare = Delegate<double(unsigned long, char)>::Create<DelegateSample, &DelegateSample::A>(&sample);
 		if (d1 == dcompare)
 			printf("Two delegates are the same\n");
-		auto d2 = Delegate<double(unsigned long, char)>::create<DelegateSample, &DelegateSample::A>(&anotherSample);
-		auto d3 = Delegate<double(unsigned long, char&)>::create<DelegateSample, &DelegateSample::B>(&sample);
-		auto d4 = Delegate<double(unsigned long, char&)>::create<DelegateSample, &DelegateSample::B>(&anotherSample);
-		auto d5 = Delegate<int(char)>::create<&DelegateSample::F>();
+		auto d2 = Delegate<double(unsigned long, char)>::Create<DelegateSample, &DelegateSample::A>(&anotherSample);
+		auto d3 = Delegate<double(unsigned long, char&)>::Create<DelegateSample, &DelegateSample::B>(&sample);
+		auto d4 = Delegate<double(unsigned long, char&)>::Create<DelegateSample, &DelegateSample::B>(&anotherSample);
+		auto d5 = Delegate<int(char)>::Create<&DelegateSample::F>();
 		double ret1 = d1(1, 'a');
 		double ret2 = d2(2, 'b');
 		printf("Returned: %g, %g\n", ret1, ret2);
@@ -93,7 +93,7 @@ public:
 		md2 += d1;
 		md2 += d1;
 		md2 += d1;
-		md2 += Delegate<double(unsigned long, char)>::create<&DelegateSample::StaticMember>();
+		md2 += Delegate<double(unsigned long, char)>::Create<&DelegateSample::StaticMember>();
 		md2 += dlambda; // template instantiation deduced (inferred)
 		if (!md1.isNull())
 			md1(5, 'F');

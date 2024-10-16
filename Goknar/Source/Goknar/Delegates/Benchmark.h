@@ -24,7 +24,7 @@ private:
 			Start();
 			for (rep repeat_index = 0; repeat_index < creation_repeat_count; ++repeat_index)
 				for (DELEGATE *j = delegates; j != delegates + delegate_count; ++j)
-					*j = DELEGATE:: template create<Sample, &Sample::A>(&sample);
+					*j = DELEGATE:: template Create<Sample, &Sample::A>(&sample);
 			return Stop();
 		}; //DelegateCreation
 		ns LambdaDelegateCreation()  {
@@ -32,7 +32,7 @@ private:
 			Start();
 			for (rep repeat_index = 0; repeat_index < creation_repeat_count; ++repeat_index)
 				for (DELEGATE *j = delegates; j != delegates + delegate_count; ++j)
-					*j = Delegate<RET(PARAMS...)>:: template create<decltype(lambda)>(lambda);
+					*j = Delegate<RET(PARAMS...)>:: template Create<decltype(lambda)>(lambda);
 			return Stop();
 		} //LambdaDelegateCreation
 		ns DelegateCall(PARAMS... arg) {
