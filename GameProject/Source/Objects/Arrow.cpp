@@ -31,9 +31,9 @@ Arrow::Arrow() : OverlappingPhysicsObject()
 
 	overlappingCollisionComponent_->SetRelativePosition(Vector3(arrowMeshSize.x * 0.5f, 0.f, 0.f));
 	overlappingCollisionComponent_->SetHalfSize(arrowMeshSize * Vector3(0.5f, 1.f, 0.25f));
-	overlappingCollisionComponent_->OnOverlapBegin = Delegate<OverlapBeginAlias>::create<Arrow, &Arrow::OnOverlapBegin>(this);
-	overlappingCollisionComponent_->OnOverlapContinue = Delegate<OverlapContinueAlias>::create<Arrow, &Arrow::OnOverlapContinue>(this);
-	overlappingCollisionComponent_->OnOverlapEnd = Delegate<OverlapEndAlias>::create<Arrow, &Arrow::OnOverlapEnd>(this);
+	overlappingCollisionComponent_->OnOverlapBegin = Delegate<OverlapBeginAlias>::Create<Arrow, &Arrow::OnOverlapBegin>(this);
+	overlappingCollisionComponent_->OnOverlapContinue = Delegate<OverlapContinueAlias>::Create<Arrow, &Arrow::OnOverlapContinue>(this);
+	overlappingCollisionComponent_->OnOverlapEnd = Delegate<OverlapEndAlias>::Create<Arrow, &Arrow::OnOverlapEnd>(this);
 
 	staticMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 	staticMeshComponent_->SetRelativePosition(Vector3(-arrowMeshSize.x * 0.5f, 0.f, 0.f));

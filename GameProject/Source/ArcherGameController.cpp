@@ -19,16 +19,16 @@ ArcherGameController::ArcherGameController(Archer* archer) :
 	Controller(),
 	archer_(archer)
 {
-	moveForwardDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::MoveForward>(this);
-	stopMovingForwardDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::StopMovingForward>(this);
-	moveBackwardDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::MoveBackward>(this);
-	stopMovingBackwardDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::StopMovingBackward>(this);
-	moveLeftDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::MoveLeft>(this);
-	stopMovingLeftDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::StopMovingLeft>(this);
-	moveRightDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::MoveRight>(this);
-	stopMovingRightDelegate_ = KeyboardDelegate::create<ArcherGameController, &ArcherGameController::StopMovingRight>(this);
-	onScrollMoveDelegate_ = Delegate<void(double, double)>::create<ArcherGameController, &ArcherGameController::OnScrollMove>(this);
-	onCursorMoveDelegate_ = Delegate<void(double, double)>::create<ArcherGameController, &ArcherGameController::OnCursorMove>(this);
+	moveForwardDelegate_ = KeyboardDelegate::Create<ArcherGameController, &ArcherGameController::MoveForward>(this);
+	stopMovingForwardDelegate_ = KeyboardDelegate::Create<ArcherGameController, &ArcherGameController::StopMovingForward>(this);
+	moveBackwardDelegate_ = KeyboardDelegate::Create<ArcherGameController, &ArcherGameController::MoveBackward>(this);
+	stopMovingBackwardDelegate_ = KeyboardDelegate::Create<ArcherGameController, &ArcherGameController::StopMovingBackward>(this);
+	moveLeftDelegate_ = KeyboardDelegate::Create<ArcherGameController, &ArcherGameController::MoveLeft>(this);
+	stopMovingLeftDelegate_ = KeyboardDelegate::Create<ArcherGameController, &ArcherGameController::StopMovingLeft>(this);
+	moveRightDelegate_ = KeyboardDelegate::Create<ArcherGameController, &ArcherGameController::MoveRight>(this);
+	stopMovingRightDelegate_ = KeyboardDelegate::Create<ArcherGameController, &ArcherGameController::StopMovingRight>(this);
+	onScrollMoveDelegate_ = Delegate<void(double, double)>::Create<ArcherGameController, &ArcherGameController::OnScrollMove>(this);
+	onCursorMoveDelegate_ = Delegate<void(double, double)>::Create<ArcherGameController, &ArcherGameController::OnCursorMove>(this);
 }
 
 ArcherGameController::~ArcherGameController()

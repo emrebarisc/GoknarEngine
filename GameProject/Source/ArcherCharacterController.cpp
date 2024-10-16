@@ -21,26 +21,28 @@ ArcherCharacterController::ArcherCharacterController(ArcherCharacter* archer) :
 	Controller(),
 	archer_(archer)
 {
-	moveForwardDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::MoveForward>(this);
-	stopMovingForwardDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::StopMovingForward>(this);
-	moveBackwardDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::MoveBackward>(this);
-	stopMovingBackwardDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::StopMovingBackward>(this);
-	moveLeftDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::MoveLeft>(this);
-	stopMovingLeftDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::StopMovingLeft>(this);
-	moveRightDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::MoveRight>(this);
-	stopMovingRightDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::StopMovingRight>(this);
-	toggleDebugDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::ToggleDebug>(this);
-	toggleToggleFreeCameraDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::ToggleFreeCamera>(this);
+	moveForwardDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::MoveForward>(this);
+	stopMovingForwardDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::StopMovingForward>(this);
+	moveBackwardDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::MoveBackward>(this);
+	stopMovingBackwardDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::StopMovingBackward>(this);
+	moveLeftDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::MoveLeft>(this);
+	stopMovingLeftDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::StopMovingLeft>(this);
+	moveRightDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::MoveRight>(this);
+	stopMovingRightDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::StopMovingRight>(this);
+	toggleDebugDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::ToggleDebug>(this);
+	toggleToggleFreeCameraDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::ToggleFreeCamera>(this);
 
-	dropBowDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::DropBow>(this);
-	equipBowDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::EquipBow>(this);
-	drawBowDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::DrawBow>(this);
-	looseBowDelegate_ = KeyboardDelegate::create<ArcherCharacterController, &ArcherCharacterController::LooseBow>(this);
+	dropBowDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::DropBow>(this);
+	equipBowDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::EquipBow>(this);
+	drawBowDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::DrawBow>(this);
+	looseBowDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::LooseBow>(this);
 
-	onScrollMoveDelegate_ = Delegate<void(double, double)>::create<ArcherCharacterController, &ArcherCharacterController::OnScrollMove>(this);
-	onCursorMoveDelegate_ = Delegate<void(double, double)>::create<ArcherCharacterController, &ArcherCharacterController::OnCursorMove>(this);
+	onScrollMoveDelegate_ = Delegate<void(double, double)>::Create<ArcherCharacterController, &ArcherCharacterController::OnScrollMove>(this);
+	onCursorMoveDelegate_ = Delegate<void(double, double)>::Create<ArcherCharacterController, &ArcherCharacterController::OnCursorMove>(this);
 
-	exitGameDelegate_ = Delegate<void()>::create<Engine, &Engine::Exit>(engine);
+	switchToFreeCameraDelegate_ = KeyboardDelegate::Create<ArcherCharacterController, &ArcherCharacterController::SwitchToFreeCamera>(this);
+
+	exitGameDelegate_ = Delegate<void()>::Create<Engine, &Engine::Exit>(engine);
 }
 
 ArcherCharacterController::~ArcherCharacterController()

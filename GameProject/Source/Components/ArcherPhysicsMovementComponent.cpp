@@ -19,7 +19,7 @@ void ArcherPhysicsMovementComponent::PreInit()
 	thirdPersonCameraComponent_ = ownerArcher_->GetThirdPersonCameraComponent();
 	
 	movementDirection_.speed = 8.f;
-	movementDirection_.OnInterpolation = Delegate<void()>::create<ArcherPhysicsMovementComponent, &ArcherPhysicsMovementComponent::OnMovementDirectionInterpolated>(this);
+	movementDirection_.OnInterpolation = Delegate<void()>::Create<ArcherPhysicsMovementComponent, &ArcherPhysicsMovementComponent::OnMovementDirectionInterpolated>(this);
 }
 
 void ArcherPhysicsMovementComponent::Init()

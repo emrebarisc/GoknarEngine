@@ -31,20 +31,27 @@ FreeCameraController::FreeCameraController(FreeCameraObject* freeCameraObject) :
 	previousCursorPositionForRotating_ = Vector2(0.f, 0.f);
 	previousCursorPositionFor2DMovement_ = Vector2(0.f, 0.f);
 
-	onMouseRightClickPressedDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::OnMouseRightClickPressed>(this);
-	onMouseRightClickReleasedDelegate_ = KeyboardDelegate::create < FreeCameraController, &FreeCameraController::OnMouseRightClickReleased > (this);
-	onMouseMiddleClickPressedDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::OnMouseMiddleClickPressed>(this);
-	onMouseMiddleClickReleasedDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::OnMouseMiddleClickReleased>(this);
+	onMouseRightClickPressedDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::OnMouseRightClickPressed>(this);
+	onMouseRightClickReleasedDelegate_ = KeyboardDelegate::Create < FreeCameraController, &FreeCameraController::OnMouseRightClickReleased > (this);
+	onMouseMiddleClickPressedDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::OnMouseMiddleClickPressed>(this);
+	onMouseMiddleClickReleasedDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::OnMouseMiddleClickReleased>(this);
 
-	moveLeftDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveLeftListener>(this);
-	moveRightDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveRightListener>(this);
-	moveForwardDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveForwardListener>(this);
-	moveBackwardDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveBackwardListener>(this);
-	moveUpDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveUpListener>(this);
-	moveDownDelegate_ = KeyboardDelegate::create<FreeCameraController, &FreeCameraController::MoveDownListener>(this);
+	moveLeftDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::MoveLeftListener>(this);
+	moveRightDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::MoveRightListener>(this);
+	moveForwardDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::MoveForwardListener>(this);
+	moveBackwardDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::MoveBackwardListener>(this);
+	moveUpDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::MoveUpListener>(this);
+	moveDownDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::MoveDownListener>(this);
 
-	onScrollMoveDelegate_ = Delegate<void(double, double)>::create<FreeCameraController, &FreeCameraController::ScrollListener>(this);
-	onCursorMoveDelegate_ = Delegate<void(double, double)>::create<FreeCameraController, &FreeCameraController::CursorMovement>(this);
+	doRaycastingDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::Raycast>(this);
+	doSweepingDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::Sweep>(this);
+
+	switchToFreeCameraDelegate_ = KeyboardDelegate::Create<FreeCameraController, &FreeCameraController::SwitchToFreeCamera>(this);
+
+	onScrollMoveDelegate_ = Delegate<void(double, double)>::Create<FreeCameraController, &FreeCameraController::ScrollListener>(this);
+	onCursorMoveDelegate_ = Delegate<void(double, double)>::Create<FreeCameraController, &FreeCameraController::CursorMovement>(this);
+
+	toggleTimeScaleDelegate_ = []() { engine->SetTimeScale(0.f < engine->GetTimeScale() ? 0.f : 1.f); };
 }
 
 FreeCameraController::~FreeCameraController()

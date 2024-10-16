@@ -23,9 +23,9 @@ CannonBall::CannonBall() : RigidBody()
 	// overlappingCollisionComponent_ = AddSubComponent<SphereCollisionComponent>();
 	// overlappingCollisionComponent_->SetRadius(2.f);
 	// overlappingCollisionComponent_->SetIsOverlapping(true);
-	// overlappingCollisionComponent_->OnOverlapBegin = Delegate<OverlapCollisionAlias>::create<CannonBall, &CannonBall::OnOverlapBegin>(this);
-	// overlappingCollisionComponent_->OnOverlapContinue = Delegate<OverlapCollisionAlias>::create<CannonBall, &CannonBall::OnOverlapContinue>(this);
-	// overlappingCollisionComponent_->OnOverlapEnd = Delegate<OverlapCollisionAlias>::create<CannonBall, &CannonBall::OnOverlapEnd>(this);
+	// overlappingCollisionComponent_->OnOverlapBegin = Delegate<OverlapCollisionAlias>::Create<CannonBall, &CannonBall::OnOverlapBegin>(this);
+	// overlappingCollisionComponent_->OnOverlapContinue = Delegate<OverlapCollisionAlias>::Create<CannonBall, &CannonBall::OnOverlapContinue>(this);
+	// overlappingCollisionComponent_->OnOverlapEnd = Delegate<OverlapCollisionAlias>::Create<CannonBall, &CannonBall::OnOverlapEnd>(this);
 	// overlappingCollisionComponent_->SetCollisionGroup(CollisionGroup::WorldDynamic);
 	// overlappingCollisionComponent_->SetCollisionMask(CollisionMask::BlockWorldDynamic);
 
