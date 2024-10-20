@@ -81,7 +81,7 @@ void InputManager::PostInit()
 {
 }
 
-void InputManager::KeyboardCallback(GLFWwindow *window, int key, int scanCode, int action, int mod)
+void InputManager::KeyboardCallback(GLFWwindow* window, int key, int scanCode, int action, int mod)
 {
 	InputManager* inputManager = engine->GetInputManager();
 

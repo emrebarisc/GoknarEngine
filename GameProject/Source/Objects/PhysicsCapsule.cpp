@@ -9,8 +9,9 @@
 
 #include "Debug/DebugDrawer.h"
 
-
 #include "BulletCollision/CollisionShapes/btBoxShape.h"
+
+#include "Game.h"
 
 PhysicsCapsule::PhysicsCapsule() : RigidBody()
 {
@@ -38,5 +39,8 @@ void PhysicsCapsule::BeginGame()
 {
 	RigidBody::BeginGame();
 
-	DebugDrawer::DrawCollisionComponent(capsuleCollisionComponent_, Colorf::Blue, 5.f, 0.5f);
+	if (dynamic_cast<Game*>(engine->GetApplication())->GetDrawDebugObjects())
+	{
+		DebugDrawer::DrawCollisionComponent(capsuleCollisionComponent_, Colorf::Blue, 5.f, 0.5f);
+	}
 }

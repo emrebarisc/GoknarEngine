@@ -39,6 +39,16 @@ public:
 		return freeCameraObject_;
 	}
 
+	bool GetDrawDebugObjects() const
+	{
+		return drawDebugObjects_;
+	}
+
+	void SetDrawDebugObjects(bool drawDebugObjects)
+	{
+		drawDebugObjects_ = drawDebugObjects;
+	}
+
 private:
 	Archer* archer_{ nullptr };
 	ArcherCharacter* physicsArcher_{ nullptr };
@@ -54,4 +64,6 @@ private:
 	PhysicsBox* boxFloor_{ nullptr };
 
 	Terrain* terrain{ nullptr };
+
+	bool drawDebugObjects_{ false };
 };

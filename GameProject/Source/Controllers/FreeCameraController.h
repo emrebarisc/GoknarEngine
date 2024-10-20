@@ -74,6 +74,11 @@ private:
 	void BindInputDelegates();
 	void UnbindInputDelegates();
 
+	void Raycast() const;
+	void Sweep() const;
+
+	void SwitchToFreeCamera();
+
 	Delegate<void()> onMouseRightClickPressedDelegate_;
 	Delegate<void()> onMouseRightClickReleasedDelegate_;
 	Delegate<void()> onMouseMiddleClickPressedDelegate_;
@@ -85,6 +90,15 @@ private:
 	Delegate<void()> moveBackwardDelegate_;
 	Delegate<void()> moveUpDelegate_;
 	Delegate<void()> moveDownDelegate_;
+
+	Delegate<void()> doRaycastingDelegate_;
+	Delegate<void()> doSweepingDelegate_;
+
+	Delegate<void()> switchToFreeCameraDelegate_;
+
+	Delegate<void()> toggleTimeScaleDelegate_;
+
+	Delegate<void()> toggleDebugObjectsDelegate_;
 
 	Delegate<void(double, double)> onScrollMoveDelegate_;
 	Delegate<void(double, double)> onCursorMoveDelegate_;

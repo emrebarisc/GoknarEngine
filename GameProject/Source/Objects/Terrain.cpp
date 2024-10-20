@@ -28,6 +28,8 @@ Terrain::Terrain() : RigidBody()
 	SetCollisionGroup(CollisionGroup::WorldStaticBlock);
 	SetCollisionMask(CollisionMask::BlockAll);
 
+	SetMass(0.f);
+
 	SetName("Terrain");
 }
 

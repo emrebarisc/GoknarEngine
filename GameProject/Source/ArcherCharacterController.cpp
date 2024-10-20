@@ -97,7 +97,7 @@ void ArcherCharacterController::BindInputDelegates()
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_RELEASE, stopMovingLeftDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_PRESS, moveRightDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, stopMovingRightDelegate_);
-	inputManager->AddKeyboardInputDelegate(KEY_MAP::F1, INPUT_ACTION::G_RELEASE, toggleDebugDelegate_);
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::F5, INPUT_ACTION::G_RELEASE, toggleDebugDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::F2, INPUT_ACTION::G_RELEASE, toggleToggleFreeCameraDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, exitGameDelegate_);
 
@@ -105,6 +105,8 @@ void ArcherCharacterController::BindInputDelegates()
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::NUM_1, INPUT_ACTION::G_PRESS, equipBowDelegate_);
 	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_PRESS, drawBowDelegate_);
 	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_RELEASE, looseBowDelegate_);
+
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::F1, INPUT_ACTION::G_PRESS, switchToFreeCameraDelegate_);
 
 	inputManager->AddScrollDelegate(onScrollMoveDelegate_);
 	inputManager->AddCursorDelegate(onCursorMoveDelegate_);
@@ -122,12 +124,15 @@ void ArcherCharacterController::UnbindInputDelegates()
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_RELEASE, stopMovingLeftDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_PRESS, moveRightDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, stopMovingRightDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::F1, INPUT_ACTION::G_RELEASE, toggleDebugDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::F5, INPUT_ACTION::G_RELEASE, toggleDebugDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::F2, INPUT_ACTION::G_RELEASE, toggleToggleFreeCameraDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, exitGameDelegate_);
 
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::G, INPUT_ACTION::G_PRESS, dropBowDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::NUM_1, INPUT_ACTION::G_PRESS, equipBowDelegate_);
+
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::F1, INPUT_ACTION::G_PRESS, switchToFreeCameraDelegate_);
+
 	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_PRESS, drawBowDelegate_);
 	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_1, INPUT_ACTION::G_RELEASE, looseBowDelegate_);
 
@@ -294,4 +299,13 @@ void ArcherCharacterController::ToggleDebug()
 	{
 		deferredRenderingData->deferredRenderingMeshShader->SetBool("isDebugging", isDebugging_);
 	}
+}
+
+void ArcherCharacterController::SwitchToFreeCamera()
+{
+	UnbindInputDelegates();
+	Game* game = dynamic_cast<Game*>(engine->GetApplication());
+
+	engine->GetCameraManager()->SetActiveCamera(game->GetFreeCameraObject()->GetCameraComponent()->GetCamera());
+	game->GetFreeCameraObject()->GetFreeCameraController()->SetIsActive(true);
 }

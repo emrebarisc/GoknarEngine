@@ -11,6 +11,7 @@
 
 
 #include "BulletCollision/CollisionShapes/btBoxShape.h"
+#include "Game.h"
 
 PhysicsBox::PhysicsBox() : RigidBody()
 {
@@ -30,6 +31,8 @@ PhysicsBox::PhysicsBox() : RigidBody()
 	SetCollisionGroup(CollisionGroup::WorldDynamicBlock);
 	SetCollisionMask(CollisionMask::BlockAll);
 
+	SetWorldScaling(Vector3{ 0.5f });
+
 	SetName("PhysicsBox");
 }
 
@@ -37,5 +40,9 @@ void PhysicsBox::BeginGame()
 {
 	RigidBody::BeginGame();
 
-	DebugDrawer::DrawCollisionComponent(boxCollisionComponent_, Colorf::Yellow, 5.f, 0.5f);
+
+	if (dynamic_cast<Game*>(engine->GetApplication())->GetDrawDebugObjects())
+	{
+		DebugDrawer::DrawCollisionComponent(boxCollisionComponent_, Colorf::Yellow, 5.f, 0.5f);
+	}
 }

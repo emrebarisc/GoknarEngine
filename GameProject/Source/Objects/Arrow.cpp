@@ -20,6 +20,7 @@
 #include "Goknar/Camera.h"
 #include "Goknar/Components/CameraComponent.h"
 #include "Goknar/Managers/CameraManager.h"
+#include "Goknar/Physics/RigidBody.h"
 
 Arrow::Arrow() : OverlappingPhysicsObject()
 {
@@ -52,6 +53,9 @@ void Arrow::BeginGame()
 	ObjectBase::BeginGame();
 
 	//DebugDrawer::DrawCollisionComponent(overlappingCollisionComponent_, Colorf::Orange, 1.f);
+	//DebugDrawer::DrawArrow(GetWorldPosition(), GetForwardVector(), Colorf::Red, 2.f, -1.f, this);
+	//DebugDrawer::DrawArrow(GetWorldPosition(), GetLeftVector(), Colorf::Green, 2.f, -1.f, this);
+	//DebugDrawer::DrawArrow(GetWorldPosition(), GetUpVector(), Colorf::Blue, 2.f, -1.f, this);
 }
 
 void Arrow::Shoot()
@@ -62,6 +66,7 @@ void Arrow::Shoot()
 	engine->GetCameraManager()->SetActiveCamera(game->GetFreeCameraObject()->GetCameraComponent()->GetCamera());
 	game->GetFreeCameraObject()->SetFollowObject(this);
 	
+	hasBeenShot_ = true;
 }
 
 void Arrow::OnOverlapBegin(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)
@@ -71,15 +76,25 @@ void Arrow::OnOverlapBegin(PhysicsObject* otherObject, CollisionComponent* other
 		return;
 	}
 
+	if (!hasBeenShot_)
+	{
+		return;
+	}
+
+	RigidBody* rigidBody = dynamic_cast<RigidBody*>(otherObject);
+	if (!rigidBody)
+	{
+		return;
+	}
+
 	SetParent(otherObject);
 	overlappingCollisionComponent_->SetIsActive(false);
 	movementComponent_->SetIsActive(false);
 
 	Game* game = dynamic_cast<Game*>(engine->GetApplication());
-	game->GetFreeCameraObject()->SetFollowObject(nullptr);
-	game->GetFreeCameraObject()->SetWorldRotation((-hitNormal).GetRotationNormalized());
-	game->GetFreeCameraObject()->SetWorldPosition(hitPosition);
-	game->GetFreeCameraObject()->SetParent(this);
+	game->GetFreeCameraObject()->SetFollowObject(otherObject);
+
+	rigidBody->ApplyForce(GetForwardVector() * 25000.f, hitPosition - rigidBody->GetWorldPosition());
 }
 
 void Arrow::OnOverlapContinue(PhysicsObject* otherObject, CollisionComponent* otherComponent, const Vector3& hitPosition, const Vector3& hitNormal)

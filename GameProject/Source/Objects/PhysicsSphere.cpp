@@ -6,6 +6,7 @@
 #include "Physics/Components/SphereCollisionComponent.h"
 
 #include "Goknar/Debug/DebugDrawer.h"
+#include "Game.h"
 
 PhysicsSphere::PhysicsSphere() : RigidBody()
 {
@@ -30,5 +31,8 @@ void PhysicsSphere::BeginGame()
 {
 	ObjectBase::BeginGame();
 
-	DebugDrawer::DrawCollisionComponent(sphereCollisionComponent_, Colorf::Red, 5.f, 0.5f);
+	if (dynamic_cast<Game*>(engine->GetApplication())->GetDrawDebugObjects())
+	{
+		DebugDrawer::DrawCollisionComponent(sphereCollisionComponent_, Colorf::Red, 5.f, 0.5f);
+	}
 }

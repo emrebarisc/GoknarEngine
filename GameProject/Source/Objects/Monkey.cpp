@@ -10,9 +10,11 @@
 
 #include "Debug/DebugDrawer.h"
 
+#include "Game.h"
+
 Monkey::Monkey() : RigidBody()
 {
-	StaticMesh* monkeyCollisionStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_MonkeyCollision.fbx");
+	StaticMesh* monkeyCollisionStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Monkey.fbx");// "Meshes/SM_MonkeyCollision.fbx");
 	collisionComponent_ = AddSubComponent<MovingTriangleMeshCollisionComponent>();
 	collisionComponent_->SetMesh(monkeyCollisionStaticMesh);
 	SetRootComponent(collisionComponent_);
@@ -35,5 +37,9 @@ Monkey::Monkey() : RigidBody()
 void Monkey::BeginGame()
 {
 	RigidBody::BeginGame();
-	DebugDrawer::DrawCollisionComponent(collisionComponent_, Colorf::Magenta, 5.f, 0.5f);
+
+	if (dynamic_cast<Game*>(engine->GetApplication())->GetDrawDebugObjects())
+	{
+		DebugDrawer::DrawCollisionComponent(collisionComponent_, Colorf::Magenta, 5.f, 0.5f);
+	}
 }

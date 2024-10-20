@@ -33,4 +33,6 @@ private:
 
 	BoxCollisionComponent* overlappingCollisionComponent_;
 	StaticMeshComponent* staticMeshComponent_;
+
+	bool hasBeenShot_{ false };
 };

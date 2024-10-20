@@ -15,12 +15,13 @@
 #include "Archer.h"
 #include "ArcherCharacter.h"
 #include "Dancer.h"
-#include "LightController.h"
-#include "Sun.h"
 #include "Fire.h"
-#include "RandomGrassSpawner.h"
+#include "LightController.h"
 #include "MaterialSphereSpawner.h"
 #include "PhysicsObjectSpawner.h"
+#include "RandomGrassSpawner.h"
+#include "Sun.h"
+#include "Controllers/FreeCameraController.h"
 #include "Objects/FreeCameraObject.h"
 #include "Objects/Terrain.h"
 #include "Objects/PhysicsBox.h"
@@ -49,22 +50,22 @@ Game::Game() : Application()
 	//fire_ = new Fire();
 	//materialSphereSpawner_ = new MaterialSphereSpawner();
 
-
 	//MeshUnit* floorStaticMesh = engine->GetResourceManager()->GetContent<MeshUnit>("Meshes/SM_Floor.fbx");
 	//if (floorStaticMesh)
 	//{
 	//	floorStaticMesh->GetMaterial()->SetShadingModel(MaterialShadingModel::TwoSided);
 	//}
 
-	//physicsArcher_ = new ArcherCharacter();
+	physicsArcher_ = new ArcherCharacter();
 	freeCameraObject_ = new FreeCameraObject();
+	freeCameraObject_->GetFreeCameraController()->SetIsActive(false);
 
 	physicsObjectSpawner_ = new PhysicsObjectSpawner();
 
 	terrain = new Terrain();
 
 	engine->GetWindowManager()->SetWindowSize(1920, 1080);
-	engine->GetWindowManager()->SetIsInFullscreen(false);
+	engine->GetWindowManager()->SetIsInFullscreen(true);
 	//engine->SetTimeScale(0.1f);
 
 	//boxFloor_ = new PhysicsBox();

@@ -11,6 +11,8 @@
 
 #include "Debug/DebugDrawer.h"
 
+#include "Game.h"
+
 MultipleCollisionComponentObject::MultipleCollisionComponentObject() : RigidBody()
 {
 	multipleCollisionComponent_ = AddSubComponent<MultipleCollisionComponent>();
@@ -59,7 +61,10 @@ void MultipleCollisionComponentObject::BeginGame()
 {
 	ObjectBase::BeginGame();
 
-	DebugDrawer::DrawCollisionComponent(sphereCollisionComponent1_, Colorf::Green, 5.f, 0.5f);
-	DebugDrawer::DrawCollisionComponent(sphereCollisionComponent2_, Colorf::Green, 5.f, 0.5f);
-	DebugDrawer::DrawCollisionComponent(boxCollisionComponent_, Colorf::Green, 5.f, 0.5f);
+	if (dynamic_cast<Game*>(engine->GetApplication())->GetDrawDebugObjects())
+	{
+		DebugDrawer::DrawCollisionComponent(sphereCollisionComponent1_, Colorf::Green, 5.f, 0.5f);
+		DebugDrawer::DrawCollisionComponent(sphereCollisionComponent2_, Colorf::Green, 5.f, 0.5f);
+		DebugDrawer::DrawCollisionComponent(boxCollisionComponent_, Colorf::Green, 5.f, 0.5f);
+	}
 }

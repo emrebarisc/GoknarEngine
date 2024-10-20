@@ -94,7 +94,7 @@ void ArcherCharacter::BeginGame()
 {
 	EquipBow(true);
 
-	// DebugDrawer::DrawCollisionComponent(capsuleCollisionComponent_, Colorf::Blue, 1.f, 1.f);
+	//DebugDrawer::DrawCollisionComponent(capsuleCollisionComponent_, Colorf::Blue, 1.f, 1.f);
 }
 
 void ArcherCharacter::Tick(float deltaTime)

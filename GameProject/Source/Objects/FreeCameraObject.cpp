@@ -2,43 +2,26 @@
 
 #include "Goknar/Engine.h"
 #include "Goknar/Camera.h"
+#include "Goknar/Debug/DebugDrawer.h"
 #include "Goknar/Managers/WindowManager.h"
 
 #include "Components/CameraComponent.h"
 #include "Controllers/FreeCameraController.h"
 
 #include "Arrow.h"
+#include "CannonBall.h"
 
 FreeCameraObject::FreeCameraObject() : ObjectBase()
 {
 	SetIsTickable(true);
-	SetIsTickEnabled(false);
+	SetIsTickEnabled(true);
 
 	cameraComponent_ = AddSubComponent<CameraComponent>();
 	cameraComponent_->SetCameraFollowsComponentRotation(true);
-	cameraComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 0.f, 0.f, 45.f }));
 	SetRootComponent(cameraComponent_);
 
 	freeCameraController_ = new FreeCameraController(this);
 	freeCameraController_->SetName("FreeCameraController");
-}
-
-void FreeCameraObject::SetFollowObject(ObjectBase* followObject)
-{
-	SetWorldRotation(Vector3{ 1.f, 1.f, -1.f }.GetRotationNormalized());
-
-	if (dynamic_cast<Arrow*>(followObject))
-	{
-		SetIsTickEnabled(false);
-		SetWorldPosition(followObject->GetWorldPosition() - Vector3{ 1.f, 1.f, -1.f } * 4.f);
-		SetParent(followObject);
-	}
-	else
-	{
-		SetIsTickEnabled(true);
-	}
-
-	followObject_ = followObject;
 }
 
 void FreeCameraObject::BeginGame()
@@ -47,15 +30,64 @@ void FreeCameraObject::BeginGame()
 	Camera* camera = cameraComponent_->GetCamera();
 	camera->SetImageWidth(windowManager->GetWindowSize().x);
 	camera->SetImageHeight(windowManager->GetWindowSize().y);
-
-	SetWorldPosition(Vector3{ 15.f, 16.f, 12.5f });
-	SetWorldRotation(Quaternion::FromEulerDegrees({ 5.f, 20.f, 205.f }));
 }
+
+#define GET_DIRECTION(followObject) followObject->GetForwardVector() - Vector3::UpVector
+#define GET_POSITION(followObject)  followObject->GetWorldPosition() + (dynamic_cast<Arrow*>(followObject) ? 2.f * followObject->GetForwardVector() : Vector3::ZeroVector) - (dynamic_cast<Arrow*>(followObject) ? 4.f : 8.f) * GetForwardVector()
 
 void FreeCameraObject::Tick(float deltaTime)
 {
 	if (followObject_)
 	{
-		SetWorldPosition(followObject_->GetWorldPosition() - GetForwardVector() * 4.f);
+		Vector3 springPosition = GetSpringPosition(deltaTime);
+		SetWorldPosition(springPosition);
 	}
+}
+
+void FreeCameraObject::SetFollowObject(ObjectBase* followObject)
+{
+	followObject_ = followObject;
+
+	if (followObject_)
+	{
+		Arrow* arrow = dynamic_cast<Arrow*>(followObject);
+		RigidBody* rigidbody = dynamic_cast<RigidBody*>(followObject);
+		if (!arrow && (!rigidbody || rigidbody->GetMass() <= 0.f))
+		{
+			SetIsTickEnabled(false);
+		}
+		else
+		{
+			SetIsTickEnabled(true);
+		}
+
+		if (arrow)
+		{
+			Vector3 direction = GET_DIRECTION(followObject_);
+			SetWorldRotation(direction.GetRotationNormalized(), false);
+
+			Vector3 position = GET_POSITION(followObject_);
+			SetWorldPosition(position);
+		}
+	}
+}
+
+Vector3 FreeCameraObject::GetSpringPosition(float deltaTime)
+{
+	const float springConstant = 10.f;
+	const float damping = 0.1f;
+	const float desiredDistance = 2.f;
+
+	Vector3 direction = GET_DIRECTION(followObject_);
+	Vector3 desiredPosition = GET_POSITION(followObject_);
+	Vector3 springPosition = GetWorldPosition();
+
+	Vector3 positionDifference = desiredPosition - springPosition;
+	Vector3 springForce = positionDifference * springConstant;
+
+	Vector3 velocity = springForce - (currentVelocity_ * damping);
+
+	springPosition += velocity * deltaTime;
+
+	return springPosition;
 }

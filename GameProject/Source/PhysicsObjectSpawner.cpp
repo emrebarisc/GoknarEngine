@@ -107,11 +107,11 @@ void PhysicsObjectSpawner::Tick(float deltaTime)
     //floatingBox->SetWorldPosition(Vector3{ floatingBoxWorldPosition.x, floatingBoxWorldPosition.y, -1.f + (GoknarMath::Cos(engine->GetElapsedTime()) * 0.5f + 1.f) * 2.f });
     //return;
 
-    static float counter = 1.f;
+    static float counter = 2.f;
 
     if(counter < 0.f)
     {
-        counter += 1.f;
+        counter += 2.f;
         
         std::random_device randomDevice;
         std::uniform_int_distribution<int> randomObjectDist(0, 4);

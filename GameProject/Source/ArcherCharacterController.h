@@ -66,6 +66,8 @@ private:
 
 	void ToggleDebug();
 
+	void SwitchToFreeCamera();
+
 	Delegate<void()> moveForwardDelegate_;
 	Delegate<void()> stopMovingForwardDelegate_;
 	Delegate<void()> moveBackwardDelegate_;
@@ -81,6 +83,8 @@ private:
 	Delegate<void()> equipBowDelegate_;
 	Delegate<void()> drawBowDelegate_;
 	Delegate<void()> looseBowDelegate_;
+
+	Delegate<void()> switchToFreeCameraDelegate_;
 
 	Delegate<void(double, double)> onScrollMoveDelegate_;
 	Delegate<void(double, double)> onCursorMoveDelegate_;
