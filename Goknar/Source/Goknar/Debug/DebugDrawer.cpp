@@ -20,11 +20,13 @@
 #include "Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 
 StaticMesh* DebugDrawer::lineMesh_ = nullptr;
+StaticMesh* DebugDrawer::arrowHeadMesh_ = nullptr;
 
 DebugDrawer::DebugDrawer()
 {
 #ifdef GOKNAR_BUILD_DEBUG
 	lineMesh_ = engine->GetResourceManager()->GetEngineContent<StaticMesh>("Debug/Meshes/SM_Line.fbx");
+	arrowHeadMesh_ = engine->GetResourceManager()->GetEngineContent<StaticMesh>("Debug/Meshes/SM_ArrowHead.fbx");
 #endif
 }
 
@@ -33,7 +35,7 @@ DebugDrawer::~DebugDrawer()
 
 }
 
-void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Colorf& color, float thickness, float time, ObjectBase* owner, SnappingRule snappingRule)
+void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
 #ifdef GOKNAR_BUILD_DEBUG
 	DebugObject* line = new DebugObject();
@@ -52,7 +54,36 @@ void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Color
 	line->SetWorldPosition(start, false);
 	line->SetWorldRotation(Quaternion::FromTwoVectors(start, end));
 
-	line->SetParent(owner, snappingRule);
+	line->SetParent(owner);
+#endif
+}
+
+void DebugDrawer::DrawArrow(const Vector3& start, const Vector3& end, const Colorf& color, float thickness, float time, ObjectBase* owner)
+{
+#ifdef GOKNAR_BUILD_DEBUG
+	DebugObject* arrow = new DebugObject();
+
+	DebugObject* arrowHead = new DebugObject();
+	StaticMeshComponent* arrowHeadStaticMeshComponent = arrowHead->AddSubComponent<StaticMeshComponent>();
+	arrowHeadStaticMeshComponent->SetMesh(arrowHeadMesh_);
+
+	StaticMeshInstance* arrowHeadMeshInstance = arrowHeadStaticMeshComponent->GetMeshInstance();
+	MaterialInstance* materialInstance = MaterialInstance::Create(arrowHeadMesh_->GetMaterial());
+	materialInstance->SetBaseColor(color.ToVector4());
+	arrowHeadMeshInstance->SetMaterial(materialInstance);
+	arrowHeadMeshInstance->SetIsCastingShadow(false);
+
+	Vector3 endToStart = end - start;
+
+	arrowHead->SetWorldScaling(Vector3{ thickness }, false);
+	arrowHead->SetWorldPosition(end, false);
+	arrowHead->SetWorldRotation(Quaternion::FromTwoVectors(start, end));
+
+	arrowHead->SetParent(arrow);
+
+	DrawLine(start, end, color, thickness, time, arrow);
+
+	arrow->SetParent(owner);
 #endif
 }
 

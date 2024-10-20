@@ -30,7 +30,8 @@ public:
 	DebugDrawer();
 	~DebugDrawer();
 
-	static void DrawLine(const Vector3& start, const Vector3& end, const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr, SnappingRule snappingRule = SnappingRule::KeepWorldAll);
+	static void DrawLine(const Vector3& start, const Vector3& end, const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
+	static void DrawArrow(const Vector3& start, const Vector3& end, const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
 	static void DrawBox(const Vector3& position, const Quaternion& rotation, const Vector3& halfSize, const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
 	static void DrawCapsule(const Vector3& position, const Quaternion& rotation, 
 								float radius, float height, const Colorf& color, 
@@ -56,5 +57,6 @@ protected:
 
 private:
 	static StaticMesh* lineMesh_;
+	static StaticMesh* arrowHeadMesh_;
 };
 #endif
