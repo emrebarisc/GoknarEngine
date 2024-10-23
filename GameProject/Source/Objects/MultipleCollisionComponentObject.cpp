@@ -9,6 +9,10 @@
 #include "Physics/Components/SphereCollisionComponent.h"
 #include "Physics/Components/MultipleCollisionComponent.h"
 
+#include "Debug/DebugDrawer.h"
+
+#include "Game.h"
+
 MultipleCollisionComponentObject::MultipleCollisionComponentObject() : RigidBody()
 {
 	multipleCollisionComponent_ = AddSubComponent<MultipleCollisionComponent>();
@@ -32,7 +36,7 @@ MultipleCollisionComponentObject::MultipleCollisionComponentObject() : RigidBody
 	boxStaticMeshComponent_->SetRelativeScaling(Vector3{ 0.5f, 0.5f, 2.f });
 
 	boxCollisionComponent_ = AddSubComponent<BoxCollisionComponent>();
-	boxCollisionComponent_->SetRelativeScaling(Vector3{ 0.5f, 0.5f, 2.f });
+	boxCollisionComponent_->SetRelativeScaling(Vector3{ 1.f, 1.f, 4.f });
 	multipleCollisionComponent_->AddCollisionComponent(boxCollisionComponent_);
 
 	sphereCollisionComponent1_ = AddSubComponent<SphereCollisionComponent>();
@@ -56,4 +60,11 @@ MultipleCollisionComponentObject::MultipleCollisionComponentObject() : RigidBody
 void MultipleCollisionComponentObject::BeginGame()
 {
 	ObjectBase::BeginGame();
+
+	if (dynamic_cast<Game*>(engine->GetApplication())->GetDrawDebugObjects())
+	{
+		DebugDrawer::DrawCollisionComponent(sphereCollisionComponent1_, Colorf::Green, 5.f, 0.5f);
+		DebugDrawer::DrawCollisionComponent(sphereCollisionComponent2_, Colorf::Green, 5.f, 0.5f);
+		DebugDrawer::DrawCollisionComponent(boxCollisionComponent_, Colorf::Green, 5.f, 0.5f);
+	}
 }

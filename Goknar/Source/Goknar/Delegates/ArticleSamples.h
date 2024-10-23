@@ -31,9 +31,9 @@ public:
 		ArticleSampleSet sample;
 
 		Delegate<double (int, char, const char*)> d;
-		auto dInstance = decltype(d)::create<Sample, &Sample::InstanceFunction>(&sample);
-		auto dConst = decltype(d)::create<Sample, &Sample::ConstInstanceFunction>(&sample);
-		auto dFunc = decltype(d)::create<&Sample::StaticFunction>(); // same thing with non-class functions
+		auto dInstance = decltype(d)::Create<Sample, &Sample::InstanceFunction>(&sample);
+		auto dConst = decltype(d)::Create<Sample, &Sample::ConstInstanceFunction>(&sample);
+		auto dFunc = decltype(d)::Create<&Sample::StaticFunction>(); // same thing with non-class functions
 		dInstance(0, 'A', "Instance method call");
 		dConst(1, 'B', "Constant instance method call");
 		dFunc(2, 'C', "Static function call");

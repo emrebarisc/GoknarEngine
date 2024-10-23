@@ -8,6 +8,8 @@
 
 #include "BulletDynamics/Dynamics/btRigidBody.h"
 
+#include "Debug/DebugDrawer.h"
+
 Terrain::Terrain() : RigidBody()
 {
 	StaticMesh* terrainStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Terrain.fbx");
@@ -26,5 +28,14 @@ Terrain::Terrain() : RigidBody()
 	SetCollisionGroup(CollisionGroup::WorldStaticBlock);
 	SetCollisionMask(CollisionMask::BlockAll);
 
+	SetMass(0.f);
+
 	SetName("Terrain");
+}
+
+void Terrain::BeginGame()
+{
+	RigidBody::BeginGame();
+
+	//DebugDrawer::DrawCollisionComponent(collisionComponent_, Colorf::Black, 4.f);
 }

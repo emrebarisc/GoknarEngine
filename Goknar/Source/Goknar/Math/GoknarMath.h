@@ -597,15 +597,17 @@ struct GOKNAR_API Vector3
 
 	Vector3 GetOrthonormalBasis() const;
 
-	Quaternion GetRotation();
-	Quaternion GetRotationNormalized();
+	Quaternion GetRotation() const;
+	Quaternion GetRotationNormalized() const;
 
 	/*
 	*	Transformations
 	*/
 
 	Vector3 Translate(const Vector3& translation, bool isPositionVector = true) const;
+	Vector3 RotatePoint(const Quaternion& quaterionRotation) const;
 	Vector3 RotatePoint(const Vector3& rotation) const;
+	Vector3 RotateVector(const Quaternion& quaterionRotation) const;
 	Vector3 RotateVector(const Vector3& rotation) const;
 	Vector3 RotatePointAroundAxis(const Vector3& axis, float angle);
 	Vector3 RotateVectorAroundAxis(const Vector3& axis, float angle);

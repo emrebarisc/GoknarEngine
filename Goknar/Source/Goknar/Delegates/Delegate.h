@@ -60,22 +60,22 @@ public:
 	bool operator !=(const MulticastDelegate<RET(PARAMS...)>& another) const { return another != (*this); }
 
 	template <class T, RET(T::*TMethod)(PARAMS...)>
-	static Delegate create(T* instance) {
+	static Delegate Create(T* instance) {
 		return Delegate(instance, method_stub<T, TMethod>);
 	} //create
 
 	template <class T, RET(T::*TMethod)(PARAMS...) const>
-	static Delegate create(T const* instance) {
+	static Delegate Create(T const* instance) {
 		return Delegate(const_cast<T*>(instance), const_method_stub<T, TMethod>);
 	} //create
 
 	template <RET(*TMethod)(PARAMS...)>
-	static Delegate create() {
+	static Delegate Create() {
 		return Delegate(nullptr, function_stub<TMethod>);
 	} //create
 
 	template <typename LAMBDA>
-	static Delegate create(const LAMBDA & instance) {
+	static Delegate Create(const LAMBDA & instance) {
 		return Delegate((void*)(&instance), lambda_stub<LAMBDA>);
 	} //create
 

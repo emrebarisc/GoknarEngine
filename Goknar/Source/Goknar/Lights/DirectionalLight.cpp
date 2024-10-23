@@ -7,7 +7,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Managers/CameraManager.h"
-#include "Goknar/Renderer/FrameBuffer.h"
+#include "Goknar/Renderer/Framebuffer.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
@@ -61,7 +61,7 @@ void DirectionalLight::PreInit()
 		{
 			0.5f, 0.f, 0.f, 0.5f,
 			0.f, 0.5f, 0.f, 0.5f,
-			0.f, 0.f, 0.5f, 0.5f - 0.00001f,
+			0.f, 0.f, 0.5f, 0.5f - shadowBiasValue_,
 			0.f, 0.f, 0.f, 1.f
 		};
 		UpdateBiasedShadowMatrix();

@@ -11,6 +11,8 @@ class GOKNAR_API Terrain : public RigidBody
 public:
 	Terrain();
 
+	virtual void BeginGame() override;
+
 protected:
 	StaticMeshComponent* staticMeshComponent_;
 	NonMovingTriangleMeshCollisionComponent* collisionComponent_;

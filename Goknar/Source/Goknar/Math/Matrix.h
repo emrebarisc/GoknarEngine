@@ -564,6 +564,16 @@ public:
         return Vector3(m[2], m[6], m[10]);
     }
 
+    inline Vector3 GetTraslation() const
+    {
+        return Vector3
+        {
+            m[3],
+            m[7],
+            m[11]
+        };
+    }
+
     inline bool ContainsNanOrInf() const
     {
         return GoknarMath::IsNanOrInf(m[0]) ||

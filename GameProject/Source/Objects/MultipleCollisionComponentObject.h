@@ -13,6 +13,22 @@ public:
 	MultipleCollisionComponentObject();
 
 	virtual void BeginGame() override;
+
+	BoxCollisionComponent* GetBoxCollisionComponent() const
+	{
+		return boxCollisionComponent_;
+	}
+
+	SphereCollisionComponent* GetSphereCollisionComponent1() const
+	{
+		return sphereCollisionComponent1_;
+	}
+
+	SphereCollisionComponent* GetSphereCollisionComponent2() const
+	{
+		return sphereCollisionComponent2_;
+	}
+
 protected:
 
 private:

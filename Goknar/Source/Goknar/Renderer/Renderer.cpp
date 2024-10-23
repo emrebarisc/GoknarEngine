@@ -3,7 +3,7 @@
 #include "Renderer.h"
 
 #include "Texture.h"
-#include "FrameBuffer.h"
+#include "Framebuffer.h"
 #include "RenderBuffer.h"
 
 #include "Goknar/Application.h"
@@ -1135,7 +1135,7 @@ void GeometryBufferData::Init()
 
 	GenerateBuffers();
 	
-	engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::create<GeometryBufferData, &GeometryBufferData::OnWindowSizeChange>(this));
+	engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::Create<GeometryBufferData, &GeometryBufferData::OnWindowSizeChange>(this));
 }
 
 void GeometryBufferData::Bind()
@@ -1319,7 +1319,7 @@ void DeferredRenderingData::Init()
 	geometryBufferData = new GeometryBufferData();
 	geometryBufferData->Init();
 
-	engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::create<DeferredRenderingData, &DeferredRenderingData::OnWindowSizeChange>(this));
+	engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::Create<DeferredRenderingData, &DeferredRenderingData::OnWindowSizeChange>(this));
 }
 
 void DeferredRenderingData::BindGeometryBuffer()

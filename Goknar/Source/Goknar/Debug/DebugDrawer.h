@@ -11,6 +11,9 @@ class BoxCollisionComponent;
 class CapsuleCollisionComponent;
 class SphereCollisionComponent;
 class MovingTriangleMeshCollisionComponent;
+class NonMovingTriangleMeshCollisionComponent;
+
+class MeshUnit;
 class ObjectBase;
 class StaticMesh;
 
@@ -28,6 +31,7 @@ public:
 	~DebugDrawer();
 
 	static void DrawLine(const Vector3& start, const Vector3& end, const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
+	static void DrawArrow(const Vector3& start, const Vector3& end, const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
 	static void DrawBox(const Vector3& position, const Quaternion& rotation, const Vector3& halfSize, const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
 	static void DrawCapsule(const Vector3& position, const Quaternion& rotation, 
 								float radius, float height, const Colorf& color, 
@@ -45,10 +49,14 @@ public:
 	static void DrawCollisionComponent(const CapsuleCollisionComponent* capsuleCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
 	static void DrawCollisionComponent(const SphereCollisionComponent* sphereCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
 	static void DrawCollisionComponent(const MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
+	static void DrawCollisionComponent(const NonMovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
+
+	static void DrawMeshUnit(const MeshUnit* meshUnit, const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
 
 protected:
 
 private:
 	static StaticMesh* lineMesh_;
+	static StaticMesh* arrowHeadMesh_;
 };
 #endif

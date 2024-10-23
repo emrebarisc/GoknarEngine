@@ -19,7 +19,7 @@ void ArcherPhysicsMovementComponent::PreInit()
 	thirdPersonCameraComponent_ = ownerArcher_->GetThirdPersonCameraComponent();
 	
 	movementDirection_.speed = 8.f;
-	movementDirection_.OnInterpolation = Delegate<void()>::create<ArcherPhysicsMovementComponent, &ArcherPhysicsMovementComponent::OnMovementDirectionInterpolated>(this);
+	movementDirection_.OnInterpolation = Delegate<void()>::Create<ArcherPhysicsMovementComponent, &ArcherPhysicsMovementComponent::OnMovementDirectionInterpolated>(this);
 }
 
 void ArcherPhysicsMovementComponent::Init()
@@ -74,10 +74,10 @@ void ArcherPhysicsMovementComponent::OnMovementDirectionInterpolated()
 	{
 		Vector3 normalizedMovementVector = movementDirection_.current.GetNormalized();
 
-		Vector3 cameraForwardVector = thirdPersonCameraComponent_->GetForwardVector();
+		Vector3 cameraForwardVector = thirdPersonCameraComponent_->GetRelativeForwardVector();
 		Vector3 cameraForwardVector2D = Vector3(cameraForwardVector.x, cameraForwardVector.y, 0.f).GetNormalized();
 
-		Vector3 cameraLeftVector = thirdPersonCameraComponent_->GetLeftVector();
+		Vector3 cameraLeftVector = thirdPersonCameraComponent_->GetRelativeLeftVector();
 		Vector3 cameraLeftVector2D = Vector3(cameraLeftVector.x, cameraLeftVector.y, 0.f).GetNormalized();
 
 		movementVectorThisFrame = normalizedMovementVector.x * cameraForwardVector2D + normalizedMovementVector.y * cameraLeftVector2D;

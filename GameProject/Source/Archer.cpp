@@ -58,10 +58,8 @@ Archer::Archer() :
 	bow_->SetIsActive(false);
 
 	thirdPersonCamera_ = new Camera(Vector3::ZeroVector, Vector3{ 1.f, 0.f, 0.f }, Vector3{ 0.f, 0.f, 1.f }.GetNormalized());
-	//thirdPersonCamera_->SetImageWidth(1920);
-	//thirdPersonCamera_->SetImageHeight(1080);
-	thirdPersonCamera_->SetImageWidth(1600);
-	thirdPersonCamera_->SetImageHeight(900);
+	thirdPersonCamera_->SetImageWidth(1920);
+	thirdPersonCamera_->SetImageHeight(1080);
 	thirdPersonCamera_->SetNearDistance(1.f);
 	thirdPersonCamera_->SetFarDistance(1000.f);
 	thirdPersonCamera_->SetFOV(45.f);
@@ -161,14 +159,14 @@ void Archer::HandleDrawBowInput()
 		isAnimationBusy_ = true;
 
 		KeyframeData keyframeData;
-		keyframeData.AddCallbackToKeyframe(9, Delegate<void()>::create<Archer, &Archer::OnCreateArrow>(this));
-		keyframeData.AddCallbackToKeyframe(18, Delegate<void()>::create<Archer, &Archer::OnAttachBowStringToHand>(this));
+		keyframeData.AddCallbackToKeyframe(9, Delegate<void()>::Create<Archer, &Archer::OnCreateArrow>(this));
+		keyframeData.AddCallbackToKeyframe(18, Delegate<void()>::Create<Archer, &Archer::OnAttachBowStringToHand>(this));
 
 		skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDrawArrow.001",
 			PlayLoopData
 			{
 				true,
-				Delegate<void()>::create<Archer, &Archer::OnAimingIdle>(this)
+				Delegate<void()>::Create<Archer, &Archer::OnAimingIdle>(this)
 			}, keyframeData);
 	}
 }
@@ -184,12 +182,12 @@ void Archer::HandleLooseBowInput()
 			isAnimationBusy_ = true;
 
 			KeyframeData keyframeData;
-			keyframeData.AddCallbackToKeyframe(3, Delegate<void()>::create<Archer, &Archer::OnShoot>(this));
+			keyframeData.AddCallbackToKeyframe(3, Delegate<void()>::Create<Archer, &Archer::OnShoot>(this));
 
 			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingAimRecoil",
 				PlayLoopData{
 					true,
-					Delegate<void()>::create<Archer, &Archer::OnFinishedLoosing>(this)
+					Delegate<void()>::Create<Archer, &Archer::OnFinishedLoosing>(this)
 				}, keyframeData);
 
 			canShoot_ = false;
@@ -222,12 +220,12 @@ void Archer::EquipBow(bool equip)
 			isAnimationBusy_ = true;
 			
 			KeyframeData keyframeData;
-			keyframeData.AddCallbackToKeyframe(8, Delegate<void()>::create<Archer, &Archer::OnBowIsHandled>(this));
+			keyframeData.AddCallbackToKeyframe(8, Delegate<void()>::Create<Archer, &Archer::OnBowIsHandled>(this));
 
 			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingEquipBow",
 				{
 					false,
-					Delegate<void()>::create<Archer, &Archer::OnFinishedEquipingBow>(this)
+					Delegate<void()>::Create<Archer, &Archer::OnFinishedEquipingBow>(this)
 				}, keyframeData);
 		}
 		else
@@ -235,12 +233,12 @@ void Archer::EquipBow(bool equip)
 			isAnimationBusy_ = true;
 
 			KeyframeData keyframeData;
-			keyframeData.AddCallbackToKeyframe(14, Delegate<void()>::create<Archer, &Archer::OnBowIsUnhandled>(this));
+			keyframeData.AddCallbackToKeyframe(14, Delegate<void()>::Create<Archer, &Archer::OnBowIsUnhandled>(this));
 
 			skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("StandingDisarmBow",
 				PlayLoopData{
 					true,
-					Delegate<void()>::create<Archer, &Archer::OnBowIsDisarmed>(this)
+					Delegate<void()>::Create<Archer, &Archer::OnBowIsDisarmed>(this)
 				}, keyframeData);
 		}
 

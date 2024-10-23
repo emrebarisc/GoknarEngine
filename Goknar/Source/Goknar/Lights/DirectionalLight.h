@@ -60,12 +60,24 @@ public:
 	virtual void SetIsShadowEnabled(bool isShadowEnabled) override;
 
 	void RenderShadowMap() override;
+
+	float GetShadowBiasValue() const
+	{
+		return shadowBiasValue_;
+	}
+
+	void SetShadowBiasValue(float biasValue)
+	{
+		shadowBiasValue_ = biasValue;
+	}
 	
 private:
 	Matrix biasedShadowViewProjectionMatrix_{ Matrix::IdentityMatrix };
 	Matrix shadowBiasMatrix_{ Matrix::IdentityMatrix };
 
 	Vector3 direction_{ Vector3::ForwardVector };
+
+	float shadowBiasValue_{ 0.0001f };
 };
 
 #endif

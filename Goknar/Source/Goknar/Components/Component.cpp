@@ -144,7 +144,7 @@ void Component::UpdateComponentToWorldTransformationMatrix()
 		worldRotation_ = parent_->GetWorldRotation();
 		worldScaling_ = parent_->GetWorldScaling();
 	}
-	else if(owner_)
+	else if (owner_)
 	{
 		componentToWorldTransformationMatrix_ = owner_->GetWorldTransformationMatrix();
 
@@ -159,9 +159,12 @@ void Component::UpdateComponentToWorldTransformationMatrix()
 		worldScaling_ = Vector3{ 1.f, 1.f, 1.f };
 	}
 
-	worldPosition_ += GetRelativePosition();
-	worldRotation_ *= GetRelativeRotation();
-	worldScaling_ *= GetRelativeScaling();
+	Vector3 relativePosition = relativePosition_ * worldScaling_;
+	relativePosition = relativePosition.RotatePoint(worldRotation_);
+	worldPosition_ += relativePosition;
+
+	worldRotation_ *= relativeRotation_;
+	worldScaling_ *= relativeScaling_;
 
 	componentToWorldTransformationMatrix_ = componentToWorldTransformationMatrix_ * GetRelativeTransformationMatrix();
 

@@ -451,21 +451,34 @@ void Engine::ClearMemory()
 	std::vector<Component*>::iterator registeredComponentsIterator = registeredComponents_.begin();
 	for (; registeredComponentsIterator != registeredComponents_.end(); ++registeredComponentsIterator)
 	{
-		(*registeredComponentsIterator)->DestroyInner();
-		delete* registeredComponentsIterator;
-		*registeredComponentsIterator = nullptr;
+		Component* component = *registeredComponentsIterator;
+		component->Destroy();
+		component->DestroyInner();
 	}
-	registeredComponents_.clear();
-	tickableComponents_.clear();
-	componentsToBeInitialized_.clear();
 
 	std::vector<ObjectBase*>::iterator registeredObjectsIterator = registeredObjects_.begin();
 	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
 	{
-		(*registeredObjectsIterator)->DestroyInner();
-		delete* registeredObjectsIterator;
-		*registeredObjectsIterator = nullptr;
+		ObjectBase* object = *registeredObjectsIterator;
+		object->Destroy();
+		object->DestroyInner();
 	}
+
+	registeredComponentsIterator = registeredComponents_.begin();
+	for (; registeredComponentsIterator != registeredComponents_.end(); ++registeredComponentsIterator)
+	{
+		delete *registeredComponentsIterator;
+	}
+
+	registeredObjectsIterator = registeredObjects_.begin();
+	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
+	{
+		delete *registeredObjectsIterator;
+	}
+
+	registeredComponents_.clear();
+	tickableComponents_.clear();
+	componentsToBeInitialized_.clear();
 
 	registeredObjects_.clear();
 	tickableObjects_.clear();

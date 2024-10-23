@@ -201,7 +201,7 @@ void ObjectBase::SetParent(ObjectBase* newParent, SnappingRule snappingRule/* = 
 
 			if((unsigned char)snappingRule & (unsigned char)SnappingRule::KeepWorldPosition)
 			{
-				worldPosition_ -= newParent->GetWorldPosition();
+				worldPosition_ = ((worldPosition_ - newParent->worldPosition_) / newParent->GetWorldScaling()).RotatePoint(newParent->worldRotation_.GetInverse());
 			}
 			else
 			{
