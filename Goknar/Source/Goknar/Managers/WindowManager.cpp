@@ -47,13 +47,7 @@ void WindowManager::PreInit()
 
 	mainMonitor_ = glfwGetPrimaryMonitor();
 
-	GLFWmonitor* windowMonitor = nullptr;
-	if (isInFullscreen_)
-	{
-		windowMonitor = mainMonitor_;
-	}
-
-	mainWindow_ = glfwCreateWindow(windowWidth_, windowHeight_, windowTitle_, windowMonitor, 0);
+	mainWindow_ = CreateNewWindow(windowWidth_, windowHeight_, windowTitle_, nullptr, isInFullscreen_);
 
 	if(mainWindow_)
 	{
@@ -99,9 +93,24 @@ void WindowManager::PostInit()
 	SetWindowSize_Impl(windowWidth_, windowHeight_);
 }
 
-bool WindowManager::GetWindowShouldBeClosed()
+GLFWwindow* WindowManager::CreateNewWindow(int width, int height, const char* title, GLFWwindow* shareContextWith/* = nullptr*/, bool isInFullscreen/* = false*/)
 {
-	return glfwWindowShouldClose(mainWindow_);
+	return glfwCreateWindow(
+		width, 
+		height, 
+		title, 
+		isInFullscreen ? mainMonitor_ : nullptr, 
+		shareContextWith);
+}
+
+bool WindowManager::GetWindowShouldBeClosed(GLFWwindow* window/* = nullptr*/)
+{
+	if (!window)
+	{
+		window = mainWindow_;
+	}
+
+	return glfwWindowShouldClose(window);
 }
 
 void WindowManager::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -109,9 +118,14 @@ void WindowManager::FrameBufferSizeCallback(GLFWwindow* window, int width, int h
 	engine->GetWindowManager()->SetWindowSize_Impl(width, height);
 }
 
-void WindowManager::CloseWindow()
+void WindowManager::CloseWindow(GLFWwindow* window/* = nullptr*/)
 {
-	glfwSetWindowShouldClose(mainWindow_, true);
+	if (!window)
+	{
+		window = mainWindow_;
+	}
+
+	glfwSetWindowShouldClose(window, true);
 }
 
 void WindowManager::SetWindowWidth(int w)
