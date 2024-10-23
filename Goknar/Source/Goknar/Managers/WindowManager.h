@@ -51,7 +51,9 @@ public:
 	void HandleFullscreenState();
 	void ToggleFullscreen();
 
-	bool GetWindowShouldBeClosed();
+	GLFWwindow* CreateNewWindow(int width, int height, const char* title, GLFWwindow* shareContextWith = nullptr, bool isInFullscreen = false);
+	bool GetWindowShouldBeClosed(GLFWwindow* window = nullptr);
+	void CloseWindow(GLFWwindow* window = nullptr);
 
 	void SetWindowSize(int w, int h);
 	Vector2i GetWindowSize() const
@@ -67,8 +69,6 @@ public:
 	}
 
 private:
-	void CloseWindow();
-
 	static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 
 	void SetWindowSize_Impl(int w, int h);
