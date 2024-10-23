@@ -24,7 +24,7 @@ public:
 	void Init();
 	void PostInit();
 	
-	inline GLFWwindow* GetWindow() const
+	inline GLFWwindow* GetMainWindow() const
 	{
 		return mainWindow_;
 	}
