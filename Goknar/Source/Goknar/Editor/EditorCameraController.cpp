@@ -110,7 +110,7 @@ void EditorCameraController::Pitch(float value)
 void EditorCameraController::OnMouseRightClickPressed()
 {
 	double x, y;
-	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
+	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetMainWindow(), x, y);
 	previousCursorPositionForRotating_ = Vector2(x, y);
 	isRotatingTheCamera_ = true;
 }
@@ -118,7 +118,7 @@ void EditorCameraController::OnMouseRightClickPressed()
 void EditorCameraController::OnMouseMiddleClickPressed()
 {
 	double x, y;
-	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetWindow(), x, y);
+	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetMainWindow(), x, y);
 	previousCursorPositionFor2DMovement_ = Vector2(x, y);
 	isMovingCameraIn2D_ = true;
 }

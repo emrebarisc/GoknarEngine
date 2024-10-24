@@ -61,7 +61,7 @@ InputManager::~InputManager()
 
 void InputManager::PreInit()
 {
-	window_ = engine->GetWindowManager()->GetWindow();
+	window_ = engine->GetWindowManager()->GetMainWindow();
 
 	glfwSetKeyCallback(window_, InputManager::KeyboardCallback);
 	glfwSetCursorPosCallback(window_, InputManager::CursorPositionCallback);
@@ -208,7 +208,7 @@ void InputManager::SetCursorPosition(float x, float y, GLFWwindow* window)
 {
 	if (window == nullptr)
 	{
-		window = engine->GetWindowManager()->GetWindow();
+		window = engine->GetWindowManager()->GetMainWindow();
 	}
 
 	glfwSetCursorPos(window, x, y);
