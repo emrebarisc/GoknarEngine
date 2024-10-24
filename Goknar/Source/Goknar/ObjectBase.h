@@ -62,7 +62,7 @@ public:
 
 	void SetRootComponent(Component* rootComponent);
 	
-    void SetIsTickable(bool tickable);
+    virtual void SetIsTickable(bool tickable);
 	bool GetIsTickable() const
 	{
 		return isTickable_; 
