@@ -15,6 +15,9 @@ public:
 
     virtual void BeginGame() override;
     virtual void Tick(float deltaTime) override final;
+    virtual void SetIsTickable(bool isTickable) override final;
+
+    virtual void HUDTick(float deltaTime) final;
 
     virtual void UpdateHUD();
 

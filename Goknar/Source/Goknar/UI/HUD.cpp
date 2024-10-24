@@ -40,9 +40,24 @@ void HUD::BeginGame()
 void HUD::Tick(float deltaTime)
 {
 	ObjectBase::Tick(deltaTime);
+}
 
+void HUD::SetIsTickable(bool isTickable)
+{
+    if (!GetIsInitialized())
+    {
+        ObjectBase::SetIsTickable(false);
+
+        return;
+    }
+
+    GOKNAR_ASSERT(false, "HUD cannot be set as tick enabled.");
+}
+
+void HUD::HUDTick(float deltaTime)
+{
     refreshElapsedTime_ += deltaTime;
-    if(refreshDeltaTime_ < refreshElapsedTime_)
+    if (refreshDeltaTime_ < refreshElapsedTime_)
     {
         UpdateHUD();
         refreshElapsedTime_ -= GoknarMath::Mod(refreshElapsedTime_, refreshDeltaTime_);

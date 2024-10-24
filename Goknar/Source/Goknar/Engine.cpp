@@ -272,7 +272,7 @@ void Engine::Run()
 
 		if (HUD_)
 		{
-			HUD_->Tick(unscaledDeltaTime);
+			HUD_->HUDTick(unscaledDeltaTime);
 		}
 
 		windowManager_->Update();
