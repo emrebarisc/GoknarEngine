@@ -183,7 +183,7 @@ public:
 	void ReadFromFrameBuffer(GEuint framebuffer);
 	void Save(std::string path);
 
-	GEuint GetRendererTextureId()
+	GEuint GetRendererTextureId() const
 	{
 		return rendererTextureId_;
 	}

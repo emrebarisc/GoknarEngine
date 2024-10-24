@@ -38,6 +38,8 @@
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilderNew.h"
 #include "Goknar/Renderer/PostProcessing.h"
+#include "Goknar/Renderer/RenderTarget.h"
+#include "Goknar/Renderer/Texture.h"
 
 #define VERTEX_COLOR_LOCATION 0
 #define VERTEX_POSITION_LOCATION 1
@@ -388,6 +390,27 @@ void Renderer::RenderCurrentFrame()
 		//testFrameBuffer.Bind();
 		Render(RenderPassType::Deferred);
 	}
+
+	CameraManager* cameraManager = engine->GetCameraManager();
+
+	Camera* activeCamera = cameraManager->GetActiveCamera();
+
+	std::vector<const RenderTarget*>::const_iterator renderTargetIterator = renderTargets_.cbegin();
+	while (renderTargetIterator != renderTargets_.cend())
+	{
+		const RenderTarget* renderTarget = *renderTargetIterator;
+
+		cameraManager->SetActiveCamera(renderTarget->GetCamera());
+
+		Render(RenderPassType::GeometryBuffer);
+		renderTarget->GetFrameBuffer()->Bind();
+		Render(RenderPassType::Deferred);
+		renderTarget->GetFrameBuffer()->Unbind();
+
+		renderTargetIterator++;
+	}
+
+	cameraManager->SetActiveCamera(activeCamera);
 
 	//testFrameBuffer.Unbind();
 	//postProcessingEffect.Render();
@@ -1134,8 +1157,6 @@ void GeometryBufferData::Init()
 	bufferHeight = windowSize.y;
 
 	GenerateBuffers();
-	
-	engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::Create<GeometryBufferData, &GeometryBufferData::OnWindowSizeChange>(this));
 }
 
 void GeometryBufferData::Bind()
@@ -1250,13 +1271,8 @@ void GeometryBufferData::GenerateBuffers()
 	EXIT_ON_GL_ERROR("GeometryBufferData::GenerateBuffers");
 }
 
-void GeometryBufferData::OnWindowSizeChange(int width, int height)
+void GeometryBufferData::OnViewportSizeChanged(int width, int height)
 {
-	if (width <= 0 || height <= 0)
-	{
-		return;
-	}
-
 	delete worldPositionTexture;
 	delete worldNormalTexture;
 	delete diffuseTexture;
@@ -1319,7 +1335,9 @@ void DeferredRenderingData::Init()
 	geometryBufferData = new GeometryBufferData();
 	geometryBufferData->Init();
 
-	engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::Create<DeferredRenderingData, &DeferredRenderingData::OnWindowSizeChange>(this));
+	SetShaderTextureUniforms();
+
+	engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::Create<DeferredRenderingData, &DeferredRenderingData::OnViewportSizeChanged>(this));
 }
 
 void DeferredRenderingData::BindGeometryBuffer()
@@ -1332,16 +1350,21 @@ void DeferredRenderingData::UnbindGeometryBuffer()
 	geometryBufferData->Unbind();
 }
 
-void DeferredRenderingData::Render()
+void DeferredRenderingData::SetShaderTextureUniforms()
 {
-	engine->GetRenderer()->BindStaticVBO();
-
 	deferredRenderingMeshShader->Use();
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION, geometryBufferData->worldPositionTexture->GetRendererTextureId());
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL, geometryBufferData->worldNormalTexture->GetRendererTextureId());
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE, geometryBufferData->diffuseTexture->GetRendererTextureId());
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG, geometryBufferData->specularTexture->GetRendererTextureId());
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMMISIVE_COLOR, geometryBufferData->emmisiveColorTexture->GetRendererTextureId());
+}
+
+void DeferredRenderingData::Render()
+{
+	engine->GetRenderer()->BindStaticVBO();
+
+	SetShaderTextureUniforms();
 
 	engine->GetRenderer()->SetLightUniforms(deferredRenderingMeshShader);
 
@@ -1349,8 +1372,21 @@ void DeferredRenderingData::Render()
 	glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)deferredRenderingMesh->GetVertexStartingIndex(), deferredRenderingMesh->GetBaseVertex());
 }
 
-void DeferredRenderingData::OnWindowSizeChange(int x, int y)
+void DeferredRenderingData::OnViewportSizeChanged(int width, int height)
 {
+	if (width <= 0 || height <= 0)
+	{
+		return;
+	}
+
+	if (geometryBufferData->bufferWidth == width && geometryBufferData->bufferHeight == height)
+	{
+		return;
+	}
+
+	geometryBufferData->OnViewportSizeChanged(width, height);
+	SetShaderTextureUniforms();
+
 	const std::vector<Material*>& materials = engine->GetResourceManager()->GetMaterials();
 
 	decltype(materials.begin()) materialIteration = materials.begin();

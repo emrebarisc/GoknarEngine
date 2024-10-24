@@ -25,6 +25,8 @@ class SkeletalMeshInstance;
 
 class PostProcessingEffect;
 
+class RenderTarget;
+
 enum class GOKNAR_API RenderPassType : unsigned int
 {
 	None = 0b00000000,
@@ -50,6 +52,8 @@ public:
 	void GenerateBuffers();
 	void BindGBufferDepth();
 
+	void OnViewportSizeChanged(int width, int height);
+
 	FrameBuffer* geometryFrameBuffer{ nullptr };
 
 	Texture* worldPositionTexture{ nullptr };
@@ -63,7 +67,6 @@ public:
 	int bufferWidth{ 1920 };
 	int bufferHeight{ 1080 };
 private:
-	void OnWindowSizeChange(int width, int height);
 };
 
 class GOKNAR_API DeferredRenderingData
@@ -76,16 +79,19 @@ public:
 	void BindGeometryBuffer();
 	void UnbindGeometryBuffer();
 
+	void SetShaderTextureUniforms();
+
 	void BindGBufferDepth();
 
 	void Render();
 
-	void OnWindowSizeChange(int x, int y);
+	void OnViewportSizeChanged(int width, int height);
 	void BindGeometryBufferTextures(Shader* shader);
 
 	GeometryBufferData* geometryBufferData{ nullptr };
 	StaticMesh* deferredRenderingMesh{ nullptr };
 	Shader* deferredRenderingMeshShader{ nullptr };
+
 private:
 };
 
@@ -168,6 +174,24 @@ public:
 		}
 	}
 
+	void AddRenderTarget(const RenderTarget* renderTarget)
+	{
+		renderTargets_.push_back(renderTarget);
+	}
+
+	void RemoveRenderTarget(const RenderTarget* renderTarget)
+	{
+		std::vector<const RenderTarget*>::const_iterator renderTargetIterator = renderTargets_.cbegin();
+		while (renderTargetIterator != renderTargets_.cend())
+		{
+			if (renderTarget == *renderTargetIterator)
+			{
+				renderTargets_.erase(renderTargetIterator);
+				break;
+			}
+		}
+	}
+
 	void RenderStaticMesh(StaticMesh* staticMesh);
 
 private:
@@ -203,6 +227,7 @@ private:
 	DeferredRenderingData* deferredRenderingData_{ nullptr };
 
 	std::vector<const PostProcessingEffect*> postProcessingEffects_;
+	std::vector<const RenderTarget*> renderTargets_;
 
 	unsigned int totalStaticMeshVertexSize_;
 	unsigned int totalStaticMeshFaceSize_;
