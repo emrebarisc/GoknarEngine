@@ -18,6 +18,11 @@ public:
 
 	void SetFrameSize(const Vector2& frameSize);
 
+	void SetCamera(Camera* camera)
+	{
+		camera_ = camera;
+	}
+
 	Camera* GetCamera() const
 	{
 		return camera_;
@@ -33,6 +38,26 @@ public:
 		return texture_;
 	}
 
+	bool GetIsActive() const
+	{
+		return isActive_;
+	}
+
+	void SetIsActive(bool isActive)
+	{
+		isActive_ = isActive;
+	}
+
+	bool GetRerenderShadowMaps() const
+	{
+		return rerenderShadowMaps_;
+	}
+
+	void SetRerenderShadowMaps(bool renderShadows)
+	{
+		rerenderShadowMaps_ = renderShadows;
+	}
+
 protected:
 	void GenerateBuffers();
 
@@ -42,6 +67,9 @@ private:
 	Texture* texture_{ nullptr };
 
 	Vector2 frameSize_{ 1024, 1024 };
+
+	bool isActive_{ true };
+	bool rerenderShadowMaps_{ true };
 };
 
 #endif

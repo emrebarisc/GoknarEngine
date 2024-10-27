@@ -4,6 +4,7 @@
 
 #include "Camera.h"
 #include "Engine.h"
+#include "Managers/CameraManager.h"
 #include "Renderer/Framebuffer.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Texture.h"
@@ -17,14 +18,21 @@ RenderTarget::~RenderTarget()
 {
 	engine->GetRenderer()->RemoveRenderTarget(this);
 
-	camera_->Destroy();
+	if (engine->GetCameraManager()->DoesCameraExist(camera_))
+	{
+		camera_->Destroy();
+	}
 	delete texture_;
 	delete framebuffer_;
 }
 
 void RenderTarget::Init()
 {
-	camera_ = new Camera();
+	if (!camera_)
+	{
+		camera_ = new Camera();
+	}
+
 	camera_->SetImageWidth(frameSize_.x);
 	camera_->SetImageHeight(frameSize_.y);
 
