@@ -37,6 +37,8 @@ public:
 		return activeCamera_;
 	}
 
+	bool DoesCameraExist(const Camera* camera);
+
 protected:
 
 private:

@@ -102,3 +102,19 @@ void CameraManager::SetActiveCamera(Camera* camera)
 	activeCamera_ = camera;
 	engine->GetWindowManager()->UpdateViewport();
 }
+
+bool CameraManager::DoesCameraExist(const Camera* camera)
+{
+
+	std::vector<Camera*>::const_iterator camerasIterator = cameras_.cbegin();
+	while (camerasIterator != cameras_.cend())
+	{
+		if (camera == *camerasIterator)
+		{
+			return true;
+		}
+		++camerasIterator;
+	}
+
+	return false;
+}
