@@ -65,7 +65,8 @@ Renderer::Renderer() :
 	totalSkeletalMeshCount_(0),
 	totalDynamicMeshCount_(0),
 	lightManager_(nullptr),
-	removeStaticDataFromMemoryAfterTransferingToGPU_(false)
+	removeStaticDataFromMemoryAfterTransferingToGPU_(false),
+	drawOnWindow_(true)
 {
 }
 
@@ -90,65 +91,65 @@ Renderer::~Renderer()
 void Renderer::PreInit()
 {
 
-//	if (!isInitializedBuffers)
-//	{
-//		postProcessingTestTexture.SetName("postProcessingTest");
-//		postProcessingTestTexture.SetTextureDataType(TextureDataType::DYNAMIC);
-//		postProcessingTestTexture.SetTextureFormat(TextureFormat::RGB);
-//		postProcessingTestTexture.SetTextureInternalFormat(TextureInternalFormat::RGB);
-//		postProcessingTestTexture.SetTextureMinFilter(TextureMinFilter::NEAREST);
-//		postProcessingTestTexture.SetTextureMagFilter(TextureMagFilter::NEAREST);
-//		postProcessingTestTexture.SetWidth(engine->GetWindowManager()->GetWindowSize().x);
-//		postProcessingTestTexture.SetHeight(engine->GetWindowManager()->GetWindowSize().y);
-//		postProcessingTestTexture.SetGenerateMipmap(false);
-//		postProcessingTestTexture.SetTextureType(TextureType::FLOAT);
-//		postProcessingTestTexture.PreInit();
-//		postProcessingTestTexture.Init();
-//		postProcessingTestTexture.PostInit();
-//		testFrameBuffer.AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT0, &postProcessingTestTexture);
-//
-//		testFrameBuffer.PreInit();
-//		testFrameBuffer.Init();
-//		testFrameBuffer.PostInit();
-//		testFrameBuffer.Bind();
-//		testFrameBuffer.Attach();
-//
-//		testFrameBuffer.DrawBuffers();
-//
-//		postProcessingShader.SetVertexShaderScript(ShaderBuilderNew::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
-//		postProcessingShader.SetFragmentShaderScript(R"(
-//#version 440 core
-//
-//out vec4 fragmentColor;
-//
-//in mat4 finalModelMatrix;
-//in vec4 fragmentPositionScreenSpace;
-//in vec2 textureUV;
-//
-//uniform sampler2D postProcessingTest;
-//
-//void main()
-//{
-//	vec4 textureColor = texture(postProcessingTest, textureUV);
-//	float grayValue = (textureColor.r + textureColor.g + textureColor.b) / 3.f;
-//	fragmentColor = vec4(vec3(grayValue), 1.0);
-//}
-//)");
-//		postProcessingShader.PreInit();
-//		postProcessingShader.Init();
-//		postProcessingShader.PostInit();
-//		postProcessingEffect.SetShader(&postProcessingShader);
-//
-//		postProcessingShader.Use();
-//		postProcessingTestTexture.Bind(&postProcessingShader);
-//		postProcessingShader.Unbind();
-//
-//		postProcessingEffect.PreInit();
-//		postProcessingEffect.Init();
-//		postProcessingEffect.PostInit();
-//
-//		isInitializedBuffers = true;
-//	}
+	//	if (!isInitializedBuffers)
+	//	{
+	//		postProcessingTestTexture.SetName("postProcessingTest");
+	//		postProcessingTestTexture.SetTextureDataType(TextureDataType::DYNAMIC);
+	//		postProcessingTestTexture.SetTextureFormat(TextureFormat::RGB);
+	//		postProcessingTestTexture.SetTextureInternalFormat(TextureInternalFormat::RGB);
+	//		postProcessingTestTexture.SetTextureMinFilter(TextureMinFilter::NEAREST);
+	//		postProcessingTestTexture.SetTextureMagFilter(TextureMagFilter::NEAREST);
+	//		postProcessingTestTexture.SetWidth(engine->GetWindowManager()->GetWindowSize().x);
+	//		postProcessingTestTexture.SetHeight(engine->GetWindowManager()->GetWindowSize().y);
+	//		postProcessingTestTexture.SetGenerateMipmap(false);
+	//		postProcessingTestTexture.SetTextureType(TextureType::FLOAT);
+	//		postProcessingTestTexture.PreInit();
+	//		postProcessingTestTexture.Init();
+	//		postProcessingTestTexture.PostInit();
+	//		testFrameBuffer.AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT0, &postProcessingTestTexture);
+	//
+	//		testFrameBuffer.PreInit();
+	//		testFrameBuffer.Init();
+	//		testFrameBuffer.PostInit();
+	//		testFrameBuffer.Bind();
+	//		testFrameBuffer.Attach();
+	//
+	//		testFrameBuffer.DrawBuffers();
+	//
+	//		postProcessingShader.SetVertexShaderScript(ShaderBuilderNew::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
+	//		postProcessingShader.SetFragmentShaderScript(R"(
+	//#version 440 core
+	//
+	//out vec4 fragmentColor;
+	//
+	//in mat4 finalModelMatrix;
+	//in vec4 fragmentPositionScreenSpace;
+	//in vec2 textureUV;
+	//
+	//uniform sampler2D postProcessingTest;
+	//
+	//void main()
+	//{
+	//	vec4 textureColor = texture(postProcessingTest, textureUV);
+	//	float grayValue = (textureColor.r + textureColor.g + textureColor.b) / 3.f;
+	//	fragmentColor = vec4(vec3(grayValue), 1.0);
+	//}
+	//)");
+	//		postProcessingShader.PreInit();
+	//		postProcessingShader.Init();
+	//		postProcessingShader.PostInit();
+	//		postProcessingEffect.SetShader(&postProcessingShader);
+	//
+	//		postProcessingShader.Use();
+	//		postProcessingTestTexture.Bind(&postProcessingShader);
+	//		postProcessingShader.Unbind();
+	//
+	//		postProcessingEffect.PreInit();
+	//		postProcessingEffect.Init();
+	//		postProcessingEffect.PostInit();
+	//
+	//		isInitializedBuffers = true;
+	//	}
 
 	lightManager_ = new LightManager();
 	lightManager_->PreInit();
@@ -376,21 +377,6 @@ void Renderer::RenderCurrentFrame()
 {
 	PrepareSkeletalMeshInstancesForTheCurrentFrame();
 
-	GetLightManager()->RenderShadowMaps();
-
-	if (GetMainRenderType() == RenderPassType::Forward)
-	{
-		//testFrameBuffer.Bind();
-		Render(RenderPassType::Forward);
-	}
-	else if (GetMainRenderType() == RenderPassType::Deferred)
-	{
-		//testFrameBuffer.Bind();
-		Render(RenderPassType::GeometryBuffer);
-		//testFrameBuffer.Bind();
-		Render(RenderPassType::Deferred);
-	}
-
 	CameraManager* cameraManager = engine->GetCameraManager();
 
 	Camera* activeCamera = cameraManager->GetActiveCamera();
@@ -400,12 +386,20 @@ void Renderer::RenderCurrentFrame()
 	{
 		const RenderTarget* renderTarget = *renderTargetIterator;
 
-		cameraManager->SetActiveCamera(renderTarget->GetCamera());
+		if (renderTarget->GetIsActive())
+		{
+			cameraManager->SetActiveCamera(renderTarget->GetCamera());
 
-		Render(RenderPassType::GeometryBuffer);
-		renderTarget->GetFrameBuffer()->Bind();
-		Render(RenderPassType::Deferred);
-		renderTarget->GetFrameBuffer()->Unbind();
+			if (renderTarget->GetRerenderShadowMaps())
+			{
+				GetLightManager()->RenderShadowMaps();
+			}
+
+			Render(RenderPassType::GeometryBuffer);
+			renderTarget->GetFrameBuffer()->Bind();
+			Render(RenderPassType::Deferred);
+			renderTarget->GetFrameBuffer()->Unbind();
+		}
 
 		renderTargetIterator++;
 	}
@@ -422,55 +416,55 @@ void Renderer::Render(RenderPassType renderPassType)
 {
 	switch (renderPassType)
 	{
-		case RenderPassType::Forward:
-		{
-			glDepthMask(GL_TRUE);
-			const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
-			glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			break;
-		}
-		case RenderPassType::GeometryBuffer:
-		{
-			GOKNAR_CORE_CHECK(deferredRenderingData_ != nullptr, "Main rendering is not set to deferred rendering but deferred rendering is called.");
+	case RenderPassType::Forward:
+	{
+		glDepthMask(GL_TRUE);
+		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
+		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		break;
+	}
+	case RenderPassType::GeometryBuffer:
+	{
+		GOKNAR_CORE_CHECK(deferredRenderingData_ != nullptr, "Main rendering is not set to deferred rendering but deferred rendering is called.");
 
-			deferredRenderingData_->BindGeometryBuffer();
-			const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
-			glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glDepthMask(GL_TRUE);
-			break;
-		}
-		case RenderPassType::Deferred:
-		{
-			GOKNAR_CORE_CHECK(deferredRenderingData_ != nullptr, "Main rendering is not set to deferred rendering but deferred rendering is called.");
-			glClear(GL_DEPTH_BUFFER_BIT);
-			deferredRenderingData_->Render();
-			break;
-		}
-		case RenderPassType::Shadow:
-		case RenderPassType::PointLightShadow:
-		{
-			glClear(GL_DEPTH_BUFFER_BIT);
-			break;
-		}
-		case RenderPassType::None:
-		default:
-		{
-			GOKNAR_CORE_ASSERT(false, "Render function called without a correct pass type!");
-			return;
-		}
+		deferredRenderingData_->BindGeometryBuffer();
+		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
+		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDepthMask(GL_TRUE);
+		break;
+	}
+	case RenderPassType::Deferred:
+	{
+		GOKNAR_CORE_CHECK(deferredRenderingData_ != nullptr, "Main rendering is not set to deferred rendering but deferred rendering is called.");
+		glClear(GL_DEPTH_BUFFER_BIT);
+		deferredRenderingData_->Render();
+		break;
+	}
+	case RenderPassType::Shadow:
+	case RenderPassType::PointLightShadow:
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+		break;
+	}
+	case RenderPassType::None:
+	default:
+	{
+		GOKNAR_CORE_ASSERT(false, "Render function called without a correct pass type!");
+		return;
+	}
 	}
 
 	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
-	
+
 	if (activeCamera)
 	{
-		bool isShadowRender = 
-			renderPassType == RenderPassType::Shadow || 
+		bool isShadowRender =
+			renderPassType == RenderPassType::Shadow ||
 			renderPassType == RenderPassType::PointLightShadow;
 
-		if(renderPassType != RenderPassType::Deferred)
+		if (renderPassType != RenderPassType::Deferred)
 		{
 			// Static MeshUnit Instances
 			{
@@ -527,7 +521,7 @@ void Renderer::Render(RenderPassType renderPassType)
 						if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
 						if (isShadowRender && !maskedSkeletalMeshInstance->GetIsCastingShadow()) continue;
 
-			
+
 						const SkeletalMesh* skeletalMesh = maskedSkeletalMeshInstance->GetMesh();
 						maskedSkeletalMeshInstance->Render(renderPassType);
 
@@ -573,7 +567,7 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			deferredRenderingData_->BindGBufferDepth();
 		}
-			
+
 		if (renderPassType == RenderPassType::Forward ||
 			renderPassType == RenderPassType::Deferred)
 		{
@@ -588,7 +582,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			{
 				if (!transparentStaticMeshInstance->GetIsRendered()) continue;
 				const MeshUnit* mesh = transparentStaticMeshInstance->GetMesh();
-				
+
 				transparentStaticMeshInstance->Render(RenderPassType::Forward);
 
 				int facePointCount = mesh->GetFaceCount() * 3;
@@ -625,7 +619,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			// Use deferred rendering shader again if doing deferred rendering
 			// Otherwise it causes crash on setting g-buffer debug on
 			// And wishing to visualize g-buffers on deferred rendering mesh
-			if(renderPassType == RenderPassType::Deferred)
+			if (renderPassType == RenderPassType::Deferred)
 			{
 				deferredRenderingData_->deferredRenderingMeshShader->Use();
 			}
@@ -1100,18 +1094,18 @@ void Renderer::SortTransparentInstances()
 		Vector3 cameraPosition = engine->GetCameraManager()->GetActiveCamera()->GetPosition();
 		bool operator()(const StaticMeshInstance* a, const StaticMeshInstance* b) const
 		{
-			return  (cameraPosition - a->GetParentComponent()->GetWorldPosition()).SquareLength() > 
-					(cameraPosition - b->GetParentComponent()->GetWorldPosition()).SquareLength();
+			return  (cameraPosition - a->GetParentComponent()->GetWorldPosition()).SquareLength() >
+				(cameraPosition - b->GetParentComponent()->GetWorldPosition()).SquareLength();
 		}
 		bool operator()(const SkeletalMeshInstance* a, const SkeletalMeshInstance* b) const
 		{
-			return  (cameraPosition - a->GetParentComponent()->GetWorldPosition()).SquareLength() > 
-					(cameraPosition - b->GetParentComponent()->GetWorldPosition()).SquareLength();
+			return  (cameraPosition - a->GetParentComponent()->GetWorldPosition()).SquareLength() >
+				(cameraPosition - b->GetParentComponent()->GetWorldPosition()).SquareLength();
 		}
 		bool operator()(const DynamicMeshInstance* a, const DynamicMeshInstance* b) const
 		{
-			return  (cameraPosition - a->GetParentComponent()->GetWorldPosition()).SquareLength() > 
-					(cameraPosition - b->GetParentComponent()->GetWorldPosition()).SquareLength();
+			return  (cameraPosition - a->GetParentComponent()->GetWorldPosition()).SquareLength() >
+				(cameraPosition - b->GetParentComponent()->GetWorldPosition()).SquareLength();
 		}
 	} cameraDistanceSorter;
 
@@ -1280,7 +1274,7 @@ void GeometryBufferData::OnViewportSizeChanged(int width, int height)
 	delete emmisiveColorTexture;
 
 	delete geometryFrameBuffer;
-	
+
 	glDeleteRenderbuffers(1, &depthRenderbuffer);
 
 	bufferWidth = width;
@@ -1292,9 +1286,9 @@ void GeometryBufferData::BindGBufferDepth()
 {
 	geometryFrameBuffer->Bind(FrameBufferBindTarget::READ_FRAMEBUFFER);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glBlitFramebuffer(0, 0, bufferWidth, bufferHeight, 
-						0, 0, bufferWidth, bufferHeight,
-						GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+	glBlitFramebuffer(0, 0, bufferWidth, bufferHeight,
+		0, 0, bufferWidth, bufferHeight,
+		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 }
 
 DeferredRenderingData::DeferredRenderingData()
@@ -1393,7 +1387,7 @@ void DeferredRenderingData::OnViewportSizeChanged(int width, int height)
 	for (; materialIteration < materials.end(); ++materialIteration)
 	{
 		Shader* shader = (*materialIteration)->GetShader(RenderPassType::GeometryBuffer);
-		if(shader)
+		if (shader)
 		{
 			BindGeometryBufferTextures(shader);
 		}
@@ -1403,7 +1397,7 @@ void DeferredRenderingData::OnViewportSizeChanged(int width, int height)
 void DeferredRenderingData::BindGeometryBufferTextures(Shader* shader)
 {
 	shader->Use();
-	
+
 	geometryBufferData->worldPositionTexture->Bind(shader);
 	geometryBufferData->worldNormalTexture->Bind(shader);
 	geometryBufferData->diffuseTexture->Bind(shader);

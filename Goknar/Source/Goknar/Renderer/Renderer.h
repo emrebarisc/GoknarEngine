@@ -194,6 +194,17 @@ public:
 
 	void RenderStaticMesh(StaticMesh* staticMesh);
 
+	void SetDrawOnWindow(bool drawOnWindow)
+	{
+		drawOnWindow_ = drawOnWindow;
+	}
+
+	bool GetDrawOnWindow() const
+	{
+		return drawOnWindow_;
+	}
+
+
 private:
 	void BindStaticVBO();
 	void BindSkeletalVBO();
@@ -254,6 +265,7 @@ private:
 	RenderPassType mainRenderType_{ RenderPassType::Deferred };
 
 	unsigned char removeStaticDataFromMemoryAfterTransferingToGPU_ : 1;
+	unsigned char drawOnWindow_ : 1;
 };
 
 #endif
