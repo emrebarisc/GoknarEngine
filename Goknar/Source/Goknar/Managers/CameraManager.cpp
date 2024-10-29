@@ -105,7 +105,6 @@ void CameraManager::SetActiveCamera(Camera* camera)
 
 bool CameraManager::DoesCameraExist(const Camera* camera)
 {
-
 	std::vector<Camera*>::const_iterator camerasIterator = cameras_.cbegin();
 	while (camerasIterator != cameras_.cend())
 	{
@@ -113,6 +112,7 @@ bool CameraManager::DoesCameraExist(const Camera* camera)
 		{
 			return true;
 		}
+
 		++camerasIterator;
 	}
 

@@ -5,8 +5,9 @@
 #include "Math/GoknarMath.h"
 
 class Camera;
-class Texture;
 class FrameBuffer;
+class DeferredRenderingData;
+class Texture;
 
 class GOKNAR_API RenderTarget
 {
@@ -58,10 +59,16 @@ public:
 		rerenderShadowMaps_ = renderShadows;
 	}
 
+	DeferredRenderingData* GetDeferredRenderingData() const
+	{
+		return deferredRenderingData_;
+	}
+
 protected:
 	void GenerateBuffers();
 
 private:
+	DeferredRenderingData* deferredRenderingData_{ nullptr };
 	Camera* camera_{ nullptr };
 	FrameBuffer* framebuffer_{ nullptr };
 	Texture* texture_{ nullptr };

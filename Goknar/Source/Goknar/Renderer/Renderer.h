@@ -75,6 +75,7 @@ public:
 	DeferredRenderingData();
 	~DeferredRenderingData();
 
+	void PreInit();
 	void Init();
 	void BindGeometryBuffer();
 	void UnbindGeometryBuffer();

@@ -11,7 +11,7 @@
 
 RenderTarget::RenderTarget()
 {
-
+	deferredRenderingData_ = new DeferredRenderingData();
 }
 
 RenderTarget::~RenderTarget()
@@ -24,6 +24,7 @@ RenderTarget::~RenderTarget()
 	}
 	delete texture_;
 	delete framebuffer_;
+	delete deferredRenderingData_;
 }
 
 void RenderTarget::Init()
@@ -38,6 +39,11 @@ void RenderTarget::Init()
 
 	GenerateBuffers();
 
+	deferredRenderingData_->geometryBufferData->bufferWidth = frameSize_.x;
+	deferredRenderingData_->geometryBufferData->bufferHeight = frameSize_.y;
+	deferredRenderingData_->PreInit();
+	deferredRenderingData_->Init();
+
 	engine->GetRenderer()->AddRenderTarget(this);
 }
 
@@ -47,6 +53,8 @@ void RenderTarget::SetFrameSize(const Vector2& frameSize)
 
 	camera_->SetImageWidth(frameSize_.x);
 	camera_->SetImageHeight(frameSize_.y);
+
+	deferredRenderingData_->OnViewportSizeChanged(frameSize_.x, frameSize_.y);
 
 	delete texture_;
 	delete framebuffer_;

@@ -17,7 +17,8 @@ enum class GOKNAR_API CameraProjection : unsigned char
 enum class GOKNAR_API CameraType : unsigned char
 {
 	Scene,
-	Shadow
+	Shadow, 
+	RenderTarget
 };
 
 class GOKNAR_API Camera
