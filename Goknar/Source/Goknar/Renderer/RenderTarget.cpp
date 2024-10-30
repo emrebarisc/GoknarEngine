@@ -59,11 +59,18 @@ void RenderTarget::SetFrameSize(const Vector2& frameSize)
 	delete texture_;
 	delete framebuffer_;
 
+	if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Forward)
+	{
+		glDeleteRenderbuffers(1, &depthRenderbuffer_);
+	}
+
 	GenerateBuffers();
 }
 
 void RenderTarget::GenerateBuffers()
 {
+	framebuffer_ = new FrameBuffer();
+
 	texture_ = new Texture();
 	texture_->SetTextureDataType(TextureDataType::DYNAMIC);
 	texture_->SetTextureFormat(TextureFormat::RGB);
@@ -78,8 +85,6 @@ void RenderTarget::GenerateBuffers()
 	texture_->Init();
 	texture_->PostInit();
 
-	framebuffer_ = new FrameBuffer();
-
 	framebuffer_->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT0, texture_);
 
 	framebuffer_->PreInit();
@@ -88,5 +93,14 @@ void RenderTarget::GenerateBuffers()
 	framebuffer_->Bind();
 	framebuffer_->Attach();
 	framebuffer_->DrawBuffers();
+
+	if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Forward)
+	{
+		glGenRenderbuffers(1, &depthRenderbuffer_);
+		glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer_);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, frameSize_.x, frameSize_.y);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer_);
+	}
+
 	framebuffer_->Unbind();
 }

@@ -34,6 +34,8 @@ void Light::PreInit()
 		shadowMapFrameBuffer_->SetFrameBufferBindTarget(FrameBufferBindTarget::FRAMEBUFFER);
 		shadowMapFrameBuffer_->AddTextureAttachment(FrameBufferAttachment::DEPTH_ATTACHMENT, shadowMapTexture_);
 		shadowMapFrameBuffer_->PreInit();
+		shadowMapFrameBuffer_->Init();
+		shadowMapFrameBuffer_->PostInit();
 
 		shadowMapTexture_->SetWidth(shadowWidth_);
 		shadowMapTexture_->SetHeight(shadowHeight_);
@@ -42,6 +44,8 @@ void Light::PreInit()
 		shadowMapTexture_->SetTextureType(TextureType::FLOAT);
 		shadowMapTexture_->SetTextureDataType(TextureDataType::DYNAMIC);
 		shadowMapTexture_->PreInit();
+		shadowMapTexture_->Init();
+		shadowMapTexture_->PostInit();
 		shadowMapTexture_->Bind();
 
 		shadowMapFrameBuffer_->Bind();

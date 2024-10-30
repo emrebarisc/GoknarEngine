@@ -77,6 +77,8 @@ private:
 
 	bool isActive_{ true };
 	bool rerenderShadowMaps_{ true };
+
+	unsigned int depthRenderbuffer_{ 0 };
 };
 
 #endif

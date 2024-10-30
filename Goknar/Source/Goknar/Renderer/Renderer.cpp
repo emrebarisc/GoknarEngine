@@ -390,26 +390,30 @@ void Renderer::RenderCurrentFrame()
 
 		if (renderTarget->GetIsActive())
 		{
+			cameraManager->SetActiveCamera(renderTarget->GetCamera());
+
 			if (renderTarget->GetRerenderShadowMaps())
 			{
 				GetLightManager()->RenderShadowMaps();
 			}
-			
-			deferredRenderingData_ = renderTarget->GetDeferredRenderingData();
-			cameraManager->SetActiveCamera(renderTarget->GetCamera());
+
+			FrameBuffer* renderTargetFrameBuffer = renderTarget->GetFrameBuffer();
 
 			if (GetMainRenderType() == RenderPassType::Forward)
 			{
-				renderTarget->GetFrameBuffer()->Bind();
+				renderTargetFrameBuffer->Bind();
 				Render(RenderPassType::Forward);
-				renderTarget->GetFrameBuffer()->Unbind();
+				renderTargetFrameBuffer->Unbind();
 			}
 			else if (GetMainRenderType() == RenderPassType::Deferred)
 			{
+				deferredRenderingData_ = renderTarget->GetDeferredRenderingData();
+
 				Render(RenderPassType::GeometryBuffer);
-				renderTarget->GetFrameBuffer()->Bind();
+
+				renderTargetFrameBuffer->Bind();
 				Render(RenderPassType::Deferred);
-				renderTarget->GetFrameBuffer()->Unbind();
+				renderTargetFrameBuffer->Unbind();
 			}
 
 		}
