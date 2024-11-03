@@ -983,6 +983,17 @@ void SceneParser::ParseStaticMeshComponentValues(StaticMeshComponent* staticMesh
 			staticMeshComponent->SetMesh(staticMesh);
 		}
 	}
+
+	dataElement = componentElement->FirstChildElement("RenderMask");
+	if (dataElement)
+	{
+		stream << dataElement->GetText() << std::endl;
+		std::string renderMaskString;
+		stream >> renderMaskString;
+		int renderMask = std::stoi(renderMaskString);
+		staticMeshComponent->GetMeshInstance()->SetRenderMask(renderMask);
+	}
+
 	stream.clear();
 }
 
@@ -1532,6 +1543,10 @@ void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* c
 	tinyxml2::XMLElement* staticMeshComponentMeshPathElement = xmlDocument.NewElement("MeshPath"); 
 	staticMeshComponentMeshPathElement->SetText(staticMeshComponent->GetMeshInstance()->GetMesh()->GetPath().substr(ContentDir.size()).c_str());
 	parentElement->InsertEndChild(staticMeshComponentMeshPathElement);
+
+	tinyxml2::XMLElement* staticMeshInstanceRenderMaskElement = xmlDocument.NewElement("RenderMask");
+	staticMeshInstanceRenderMaskElement->SetText(staticMeshComponent->GetMeshInstance()->GetRenderMask());
+	parentElement->InsertEndChild(staticMeshInstanceRenderMaskElement);
 }
 
 void SceneParser::GetXMLElement_BoxCollisionComponent(const BoxCollisionComponent* const boxCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)

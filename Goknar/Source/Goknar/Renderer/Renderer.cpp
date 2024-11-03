@@ -514,6 +514,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				{
 					if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !opaqueStaticMeshInstance->GetIsCastingShadow()) continue;
+					if (!(activeCamera->GetRenderMask() & opaqueStaticMeshInstance->GetRenderMask())) continue;
 
 					const MeshUnit* mesh = opaqueStaticMeshInstance->GetMesh();
 					opaqueStaticMeshInstance->Render(renderPassType);
@@ -526,6 +527,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				{
 					if (!maskedStaticMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !maskedStaticMeshInstance->GetIsCastingShadow()) continue;
+					if (!(activeCamera->GetRenderMask() & maskedStaticMeshInstance->GetRenderMask())) continue;
 
 					const MeshUnit* mesh = maskedStaticMeshInstance->GetMesh();
 					maskedStaticMeshInstance->Render(renderPassType);
@@ -546,6 +548,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				{
 					if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !opaqueSkeletalMeshInstance->GetIsCastingShadow()) continue;
+					if (!(activeCamera->GetRenderMask() & opaqueSkeletalMeshInstance->GetRenderMask())) continue;
 
 					const SkeletalMesh* skeletalMesh = opaqueSkeletalMeshInstance->GetMesh();
 					opaqueSkeletalMeshInstance->Render(renderPassType);
@@ -558,7 +561,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				{
 					if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !maskedSkeletalMeshInstance->GetIsCastingShadow()) continue;
-
+					if (!(activeCamera->GetRenderMask() & maskedSkeletalMeshInstance->GetRenderMask())) continue;
 
 					const SkeletalMesh* skeletalMesh = maskedSkeletalMeshInstance->GetMesh();
 					maskedSkeletalMeshInstance->Render(renderPassType);
@@ -579,6 +582,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				{
 					if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !opaqueDynamicMeshInstance->GetIsCastingShadow()) continue;
+					if (!(activeCamera->GetRenderMask() & opaqueDynamicMeshInstance->GetRenderMask())) continue;
 
 					const MeshUnit* mesh = opaqueDynamicMeshInstance->GetMesh();
 					opaqueDynamicMeshInstance->Render(renderPassType);
@@ -591,6 +595,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				{
 					if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !maskedDynamicMeshInstance->GetIsCastingShadow()) continue;
+					if (!(activeCamera->GetRenderMask() & maskedDynamicMeshInstance->GetRenderMask())) continue;
 
 					const MeshUnit* mesh = maskedDynamicMeshInstance->GetMesh();
 					maskedDynamicMeshInstance->Render(renderPassType);
@@ -619,6 +624,8 @@ void Renderer::Render(RenderPassType renderPassType)
 		for (StaticMeshInstance* transparentStaticMeshInstance : transparentStaticMeshInstances_)
 		{
 			if (!transparentStaticMeshInstance->GetIsRendered()) continue;
+			if (!(activeCamera->GetRenderMask() & transparentStaticMeshInstance->GetRenderMask())) continue;
+
 			const MeshUnit* mesh = transparentStaticMeshInstance->GetMesh();
 
 			transparentStaticMeshInstance->Render(RenderPassType::Forward);
@@ -631,6 +638,7 @@ void Renderer::Render(RenderPassType renderPassType)
 		for (SkeletalMeshInstance* transparentSkeletalMeshInstance : transparentSkeletalMeshInstances_)
 		{
 			if (!transparentSkeletalMeshInstance->GetIsRendered()) continue;
+			if (!(activeCamera->GetRenderMask() & transparentSkeletalMeshInstance->GetRenderMask())) continue;
 
 			const SkeletalMesh* skeletalMesh = transparentSkeletalMeshInstance->GetMesh();
 			transparentSkeletalMeshInstance->Render(RenderPassType::Forward);
@@ -643,6 +651,8 @@ void Renderer::Render(RenderPassType renderPassType)
 		for (DynamicMeshInstance* transparentDynamicMeshInstance : transparentDynamicMeshInstances_)
 		{
 			if (!transparentDynamicMeshInstance->GetIsRendered()) continue;
+			if (!(activeCamera->GetRenderMask() & transparentDynamicMeshInstance->GetRenderMask())) continue;
+
 			const MeshUnit* mesh = transparentDynamicMeshInstance->GetMesh();
 
 			transparentDynamicMeshInstance->Render(RenderPassType::Forward);

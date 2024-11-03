@@ -82,6 +82,16 @@ public:
 		return isCastingShadow_;
 	}
 
+	unsigned int GetRenderMask() const
+	{
+		return renderMask_;
+	}
+
+	void SetRenderMask(unsigned int renderMask)
+	{
+		renderMask_ = renderMask;
+	}
+
 	inline virtual void Destroy();
 
 protected:
@@ -94,6 +104,7 @@ protected:
 
 	MaterialInstance* material_{ nullptr };
 private:
+	unsigned int renderMask_{ 0b1 };
 
 	int instanceID_{ lastComponentId_++ };
 
