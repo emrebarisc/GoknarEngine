@@ -49,6 +49,11 @@ void RenderTarget::Init()
 
 void RenderTarget::SetFrameSize(const Vector2& frameSize)
 {
+	if ((frameSize_ - frameSize).Length() < EPSILON)
+	{
+		return;
+	}
+
 	frameSize_ = frameSize;
 
 	camera_->SetImageWidth(frameSize_.x);

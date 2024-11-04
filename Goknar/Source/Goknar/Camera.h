@@ -7,6 +7,7 @@
 #include "Goknar/Log.h"
 
 class CameraManager;
+class Box;
 
 enum class GOKNAR_API CameraProjection : unsigned char
 {
@@ -300,15 +301,20 @@ public:
 
 	virtual void Destroy();
 
+	bool IsAABBVisible(const Box& aabb, const Matrix& worldTransformationMatrix) const;
+
 protected:
 	virtual ~Camera();
 
 private:
 	void LookAt();
+	void UpdateFrustumPlanes();
 
 	Matrix viewMatrix_{ Matrix::IdentityMatrix };
 	Matrix projectionMatrix_{ Matrix::IdentityMatrix };
 	Matrix viewProjectionMatrix_{ Matrix::IdentityMatrix };
+
+	Vector4 frustumPlanes_[6];
 
 	// Left Right Bottom Top
 	Vector4 nearPlane_{ Vector4(-0.5f, 0.5f, -0.28125f, 0.28125f) };

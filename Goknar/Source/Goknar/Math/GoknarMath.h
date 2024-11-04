@@ -592,6 +592,23 @@ struct GOKNAR_API Vector3
 		z = mathClamp(z, min, max);
 	}
 
+	static inline Vector3 Min(const Vector3& a, const Vector3& b)
+	{
+		return Vector3(
+			GoknarMath::Min(a.x, b.x),
+			GoknarMath::Min(a.y, b.y),
+			GoknarMath::Min(a.z, b.z)
+		);
+	}
+	
+	static inline Vector3 Max(const Vector3& a, const Vector3& b) {
+		return Vector3(
+			GoknarMath::Max(a.x, b.x),
+			GoknarMath::Max(a.y, b.y),
+			GoknarMath::Max(a.z, b.z)
+		);
+	}
+
 	void ConvertDegreeToRadian();
 	void ConvertRadianToDegree();
 
@@ -656,6 +673,33 @@ struct GOKNAR_API Vector4
 	}
 
 	Vector4(const Vector3& rhs, float value = 0);
+
+	inline float Length() const
+	{
+		return sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2) + std::pow(w, 2));
+	}
+
+	inline void Normalize()
+	{
+		*this /= this->Length();
+	}
+
+	static inline void Normalize(Vector4& vec)
+	{
+		vec = vec / vec.Length();
+	}
+
+	inline Vector4 GetNormalized() const
+	{
+		float length = this->Length();
+
+		if (length != 0.f)
+		{
+			return *this / this->Length();
+		}
+
+		return Vector3::ZeroVector;
+	}
 
 	Vector4 operator*(const Matrix &rhs) const;
 

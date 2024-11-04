@@ -564,7 +564,7 @@ public:
         return Vector3(m[2], m[6], m[10]);
     }
 
-    inline Vector3 GetTraslation() const
+    inline Vector3 GetTranslation() const
     {
         return Vector3
         {

@@ -17,6 +17,8 @@
 
 #include "Goknar/Delegates/Delegate.h"
 
+#include "Goknar/Geometry/Rect.h"
+
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
@@ -428,14 +430,18 @@ void Renderer::RenderCurrentFrame()
 	{
 		GetLightManager()->RenderShadowMaps();
 
+		countDrawCalls = true;
+		drawCallCount = 0;
 		if (GetMainRenderType() == RenderPassType::Forward)
 		{
 			//testFrameBuffer.Bind();
 			Render(RenderPassType::Forward);
+			countDrawCalls = false;
 		}
 		else if (GetMainRenderType() == RenderPassType::Deferred)
 		{
 			Render(RenderPassType::GeometryBuffer);
+			countDrawCalls = false;
 			//testFrameBuffer.Bind();
 			Render(RenderPassType::Deferred);
 		}
@@ -443,6 +449,7 @@ void Renderer::RenderCurrentFrame()
 		//testFrameBuffer.Unbind();
 		//postProcessingEffect.Render();
 	}
+	countDrawCalls = false;
 
 	PrepareSkeletalMeshInstancesForTheNextFrame();
 }
@@ -515,6 +522,9 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (!opaqueStaticMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !opaqueStaticMeshInstance->GetIsCastingShadow()) continue;
 					if (!(activeCamera->GetRenderMask() & opaqueStaticMeshInstance->GetRenderMask())) continue;
+					if (!activeCamera->IsAABBVisible(opaqueStaticMeshInstance->GetMesh()->GetAABB(), opaqueStaticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
+					
+					if(countDrawCalls) ++drawCallCount;
 
 					const MeshUnit* mesh = opaqueStaticMeshInstance->GetMesh();
 					opaqueStaticMeshInstance->Render(renderPassType);
@@ -528,6 +538,9 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (!maskedStaticMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !maskedStaticMeshInstance->GetIsCastingShadow()) continue;
 					if (!(activeCamera->GetRenderMask() & maskedStaticMeshInstance->GetRenderMask())) continue;
+					if (!activeCamera->IsAABBVisible(maskedStaticMeshInstance->GetMesh()->GetAABB(), maskedStaticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
+					
+					if(countDrawCalls) ++drawCallCount;
 
 					const MeshUnit* mesh = maskedStaticMeshInstance->GetMesh();
 					maskedStaticMeshInstance->Render(renderPassType);
@@ -549,6 +562,9 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (!opaqueSkeletalMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !opaqueSkeletalMeshInstance->GetIsCastingShadow()) continue;
 					if (!(activeCamera->GetRenderMask() & opaqueSkeletalMeshInstance->GetRenderMask())) continue;
+					if (!activeCamera->IsAABBVisible(opaqueSkeletalMeshInstance->GetMesh()->GetAABB(), opaqueSkeletalMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
+					
+					if(countDrawCalls) ++drawCallCount;
 
 					const SkeletalMesh* skeletalMesh = opaqueSkeletalMeshInstance->GetMesh();
 					opaqueSkeletalMeshInstance->Render(renderPassType);
@@ -562,6 +578,9 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (!maskedSkeletalMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !maskedSkeletalMeshInstance->GetIsCastingShadow()) continue;
 					if (!(activeCamera->GetRenderMask() & maskedSkeletalMeshInstance->GetRenderMask())) continue;
+					if (!activeCamera->IsAABBVisible(maskedSkeletalMeshInstance->GetMesh()->GetAABB(), maskedSkeletalMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
+					
+					if(countDrawCalls) ++drawCallCount;
 
 					const SkeletalMesh* skeletalMesh = maskedSkeletalMeshInstance->GetMesh();
 					maskedSkeletalMeshInstance->Render(renderPassType);
@@ -583,6 +602,9 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (!opaqueDynamicMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !opaqueDynamicMeshInstance->GetIsCastingShadow()) continue;
 					if (!(activeCamera->GetRenderMask() & opaqueDynamicMeshInstance->GetRenderMask())) continue;
+					if (!activeCamera->IsAABBVisible(opaqueDynamicMeshInstance->GetMesh()->GetAABB(), opaqueDynamicMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
+					
+					if(countDrawCalls) ++drawCallCount;
 
 					const MeshUnit* mesh = opaqueDynamicMeshInstance->GetMesh();
 					opaqueDynamicMeshInstance->Render(renderPassType);
@@ -596,6 +618,9 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (!maskedDynamicMeshInstance->GetIsRendered()) continue;
 					if (isShadowRender && !maskedDynamicMeshInstance->GetIsCastingShadow()) continue;
 					if (!(activeCamera->GetRenderMask() & maskedDynamicMeshInstance->GetRenderMask())) continue;
+					if (!activeCamera->IsAABBVisible(maskedDynamicMeshInstance->GetMesh()->GetAABB(), maskedDynamicMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
+					
+					if(countDrawCalls) ++drawCallCount;
 
 					const MeshUnit* mesh = maskedDynamicMeshInstance->GetMesh();
 					maskedDynamicMeshInstance->Render(renderPassType);
@@ -625,6 +650,11 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			if (!transparentStaticMeshInstance->GetIsRendered()) continue;
 			if (!(activeCamera->GetRenderMask() & transparentStaticMeshInstance->GetRenderMask())) continue;
+			if (!activeCamera->IsAABBVisible(transparentStaticMeshInstance->GetMesh()->GetAABB(), transparentStaticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
+			else
+			{
+				if(countDrawCalls) ++drawCallCount;
+			}
 
 			const MeshUnit* mesh = transparentStaticMeshInstance->GetMesh();
 
@@ -639,6 +669,11 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			if (!transparentSkeletalMeshInstance->GetIsRendered()) continue;
 			if (!(activeCamera->GetRenderMask() & transparentSkeletalMeshInstance->GetRenderMask())) continue;
+			if (!activeCamera->IsAABBVisible(transparentSkeletalMeshInstance->GetMesh()->GetAABB(), transparentSkeletalMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
+			else
+			{
+				if(countDrawCalls) ++drawCallCount;
+			}
 
 			const SkeletalMesh* skeletalMesh = transparentSkeletalMeshInstance->GetMesh();
 			transparentSkeletalMeshInstance->Render(RenderPassType::Forward);
@@ -652,6 +687,11 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			if (!transparentDynamicMeshInstance->GetIsRendered()) continue;
 			if (!(activeCamera->GetRenderMask() & transparentDynamicMeshInstance->GetRenderMask())) continue;
+			if (!activeCamera->IsAABBVisible(transparentDynamicMeshInstance->GetMesh()->GetAABB(), transparentDynamicMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
+			else
+			{
+				if(countDrawCalls) ++drawCallCount;
+			}
 
 			const MeshUnit* mesh = transparentDynamicMeshInstance->GetMesh();
 

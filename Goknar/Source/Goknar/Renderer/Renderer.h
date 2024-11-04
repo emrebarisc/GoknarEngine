@@ -205,6 +205,8 @@ public:
 		return drawOnWindow_;
 	}
 
+	int drawCallCount{ 0 };
+	bool countDrawCalls{ false };
 
 private:
 	void BindStaticVBO();
