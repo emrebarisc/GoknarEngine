@@ -6,6 +6,7 @@
 #include "Engine.h"
 #include "Managers/CameraManager.h"
 #include "Renderer/Framebuffer.h"
+#include "Renderer/RenderBuffer.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Texture.h"
 
@@ -22,9 +23,12 @@ RenderTarget::~RenderTarget()
 	{
 		camera_->Destroy();
 	}
+
 	delete texture_;
 	delete framebuffer_;
 	delete deferredRenderingData_;
+
+	delete depthRenderbuffer_;
 }
 
 void RenderTarget::Init()
@@ -64,10 +68,7 @@ void RenderTarget::SetFrameSize(const Vector2& frameSize)
 	delete texture_;
 	delete framebuffer_;
 
-	if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Forward)
-	{
-		glDeleteRenderbuffers(1, &depthRenderbuffer_);
-	}
+	delete depthRenderbuffer_;
 
 	GenerateBuffers();
 }
@@ -99,13 +100,18 @@ void RenderTarget::GenerateBuffers()
 	framebuffer_->Attach();
 	framebuffer_->DrawBuffers();
 
-	if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Forward)
-	{
-		glGenRenderbuffers(1, &depthRenderbuffer_);
-		glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer_);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, frameSize_.x, frameSize_.y);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer_);
-	}
+	depthRenderbuffer_ = new RenderBuffer();
+	depthRenderbuffer_->SetWidth(frameSize_.x);
+	depthRenderbuffer_->SetHeight(frameSize_.y);
+	depthRenderbuffer_->SetRenderBufferAttachment(RenderBufferAttachment::DEPTH_ATTACHMENT);
+	depthRenderbuffer_->SetRenderBufferBindTarget(RenderBufferBindTarget::RENDERBUFFER);
+	depthRenderbuffer_->SetRenderBufferInternalType(RenderBufferInternalType::DEPTH);
+
+	depthRenderbuffer_->PreInit();
+	depthRenderbuffer_->Init();
+	depthRenderbuffer_->PostInit();
+
+	depthRenderbuffer_->BindToFrameBuffer();
 
 	framebuffer_->Unbind();
 }

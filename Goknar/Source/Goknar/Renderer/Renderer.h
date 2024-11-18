@@ -17,6 +17,7 @@ class LightManager;
 
 class Texture;
 class FrameBuffer;
+class RenderBuffer;
 class Shader;
 
 class DynamicMeshInstance;
@@ -50,19 +51,19 @@ public:
 	void Unbind();
 
 	void GenerateBuffers();
-	void BindGBufferDepth();
+	void BindGBufferDepth(const RenderTarget* renderTarget);
 
 	void OnViewportSizeChanged(int width, int height);
 
 	FrameBuffer* geometryFrameBuffer{ nullptr };
+
+	RenderBuffer* depthRenderbuffer{ nullptr };
 
 	Texture* worldPositionTexture{ nullptr };
 	Texture* worldNormalTexture{ nullptr };
 	Texture* diffuseTexture{ nullptr };
 	Texture* specularTexture{ nullptr };
 	Texture* emmisiveColorTexture{ nullptr };
-
-	unsigned int depthRenderbuffer{ 0 };
 
 	int bufferWidth{ 1920 };
 	int bufferHeight{ 1080 };
@@ -82,7 +83,7 @@ public:
 
 	void SetShaderTextureUniforms();
 
-	void BindGBufferDepth();
+	void BindGBufferDepth(const RenderTarget* renderTarget);
 
 	void Render();
 
@@ -242,6 +243,8 @@ private:
 
 	std::vector<const PostProcessingEffect*> postProcessingEffects_;
 	std::vector<const RenderTarget*> renderTargets_;
+
+	const RenderTarget* currentRenderTarget_{ nullptr };
 
 	unsigned int totalStaticMeshVertexSize_;
 	unsigned int totalStaticMeshFaceSize_;

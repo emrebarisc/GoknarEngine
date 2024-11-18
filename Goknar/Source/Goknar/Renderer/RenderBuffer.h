@@ -87,9 +87,29 @@ public:
 		return renderBufferBindTarget_;
 	}
 
-	void SetRenderBufferBindTarget(RenderBufferBindTarget renderBBindTarget)
+	void SetRenderBufferBindTarget(RenderBufferBindTarget renderBindTarget)
 	{
-		renderBufferBindTarget_ = renderBBindTarget;
+		renderBufferBindTarget_ = renderBindTarget;
+	}
+	
+	RenderBufferAttachment GetRenderBufferAttachment() const
+	{
+		return renderBufferAttachment_;
+	}
+
+	void SetRenderBufferAttachment(RenderBufferAttachment renderBufferAttachment)
+	{
+		renderBufferAttachment_ = renderBufferAttachment;
+	}
+
+	RenderBufferInternalType GetRenderBufferInternalType() const
+	{
+		return renderBufferInternalType_;
+	}
+
+	void SetRenderBufferInternalType(RenderBufferInternalType renderBufferInternalType)
+	{
+		renderBufferInternalType_ = renderBufferInternalType;
 	}
 
 	void SetWidth(int width)

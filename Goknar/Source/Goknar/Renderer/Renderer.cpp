@@ -390,6 +390,8 @@ void Renderer::RenderCurrentFrame()
 	{
 		const RenderTarget* renderTarget = *renderTargetIterator;
 
+		currentRenderTarget_ = renderTarget;
+
 		if (renderTarget->GetIsActive())
 		{
 			cameraManager->SetActiveCamera(renderTarget->GetCamera());
@@ -423,6 +425,8 @@ void Renderer::RenderCurrentFrame()
 		renderTargetIterator++;
 	}
 
+	currentRenderTarget_ = nullptr;
+
 	cameraManager->SetActiveCamera(activeCamera);
 	deferredRenderingData_ = mainDeferredRenderingData;
 
@@ -449,6 +453,12 @@ void Renderer::RenderCurrentFrame()
 		//testFrameBuffer.Unbind();
 		//postProcessingEffect.Render();
 	}
+	else
+	{
+		glClearColor(0.f, 0.f, 0.f, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
 	countDrawCalls = false;
 
 	PrepareSkeletalMeshInstancesForTheNextFrame();
@@ -633,7 +643,13 @@ void Renderer::Render(RenderPassType renderPassType)
 	}
 	else
 	{
-		deferredRenderingData_->BindGBufferDepth();
+		deferredRenderingData_->BindGBufferDepth(currentRenderTarget_);
+
+		if(currentRenderTarget_)
+		{
+			currentRenderTarget_->GetFrameBuffer()->Bind();
+			currentRenderTarget_->GetDepthRenderBuffer()->Bind();
+		}
 	}
 
 	if (renderPassType == RenderPassType::Forward ||
@@ -1227,6 +1243,7 @@ GeometryBufferData::~GeometryBufferData()
 	delete specularTexture;
 	delete emmisiveColorTexture;
 
+	delete depthRenderbuffer;
 	delete geometryFrameBuffer;
 }
 
@@ -1340,14 +1357,20 @@ void GeometryBufferData::GenerateBuffers()
 
 	geometryFrameBuffer->DrawBuffers();
 
-	glGenRenderbuffers(1, &depthRenderbuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, bufferWidth, bufferHeight);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
+	depthRenderbuffer = new RenderBuffer();
+	depthRenderbuffer->SetWidth(bufferWidth);
+	depthRenderbuffer->SetHeight(bufferHeight);
+	depthRenderbuffer->SetRenderBufferAttachment(RenderBufferAttachment::DEPTH_ATTACHMENT);
+	depthRenderbuffer->SetRenderBufferBindTarget(RenderBufferBindTarget::RENDERBUFFER);
+	depthRenderbuffer->SetRenderBufferInternalType(RenderBufferInternalType::DEPTH);
+
+	depthRenderbuffer->PreInit();
+	depthRenderbuffer->Init();
+	depthRenderbuffer->PostInit();
+
+	depthRenderbuffer->BindToFrameBuffer();
 
 	geometryFrameBuffer->Unbind();
-
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	EXIT_ON_GL_ERROR("GeometryBufferData::GenerateBuffers");
 }
@@ -1362,18 +1385,28 @@ void GeometryBufferData::OnViewportSizeChanged(int width, int height)
 
 	delete geometryFrameBuffer;
 
-	glDeleteRenderbuffers(1, &depthRenderbuffer);
+	delete depthRenderbuffer;
 
 	bufferWidth = width;
 	bufferHeight = height;
 	GenerateBuffers();
 }
 
-void GeometryBufferData::BindGBufferDepth()
+void GeometryBufferData::BindGBufferDepth(const RenderTarget* renderTarget)
 {
 	geometryFrameBuffer->Bind(FrameBufferBindTarget::READ_FRAMEBUFFER);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glBlitFramebuffer(0, 0, bufferWidth, bufferHeight,
+
+	if (renderTarget)
+	{
+		renderTarget->GetFrameBuffer()->Bind(FrameBufferBindTarget::DRAW_FRAMEBUFFER);
+	}
+	else
+	{
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	}
+
+	glBlitFramebuffer(
+		0, 0, bufferWidth, bufferHeight,
 		0, 0, bufferWidth, bufferHeight,
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 }
@@ -1495,7 +1528,7 @@ void DeferredRenderingData::BindGeometryBufferTextures(Shader* shader)
 	geometryBufferData->emmisiveColorTexture->Bind(shader);
 }
 
-void DeferredRenderingData::BindGBufferDepth()
+void DeferredRenderingData::BindGBufferDepth(const RenderTarget* renderTarget)
 {
-	geometryBufferData->BindGBufferDepth();
+	geometryBufferData->BindGBufferDepth(renderTarget);
 }

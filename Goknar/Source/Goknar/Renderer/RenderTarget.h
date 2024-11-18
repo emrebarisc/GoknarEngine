@@ -5,8 +5,9 @@
 #include "Math/GoknarMath.h"
 
 class Camera;
-class FrameBuffer;
 class DeferredRenderingData;
+class FrameBuffer;
+class RenderBuffer;
 class Texture;
 
 class GOKNAR_API RenderTarget
@@ -64,6 +65,11 @@ public:
 		return deferredRenderingData_;
 	}
 
+	RenderBuffer* GetDepthRenderBuffer() const
+	{
+		return depthRenderbuffer_;
+	}
+
 protected:
 	void GenerateBuffers();
 
@@ -71,14 +77,13 @@ private:
 	DeferredRenderingData* deferredRenderingData_{ nullptr };
 	Camera* camera_{ nullptr };
 	FrameBuffer* framebuffer_{ nullptr };
+	RenderBuffer* depthRenderbuffer_{ nullptr };
 	Texture* texture_{ nullptr };
 
 	Vector2 frameSize_{ 1024, 1024 };
 
 	bool isActive_{ true };
 	bool rerenderShadowMaps_{ true };
-
-	unsigned int depthRenderbuffer_{ 0 };
 };
 
 #endif
