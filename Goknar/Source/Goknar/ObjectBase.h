@@ -55,7 +55,7 @@ public:
 	
 	virtual void Destroy();
 
-	Component* GetRootComponent() const
+	inline Component* GetRootComponent() const
 	{
 		return rootComponent_;
 	}
@@ -63,87 +63,87 @@ public:
 	void SetRootComponent(Component* rootComponent);
 	
     virtual void SetIsTickable(bool tickable);
-	bool GetIsTickable() const
+	inline bool GetIsTickable() const
 	{
 		return isTickable_; 
 	}
 
-	bool GetIsTickEnabled() const
+	inline bool GetIsTickEnabled() const
 	{
 		return isTickEnabled_;
 	}
 
-	void SetIsTickEnabled(bool isTickEnabled)
+	inline void SetIsTickEnabled(bool isTickEnabled)
 	{
 		isTickEnabled_ = isTickEnabled;
 	}
 
-	bool GetIsInitialized() const
+	inline bool GetIsInitialized() const
 	{
 		return isInitialized_;
 	}
 
 	virtual void SetWorldPosition(const Vector3& position, bool updateWorldTransformationMatrix = true);
-	const Vector3& GetWorldPosition() const
+	inline const Vector3& GetWorldPosition() const
 	{
 		return worldPosition_;
 	}
 
 	virtual void SetWorldRotation(const Quaternion& rotation, bool updateWorldTransformationMatrix = true);
-	const Quaternion& GetWorldRotation() const
+	inline const Quaternion& GetWorldRotation() const
 	{
 		return worldRotation_;
 	}
 
 	virtual void SetWorldScaling(const Vector3& scaling, bool updateWorldTransformationMatrix = true);
-	const Vector3& GetWorldScaling() const
+	inline const Vector3& GetWorldScaling() const
 	{
 		return worldScaling_;
 	}
 
-	const Matrix& GetWorldTransformationMatrix() const
+	inline const Matrix& GetWorldTransformationMatrix() const
 	{
 		return worldTransformationMatrix_;
 	}
 
-	const Matrix& GetWorldTransformationMatrixWithoutScaling() const
+	inline const Matrix& GetWorldTransformationMatrixWithoutScaling() const
 	{
 		return worldTransformationMatrixWithoutScaling_;
 	}
 
-	Vector3 GetForwardVector() const
+	inline Vector3 GetForwardVector() const
 	{
 		return worldTransformationMatrix_.GetForwardVector().GetNormalized();
 	}
 
-	Vector3 GetLeftVector() const
+	inline Vector3 GetLeftVector() const
 	{
 		return worldTransformationMatrix_.GetLeftVector().GetNormalized();
 	}
 
-	Vector3 GetUpVector() const
+	inline Vector3 GetUpVector() const
 	{
 		return worldTransformationMatrix_.GetUpVector().GetNormalized();
 	}
 
-	std::string GetName() const
+	inline std::string GetName() const
 	{
 		return std::to_string(GUID_) + "_" + name_;
 	}
 
-	std::string GetNameWithoutId() const
+	inline std::string GetNameWithoutId() const
 	{
 		return name_;
 	}
 
-	void SetName(const std::string& name)
+	inline void SetName(const std::string& name)
 	{
 		name_ = name;
 	}
 
 	virtual void SetIsActive(bool isActive);
 
-	bool GetIsActive() const
+	inline bool GetIsActive() const
 	{
 		return isActive_;
 	}
@@ -157,7 +157,7 @@ public:
 	template<class T>
 	std::vector<T*> GetComponentsOfType();
 
-	const std::vector<Component*>& GetComponents() const
+	inline const std::vector<Component*>& GetComponents() const
 	{
 		return components_;
 	}
@@ -165,19 +165,19 @@ public:
 	void AttachToSocket(SocketComponent* socketComponent);
 	void RemoveFromSocket(SocketComponent* socketComponent);
 
-	ObjectBase* GetParent() const
+	inline ObjectBase* GetParent() const
 	{
 		return parent_;
 	}
 
 	void SetParent(ObjectBase* parent, SnappingRule snappingRule = SnappingRule::KeepWorldAll, bool updateWorldTransformation = true);
 
-	void AddChild(ObjectBase* child)
+	inline void AddChild(ObjectBase* child)
 	{
 		children_.push_back(child);
 	}
 	void RemoveChild(ObjectBase* child);
-	const std::vector<ObjectBase*>& GetChildren() const
+	inline const std::vector<ObjectBase*>& GetChildren() const
 	{
 		return children_;
 	}
@@ -187,7 +187,7 @@ public:
 	Vector3 GetRelativeDirectionInWorldSpace(const Vector3& relativeDirection);
 	Vector3 GetWorldDirectionInRelativeSpace(const Vector3& directionInWorldSpace);
 
-	int GetGUID() const
+	inline int GetGUID() const
 	{
 		return GUID_;
 	}
