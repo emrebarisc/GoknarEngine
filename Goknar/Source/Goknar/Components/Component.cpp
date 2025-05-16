@@ -151,6 +151,14 @@ void Component::UpdateComponentToWorldTransformationMatrix()
 		worldPosition_ = owner_->GetWorldPosition();
 		worldRotation_ = owner_->GetWorldRotation();
 		worldScaling_ = owner_->GetWorldScaling();
+
+		ObjectBase* parentOfOwner = owner_->GetParent();
+		if (parentOfOwner)
+		{
+			worldPosition_ += parentOfOwner->GetWorldPosition();
+			worldRotation_ = parentOfOwner->GetWorldRotation() * worldRotation_;
+			worldScaling_ *= parentOfOwner->GetWorldScaling();
+		}
 	}
 	else
 	{

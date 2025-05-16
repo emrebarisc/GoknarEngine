@@ -89,7 +89,7 @@ void OverlappingPhysicsObject::UpdateWorldTransformationMatrix()
 
     btTransform collisionObjectTransform;
     bulletCollisionObject_->setWorldTransform(btTransform(
-        PhysicsUtils::FromQuaternionToBtQuaternion(worldRotation_),
-        PhysicsUtils::FromVector3ToBtVector3(worldPosition_))
+        PhysicsUtils::FromQuaternionToBtQuaternion(collisionComponent_->GetWorldRotation()),
+        PhysicsUtils::FromVector3ToBtVector3(collisionComponent_->GetWorldPosition()))
     );
 }
