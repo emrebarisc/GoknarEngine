@@ -39,6 +39,12 @@ struct GOKNAR_API PhysicsMovementComponentInitializationData
 	bool isImpulseSet{ false };
 };
 
+struct GOKNAR_API ForceMovementData
+{
+	Vector3 movement;
+	float duration;
+};
+
 class GOKNAR_API PhysicsMovementComponent : public Component
 {
 public:
@@ -135,6 +141,9 @@ public:
 		return movementSpeed_;
 	}
 
+	void ForceMovementForDuration(const Vector3& movement, float duration);
+	void RemoveForceMovement();
+
 protected:
 	virtual void DestroyInner() override;
 
@@ -145,6 +154,8 @@ private:
 
 	CollisionComponent* collisionComponent_{ nullptr };
 	OverlappingPhysicsObject* ownerPhysicsObject_{ nullptr };
+
+	ForceMovementData* forceMovementData_{ nullptr };
 
 	float movementSpeed_{ 0.25f };
 };

@@ -16,6 +16,8 @@
 PhysicsMovementComponent::PhysicsMovementComponent(Component* parent) :
 	Component(parent)
 {
+	SetIsTickable(true);
+
 	initializationData_ = new PhysicsMovementComponentInitializationData();
 }
 
@@ -33,6 +35,27 @@ PhysicsMovementComponent::~PhysicsMovementComponent()
 void PhysicsMovementComponent::Destroy()
 {
 	Component::Destroy();
+}
+
+void PhysicsMovementComponent::ForceMovementForDuration(const Vector3& movement, float duration)
+{
+	if (!forceMovementData_)
+	{
+		forceMovementData_ = new ForceMovementData();
+	}
+
+	forceMovementData_->movement = movement;
+	forceMovementData_->duration = duration;
+
+	SetIsTickEnabled(true);
+}
+
+void PhysicsMovementComponent::RemoveForceMovement()
+{
+	delete forceMovementData_;
+	forceMovementData_ = nullptr;
+
+	SetIsTickEnabled(false);
 }
 
 void PhysicsMovementComponent::DestroyInner()
@@ -140,6 +163,20 @@ void PhysicsMovementComponent::BeginGame()
 void PhysicsMovementComponent::TickComponent(float deltaTime)
 {
 	Component::TickComponent(deltaTime);
+
+	if (forceMovementData_)
+	{
+		Vector3 movement = forceMovementData_->movement;
+		forceMovementData_->duration -= deltaTime;
+
+		if (forceMovementData_->duration <= 0.f)
+		{
+			RemoveForceMovement();
+			movement = Vector3::ZeroVector;
+		}
+
+		bulletKinematicCharacterController_->setWalkDirection(PhysicsUtils::FromVector3ToBtVector3(movement));
+	}
 }
 
 void PhysicsMovementComponent::UpdateComponentToWorldTransformationMatrix()
@@ -149,6 +186,11 @@ void PhysicsMovementComponent::UpdateComponentToWorldTransformationMatrix()
 
 void PhysicsMovementComponent::SetMovementDirection(const Vector3& movementDirection)
 {
+	if (forceMovementData_)
+	{
+		return;
+	}
+
 	if (!GetIsInitialized())
 	{
 		initializationData_->isMovementDirectionSet = true;
