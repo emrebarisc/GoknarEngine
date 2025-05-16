@@ -25,45 +25,45 @@ public:
 	virtual void TickComponent(float deltaTime) {}
 
 	void SetPivotPoint(const Vector3& pivotPoint);
-	const Vector3& GetPivotPoint() const
+	inline const Vector3& GetPivotPoint() const
 	{
 		return pivotPoint_;
 	}
 
 	virtual void SetRelativePosition(const Vector3& position, bool updateRelativeTransformationMatrix = true);
-	virtual const Vector3& GetRelativePosition() const
+	inline virtual const Vector3& GetRelativePosition() const
 	{
 		return relativePosition_;
 	}
 
 	virtual void SetRelativeRotation(const Quaternion& rotation, bool updateRelativeTransformationMatrix = true);
-	virtual const Quaternion& GetRelativeRotation() const
+	inline virtual const Quaternion& GetRelativeRotation() const
 	{
 		return relativeRotation_;
 	}
 
 	virtual void SetRelativeScaling(const Vector3& scaling, bool updateRelativeTransformationMatrix = true);
-	virtual const Vector3& GetRelativeScaling() const
+	inline virtual const Vector3& GetRelativeScaling() const
 	{
 		return relativeScaling_;
 	}
 
-	virtual const Vector3& GetWorldPosition() const
+	inline virtual const Vector3& GetWorldPosition() const
 	{
 		return worldPosition_;
 	}
 
-	virtual const Quaternion& GetWorldRotation() const
+	inline virtual const Quaternion& GetWorldRotation() const
 	{
 		return worldRotation_;
 	}
 
-	virtual const Vector3& GetWorldScaling() const
+	inline virtual const Vector3& GetWorldScaling() const
 	{
 		return worldScaling_;
 	}
 
-	virtual const Matrix& GetRelativeTransformationMatrix() const
+	inline virtual const Matrix& GetRelativeTransformationMatrix() const
 	{
 		return relativeTransformationMatrix_;
 	}
@@ -104,24 +104,24 @@ public:
 		return Vector3(worldTransformationMatrix[2], worldTransformationMatrix[6], worldTransformationMatrix[10]).GetNormalized();
 	}
 
-	bool GetIsInitialized() const
+	inline bool GetIsInitialized() const
 	{
 		return isInitialized_;
 	}
 
-	bool GetIsTickable() const
+	inline bool GetIsTickable() const
 	{
 		return isTickable_;
 	}
 
 	void SetIsTickable(bool isTickable);
 
-	bool GetIsTickEnabled() const
+	inline bool GetIsTickEnabled() const
 	{
 		return isTickEnabled_;
 	}
 
-	void SetIsTickEnabled(bool isTickEnabled)
+	inline void SetIsTickEnabled(bool isTickEnabled)
 	{
 		isTickEnabled_ = isTickEnabled;
 	}
@@ -130,13 +130,13 @@ public:
 
 	void SetParent(ObjectBase* objectBase);
 	void SetParent(Component* component);
-	Component* GetParent() const
+	inline Component* GetParent() const
 	{
 		return parent_;
 	}
 
 	void RemoveChild(Component* child);
-	const std::vector<Component*>& GetChildren()
+	inline const std::vector<Component*>& GetChildren()
 	{
 		return children_;
 	}
@@ -147,27 +147,27 @@ public:
 		UpdateRelativeTransformationMatrix();
 	}
 
-	ObjectBase* GetOwner() const
+	inline ObjectBase* GetOwner() const
 	{
 		return owner_;
 	}
 
-	virtual void SetIsActive(bool isActive)
+	inline virtual void SetIsActive(bool isActive)
 	{
 		isActive_ = isActive;
 	}
 
-	bool GetIsActive() const
+	inline bool GetIsActive() const
 	{
 		return isActive_;
 	}
 
-	const Matrix& GetComponentToWorldTransformationMatrix() const
+	inline const Matrix& GetComponentToWorldTransformationMatrix() const
 	{
 		return componentToWorldTransformationMatrix_;
 	}
 
-	unsigned int GetGUID()
+	inline unsigned int GetGUID()
 	{
 		return GUID_;
 	}
