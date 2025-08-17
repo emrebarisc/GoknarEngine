@@ -85,6 +85,8 @@ public:
     inline Quaternion& operator*=(const Quaternion& other);
     inline Quaternion& operator*=(const float scale);
 
+    inline Vector3 operator*(const Vector3& v) const;
+
     static void Slerp(Quaternion& out, const Quaternion& start, const Quaternion& end, float alpha);
 
     bool Equals(const Quaternion& other, float tolerance = EPSILON) const;
@@ -216,6 +218,23 @@ inline Quaternion& Quaternion::operator*=(const float scale)
     w *= scale;
 
     return *this;
+}
+
+inline Vector3 Quaternion::operator*(const Vector3& v) const
+{
+    Vector3 t(
+        2.0f * (y * v.z - z * v.y),
+        2.0f * (z * v.x - x * v.z),
+        2.0f * (x * v.y - y * v.x)
+    );
+    
+    Vector3 result(
+        v.x + w * t.x + (y * t.z - z * t.y),
+        v.y + w * t.y + (z * t.x - x * t.z),
+        v.z + w * t.z + (x * t.y - y * t.x)
+    );
+
+    return result;
 }
 
 float Quaternion::Length() const
