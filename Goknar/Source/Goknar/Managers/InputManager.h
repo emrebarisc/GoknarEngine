@@ -4,12 +4,19 @@
 #include <functional>
 #include <unordered_map>
 #include <memory>
+#include <bitset>
 
 #include "GLFW/glfw3.h"
 
 #include "Goknar/Core.h"
+#include "Goknar/Timer.h"
 #include "Goknar/Delegates/Delegate.h"
 #include "Goknar/Delegates/MulticastDelegate.h"
+
+#define FIRST_PRESSABLE_KEY_CODE GLFW_KEY_SPACE
+#define LAST_PRESSABLE_KEY_CODE GLFW_KEY_Z
+#define MAX_KEYBOARD_KEYS LAST_PRESSABLE_KEY_CODE - FIRST_PRESSABLE_KEY_CODE + 1
+#define MAX_MOUSE_BUTTONS 8
 
 struct GLFWwindow;
 
@@ -234,6 +241,8 @@ public:
 	void Init();
 	void PostInit();
 
+	void InputTick();
+
 	static inline void KeyboardCallback(GLFWwindow *window, int key, int scanCode, int action, int mod);
 	static inline void CursorPositionCallback(GLFWwindow *window, double xPosition, double yPosition);
 	static inline void MouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
@@ -364,21 +373,20 @@ public:
 	}
 
 private:
-	GLFWwindow* window_;
-
-	KeyboardEventMap* keyboardEvents_;
-
 	// Keyboard Delegates
-	std::unordered_map< int, KeyboardDelegates > pressedKeyDelegates_;
-	std::unordered_map< int, KeyboardDelegates > repeatedKeyDelegates_;
-	std::unordered_map< int, KeyboardDelegates > releasedKeyDelegates_;
+	std::unordered_map< int, KeyboardDelegates > pressedKeyDelegates_{};
+	std::unordered_map< int, KeyboardDelegates > repeatedKeyDelegates_{};
+	std::unordered_map< int, KeyboardDelegates > releasedKeyDelegates_{};
 
-	KeyboardListeners keyboardListeners_;
+	std::bitset<MAX_KEYBOARD_KEYS> currentlyPressedKeyboardKeys_{};
+	std::bitset<MAX_MOUSE_BUTTONS> currentlyPressedMouseKeys_{};
 
 	// Mouse Delegates
-	std::unordered_map< int, MouseDelegates > pressedMouseDelegates_;
-	std::unordered_map< int, MouseDelegates > repeatedMouseDelegates_;
-	std::unordered_map< int, MouseDelegates > releasedMouseDelegates_;
+	std::unordered_map< int, MouseDelegates > pressedMouseDelegates_{};
+	std::unordered_map< int, MouseDelegates > repeatedMouseDelegates_{};
+	std::unordered_map< int, MouseDelegates > releasedMouseDelegates_{};
+
+	Timer inputRepeatTimer;
 
 	// Cursor Delegates
 	CursorDelegates cursorDelegates_;
@@ -388,6 +396,12 @@ private:
 
 	// Char Delegates
 	CharDelegates charDelegates_;
+
+	KeyboardListeners keyboardListeners_;
+
+	GLFWwindow* window_{ nullptr };
+
+	KeyboardEventMap* keyboardEvents_{ nullptr };
 };
 
 #endif

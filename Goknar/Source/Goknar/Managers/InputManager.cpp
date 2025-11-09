@@ -52,6 +52,12 @@ void InputManager::KeyboardEvent::OnReleased()
 InputManager::InputManager()
 {
 	keyboardEvents_ = new KeyboardEventMap();
+
+	currentlyPressedKeyboardKeys_.reset();
+	currentlyPressedMouseKeys_.reset();
+
+	inputRepeatTimer.SetTicksPerSecond(20);
+	inputRepeatTimer.CallOnTick(Delegate<void()>::Create<InputManager, &InputManager::InputTick>(this));
 }
 
 InputManager::~InputManager()
@@ -81,6 +87,33 @@ void InputManager::PostInit()
 {
 }
 
+void InputManager::InputTick()
+{
+	for (int key = 0; key < MAX_KEYBOARD_KEYS; ++key)
+	{
+		if (currentlyPressedKeyboardKeys_.test(key))
+		{
+			auto it = repeatedKeyDelegates_.find(key + FIRST_PRESSABLE_KEY_CODE);
+			if (it != repeatedKeyDelegates_.end() && !it->second.isNull())
+			{
+				it->second();
+			}
+		}
+	}
+
+	for (int button = 0; button < MAX_MOUSE_BUTTONS; ++button)
+	{
+		if (currentlyPressedMouseKeys_.test(button))
+		{
+			auto it = repeatedMouseDelegates_.find(button);
+			if (it != repeatedMouseDelegates_.end() && !it->second.isNull())
+			{
+				it->second();
+			}
+		}
+	}
+}
+
 void InputManager::KeyboardCallback(GLFWwindow* window, int key, int scanCode, int action, int mod)
 {
 	InputManager* inputManager = engine->GetInputManager();
@@ -99,6 +132,11 @@ void InputManager::KeyboardCallback(GLFWwindow* window, int key, int scanCode, i
 			{
 				inputManager->pressedKeyDelegates_[key]();
 			}
+
+			if (FIRST_PRESSABLE_KEY_CODE <= key && key <= LAST_PRESSABLE_KEY_CODE)
+			{
+				inputManager->currentlyPressedKeyboardKeys_.set(key - FIRST_PRESSABLE_KEY_CODE);
+			}
 			
 			break;
 		}
@@ -110,14 +148,9 @@ void InputManager::KeyboardCallback(GLFWwindow* window, int key, int scanCode, i
 				inputManager->releasedKeyDelegates_[key]();
 			}
 
-			break;
-		}
-		case GLFW_REPEAT:
-		{
-			if(	inputManager->repeatedKeyDelegates_.find(key) != inputManager->repeatedKeyDelegates_.end() && 
-				!inputManager->repeatedKeyDelegates_[key].isNull())
+			if (FIRST_PRESSABLE_KEY_CODE <= key && key <= LAST_PRESSABLE_KEY_CODE)
 			{
-				inputManager->repeatedKeyDelegates_[key]();
+				inputManager->currentlyPressedKeyboardKeys_.reset(key - FIRST_PRESSABLE_KEY_CODE);
 			}
 
 			break;
@@ -149,6 +182,9 @@ void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int actio
 		{
 			inputManager->pressedMouseDelegates_[button]();
 		}
+
+		inputManager->currentlyPressedMouseKeys_.set(button);
+
 		break;
 	}
 	case GLFW_RELEASE:
@@ -158,15 +194,8 @@ void InputManager::MouseButtonCallback(GLFWwindow* window, int button, int actio
 		{
 			inputManager->releasedMouseDelegates_[button]();
 		}
-		break;
-	}
-	case GLFW_REPEAT:
-	{
-		if( inputManager->repeatedMouseDelegates_.find(button) != inputManager->repeatedMouseDelegates_.end() &&
-			!inputManager->repeatedMouseDelegates_[button].isNull())
-		{
-			inputManager->repeatedMouseDelegates_[button]();
-		}
+
+		inputManager->currentlyPressedMouseKeys_.reset(button);
 		break;
 	}
 	default:
