@@ -191,6 +191,8 @@ void PhysicsMovementComponent::SetMovementDirection(const Vector3& movementDirec
 		return;
 	}
 
+	movementDirection_ = movementDirection;
+
 	if (!GetIsInitialized())
 	{
 		initializationData_->isMovementDirectionSet = true;

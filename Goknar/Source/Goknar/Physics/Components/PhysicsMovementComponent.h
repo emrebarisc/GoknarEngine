@@ -63,6 +63,10 @@ public:
 
 	virtual void UpdateComponentToWorldTransformationMatrix();
 
+	virtual inline Vector3 GetMovementDirection() const
+	{
+		return movementDirection_;
+	}
 	virtual void SetMovementDirection(const Vector3& movementDirection);
 	virtual void SetMovementVelocityForGivenDuration(const Vector3& movementVelocity, float duration);
 
@@ -148,6 +152,8 @@ protected:
 	virtual void DestroyInner() override;
 
 private:
+	Vector3 movementDirection_{ Vector3::ZeroVector };
+
 	PhysicsMovementComponentInitializationData* initializationData_{ nullptr };
 
 	btKinematicCharacterController* bulletKinematicCharacterController_{ nullptr };
@@ -157,7 +163,7 @@ private:
 
 	ForceMovementData* forceMovementData_{ nullptr };
 
-	float movementSpeed_{ 0.25f };
+	float movementSpeed_{ 0.05f };
 };
 
 #endif
