@@ -7,7 +7,6 @@
 #include "Controller.h"
 #include "Log.h"
 #include "ObjectBase.h"
-#include "Scene.h"
 #include "TimeDependentObject.h"
 #include "Components/Component.h"
 #include "Debug/DebugDrawer.h"
@@ -24,15 +23,6 @@
 #include "Renderer/ShaderBuilder.h"
 #include "Renderer/ShaderBuilderNew.h"
 #include "UI/HUD.h"
-
-#include "Lights/DirectionalLight.h"
-#include "Lights/Light.h"
-#include "Lights/PointLight.h"
-#include "Lights/SpotLight.h"
-#include "Lights/LightManager/LightManager.h"
-
-// OpenGL Libraries
-#include "GLFW/glfw3.h"
 
 #define GOKNAR_EDITOR false
 

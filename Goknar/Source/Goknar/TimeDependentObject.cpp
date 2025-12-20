@@ -2,9 +2,7 @@
 
 #include "TimeDependentObject.h"
 
-#include "Application.h"
 #include "Engine.h"
-#include "Scene.h"
 
 TimeDependentObject::TimeDependentObject()
 {

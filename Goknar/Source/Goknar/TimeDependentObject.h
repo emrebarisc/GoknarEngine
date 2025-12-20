@@ -1,8 +1,6 @@
 #ifndef __TIMEDEPENDENTOBJECT_H__
 #define __TIMEDEPENDENTOBJECT_H__
 
-#include "ObjectBase.h"
-
 #include "Goknar/Core.h"
 
 class GOKNAR_API TimeDependentObject
