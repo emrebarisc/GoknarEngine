@@ -193,6 +193,10 @@ public:
 	{
 		return std::fmod(value, mod);
 	}
+
+	static float GetRandom(float min = 0.f, float max = 1.f);
+	static double GetRandom(double min = 0.f, double max = 1.f);
+	static int GetRandom(int min, int max);
 };
 
 struct GOKNAR_API Vector2

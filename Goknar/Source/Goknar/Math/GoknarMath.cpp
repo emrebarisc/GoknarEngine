@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include <limits>
+#include <random>
 
 #include "GoknarMath.h"
 #include "Matrix.h"
@@ -309,4 +310,25 @@ inline float GoknarMath::Determinant(const Vector4& a, const Vector4& b, const V
 		- a.y * Determinant(Vector3(b.x, b.z, b.w), Vector3(c.x, c.z, c.w), Vector3(d.x, d.z, d.w))
 		+ a.z * Determinant(Vector3(b.x, b.y, b.w), Vector3(c.x, c.y, c.w), Vector3(d.x, d.y, d.w))
 		- a.w * Determinant(Vector3(b.x, b.y, b.z), Vector3(c.x, c.y, c.z), Vector3(d.x, d.y, d.z));
+}
+
+float GoknarMath::GetRandom(float min/* = 0.f*/, float max/* = 1.f*/)
+{
+	std::random_device randomDevice;
+	std::uniform_real_distribution<float> randomDistribution(min, max);
+	return randomDistribution(randomDevice);
+}
+
+double GoknarMath::GetRandom(double min/* = 0.f*/, double max/* = 1.f*/)
+{
+	std::random_device randomDevice;
+	std::uniform_real_distribution<double> randomDistribution(min, max);
+	return randomDistribution(randomDevice);
+}
+
+int GoknarMath::GetRandom(int min, int max)
+{
+	std::random_device randomDevice;
+	std::uniform_int_distribution<int> randomDistribution(min, max);
+	return randomDistribution(randomDevice);
 }
