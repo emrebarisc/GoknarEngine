@@ -87,7 +87,13 @@ public:
 
     inline Vector3 operator*(const Vector3& v) const;
 
-    static void Slerp(Quaternion& out, const Quaternion& start, const Quaternion& end, float alpha);
+    inline float Dot(const Quaternion& rhs) const;
+
+    static inline float GetAngleBetween(const Quaternion& first, const Quaternion& second);
+
+    static inline Quaternion FromAxisAngle(const Vector3& axis, float angleRadians);
+
+    static Quaternion Slerp(const Quaternion& start, const Quaternion& end, float alpha);
 
     bool Equals(const Quaternion& other, float tolerance = EPSILON) const;
 
@@ -237,6 +243,35 @@ inline Vector3 Quaternion::operator*(const Vector3& v) const
     return result;
 }
 
+inline float Quaternion::Dot(const Quaternion& rhs) const
+{
+    return x * rhs.x + y * rhs.y + z * rhs.z + w * rhs.w;
+}
+
+inline float Quaternion::GetAngleBetween(const Quaternion& first, const Quaternion& second)
+{
+    Quaternion qRel = first.GetInverse() * second;
+    return 2.0f * GoknarMath::Acos(GoknarMath::Clamp(qRel.w, -1.0f, 1.0f));
+}
+
+inline Quaternion Quaternion::FromAxisAngle(const Vector3& axis, float angleRadians)
+{
+    Vector3 n = axis;
+    n.Normalize();
+
+    const float halfAngle = angleRadians * 0.5f;
+    const float sinHalf = GoknarMath::Sin(halfAngle);
+    const float cosHalf = GoknarMath::Cos(halfAngle);
+
+    Quaternion q;
+    q.x = n.x * sinHalf;
+    q.y = n.y * sinHalf;
+    q.z = n.z * sinHalf;
+    q.w = cosHalf;
+
+    return q;
+}
+
 float Quaternion::Length() const
 {
     return sqrtf(x * x + y * y + z * z + w * w);
@@ -287,13 +322,16 @@ inline Quaternion Quaternion::GetInverse() const
 
 inline Quaternion& Quaternion::Invert()
 {
-    const float length = Length();
-    const float squareLength = length * length;
+    const float squareLength = x * x + y * y + z * z + w * w;
 
-    x = -x / squareLength;
-    y = -y / squareLength;
-    z = -z / squareLength;
-    w = w / squareLength;
+    if (squareLength > 0.0f)
+    {
+        const float invSqLen = 1.0f / squareLength;
+        x = -x * invSqLen;
+        y = -y * invSqLen;
+        z = -z * invSqLen;
+        w = w * invSqLen;
+    }
 
     return *this;
 }

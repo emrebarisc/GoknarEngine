@@ -213,7 +213,7 @@ struct GOKNAR_API SkeletalAnimationNode
         int nextIndex = previousIndex + 1;
 
         float alpha = (time - rotationKeys[previousIndex].time) / (rotationKeys[nextIndex].time - rotationKeys[previousIndex].time);
-        Quaternion::Slerp(out, rotationKeys[previousIndex].value, rotationKeys[nextIndex].value, alpha);
+        out = Quaternion::Slerp(rotationKeys[previousIndex].value, rotationKeys[nextIndex].value, alpha);
     }
 
     void GetInterpolatedRotationMatrix(Matrix& out, float time)

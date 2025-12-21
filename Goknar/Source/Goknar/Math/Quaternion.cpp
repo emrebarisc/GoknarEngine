@@ -277,7 +277,7 @@ Quaternion& Quaternion::operator*=(const Matrix& scaleMatrix)
     return (*this = scaleMatrix * (*this));
 }
 
-void Quaternion::Slerp(Quaternion& out, const Quaternion& start, const Quaternion& end, float alpha)
+Quaternion Quaternion::Slerp(const Quaternion& start, const Quaternion& end, float alpha)
 {
     float cosom = start.x * end.x + start.y * end.y + start.z * end.z + start.w * end.w;
 
@@ -306,8 +306,10 @@ void Quaternion::Slerp(Quaternion& out, const Quaternion& start, const Quaternio
         sclq = alpha;
     }
 
+    Quaternion out;
     out.x = sclp * start.x + sclq * correctedEnd.x;
     out.y = sclp * start.y + sclq * correctedEnd.y;
     out.z = sclp * start.z + sclq * correctedEnd.z;
     out.w = sclp * start.w + sclq * correctedEnd.w;
+    return out;
 }

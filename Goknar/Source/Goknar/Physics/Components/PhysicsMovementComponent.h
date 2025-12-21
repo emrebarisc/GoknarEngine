@@ -41,8 +41,8 @@ struct GOKNAR_API PhysicsMovementComponentInitializationData
 
 struct GOKNAR_API ForceMovementData
 {
-	Vector3 movement;
-	float duration;
+	Vector3 movement{ Vector3::ZeroVector };
+	float duration{ 0.f };
 };
 
 class GOKNAR_API PhysicsMovementComponent : public Component
