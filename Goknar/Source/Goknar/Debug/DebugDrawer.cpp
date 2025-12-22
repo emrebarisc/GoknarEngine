@@ -49,10 +49,15 @@ void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Color
 	lineMeshInstance->SetIsCastingShadow(false);
 
 	Vector3 endToStart = end - start;
+	float lineLength = endToStart.Length();
 
-	line->SetWorldScaling(Vector3{ endToStart.Length(), thickness, thickness }, false);
-	line->SetWorldPosition(start, false);
-	line->SetWorldRotation(Quaternion::FromTwoVectors(start, end));
+	if (lineLength > 0.0001f)
+	{
+		line->SetWorldScaling(Vector3{ lineLength, thickness, thickness }, false);
+		line->SetWorldPosition(start, false);
+
+		line->SetWorldRotation(Quaternion::FromTwoVectors(Vector3::ForwardVector, endToStart.GetNormalized()));
+	}
 
 	line->SetParent(owner);
 #endif

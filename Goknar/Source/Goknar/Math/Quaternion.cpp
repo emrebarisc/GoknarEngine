@@ -147,8 +147,34 @@ Quaternion Quaternion::FromEulerRadians(float x, float y, float z)
 
 Quaternion Quaternion::FromTwoVectors(const Vector3& first, const Vector3& second)
 {
-    Vector3 difference = second - first;
-    return difference.GetNormalized().GetRotationNormalized();
+    Vector3 u = first.GetNormalized();
+    Vector3 v = second.GetNormalized();
+
+    float dot = u.Dot(v);
+
+    if (dot > 0.999999f)
+    {
+        return Quaternion::Identity;
+    }
+    else if (dot < -0.999999f)
+    {
+        Vector3 axis = Vector3::UpVector.Cross(u);
+        if (axis.SquareLength() < 0.000001f)
+        {
+            axis = Vector3::LeftVector.Cross(u);
+        }
+        return Quaternion(axis.GetNormalized(), PI);
+    }
+
+    Vector3 cross = u.Cross(v);
+    Quaternion q(
+        cross.x,
+        cross.y,
+        cross.z,
+        1.0f + dot
+    );
+
+    return q.Normalize();
 }
 
 void Quaternion::AddVector(const Vector3& vector)

@@ -251,7 +251,7 @@ inline float Quaternion::Dot(const Quaternion& rhs) const
 inline float Quaternion::GetAngleBetween(const Quaternion& first, const Quaternion& second)
 {
     Quaternion qRel = first.GetInverse() * second;
-    return 2.0f * GoknarMath::Acos(GoknarMath::Clamp(qRel.w, -1.0f, 1.0f));
+    return 2.0f * GoknarMath::Acos(GoknarMath::Clamp(GoknarMath::Abs(qRel.w), -1.0f, 1.0f));
 }
 
 inline Quaternion Quaternion::FromAxisAngle(const Vector3& axis, float angleRadians)
