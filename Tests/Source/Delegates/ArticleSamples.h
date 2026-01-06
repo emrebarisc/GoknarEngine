@@ -1,0 +1,96 @@
+/*
+
+	Copyright (C) 2017 by Sergey A Kryukov: derived work
+	http://www.SAKryukov.org
+	http://www.codeproject.com/Members/SAKryukov
+
+	Based on original work by Sergey Ryazanov:
+	"The Impossibly Fast C++ Delegates", 18 Jul 2005
+	https://www.codeproject.com/articles/11015/the-impossibly-fast-c-delegates
+
+	MIT license:
+	http://en.wikipedia.org/wiki/MIT_License
+
+	Original publication: https://www.codeproject.com/Articles/1170503/The-Impossibly-Fast-Cplusplus-Delegates-Fixed
+
+*/
+
+#pragma once
+#include "Goknar/Delegates/stdafx.h"
+
+#include "TestsCore.h"
+
+class ArticleSampleSet {
+public:
+
+	double InstanceFunction(int, char, const char*) { return 0.1; }
+	double ConstInstanceFunction(int, char, const char*) const { return 0.2; }
+	static double StaticFunction(int, char, const char*) { return 0.3; }
+
+	void Demo() {
+		typedef ArticleSampleSet Sample;
+
+		ArticleSampleSet sample;
+
+		Delegate<double (int, char, const char*)> d;
+		auto dInstance = decltype(d)::Create<Sample, &Sample::InstanceFunction>(&sample);
+		auto dConst = decltype(d)::Create<Sample, &Sample::ConstInstanceFunction>(&sample);
+		auto dFunc = decltype(d)::Create<&Sample::StaticFunction>(); // same thing with non-class functions
+		dInstance(0, 'A', "Instance method call");
+		dConst(1, 'B', "Constant instance method call");
+		dFunc(2, 'C', "Static function call");
+
+		int touchPoint = 1;
+		auto lambda = [&touchPoint](int i, char c, const char* msg) -> double {
+			GOKNAR_CORE_INFO(msg);
+			// touch point is captured by ref, can change:
+			return (++touchPoint + (int)c) * 0.1 - i;
+		}; //lambda
+
+		d = lambda;
+		decltype(d) dLambda = lambda;
+		// or:
+		//decltype(d) dLambda(lambda);
+
+		if (d != nullptr) // true
+			d(1, '2', "lambda call"); //won't
+
+		d = dLambda; // Delegate to Delegate
+
+		if (d == dLambda) // true, and also d != nullptr
+			d(3, '4', "another lambda call"); //will be called
+
+											  // multicast delegates:
+
+		MulticastDelegate<double(int, char, const char*)> md;
+		MulticastDelegate<double(int, char, const char*)> mdSecond;
+
+		if (md == nullptr) // true
+			md(5, '6', "zero calls"); //won't
+
+									  // add some of the Delegate instances:
+		md += mdSecond; // nothing happens to md
+		md += d; // invocation list: size=1
+		md += dLambda; // invocation list: size=2
+
+		TEST_ASSERT(md != dLambda, "md == dLambda");
+		TEST_ASSERT(dLambda != md, "dLambda == md");
+		TEST_ASSERT(md != mdSecond, "md == mdSecond");
+
+		//adding lambda directly:
+		md += lambda; // invocation list: size=3
+
+		md(7, '8', "call them all");
+
+		double total = 0;
+		md(9, 'a', "handling the return values:",
+			[&total](size_t index, double* ret) -> void
+			{
+				GOKNAR_CORE_INFO("\t index: {0}; returned: {1}", index, *ret);
+				total += *ret;
+			});
+
+	} //Demo
+
+}; /* class ArticleSampleSet */
+
