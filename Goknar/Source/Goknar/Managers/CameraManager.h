@@ -47,7 +47,7 @@ private:
 	std::vector<Camera*> cameras_{};
 	std::vector<Camera*> camerasToAddNextFrame_{};
 
-	int camerasToAddNextFrameCount_;
+	int camerasToAddNextFrameCount_{ 0 };
 };
 
 #endif
