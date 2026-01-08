@@ -898,7 +898,7 @@ public:
         return 0.f;
 	}
 
-    bool operator==(const Matrix &rhs)
+    bool operator==(const Matrix &rhs) const
     {
         return Equals(rhs);
     }
