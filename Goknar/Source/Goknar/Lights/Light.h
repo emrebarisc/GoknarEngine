@@ -1,9 +1,10 @@
 #ifndef __LIGHT_H__
 #define __LIGHT_H__
 
+#include "Goknar/Core.h"
+
 #include "Goknar/Camera.h"
 #include "Goknar/Math/GoknarMath.h"
-#include "Goknar/Renderer/Types.h"
 
 class FrameBuffer;
 class Shader;
