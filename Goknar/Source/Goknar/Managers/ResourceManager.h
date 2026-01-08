@@ -4,10 +4,13 @@
 #include "Core.h"
 
 #include <map>
+#include <memory>
+#include <vector>
+
+#include "Goknar/Materials/Material.h"
 
 class Audio;
 class Content;
-class Material;
 class MeshUnit;
 class Image;
 
@@ -111,6 +114,8 @@ class GOKNAR_API ResourceManager
 {
 public:
 	ResourceManager();
+	ResourceManager(const ResourceManager&&) = delete;
+	ResourceManager operator=(ResourceManager&) = delete;
 	~ResourceManager();
 
 	void PreInit();
@@ -154,23 +159,23 @@ public:
 
 	void AddMaterial(Material* material)
 	{
-		materials_.push_back(material);
+		materials_.push_back(std::unique_ptr<Material>(material));
 	}
 
-	const std::vector<Material*>& GetMaterials() const
+	const std::vector<std::unique_ptr<Material>>& GetMaterials() const
 	{
 		return materials_;
 	}
 
 	Material* GetMaterial(int index) const
 	{
-		return materials_[index];
+		return materials_[index].get();
 	}
 
 private:
 	Content* LoadContent(const std::string& path);
 
-	std::vector<Material*> materials_;
+	std::vector<std::unique_ptr<Material>> materials_;
 
 	ResourceContainer* resourceContainer_;
 };

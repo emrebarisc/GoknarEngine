@@ -1,10 +1,9 @@
 #include "pch.h"
 
-// Goknar Libraries
 #include "Engine.h"
 
 #include "Application.h"
-#include "Controller.h"
+#include "GoknarAssert.h"
 #include "Log.h"
 #include "ObjectBase.h"
 #include "TimeDependentObject.h"

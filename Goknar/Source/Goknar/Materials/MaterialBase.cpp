@@ -3,8 +3,8 @@
 #include "MaterialBase.h"
 
 #include "Goknar/Application.h"
-#include "Goknar/Scene.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Log.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Lights/LightManager/LightManager.h"
