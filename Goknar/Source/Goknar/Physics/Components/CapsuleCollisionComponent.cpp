@@ -2,6 +2,7 @@
 
 #include "CapsuleCollisionComponent.h"
 
+#include "Goknar/GoknarAssert.h"
 #include "BulletCollision/CollisionShapes/btCapsuleShape.h"
 
 CapsuleCollisionComponent::CapsuleCollisionComponent(Component* parent) :

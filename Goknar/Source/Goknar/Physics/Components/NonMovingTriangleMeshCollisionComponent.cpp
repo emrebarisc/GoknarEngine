@@ -4,6 +4,7 @@
 #include "BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h"
 
 #include "ObjectBase.h"
+#include "GoknarAssert.h"
 #include "NonMovingTriangleMeshCollisionComponent.h"
 #include "Model/MeshUnit.h"
 #include "Physics/PhysicsUtils.h"

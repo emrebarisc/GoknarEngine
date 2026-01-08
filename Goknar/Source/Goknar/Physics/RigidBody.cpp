@@ -3,12 +3,12 @@
 #include "RigidBody.h"
 
 #include "Engine.h"
+#include "GoknarAssert.h"
 #include "Components/CollisionComponent.h"
 #include "Physics/PhysicsWorld.h"
 #include "Physics/PhysicsUtils.h"
 
 #include "btBulletDynamicsCommon.h"
-#include "Bullet3Common/b3Vector3.h"
 
 RigidBody::RigidBody() : PhysicsObject()
 {

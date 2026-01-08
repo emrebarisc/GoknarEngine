@@ -3,10 +3,9 @@
 #include "Light.h"
 
 #include "Goknar/Camera.h"
-#include "Goknar/Log.h"
+#include "Goknar/GoknarAssert.h"
 #include "Goknar/Renderer/Framebuffer.h"
 #include "Goknar/Renderer/Shader.h"
-#include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"
 
 Light::~Light()

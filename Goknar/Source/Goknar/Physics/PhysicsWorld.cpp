@@ -5,15 +5,13 @@
 #include "BulletDynamics/Character/btKinematicCharacterController.h"
 
 #include "Engine.h"
-#include "Log.h"
+#include "GoknarAssert.h"
 #include "PhysicsDebugger.h"
 #include "PhysicsUtils.h"
 #include "PhysicsWorld.h"
 #include "RigidBody.h"
-#include "Character.h"
 #include "Components/PhysicsMovementComponent.h"
 #include "Components/CollisionComponent.h"
-#include "Components/OverlappingTypes.h"
 
 PhysicsWorld::PhysicsWorld()
 {

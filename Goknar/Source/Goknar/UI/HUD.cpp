@@ -1,6 +1,7 @@
 #include "HUD.h"
 
 #include "Engine.h"
+#include "GoknarAssert.h"
 #include "Math/GoknarMath.h"
 
 HUD::HUD() : ObjectBase()

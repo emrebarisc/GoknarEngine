@@ -1,12 +1,11 @@
 #include "pch.h"
 
-#include "BulletCollision/CollisionShapes/btTriangleMesh.h"
 #include "BulletCollision/CollisionShapes/btConvexHullShape.h"
 
+#include "GoknarAssert.h"
 #include "ObjectBase.h"
 #include "MovingTriangleMeshCollisionComponent.h"
 #include "Model/MeshUnit.h"
-#include "Physics/PhysicsUtils.h"
 
 MovingTriangleMeshCollisionComponent::MovingTriangleMeshCollisionComponent(Component* parent) :
 	CollisionComponent(parent)

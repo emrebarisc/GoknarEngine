@@ -2,10 +2,9 @@
 
 #include "ObjectBase.h"
 
-#include "Goknar/Application.h"
 #include "Goknar/Engine.h"
+#include "Goknar/GoknarAssert.h"
 #include "Goknar/Log.h"
-#include "Goknar/Scene.h"
 #include "Goknar/Components/Component.h"
 #include "Goknar/Components/SocketComponent.h"
 #include "Goknar/Managers/ObjectIDManager.h"
@@ -36,7 +35,7 @@ void ObjectBase::PreInit()
 {
 	if (isInitialized_)
 	{
-		GOKNAR_CORE_ASSERT("ObjectBase::Init called more than once!");
+		GOKNAR_CORE_ASSERT(false, "ObjectBase::Init called more than once!");
 		return;
 	}
 }

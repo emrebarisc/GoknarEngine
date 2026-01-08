@@ -2,13 +2,13 @@
 
 #include "PhysicsMovementComponent.h"
 #include "Engine.h"
+#include "GoknarAssert.h"
 #include "Physics/PhysicsUtils.h"
 #include "Physics/PhysicsWorld.h"
 #include "Physics/RigidBody.h"
 
 #include "Physics/Character.h"
 #include "Physics/Components/CollisionComponent.h"
-#include "Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #include "BulletDynamics/Character/btKinematicCharacterController.h"
