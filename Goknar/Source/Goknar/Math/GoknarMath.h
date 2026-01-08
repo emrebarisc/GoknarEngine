@@ -2,8 +2,6 @@
 #define __MATH_H__
 
 #include "Goknar/Core.h"
-#include "Goknar/GoknarAssert.h"
-#include "Goknar/Math/MathDefines.h"
 
 #include <iostream>
 
@@ -42,6 +40,7 @@ class GOKNAR_API GoknarMath
 public:
 	static void LookAt(Matrix& viewMatrix, const Vector3& position, const Vector3& target, const Vector3& upVector);
 
+	static inline float Determinant(const Vector2& a, const Vector2& b);
 	static inline float Determinant(const Vector3& a, const Vector3& b, const Vector3& c);
 	static inline float Determinant(const Vector4& a, const Vector4& b, const Vector4& c, const Vector4& d);
 
@@ -359,6 +358,8 @@ struct GOKNAR_API Vector2i
 		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + "]";
 	}
 
+	static const Vector2i ZeroVector;
+
 	int x, y;
 };
 
@@ -632,6 +633,7 @@ struct GOKNAR_API Vector3
 	Vector3 RotateVector(const Vector3& rotation) const;
 	Vector3 RotatePointAroundAxis(const Vector3& axis, float angle);
 	Vector3 RotateVectorAroundAxis(const Vector3& axis, float angle);
+	Vector3 Rotate(const Vector3& rotation, bool isPositionVector) const;
 	Vector3 Scale(const Vector3& scale, bool isPositionVector = true) const;
 
 	inline std::string ToString() const
@@ -647,7 +649,6 @@ struct GOKNAR_API Vector3
 	float x, y, z;
 
 private:
-	Vector3 Rotate(const Vector3& rotation, bool isPositionVector) const;
 };
 
 struct GOKNAR_API Vector3i

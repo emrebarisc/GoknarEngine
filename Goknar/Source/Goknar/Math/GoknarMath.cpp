@@ -6,6 +6,8 @@
 #include "GoknarMath.h"
 #include "Matrix.h"
 
+const Vector2i Vector2i::ZeroVector = Vector2i(0.f);
+
 const Vector2 Vector2::ZeroVector = Vector2(0.f);
 
 const Vector3 Vector3::ZeroVector = Vector3(0.f);
@@ -295,6 +297,11 @@ void GoknarMath::LookAt(Matrix& viewMatrix, const Vector3& position, const Vecto
 							up.x,			up.y,				up.z,				-up.x * position.x - up.y * position.y - up.z * position.z,
 							forward.x,		forward.y,			forward.z,			-forward.x * position.x - forward.y * position.y - forward.z * position.z,
 							0.f, 0.f, 0.f, 1.f);
+}
+
+inline float GoknarMath::Determinant(const Vector2& a, const Vector2& b)
+{
+	return a.x * b.y - b.x * a.y;
 }
 
 inline float GoknarMath::Determinant(const Vector3& a, const Vector3& b, const Vector3& c)
