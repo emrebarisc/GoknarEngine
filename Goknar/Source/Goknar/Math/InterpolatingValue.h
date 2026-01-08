@@ -16,8 +16,9 @@ struct InterpolatingValue : public TimeDependentObject
 		timer = 1.f;
 		innerTimer = timer;
 		speed = 1.f;
-		limitWithTime = false;
 	}
+
+	virtual ~InterpolatingValue() = default;
 
 	virtual void Tick(float deltaSeconds) override
 	{
@@ -37,16 +38,10 @@ struct InterpolatingValue : public TimeDependentObject
 		timer = 1.f;
 		innerTimer = timer;
 		speed = 1.f;
-		limitWithTime = false;
 	}
 
 	virtual void UpdateDestination(const T& newDestination)
 	{
-		if (this->limitWithTime && 0.f < this->innerTimer)
-		{
-			return;
-		}
-
 		this->destination = newDestination;
 		this->initial = this->current;
 		this->interpolationValue = 0.f;
@@ -85,7 +80,6 @@ struct InterpolatingValue : public TimeDependentObject
 	float speed;
 	float timer;
 	float innerTimer;
-	bool limitWithTime;
 };
 
 template<typename T>
@@ -100,11 +94,6 @@ struct TwoDestinationInterpolatedValue : public InterpolatingValue<T>
 
 	void UpdateDestination(const T& destinationVector, const T& secondDestinationVector, bool force = false)
 	{
-		if (this->limitWithTime && 0.f < this->timer)
-		{
-			return;
-		}
-
 		this->destination = destinationVector;
 		this->secondDestination = secondDestinationVector;
 		this->initial = this->current;
@@ -156,11 +145,6 @@ struct RotatingInterpolatedValue : public InterpolatingValue<T>
 
 	void UpdateDestination(const T& newDestination) override
 	{
-		if (this->limitWithTime && 0.f < this->innerTimer)
-		{
-			return;
-		}
-
 		this->destination = newDestination;
 		this->initial = this->current;
 		this->interpolationValue = 0.f;
@@ -178,8 +162,6 @@ struct RotatingInterpolatedValue : public InterpolatingValue<T>
 		{
 			this->destinationAngle += 2.f * PI;
 		}
-
-		std::cout << this->destinationAngle << std::endl;
 	}
 
 	virtual void Interpolate(float deltaTime)
