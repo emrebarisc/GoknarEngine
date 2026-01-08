@@ -8,6 +8,4 @@
         throw("Test failed."); \
     } \
     else \
-    { \
-        GOKNAR_INFO("Test Passed: {}", message); \
-    }
+    {}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Goknar/Application.h"
+#include "Goknar/Timer.h"
 
 #include "Tests.h"
 
@@ -13,4 +14,6 @@ public:
 
 private:
 	Tests tests;
+
+	Timer shutdownTimer;
 };

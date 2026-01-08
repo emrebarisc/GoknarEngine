@@ -6,7 +6,17 @@
 
 void Delegates_Tests::Run()
 {
-	ArticleSampleSet().Demo();
-	DelegateSample::Demo();
-	Benchmark::Run();
+    try
+    {
+        ArticleSampleSet().Demo();
+        DelegateSample::Demo();
+        Benchmark::Run();
+
+        GOKNAR_CORE_INFO("All Delegate test sequences completed.");
+    }
+    catch (...)
+    {
+
+        GOKNAR_CORE_ERROR("An unexpected error occurred during testing Delegates.");
+    }
 }

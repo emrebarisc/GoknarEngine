@@ -16,4 +16,5 @@ private:
     void RunVector2Tests();
     void RunVector3Tests();
     void RunVector4Tests();
+    void RunStaticMathTests();
 };

@@ -93,15 +93,15 @@ private:
 				long double averageCreation2 = 1.0 * creationTime2 / (delegate_count * creation_repeat_count);
 				long double averageCall1 = 1.0 * callTime1 / (delegate_count * call_count);
 				long double averageCall2 = 1.0 * callTime2 / (delegate_count * call_count);
-				std::cout << title << ":" << std::endl;
-				std::cout << "\tcreation: " << creationTime1 << " vs. " << creationTime2 << std::endl;
-				std::cout << "\taverage creation: " << averageCreation1 << " vs. " << averageCreation2 << std::endl;
-				std::cout << "\tcall: " << callTime1 << " vs. " << callTime2 << std::endl;
-				std::cout << "\taverage call: " << averageCall1 << " vs. " << averageCall2 << std::endl;
-				std::cout << "\ttotal: " << total1 << " vs. " << total2 << std::endl;
-				std::cout << "\tcreation gain:\t" << 1.0*creationTime2/creationTime1 << std::endl;
-				std::cout << "\tcall gain:\t" << 1.0*callTime2/ callTime1 << std::endl;
-				std::cout << "\ttotal gain:\t" << 1.0*total2/total1 << std::endl;
+				GOKNAR_CORE_INFO("{}: ", title);
+				GOKNAR_CORE_INFO("\tcreation: {} vs {}", creationTime1, creationTime2);
+				GOKNAR_CORE_INFO("\taverage creation: {} vs {}", averageCreation1, averageCreation2);
+				GOKNAR_CORE_INFO("\tcall: {} vs {}", callTime1, callTime2);
+				GOKNAR_CORE_INFO("\taverage call: {} vs {}", averageCall1, averageCall2);
+				GOKNAR_CORE_INFO("\ttotal: {} vs {}", total1, total2);
+				GOKNAR_CORE_INFO("\tcreation gain: {}\t", 1.0*creationTime2/creationTime1);
+				GOKNAR_CORE_INFO("\tcall gain: {}\t", 1.0*callTime2/ callTime1);
+				GOKNAR_CORE_INFO("\ttotal gain: {}\t", 1.0*total2/total1);
 			};
 			comparison(delegateCreationTime, delegateCallTime, functionCreationTime, functionCallTime,
 				"Instance methods of a class, Delegate vs. std::function");

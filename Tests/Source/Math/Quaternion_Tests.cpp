@@ -11,12 +11,12 @@ void Quaternion_Tests::Run()
     {
         RunQuaternionTests();
 
-        GOKNAR_CORE_INFO("All test sequences completed.");
+        GOKNAR_CORE_INFO("All Quaternion test sequences completed.");
     }
     catch (...)
     {
 
-        GOKNAR_CORE_ERROR("An unexpected error occurred during testing.");
+        GOKNAR_CORE_ERROR("An unexpected error occurred during testing Quaternion.");
     }
 }
 
