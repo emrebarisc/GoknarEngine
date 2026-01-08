@@ -611,6 +611,16 @@ void Engine::RemoveTimeDependentObject(TimeDependentObject* timeDependentObject)
 			return;
 		}
 	}
+
+	for (size_t timeDependentObjectIndex = 0; timeDependentObjectIndex < timeDependentObjectsToBeRegisteredSize_; timeDependentObjectIndex++)
+	{
+		if (timeDependentObjectsToRegisterForNextFrame_[timeDependentObjectIndex] == timeDependentObject)
+		{
+			timeDependentObjectsToRegisterForNextFrame_.erase(timeDependentObjectsToRegisterForNextFrame_.begin() + timeDependentObjectIndex);
+			--timeDependentObjectsToBeRegisteredSize_;
+			return;
+		}
+	}
 }
 
 void Engine::RemoveFromTickableObjects(ObjectBase* object)
