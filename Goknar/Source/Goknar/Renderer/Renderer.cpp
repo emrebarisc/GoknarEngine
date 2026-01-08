@@ -1504,7 +1504,7 @@ void DeferredRenderingData::OnViewportSizeChanged(int width, int height)
 	geometryBufferData->OnViewportSizeChanged(width, height);
 	SetShaderTextureUniforms();
 
-	const std::vector<Material*>& materials = engine->GetResourceManager()->GetMaterials();
+	const std::vector<std::unique_ptr<Material>> &materials = engine->GetResourceManager()->GetMaterials();
 
 	decltype(materials.begin()) materialIteration = materials.begin();
 	for (; materialIteration < materials.end(); ++materialIteration)
