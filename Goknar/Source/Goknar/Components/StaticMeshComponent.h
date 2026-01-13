@@ -10,6 +10,7 @@ class GOKNAR_API StaticMeshComponent : public MeshComponent<StaticMesh, StaticMe
 {
 public:
 	StaticMeshComponent() = delete;
+	StaticMeshComponent(const StaticMeshComponent&) = delete;
 	StaticMeshComponent(Component* parent);
 	virtual ~StaticMeshComponent();
 

@@ -173,6 +173,7 @@ public:
 	}
 
 protected:
+	Component(const Component&) = delete;
 	Component(Component* parent);
 	Component(ObjectBase* parentObjectBase);
 	

@@ -11,6 +11,7 @@ class GOKNAR_API RenderComponent : public Component
 {
 public:
 	RenderComponent() = delete;
+	RenderComponent(const RenderComponent&) = delete;
 	RenderComponent(Component* parent);
 	virtual ~RenderComponent()
 	{

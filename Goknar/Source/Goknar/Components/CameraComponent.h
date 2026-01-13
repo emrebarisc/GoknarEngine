@@ -10,6 +10,7 @@ class CameraComponent : public Component
 {
 public:
 	CameraComponent(Component* parentComponent);
+	CameraComponent(const CameraComponent&) = delete;
 
 	virtual ~CameraComponent() = default;
 

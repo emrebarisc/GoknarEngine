@@ -10,6 +10,7 @@ class GOKNAR_API SkeletalMeshComponent : public MeshComponent<SkeletalMesh, Skel
 {
 public:
 	SkeletalMeshComponent() = delete;
+	SkeletalMeshComponent(const SkeletalMeshComponent&) = delete;
 	SkeletalMeshComponent(Component* parent);
 	virtual ~SkeletalMeshComponent();
 	

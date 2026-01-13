@@ -10,6 +10,7 @@ class GOKNAR_API DynamicMeshComponent : public MeshComponent<DynamicMesh, Dynami
 {
 public:
 	DynamicMeshComponent() = delete;
+	DynamicMeshComponent(const DynamicMeshComponent&) = delete;
 	DynamicMeshComponent(Component* parent);
 	virtual ~DynamicMeshComponent();
 

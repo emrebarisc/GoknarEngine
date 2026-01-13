@@ -9,6 +9,7 @@ class ObjectBase;
 class SocketComponent : public Component
 {
 public:
+	SocketComponent(const SocketComponent&) = delete;
 	SocketComponent(Component* parentComponent) :
 		Component(parentComponent)
 	{

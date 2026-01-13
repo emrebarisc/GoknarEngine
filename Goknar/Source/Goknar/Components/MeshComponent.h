@@ -19,6 +19,7 @@ template<class MeshType, class MeshInstanceType>
 class GOKNAR_API MeshComponent : public RenderComponent
 {
 public:
+	MeshComponent(const MeshComponent&) = delete;
 	MeshComponent() = delete;
 	inline virtual ~MeshComponent();
 
