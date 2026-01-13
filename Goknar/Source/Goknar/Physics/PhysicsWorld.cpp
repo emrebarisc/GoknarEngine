@@ -1,8 +1,8 @@
 #include "pch.h"
 
 #include "btBulletDynamicsCommon.h"
-#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 #include "BulletDynamics/Character/btKinematicCharacterController.h"
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
 #include "Engine.h"
 #include "GoknarAssert.h"

@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "GoknarAssert.h"
 #include "PhysicsMovementComponent.h"
 #include "Engine.h"
 #include "GoknarAssert.h"

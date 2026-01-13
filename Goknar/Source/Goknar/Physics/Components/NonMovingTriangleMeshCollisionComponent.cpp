@@ -3,6 +3,7 @@
 #include "BulletCollision/CollisionShapes/btTriangleMesh.h"
 #include "BulletCollision/CollisionShapes/btBvhTriangleMeshShape.h"
 
+#include "GoknarAssert.h"
 #include "ObjectBase.h"
 #include "GoknarAssert.h"
 #include "NonMovingTriangleMeshCollisionComponent.h"

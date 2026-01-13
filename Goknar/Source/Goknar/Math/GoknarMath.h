@@ -36,7 +36,6 @@ enum class GOKNAR_API Axis : unsigned int
 	Z
 };
 
-
 class GOKNAR_API GoknarMath
 {
 public:
