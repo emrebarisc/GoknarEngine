@@ -6,13 +6,13 @@
 #include "Managers/ObjectIDManager.h"
 
 Component::Component(Component* parent) :
-	parent_(parent), 
 	isActive_(true),
 	isTickable_(false),
 	isTickEnabled_(true),
 	isInitialized_(false),
 	isPendingDestroy_(false)
 {
+	SetParent(parent);
 	engine->RegisterComponent(this);
 	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreaseComponentID();
 }
