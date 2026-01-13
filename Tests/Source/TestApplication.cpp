@@ -5,6 +5,8 @@
 #include "Goknar/Engine.h"
 
 #include "Camera_Tests.h"
+#include "Component_Tests.h"
+#include "ObjectBase_Tests.h"
 #include "Math/GoknarMath_Tests.h"
 #include "Math/InterpolatingValue_Tests.h"
 #include "Math/Matrix_Tests.h"
@@ -24,6 +26,8 @@ TestApplication::TestApplication() :
 	GOKNAR_CORE_INFO("");
 
 	tests.AddTest(std::make_shared<Camera_Tests>());
+	tests.AddTest(std::make_shared<Component_Tests>());
+	tests.AddTest(std::make_shared<ObjectBase_Tests>());
 
 	//tests.AddTest(std::make_shared<Delegates_Tests>());
 

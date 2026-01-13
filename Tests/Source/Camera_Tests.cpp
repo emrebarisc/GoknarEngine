@@ -60,12 +60,9 @@ void Camera_Tests::RunMovementTests()
     TEST_ASSERT(GoknarMath::Abs(camera->GetPosition().x - 10.f) < EPSILON, "Camera MoveForward");
 
     // 2. Move Right (Negative Left)
-    // If Left is (0,1,0), Right is (0,-1,0). 
+    // If Left is (0,-1,0), Right is (0,1,0). 
     // Note: Verify "MoveRight" implementation direction in Camera.cpp. 
-    // Usually MoveRight(x) implies position += RightVector * x. 
-    // Since LeftVector is stored, Right is -LeftVector.
     camera->MoveRight(5.f);
-    // If Left is (0,1,0), Right is (0,-1,0). Position should be y = 5.
     TEST_ASSERT(GoknarMath::Abs(camera->GetPosition().y - 5.f) < EPSILON, "Camera MoveRight");
 
     // 3. Move Upward
