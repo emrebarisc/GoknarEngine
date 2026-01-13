@@ -3,6 +3,8 @@
 
 #include "Goknar/Core.h"
 
+#include "Goknar/Math/MathDefines.h"
+
 #include <iostream>
 
 #define mathMax(f, s) (f > s ? f : s)
@@ -469,6 +471,13 @@ struct GOKNAR_API Vector3
 	static inline Vector3 GetNormalized(const Vector3& vec)
 	{
 		return vec / vec.Length();
+	}
+
+	inline bool Equals(const Vector3& other, float tolerance = EPSILON) const
+	{
+		return  GoknarMath::Abs(x - other.x) <= tolerance &&
+				GoknarMath::Abs(y - other.y) <= tolerance &&
+				GoknarMath::Abs(z - other.z) <= tolerance;
 	}
 
 	inline Vector3 operator-() const
