@@ -321,21 +321,18 @@ inline float GoknarMath::Determinant(const Vector4& a, const Vector4& b, const V
 
 float GoknarMath::GetRandom(float min/* = 0.f*/, float max/* = 1.f*/)
 {
-	std::random_device randomDevice;
 	std::uniform_real_distribution<float> randomDistribution(min, max);
-	return randomDistribution(randomDevice);
+	return randomDistribution(randomDevice_);
 }
 
 double GoknarMath::GetRandom(double min/* = 0.f*/, double max/* = 1.f*/)
 {
-	std::random_device randomDevice;
 	std::uniform_real_distribution<double> randomDistribution(min, max);
-	return randomDistribution(randomDevice);
+	return randomDistribution(randomDevice_);
 }
 
 int GoknarMath::GetRandom(int min, int max)
 {
-	std::random_device randomDevice;
 	std::uniform_int_distribution<int> randomDistribution(min, max);
-	return randomDistribution(randomDevice);
+	return randomDistribution(randomDevice_);
 }

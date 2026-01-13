@@ -3,9 +3,8 @@
 
 #include "Goknar/Core.h"
 
-#include "Goknar/Math/MathDefines.h"
-
 #include <iostream>
+#include <random>
 
 #define mathMax(f, s) (f > s ? f : s)
 #define mathMin(f, s) (f > s ? s : f)
@@ -197,6 +196,9 @@ public:
 	static float GetRandom(float min = 0.f, float max = 1.f);
 	static double GetRandom(double min = 0.f, double max = 1.f);
 	static int GetRandom(int min, int max);
+
+private:
+	inline static std::mt19937 randomDevice_{ std::random_device{}() };
 };
 
 struct GOKNAR_API Vector2
