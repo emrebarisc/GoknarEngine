@@ -9,15 +9,12 @@
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
-#include "Goknar/Log.h"
 
 #include "Goknar/Materials/Material.h"
 #include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Materials/MaterialInstance.h"
 
 #include "Goknar/Delegates/Delegate.h"
-
-#include "Goknar/Geometry/Rect.h"
 
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
@@ -41,7 +38,6 @@
 #include "Goknar/Renderer/ShaderBuilderNew.h"
 #include "Goknar/Renderer/PostProcessing.h"
 #include "Goknar/Renderer/RenderTarget.h"
-#include "Goknar/Renderer/Texture.h"
 
 #define VERTEX_COLOR_LOCATION 0
 #define VERTEX_POSITION_LOCATION 1
@@ -440,15 +436,14 @@ void Renderer::RenderCurrentFrame()
 		{
 			//testFrameBuffer.Bind();
 			Render(RenderPassType::Forward);
-			countDrawCalls = false;
 		}
 		else if (GetMainRenderType() == RenderPassType::Deferred)
 		{
 			Render(RenderPassType::GeometryBuffer);
-			countDrawCalls = false;
 			//testFrameBuffer.Bind();
 			Render(RenderPassType::Deferred);
 		}
+		countDrawCalls = false;
 
 		//testFrameBuffer.Unbind();
 		//postProcessingEffect.Render();
@@ -497,7 +492,7 @@ void Renderer::Render(RenderPassType renderPassType)
 	case RenderPassType::Deferred:
 	{
 		GOKNAR_CORE_CHECK(deferredRenderingData_ != nullptr, "Main rendering is not set to deferred rendering but deferred rendering is called.");
-		glClear(GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		deferredRenderingData_->Render();
 		break;
 	}
