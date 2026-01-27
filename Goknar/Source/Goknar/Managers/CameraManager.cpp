@@ -72,7 +72,7 @@ void CameraManager::RemoveCamera(Camera* camera)
 		if (camera == currentCamera)
 		{
 			std::vector<Camera*>::const_iterator iterator = camerasToAddNextFrame_.cbegin();
-			std::advance(camerasToAddNextFrame_.cbegin(), cameraToAddNextFrameIndex);
+			std::advance(iterator, cameraToAddNextFrameIndex);
 
 			camerasToAddNextFrame_.erase(iterator);
 			--camerasToAddNextFrameCount_;
