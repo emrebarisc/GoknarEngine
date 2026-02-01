@@ -90,33 +90,47 @@ void DefaultCharacter::Tick(float deltaTime)
 
 	Quaternion yawRot = Quaternion::FromAxisAngle(Vector3::UpVector, cameraYaw_);
 	Quaternion pitchRot = Quaternion::FromAxisAngle(Vector3::LeftVector, cameraPitch_);
-
 	Quaternion newRotation = yawRot * pitchRot;
 
-	Vector3 baseOffset = Vector3{ -1.f, 0.f, 0.f };
+	Vector3 pivotOffset = Vector3{ 0.f, 0.f, 1.f };
 
-	Vector3 cameraPosition = thirdPersonCameraComponent_->GetWorldPosition();
-	Vector3 raycastFromPosition = GetWorldPosition() + Vector3{ 0.f, 0.f, 2.f };
+	Vector3 cameraBackwardVector = Vector3{ -1.f, 0.f, 0.f };
+	Vector3 cameraDirection = newRotation * cameraBackwardVector;
+
+	Vector3 raycastFromPosition = GetWorldPosition() + pivotOffset;
+
+	Vector3 raycastStart = raycastFromPosition + (cameraDirection * 0.25f);
+	Vector3 raycastEnd = raycastFromPosition + (cameraDirection * defaultCameraDistance_);
 
 	RaycastData raycastData;
-	raycastData.from = raycastFromPosition;
-	raycastData.to = cameraPosition;
+	raycastData.from = raycastStart;
+	raycastData.to = raycastEnd;
 	raycastData.collisionGroup = CollisionGroup::AllBlock;
 	raycastData.collisionMask = CollisionMask::BlockAllExceptCharacter;
 
 	RaycastSingleResult raycastResult;
-	if (engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult))
+	bool isHit = engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult);
+
+	if (isHit)
 	{
-		cameraDistance_.UpdateDestination((raycastResult.hitPosition - raycastFromPosition).Length());
+		float hitDistance = (raycastResult.hitPosition - raycastFromPosition).Length();
+
+		float targetDist = hitDistance - 0.2f;
+		if (targetDist < 0.5f)
+		{
+			targetDist = 0.5f;
+		}
+
+		cameraDistance_.UpdateDestination(targetDist);
 	}
 	else
 	{
 		cameraDistance_.UpdateDestination(defaultCameraDistance_);
 	}
 
-	Vector3 newRelativePosition = Vector3::UpVector + (newRotation * baseOffset) * cameraDistance_.current;
-
 	thirdPersonCameraComponent_->SetRelativeRotation(newRotation);
+
+	Vector3 newRelativePosition = pivotOffset + (cameraDirection * cameraDistance_.current);
 	thirdPersonCameraComponent_->SetRelativePosition(newRelativePosition);
 }
 
