@@ -34,7 +34,7 @@ private:
 
 	float cameraYaw_ = 0.0f;
 	float cameraPitch_ = 0.0f;
-	float defaultCameraDistance_ = 8.0f;
+	float defaultCameraDistance_ = 4.0f;
 	
 	float mouseSensitivity_ = 1.f;
 	float minPitch_ = -40.0f;

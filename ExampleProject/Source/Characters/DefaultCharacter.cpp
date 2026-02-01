@@ -92,12 +92,16 @@ void DefaultCharacter::Tick(float deltaTime)
 	Quaternion pitchRot = Quaternion::FromAxisAngle(Vector3::LeftVector, cameraPitch_);
 	Quaternion newRotation = yawRot * pitchRot;
 
-	Vector3 pivotOffset = Vector3{ 0.f, 0.f, 1.f };
+	Vector3 heightOffset = Vector3{ 0.f, 0.f, 1.f };
+	Vector3 backwardDir = Vector3{ -1.f, 0.f, 0.f };
 
-	Vector3 cameraBackwardVector = Vector3{ -1.f, 0.f, 0.f };
-	Vector3 cameraDirection = newRotation * cameraBackwardVector;
+	float shoulderOffsetAmount = 0.5f;
+	Vector3 rightDir = Vector3{ 0.f, -1.f, 0.f };
+	Vector3 rightOffsetVector = (newRotation * rightDir) * shoulderOffsetAmount;
 
-	Vector3 raycastFromPosition = GetWorldPosition() + pivotOffset;
+	Vector3 cameraDirection = newRotation * backwardDir;
+
+	Vector3 raycastFromPosition = GetWorldPosition() + heightOffset + rightOffsetVector;
 
 	Vector3 raycastStart = raycastFromPosition + (cameraDirection * 0.25f);
 	Vector3 raycastEnd = raycastFromPosition + (cameraDirection * defaultCameraDistance_);
@@ -114,13 +118,11 @@ void DefaultCharacter::Tick(float deltaTime)
 	if (isHit)
 	{
 		float hitDistance = (raycastResult.hitPosition - raycastFromPosition).Length();
-
 		float targetDist = hitDistance - 0.2f;
 		if (targetDist < 0.5f)
 		{
 			targetDist = 0.5f;
 		}
-
 		cameraDistance_.UpdateDestination(targetDist);
 	}
 	else
@@ -128,9 +130,12 @@ void DefaultCharacter::Tick(float deltaTime)
 		cameraDistance_.UpdateDestination(defaultCameraDistance_);
 	}
 
+	cameraDistance_.Tick(deltaTime);
+
 	thirdPersonCameraComponent_->SetRelativeRotation(newRotation);
 
-	Vector3 newRelativePosition = pivotOffset + (cameraDirection * cameraDistance_.current);
+	Vector3 newRelativePosition = (heightOffset + rightOffsetVector) + (cameraDirection * cameraDistance_.current);
+
 	thirdPersonCameraComponent_->SetRelativePosition(newRelativePosition);
 }
 
