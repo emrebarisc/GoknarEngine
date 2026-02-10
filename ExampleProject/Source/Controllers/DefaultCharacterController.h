@@ -76,4 +76,5 @@ private:
 	bool moveBackward_{ false };
 	bool moveLeft_{ false };
 	bool moveRight_{ false };
+	bool onGround_{ false };
 };

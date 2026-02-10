@@ -27,6 +27,7 @@ public:
 
 	void StartRunning();
 	void StopRunning();
+	virtual void Jump(const Vector3& v = Vector3::ZeroVector) override;
 
 private:
 	void OnMovementDirectionInterpolated();

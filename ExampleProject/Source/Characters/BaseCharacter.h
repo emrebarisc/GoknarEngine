@@ -26,6 +26,9 @@ public:
 	virtual void WalkRight();
 	virtual void WalkLeft();
 	virtual void Die();
+	virtual void Jump();
+	virtual void OnAir();
+	virtual void OnGround();
 
 	virtual void OnAttackStarted();
 	virtual void OnAttackFinished();
@@ -46,4 +49,5 @@ protected:
 private:
 
 	bool isAttacking_{ false };
+	bool blockAnimationChange_{ false };
 };

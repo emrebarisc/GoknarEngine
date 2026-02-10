@@ -83,6 +83,11 @@ void DefaultCharacterMovementComponent::StopRunning()
 	SetMovementSpeed(WALK_SPEED);
 }
 
+void DefaultCharacterMovementComponent::Jump(const Vector3& v)
+{
+	PhysicsMovementComponent::Jump(v);
+}
+
 void DefaultCharacterMovementComponent::OnMovementDirectionInterpolated()
 {
 	Vector3 movementVectorThisFrame = movementDirection_.current;
@@ -104,16 +109,19 @@ void DefaultCharacterMovementComponent::OnMovementDirectionInterpolated()
 
 		ownerCharacter_->SetWorldRotation(lookAtVector.GetRotationNormalized());
 
-		if (GetMovementSpeed() <= 0.05f)
+		if (OnGround())
 		{
-			ownerCharacter_->WalkForward();
-		}
-		else
-		{
-			ownerCharacter_->RunForward();
+			if (GetMovementSpeed() <= WALK_SPEED)
+			{
+				ownerCharacter_->WalkForward();
+			}
+			else
+			{
+				ownerCharacter_->RunForward();
+			}
 		}
 	}
-	else
+	else if (OnGround())
 	{
 		ownerCharacter_->Idle();
 	}

@@ -3,7 +3,8 @@
 #include "Goknar/Components/SkeletalMeshComponent.h"
 #include "Goknar/Model/SkeletalMeshInstance.h"
 
-#include "Controllers/FreeCameraController.h"
+#include "Controllers/DefaultCharacterController.h"
+#include "Components/DefaultCharacterMovementComponent.h"
 
 BaseCharacter::BaseCharacter() : 
 	Character()
@@ -31,12 +32,12 @@ void BaseCharacter::Tick(float deltaTime)
 
 void BaseCharacter::Idle()
 {
-	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Idle");
+	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|RifleIdle");
 }
 
 void BaseCharacter::RunForward()
 {
-	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("RunForward");
+	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|RifleRunForward");
 }
 
 void BaseCharacter::RunBackward()
@@ -53,7 +54,7 @@ void BaseCharacter::RunLeft()
 
 void BaseCharacter::WalkForward()
 {
-	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("WalkForward");
+	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|RifleWalkForward");
 }
 
 void BaseCharacter::WalkBackward()
@@ -70,6 +71,31 @@ void BaseCharacter::WalkLeft()
 
 void BaseCharacter::Die()
 {
+}
+
+void BaseCharacter::Jump()
+{
+	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|RifleJumpStart",
+		PlayLoopData{ true, Delegate<void()>::Create<BaseCharacter, &BaseCharacter::OnAir>(this) });
+
+	blockAnimationChange_ = true;
+}
+
+void BaseCharacter::OnAir()
+{
+	if (blockAnimationChange_)
+	{
+		return;
+	}
+
+	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|RifleOnAir");
+}
+
+void BaseCharacter::OnGround()
+{
+	skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|RifleJumpFinish");
+
+	blockAnimationChange_ = false;
 }
 
 void BaseCharacter::OnAttackStarted()

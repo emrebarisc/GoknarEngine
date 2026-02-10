@@ -45,7 +45,7 @@ DefaultCharacterController::~DefaultCharacterController()
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, stopMovingRightDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_PRESS, startRunningDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_RELEASE, stopRunningDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_RELEASE, jumpDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, jumpDelegate_);
 
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, onPauseDelegate_);
 }
@@ -61,11 +61,28 @@ void DefaultCharacterController::BeginGame()
 	engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
 
 	inputManager->SetIsCursorVisible(false);
+
+	onGround_ = characterMovementComponent_->OnGround();
 }
 
 void DefaultCharacterController::Tick(float deltaTime)
 {
 	Controller::Tick(deltaTime);
+
+	bool newOnGround = characterMovementComponent_->OnGround();
+
+	if (onGround_ != newOnGround)
+	{
+		if (newOnGround)
+		{
+			character_->OnGround();
+		}
+		else
+		{
+			character_->OnAir();
+		}
+		onGround_ = newOnGround;
+	}
 }
 
 void DefaultCharacterController::SetupInputs()
