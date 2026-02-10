@@ -5,6 +5,7 @@
 
 #include "Goknar/Components/CameraComponent.h"
 #include "Goknar/Components/SkeletalMeshComponent.h"
+#include "Goknar/Components/SocketComponent.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Physics/PhysicsWorld.h"
@@ -12,6 +13,8 @@
 
 #include "Controllers/DefaultCharacterController.h"
 #include "Components/DefaultCharacterMovementComponent.h"
+#include "Objects/Bullet.h"
+#include "Objects/Weapon.h"
 
 DefaultCharacter::DefaultCharacter() :
 	BaseCharacter()
@@ -39,18 +42,26 @@ DefaultCharacter::DefaultCharacter() :
 	skeletalMeshComponent_->SetParent(GetRootComponent());
 	skeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
 	skeletalMeshComponent_->SetRelativeScaling(Vector3{ 0.01f });
-	skeletalMeshComponent_->SetRelativePosition(Vector3{ 0.f, 0.f, -0.7f });
+	skeletalMeshComponent_->SetRelativePosition(Vector3{ 0.f, 0.f, -0.775f });
 
 	thirdPersonCameraComponent_ = AddSubComponent<CameraComponent>();
 	thirdPersonCameraComponent_->SetCameraFollowsComponentRotation(false);
 	thirdPersonCameraComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 0.f, 0.f, 0.f }));
-	thirdPersonCameraComponent_->SetRelativePosition(Vector3::UpVector * 2.f + thirdPersonCameraComponent_->GetRelativeForwardVector() * -8.f);
+	thirdPersonCameraComponent_->SetRelativePosition(Vector3::UpVector * 2.f - Vector3::LeftVector + thirdPersonCameraComponent_->GetRelativeForwardVector() * -8.f);
 	thirdPersonCameraComponent_->SetParent(GetRootComponent());
 
 	Camera* thirdPersonCamera = thirdPersonCameraComponent_->GetCamera();
 	thirdPersonCamera->SetNearDistance(1.f);
 	thirdPersonCamera->SetFarDistance(1000.f);
 	thirdPersonCamera->SetFOV(45.f);
+
+	SocketComponent* socketComponent = skeletalMeshComponent_->GetMeshInstance()->AddSocketToBone("mixamorig:RightHand");
+	socketComponent->SetRelativePosition(Vector3{ 0.f, 12.5f, 5.f });
+	socketComponent->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 110.f }));
+	socketComponent->SetRelativeScaling(Vector3{ 100.f });
+
+	weapon_ = new Weapon();
+	weapon_->AttachToSocket(socketComponent);
 }
 
 DefaultCharacter::~DefaultCharacter()
@@ -80,7 +91,6 @@ void DefaultCharacter::Tick(float deltaTime)
 	BaseCharacter::Tick(deltaTime);
 
 	const Vector2i cursorMovement = ((DefaultCharacterController*)controller_)->GetCursorDeltaMoveLastFrame();
-
 	float multiplier = mouseSensitivity_ * deltaTime;
 
 	cameraYaw_ -= cursorMovement.x * multiplier;
@@ -142,4 +152,14 @@ void DefaultCharacter::Tick(float deltaTime)
 void DefaultCharacter::Die()
 {
 	BaseCharacter::Die();
+}
+
+void DefaultCharacter::Fire()
+{
+	Bullet* bullet = new Bullet();
+
+	Vector3 weaponForwardVector = weapon_->GetForwardVector();
+
+	bullet->SetWorldPosition(weapon_->GetWorldPosition() + weaponForwardVector * 0.5f);
+	bullet->ApplyForce(weaponForwardVector * 4000.f);
 }

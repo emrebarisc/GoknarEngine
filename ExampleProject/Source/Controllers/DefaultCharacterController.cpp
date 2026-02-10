@@ -27,6 +27,7 @@ DefaultCharacterController::DefaultCharacterController(DefaultCharacter* charact
 	startRunningDelegate_= KeyboardDelegate::Create<DefaultCharacterController, &DefaultCharacterController::StartRunning>(this);
 	stopRunningDelegate_ = KeyboardDelegate::Create<DefaultCharacterController, &DefaultCharacterController::StopRunning>(this);
 	jumpDelegate_ = KeyboardDelegate::Create<DefaultCharacterController, &DefaultCharacterController::Jump>(this);
+	fireDelegate_ = MouseDelegate::Create<DefaultCharacterController, &DefaultCharacterController::Fire>(this);
 
 	onPauseDelegate_ = Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnPause>(this);
 }
@@ -48,6 +49,8 @@ DefaultCharacterController::~DefaultCharacterController()
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, jumpDelegate_);
 
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, onPauseDelegate_);
+
+	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, fireDelegate_);
 }
 
 void DefaultCharacterController::BeginGame()
@@ -100,6 +103,8 @@ void DefaultCharacterController::SetupInputs()
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_RELEASE, stopRunningDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_RELEASE, jumpDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, onPauseDelegate_);
+
+	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, fireDelegate_);
 
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::F5, INPUT_ACTION::G_PRESS, []() { engine->SetTimeScale(0.f); });
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::F6, INPUT_ACTION::G_PRESS, []() { engine->SetTimeScale(1.f); });
@@ -196,7 +201,13 @@ void DefaultCharacterController::Jump()
 	if(characterMovementComponent_->CanJump())
 	{
 		characterMovementComponent_->Jump();
+		character_->Jump();
 	}
+}
+
+void DefaultCharacterController::Fire()
+{
+	character_->Fire();
 }
 
 void DefaultCharacterController::OnPause()

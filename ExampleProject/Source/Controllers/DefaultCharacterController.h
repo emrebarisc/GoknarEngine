@@ -45,6 +45,7 @@ private:
 	void StartRunning();
 	void StopRunning();
 	void Jump();
+	void Fire();
 
 	void OnPause();
 
@@ -61,6 +62,7 @@ private:
 	Delegate<void()> startRunningDelegate_;
 	Delegate<void()> stopRunningDelegate_;
 	Delegate<void()> jumpDelegate_;
+	Delegate<void()> fireDelegate_;
 	
 	Delegate<void()> onPauseDelegate_;
 
