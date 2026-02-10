@@ -24,7 +24,7 @@ Image::Image(const std::string& path) :
 	width_(0),
 	height_(0),
 	channels_(0),
-	textureUsage_(TextureUsage::None),
+	textureUsage_(TextureUsage::Diffuse),
 	buffer_(nullptr),
 	generatedTexture_(nullptr)
 {
@@ -35,7 +35,7 @@ Image::Image(const std::string& path, int width, int height, int channels, unsig
 	width_(width),
 	height_(height),
 	channels_(channels),
-	textureUsage_(TextureUsage::None),
+	textureUsage_(TextureUsage::Diffuse),
 	buffer_(buffer),
 	generatedTexture_(nullptr)
 {

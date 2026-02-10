@@ -16,6 +16,7 @@ set(GOKNAR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/")
 set(SUBDIRS
 	${SOURCE_DIR_NAME}
 	${SOURCE_DIR_NAME}/Goknar
+	${SOURCE_DIR_NAME}/Goknar/Animation
 	${SOURCE_DIR_NAME}/Goknar/Components
 	${SOURCE_DIR_NAME}/Goknar/Components/LightComponents
 	#${SOURCE_DIR_NAME}/Goknar/Components/2D

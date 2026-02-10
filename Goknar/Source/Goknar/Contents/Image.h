@@ -103,7 +103,7 @@ private:
 	int height_;
 	int channels_;
 
-	TextureUsage textureUsage_;
+	TextureUsage textureUsage_{ TextureUsage::Diffuse };
 	TextureWrapping textureWrappingR_{ TextureWrapping::REPEAT };
 	TextureWrapping textureWrappingT_{ TextureWrapping::REPEAT };
 	TextureWrapping textureWrappingS_{ TextureWrapping::REPEAT };
