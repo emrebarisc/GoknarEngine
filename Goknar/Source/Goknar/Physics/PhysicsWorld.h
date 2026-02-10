@@ -120,7 +120,7 @@ protected:
     PhysicsMovementComponentVector physicsMovementComponents_;
 
 private:
-    Vector3 gravity_{ Vector3{0.f, 0.f, -10.f} };
+    Vector3 gravity_{ Vector3{0.f, 0.f, -20.f} };
 
     PhysicsDebugger* physicsDebugger_{ nullptr };
 
