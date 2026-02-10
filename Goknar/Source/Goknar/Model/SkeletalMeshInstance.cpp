@@ -24,7 +24,23 @@ SkeletalMeshInstance::~SkeletalMeshInstance()
 
 void SkeletalMeshInstance::PrepareForTheCurrentFrame()
 {
-	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
+	std::vector<Matrix> firstTransforms;
+	std::vector<Matrix> secondTransforms;
+	std::vector<Matrix> resultTransforms;
+
+	SkeletalMesh* skeletalMesh = GetMesh();
+	if (!skeletalMesh)
+	{
+		return;
+	}
+	const SkeletalAnimation* firstAnimation = skeletalMesh->GetSkeletalAnimation("Armature|RifleIdle");
+	const SkeletalAnimation* secondAnimation = skeletalMesh->GetSkeletalAnimation("Armature|RifleWalkForward");
+
+	mesh_->GetBoneTransforms(firstTransforms, firstAnimation, skeletalMeshAnimation_.animationTime, sockets_);
+	mesh_->GetBoneTransforms(secondTransforms, secondAnimation, skeletalMeshAnimation_.animationTime, sockets_);
+
+	//mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
+
 
 	// TODO: Implement a proper multi threading
 	// Following std::for_each parallelizing causes game crash
@@ -154,6 +170,11 @@ void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, const
 		skeletalMeshAnimation_.skeletalAnimation && skeletalMeshAnimation_.skeletalAnimation->name != animationName)
 	{
 		SkeletalMesh* skeletalMesh = GetMesh();
+		if (!skeletalMesh)
+		{
+			return;
+		}
+
 		skeletalMeshAnimation_.skeletalAnimation = skeletalMesh->GetSkeletalAnimation(animationName);
 		if (!skeletalMeshAnimation_.skeletalAnimation)
 		{
@@ -166,6 +187,10 @@ void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, const
 		skeletalMeshAnimation_.playLoopData = playLoopData;
 		skeletalMeshAnimation_.keyframeData = keyframeData;
 	}
+}
+
+void SkeletalMeshInstance::PlayAnimations(const std::string& animationName1, const std::string& animationName2, float t)
+{
 }
 
 void SkeletalMeshInstance::AttachBoneToMatrixPointer(const std::string& boneName, const Matrix* matrix)
