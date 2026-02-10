@@ -49,7 +49,6 @@ public:
 	virtual void SetMesh(SkeletalMesh* skeletalMesh) override;
 
 	void PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData = { false, {} }, const KeyframeData& keyframeData = {});
-	void PlayAnimations(const std::string& animationName1, const std::string& animationName2, float t);
 
 	void AttachBoneToMatrixPointer(const std::string& boneName, const Matrix* matrix);
 	void RemoveBoneToMatrixPointer(const std::string& boneName);
@@ -65,6 +64,7 @@ public:
 protected:
 
 private:
+	void UpdateBlendSpace(float alpha);
 	void SetRenderOperations(RenderPassType renderPassType = RenderPassType::Forward);
 
 	SkeletalMeshAnimation skeletalMeshAnimation_{};

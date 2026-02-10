@@ -525,6 +525,42 @@ public:
 
     }
 
+    void Decompose(Vector3& outTranslation, Vector3& outScale, Quaternion& outRotation) const
+    {
+        // 1. Extract Translation from the last column
+        outTranslation.x = m[3]; 
+        outTranslation.y = m[7];
+        outTranslation.z = m[11];
+
+        // 2. Extract Basis Vectors (columns) to calculate scale
+        // Col 0: m[0], m[4], m[8]
+        // Col 1: m[1], m[5], m[9]
+        // Col 2: m[2], m[6], m[10]
+        Vector3 basisX(m[0], m[4], m[8]);
+        Vector3 basisY(m[1], m[5], m[9]);
+        Vector3 basisZ(m[2], m[6], m[10]);
+
+        outScale.x = basisX.Length();
+        outScale.y = basisY.Length();
+        outScale.z = basisZ.Length();
+
+        // 3. Normalize basis vectors to remove scale for rotation extraction
+        if (outScale.x != 0.f) basisX /= outScale.x;
+        if (outScale.y != 0.f) basisY /= outScale.y;
+        if (outScale.z != 0.f) basisZ /= outScale.z;
+
+        // 4. Create a pure rotation Matrix3x3
+        // We map the normalized basis vectors back to a 3x3 grid
+        Matrix3x3 rotationMat(
+            basisX.x, basisY.x, basisZ.x,
+            basisX.y, basisY.y, basisZ.y,
+            basisX.z, basisY.z, basisZ.z
+        );
+
+        // 5. Use the existing Quaternion constructor that handles Matrix3x3
+        outRotation = Quaternion(rotationMat);
+    }
+
     Vector3 GetAxisVector(int i) const
     {
         return Vector3(m[i], m[i + 4], m[i + 8]);
@@ -646,7 +682,7 @@ public:
         const float cosGamma = cos(rotation.z);
         const float sinGamma = sin(rotation.z);
 
-		return Matrix(cosBeta * cosGamma,                                   cosBeta * sinGamma, -sinBeta,                                               0.f,
+		return Matrix(cosBeta * cosGamma,                                   cosBeta * sinGamma,                                 -sinBeta,               0.f,
                       sinAlpha * sinBeta * cosGamma - cosAlpha * sinGamma,  sinAlpha * sinBeta * sinGamma + cosAlpha * cosGamma, sinAlpha * cosBeta,    0.f,
                       cosAlpha * sinBeta * cosGamma + sinAlpha * sinGamma,  cosAlpha * sinBeta * sinGamma - sinAlpha * cosGamma, cosAlpha * cosBeta,    0.f,
                       0.f,                                                  0.f,                                                 0.f,                   1.f);
@@ -778,6 +814,28 @@ public:
         }
     }
 
+    Matrix operator+(const Matrix& other)
+    {
+        Matrix result(*this);
+
+        result.m[0] += other.m[0];
+        result.m[1] += other.m[1];
+        result.m[2] += other.m[2];
+        result.m[3] += other.m[3];
+
+        result.m[4] += other.m[4];
+        result.m[5] += other.m[5];
+        result.m[6] += other.m[6];
+        result.m[7] += other.m[7];
+        
+        result.m[8] += other.m[8];
+        result.m[9] += other.m[9];
+        result.m[8] += other.m[8];
+        result.m[8] += other.m[8];
+
+        return result;
+    }
+
 	Matrix operator-()
 	{
 		Matrix result(*this);
@@ -790,12 +848,34 @@ public:
 		return result;
 	}
 
+    Matrix operator-(const Matrix& other)
+    {
+        Matrix result(*this);
+
+        result.m[0] -= other.m[0];
+        result.m[1] -= other.m[1];
+        result.m[2] -= other.m[2];
+        result.m[3] -= other.m[3];
+
+        result.m[4] -= other.m[4];
+        result.m[5] -= other.m[5];
+        result.m[6] -= other.m[6];
+        result.m[7] -= other.m[7];
+        
+        result.m[8] -= other.m[8];
+        result.m[9] -= other.m[9];
+        result.m[8] -= other.m[8];
+        result.m[8] -= other.m[8];
+
+        return result;
+    }
+
     Matrix operator*(float value) const
     {
         return Matrix(
-            m[0] * value, m[1] * value, m[2] * value, m[3] * value,
-            m[4] * value, m[5] * value, m[6] * value, m[7] * value,
-            m[8] * value, m[9] * value, m[10] * value, m[11] * value,
+            m[0] * value,  m[1] * value,  m[2] * value,  m[3] * value,
+            m[4] * value,  m[5] * value,  m[6] * value,  m[7] * value,
+            m[8] * value,  m[9] * value,  m[10] * value, m[11] * value,
             m[12] * value, m[13] * value, m[14] * value, m[15] * value
             );
     }
