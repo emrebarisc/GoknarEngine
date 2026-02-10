@@ -60,89 +60,72 @@ void SkeletalMeshInstance::PrepareForTheCurrentFrame()
 
 void SkeletalMeshInstance::PrepareForTheNextFrame()
 {
-	if (skeletalMeshAnimation_.skeletalAnimation)
+	auto& animation = skeletalMeshAnimation_;
+	if (!animation.skeletalAnimation)
 	{
-		const float newElapsedTimeInSeconds = engine->GetElapsedTime() - skeletalMeshAnimation_.initialTimeInSeconds;
+		return;
+	}
 
-		const float newKeyframeIndex = skeletalMeshAnimation_.skeletalAnimation->ticksPerSecond * newElapsedTimeInSeconds;
+	const float duration = animation.skeletalAnimation->duration;
+	const float ticksPerSec = animation.skeletalAnimation->ticksPerSecond;
 
-		const float floorQuotient = std::floor(newKeyframeIndex / skeletalMeshAnimation_.skeletalAnimation->duration);
-		const float normalizedNewKeyframeIndex = newKeyframeIndex - (floorQuotient * skeletalMeshAnimation_.skeletalAnimation->duration);
+	const float newElapsedTime = engine->GetElapsedTime() - animation.initialTimeInSeconds;
+	const float totalTicks = ticksPerSec * newElapsedTime;
 
-		const bool isAnimationLoopedThisFrame = normalizedNewKeyframeIndex < skeletalMeshAnimation_.animationTime;
+	float newKeyframeIndex = std::fmod(totalTicks, duration);
 
-		if (!isAnimationLoopedThisFrame ||
-			(isAnimationLoopedThisFrame && !skeletalMeshAnimation_.playLoopData.playOnce))
+	const bool loopedThisFrame = newKeyframeIndex < animation.animationTime;
+
+	if (loopedThisFrame && animation.playLoopData.playOnce)
+	{
+		if (!animation.playLoopData.callback.isNull())
 		{
-			skeletalMeshAnimation_.elapsedTimeInSeconds = newElapsedTimeInSeconds;
-			skeletalMeshAnimation_.animationTime = normalizedNewKeyframeIndex;
+			animation.playLoopData.callback();
+		}
+		return;
+	}
 
-			if (isAnimationLoopedThisFrame && skeletalMeshAnimation_.playLoopData.callback != nullptr)
+	animation.elapsedTimeInSeconds = newElapsedTime;
+	float oldKeyframeIndex = animation.animationTime;
+	animation.animationTime = newKeyframeIndex;
+
+	if (loopedThisFrame && !animation.playLoopData.callback.isNull())
+	{
+		animation.playLoopData.callback();
+	}
+
+	int startKeyframeIndex = (int)oldKeyframeIndex;
+	int endKeyframeIndex = (int)newKeyframeIndex;
+
+	if (startKeyframeIndex != endKeyframeIndex)
+	{
+		auto& callbackMap = animation.keyframeData.keyframeCallbackMap;
+
+		std::function<void(int, int)> triggerRange =
+			[&](int from, int to)
 			{
-				skeletalMeshAnimation_.playLoopData.callback();
-			}
+				for (int i = from; i <= to; ++i)
+				{
+					auto it = callbackMap.find(i);
+					if (it != callbackMap.end())
+					{
+						it->second();
+					}
+				}
+			};
+
+		if (loopedThisFrame)
+		{
+			triggerRange(startKeyframeIndex + 1, (int)duration);
+			triggerRange(0, endKeyframeIndex);
 		}
 		else
 		{
-			if (skeletalMeshAnimation_.playLoopData.callback != nullptr)
-			{
-				skeletalMeshAnimation_.playLoopData.callback();
-			}
+			triggerRange(startKeyframeIndex + 1, endKeyframeIndex);
 		}
 
-		// TODO: OPTIMIZE
-		const int currentKeyframe = (int)std::floor(skeletalMeshAnimation_.animationTime);
-		if (currentKeyframe != skeletalMeshAnimation_.currentKeyframe)
-		{
-			decltype(skeletalMeshAnimation_.keyframeData.keyframeCallbackMap)& keyframeCallbackMap = skeletalMeshAnimation_.keyframeData.keyframeCallbackMap;
-			
-			int keyframeIndex = skeletalMeshAnimation_.currentKeyframe;
-			while(keyframeIndex < currentKeyframe)
-			{
-				if (keyframeCallbackMap.find(keyframeIndex) != keyframeCallbackMap.end())
-				{
-					keyframeCallbackMap[keyframeIndex]();
-				}
-
-				keyframeIndex = (keyframeIndex + 1) % skeletalMeshAnimation_.skeletalAnimation->maxKeyframe;
-			}
-			
-			skeletalMeshAnimation_.currentKeyframe = currentKeyframe;
-		}
+		animation.currentKeyframe = endKeyframeIndex;
 	}
-
-	// mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
-
-	// // TODO: Implement a proper multi threading
-	// // Following std::for_each parallelizing causes game crash
-	// //std::for_each
-	// //(
-	// //	std::execution::par,
-	// //	std::begin(boneIdToAttachedMatrixPointerMap_),
-	// //	std::end(boneIdToAttachedMatrixPointerMap_),
-	// //	[&](const std::pair<int, const Matrix*>& pair)
-	// //	{
-	// //		const Matrix* matrix = pair.second;
-
-	// //		if (matrix)
-	// //		{
-	// //			boneTransformations_[pair.first] = parentComponent_->GetComponentToWorldTransformationMatrix().GetInverse() * *matrix;
-	// //		}
-	// //	}
-	// //);
-
-	// std::unordered_map<int, const Matrix*>::iterator boneIdToAttachedMatrixPointerMapIterator = boneIdToAttachedMatrixPointerMap_.begin();
-	// while (boneIdToAttachedMatrixPointerMapIterator != boneIdToAttachedMatrixPointerMap_.end())
-	// {
-	// 	const Matrix* matrix = boneIdToAttachedMatrixPointerMapIterator->second;
-
-	// 	if (matrix)
-	// 	{
-	// 		boneTransformations_[boneIdToAttachedMatrixPointerMapIterator->first] = parentComponent_->GetComponentToWorldTransformationMatrix().GetInverse() * *matrix;
-	// 	}
-
-	// 	++boneIdToAttachedMatrixPointerMapIterator;
-	// }
 }
 
 void SkeletalMeshInstance::Render(RenderPassType renderPassType)
