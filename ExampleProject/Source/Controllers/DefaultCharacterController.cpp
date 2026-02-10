@@ -30,6 +30,8 @@ DefaultCharacterController::DefaultCharacterController(DefaultCharacter* charact
 	fireDelegate_ = MouseDelegate::Create<DefaultCharacterController, &DefaultCharacterController::Fire>(this);
 
 	onPauseDelegate_ = Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnPause>(this);
+
+	cursorDelegate_ = Delegate<void(double, double)>::Create<DefaultCharacterController, &DefaultCharacterController::OnCursorMove>(this);
 }
 
 DefaultCharacterController::~DefaultCharacterController()
@@ -51,6 +53,8 @@ DefaultCharacterController::~DefaultCharacterController()
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, onPauseDelegate_);
 
 	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, fireDelegate_);
+	
+	inputManager->RemoveCursorDelegate(cursorDelegate_);
 }
 
 void DefaultCharacterController::BeginGame()
@@ -111,7 +115,7 @@ void DefaultCharacterController::SetupInputs()
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::F7, INPUT_ACTION::G_PRESS, []() { float newTimeScale = GoknarMath::Max(engine->GetTimeScale() - 0.1f, 0.f); engine->SetTimeScale(newTimeScale); });
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::F8, INPUT_ACTION::G_PRESS, []() { float newTimeScale = GoknarMath::Min(engine->GetTimeScale() + 0.1f, 10.f); engine->SetTimeScale(newTimeScale); });
 
-	inputManager->AddCursorDelegate(Delegate<void(double, double)>::Create<DefaultCharacterController, &DefaultCharacterController::OnCursorMove>(this));
+	inputManager->AddCursorDelegate(cursorDelegate_);
 }
 
 void DefaultCharacterController::MoveForward()
@@ -230,7 +234,13 @@ void DefaultCharacterController::OnCursorMove(double x, double y)
 	Vector2 windowCenter = windowSize * 0.5f;
 	Vector2i currentCursorPosition = Vector2i(x, y);
 
-	cursorDeltaMoveLastFrame_ = currentCursorPosition - windowCenter;
+	Vector2i difference = currentCursorPosition - windowCenter;
+	if(GoknarMath::Abs(difference.x) + GoknarMath::Abs(difference.y) < 4)
+	{
+		difference = Vector2i::ZeroVector;
+	}
+
+	cursorDeltaMoveLastFrame_ = difference;
 
 	engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
 }

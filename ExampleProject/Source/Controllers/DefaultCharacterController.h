@@ -65,6 +65,7 @@ private:
 	Delegate<void()> fireDelegate_;
 	
 	Delegate<void()> onPauseDelegate_;
+	Delegate<void(double, double)> cursorDelegate_;
 
 	InterpolatingValue<Vector3> movementVector_;
 	InterpolatingValue<float> movementRotation_;
