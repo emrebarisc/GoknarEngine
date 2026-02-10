@@ -18,7 +18,7 @@ void MaterialInitializer::DefaultSceneAssets()
 
     std::string placeholderTextureName = "placeholderTexture";
 
-    Image* placeholderImage = resourceManager->GetContent<Image>("Textures/T_LightPlaceholder.png");
+    Image* placeholderImage = resourceManager->GetContent<Image>("Textures/T_DarkPlaceholder.png");
     placeholderImage->SetName(placeholderTextureName);
 
     Material* material = new Material();
@@ -32,36 +32,28 @@ void MaterialInitializer::DefaultSceneAssets()
     materialInitializationData->baseColor.calculation = R"(
     mat4 modelMatrix = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + R"(;
 
-    float scaleX = length(vec3(modelMatrix[0].x, modelMatrix[0].y, modelMatrix[0].z));
-    float scaleY = length(vec3(modelMatrix[1].x, modelMatrix[1].y, modelMatrix[1].z));
-    float scaleZ = length(vec3(modelMatrix[2].x, modelMatrix[2].y, modelMatrix[2].z));
-    vec3 worldScale = vec3(scaleX, scaleY, scaleZ);
-
     mat4 invModel = inverse(modelMatrix);
 
     vec3 worldNormal = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"(;
-    vec3 localNormal = normalize((vec4(worldNormal, 0.0) * modelMatrix).xyz); 
-    vec3 localPos = (invModel * )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"().xyz;
+    vec3 fragmentPosition = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(.xyz;
     
-    vec3 absNormal = abs(localNormal);
+    vec3 absNormal = abs(worldNormal);
     
     vec2 projectedUV;
     if (absNormal.x > absNormal.y && absNormal.x > absNormal.z)
     {
-        projectedUV = localPos.zy * worldScale.zy;
+        projectedUV = fragmentPosition.zy;
     }
     else if (absNormal.y > absNormal.x && absNormal.y > absNormal.z)
     {
-        projectedUV = localPos.xz * worldScale.xz;
+        projectedUV = fragmentPosition.xz;
     }
     else
     {
-        projectedUV = localPos.xy * worldScale.xy;
+        projectedUV = fragmentPosition.xy;
     }
 
     vec4 textureValue = texture2D()" + placeholderTextureName + R"(, projectedUV);
-    float upsideValue = clamp(dot(vec3(0.0, 0.0, 1.0), worldNormal), 0.0, 1.0);
-    textureValue.xyz = textureValue.xyz * upsideValue + vec3(0.05) * (1.0 - upsideValue);
 )";
 
     materialInitializationData->baseColor.result = "textureValue;";
@@ -80,6 +72,13 @@ void MaterialInitializer::DefaultSceneAssets()
 
     StaticMesh* unitCubeMesh = resourceManager->GetContent<StaticMesh>("Meshes/DefaultScene/SM_UnitCube.fbx");
     unitCubeMesh->SetMaterial(material);
+
+    Material* blockMaterial = new Material();
+    blockMaterial->SetBaseColor(Vector3{ 0.8f, 0.35f, 0.05f });
+    blockMaterial->SetEmmisiveColor(Vector3{ 0.f });
+    blockMaterial->SetSpecularReflectance(Vector3{ 1.f });
+    StaticMesh* blockMesh = resourceManager->GetContent<StaticMesh>("Meshes/DefaultScene/SM_Block.fbx");
+    blockMesh->SetMaterial(blockMaterial);
 }
 
 void MaterialInitializer::DefaultCharacter()
