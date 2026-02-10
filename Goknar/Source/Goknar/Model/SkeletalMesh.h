@@ -140,9 +140,9 @@ struct GOKNAR_API AnimationQuaternionKey
     Quaternion value{ Quaternion::Identity };
 };
 
-struct GOKNAR_API SkeletalAnimationNode
+struct GOKNAR_API SkeletalAnimationKeyframe
 {
-    ~SkeletalAnimationNode()
+    ~SkeletalAnimationKeyframe()
     {
         delete[] rotationKeys;
         delete[] positionKeys;
@@ -238,26 +238,26 @@ struct GOKNAR_API SkeletalAnimation
 {
     ~SkeletalAnimation()
     {
-        for (unsigned int animationNodeIndex = 0; animationNodeIndex < animationNodeSize; ++animationNodeIndex)
+        for (unsigned int animationKeyframeIndex = 0; animationKeyframeIndex < animationKeyframeCount; ++animationKeyframeIndex)
         {
-            delete animationNodes[animationNodeIndex];
+            delete animationKeyframes[animationKeyframeIndex];
         }
-        delete[] animationNodes;
+        delete[] animationKeyframes;
     }
 
-    void AddSkeletalAnimationNode(int index, SkeletalAnimationNode* skeletalAnimationNode)
+    void AddSkeletalAnimationKeyframe(int index, SkeletalAnimationKeyframe* skeletalAnimationKeyframe)
     {
-        animationNodes[index] = skeletalAnimationNode;
-        affectedBoneNameToSkeletalAnimationNodeMap[skeletalAnimationNode->affectedBoneName] = skeletalAnimationNode;
+        animationKeyframes[index] = skeletalAnimationKeyframe;
+        affectedBoneNameToSkeletalAnimationKeyframeMap[skeletalAnimationKeyframe->affectedBoneName] = skeletalAnimationKeyframe;
     }
 
-    std::unordered_map<std::string, SkeletalAnimationNode*> affectedBoneNameToSkeletalAnimationNodeMap;
-    SkeletalAnimationNode** animationNodes{ nullptr };
+    std::unordered_map<std::string, SkeletalAnimationKeyframe*> affectedBoneNameToSkeletalAnimationKeyframeMap;
+    SkeletalAnimationKeyframe** animationKeyframes{ nullptr };
     std::string name{ "" };
     float duration{ 0.f };
     float ticksPerSecond{ 0.f };
-    unsigned int animationNodeSize{ 0 };
-	unsigned int maxKeyframe{ 0 };
+    unsigned int animationKeyframeCount{ 0 };
+	unsigned int maxKeyframeCount{ 0 };
 };
 
 typedef std::vector<VertexBoneData> VertexBoneDataArray;

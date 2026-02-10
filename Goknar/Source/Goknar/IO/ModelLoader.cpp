@@ -280,50 +280,50 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 						SkeletalAnimation* skeletalAnimation = new SkeletalAnimation();
 
 						skeletalAnimation->name = assimpAnimation->mName.C_Str();
-						skeletalAnimation->animationNodeSize = assimpAnimation->mNumChannels;
-						skeletalAnimation->animationNodes = new SkeletalAnimationNode * [skeletalAnimation->animationNodeSize];
+						skeletalAnimation->animationKeyframeCount = assimpAnimation->mNumChannels;
+						skeletalAnimation->animationKeyframes = new SkeletalAnimationKeyframe * [skeletalAnimation->animationKeyframeCount];
 						skeletalAnimation->duration = assimpAnimation->mDuration;
 						skeletalAnimation->ticksPerSecond = assimpAnimation->mTicksPerSecond;
-						skeletalAnimation->maxKeyframe = (int)(skeletalAnimation->ticksPerSecond * skeletalAnimation->duration);
+						skeletalAnimation->maxKeyframeCount = (int)(skeletalAnimation->ticksPerSecond * skeletalAnimation->duration);
 
-						for (unsigned int animationNodeIndex = 0; animationNodeIndex < skeletalAnimation->animationNodeSize; ++animationNodeIndex)
+						for (unsigned int animationKeyframeIndex = 0; animationKeyframeIndex < skeletalAnimation->animationKeyframeCount; ++animationKeyframeIndex)
 						{
-							aiNodeAnim* assimpAnimationNode = assimpAnimation->mChannels[animationNodeIndex];
+							aiNodeAnim* assimpAnimationKeyframe = assimpAnimation->mChannels[animationKeyframeIndex];
 
-							SkeletalAnimationNode* skeletalAnimationNode = new SkeletalAnimationNode();
-							skeletalAnimationNode->affectedBoneName = assimpAnimationNode->mNodeName.C_Str();
+							SkeletalAnimationKeyframe* skeletalAnimationNode = new SkeletalAnimationKeyframe();
+							skeletalAnimationNode->affectedBoneName = assimpAnimationKeyframe->mNodeName.C_Str();
 
-							skeletalAnimationNode->rotationKeySize = assimpAnimationNode->mNumRotationKeys;
+							skeletalAnimationNode->rotationKeySize = assimpAnimationKeyframe->mNumRotationKeys;
 							skeletalAnimationNode->rotationKeys = new AnimationQuaternionKey[skeletalAnimationNode->rotationKeySize];
 							for (unsigned int rotationKeyIndex = 0; rotationKeyIndex < skeletalAnimationNode->rotationKeySize; ++rotationKeyIndex)
 							{
-								const aiQuatKey& assimpQuaternionKey = assimpAnimationNode->mRotationKeys[rotationKeyIndex];
+								const aiQuatKey& assimpQuaternionKey = assimpAnimationKeyframe->mRotationKeys[rotationKeyIndex];
 
 								skeletalAnimationNode->rotationKeys[rotationKeyIndex].time = assimpQuaternionKey.mTime;
 								skeletalAnimationNode->rotationKeys[rotationKeyIndex].value = Quaternion(assimpQuaternionKey.mValue.x, assimpQuaternionKey.mValue.y, assimpQuaternionKey.mValue.z, assimpQuaternionKey.mValue.w);
 							}
 
-							skeletalAnimationNode->positionKeySize = assimpAnimationNode->mNumPositionKeys;
+							skeletalAnimationNode->positionKeySize = assimpAnimationKeyframe->mNumPositionKeys;
 							skeletalAnimationNode->positionKeys = new AnimationVectorKey[skeletalAnimationNode->positionKeySize];
 							for (unsigned int positionKeyIndex = 0; positionKeyIndex < skeletalAnimationNode->positionKeySize; ++positionKeyIndex)
 							{
-								const aiVectorKey& assimpVectorKey = assimpAnimationNode->mPositionKeys[positionKeyIndex];
+								const aiVectorKey& assimpVectorKey = assimpAnimationKeyframe->mPositionKeys[positionKeyIndex];
 
 								skeletalAnimationNode->positionKeys[positionKeyIndex].time = assimpVectorKey.mTime;
 								skeletalAnimationNode->positionKeys[positionKeyIndex].value = Vector3(assimpVectorKey.mValue.x, assimpVectorKey.mValue.y, assimpVectorKey.mValue.z);
 							}
 
-							skeletalAnimationNode->scalingKeySize = assimpAnimationNode->mNumScalingKeys;
+							skeletalAnimationNode->scalingKeySize = assimpAnimationKeyframe->mNumScalingKeys;
 							skeletalAnimationNode->scalingKeys = new AnimationVectorKey[skeletalAnimationNode->scalingKeySize];
 							for (unsigned int scalingKeyIndex = 0; scalingKeyIndex < skeletalAnimationNode->scalingKeySize; ++scalingKeyIndex)
 							{
-								const aiVectorKey& assimpVectorKey = assimpAnimationNode->mScalingKeys[scalingKeyIndex];
+								const aiVectorKey& assimpVectorKey = assimpAnimationKeyframe->mScalingKeys[scalingKeyIndex];
 
 								skeletalAnimationNode->scalingKeys[scalingKeyIndex].time = assimpVectorKey.mTime;
 								skeletalAnimationNode->scalingKeys[scalingKeyIndex].value = Vector3(assimpVectorKey.mValue.x, assimpVectorKey.mValue.y, assimpVectorKey.mValue.z);
 							}
 
-							skeletalAnimation->AddSkeletalAnimationNode(animationNodeIndex, skeletalAnimationNode);
+							skeletalAnimation->AddSkeletalAnimationKeyframe(animationKeyframeIndex, skeletalAnimationNode);
 						}
 						skeletalMesh->AddSkeletalAnimation(skeletalAnimation);
 					}

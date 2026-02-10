@@ -65,7 +65,7 @@ void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform, st
 	Matrix boneTransformation = bone->transformation;
 	if (skeletalAnimation)
 	{
-		SkeletalAnimationNode* skeletalAnimationNode = skeletalAnimation->affectedBoneNameToSkeletalAnimationNodeMap.at(bone->name);
+		SkeletalAnimationKeyframe* skeletalAnimationNode = skeletalAnimation->affectedBoneNameToSkeletalAnimationKeyframeMap.at(bone->name);
 
 		if (skeletalAnimationNode)
 		{
