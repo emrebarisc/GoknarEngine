@@ -30,6 +30,9 @@
         <Mesh>
             <Path>Meshes/SM_Weapon.fbx</Path>
         </Mesh>
+        <Mesh>
+            <Path>Meshes/SM_Matilda.fbx</Path>
+        </Mesh>
     </Assets>
     <Lights>
         <DirectionalLight>
@@ -506,5 +509,20 @@
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
+        <ObjectBase>
+            <Name>ObjectBase</Name>
+            <WorldPosition>0.000000 2.000000 0.125000</WorldPosition>
+            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
+            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
+            <Components>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/SM_Matilda.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
+                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
+                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
+                </StaticMeshComponent>
+            </Components>
+        </ObjectBase>
     </Objects>
 </Scene>

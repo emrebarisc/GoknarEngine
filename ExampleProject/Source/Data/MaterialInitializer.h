@@ -14,4 +14,5 @@ protected:
 private:
 	static void DefaultSceneAssets();
 	static void DefaultCharacter();
+	static void Matilda();
 };

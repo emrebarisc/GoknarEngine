@@ -20,6 +20,7 @@
 #include "Data/MaterialInitializer.h"
 #include "Objects/FreeCameraObject.h"
 #include "Controllers/FreeCameraController.h"
+#include "UI/MainHUD.h"
 
 Game::Game() : Application()
 {
@@ -41,16 +42,31 @@ Game::Game() : Application()
 
 	lastFrameTimePoint = currentTimePoint;
 	
-	//freeCameraObject_ = new FreeCameraObject();
-	//freeCameraObject_->SetWorldPosition(Vector3{ 0.f, 0.f, 1.f });
-	//freeCameraObject_->GetFreeCameraController()->SetIsActive(true);
-
 	defaultCharacter_ = new DefaultCharacter();
 
 	engine->GetWindowManager()->SetWindowSize(1600, 900);
 	engine->GetWindowManager()->SetIsInFullscreen(false);
 
 	gameState_ = new GameState();
+
+	engine->SetHUD(new MainHUD());
+}
+
+void Game::PreInit()
+{
+	Application::PreInit();
+
+	gameState_->PauseGame();
+}
+
+void Game::Init()
+{
+	Application::Init();
+}
+
+void Game::PostInit()
+{
+	Application::PostInit();
 }
 
 void Game::Run()

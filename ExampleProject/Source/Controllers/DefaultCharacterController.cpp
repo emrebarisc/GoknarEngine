@@ -36,25 +36,7 @@ DefaultCharacterController::DefaultCharacterController(DefaultCharacter* charact
 
 DefaultCharacterController::~DefaultCharacterController()
 {
-	InputManager* inputManager = engine->GetInputManager();
-
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_PRESS, moveForwardDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_RELEASE, stopMovingForwardDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_PRESS, moveBackwardDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_RELEASE, stopMovingBackwardDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_PRESS, moveLeftDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_RELEASE, stopMovingLeftDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_PRESS, moveRightDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, stopMovingRightDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_PRESS, startRunningDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_RELEASE, stopRunningDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, jumpDelegate_);
-
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, onPauseDelegate_);
-
-	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, fireDelegate_);
-	
-	inputManager->RemoveCursorDelegate(cursorDelegate_);
+	RemoveInputDelegates();
 }
 
 void DefaultCharacterController::BeginGame()
@@ -67,9 +49,10 @@ void DefaultCharacterController::BeginGame()
 	Vector2 windowCenter = windowSize * 0.5f;
 	engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
 
-	inputManager->SetIsCursorVisible(false);
-
 	onGround_ = characterMovementComponent_->OnGround();
+
+	dynamic_cast<Game*>(engine->GetApplication())->GetGameState()->OnGameStartedDelegate += Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnGameResumed>(this);
+	dynamic_cast<Game*>(engine->GetApplication())->GetGameState()->OnGameResumedDelegate += Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnGameResumed>(this);
 }
 
 void DefaultCharacterController::Tick(float deltaTime)
@@ -92,7 +75,7 @@ void DefaultCharacterController::Tick(float deltaTime)
 	}
 }
 
-void DefaultCharacterController::SetupInputs()
+void DefaultCharacterController::SetupInputDelegates()
 {
 	InputManager* inputManager = engine->GetInputManager();
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_PRESS, moveForwardDelegate_);
@@ -116,6 +99,29 @@ void DefaultCharacterController::SetupInputs()
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::F8, INPUT_ACTION::G_PRESS, []() { float newTimeScale = GoknarMath::Min(engine->GetTimeScale() + 0.1f, 10.f); engine->SetTimeScale(newTimeScale); });
 
 	inputManager->AddCursorDelegate(cursorDelegate_);
+}
+
+void DefaultCharacterController::RemoveInputDelegates()
+{
+	InputManager* inputManager = engine->GetInputManager();
+
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_PRESS, moveForwardDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::W, INPUT_ACTION::G_RELEASE, stopMovingForwardDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_PRESS, moveBackwardDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::S, INPUT_ACTION::G_RELEASE, stopMovingBackwardDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_PRESS, moveLeftDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::A, INPUT_ACTION::G_RELEASE, stopMovingLeftDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_PRESS, moveRightDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, stopMovingRightDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_PRESS, startRunningDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_RELEASE, stopRunningDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, jumpDelegate_);
+
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, onPauseDelegate_);
+
+	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, fireDelegate_);
+
+	inputManager->RemoveCursorDelegate(cursorDelegate_);
 }
 
 void DefaultCharacterController::MoveForward()
@@ -218,14 +224,20 @@ void DefaultCharacterController::OnPause()
 {
 	Game* game = dynamic_cast<Game*>(engine->GetApplication());
 	GameState* gameState = game->GetGameState();
-	if (gameState->GetIsGamePaused())
-	{
-		gameState->ResumeGame();
-	}
-	else
-	{
-		gameState->PauseGame();
-	}
+	gameState->PauseGame();
+
+	InputManager* inputManager = engine->GetInputManager();
+	inputManager->SetIsCursorVisible(true);
+
+	RemoveInputDelegates();
+}
+
+void DefaultCharacterController::OnGameResumed()
+{
+	InputManager* inputManager = engine->GetInputManager();
+	inputManager->SetIsCursorVisible(false);
+
+	SetupInputDelegates();
 }
 
 void DefaultCharacterController::OnCursorMove(double x, double y)

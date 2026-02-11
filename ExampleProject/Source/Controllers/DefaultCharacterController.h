@@ -21,7 +21,8 @@ public:
 	virtual void BeginGame() override;
 	virtual void Tick(float deltaTime) override;
 
-	void SetupInputs() override;
+	void SetupInputDelegates() override;
+	void RemoveInputDelegates();
 
 	void SetDefaultCharacter(DefaultCharacter* character)
 	{
@@ -48,6 +49,7 @@ private:
 	void Fire();
 
 	void OnPause();
+	void OnGameResumed();
 
 	void OnCursorMove(double x, double y);
 

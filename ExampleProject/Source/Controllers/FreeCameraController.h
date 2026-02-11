@@ -14,7 +14,7 @@ public:
 	~FreeCameraController();
 
 	void BeginGame() override;
-	void SetupInputs() override;
+	void SetupInputDelegates() override;
 
 	virtual void SetIsActive(bool isActive) override;
 

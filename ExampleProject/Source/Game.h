@@ -13,6 +13,9 @@ public:
 	{
 	}
 
+	void PreInit() override;
+	void Init() override;
+	void PostInit() override;
 	void Run() override;
 
 	DefaultCharacter* GetDefaultCharacter() const

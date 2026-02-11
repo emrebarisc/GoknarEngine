@@ -10,6 +10,8 @@
 void MaterialInitializer::Init()
 {
 	DefaultSceneAssets();
+    DefaultCharacter();
+    Matilda();
 }
 
 void MaterialInitializer::DefaultSceneAssets()
@@ -76,7 +78,8 @@ void MaterialInitializer::DefaultSceneAssets()
     Material* blockMaterial = new Material();
     blockMaterial->SetBaseColor(Vector3{ 0.8f, 0.35f, 0.05f });
     blockMaterial->SetEmmisiveColor(Vector3{ 0.f });
-    blockMaterial->SetSpecularReflectance(Vector3{ 1.f });
+    blockMaterial->SetSpecularReflectance(Vector3{ 2.f });
+    blockMaterial->SetPhongExponent(2.f);
     StaticMesh* blockMesh = resourceManager->GetContent<StaticMesh>("Meshes/DefaultScene/SM_Block.fbx");
     blockMesh->SetMaterial(blockMaterial);
 }
@@ -92,4 +95,23 @@ void MaterialInitializer::DefaultCharacter()
 
     SkeletalMesh* defaultCharacterMesh = resourceManager->GetContent<SkeletalMesh>("Meshes/SK_DefaultCharacter.fbx");
     defaultCharacterMesh->SetMaterial(material);
+}
+
+void MaterialInitializer::Matilda()
+{
+    ResourceManager* resourceManager = engine->GetResourceManager();
+
+    std::string matildaTextureName = "matildaTexture";
+
+    Image* matildaTexture = resourceManager->GetContent<Image>("Textures/T_Matilda.png");
+    matildaTexture->SetName(matildaTextureName);
+
+    Material* matildaMaterial = new Material();
+    matildaMaterial->SetBaseColor(Vector3::ZeroVector);
+    matildaMaterial->SetEmmisiveColor(Vector3{ 0.f });
+    matildaMaterial->SetSpecularReflectance(Vector3{ 0.f });
+    matildaMaterial->AddTextureImage(matildaTexture);
+
+    StaticMesh* matildaMesh = resourceManager->GetContent<StaticMesh>("Meshes/SM_Matilda.fbx");
+    matildaMesh->SetMaterial(matildaMaterial);
 }

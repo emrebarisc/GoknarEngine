@@ -20,6 +20,8 @@ set(SUBDIRS
     ${SOURCE_DIR_NAME}/Controllers
     ${SOURCE_DIR_NAME}/Data
     ${SOURCE_DIR_NAME}/Objects
+    ${SOURCE_DIR_NAME}/UI
+    ${SOURCE_DIR_NAME}/UI/Panels
 )
 set(GAME_SOURCE)
 
@@ -51,6 +53,12 @@ else()
     add_library(${APP_NAME} SHARED ${GAME_SOURCE})
     target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
 endif()
+
+add_subdirectory(Thirdparty/Imgui/)
+target_link_libraries(${APP_NAME} PUBLIC IMGUI)
+target_include_directories(${APP_NAME} PUBLIC 
+    Thirdparty/Imgui/Repo
+)
 
 add_subdirectory(${ENGINE_PATH} ./Goknar)
 

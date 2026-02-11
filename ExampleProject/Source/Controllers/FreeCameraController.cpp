@@ -60,7 +60,7 @@ void FreeCameraController::BeginGame()
 	}
 }
 
-void FreeCameraController::SetupInputs()
+void FreeCameraController::SetupInputDelegates()
 {
 }
 

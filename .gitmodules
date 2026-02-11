@@ -13,3 +13,6 @@
 [submodule "Goknar/thirdparty/bullet3"]
 	path = Goknar/thirdparty/bullet3
 	url = https://github.com/bulletphysics/bullet3.git
+[submodule "ExampleProject/Thirdparty/Imgui/Repo"]
+	path = ExampleProject/Thirdparty/Imgui/Repo
+	url = https://github.com/ocornut/imgui
