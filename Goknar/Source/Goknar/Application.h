@@ -19,9 +19,9 @@ public:
 	Application();
 	virtual ~Application();
 
-	void PreInit();
-	void Init();
-	void PostInit();
+	virtual void PreInit();
+	virtual void Init();
+	virtual void PostInit();
 
 	virtual void Run();
 

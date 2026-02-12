@@ -14,7 +14,7 @@ public:
 	virtual void PostInit() override;
 
 	virtual void BeginGame() {}
-	virtual void SetupInputs() = 0;
+	virtual void SetupInputDelegates() = 0;
 private:
 
 };

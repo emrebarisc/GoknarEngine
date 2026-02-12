@@ -26,7 +26,5 @@ void Controller::Init()
 
 void Controller::PostInit()
 {
-	SetupInputs();
-
 	ObjectBase::PostInit();
 }

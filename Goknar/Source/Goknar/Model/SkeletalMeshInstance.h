@@ -61,6 +61,8 @@ public:
 
 	SocketComponent* AddSocketToBone(const std::string& boneName);
 	SocketComponent* GetSocket(const std::string& boneName);
+
+	static inline float blendValue;
 protected:
 
 private:

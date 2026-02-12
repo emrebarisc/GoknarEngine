@@ -88,12 +88,7 @@ void SkeletalMeshInstance::UpdateBlendSpace(float alpha)
 
 void SkeletalMeshInstance::PrepareForTheCurrentFrame()
 {
-	static float time = engine->GetElapsedTime();
-	float currentTime = engine->GetElapsedTime();
-	float elapsedTime = currentTime - time;
-	static float alpha = 0.f;
-	alpha = GoknarMath::Frac(alpha + engine->GetDeltaTime() * 0.1f);
-	UpdateBlendSpace(alpha);
+	UpdateBlendSpace(blendValue);
 
 
 

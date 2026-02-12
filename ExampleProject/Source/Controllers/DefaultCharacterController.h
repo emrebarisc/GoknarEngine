@@ -48,7 +48,8 @@ private:
 	void Jump();
 	void Fire();
 
-	void OnPause();
+	void OnPauseInput();
+	void OnGamePaused();
 	void OnGameResumed();
 
 	void OnCursorMove(double x, double y);

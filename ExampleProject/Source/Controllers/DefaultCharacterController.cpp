@@ -29,7 +29,7 @@ DefaultCharacterController::DefaultCharacterController(DefaultCharacter* charact
 	jumpDelegate_ = KeyboardDelegate::Create<DefaultCharacterController, &DefaultCharacterController::Jump>(this);
 	fireDelegate_ = MouseDelegate::Create<DefaultCharacterController, &DefaultCharacterController::Fire>(this);
 
-	onPauseDelegate_ = Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnPause>(this);
+	onPauseDelegate_ = Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnPauseInput>(this);
 
 	cursorDelegate_ = Delegate<void(double, double)>::Create<DefaultCharacterController, &DefaultCharacterController::OnCursorMove>(this);
 }
@@ -51,8 +51,13 @@ void DefaultCharacterController::BeginGame()
 
 	onGround_ = characterMovementComponent_->OnGround();
 
-	dynamic_cast<Game*>(engine->GetApplication())->GetGameState()->OnGameStartedDelegate += Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnGameResumed>(this);
-	dynamic_cast<Game*>(engine->GetApplication())->GetGameState()->OnGameResumedDelegate += Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnGameResumed>(this);
+	GameState* gameState = dynamic_cast<Game*>(engine->GetApplication())->GetGameState();
+
+	gameState->OnGamePausedDelegate += Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnGamePaused>(this);
+	gameState->OnGameStartedDelegate += Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnGameResumed>(this);
+	gameState->OnGameResumedDelegate += Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnGameResumed>(this);
+
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, onPauseDelegate_);
 }
 
 void DefaultCharacterController::Tick(float deltaTime)
@@ -89,7 +94,6 @@ void DefaultCharacterController::SetupInputDelegates()
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_PRESS, startRunningDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_RELEASE, stopRunningDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_RELEASE, jumpDelegate_);
-	inputManager->AddKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, onPauseDelegate_);
 
 	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, fireDelegate_);
 
@@ -116,8 +120,6 @@ void DefaultCharacterController::RemoveInputDelegates()
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_PRESS, startRunningDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_RELEASE, stopRunningDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, jumpDelegate_);
-
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, onPauseDelegate_);
 
 	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, fireDelegate_);
 
@@ -220,7 +222,7 @@ void DefaultCharacterController::Fire()
 	character_->Fire();
 }
 
-void DefaultCharacterController::OnPause()
+void DefaultCharacterController::OnPauseInput()
 {
 	Game* game = dynamic_cast<Game*>(engine->GetApplication());
 	GameState* gameState = game->GetGameState();
@@ -228,31 +230,34 @@ void DefaultCharacterController::OnPause()
 
 	InputManager* inputManager = engine->GetInputManager();
 	inputManager->SetIsCursorVisible(true);
+}
 
+void DefaultCharacterController::OnGamePaused()
+{
 	RemoveInputDelegates();
 }
 
 void DefaultCharacterController::OnGameResumed()
 {
 	InputManager* inputManager = engine->GetInputManager();
-	inputManager->SetIsCursorVisible(false);
+	//inputManager->SetIsCursorVisible(false);
 
-	SetupInputDelegates();
+	//SetupInputDelegates();
 }
 
 void DefaultCharacterController::OnCursorMove(double x, double y)
 {
-	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
-	Vector2 windowCenter = windowSize * 0.5f;
-	Vector2i currentCursorPosition = Vector2i(x, y);
+	//Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
+	//Vector2 windowCenter = windowSize * 0.5f;
+	//Vector2i currentCursorPosition = Vector2i(x, y);
 
-	Vector2i difference = currentCursorPosition - windowCenter;
-	if(GoknarMath::Abs(difference.x) + GoknarMath::Abs(difference.y) < 4)
-	{
-		difference = Vector2i::ZeroVector;
-	}
+	//Vector2i difference = currentCursorPosition - windowCenter;
+	//if(GoknarMath::Abs(difference.x) + GoknarMath::Abs(difference.y) < 4)
+	//{
+	//	difference = Vector2i::ZeroVector;
+	//}
 
-	cursorDeltaMoveLastFrame_ = difference;
+	//cursorDeltaMoveLastFrame_ = difference;
 
-	engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
+	//engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
 }
