@@ -32,13 +32,14 @@ void MainMenuPanel::Draw()
 
 	ImGui::Begin(title_.c_str(), &isOpen_, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
-	ImGui::SetNextWindowPos(UIUtils::ToImVec2(context->windowSize * 0.5f - Vector2{25.f, 25.f}));
-
+	ImGui::SetCursorPos(UIUtils::ToImVec2(context->windowSize * 0.5f - Vector2{25.f, 25.f}));
 	if (ImGui::Button("Play", UIUtils::ToImVec2(context->buttonSize)))
 	{
 		dynamic_cast<Game*>(engine->GetApplication())->GetGameState()->ResumeGame();
 	}
-	else if (ImGui::Button("Quit", UIUtils::ToImVec2(context->buttonSize)))
+
+	ImGui::SetCursorPos(UIUtils::ToImVec2(context->windowSize * 0.5f - Vector2{ 25.f, -25.f })); 
+	if (ImGui::Button("Quit", UIUtils::ToImVec2(context->buttonSize)))
 	{
 		engine->Exit();
 	}
