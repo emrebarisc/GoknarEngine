@@ -14,7 +14,7 @@ class SocketComponent;
 struct GOKNAR_API PlayLoopData
 {
 	bool playOnce{ false };
-	Delegate<void()> callback {};
+	Delegate<void()> callback{};
 };
 
 struct GOKNAR_API KeyframeData
@@ -24,14 +24,14 @@ struct GOKNAR_API KeyframeData
 		keyframeCallbackMap.insert({ keyframe, callback });
 	}
 
-	std::unordered_map<int, Delegate<void()>> keyframeCallbackMap {};
+	std::unordered_map<int, Delegate<void()>> keyframeCallbackMap{};
 };
 
 struct GOKNAR_API SkeletalMeshAnimation
 {
 	std::string name{ "" };
-	PlayLoopData playLoopData {};
-	KeyframeData keyframeData {};
+	PlayLoopData playLoopData{};
+	KeyframeData keyframeData{};
 	const SkeletalAnimation* skeletalAnimation{ nullptr };
 	float animationTime{ 0.f };
 	float elapsedTimeInSeconds{ 0.f };
@@ -61,19 +61,16 @@ public:
 
 	SocketComponent* AddSocketToBone(const std::string& boneName);
 	SocketComponent* GetSocket(const std::string& boneName);
-
-	static inline float blendValue;
 protected:
 
 private:
-	void UpdateBlendSpace(float alpha);
 	void SetRenderOperations(RenderPassType renderPassType = RenderPassType::Forward);
 
 	SkeletalMeshAnimation skeletalMeshAnimation_{};
 
-	std::vector<Matrix> boneTransformations_ {};
-	std::unordered_map<std::string, SocketComponent*> sockets_ {};
-	std::unordered_map<int, const Matrix*> boneIdToAttachedMatrixPointerMap_ {};
+	std::vector<Matrix> boneTransformations_{};
+	std::unordered_map<std::string, SocketComponent*> sockets_{};
+	std::unordered_map<int, const Matrix*> boneIdToAttachedMatrixPointerMap_{};
 };
 
 #endif

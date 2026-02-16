@@ -22,117 +22,9 @@ SkeletalMeshInstance::~SkeletalMeshInstance()
 {
 }
 
-std::vector<Matrix> firstTransforms;
-std::vector<Matrix> secondTransforms;
-
-void SkeletalMeshInstance::UpdateBlendSpace(float alpha)
-{
-    SkeletalMesh* skeletalMesh = GetMesh();
-    int boneSize = skeletalMesh->GetBoneSize();
-
-    // 1. Get the two specific animations
-    const SkeletalAnimation* idleAnim = skeletalMesh->GetSkeletalAnimation("Armature|RifleWalkForward");
-    const SkeletalAnimation* walkAnim = skeletalMesh->GetSkeletalAnimation("Armature|RifleRunForward");
-
-    if (!idleAnim || !walkAnim) return;
-
-    // 2. Timing Logic (Using your specific variables)
-    auto& animation = skeletalMeshAnimation_;
-    
-    // We blend the durations and ticks-per-second to create a "Virtual Master Clock"
-    const float durationA = idleAnim->duration;
-    const float durationB = walkAnim->duration;
-    const float blendedDuration = GoknarMath::Lerp(durationA, durationB, alpha);
-
-    const float tpsA = idleAnim->ticksPerSecond;
-    const float tpsB = walkAnim->ticksPerSecond;
-    const float blendedTicksPerSec = GoknarMath::Lerp(tpsA, tpsB, alpha);
-
-    const float newElapsedTime = engine->GetElapsedTime() - animation.initialTimeInSeconds;
-    const float totalTicks = blendedTicksPerSec * newElapsedTime;
-
-    // Calculate current position in the blended loop
-    float newKeyframeIndex = std::fmod(totalTicks, blendedDuration);
-
-    animation.elapsedTimeInSeconds = newElapsedTime;
-    animation.animationTime = newKeyframeIndex;
-
-    float globalPhase = newKeyframeIndex / blendedDuration;
-
-    if (firstTransforms.size() != boneSize) firstTransforms.resize(boneSize);
-    if (secondTransforms.size() != boneSize) secondTransforms.resize(boneSize);
-
-    mesh_->GetBoneTransforms(firstTransforms, idleAnim, globalPhase * durationA, sockets_);
-    mesh_->GetBoneTransforms(secondTransforms, walkAnim, globalPhase * durationB, sockets_);
-
-    for(int i = 0; i < boneSize; ++i)
-    {
-        Vector3 posA, scaleA, posB, scaleB;
-        Quaternion rotA, rotB;
-
-        firstTransforms[i].Decompose(posA, scaleA, rotA);
-        secondTransforms[i].Decompose(posB, scaleB, rotB);
-
-        if (rotA.Dot(rotB) < 0.0f)
-        {
-            rotB = rotB * -1.0f;
-        }
-
-        Vector3 finalPos = GoknarMath::Lerp(posA, posB, alpha);
-        Vector3 finalScale = GoknarMath::Lerp(scaleA, scaleB, alpha);
-        Quaternion finalRot = Quaternion::Slerp(rotA, rotB, alpha);
-
-        boneTransformations_[i] = Matrix::GetPositionMatrix(finalPos) * finalRot.GetMatrix() * Matrix::GetScalingMatrix(finalScale);
-    }
-}
-
 void SkeletalMeshInstance::PrepareForTheCurrentFrame()
 {
-	UpdateBlendSpace(blendValue);
-
-
-
-
-
-
-	// SkeletalMesh* skeletalMesh = GetMesh();
-	// int boneSize = skeletalMesh->GetBoneSize();
-
-	// static float time = engine->GetElapsedTime();
-	// float currentTime = engine->GetElapsedTime();
-	// float elapsedTime = currentTime - time;
-	// static float alpha = 0.f;
-	// alpha = GoknarMath::Frac(alpha + engine->GetDeltaTime() * 0.1f);
-
-	// const SkeletalAnimation* firstAnimation = skeletalMesh->GetSkeletalAnimation("Armature|RifleIdle");
-	// const SkeletalAnimation* secondAnimation = skeletalMesh->GetSkeletalAnimation("Armature|RifleWalkForward");
-
-	// mesh_->GetBoneTransforms(firstTransforms, firstAnimation, elapsedTime, sockets_);
-	// mesh_->GetBoneTransforms(secondTransforms, secondAnimation, elapsedTime, sockets_);
-
-	// static float alpha = 0.f;
-	// alpha = GoknarMath::Frac(alpha + engine->GetDeltaTime() * 0.1f);
-
-	// for(int boneIndex = 0; boneIndex < boneSize; ++boneIndex)
-	// {
-	// 	Vector3 firstPosition;
-	// 	Vector3 firstScaling;
-	// 	Quaternion firstRotation;
-	// 	firstTransforms[boneIndex].Decompose(firstPosition, firstScaling, firstRotation);
-
-	// 	Vector3 secondPosition;
-	// 	Vector3 secondScaling;
-	// 	Quaternion secondRotation;
-	// 	secondTransforms[boneIndex].Decompose(secondPosition, secondScaling, secondRotation);
-
-	// 	Vector3 resultPosition = GoknarMath::Lerp(firstPosition, secondPosition, alpha);
-	// 	Vector3 resultScaling = GoknarMath::Lerp(firstScaling, secondScaling, alpha);
-	// 	Quaternion resultRotation = GoknarMath::Lerp(firstRotation, secondRotation, alpha);
-
-	// 	boneTransformations_[boneIndex] = Matrix::GetPositionMatrix(resultPosition) * resultRotation.GetMatrix() * Matrix::GetScalingMatrix(resultScaling);
-	// }
-
-	//mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
+	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
 
 	// TODO: Implement a proper multi threading
 	// Following std::for_each parallelizing causes game crash
@@ -258,7 +150,7 @@ void SkeletalMeshInstance::SetMesh(SkeletalMesh* skeletalMesh)
 
 void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData/* = { false, {} }*/, const KeyframeData& keyframeData/* = {}*/)
 {
-	if (!skeletalMeshAnimation_.skeletalAnimation || 
+	if (!skeletalMeshAnimation_.skeletalAnimation ||
 		skeletalMeshAnimation_.skeletalAnimation && skeletalMeshAnimation_.skeletalAnimation->name != animationName)
 	{
 		SkeletalMesh* skeletalMesh = GetMesh();
