@@ -240,24 +240,24 @@ void DefaultCharacterController::OnGamePaused()
 void DefaultCharacterController::OnGameResumed()
 {
 	InputManager* inputManager = engine->GetInputManager();
-	//inputManager->SetIsCursorVisible(false);
+	inputManager->SetIsCursorVisible(false);
 
-	//SetupInputDelegates();
+	SetupInputDelegates();
 }
 
 void DefaultCharacterController::OnCursorMove(double x, double y)
 {
-	//Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
-	//Vector2 windowCenter = windowSize * 0.5f;
-	//Vector2i currentCursorPosition = Vector2i(x, y);
+	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
+	Vector2 windowCenter = windowSize * 0.5f;
+	Vector2i currentCursorPosition = Vector2i(x, y);
 
-	//Vector2i difference = currentCursorPosition - windowCenter;
-	//if(GoknarMath::Abs(difference.x) + GoknarMath::Abs(difference.y) < 4)
-	//{
-	//	difference = Vector2i::ZeroVector;
-	//}
+	Vector2i difference = currentCursorPosition - windowCenter;
+	if(GoknarMath::Abs(difference.x) + GoknarMath::Abs(difference.y) < 4)
+	{
+		difference = Vector2i::ZeroVector;
+	}
 
-	//cursorDeltaMoveLastFrame_ = difference;
+	cursorDeltaMoveLastFrame_ = difference;
 
-	//engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
+	engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
 }

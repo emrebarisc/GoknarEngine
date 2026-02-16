@@ -37,7 +37,7 @@ void BlendSpacePanel::Draw()
 
 	ImGui::SliderFloat("BlendSpaceValue", &sliderValue, 0, 1.f);
 
-	SkeletalMeshInstance::blendValue = sliderValue;
+	//SkeletalMeshInstance::blendValue = sliderValue;
 
 	ImGui::End();
 }
