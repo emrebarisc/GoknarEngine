@@ -47,6 +47,21 @@ void DefaultCharacterMovementComponent::BeginGame()
 void DefaultCharacterMovementComponent::TickComponent(float deltaTime)
 {
 	PhysicsMovementComponent::TickComponent(deltaTime);
+
+	if (isStrafing_)
+	{
+		Vector3 cameraForward = thirdPersonCamera_->GetForwardVector();
+
+		Vector3 lookAtVector = Vector3(cameraForward.x, cameraForward.y, 0.f).GetNormalized();
+
+		if (lookAtVector.Length() > 0.001f)
+		{
+			ownerCharacter_->SetWorldRotation(lookAtVector.GetRotationNormalized());
+		}
+	}
+
+	Vector3 currentVelocity = movementDirection_.current;
+	ownerCharacter_->UpdateAnimationState(currentVelocity, isStrafing_);
 }
 
 void DefaultCharacterMovementComponent::AddMovementDirection(const Vector3& movementDirection)
@@ -95,35 +110,20 @@ void DefaultCharacterMovementComponent::OnMovementDirectionInterpolated()
 	if (BIGGER_EPSILON < movementDirection_.current.Length())
 	{
 		Vector3 normalizedMovementVector = movementDirection_.current.GetNormalized();
+		Vector3 cameraForward = thirdPersonCamera_->GetForwardVector();
+		Vector3 cameraLeft = thirdPersonCamera_->GetLeftVector();
 
-		Vector3 cameraForwardVector = thirdPersonCamera_->GetForwardVector();
-		Vector3 cameraForwardVector2D = Vector3(cameraForwardVector.x, cameraForwardVector.y, 0.f).GetNormalized();
+		Vector3 cameraForward2D = Vector3(cameraForward.x, cameraForward.y, 0.f).GetNormalized();
+		Vector3 cameraLeft2D = Vector3(cameraLeft.x, cameraLeft.y, 0.f).GetNormalized();
 
-		Vector3 cameraLeftVector = thirdPersonCamera_->GetLeftVector();
-		Vector3 cameraLeftVector2D = Vector3(cameraLeftVector.x, cameraLeftVector.y, 0.f).GetNormalized();
+		movementVectorThisFrame = normalizedMovementVector.x * cameraForward2D + normalizedMovementVector.y * cameraLeft2D;
 
-		movementVectorThisFrame = normalizedMovementVector.x * cameraForwardVector2D + normalizedMovementVector.y * cameraLeftVector2D;
-
-		Vector3 lookAtVector = movementVectorThisFrame.GetNormalized();
-		lookAtVector.RotateVector(Vector3::UpVector * movementRotation_.current);
-
-		ownerCharacter_->SetWorldRotation(lookAtVector.GetRotationNormalized());
-
-		if (OnGround())
+		if (!isStrafing_)
 		{
-			if (GetMovementSpeed() <= WALK_SPEED)
-			{
-				ownerCharacter_->WalkForward();
-			}
-			else
-			{
-				ownerCharacter_->RunForward();
-			}
+			Vector3 lookAtVector = movementVectorThisFrame.GetNormalized();
+			lookAtVector.RotateVector(Vector3::UpVector * movementRotation_.current);
+			ownerCharacter_->SetWorldRotation(lookAtVector.GetRotationNormalized());
 		}
-	}
-	else if (OnGround())
-	{
-		ownerCharacter_->Idle();
 	}
 
 	SetMovementDirection(movementVectorThisFrame);

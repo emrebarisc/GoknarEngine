@@ -54,6 +54,10 @@ private:
 
 	void OnCursorMove(double x, double y);
 
+	void ToggleCrouch();
+	void StartStrafing();
+	void StopStrafing();
+
 	Delegate<void()> moveForwardDelegate_;
 	Delegate<void()> stopMovingForwardDelegate_;
 	Delegate<void()> moveBackwardDelegate_;
@@ -66,6 +70,9 @@ private:
 	Delegate<void()> stopRunningDelegate_;
 	Delegate<void()> jumpDelegate_;
 	Delegate<void()> fireDelegate_;
+	Delegate<void()> crouchDelegate_;
+	Delegate<void()> strafeDelegate_;
+	Delegate<void()> stopStrafeDelegate_;
 	
 	Delegate<void()> onPauseDelegate_;
 	Delegate<void(double, double)> cursorDelegate_;

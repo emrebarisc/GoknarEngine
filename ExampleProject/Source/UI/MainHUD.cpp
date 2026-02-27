@@ -33,7 +33,7 @@ MainHUD::MainHUD() : HUD()
 	engine->SetHUD(this);
 
 	AddPanel<MainMenuPanel>();
-	AddPanel<BlendSpacePanel>();
+	//AddPanel<BlendSpacePanel>();
 
 	onKeyboardEventDelegate_ = Delegate<void(int, int, int, int)>::Create<MainHUD, &MainHUD::OnKeyboardEvent>(this);
 	onCursorMoveDelegate_ = Delegate<void(double, double)>::Create<MainHUD, &MainHUD::OnCursorMove>(this);

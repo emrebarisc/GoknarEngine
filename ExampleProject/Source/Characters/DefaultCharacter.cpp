@@ -128,19 +128,26 @@ void DefaultCharacter::Tick(float deltaTime)
 	if (isHit)
 	{
 		float hitDistance = (raycastResult.hitPosition - raycastFromPosition).Length();
-		float targetDist = hitDistance - 0.2f;
-		if (targetDist < 0.5f)
+		float targetDist = GoknarMath::Max(hitDistance - 0.2f, 0.5f);
+		
+		if (isStrafing_)
 		{
-			targetDist = 0.5f;
+			targetDist = GoknarMath::Min(targetDist, strafingCameraDistance_);
 		}
+
 		cameraDistance_.UpdateDestination(targetDist);
 	}
 	else
 	{
-		cameraDistance_.UpdateDestination(defaultCameraDistance_);
+		if (isStrafing_)
+		{
+			cameraDistance_.UpdateDestination(strafingCameraDistance_);
+		}
+		else
+		{
+			cameraDistance_.UpdateDestination(defaultCameraDistance_);
+		}
 	}
-
-	cameraDistance_.Tick(deltaTime);
 
 	thirdPersonCameraComponent_->SetRelativeRotation(newRotation);
 
@@ -156,10 +163,189 @@ void DefaultCharacter::Die()
 
 void DefaultCharacter::Fire()
 {
-	Bullet* bullet = new Bullet();
+	if (!isStrafing_)
+	{
+		return;
+	}
 
-	Vector3 weaponForwardVector = weapon_->GetForwardVector();
+	Camera* camera = thirdPersonCameraComponent_->GetCamera();
 
-	bullet->SetWorldPosition(weapon_->GetWorldPosition() + weaponForwardVector * 0.5f);
-	bullet->ApplyForce(weaponForwardVector * 4000.f);
+	Vector3& cameraPosition = camera->GetPosition();
+	const float rayLength = 100.f;
+
+	RaycastData raycastData;
+	raycastData.from = cameraPosition;
+	raycastData.to = cameraPosition + rayLength * camera->GetForwardVector();
+
+	RaycastSingleResult raycastResult;
+	
+	PhysicsWorld* physicsWorld = engine->GetPhysicsWorld();
+	
+	if (physicsWorld->RaycastClosest(raycastData, raycastResult))
+	{
+		RigidBody* hitRigidBody = dynamic_cast<RigidBody*>(raycastResult.hitObject);
+		if (hitRigidBody)
+		{
+			hitRigidBody->ApplyForce(-10000.f * raycastResult.hitNormal, raycastResult.hitPosition - hitRigidBody->GetWorldPosition());
+		}
+	}
+}
+
+void DefaultCharacter::ToggleCrouch()
+{
+    isCrouched_ = !isCrouched_;
+}
+
+void DefaultCharacter::SetIsStrafing(bool isStrafing)
+{
+	isStrafing_ = isStrafing;
+
+	if (movementComponent_)
+	{
+		((DefaultCharacterMovementComponent*)movementComponent_)->SetIsStrafing(isStrafing);
+	}
+}
+
+void DefaultCharacter::UpdateAnimationState(const Vector3& worldVelocity, bool isStrafing)
+{
+	float velocityMagnitude = worldVelocity.Length();
+
+	if (GoknarMath::Abs(velocityMagnitude) < EPSILON)
+	{
+		Idle();
+
+		return;
+	}
+
+	Camera* camera = thirdPersonCameraComponent_->GetCamera();
+	
+	Vector3 cameraForward = camera->GetForwardVector();
+	Vector3 cameraLeft = camera->GetLeftVector();
+
+	Vector3 relativeInput = (cameraForward * worldVelocity.x) + (cameraLeft * worldVelocity.y);
+    Vector3 direction = relativeInput.GetNormalized();
+
+    bool isRunning = (DefaultCharacterMovementComponent::WALK_SPEED * 1.5f) < velocityMagnitude;
+
+    std::string animationName = "";
+	if (isStrafing)
+	{
+		if (isCrouched_)
+		{
+			animationName = GetStrafingCrouchAnimation(direction);
+		}
+		else
+		{
+			animationName = GetStrafingStandAnimation(direction, isRunning);
+		}
+	}
+	else
+	{
+		if (isCrouched_)
+		{
+			animationName = GetCrouchAnimation(direction);
+		}
+		else
+		{
+			animationName = GetStandAnimation(direction, isRunning);
+		}
+	}
+
+    if (!animationName.empty())
+    {
+        skeletalMeshComponent_->GetMeshInstance()->PlayAnimation(animationName);
+    }
+}
+
+std::string DefaultCharacter::GetStandAnimation(const Vector3& dir, bool isRunning)
+{
+	if (isRunning)
+	{
+		return "Armature|RifleSprintForward";
+	}
+	else
+	{
+		return "Armature|RifleWalkForward";
+	}
+}
+
+std::string DefaultCharacter::GetCrouchAnimation(const Vector3& dir)
+{
+	return "Armature|RifleCrouchWalkForward";
+}
+
+std::string DefaultCharacter::GetStrafingStandAnimation(const Vector3& direction, bool isRunning)
+{
+    float forward = direction.x;
+    float left = direction.y;
+
+    bool isForward = 0.5f < forward;
+    bool isBackward = forward < -0.5f;
+	bool isLeft = 0.5f < left;
+	bool isRight = left < -0.5f;
+
+    if (isRunning)
+    {
+        if (isForward && isLeft){ return "Armature|RifleRunLeftForward"; }
+        if (isForward && isRight){ return "Armature|RifleRunRightForward"; }
+        if (isBackward && isLeft){ return "Armature|RifleRunLeftBackward"; }
+        if (isBackward && isRight){ return "Armature|RifleRunRightBackward"; }
+
+        if (isForward){ return "Armature|RifleRunForward"; }
+        if (isBackward){ return "Armature|RifleRunBackward"; }
+        if (isLeft){ return "Armature|RifleRunLeft"; }
+        if (isRight){ return "Armature|RifleRunRight"; }
+    }
+
+    if (isForward && isLeft){ return "Armature|RifleWalkLeftForward"; }
+    if (isForward && isRight){ return "Armature|RifleWalkRighttForward"; }
+    if (isBackward && isLeft){ return "Armature|RifleWalkLeftBackward"; }
+    if (isBackward && isRight){ return "Armature|RifleWalkRightBackward"; }
+
+    if (isForward){ return "Armature|RifleWalkForward"; }
+    if (isBackward){ return "Armature|RifleWalkBackward"; }
+    if (isLeft){ return "Armature|RifleWalkLeft"; }
+    if (isRight){ return "Armature|RifleWalkRight"; }
+
+    return "Armature|RifleWalkForward";
+}
+
+std::string DefaultCharacter::GetStrafingCrouchAnimation(const Vector3& direction)
+{
+	if (!isStrafing_)
+	{
+		return "Armature|RifleWalkForward";
+	}
+
+    float forward = direction.x;
+    float left = direction.y;
+
+    bool isForward = forward > 0.5f;
+    bool isBackward = forward < -0.5f;
+	bool isLeft = 0.5f < left;
+    bool isRight = left < -0.5f;
+
+    if (isForward && isRight){ return "Armature|RifleCrouchWalkRightForward"; }
+    if (isForward && isLeft){ return "Armature|RifleCrouchWalkLeftForward"; }
+    if (isBackward && isRight){ return "Armature|RifleCrouchWalkRightBackward"; }
+    if (isBackward && isLeft){ return "Armature|RifleCrouchWalkLeftBackward"; }
+
+    if (isForward){ return "Armature|RifleCrouchWalkForward"; }
+    if (isBackward){ return "Armature|RifleCrouchWalkBackward"; }
+    if (isRight){ return "Armature|RifleCrouchWalkRight"; }
+    if (isLeft){ return "Armature|RifleCrouchWalkLeft"; }
+
+    return "Armature|RifleCrouchWalkForward";
+}
+
+void DefaultCharacter::Idle()
+{
+    if (isCrouched_)
+    {
+        skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|RifleCourchIdle");
+    }
+    else
+    {
+        skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|RifleIdle");
+    }
 }

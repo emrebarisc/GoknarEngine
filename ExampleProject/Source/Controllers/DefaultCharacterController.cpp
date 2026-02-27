@@ -28,6 +28,9 @@ DefaultCharacterController::DefaultCharacterController(DefaultCharacter* charact
 	stopRunningDelegate_ = KeyboardDelegate::Create<DefaultCharacterController, &DefaultCharacterController::StopRunning>(this);
 	jumpDelegate_ = KeyboardDelegate::Create<DefaultCharacterController, &DefaultCharacterController::Jump>(this);
 	fireDelegate_ = MouseDelegate::Create<DefaultCharacterController, &DefaultCharacterController::Fire>(this);
+	crouchDelegate_ = KeyboardDelegate::Create<DefaultCharacterController, &DefaultCharacterController::ToggleCrouch>(this);
+	strafeDelegate_ = MouseDelegate::Create<DefaultCharacterController, &DefaultCharacterController::StartStrafing>(this);
+	stopStrafeDelegate_ = MouseDelegate::Create<DefaultCharacterController, &DefaultCharacterController::StopStrafing>(this);
 
 	onPauseDelegate_ = Delegate<void()>::Create<DefaultCharacterController, &DefaultCharacterController::OnPauseInput>(this);
 
@@ -94,6 +97,9 @@ void DefaultCharacterController::SetupInputDelegates()
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_PRESS, startRunningDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_RELEASE, stopRunningDelegate_);
 	inputManager->AddKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_RELEASE, jumpDelegate_);
+	inputManager->AddKeyboardInputDelegate(KEY_MAP::C, INPUT_ACTION::G_PRESS, crouchDelegate_);
+	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_PRESS, strafeDelegate_);
+	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_RELEASE, stopStrafeDelegate_);
 
 	inputManager->AddMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, fireDelegate_);
 
@@ -120,6 +126,9 @@ void DefaultCharacterController::RemoveInputDelegates()
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_PRESS, startRunningDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_RELEASE, stopRunningDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, jumpDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::C, INPUT_ACTION::G_PRESS, crouchDelegate_);
+	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_PRESS, strafeDelegate_);
+	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_RELEASE, stopStrafeDelegate_);
 
 	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, fireDelegate_);
 
@@ -260,4 +269,28 @@ void DefaultCharacterController::OnCursorMove(double x, double y)
 	cursorDeltaMoveLastFrame_ = difference;
 
 	engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
+}
+
+void DefaultCharacterController::ToggleCrouch()
+{
+	if (character_)
+	{
+		character_->ToggleCrouch();
+	}
+}
+
+void DefaultCharacterController::StartStrafing()
+{
+	if (character_)
+	{
+		character_->SetIsStrafing(true);
+	}
+}
+
+void DefaultCharacterController::StopStrafing()
+{
+	if (character_)
+	{
+		character_->SetIsStrafing(false);
+	}
 }

@@ -25,8 +25,23 @@ public:
 	}
 
 	virtual void Die() override;
+	virtual void Idle() override;
+	virtual void Fire();
+	virtual void ToggleCrouch();
 
-	void Fire();
+	void SetIsStrafing(bool isStrafing);
+	bool GetIsStrafing() const
+	{
+		return isStrafing_;
+	}
+
+	void UpdateAnimationState(const Vector3& worldVelocity, bool isStrafing);
+
+protected:
+	std::string GetStandAnimation(const Vector3& dir, bool isRunning);
+	std::string GetCrouchAnimation(const Vector3& dir);
+	std::string GetStrafingStandAnimation(const Vector3& dir, bool isRunning);
+	std::string GetStrafingCrouchAnimation(const Vector3& dir);
 
 private:
 	Weapon* weapon_{ nullptr };
@@ -37,11 +52,18 @@ private:
 
 	InterpolatingValue<float> cameraDistance_;
 
-	float cameraYaw_ = 0.0f;
-	float cameraPitch_ = 0.0f;
-	float defaultCameraDistance_ = 6.0f;
+	float cameraYaw_{ 0.f };
+	float cameraPitch_{ 0.f };
+	float defaultCameraDistance_{ 6.f };
+	float strafingCameraDistance_{ 2.f };
 	
-	float mouseSensitivity_ = 1.f;
-	float minPitch_ = -40.0f;
-	float maxPitch_ = 40.0f;
+	float mouseSensitivity_{ 1.f };
+	float minPitch_{ -40.f };
+	float maxPitch_{ 40.f };
+
+	float timeSinceStopped_{ 0.f };
+
+	bool isCrouched_{ false };
+	bool isStrafing_{ false };
+
 };

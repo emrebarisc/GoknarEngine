@@ -29,6 +29,14 @@ public:
 	void StopRunning();
 	virtual void Jump(const Vector3& v = Vector3::ZeroVector) override;
 
+	void SetIsStrafing(bool isStrafing)
+	{
+		isStrafing_ = isStrafing;
+	}
+
+	inline static constexpr float WALK_SPEED = 0.05f;
+	inline static constexpr float RUN_SPEED = 0.1f;
+
 private:
 	void OnMovementDirectionInterpolated();
 	void OnMovementRotationInterpolated();
@@ -40,6 +48,5 @@ private:
 	Camera* thirdPersonCamera_{ nullptr };
 	CameraComponent* thirdPersonCameraComponent_{ nullptr };
 
-	inline static constexpr float WALK_SPEED = 0.05f;
-	inline static constexpr float RUN_SPEED = 0.1f;
+	bool isStrafing_ = false;
 };
