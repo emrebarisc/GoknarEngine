@@ -19,7 +19,7 @@
 #include "Goknar/Renderer/Texture.h"
 
 #include "UI/ImGuiOpenGL.h"
-#include "UI/Panels/BlendSpacePanel.h"
+#include "UI/Panels/CrosshairPanel.h"
 #include "UI/Panels/MainMenuPanel.h"
 
 #include "UIContext.h"
@@ -33,7 +33,7 @@ MainHUD::MainHUD() : HUD()
 	engine->SetHUD(this);
 
 	AddPanel<MainMenuPanel>();
-	//AddPanel<BlendSpacePanel>();
+	AddPanel<CrosshairPanel>();
 
 	onKeyboardEventDelegate_ = Delegate<void(int, int, int, int)>::Create<MainHUD, &MainHUD::OnKeyboardEvent>(this);
 	onCursorMoveDelegate_ = Delegate<void(double, double)>::Create<MainHUD, &MainHUD::OnCursorMove>(this);
