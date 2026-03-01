@@ -85,37 +85,40 @@ void DefaultCharacter::BeginGame()
 
 	cameraDistance_.Reset(defaultCameraDistance_);
 	cameraDistance_.speed = 32.f;
+
+	cameraHeightOffset_.Reset(Vector3{ 0.f, 0.f, 1.f });
+	cameraHeightOffset_.speed = 8.f;
 }
 
 void DefaultCharacter::Tick(float deltaTime)
 {
 	BaseCharacter::Tick(deltaTime);
 
-	const Vector2i cursorMovement = ((DefaultCharacterController*)controller_)->GetCursorDeltaMoveLastFrame();
+	const Vector2& cursorMovement = ((DefaultCharacterController*)controller_)->GetCursorDeltaMoveLastFrame();
 	float multiplier = mouseSensitivity_ * deltaTime;
 
-	cameraYaw_ -= cursorMovement.x * multiplier;
-	cameraPitch_ += cursorMovement.y * multiplier;
+	Vector3 forwardVector = thirdPersonCameraComponent_->GetRelativeForwardVector();
+	Vector3 leftVector = thirdPersonCameraComponent_->GetRelativeLeftVector();
 
-	GoknarMath::Clamp(cameraPitch_, minPitch_, maxPitch_);
+	Vector3 newForwardVector = forwardVector.RotateVectorAroundAxis(Vector3::UpVector, cursorMovement.x);
 
-	Quaternion yawRot = Quaternion::FromAxisAngle(Vector3::UpVector, cameraYaw_);
-	Quaternion pitchRot = Quaternion::FromAxisAngle(Vector3::LeftVector, cameraPitch_);
-	Quaternion newRotation = yawRot * pitchRot;
+	if ((forwardVector.z < 0.25f && 0.f < cursorMovement.y) ||
+		(-0.9f < forwardVector.z && cursorMovement.y < 0.f))
+	{
+		newForwardVector = newForwardVector.RotateVectorAroundAxis(leftVector, -cursorMovement.y);
+	}
 
-	Vector3 heightOffset = Vector3{ 0.f, 0.f, 1.f };
-	Vector3 backwardDir = Vector3{ -1.f, 0.f, 0.f };
+	thirdPersonCameraComponent_->SetRelativeRotation(newForwardVector.GetRotationNormalized());
 
 	float shoulderOffsetAmount = 0.5f;
-	Vector3 rightDir = Vector3{ 0.f, -1.f, 0.f };
-	Vector3 rightOffsetVector = (newRotation * rightDir) * shoulderOffsetAmount;
+	Vector3 rightOffsetVector = -leftVector * shoulderOffsetAmount;
 
-	Vector3 cameraDirection = newRotation * backwardDir;
+	float desiredMaxDistance = isStrafing_ ? strafingCameraDistance_ : defaultCameraDistance_;
 
-	Vector3 raycastFromPosition = GetWorldPosition() + heightOffset + rightOffsetVector;
+	Vector3 pivotWorldPosition = GetWorldPosition() + cameraHeightOffset_.current + rightOffsetVector;
 
-	Vector3 raycastStart = raycastFromPosition + (cameraDirection * 0.25f);
-	Vector3 raycastEnd = raycastFromPosition + (cameraDirection * defaultCameraDistance_);
+	Vector3 raycastStart = pivotWorldPosition;
+	Vector3 raycastEnd = pivotWorldPosition - (newForwardVector * desiredMaxDistance);
 
 	RaycastData raycastData;
 	raycastData.from = raycastStart;
@@ -128,32 +131,17 @@ void DefaultCharacter::Tick(float deltaTime)
 
 	if (isHit)
 	{
-		float hitDistance = (raycastResult.hitPosition - raycastFromPosition).Length();
-		float targetDist = GoknarMath::Max(hitDistance - 0.2f, 0.5f);
-		
-		if (isStrafing_)
-		{
-			targetDist = GoknarMath::Min(targetDist, strafingCameraDistance_);
-		}
+		float hitDistance = (raycastResult.hitPosition - pivotWorldPosition).Length();
 
+		float targetDist = GoknarMath::Max(hitDistance - 0.2f, 0.5f);
 		cameraDistance_.UpdateDestination(targetDist);
 	}
 	else
 	{
-		if (isStrafing_)
-		{
-			cameraDistance_.UpdateDestination(strafingCameraDistance_);
-		}
-		else
-		{
-			cameraDistance_.UpdateDestination(defaultCameraDistance_);
-		}
+		cameraDistance_.UpdateDestination(desiredMaxDistance);
 	}
 
-	thirdPersonCameraComponent_->SetRelativeRotation(newRotation);
-
-	Vector3 newRelativePosition = (heightOffset + rightOffsetVector) + (cameraDirection * cameraDistance_.current);
-
+	Vector3 newRelativePosition = (cameraHeightOffset_.current + rightOffsetVector) - (newForwardVector * cameraDistance_.current);
 	thirdPersonCameraComponent_->SetRelativePosition(newRelativePosition);
 }
 
