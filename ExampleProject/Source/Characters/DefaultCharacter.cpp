@@ -28,8 +28,9 @@ DefaultCharacter::DefaultCharacter() :
 	capsuleCollisionComponent_->SetHeight(0.9f);
 	capsuleCollisionComponent_->SetCollisionGroup(GetCollisionGroup());
 
-	movementComponent_ = AddSubComponent<DefaultCharacterMovementComponent>();
-	movementComponent_->SetParent(GetRootComponent());
+	defaultCharacterMovementComponent_ = AddSubComponent<DefaultCharacterMovementComponent>();
+	defaultCharacterMovementComponent_->SetParent(GetRootComponent());
+	movementComponent_ = defaultCharacterMovementComponent_;
 
 	controller_ = new DefaultCharacterController(this);
 
@@ -202,7 +203,7 @@ void DefaultCharacter::SetIsStrafing(bool isStrafing)
 
 	if (movementComponent_)
 	{
-		((DefaultCharacterMovementComponent*)movementComponent_)->SetIsStrafing(isStrafing);
+		defaultCharacterMovementComponent_->SetIsStrafing(isStrafing);
 	}
 }
 

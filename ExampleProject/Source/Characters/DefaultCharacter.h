@@ -9,6 +9,7 @@ class SkeletalMesh;
 
 class SocketComponent;
 class DefaultCharacterController;
+class DefaultCharacterMovementComponent;
 class Weapon;
 
 class GOKNAR_API DefaultCharacter : public BaseCharacter
@@ -49,6 +50,7 @@ private:
 	SkeletalMesh* skeletalMesh_{ nullptr };
 
 	CameraComponent* thirdPersonCameraComponent_{ nullptr };
+	DefaultCharacterMovementComponent* defaultCharacterMovementComponent_{ nullptr };
 
 	InterpolatingValue<float> cameraDistance_;
 
@@ -65,5 +67,4 @@ private:
 
 	bool isCrouched_{ false };
 	bool isStrafing_{ false };
-
 };
