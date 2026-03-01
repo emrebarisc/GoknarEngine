@@ -159,12 +159,13 @@ void DefaultCharacter::Fire()
 
 	Camera* camera = thirdPersonCameraComponent_->GetCamera();
 
+	Vector3 cameraForward = camera->GetForwardVector();
 	Vector3 cameraPosition = camera->GetPosition();
 	const float rayLength = 100.f;
 
 	RaycastData raycastData;
 	raycastData.from = cameraPosition;
-	raycastData.to = cameraPosition + rayLength * camera->GetForwardVector();
+	raycastData.to = cameraPosition + rayLength * cameraForward;
 
 	RaycastSingleResult raycastResult;
 	
@@ -175,7 +176,9 @@ void DefaultCharacter::Fire()
 		RigidBody* hitRigidBody = dynamic_cast<RigidBody*>(raycastResult.hitObject);
 		if (hitRigidBody)
 		{
-			hitRigidBody->ApplyForce(-4000.f * raycastResult.hitNormal, raycastResult.hitPosition - hitRigidBody->GetWorldPosition());
+			const Vector3 relativePosition = hitRigidBody->GetWorldPositionInRelativeSpace(raycastResult.hitPosition);
+			const float forceMagnitude = 50.f;
+			hitRigidBody->ApplyImpulse(forceMagnitude * cameraForward, relativePosition);
 		}
 	}
 }
