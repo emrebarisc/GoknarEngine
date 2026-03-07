@@ -299,14 +299,36 @@ struct GOKNAR_API Vector2
 		y /= val;
 	}
 
-	inline bool operator==(const Vector2& val) const
+	inline bool operator==(const Vector2& other) const
 	{
-		return x == val.x && y == val.y;
+		return
+			GoknarMath::Abs(x - other.x) < EPSILON &&
+			GoknarMath::Abs(y - other.y) < EPSILON;
 	}
 
-	inline bool operator!=(const Vector2& val) const
+	inline bool operator!=(const Vector2& other) const
 	{
-		return x != val.x && y != val.y;
+		return !(*this == other);
+	}
+
+	inline bool operator<(const Vector2& other) const
+	{
+		return x < other.x && y < other.y;
+	}
+
+	inline bool operator>(const Vector2& other) const
+	{
+		return x > other.x && y > other.y;
+	}
+
+	inline bool operator<=(const Vector2& other) const
+	{
+		return x <= other.x && y <= other.y;
+	}
+
+	inline bool operator>=(const Vector2& other) const
+	{
+		return x >= other.x && y >= other.y;
 	}
 
 	inline friend std::ostream& operator<<(std::ostream& out, const Vector2& val)
@@ -354,6 +376,36 @@ struct GOKNAR_API Vector2i
 	inline friend Vector2 operator*(const Vector2i vector2i, float multiplier)
 	{
 		return Vector2(vector2i.x * multiplier, vector2i.y * multiplier);
+	}
+
+	inline bool operator==(const Vector2i& val) const
+	{
+		return x == val.x && y == val.y;
+	}
+
+	inline bool operator!=(const Vector2i& val) const
+	{
+		return x != val.x && y != val.y;
+	}
+
+	inline bool operator<(const Vector2i& other) const
+	{
+		return x < other.x && y < other.y;
+	}
+
+	inline bool operator>(const Vector2i& other) const
+	{
+		return x > other.x && y > other.y;
+	}
+
+	inline bool operator<=(const Vector2i& other) const
+	{
+		return x <= other.x && y <= other.y;
+	}
+
+	inline bool operator>=(const Vector2i& other) const
+	{
+		return x >= other.x && y >= other.y;
 	}
 
 	inline std::string ToString() const
@@ -584,14 +636,37 @@ struct GOKNAR_API Vector3
 		return z;
 	}
 
-	inline bool operator==(const Vector3& val) const
+	inline bool operator==(const Vector3& other) const
 	{
-		return x == val.x && y == val.y && z == val.z;
+		return
+			GoknarMath::Abs(x - other.x) < EPSILON &&
+			GoknarMath::Abs(y - other.y) < EPSILON &&
+			GoknarMath::Abs(z - other.z) < EPSILON;
 	}
 
-	inline bool operator!=(const Vector3& val) const
+	inline bool operator!=(const Vector3& other) const
 	{
-		return x != val.x && y != val.y && z != val.z;
+		return !(*this == other);
+	}
+
+	inline bool operator<(const Vector3& other) const
+	{
+		return x < other.x && y < other.y && z < other.z;
+	}
+
+	inline bool operator>(const Vector3& other) const
+	{
+		return x > other.x && y > other.y && z > other.z;
+	}
+
+	inline bool operator<=(const Vector3& other) const
+	{
+		return x <= other.x && y <= other.y && z <= other.z;
+	}
+
+	inline bool operator>=(const Vector3& other) const
+	{
+		return x >= other.x && y >= other.y && z >= other.z;
 	}
 
 	inline friend std::ostream& operator<<(std::ostream& out, const Vector3& val)
@@ -665,6 +740,36 @@ struct GOKNAR_API Vector3i
 {
 	Vector3i();
 	Vector3i(const Vector3& rhs);
+
+	inline bool operator==(const Vector3i& val) const
+	{
+		return x == val.x && y == val.y && z == val.z;
+	}
+
+	inline bool operator!=(const Vector3i& val) const
+	{
+		return x != val.x && y != val.y && z != val.z;
+	}
+
+	inline bool operator<(const Vector3i& other) const
+	{
+		return x < other.x && y < other.y && z < other.z;
+	}
+
+	inline bool operator>(const Vector3i& other) const
+	{
+		return x > other.x && y > other.y && z > other.z;
+	}
+
+	inline bool operator<=(const Vector3i& other) const
+	{
+		return x <= other.x && y <= other.y && z <= other.z;
+	}
+
+	inline bool operator>=(const Vector3i& other) const
+	{
+		return x >= other.x && y >= other.y && z >= other.z;
+	}
 
 	inline std::string ToString() const
 	{
@@ -792,6 +897,39 @@ struct GOKNAR_API Vector4
 		z *= rhs.z;
 		w *= rhs.w;
 		return *this;
+	}
+
+	inline bool operator==(const Vector4& other) const
+	{
+		return GoknarMath::Abs(x - other.x) < EPSILON &&
+			GoknarMath::Abs(y - other.y) < EPSILON &&
+			GoknarMath::Abs(z - other.z) < EPSILON &&
+			GoknarMath::Abs(w - other.w) < EPSILON;
+	}
+
+	inline bool operator!=(const Vector4& other) const
+	{
+		return !(*this == other);
+	}
+
+	inline bool operator<(const Vector4& other) const
+	{
+		return x < other.x && y < other.y && z < other.z && w < other.w;
+	}
+
+	inline bool operator>(const Vector4& other) const
+	{
+		return x > other.x && y > other.y && z > other.z && w > other.w;
+	}
+
+	inline bool operator<=(const Vector4& other) const
+	{
+		return x <= other.x && y <= other.y && z <= other.z && w <= other.w;
+	}
+
+	inline bool operator>=(const Vector4& other) const
+	{
+		return x >= other.x && y >= other.y && z >= other.z && w >= other.w;
 	}
 
 	inline friend std::ostream& operator<<(std::ostream& out, const Vector4& val)
