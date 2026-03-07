@@ -3,13 +3,20 @@
 
 #include "Core.h"
 
-class GOKNAR_API AnimationNode
+#include <memory>
+
+struct AnimationNodeTransition;
+
+struct GOKNAR_API AnimationNode
 {
-public:
+	AnimationNode() = default;
+	~AnimationNode() = default;
 
-protected:
+    std::string animationName{ "" };
 
-private:
+	std::vector<std::shared_ptr<AnimationNodeTransition>> outboundConnections;
+
+    bool loop{ true };
 };
 
 #endif

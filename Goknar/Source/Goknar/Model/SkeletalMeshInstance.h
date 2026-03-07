@@ -61,6 +61,12 @@ public:
 
 	SocketComponent* AddSocketToBone(const std::string& boneName);
 	SocketComponent* GetSocket(const std::string& boneName);
+
+	const SkeletalMeshAnimation& GetSkeletalMeshAnimation() const
+	{
+		return skeletalMeshAnimation_;
+	}
+
 protected:
 
 private:
