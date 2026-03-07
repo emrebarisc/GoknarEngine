@@ -129,6 +129,11 @@ void RigidBody::SetupRigidBodyInitializationData()
         bulletRigidBody_->applyTorqueImpulse(rigidBodyInitializationData_->torqueImpulse);
     }
 
+    if (0.01f < rigidBodyInitializationData_->impulse.length2())
+    {
+        bulletRigidBody_->applyImpulse(rigidBodyInitializationData_->impulse, rigidBodyInitializationData_->impulsePosition);
+    }
+
     if (0.01f < rigidBodyInitializationData_->pushImpulse.length2())
     {
         bulletRigidBody_->applyPushImpulse(rigidBodyInitializationData_->pushImpulse, rigidBodyInitializationData_->pushImpulsePosition);
@@ -317,6 +322,22 @@ void RigidBody::ApplyTorqueImpulse(const Vector3& impulse)
 
     bulletRigidBody_->activate();
     bulletRigidBody_->applyTorqueImpulse(btImpulse);
+}
+
+void RigidBody::ApplyImpulse(const Vector3& impulse, const Vector3& position)
+{
+    btVector3 btImpulse = PhysicsUtils::FromVector3ToBtVector3(impulse);
+    btVector3 btImpulsePosition = PhysicsUtils::FromVector3ToBtVector3(position);
+
+    if (!GetIsInitialized())
+    {
+        rigidBodyInitializationData_->impulse = btImpulse;
+        rigidBodyInitializationData_->impulsePosition = btImpulsePosition;
+        return;
+    }
+
+    bulletRigidBody_->activate();
+    bulletRigidBody_->applyImpulse(btImpulse, btImpulsePosition);
 }
 
 void RigidBody::ApplyPushImpulse(const Vector3& impulse, const Vector3& position)

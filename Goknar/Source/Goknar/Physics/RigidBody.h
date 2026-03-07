@@ -24,6 +24,8 @@ struct GOKNAR_API RigidBodyInitializationData : public PhysicsObjectInitializati
 	btVector3 forcePosition{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
 	btVector3 centralImpulse{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
 	btVector3 torqueImpulse{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
+	btVector3 impulse{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
+	btVector3 impulsePosition{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
 	btVector3 pushImpulse{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
 	btVector3 pushImpulsePosition{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
 	btVector3 torque{ PhysicsUtils::FromVector3ToBtVector3(Vector3(0.f, 0.f, 0.f)) };
@@ -80,6 +82,7 @@ public:
 	void ApplyForce(const Vector3& force, const Vector3& position = Vector3::ZeroVector);
 	void ApplyCentralImpulse(const Vector3& impulse);
 	void ApplyTorqueImpulse(const Vector3& impulse);
+	void ApplyImpulse(const Vector3& impulse, const Vector3& position);
 	void ApplyPushImpulse(const Vector3& impulse, const Vector3& position);
 	void ApplyTorque(const Vector3& torque);
 
