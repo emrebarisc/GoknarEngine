@@ -29,9 +29,14 @@ public:
 		character_ = character;
 	}
 
-	const Vector2i& GetCursorDeltaMoveLastFrame() const
+	const Vector2& GetCursorDeltaMoveLastFrame() const
 	{
 		return cursorDeltaMoveLastFrame_;
+	}
+
+	bool GetIsRunInputPresent() const
+	{
+		return runInputPresent_;
 	}
 
 private:
@@ -83,11 +88,12 @@ private:
 	DefaultCharacter* character_{ nullptr };
 	DefaultCharacterMovementComponent* characterMovementComponent_{ nullptr };
 
-	Vector2i cursorDeltaMoveLastFrame_{ 0, 0 };
+	Vector2 cursorDeltaMoveLastFrame_{ 0.f, 0.f };
 
 	bool moveForward_{ false };
 	bool moveBackward_{ false };
 	bool moveLeft_{ false };
 	bool moveRight_{ false };
 	bool onGround_{ false };
+	bool runInputPresent_{ false };
 };

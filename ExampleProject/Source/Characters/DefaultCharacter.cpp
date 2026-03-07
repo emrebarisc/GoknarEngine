@@ -3,6 +3,10 @@
 #include "Goknar/Camera.h"
 #include "Goknar/Engine.h"
 
+#include "Goknar/Animation/AnimationGraph.h"
+#include "Goknar/Animation/AnimationNode.h"
+#include "Goknar/Animation/AnimationState.h"
+#include "Goknar/Animation/AnimationNodeTransition.h"
 #include "Goknar/Components/CameraComponent.h"
 #include "Goknar/Components/SkeletalMeshComponent.h"
 #include "Goknar/Components/SocketComponent.h"
@@ -63,10 +67,14 @@ DefaultCharacter::DefaultCharacter() :
 
 	weapon_ = new Weapon();
 	weapon_->AttachToSocket(socketComponent);
+
+	animationGraph_ = new AnimationGraph();
+	animationGraph_->relativeSkeletalMeshInstance = skeletalMeshComponent_->GetMeshInstance();
 }
 
 DefaultCharacter::~DefaultCharacter()
 {
+	delete animationGraph_;
 }
 
 void DefaultCharacter::BeginGame()
@@ -88,6 +96,9 @@ void DefaultCharacter::BeginGame()
 
 	cameraHeightOffset_.Reset(Vector3{ 0.f, 0.f, 1.f });
 	cameraHeightOffset_.speed = 8.f;
+
+	SetupAnimationGraph();
+	animationGraph_->Init();
 }
 
 void DefaultCharacter::Tick(float deltaTime)
@@ -143,6 +154,11 @@ void DefaultCharacter::Tick(float deltaTime)
 
 	Vector3 newRelativePosition = (cameraHeightOffset_.current + rightOffsetVector) - (newForwardVector * cameraDistance_.current);
 	thirdPersonCameraComponent_->SetRelativePosition(newRelativePosition);
+
+	animationGraph_->SetVariable<float>("VelocityMagnitude", Vector2(movementComponent_->GetLinearVelocity()).Length());
+	animationGraph_->SetVariable<bool>("IsOnGround", movementComponent_->OnGround());
+
+	animationGraph_->Update(deltaTime);
 }
 
 void DefaultCharacter::Die()
@@ -186,6 +202,45 @@ void DefaultCharacter::Fire()
 void DefaultCharacter::ToggleCrouch()
 {
     isCrouched_ = !isCrouched_;
+
+	if (isCrouched_)
+	{
+		cameraHeightOffset_ = Vector3{0.f, 0.f, 0.5f};
+		defaultCharacterMovementComponent_->StartCrouching();
+	}
+	else
+	{
+		cameraHeightOffset_ = Vector3{ 0.f, 0.f, 1.f };
+
+		if (((DefaultCharacterController*)controller_)->GetIsRunInputPresent())
+		{
+			defaultCharacterMovementComponent_->StartRunning();
+		}
+		else
+		{
+			defaultCharacterMovementComponent_->StartWalking();
+		}
+	}
+}
+
+void DefaultCharacter::StartRunning()
+{
+	if (isCrouched_)
+	{
+		return;
+	}
+
+	defaultCharacterMovementComponent_->StartRunning();
+}
+
+void DefaultCharacter::StopRunning()
+{
+	if (isCrouched_)
+	{
+		return;
+	}
+
+	defaultCharacterMovementComponent_->StartWalking();
 }
 
 void DefaultCharacter::SetIsStrafing(bool isStrafing)
@@ -196,57 +251,6 @@ void DefaultCharacter::SetIsStrafing(bool isStrafing)
 	{
 		defaultCharacterMovementComponent_->SetIsStrafing(isStrafing);
 	}
-}
-
-void DefaultCharacter::UpdateAnimationState(const Vector3& worldVelocity, bool isStrafing)
-{
-	float velocityMagnitude = worldVelocity.Length();
-
-	if (GoknarMath::Abs(velocityMagnitude) < EPSILON)
-	{
-		Idle();
-
-		return;
-	}
-
-	Camera* camera = thirdPersonCameraComponent_->GetCamera();
-	
-	Vector3 cameraForward = camera->GetForwardVector();
-	Vector3 cameraLeft = camera->GetLeftVector();
-
-	Vector3 relativeInput = (cameraForward * worldVelocity.x) + (cameraLeft * worldVelocity.y);
-    Vector3 direction = relativeInput.GetNormalized();
-
-    bool isRunning = (DefaultCharacterMovementComponent::WALK_SPEED * 1.5f) < velocityMagnitude;
-
-    std::string animationName = "";
-	if (isStrafing)
-	{
-		if (isCrouched_)
-		{
-			animationName = GetStrafingCrouchAnimation(direction);
-		}
-		else
-		{
-			animationName = GetStrafingStandAnimation(direction, isRunning);
-		}
-	}
-	else
-	{
-		if (isCrouched_)
-		{
-			animationName = GetCrouchAnimation(direction);
-		}
-		else
-		{
-			animationName = GetStandAnimation(direction, isRunning);
-		}
-	}
-
-    if (!animationName.empty())
-    {
-        skeletalMeshComponent_->GetMeshInstance()->PlayAnimation(animationName);
-    }
 }
 
 std::string DefaultCharacter::GetStandAnimation(const Vector3& dir, bool isRunning)
@@ -330,14 +334,117 @@ std::string DefaultCharacter::GetStrafingCrouchAnimation(const Vector3& directio
     return "Armature|RifleCrouchWalkForward";
 }
 
+void DefaultCharacter::SetupAnimationGraph()
+{
+	std::shared_ptr<AnimationNode> idleNode = std::make_shared<AnimationNode>();
+	idleNode->animationName = "Armature|RifleIdle";
+
+	std::shared_ptr<AnimationNode> walkNode = std::make_shared<AnimationNode>();
+	walkNode->animationName = "Armature|RifleWalkForward";
+
+	std::shared_ptr<AnimationNode> runNode = std::make_shared<AnimationNode>();
+	runNode->animationName = "Armature|RifleSprintForward";
+
+	std::shared_ptr<AnimationNode> onAirNode = std::make_shared<AnimationNode>();
+	onAirNode->animationName = "Armature|RifleOnAir";
+
+	std::shared_ptr<AnimationNode> jumpStartNode = std::make_shared<AnimationNode>();
+	jumpStartNode->animationName = "Armature|RifleJumpStart";
+	jumpStartNode->loop = false;
+
+	std::shared_ptr<AnimationNode> jumpEndNode = std::make_shared<AnimationNode>();
+	jumpEndNode->animationName = "Armature|RifleJumpFinish";
+	jumpEndNode->loop = false;
+
+	std::shared_ptr<AnimationState> standingState = std::make_shared<AnimationState>();
+	standingState->currentNode = idleNode;
+
+	std::shared_ptr<AnimationNodeTransition> idleToWalk = std::make_shared<AnimationNodeTransition>();
+	idleToWalk->targetNode = walkNode;
+	idleToWalk->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
+	idleNode->outboundConnections.push_back(idleToWalk);
+
+	std::shared_ptr<AnimationNodeTransition> idleToJump = std::make_shared<AnimationNodeTransition>();
+	idleToJump->targetNode = jumpStartNode;
+	idleToJump->conditions.push_back({ "IsJumping", CompareOp::Equal, true });
+	idleNode->outboundConnections.push_back(idleToJump);
+
+	std::shared_ptr<AnimationNodeTransition> walkToIdle = std::make_shared<AnimationNodeTransition>();
+	walkToIdle->targetNode = idleNode;
+	walkToIdle->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
+	walkNode->outboundConnections.push_back(walkToIdle);
+
+	std::shared_ptr<AnimationNodeTransition> walkToRun = std::make_shared<AnimationNodeTransition>();
+	walkToRun->targetNode = runNode;
+	walkToRun->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::RUN_SPEED * 0.9f });
+	walkNode->outboundConnections.push_back(walkToRun);
+
+	std::shared_ptr<AnimationNodeTransition> walkToJump = std::make_shared<AnimationNodeTransition>();
+	walkToJump->targetNode = jumpStartNode;
+	walkToJump->conditions.push_back({ "IsJumping", CompareOp::Equal, true });
+	walkNode->outboundConnections.push_back(walkToJump);
+
+	std::shared_ptr<AnimationNodeTransition> runToWalk = std::make_shared<AnimationNodeTransition>();
+	runToWalk->targetNode = walkNode;
+	runToWalk->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::RUN_SPEED * 0.9f });
+	runNode->outboundConnections.push_back(runToWalk);
+
+	std::shared_ptr<AnimationNodeTransition> runToIdle = std::make_shared<AnimationNodeTransition>();
+	runToIdle->targetNode = idleNode;
+	runToIdle->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
+	runNode->outboundConnections.push_back(runToIdle);
+
+	std::shared_ptr<AnimationNodeTransition> runToJump = std::make_shared<AnimationNodeTransition>();
+	runToJump->targetNode = jumpStartNode;
+	runToJump->conditions.push_back({ "IsJumping", CompareOp::Equal, true });
+	runNode->outboundConnections.push_back(runToJump);
+
+	std::shared_ptr<AnimationNodeTransition> jumpStartToOnAir = std::make_shared<AnimationNodeTransition>();
+	jumpStartToOnAir->targetNode = onAirNode;
+	jumpStartToOnAir->transitWhenAnimationDone = true;
+	jumpStartNode->outboundConnections.push_back(jumpStartToOnAir);
+
+	std::shared_ptr<AnimationNodeTransition> jumpEndToIdle = std::make_shared<AnimationNodeTransition>();
+	jumpEndToIdle->targetNode = idleNode;
+	jumpEndToIdle->transitWhenAnimationDone = true;
+	jumpEndNode->outboundConnections.push_back(jumpEndToIdle);
+
+	std::shared_ptr<AnimationNodeTransition> onAirToJumpEnd = std::make_shared<AnimationNodeTransition>();
+	onAirToJumpEnd->targetNode = jumpEndNode;
+	onAirToJumpEnd->conditions.push_back({ "IsOnGround", CompareOp::Equal, true });
+	onAirNode->outboundConnections.push_back(onAirToJumpEnd);
+
+	std::shared_ptr<AnimationNodeTransition> walkToOnAir = std::make_shared<AnimationNodeTransition>();
+	walkToOnAir->targetNode = onAirNode;
+	walkToOnAir->conditions.push_back({ "IsOnGround", CompareOp::Equal, false });
+	walkNode->outboundConnections.push_back(walkToOnAir);
+
+	std::shared_ptr<AnimationNodeTransition> runToOnAir = std::make_shared<AnimationNodeTransition>();
+	runToOnAir->targetNode = onAirNode;
+	runToOnAir->conditions.push_back({ "IsOnGround", CompareOp::Equal, false });
+	runNode->outboundConnections.push_back(runToOnAir);
+
+	animationGraph_->SetVariable<float>("VelocityMagnitude", Vector2(movementComponent_->GetLinearVelocity()).Length());
+	animationGraph_->SetVariable<bool>("IsOnGround", true);
+	animationGraph_->SetVariable<bool>("IsJumping", false);
+
+	animationGraph_->currentState = standingState;
+}
+
 void DefaultCharacter::Idle()
 {
-    if (isCrouched_)
-    {
-        skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|RifleCourchIdle");
-    }
-    else
-    {
-        skeletalMeshComponent_->GetMeshInstance()->PlayAnimation("Armature|RifleIdle");
-    }
+}
+
+void DefaultCharacter::Jump()
+{
+	if (isCrouched_)
+	{
+		ToggleCrouch();
+		return;
+	}
+
+	BaseCharacter::Jump();
+
+	defaultCharacterMovementComponent_->Jump();
+	animationGraph_->SetTrigger<bool>("IsJumping", true);
 }

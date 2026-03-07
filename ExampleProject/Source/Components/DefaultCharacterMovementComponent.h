@@ -26,7 +26,8 @@ public:
 	virtual void AddMovementDirection(const Vector3& movementDirection);
 
 	void StartRunning();
-	void StopRunning();
+	void StartWalking();
+	void StartCrouching();
 	virtual void Jump(const Vector3& v = Vector3::ZeroVector) override;
 
 	void SetIsStrafing(bool isStrafing)
@@ -34,6 +35,13 @@ public:
 		isStrafing_ = isStrafing;
 	}
 
+	inline bool GetIsRunning() const
+	{
+		return (WALK_SPEED * 1.25f) < GetLinearVelocity().Length();
+	}
+
+	inline static constexpr float MIN_SPEED = 0.01f;
+	inline static constexpr float CROUCH_SPEED = 0.025f;
 	inline static constexpr float WALK_SPEED = 0.05f;
 	inline static constexpr float RUN_SPEED = 0.1f;
 

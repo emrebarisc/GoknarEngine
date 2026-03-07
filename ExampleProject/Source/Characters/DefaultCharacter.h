@@ -4,6 +4,7 @@
 
 #include "Goknar/Math/InterpolatingValue.h"
 
+class AnimationGraph;
 class CameraComponent;
 class SkeletalMesh;
 
@@ -27,16 +28,17 @@ public:
 
 	virtual void Die() override;
 	virtual void Idle() override;
+	virtual void Jump() override;
 	virtual void Fire();
 	virtual void ToggleCrouch();
+	virtual void StartRunning();
+	virtual void StopRunning();
 
 	void SetIsStrafing(bool isStrafing);
 	bool GetIsStrafing() const
 	{
 		return isStrafing_;
 	}
-
-	void UpdateAnimationState(const Vector3& worldVelocity, bool isStrafing);
 
 protected:
 	std::string GetStandAnimation(const Vector3& dir, bool isRunning);
@@ -45,14 +47,19 @@ protected:
 	std::string GetStrafingCrouchAnimation(const Vector3& dir);
 
 private:
+	void SetupAnimationGraph();
+
 	Weapon* weapon_{ nullptr };
 
 	SkeletalMesh* skeletalMesh_{ nullptr };
+
+	AnimationGraph* animationGraph_{ nullptr };
 
 	CameraComponent* thirdPersonCameraComponent_{ nullptr };
 	DefaultCharacterMovementComponent* defaultCharacterMovementComponent_{ nullptr };
 
 	InterpolatingValue<float> cameraDistance_;
+	InterpolatingValue<Vector3> cameraHeightOffset_;
 
 	float cameraYaw_{ 0.f };
 	float cameraPitch_{ 0.f };

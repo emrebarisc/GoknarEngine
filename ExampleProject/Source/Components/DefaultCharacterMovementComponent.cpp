@@ -59,9 +59,6 @@ void DefaultCharacterMovementComponent::TickComponent(float deltaTime)
 			ownerCharacter_->SetWorldRotation(lookAtVector.GetRotationNormalized());
 		}
 	}
-
-	Vector3 currentVelocity = movementDirection_.current;
-	ownerCharacter_->UpdateAnimationState(currentVelocity, isStrafing_);
 }
 
 void DefaultCharacterMovementComponent::AddMovementDirection(const Vector3& movementDirection)
@@ -93,9 +90,14 @@ void DefaultCharacterMovementComponent::StartRunning()
 	SetMovementSpeed(RUN_SPEED);
 }
 
-void DefaultCharacterMovementComponent::StopRunning()
+void DefaultCharacterMovementComponent::StartWalking()
 {
 	SetMovementSpeed(WALK_SPEED);
+}
+
+void DefaultCharacterMovementComponent::StartCrouching()
+{
+	SetMovementSpeed(CROUCH_SPEED);
 }
 
 void DefaultCharacterMovementComponent::Jump(const Vector3& v)

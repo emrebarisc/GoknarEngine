@@ -1,6 +1,7 @@
 #include "DefaultCharacterController.h"
 
 #include "Goknar/Engine.h"
+#include "Goknar/GoknarAssert.h"
 #include "Goknar/Managers/InputManager.h"
 #include "Goknar/Managers/WindowManager.h"
 
@@ -8,6 +9,8 @@
 #include "GameState.h"
 #include "Characters/DefaultCharacter.h"
 #include "Components/DefaultCharacterMovementComponent.h"
+#include "UI/MainHUD.h"
+#include "UI/Panels/CrosshairPanel.h"
 
 DefaultCharacterController::DefaultCharacterController(DefaultCharacter* character) :
 	Controller(),
@@ -44,6 +47,11 @@ DefaultCharacterController::~DefaultCharacterController()
 
 void DefaultCharacterController::BeginGame()
 {
+	hud_ = dynamic_cast<MainHUD*>(engine->GetHUD());
+	GOKNAR_ASSERT(hud_, "There is no HUD");
+
+	GOKNAR_ASSERT(character_, "There is no character attached to DefaultCharacterController");
+
 	characterMovementComponent_ = dynamic_cast<DefaultCharacterMovementComponent*>(character_->GetMovementComponent());
 
 	InputManager* inputManager = engine->GetInputManager();
@@ -209,19 +217,20 @@ void DefaultCharacterController::StopMovingRight()
 
 void DefaultCharacterController::StartRunning()
 {
-	characterMovementComponent_->StartRunning();
+	character_->StartRunning();
+	runInputPresent_ = true;
 }
 
 void DefaultCharacterController::StopRunning()
 {
-	characterMovementComponent_->StopRunning();
+	character_->StopRunning();
+	runInputPresent_ = false;
 }
 
 void DefaultCharacterController::Jump()
 {
 	if(characterMovementComponent_->CanJump())
 	{
-		characterMovementComponent_->Jump();
 		character_->Jump();
 	}
 }
@@ -273,24 +282,19 @@ void DefaultCharacterController::OnCursorMove(double x, double y)
 
 void DefaultCharacterController::ToggleCrouch()
 {
-	if (character_)
-	{
-		character_->ToggleCrouch();
-	}
+	character_->ToggleCrouch();
 }
 
 void DefaultCharacterController::StartStrafing()
 {
-	if (character_)
-	{
-		character_->SetIsStrafing(true);
-	}
+	character_->SetIsStrafing(true);
+
+	hud_->ShowPanel<CrosshairPanel>();
 }
 
 void DefaultCharacterController::StopStrafing()
 {
-	if (character_)
-	{
-		character_->SetIsStrafing(false);
-	}
+	character_->SetIsStrafing(false);
+
+	hud_->HidePanel<CrosshairPanel>();
 }

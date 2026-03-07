@@ -30,24 +30,13 @@ public:
 	virtual void OnAir();
 	virtual void OnGround();
 
-	virtual void OnAttackStarted();
-	virtual void OnAttackFinished();
-
 	Controller* GetController() const
 	{
 		return controller_;
-	}
-
-	bool GetIsAttacking() const
-	{
-		return isAttacking_;
 	}
 
 protected:
 	Controller* controller_{ nullptr };
 
 private:
-
-	bool isAttacking_{ false };
-	bool blockAnimationChange_{ false };
 };
