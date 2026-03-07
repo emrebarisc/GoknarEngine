@@ -105,7 +105,7 @@ public:
     {}
 
     Colorf(const Vector3i &vector) 
-    : r((float)vector.x), g((float)vector.y), b((float)vector.z)
+    : r(vector.x / 255.f), g(vector.y / 255.f), b(vector.z / 255.f)
     {}
 
     Colorf(float red, float green, float blue) 
@@ -217,18 +217,27 @@ public:
         return out << "[" << val.r << ", " << val.g << ", " << val.b << "]";
     }
 
-    static Colorf Red;
-    static Colorf Green;
-    static Colorf Blue;
-    static Colorf Yellow;
-    static Colorf Magenta;
-    static Colorf Orange;
-    static Colorf Black;
-    static Colorf White;
+    static const Colorf Red;
+    static const Colorf Green;
+    static const Colorf Blue;
+    static const Colorf Yellow;
+    static const Colorf Magenta;
+    static const Colorf Orange;
+    static const Colorf Black;
+    static const Colorf White;
 
     float r, g, b;
 private:
 
 };
+
+inline const Colorf Colorf::Red = Colorf(1.f, 0.f, 0.f);
+inline const Colorf Colorf::Green = Colorf(0.f, 1.f, 0.f);
+inline const Colorf Colorf::Blue = Colorf(0.f, 0.f, 1.f);
+inline const Colorf Colorf::Yellow = Colorf(1.f, 1.f, 0.f);
+inline const Colorf Colorf::Magenta = Colorf(1.f, 0.f, 1.f);
+inline const Colorf Colorf::Orange = Colorf(1.f, 0.65f, 0.f);
+inline const Colorf Colorf::Black = Colorf(0.f, 0.f, 0.f);
+inline const Colorf Colorf::White = Colorf(1.f, 1.f, 1.f);
 
 #endif
