@@ -9,6 +9,7 @@
 
 class DefaultCharacter;
 class DefaultCharacterMovementComponent;
+class MainHUD;
 
 class SkillContainerComponent;
 
@@ -85,6 +86,7 @@ private:
 	InterpolatingValue<Vector3> movementVector_;
 	InterpolatingValue<float> movementRotation_;
 
+	MainHUD* hud_{ nullptr };
 	DefaultCharacter* character_{ nullptr };
 	DefaultCharacterMovementComponent* characterMovementComponent_{ nullptr };
 

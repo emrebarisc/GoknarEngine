@@ -13,27 +13,18 @@ CrosshairPanel::CrosshairPanel(HUD* hud) :
 	IPanel("Crosshair", hud)
 {
     isOpen_ = false;
-
-    onGameResumedDelegate_ = Delegate<void()>::Create<CrosshairPanel, &CrosshairPanel::SetOpen>(this);
-    onGamePausedDelegate_ = Delegate<void()>::Create<CrosshairPanel, &CrosshairPanel::SetClosed>(this);
 }
 
 CrosshairPanel::~CrosshairPanel()
 {
     Game* game = (Game*)engine->GetApplication();
     GameState* gameState = game->GetGameState();
-
-    gameState->OnGamePausedDelegate -= onGamePausedDelegate_;
-    gameState->OnGameResumedDelegate -= onGameResumedDelegate_;
 }
 
 void CrosshairPanel::Init()
 {
     Game* game = (Game*)engine->GetApplication();
     GameState* gameState = game->GetGameState();
-
-    gameState->OnGamePausedDelegate += onGamePausedDelegate_;
-    gameState->OnGameResumedDelegate += onGameResumedDelegate_;
 }
 
 void CrosshairPanel::Draw()
@@ -61,8 +52,8 @@ void CrosshairPanel::Draw()
     ImDrawList* drawList = ImGui::GetWindowDrawList();
 
     const float lineLength = 10.f;
-    const float gap = 4.f;
-    const float thickness = 2.f;
+    const float gap = 2.f;
+    const float thickness = 1.f;
     const ImU32 foreground = IM_COL32(255, 255, 255, 255);
     const ImU32 background = IM_COL32(0, 0, 0, 200);
 

@@ -267,16 +267,9 @@ void DefaultCharacterController::OnCursorMove(double x, double y)
 {
 	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
 	Vector2 windowCenter = windowSize * 0.5f;
-	Vector2i currentCursorPosition = Vector2i(x, y);
+	Vector2 currentCursorPosition{ (float)x, (float)y };
 
-	Vector2i difference = currentCursorPosition - windowCenter;
-	if(GoknarMath::Abs(difference.x) + GoknarMath::Abs(difference.y) < 4)
-	{
-		difference = Vector2i::ZeroVector;
-	}
-
-	cursorDeltaMoveLastFrame_ = difference;
-
+	cursorDeltaMoveLastFrame_ = (windowCenter - currentCursorPosition) / 1000.f;
 	engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
 }
 
