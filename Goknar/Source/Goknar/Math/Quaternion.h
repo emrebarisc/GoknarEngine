@@ -64,6 +64,10 @@ public:
     Matrix GetMatrix() const;
     Matrix3x3 GetMatrix3x3() const;
 
+    inline Vector3 GetForwardVector() const;
+    inline Vector3 GetUpVector() const;
+    inline Vector3 GetLeftVector() const;
+
     inline bool operator==(const Quaternion& other) const;
     inline bool operator!=(const Quaternion& other) const;
 
@@ -126,6 +130,21 @@ public:
 
     float x, y, z, w;
 };
+
+inline Vector3 Quaternion::GetForwardVector() const
+{
+    return Rotate(Vector3::ForwardVector);
+}
+
+inline Vector3 Quaternion::GetUpVector() const
+{
+    return Rotate(Vector3::UpVector);
+}
+
+inline Vector3 Quaternion::GetLeftVector() const
+{
+    return Rotate(Vector3::LeftVector);
+}
 
 inline bool Quaternion::operator==(const Quaternion& other) const
 {
