@@ -5,16 +5,29 @@
 
 #include "Core.h"
 
-struct AnimationNodeTransition;
-
 struct AnimationNode;
+struct AnimationNodeTransition;
 
 struct GOKNAR_API AnimationState
 {
+	friend struct AnimationGraph;
+
 	AnimationState() = default;
 	~AnimationState() = default;
 
-	std::shared_ptr<AnimationNode> currentNode{ nullptr };
+	void SetEntryNode(const std::shared_ptr<AnimationNode>& entryNode)
+	{
+		entryNode_ = entryNode;
+	}
+
+	void Reset()
+	{
+		currentNode_ = entryNode_;
+	}
+
+private:
+	std::shared_ptr<AnimationNode> entryNode_{ nullptr };
+	std::shared_ptr<AnimationNode> currentNode_{ nullptr };
 };
 
 #endif

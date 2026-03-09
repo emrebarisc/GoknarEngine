@@ -11,39 +11,44 @@ void AnimationGraph::Init()
 {
 	PlayLoopData playLoopData;
 
-	if (!currentState->currentNode->loop)
+	if (!currentState_->currentNode_->loop)
 	{
 		playLoopData.playOnce = true;
 		playLoopData.callback = Delegate<void()>::Create<AnimationGraph, &AnimationGraph::SetIsCurrentStateAnimationFinishedTrue>(this);
 	}
 
-	relativeSkeletalMeshInstance->PlayAnimation(currentState->currentNode->animationName, playLoopData);
+	relativeSkeletalMeshInstance->PlayAnimation(currentState_->currentNode_->animationName, playLoopData);
 }
 
 void AnimationGraph::Update(float deltaTime)
 {
-	if (!currentState.get() && !relativeSkeletalMeshInstance)
+	if (!isDirty_)
 	{
 		return;
 	}
 
-	for (const auto& connection : currentState->currentNode->outboundConnections)
+	if (!currentState_.get() && !relativeSkeletalMeshInstance)
+	{
+		return;
+	}
+
+	for (const auto& connection : currentState_->currentNode_->outboundConnections)
 	{
 		if (connection->ShouldTransit(this, isCurrentStateAnimationFinished))
 		{
-			currentState->currentNode = connection->targetNode;
+			currentState_->currentNode_ = connection->targetNode;
 
 			isCurrentStateAnimationFinished = false;
 
 			PlayLoopData playLoopData;
 
-			if (!currentState->currentNode->loop)
+			if (!currentState_->currentNode_->loop)
 			{
 				playLoopData.playOnce = true;
 				playLoopData.callback = Delegate<void()>::Create<AnimationGraph, &AnimationGraph::SetIsCurrentStateAnimationFinishedTrue>(this);
 			}
 
-			relativeSkeletalMeshInstance->PlayAnimation(currentState->currentNode->animationName, playLoopData);
+			relativeSkeletalMeshInstance->PlayAnimation(currentState_->currentNode_->animationName, playLoopData);
 
 			break;
 		}
@@ -58,4 +63,6 @@ void AnimationGraph::Update(float deltaTime)
 
 		triggersToClear.clear();
 	}
+
+	isDirty_ = false;
 }

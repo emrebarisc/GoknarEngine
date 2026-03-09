@@ -150,27 +150,30 @@ void SkeletalMeshInstance::SetMesh(SkeletalMesh* skeletalMesh)
 
 void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData/* = { false, {} }*/, const KeyframeData& keyframeData/* = {}*/)
 {
-	if (!skeletalMeshAnimation_.skeletalAnimation ||
-		skeletalMeshAnimation_.skeletalAnimation && skeletalMeshAnimation_.skeletalAnimation->name != animationName)
+	if (animationName.empty() ||
+		(skeletalMeshAnimation_.skeletalAnimation &&
+		skeletalMeshAnimation_.skeletalAnimation->name == animationName))
 	{
-		SkeletalMesh* skeletalMesh = GetMesh();
-		if (!skeletalMesh)
-		{
-			return;
-		}
-
-		skeletalMeshAnimation_.skeletalAnimation = skeletalMesh->GetSkeletalAnimation(animationName);
-		if (!skeletalMeshAnimation_.skeletalAnimation)
-		{
-			return;
-		}
-		skeletalMeshAnimation_.animationTime = 0.f;
-		skeletalMeshAnimation_.elapsedTimeInSeconds = 0.f;
-		skeletalMeshAnimation_.initialTimeInSeconds = engine->GetElapsedTime();
-
-		skeletalMeshAnimation_.playLoopData = playLoopData;
-		skeletalMeshAnimation_.keyframeData = keyframeData;
+		return;
 	}
+
+	SkeletalMesh* skeletalMesh = GetMesh();
+	if (!skeletalMesh)
+	{
+		return;
+	}
+
+	skeletalMeshAnimation_.skeletalAnimation = skeletalMesh->GetSkeletalAnimation(animationName);
+	if (!skeletalMeshAnimation_.skeletalAnimation)
+	{
+		return;
+	}
+	skeletalMeshAnimation_.animationTime = 0.f;
+	skeletalMeshAnimation_.elapsedTimeInSeconds = 0.f;
+	skeletalMeshAnimation_.initialTimeInSeconds = engine->GetElapsedTime();
+
+	skeletalMeshAnimation_.playLoopData = playLoopData;
+	skeletalMeshAnimation_.keyframeData = keyframeData;
 }
 
 void SkeletalMeshInstance::AttachBoneToMatrixPointer(const std::string& boneName, const Matrix* matrix)

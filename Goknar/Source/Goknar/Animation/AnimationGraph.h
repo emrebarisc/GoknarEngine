@@ -6,9 +6,9 @@
 
 #include "Goknar/Core.h"
 
+#include "Goknar/Animation/AnimationState.h"
 #include "Goknar/Animation/AnimationTypes.h"
 
-struct AnimationState;
 struct SkeletalMeshInstance;
 
 struct GOKNAR_API AnimationGraph
@@ -33,19 +33,47 @@ struct GOKNAR_API AnimationGraph
 	template<typename T>
 	void SetVariable(const std::string& name, T value)
 	{
+		if (!isDirty_ && T* currentValue = std::get_if<T>(&variables[name]))
+		{
+			if (*currentValue == value)
+			{
+				return;
+			}
+		}
+
 		variables[name] = value;
+		isDirty_ = true;
 	}
 
 	template<typename T, typename = typename std::enable_if<std::is_same<T, bool>::value>::type>
 	void SetTrigger(const std::string& name, T value)
 	{
+		if (!isDirty_ && T* currentValue = std::get_if<T>(&variables[name]))
+		{
+			if (*currentValue == value)
+			{
+				return;
+			}
+		}
+
 		variables[name] = value;
 		triggersToClear.emplace_back(name);
+		isDirty_ = true;
+	}
+
+	const std::shared_ptr<AnimationState>& GetCurrentState() const
+	{
+		return currentState_;
+	}
+
+	void SetCurrentState(const std::shared_ptr<AnimationState>& currentState)
+	{
+		currentState_ = currentState;
+		currentState_->Reset();
+		Init();
 	}
 
 	std::unordered_map<std::string, AnimationVariable> variables;
-
-	std::shared_ptr<AnimationState> currentState = nullptr;
 
 	SkeletalMeshInstance* relativeSkeletalMeshInstance = nullptr;
 
@@ -57,7 +85,11 @@ private:
 		isCurrentStateAnimationFinished = true;
 	}
 
+	std::shared_ptr<AnimationState> currentState_ = nullptr;
+
 	std::vector<std::string> triggersToClear;
+	
+	bool isDirty_{ false };
 };
 
 #endif
