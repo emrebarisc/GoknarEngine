@@ -1,9 +1,12 @@
 #pragma once 
 
+#include <memory>
+
 #include "BaseCharacter.h"
 
 #include "Goknar/Math/InterpolatingValue.h"
 
+class AnimationState;
 class AnimationGraph;
 class CameraComponent;
 class SkeletalMesh;
@@ -41,13 +44,13 @@ public:
 	}
 
 protected:
-	std::string GetStandAnimation(const Vector3& dir, bool isRunning);
-	std::string GetCrouchAnimation(const Vector3& dir);
-	std::string GetStrafingStandAnimation(const Vector3& dir, bool isRunning);
 	std::string GetStrafingCrouchAnimation(const Vector3& dir);
 
 private:
 	void SetupAnimationGraph();
+	void SetupStandingState();
+	void SetupCrouchState();
+	void SetupStandingStrafingState();
 
 	Weapon* weapon_{ nullptr };
 
@@ -60,6 +63,10 @@ private:
 
 	InterpolatingValue<float> cameraDistance_;
 	InterpolatingValue<Vector3> cameraHeightOffset_;
+
+	std::shared_ptr<AnimationState> standingState_;
+	std::shared_ptr<AnimationState> crouchState_;
+	std::shared_ptr<AnimationState> standingStrafingState_;
 
 	float cameraYaw_{ 0.f };
 	float cameraPitch_{ 0.f };
