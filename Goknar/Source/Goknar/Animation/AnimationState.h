@@ -2,6 +2,7 @@
 #define __ANIMATIONSTATE_H__
 
 #include <memory>
+#include <string>
 
 #include "Core.h"
 
@@ -24,6 +25,8 @@ struct GOKNAR_API AnimationState
 	{
 		currentNode_ = entryNode_;
 	}
+
+	std::string name{ "" };
 
 private:
 	std::shared_ptr<AnimationNode> entryNode_{ nullptr };
