@@ -4,7 +4,6 @@
 #include "Goknar/Animation/AnimationNode.h"
 #include "Goknar/Animation/AnimationState.h"
 #include "Goknar/Animation/AnimationNodeTransition.h"
-#include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Model/SkeletalMeshInstance.h"
 
 void AnimationGraph::Init()
@@ -27,7 +26,12 @@ void AnimationGraph::Update(float deltaTime)
 		return;
 	}
 
-	if (!currentState_.get() && !relativeSkeletalMeshInstance)
+	if (!currentState_.get())
+	{
+		return;
+	}
+
+	if (!relativeSkeletalMeshInstance)
 	{
 		return;
 	}
