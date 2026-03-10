@@ -739,6 +739,12 @@ private:
 struct GOKNAR_API Vector3i
 {
 	Vector3i();
+	Vector3i(int valX, int valY, int valZ) :
+		x(valX),
+		y(valY),
+		z(valZ)
+	{}
+
 	Vector3i(const Vector3& rhs);
 
 	inline bool operator==(const Vector3i& val) const
