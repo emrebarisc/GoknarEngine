@@ -44,13 +44,13 @@ public:
 	}
 
 protected:
-	std::string GetStrafingCrouchAnimation(const Vector3& dir);
 
 private:
 	void SetupAnimationGraph();
 	void SetupStandingState();
 	void SetupCrouchState();
 	void SetupStandingStrafingState();
+	void SetupCrouchStrafingState();
 
 	Weapon* weapon_{ nullptr };
 
@@ -67,6 +67,7 @@ private:
 	std::shared_ptr<AnimationState> standingState_;
 	std::shared_ptr<AnimationState> crouchState_;
 	std::shared_ptr<AnimationState> standingStrafingState_;
+	std::shared_ptr<AnimationState> crouchStrafingState_;
 
 	float cameraYaw_{ 0.f };
 	float cameraPitch_{ 0.f };
