@@ -16,6 +16,11 @@ struct GOKNAR_API AnimationState
 	AnimationState() = default;
 	~AnimationState() = default;
 
+	const std::shared_ptr<AnimationNode>& GetEntryNode() const
+	{
+		return entryNode_;
+	}
+
 	void SetEntryNode(const std::shared_ptr<AnimationNode>& entryNode)
 	{
 		entryNode_ = entryNode;
