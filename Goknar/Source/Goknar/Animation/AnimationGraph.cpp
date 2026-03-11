@@ -26,11 +26,6 @@ void AnimationGraph::PlayCurrentStateAnimation()
 
 void AnimationGraph::Update(float deltaTime)
 {
-	if (!isDirty_)
-	{
-		return;
-	}
-
 	if (!currentState_.get())
 	{
 		return;
@@ -45,8 +40,7 @@ void AnimationGraph::Update(float deltaTime)
 	{
 		if (connection->ShouldTransit(this, false))
 		{
-			currentState_ = connection->target;
-			currentState_->Reset();
+			SetCurrentState(connection->target);
 			PlayCurrentStateAnimation();
 		}
 	}
@@ -74,6 +68,4 @@ void AnimationGraph::Update(float deltaTime)
 
 		triggersToClear.clear();
 	}
-
-	isDirty_ = false;
 }

@@ -33,53 +33,19 @@ struct GOKNAR_API AnimationGraph
 	template<typename T>
 	void SetVariable(const std::string& name, T value)
 	{
-		if (!isDirty_)
-		{
-			if (T* currentValue = std::get_if<T>(&variables[name]))
-			{
-				if (*currentValue == value)
-				{
-					return;
-				}
-			}
-		}
-
 		variables[name] = value;
-		isDirty_ = true;
 	}
 
 	void SetVariable(const std::string& name, const AnimationVariable& value)
 	{
-		if (!isDirty_)
-		{
-			auto it = variables.find(name);
-			if (it != variables.end() && it->second == value)
-			{
-				return;
-			}
-		}
-
 		variables[name] = value;
-		isDirty_ = true;
 	}
 
 	template<typename T, typename = typename std::enable_if<std::is_same<T, bool>::value>::type>
 	void SetTrigger(const std::string& name, T value)
 	{
-		if (!isDirty_)
-		{
-			if (T* currentValue = std::get_if<T>(&variables[name]))
-			{
-				if (*currentValue == value)
-				{
-					return;
-				}
-			}
-		}
-
 		variables[name] = value;
 		triggersToClear.emplace_back(name);
-		isDirty_ = true;
 	}
 
 	const std::shared_ptr<AnimationState>& GetCurrentState() const
@@ -121,8 +87,6 @@ private:
 	std::vector<std::shared_ptr<AnimationState>> states_{};
 
 	std::vector<std::string> triggersToClear{};
-	
-	bool isDirty_{ false };
 };
 
 #endif
