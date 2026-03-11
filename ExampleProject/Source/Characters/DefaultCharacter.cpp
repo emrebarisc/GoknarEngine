@@ -20,6 +20,9 @@
 #include "Objects/Bullet.h"
 #include "Objects/Weapon.h"
 
+#include "Animation/AnimationSerializer.h"
+#include "Animation/AnimationDeserializer.h"
+
 DefaultCharacter::DefaultCharacter() :
 	BaseCharacter()
 {
@@ -97,7 +100,20 @@ void DefaultCharacter::BeginGame()
 	cameraHeightOffset_.Reset(Vector3{ 0.f, 0.f, 1.f });
 	cameraHeightOffset_.speed = 8.f;
 
-	SetupAnimationGraph();
+	//SetupAnimationGraph();
+
+	//animationGraph_->AddState(standingState_);
+	//animationGraph_->AddState(standingStrafingState_);
+	//animationGraph_->AddState(crouchState_);
+	//animationGraph_->AddState(crouchStrafingState_);
+
+	AnimationDeserializer().Deserialize(animationGraph_, "Animations/AG_DefaultCharacter");
+
+	standingState_ = animationGraph_->GetStates()[0];
+	standingStrafingState_ = animationGraph_->GetStates()[1];
+	crouchState_ = animationGraph_->GetStates()[2];
+	crouchStrafingState_ = animationGraph_->GetStates()[3];
+
 	animationGraph_->Init();
 }
 
