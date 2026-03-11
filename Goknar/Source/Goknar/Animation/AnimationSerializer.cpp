@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "AnimationSerializer.h"
 
+#include <filesystem>
+
 #include "Goknar/Animation/AnimationNode.h"
-#include "Goknar/Animation/AnimationNodeTransition.h"
 #include "Goknar/Animation/AnimationCondition.h"
 
 bool AnimationSerializer::Serialize(const AnimationGraph* graph, const std::string& filepath)
@@ -35,6 +36,16 @@ bool AnimationSerializer::Serialize(const AnimationGraph* graph, const std::stri
     }
     root->InsertEndChild(statesEl);
 
+    std::filesystem::path pathObj(contentPath);
+    std::filesystem::path directory = pathObj.parent_path();
+
+    if (!directory.empty() && !std::filesystem::exists(directory))
+    {
+        std::error_code ec;
+        std::filesystem::create_directories(directory, ec);
+        if (ec) return false;
+    }
+
     return doc.SaveFile(contentPath.c_str()) == tinyxml2::XML_SUCCESS;
 }
 
@@ -46,6 +57,16 @@ int AnimationSerializer::GetNodeId(const AnimationNode* node)
         nodeToIdMap_[node] = nextNodeId_++;
     }
     return nodeToIdMap_[node];
+}
+
+int AnimationSerializer::GetStateId(const AnimationState* state)
+{
+    if (!state) return 0;
+    if (stateToIdMap_.find(state) == stateToIdMap_.end())
+    {
+        stateToIdMap_[state] = nextStateId_++;
+    }
+    return stateToIdMap_[state];
 }
 
 std::string AnimationSerializer::CompareOpToString(CompareOp op)
@@ -111,16 +132,23 @@ void AnimationSerializer::CollectNodes(const std::shared_ptr<AnimationNode>& nod
 
     for (const auto& transition : node->outboundConnections)
     {
-        CollectNodes(transition->targetNode, visited, outNodes);
+        CollectNodes(transition->target, visited, outNodes);
     }
 }
 
 void AnimationSerializer::SerializeState(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* parent, const std::shared_ptr<AnimationState>& state)
 {
     tinyxml2::XMLElement* stateEl = doc->NewElement("State");
+    stateEl->SetAttribute("id", GetStateId(state.get()));
     stateEl->SetAttribute("name", state->name.c_str());
 
-   
+    tinyxml2::XMLElement* stateOutboundsEl = doc->NewElement("OutboundConnections");
+    for (const auto& transition : state->outboundConnections)
+    {
+        SerializeStateTransition(doc, stateOutboundsEl, transition);
+    }
+    stateEl->InsertEndChild(stateOutboundsEl);
+
     std::shared_ptr<AnimationNode> entryNode = state->GetEntryNode();
     if (entryNode)
     {
@@ -129,7 +157,6 @@ void AnimationSerializer::SerializeState(tinyxml2::XMLDocument* doc, tinyxml2::X
         stateEl->InsertEndChild(entryEl);
     }
 
-   
     std::unordered_set<const AnimationNode*> visited;
     std::vector<std::shared_ptr<AnimationNode>> flatNodes;
     CollectNodes(entryNode, visited, flatNodes);
@@ -154,17 +181,37 @@ void AnimationSerializer::SerializeNode(tinyxml2::XMLDocument* doc, tinyxml2::XM
     tinyxml2::XMLElement* outboundsEl = doc->NewElement("OutboundConnections");
     for (const auto& transition : node->outboundConnections)
     {
-        SerializeTransition(doc, outboundsEl, transition);
+        SerializeNodeTransition(doc, outboundsEl, transition);
     }
     nodeEl->InsertEndChild(outboundsEl);
 
     parent->InsertEndChild(nodeEl);
 }
 
-void AnimationSerializer::SerializeTransition(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* parent, const std::shared_ptr<AnimationNodeTransition>& transition)
+void AnimationSerializer::SerializeNodeTransition(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* parent, const std::shared_ptr<AnimationTransition<AnimationNode>>& transition)
 {
     tinyxml2::XMLElement* transEl = doc->NewElement("Transition");
-    transEl->SetAttribute("targetNodeId", GetNodeId(transition->targetNode.get()));
+    transEl->SetAttribute("targetId", GetNodeId(transition->target.get()));
+    transEl->SetAttribute("transitWhenAnimationDone", transition->transitWhenAnimationDone);
+
+    tinyxml2::XMLElement* conditionsEl = doc->NewElement("Conditions");
+    for (const auto& condition : transition->conditions)
+    {
+        tinyxml2::XMLElement* condEl = doc->NewElement("Condition");
+        condEl->SetAttribute("variableName", condition.variableName.c_str());
+        condEl->SetAttribute("operation", CompareOpToString(condition.operation).c_str());
+        SerializeVariable(condEl, condition.targetValue);
+        conditionsEl->InsertEndChild(condEl);
+    }
+    transEl->InsertEndChild(conditionsEl);
+
+    parent->InsertEndChild(transEl);
+}
+
+void AnimationSerializer::SerializeStateTransition(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* parent, const std::shared_ptr<AnimationTransition<AnimationState>>& transition)
+{
+    tinyxml2::XMLElement* transEl = doc->NewElement("Transition");
+    transEl->SetAttribute("targetId", GetStateId(transition->target.get()));
     transEl->SetAttribute("transitWhenAnimationDone", transition->transitWhenAnimationDone);
 
     tinyxml2::XMLElement* conditionsEl = doc->NewElement("Conditions");

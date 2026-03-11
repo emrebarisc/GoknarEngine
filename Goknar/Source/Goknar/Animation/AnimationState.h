@@ -7,7 +7,9 @@
 #include "Core.h"
 
 struct AnimationNode;
-struct AnimationNodeTransition;
+
+template<typename T>
+struct AnimationTransition;
 
 struct GOKNAR_API AnimationState
 {
@@ -30,6 +32,8 @@ struct GOKNAR_API AnimationState
 	{
 		currentNode_ = entryNode_;
 	}
+
+	std::vector<std::shared_ptr<AnimationTransition<AnimationState>>> outboundConnections;
 
 	std::string name{ "" };
 

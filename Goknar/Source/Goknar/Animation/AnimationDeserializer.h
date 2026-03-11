@@ -18,6 +18,7 @@ public:
 
 private:
     std::unordered_map<int, std::shared_ptr<AnimationNode>> idToNodeMap_;
+    std::unordered_map<int, std::shared_ptr<AnimationState>> idToStateMap_;
 
     CompareOp StringToCompareOp(const std::string& opStr);
     AnimationVariable DeserializeVariable(tinyxml2::XMLElement* element);

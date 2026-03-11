@@ -2,7 +2,7 @@
 #include "AnimationDeserializer.h"
 
 #include "Goknar/Animation/AnimationNode.h"
-#include "Goknar/Animation/AnimationNodeTransition.h"
+#include "Goknar/Animation/AnimationTransition.h"
 #include "Goknar/Animation/AnimationCondition.h"
 
 CompareOp AnimationDeserializer::StringToCompareOp(const std::string& opStr)
@@ -54,6 +54,7 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
     }
 
     idToNodeMap_.clear();
+    idToStateMap_.clear();
 
     tinyxml2::XMLElement* variablesEl = root->FirstChildElement("Variables");
     if (variablesEl)
@@ -66,33 +67,64 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
     }
 
     tinyxml2::XMLElement* statesEl = root->FirstChildElement("States");
-    if (!statesEl)
-    {
-        return true;
-    }
+    if (!statesEl) return true;
 
+   
     for (tinyxml2::XMLElement* stateEl = statesEl->FirstChildElement("State"); stateEl != nullptr; stateEl = stateEl->NextSiblingElement("State"))
     {
+        int stateId = stateEl->IntAttribute("id");
+        auto state = std::make_shared<AnimationState>();
+        state->name = stateEl->Attribute("name");
+        idToStateMap_[stateId] = state;
+
+        graph->AddState(state);
+
         tinyxml2::XMLElement* nodesEl = stateEl->FirstChildElement("Nodes");
         if (nodesEl)
         {
             for (tinyxml2::XMLElement* nodeEl = nodesEl->FirstChildElement("Node"); nodeEl != nullptr; nodeEl = nodeEl->NextSiblingElement("Node"))
             {
                 int nodeId = nodeEl->IntAttribute("id");
-
                 auto node = std::make_shared<AnimationNode>();
                 node->animationName = nodeEl->Attribute("animationName");
                 node->loop = nodeEl->BoolAttribute("loop");
-
                 idToNodeMap_[nodeId] = node;
             }
         }
     }
 
+   
     for (tinyxml2::XMLElement* stateEl = statesEl->FirstChildElement("State"); stateEl != nullptr; stateEl = stateEl->NextSiblingElement("State"))
     {
-        auto state = std::make_shared<AnimationState>();
-        state->name = stateEl->Attribute("name");
+        int stateId = stateEl->IntAttribute("id");
+        auto state = idToStateMap_[stateId];
+
+        tinyxml2::XMLElement* stateOutboundsEl = stateEl->FirstChildElement("OutboundConnections");
+        if (stateOutboundsEl)
+        {
+            for (tinyxml2::XMLElement* transEl = stateOutboundsEl->FirstChildElement("Transition"); transEl != nullptr; transEl = transEl->NextSiblingElement("Transition"))
+            {
+                auto transition = std::make_shared<AnimationTransition<AnimationState>>();
+                int targetId = transEl->IntAttribute("targetId");
+
+                transition->target = idToStateMap_[targetId];
+                transition->transitWhenAnimationDone = transEl->BoolAttribute("transitWhenAnimationDone");
+
+                tinyxml2::XMLElement* conditionsEl = transEl->FirstChildElement("Conditions");
+                if (conditionsEl)
+                {
+                    for (tinyxml2::XMLElement* condEl = conditionsEl->FirstChildElement("Condition"); condEl != nullptr; condEl = condEl->NextSiblingElement("Condition"))
+                    {
+                        AnimationCondition condition;
+                        condition.variableName = condEl->Attribute("variableName");
+                        condition.operation = StringToCompareOp(condEl->Attribute("operation"));
+                        condition.targetValue = DeserializeVariable(condEl);
+                        transition->conditions.push_back(condition);
+                    }
+                }
+                state->outboundConnections.push_back(transition);
+            }
+        }
 
         tinyxml2::XMLElement* nodesEl = stateEl->FirstChildElement("Nodes");
         if (nodesEl)
@@ -107,10 +139,10 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
                 {
                     for (tinyxml2::XMLElement* transEl = outboundsEl->FirstChildElement("Transition"); transEl != nullptr; transEl = transEl->NextSiblingElement("Transition"))
                     {
-                        auto transition = std::make_shared<AnimationNodeTransition>();
-                        int targetId = transEl->IntAttribute("targetNodeId");
+                        auto transition = std::make_shared<AnimationTransition<AnimationNode>>();
+                        int targetId = transEl->IntAttribute("targetId");
 
-                        transition->targetNode = idToNodeMap_[targetId];
+                        transition->target = idToNodeMap_[targetId];
                         transition->transitWhenAnimationDone = transEl->BoolAttribute("transitWhenAnimationDone");
 
                         tinyxml2::XMLElement* conditionsEl = transEl->FirstChildElement("Conditions");
@@ -122,7 +154,6 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
                                 condition.variableName = condEl->Attribute("variableName");
                                 condition.operation = StringToCompareOp(condEl->Attribute("operation"));
                                 condition.targetValue = DeserializeVariable(condEl);
-
                                 transition->conditions.push_back(condition);
                             }
                         }
@@ -138,8 +169,6 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
             int entryId = entryEl->IntAttribute("id");
             state->SetEntryNode(idToNodeMap_[entryId]);
         }
-
-        graph->AddState(state);
     }
 
     if (!graph->GetStates().empty())

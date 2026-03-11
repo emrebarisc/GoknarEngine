@@ -91,7 +91,7 @@ struct GOKNAR_API AnimationGraph
 	{
 		currentState_ = currentState;
 		currentState_->Reset();
-		Init();
+		PlayCurrentStateAnimation();
 	}
 
 	void AddState(const std::shared_ptr<AnimationState>& state)
@@ -111,6 +111,8 @@ struct GOKNAR_API AnimationGraph
 	bool isCurrentStateAnimationFinished = false;
 
 private:
+	void PlayCurrentStateAnimation();
+
 	inline void SetIsCurrentStateAnimationFinishedTrue()
 	{
 		isCurrentStateAnimationFinished = true;

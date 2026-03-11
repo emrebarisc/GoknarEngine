@@ -5,7 +5,8 @@
 
 #include <memory>
 
-struct AnimationNodeTransition;
+template<typename T>
+struct AnimationTransition;
 
 struct GOKNAR_API AnimationNode
 {
@@ -14,7 +15,7 @@ struct GOKNAR_API AnimationNode
 
     std::string animationName{ "" };
 
-	std::vector<std::shared_ptr<AnimationNodeTransition>> outboundConnections;
+	std::vector<std::shared_ptr<AnimationTransition<AnimationNode>>> outboundConnections;
 
     bool loop{ true };
 };

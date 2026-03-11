@@ -11,16 +11,11 @@
 struct AnimationNode;
 struct AnimationGraph;
 
-struct GOKNAR_API AnimationNodeTransition
+template<typename T>
+struct GOKNAR_API AnimationTransition
 {
-	AnimationNodeTransition() = default;
-	~AnimationNodeTransition() = default;
-
-	std::shared_ptr<AnimationNode> targetNode = nullptr;
-
-	bool transitWhenAnimationDone = false;
-
-	std::vector<AnimationCondition> conditions;
+	AnimationTransition() = default;
+	~AnimationTransition() = default;
 
 	bool ShouldTransit(const AnimationGraph* graph, bool isCurrentStateFinished) const
 	{
@@ -44,6 +39,12 @@ struct GOKNAR_API AnimationNodeTransition
 
 		return false;
 	}
+
+	std::shared_ptr<T> target{ nullptr };
+
+	bool transitWhenAnimationDone{ false };
+
+	std::vector<AnimationCondition> conditions;
 };
 
 #endif
