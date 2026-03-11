@@ -138,11 +138,11 @@ target_include_directories(${APP_NAME} PUBLIC
 )
 
 
-target_compile_definitions(${APP_NAME} PUBLIC "CONTENT_DIR=\"${CMAKE_BINARY_DIR}/Content/\"")
+target_compile_definitions(${APP_NAME} PUBLIC "CONTENT_DIR=\"Content/\"")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
 	file(COPY "EngineContent" DESTINATION ${CMAKE_BINARY_DIR}/)
-	target_compile_definitions(${APP_NAME} PUBLIC "ENGINE_CONTENT_DIR=\"${CMAKE_BINARY_DIR}/EngineContent/\"")
+	target_compile_definitions(${APP_NAME} PUBLIC "ENGINE_CONTENT_DIR=\"EngineContent/\"")
 	add_compile_definitions(GOKNAR_BUILD_DEBUG GOKNAR_ENABLE_ASSERTS)
 	message("-------------------- Debug --------------------")
 elseif(${CMAKE_BUILD_TYPE} STREQUAL Release)
