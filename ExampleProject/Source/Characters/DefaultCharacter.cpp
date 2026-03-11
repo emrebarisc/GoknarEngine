@@ -6,7 +6,7 @@
 #include "Goknar/Animation/AnimationGraph.h"
 #include "Goknar/Animation/AnimationNode.h"
 #include "Goknar/Animation/AnimationState.h"
-#include "Goknar/Animation/AnimationNodeTransition.h"
+#include "Goknar/Animation/AnimationTransition.h"
 #include "Goknar/Components/CameraComponent.h"
 #include "Goknar/Components/SkeletalMeshComponent.h"
 #include "Goknar/Components/SocketComponent.h"
@@ -102,17 +102,76 @@ void DefaultCharacter::BeginGame()
 
 	//SetupAnimationGraph();
 
+	//standingState_->name = "Standing State";
+	//standingStrafingState_->name = "Standing Strafing State";
+	//crouchState_->name = "Crouch State";
+	//crouchStrafingState_->name = "Crouch Strafing State";
+
 	//animationGraph_->AddState(standingState_);
 	//animationGraph_->AddState(standingStrafingState_);
 	//animationGraph_->AddState(crouchState_);
 	//animationGraph_->AddState(crouchStrafingState_);
+	//
+	//// ==========================================
+	//// 1. STRAFING TRANSITIONS (Same Stance)
+	//// ==========================================
+
+	//std::shared_ptr<AnimationTransition<AnimationState>> standingToStandingStrafing = std::make_shared<AnimationTransition<AnimationState>>();
+	//standingToStandingStrafing->target = standingStrafingState_; //
+	//standingToStandingStrafing->conditions.push_back({ "IsCrouched", CompareOp::Equal, false }); //
+	//standingToStandingStrafing->conditions.push_back({ "IsStrafing", CompareOp::Equal, true });
+	//standingState_->outboundConnections.push_back(standingToStandingStrafing); //
+
+	//std::shared_ptr<AnimationTransition<AnimationState>> standingStrafingToStanding = std::make_shared<AnimationTransition<AnimationState>>();
+	//standingStrafingToStanding->target = standingState_;
+	//standingStrafingToStanding->conditions.push_back({ "IsCrouched", CompareOp::Equal, false });
+	//standingStrafingToStanding->conditions.push_back({ "IsStrafing", CompareOp::Equal, false });
+	//standingStrafingState_->outboundConnections.push_back(standingStrafingToStanding);
+
+	//std::shared_ptr<AnimationTransition<AnimationState>> crouchToCrouchStrafing = std::make_shared<AnimationTransition<AnimationState>>();
+	//crouchToCrouchStrafing->target = crouchStrafingState_;
+	//crouchToCrouchStrafing->conditions.push_back({ "IsCrouched", CompareOp::Equal, true });
+	//crouchToCrouchStrafing->conditions.push_back({ "IsStrafing", CompareOp::Equal, true });
+	//crouchState_->outboundConnections.push_back(crouchToCrouchStrafing);
+
+	//std::shared_ptr<AnimationTransition<AnimationState>> crouchStrafingToCrouch = std::make_shared<AnimationTransition<AnimationState>>();
+	//crouchStrafingToCrouch->target = crouchState_;
+	//crouchStrafingToCrouch->conditions.push_back({ "IsCrouched", CompareOp::Equal, true });
+	//crouchStrafingToCrouch->conditions.push_back({ "IsStrafing", CompareOp::Equal, false });
+	//crouchStrafingState_->outboundConnections.push_back(crouchStrafingToCrouch);
+
+	//std::shared_ptr<AnimationTransition<AnimationState>> standingToCrouch = std::make_shared<AnimationTransition<AnimationState>>();
+	//standingToCrouch->target = crouchState_;
+	//standingToCrouch->conditions.push_back({ "IsCrouched", CompareOp::Equal, true });
+	//standingToCrouch->conditions.push_back({ "IsStrafing", CompareOp::Equal, false });
+	//standingState_->outboundConnections.push_back(standingToCrouch);
+
+	//std::shared_ptr<AnimationTransition<AnimationState>> crouchToStanding = std::make_shared<AnimationTransition<AnimationState>>();
+	//crouchToStanding->target = standingState_;
+	//crouchToStanding->conditions.push_back({ "IsCrouched", CompareOp::Equal, false });
+	//crouchToStanding->conditions.push_back({ "IsStrafing", CompareOp::Equal, false });
+	//crouchState_->outboundConnections.push_back(crouchToStanding);
+
+	//std::shared_ptr<AnimationTransition<AnimationState>> standingStrafingToCrouchStrafing = std::make_shared<AnimationTransition<AnimationState>>();
+	//standingStrafingToCrouchStrafing->target = crouchStrafingState_;
+	//standingStrafingToCrouchStrafing->conditions.push_back({ "IsCrouched", CompareOp::Equal, true });
+	//standingStrafingToCrouchStrafing->conditions.push_back({ "IsStrafing", CompareOp::Equal, true });
+	//standingStrafingState_->outboundConnections.push_back(standingStrafingToCrouchStrafing);
+
+	//std::shared_ptr<AnimationTransition<AnimationState>> crouchStrafingToStandingStrafing = std::make_shared<AnimationTransition<AnimationState>>();
+	//crouchStrafingToStandingStrafing->target = standingStrafingState_;
+	//crouchStrafingToStandingStrafing->conditions.push_back({ "IsCrouched", CompareOp::Equal, false });
+	//crouchStrafingToStandingStrafing->conditions.push_back({ "IsStrafing", CompareOp::Equal, true });
+	//crouchStrafingState_->outboundConnections.push_back(crouchStrafingToStandingStrafing);
+
+	//AnimationSerializer().Serialize(animationGraph_, "Animations/AG_DefaultCharacter");
 
 	AnimationDeserializer().Deserialize(animationGraph_, "Animations/AG_DefaultCharacter");
 
-	standingState_ = animationGraph_->GetStates()[0];
-	standingStrafingState_ = animationGraph_->GetStates()[1];
-	crouchState_ = animationGraph_->GetStates()[2];
-	crouchStrafingState_ = animationGraph_->GetStates()[3];
+	//standingState_ = animationGraph_->GetStates()[0];
+	//standingStrafingState_ = animationGraph_->GetStates()[1];
+	//crouchState_ = animationGraph_->GetStates()[2];
+	//crouchStrafingState_ = animationGraph_->GetStates()[3];
 
 	animationGraph_->Init();
 }
@@ -229,28 +288,16 @@ void DefaultCharacter::ToggleCrouch()
 {
     isCrouched_ = !isCrouched_;
 
+	animationGraph_->SetVariable<bool>("IsCrouched", isCrouched_);
+
 	if (isCrouched_)
 	{
 		cameraHeightOffset_ = Vector3{0.f, 0.f, 0.5f};
 		defaultCharacterMovementComponent_->StartCrouching();
-
-		if (isStrafing_)
-		{
-			animationGraph_->SetCurrentState(crouchStrafingState_);
-			animationGraph_->Init();
-		}
-		else
-		{
-			animationGraph_->SetCurrentState(crouchState_);
-			animationGraph_->Init();
-		}
 	}
 	else
 	{
-		animationGraph_->SetCurrentState(standingState_);
-		animationGraph_->Init();
-
-			cameraHeightOffset_ = Vector3{ 0.f, 0.f, 1.f };
+		cameraHeightOffset_ = Vector3{ 0.f, 0.f, 1.f };
 
 		if (((DefaultCharacterController*)controller_)->GetIsRunInputPresent())
 		{
@@ -287,32 +334,7 @@ void DefaultCharacter::SetIsStrafing(bool isStrafing)
 {
 	isStrafing_ = isStrafing;
 
-	if (isStrafing_)
-	{
-		if (isCrouched_)
-		{
-			animationGraph_->SetCurrentState(crouchStrafingState_);
-			animationGraph_->Init();
-		}
-		else
-		{
-			animationGraph_->SetCurrentState(standingStrafingState_);
-			animationGraph_->Init();
-		}
-	}
-	else
-	{
-		if (isCrouched_)
-		{
-			animationGraph_->SetCurrentState(crouchState_);
-			animationGraph_->Init();
-		}
-		else
-		{
-			animationGraph_->SetCurrentState(standingState_);
-			animationGraph_->Init();
-		}
-	}
+	animationGraph_->SetVariable<bool>("IsStrafing", isStrafing_);
 
 	if (movementComponent_)
 	{
@@ -334,6 +356,8 @@ void DefaultCharacter::SetupAnimationGraph()
 	animationGraph_->SetVariable<float>("StrafingRotation", 0.f);
 	animationGraph_->SetVariable<bool>("IsOnGround", true);
 	animationGraph_->SetVariable<bool>("IsJumping", false);
+	animationGraph_->SetVariable<bool>("IsCrouched", false);
+	animationGraph_->SetVariable<bool>("IsStrafing", false);
 }
 
 void DefaultCharacter::SetupStandingState()
@@ -358,68 +382,68 @@ void DefaultCharacter::SetupStandingState()
 	jumpEndNode->animationName = "Armature|RifleJumpFinish";
 	jumpEndNode->loop = false;
 
-	std::shared_ptr<AnimationNodeTransition> idleToWalk = std::make_shared<AnimationNodeTransition>();
-	idleToWalk->targetNode = walkNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> idleToWalk = std::make_shared<AnimationTransition<AnimationNode>>();
+	idleToWalk->target = walkNode;
 	idleToWalk->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	idleNode->outboundConnections.push_back(idleToWalk);
 
-	std::shared_ptr<AnimationNodeTransition> idleToJump = std::make_shared<AnimationNodeTransition>();
-	idleToJump->targetNode = jumpStartNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> idleToJump = std::make_shared<AnimationTransition<AnimationNode>>();
+	idleToJump->target = jumpStartNode;
 	idleToJump->conditions.push_back({ "IsJumping", CompareOp::Equal, true });
 	idleNode->outboundConnections.push_back(idleToJump);
 
-	std::shared_ptr<AnimationNodeTransition> walkToIdle = std::make_shared<AnimationNodeTransition>();
-	walkToIdle->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkToIdle = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkToIdle->target = idleNode;
 	walkToIdle->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	walkNode->outboundConnections.push_back(walkToIdle);
 
-	std::shared_ptr<AnimationNodeTransition> walkToRun = std::make_shared<AnimationNodeTransition>();
-	walkToRun->targetNode = runNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkToRun = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkToRun->target = runNode;
 	walkToRun->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::RUN_SPEED * 0.9f });
 	walkNode->outboundConnections.push_back(walkToRun);
 
-	std::shared_ptr<AnimationNodeTransition> walkToJump = std::make_shared<AnimationNodeTransition>();
-	walkToJump->targetNode = jumpStartNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkToJump = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkToJump->target = jumpStartNode;
 	walkToJump->conditions.push_back({ "IsJumping", CompareOp::Equal, true });
 	walkNode->outboundConnections.push_back(walkToJump);
 
-	std::shared_ptr<AnimationNodeTransition> runToWalk = std::make_shared<AnimationNodeTransition>();
-	runToWalk->targetNode = walkNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> runToWalk = std::make_shared<AnimationTransition<AnimationNode>>();
+	runToWalk->target = walkNode;
 	runToWalk->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::RUN_SPEED * 0.9f });
 	runNode->outboundConnections.push_back(runToWalk);
 
-	std::shared_ptr<AnimationNodeTransition> runToIdle = std::make_shared<AnimationNodeTransition>();
-	runToIdle->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> runToIdle = std::make_shared<AnimationTransition<AnimationNode>>();
+	runToIdle->target = idleNode;
 	runToIdle->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	runNode->outboundConnections.push_back(runToIdle);
 
-	std::shared_ptr<AnimationNodeTransition> runToJump = std::make_shared<AnimationNodeTransition>();
-	runToJump->targetNode = jumpStartNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> runToJump = std::make_shared<AnimationTransition<AnimationNode>>();
+	runToJump->target = jumpStartNode;
 	runToJump->conditions.push_back({ "IsJumping", CompareOp::Equal, true });
 	runNode->outboundConnections.push_back(runToJump);
 
-	std::shared_ptr<AnimationNodeTransition> jumpStartToOnAir = std::make_shared<AnimationNodeTransition>();
-	jumpStartToOnAir->targetNode = onAirNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> jumpStartToOnAir = std::make_shared<AnimationTransition<AnimationNode>>();
+	jumpStartToOnAir->target = onAirNode;
 	jumpStartToOnAir->transitWhenAnimationDone = true;
 	jumpStartNode->outboundConnections.push_back(jumpStartToOnAir);
 
-	std::shared_ptr<AnimationNodeTransition> jumpEndToIdle = std::make_shared<AnimationNodeTransition>();
-	jumpEndToIdle->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> jumpEndToIdle = std::make_shared<AnimationTransition<AnimationNode>>();
+	jumpEndToIdle->target = idleNode;
 	jumpEndToIdle->transitWhenAnimationDone = true;
 	jumpEndNode->outboundConnections.push_back(jumpEndToIdle);
 
-	std::shared_ptr<AnimationNodeTransition> onAirToJumpEnd = std::make_shared<AnimationNodeTransition>();
-	onAirToJumpEnd->targetNode = jumpEndNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> onAirToJumpEnd = std::make_shared<AnimationTransition<AnimationNode>>();
+	onAirToJumpEnd->target = jumpEndNode;
 	onAirToJumpEnd->conditions.push_back({ "IsOnGround", CompareOp::Equal, true });
 	onAirNode->outboundConnections.push_back(onAirToJumpEnd);
 
-	std::shared_ptr<AnimationNodeTransition> walkToOnAir = std::make_shared<AnimationNodeTransition>();
-	walkToOnAir->targetNode = onAirNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkToOnAir = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkToOnAir->target = onAirNode;
 	walkToOnAir->conditions.push_back({ "IsOnGround", CompareOp::Equal, false });
 	walkNode->outboundConnections.push_back(walkToOnAir);
 
-	std::shared_ptr<AnimationNodeTransition> runToOnAir = std::make_shared<AnimationNodeTransition>();
-	runToOnAir->targetNode = onAirNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> runToOnAir = std::make_shared<AnimationTransition<AnimationNode>>();
+	runToOnAir->target = onAirNode;
 	runToOnAir->conditions.push_back({ "IsOnGround", CompareOp::Equal, false });
 	runNode->outboundConnections.push_back(runToOnAir);
 
@@ -435,13 +459,13 @@ void DefaultCharacter::SetupCrouchState()
 	std::shared_ptr<AnimationNode> crouchWalkForwardNode = std::make_shared<AnimationNode>();
 	crouchWalkForwardNode->animationName = "Armature|RifleCrouchWalkForward";
 
-	std::shared_ptr<AnimationNodeTransition> crouchIdleToWalk = std::make_shared<AnimationNodeTransition>();
-	crouchIdleToWalk->targetNode = crouchWalkForwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchIdleToWalk = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchIdleToWalk->target = crouchWalkForwardNode;
 	crouchIdleToWalk->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchIdleNode->outboundConnections.push_back(crouchIdleToWalk);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkToIdle = std::make_shared<AnimationNodeTransition>();
-	crouchWalkToIdle->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkToIdle = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkToIdle->target = crouchIdleNode;
 	crouchWalkToIdle->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchWalkForwardNode->outboundConnections.push_back(crouchWalkToIdle);
 
@@ -479,187 +503,187 @@ void DefaultCharacter::SetupStandingStrafingState()
 	walkRightForwardNode->animationName = "Armature|RifleWalkRightForward";
 
 	// --- Forward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkForward = std::make_shared<AnimationNodeTransition>();
-	entryToWalkForward->targetNode = walkForwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkForward = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkForward->target = walkForwardNode;
 	entryToWalkForward->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.125f * PI });
 	entryToWalkForward->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.125f * PI });
 	entryToWalkForward->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	idleNode->outboundConnections.push_back(entryToWalkForward);
 
-	std::shared_ptr<AnimationNodeTransition> walkForwardToEntry1 = std::make_shared<AnimationNodeTransition>();
-	walkForwardToEntry1->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkForwardToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkForwardToEntry1->target = idleNode;
 	walkForwardToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.125f * PI });
 	walkForwardNode->outboundConnections.push_back(walkForwardToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> walkForwardToEntry2 = std::make_shared<AnimationNodeTransition>();
-	walkForwardToEntry2->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkForwardToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkForwardToEntry2->target = idleNode;
 	walkForwardToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.125f * PI });
 	walkForwardNode->outboundConnections.push_back(walkForwardToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> walkForwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	walkForwardToIdleStop->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkForwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkForwardToIdleStop->target = idleNode;
 	walkForwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	walkForwardNode->outboundConnections.push_back(walkForwardToIdleStop);
 
 	// --- Left Forward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkLeftForward = std::make_shared<AnimationNodeTransition>();
-	entryToWalkLeftForward->targetNode = walkLeftForwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkLeftForward = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkLeftForward->target = walkLeftForwardNode;
 	entryToWalkLeftForward->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.125f * PI });
 	entryToWalkLeftForward->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.375f * PI });
 	entryToWalkLeftForward->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	idleNode->outboundConnections.push_back(entryToWalkLeftForward);
 
-	std::shared_ptr<AnimationNodeTransition> walkLeftForwardToEntry1 = std::make_shared<AnimationNodeTransition>();
-	walkLeftForwardToEntry1->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkLeftForwardToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkLeftForwardToEntry1->target = idleNode;
 	walkLeftForwardToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.125f * PI });
 	walkLeftForwardNode->outboundConnections.push_back(walkLeftForwardToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> walkLeftForwardToEntry2 = std::make_shared<AnimationNodeTransition>();
-	walkLeftForwardToEntry2->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkLeftForwardToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkLeftForwardToEntry2->target = idleNode;
 	walkLeftForwardToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.375f * PI });
 	walkLeftForwardNode->outboundConnections.push_back(walkLeftForwardToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> walkLeftForwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	walkLeftForwardToIdleStop->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkLeftForwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkLeftForwardToIdleStop->target = idleNode;
 	walkLeftForwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	walkLeftForwardNode->outboundConnections.push_back(walkLeftForwardToIdleStop);
 
 	// --- Left ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkLeft = std::make_shared<AnimationNodeTransition>();
-	entryToWalkLeft->targetNode = walkLeftNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkLeft = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkLeft->target = walkLeftNode;
 	entryToWalkLeft->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.375f * PI });
 	entryToWalkLeft->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.625f * PI });
 	entryToWalkLeft->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	idleNode->outboundConnections.push_back(entryToWalkLeft);
 
-	std::shared_ptr<AnimationNodeTransition> walkLeftToEntry1 = std::make_shared<AnimationNodeTransition>();
-	walkLeftToEntry1->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkLeftToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkLeftToEntry1->target = idleNode;
 	walkLeftToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.375f * PI });
 	walkLeftNode->outboundConnections.push_back(walkLeftToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> walkLeftToEntry2 = std::make_shared<AnimationNodeTransition>();
-	walkLeftToEntry2->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkLeftToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkLeftToEntry2->target = idleNode;
 	walkLeftToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.625f * PI });
 	walkLeftNode->outboundConnections.push_back(walkLeftToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> walkLeftToIdleStop = std::make_shared<AnimationNodeTransition>();
-	walkLeftToIdleStop->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkLeftToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkLeftToIdleStop->target = idleNode;
 	walkLeftToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	walkLeftNode->outboundConnections.push_back(walkLeftToIdleStop);
 
 	// --- Left Backward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkLeftBackward = std::make_shared<AnimationNodeTransition>();
-	entryToWalkLeftBackward->targetNode = walkLeftBackwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkLeftBackward = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkLeftBackward->target = walkLeftBackwardNode;
 	entryToWalkLeftBackward->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.625f * PI });
 	entryToWalkLeftBackward->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.875f * PI });
 	entryToWalkLeftBackward->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	idleNode->outboundConnections.push_back(entryToWalkLeftBackward);
 
-	std::shared_ptr<AnimationNodeTransition> walkLeftBackwardToEntry1 = std::make_shared<AnimationNodeTransition>();
-	walkLeftBackwardToEntry1->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkLeftBackwardToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkLeftBackwardToEntry1->target = idleNode;
 	walkLeftBackwardToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.625f * PI });
 	walkLeftBackwardNode->outboundConnections.push_back(walkLeftBackwardToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> walkLeftBackwardToEntry2 = std::make_shared<AnimationNodeTransition>();
-	walkLeftBackwardToEntry2->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkLeftBackwardToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkLeftBackwardToEntry2->target = idleNode;
 	walkLeftBackwardToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.875f * PI });
 	walkLeftBackwardNode->outboundConnections.push_back(walkLeftBackwardToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> walkLeftBackwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	walkLeftBackwardToIdleStop->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkLeftBackwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkLeftBackwardToIdleStop->target = idleNode;
 	walkLeftBackwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	walkLeftBackwardNode->outboundConnections.push_back(walkLeftBackwardToIdleStop);
 
 	// --- Backward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkBackwardPos = std::make_shared<AnimationNodeTransition>();
-	entryToWalkBackwardPos->targetNode = walkBackwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkBackwardPos = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkBackwardPos->target = walkBackwardNode;
 	entryToWalkBackwardPos->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.875f * PI });
 	entryToWalkBackwardPos->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	idleNode->outboundConnections.push_back(entryToWalkBackwardPos);
 
-	std::shared_ptr<AnimationNodeTransition> entryToWalkBackwardNeg = std::make_shared<AnimationNodeTransition>();
-	entryToWalkBackwardNeg->targetNode = walkBackwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkBackwardNeg = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkBackwardNeg->target = walkBackwardNode;
 	entryToWalkBackwardNeg->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.875f * PI });
 	entryToWalkBackwardNeg->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	idleNode->outboundConnections.push_back(entryToWalkBackwardNeg);
 
-	std::shared_ptr<AnimationNodeTransition> walkBackwardToEntry = std::make_shared<AnimationNodeTransition>();
-	walkBackwardToEntry->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkBackwardToEntry = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkBackwardToEntry->target = idleNode;
 	walkBackwardToEntry->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.875f * PI });
 	walkBackwardToEntry->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.875f * PI });
 	walkBackwardNode->outboundConnections.push_back(walkBackwardToEntry);
 
-	std::shared_ptr<AnimationNodeTransition> walkBackwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	walkBackwardToIdleStop->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkBackwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkBackwardToIdleStop->target = idleNode;
 	walkBackwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	walkBackwardNode->outboundConnections.push_back(walkBackwardToIdleStop);
 
 	// --- Right Backward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkRightBackward = std::make_shared<AnimationNodeTransition>();
-	entryToWalkRightBackward->targetNode = walkRightBackwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkRightBackward = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkRightBackward->target = walkRightBackwardNode;
 	entryToWalkRightBackward->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.875f * PI });
 	entryToWalkRightBackward->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.625f * PI });
 	entryToWalkRightBackward->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	idleNode->outboundConnections.push_back(entryToWalkRightBackward);
 
-	std::shared_ptr<AnimationNodeTransition> walkRightBackwardToEntry1 = std::make_shared<AnimationNodeTransition>();
-	walkRightBackwardToEntry1->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkRightBackwardToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkRightBackwardToEntry1->target = idleNode;
 	walkRightBackwardToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.875f * PI });
 	walkRightBackwardNode->outboundConnections.push_back(walkRightBackwardToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> walkRightBackwardToEntry2 = std::make_shared<AnimationNodeTransition>();
-	walkRightBackwardToEntry2->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkRightBackwardToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkRightBackwardToEntry2->target = idleNode;
 	walkRightBackwardToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.625f * PI });
 	walkRightBackwardNode->outboundConnections.push_back(walkRightBackwardToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> walkRightBackwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	walkRightBackwardToIdleStop->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkRightBackwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkRightBackwardToIdleStop->target = idleNode;
 	walkRightBackwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	walkRightBackwardNode->outboundConnections.push_back(walkRightBackwardToIdleStop);
 
 	// --- Right ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkRight = std::make_shared<AnimationNodeTransition>();
-	entryToWalkRight->targetNode = walkRightNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkRight = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkRight->target = walkRightNode;
 	entryToWalkRight->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.625f * PI });
 	entryToWalkRight->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.375f * PI });
 	entryToWalkRight->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	idleNode->outboundConnections.push_back(entryToWalkRight);
 
-	std::shared_ptr<AnimationNodeTransition> walkRightToEntry1 = std::make_shared<AnimationNodeTransition>();
-	walkRightToEntry1->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkRightToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkRightToEntry1->target = idleNode;
 	walkRightToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.625f * PI });
 	walkRightNode->outboundConnections.push_back(walkRightToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> walkRightToEntry2 = std::make_shared<AnimationNodeTransition>();
-	walkRightToEntry2->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkRightToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkRightToEntry2->target = idleNode;
 	walkRightToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.375f * PI });
 	walkRightNode->outboundConnections.push_back(walkRightToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> walkRightToIdleStop = std::make_shared<AnimationNodeTransition>();
-	walkRightToIdleStop->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkRightToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkRightToIdleStop->target = idleNode;
 	walkRightToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	walkRightNode->outboundConnections.push_back(walkRightToIdleStop);
 
 	// --- Right Forward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkRightForward = std::make_shared<AnimationNodeTransition>();
-	entryToWalkRightForward->targetNode = walkRightForwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkRightForward = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkRightForward->target = walkRightForwardNode;
 	entryToWalkRightForward->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.375f * PI });
 	entryToWalkRightForward->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.125f * PI });
 	entryToWalkRightForward->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	idleNode->outboundConnections.push_back(entryToWalkRightForward);
 
-	std::shared_ptr<AnimationNodeTransition> walkRightForwardToEntry1 = std::make_shared<AnimationNodeTransition>();
-	walkRightForwardToEntry1->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkRightForwardToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkRightForwardToEntry1->target = idleNode;
 	walkRightForwardToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.375f * PI });
 	walkRightForwardNode->outboundConnections.push_back(walkRightForwardToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> walkRightForwardToEntry2 = std::make_shared<AnimationNodeTransition>();
-	walkRightForwardToEntry2->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkRightForwardToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkRightForwardToEntry2->target = idleNode;
 	walkRightForwardToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.125f * PI });
 	walkRightForwardNode->outboundConnections.push_back(walkRightForwardToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> walkRightForwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	walkRightForwardToIdleStop->targetNode = idleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> walkRightForwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	walkRightForwardToIdleStop->target = idleNode;
 	walkRightForwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	walkRightForwardNode->outboundConnections.push_back(walkRightForwardToIdleStop);
 
@@ -700,187 +724,187 @@ void DefaultCharacter::SetupCrouchStrafingState()
 	crouchWalkRightForwardNode->animationName = "Armature|RifleCrouchWalkRightForward";
 
 	// --- Forward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkForward = std::make_shared<AnimationNodeTransition>();
-	entryToWalkForward->targetNode = crouchWalkForwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkForward = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkForward->target = crouchWalkForwardNode;
 	entryToWalkForward->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.125f * PI });
 	entryToWalkForward->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.125f * PI });
 	entryToWalkForward->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchIdleNode->outboundConnections.push_back(entryToWalkForward);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkForwardToEntry1 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkForwardToEntry1->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkForwardToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkForwardToEntry1->target = crouchIdleNode;
 	crouchWalkForwardToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.125f * PI });
 	crouchWalkForwardNode->outboundConnections.push_back(crouchWalkForwardToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkForwardToEntry2 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkForwardToEntry2->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkForwardToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkForwardToEntry2->target = crouchIdleNode;
 	crouchWalkForwardToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.125f * PI });
 	crouchWalkForwardNode->outboundConnections.push_back(crouchWalkForwardToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkForwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	crouchWalkForwardToIdleStop->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkForwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkForwardToIdleStop->target = crouchIdleNode;
 	crouchWalkForwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchWalkForwardNode->outboundConnections.push_back(crouchWalkForwardToIdleStop);
 
 	// --- Left Forward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkLeftForward = std::make_shared<AnimationNodeTransition>();
-	entryToWalkLeftForward->targetNode = crouchWalkLeftForwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkLeftForward = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkLeftForward->target = crouchWalkLeftForwardNode;
 	entryToWalkLeftForward->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.125f * PI });
 	entryToWalkLeftForward->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.375f * PI });
 	entryToWalkLeftForward->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchIdleNode->outboundConnections.push_back(entryToWalkLeftForward);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkLeftForwardToEntry1 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkLeftForwardToEntry1->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkLeftForwardToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkLeftForwardToEntry1->target = crouchIdleNode;
 	crouchWalkLeftForwardToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.125f * PI });
 	crouchWalkLeftForwardNode->outboundConnections.push_back(crouchWalkLeftForwardToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkLeftForwardToEntry2 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkLeftForwardToEntry2->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkLeftForwardToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkLeftForwardToEntry2->target = crouchIdleNode;
 	crouchWalkLeftForwardToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.375f * PI });
 	crouchWalkLeftForwardNode->outboundConnections.push_back(crouchWalkLeftForwardToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkLeftForwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	crouchWalkLeftForwardToIdleStop->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkLeftForwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkLeftForwardToIdleStop->target = crouchIdleNode;
 	crouchWalkLeftForwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchWalkLeftForwardNode->outboundConnections.push_back(crouchWalkLeftForwardToIdleStop);
 
 	// --- Left ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkLeft = std::make_shared<AnimationNodeTransition>();
-	entryToWalkLeft->targetNode = crouchWalkLeftNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkLeft = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkLeft->target = crouchWalkLeftNode;
 	entryToWalkLeft->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.375f * PI });
 	entryToWalkLeft->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.625f * PI });
 	entryToWalkLeft->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchIdleNode->outboundConnections.push_back(entryToWalkLeft);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkLeftToEntry1 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkLeftToEntry1->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkLeftToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkLeftToEntry1->target = crouchIdleNode;
 	crouchWalkLeftToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.375f * PI });
 	crouchWalkLeftNode->outboundConnections.push_back(crouchWalkLeftToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkLeftToEntry2 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkLeftToEntry2->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkLeftToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkLeftToEntry2->target = crouchIdleNode;
 	crouchWalkLeftToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.625f * PI });
 	crouchWalkLeftNode->outboundConnections.push_back(crouchWalkLeftToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkLeftToIdleStop = std::make_shared<AnimationNodeTransition>();
-	crouchWalkLeftToIdleStop->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkLeftToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkLeftToIdleStop->target = crouchIdleNode;
 	crouchWalkLeftToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchWalkLeftNode->outboundConnections.push_back(crouchWalkLeftToIdleStop);
 
 	// --- Left Backward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkLeftBackward = std::make_shared<AnimationNodeTransition>();
-	entryToWalkLeftBackward->targetNode = crouchWalkLeftBackwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkLeftBackward = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkLeftBackward->target = crouchWalkLeftBackwardNode;
 	entryToWalkLeftBackward->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.625f * PI });
 	entryToWalkLeftBackward->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.875f * PI });
 	entryToWalkLeftBackward->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchIdleNode->outboundConnections.push_back(entryToWalkLeftBackward);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkLeftBackwardToEntry1 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkLeftBackwardToEntry1->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkLeftBackwardToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkLeftBackwardToEntry1->target = crouchIdleNode;
 	crouchWalkLeftBackwardToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.625f * PI });
 	crouchWalkLeftBackwardNode->outboundConnections.push_back(crouchWalkLeftBackwardToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkLeftBackwardToEntry2 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkLeftBackwardToEntry2->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkLeftBackwardToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkLeftBackwardToEntry2->target = crouchIdleNode;
 	crouchWalkLeftBackwardToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.875f * PI });
 	crouchWalkLeftBackwardNode->outboundConnections.push_back(crouchWalkLeftBackwardToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkLeftBackwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	crouchWalkLeftBackwardToIdleStop->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkLeftBackwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkLeftBackwardToIdleStop->target = crouchIdleNode;
 	crouchWalkLeftBackwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchWalkLeftBackwardNode->outboundConnections.push_back(crouchWalkLeftBackwardToIdleStop);
 
 	// --- Backward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkBackwardPos = std::make_shared<AnimationNodeTransition>();
-	entryToWalkBackwardPos->targetNode = crouchWalkBackwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkBackwardPos = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkBackwardPos->target = crouchWalkBackwardNode;
 	entryToWalkBackwardPos->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, 0.875f * PI });
 	entryToWalkBackwardPos->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchIdleNode->outboundConnections.push_back(entryToWalkBackwardPos);
 
-	std::shared_ptr<AnimationNodeTransition> entryToWalkBackwardNeg = std::make_shared<AnimationNodeTransition>();
-	entryToWalkBackwardNeg->targetNode = crouchWalkBackwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkBackwardNeg = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkBackwardNeg->target = crouchWalkBackwardNode;
 	entryToWalkBackwardNeg->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.875f * PI });
 	entryToWalkBackwardNeg->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchIdleNode->outboundConnections.push_back(entryToWalkBackwardNeg);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkBackwardToEntry = std::make_shared<AnimationNodeTransition>();
-	crouchWalkBackwardToEntry->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkBackwardToEntry = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkBackwardToEntry->target = crouchIdleNode;
 	crouchWalkBackwardToEntry->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.875f * PI });
 	crouchWalkBackwardToEntry->conditions.push_back({ "StrafingRotation", CompareOp::Less, 0.875f * PI });
 	crouchWalkBackwardNode->outboundConnections.push_back(crouchWalkBackwardToEntry);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkBackwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	crouchWalkBackwardToIdleStop->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkBackwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkBackwardToIdleStop->target = crouchIdleNode;
 	crouchWalkBackwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchWalkBackwardNode->outboundConnections.push_back(crouchWalkBackwardToIdleStop);
 
 	// --- Right Backward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkRightBackward = std::make_shared<AnimationNodeTransition>();
-	entryToWalkRightBackward->targetNode = crouchWalkRightBackwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkRightBackward = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkRightBackward->target = crouchWalkRightBackwardNode;
 	entryToWalkRightBackward->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.875f * PI });
 	entryToWalkRightBackward->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.625f * PI });
 	entryToWalkRightBackward->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchIdleNode->outboundConnections.push_back(entryToWalkRightBackward);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkRightBackwardToEntry1 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkRightBackwardToEntry1->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkRightBackwardToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkRightBackwardToEntry1->target = crouchIdleNode;
 	crouchWalkRightBackwardToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.875f * PI });
 	crouchWalkRightBackwardNode->outboundConnections.push_back(crouchWalkRightBackwardToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkRightBackwardToEntry2 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkRightBackwardToEntry2->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkRightBackwardToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkRightBackwardToEntry2->target = crouchIdleNode;
 	crouchWalkRightBackwardToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.625f * PI });
 	crouchWalkRightBackwardNode->outboundConnections.push_back(crouchWalkRightBackwardToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkRightBackwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	crouchWalkRightBackwardToIdleStop->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkRightBackwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkRightBackwardToIdleStop->target = crouchIdleNode;
 	crouchWalkRightBackwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchWalkRightBackwardNode->outboundConnections.push_back(crouchWalkRightBackwardToIdleStop);
 
 	// --- Right ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkRight = std::make_shared<AnimationNodeTransition>();
-	entryToWalkRight->targetNode = crouchWalkRightNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkRight = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkRight->target = crouchWalkRightNode;
 	entryToWalkRight->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.625f * PI });
 	entryToWalkRight->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.375f * PI });
 	entryToWalkRight->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchIdleNode->outboundConnections.push_back(entryToWalkRight);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkRightToEntry1 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkRightToEntry1->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkRightToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkRightToEntry1->target = crouchIdleNode;
 	crouchWalkRightToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.625f * PI });
 	crouchWalkRightNode->outboundConnections.push_back(crouchWalkRightToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkRightToEntry2 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkRightToEntry2->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkRightToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkRightToEntry2->target = crouchIdleNode;
 	crouchWalkRightToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.375f * PI });
 	crouchWalkRightNode->outboundConnections.push_back(crouchWalkRightToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkRightToIdleStop = std::make_shared<AnimationNodeTransition>();
-	crouchWalkRightToIdleStop->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkRightToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkRightToIdleStop->target = crouchIdleNode;
 	crouchWalkRightToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchWalkRightNode->outboundConnections.push_back(crouchWalkRightToIdleStop);
 
 	// --- Right Forward ---
-	std::shared_ptr<AnimationNodeTransition> entryToWalkRightForward = std::make_shared<AnimationNodeTransition>();
-	entryToWalkRightForward->targetNode = crouchWalkRightForwardNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> entryToWalkRightForward = std::make_shared<AnimationTransition<AnimationNode>>();
+	entryToWalkRightForward->target = crouchWalkRightForwardNode;
 	entryToWalkRightForward->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.375f * PI });
 	entryToWalkRightForward->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.125f * PI });
 	entryToWalkRightForward->conditions.push_back({ "VelocityMagnitude", CompareOp::GreaterOrEqual, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchIdleNode->outboundConnections.push_back(entryToWalkRightForward);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkRightForwardToEntry1 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkRightForwardToEntry1->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkRightForwardToEntry1 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkRightForwardToEntry1->target = crouchIdleNode;
 	crouchWalkRightForwardToEntry1->conditions.push_back({ "StrafingRotation", CompareOp::Less, -0.375f * PI });
 	crouchWalkRightForwardNode->outboundConnections.push_back(crouchWalkRightForwardToEntry1);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkRightForwardToEntry2 = std::make_shared<AnimationNodeTransition>();
-	crouchWalkRightForwardToEntry2->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkRightForwardToEntry2 = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkRightForwardToEntry2->target = crouchIdleNode;
 	crouchWalkRightForwardToEntry2->conditions.push_back({ "StrafingRotation", CompareOp::GreaterOrEqual, -0.125f * PI });
 	crouchWalkRightForwardNode->outboundConnections.push_back(crouchWalkRightForwardToEntry2);
 
-	std::shared_ptr<AnimationNodeTransition> crouchWalkRightForwardToIdleStop = std::make_shared<AnimationNodeTransition>();
-	crouchWalkRightForwardToIdleStop->targetNode = crouchIdleNode;
+	std::shared_ptr<AnimationTransition<AnimationNode>> crouchWalkRightForwardToIdleStop = std::make_shared<AnimationTransition<AnimationNode>>();
+	crouchWalkRightForwardToIdleStop->target = crouchIdleNode;
 	crouchWalkRightForwardToIdleStop->conditions.push_back({ "VelocityMagnitude", CompareOp::Less, DefaultCharacterMovementComponent::MIN_SPEED });
 	crouchWalkRightForwardNode->outboundConnections.push_back(crouchWalkRightForwardToIdleStop);
 
