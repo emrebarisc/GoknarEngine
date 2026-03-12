@@ -221,48 +221,37 @@ void Camera::UpdateFrustumPlanes()
 
 bool Camera::IsAABBVisible(const Box& aabb, const Matrix& worldTransformationMatrix) const
 {
-	Vector3 localMin = aabb.GetMin();
-	Vector3 localMax = aabb.GetMax();
+	Vector3 localCenter = (aabb.GetMax() + aabb.GetMin()) * 0.5f;
+	Vector3 localExtents = (aabb.GetMax() - aabb.GetMin()) * 0.5f;
 
-	Vector3 localCorners[8] =
+	Vector4 worldCenter4 = worldTransformationMatrix * Vector4(localCenter, 1.f);
+	Vector3 worldCenter(worldCenter4);
+
+	Vector3 axisX(worldTransformationMatrix.m[0], worldTransformationMatrix.m[4], worldTransformationMatrix.m[8]);
+	axisX *= localExtents.x;
+
+	Vector3 axisY(worldTransformationMatrix.m[1], worldTransformationMatrix.m[5], worldTransformationMatrix.m[9]);
+	axisY *= localExtents.y;
+
+	Vector3 axisZ(worldTransformationMatrix.m[2], worldTransformationMatrix.m[6], worldTransformationMatrix.m[10]);
+	axisZ *= localExtents.z;
+
+	for (int i = 0; i < 6; ++i)
 	{
-		Vector3(localMin.x, localMin.y, localMin.z),
-		Vector3(localMin.x, localMin.y, localMax.z),
-		Vector3(localMin.x, localMax.y, localMin.z),
-		Vector3(localMin.x, localMax.y, localMax.z),
-		Vector3(localMax.x, localMin.y, localMin.z),
-		Vector3(localMax.x, localMin.y, localMax.z),
-		Vector3(localMax.x, localMax.y, localMin.z),
-		Vector3(localMax.x, localMax.y, localMax.z)
-	};
+		const Vector4& plane = frustumPlanes_[i];
 
-	Vector3 worldCorners[8];
-	for (int i = 0; i < 8; ++i)
-	{
-		Vector4 worldPos = worldTransformationMatrix * Vector4(localCorners[i], 1.f);
-		worldCorners[i] = Vector3(worldPos.x, worldPos.y, worldPos.z);
-	}
+		float distanceToCenter = 
+			plane.x * worldCenter.x +
+			plane.y * worldCenter.y +
+			plane.z * worldCenter.z +
+			plane.w;
 
-	for (int p = 0; p < 6; ++p)
-	{
-		const Vector4& plane = frustumPlanes_[p];
+		float projectedRadius =
+			GoknarMath::Abs(plane.x * axisX.x + plane.y * axisX.y + plane.z * axisX.z) +
+			GoknarMath::Abs(plane.x * axisY.x + plane.y * axisY.y + plane.z * axisY.z) +
+			GoknarMath::Abs(plane.x * axisZ.x + plane.y * axisZ.y + plane.z * axisZ.z);
 
-		int cornersOutside = 0;
-		for (int i = 0; i < 8; ++i)
-		{
-			float distance = 
-				plane.x * worldCorners[i].x +
-				plane.y * worldCorners[i].y +
-				plane.z * worldCorners[i].z +
-				plane.w;
-
-			if (distance < 0.f)
-			{
-				cornersOutside++;
-			}
-		}
-
-		if (cornersOutside == 8)
+		if (distanceToCenter < -projectedRadius)
 		{
 			return false;
 		}
