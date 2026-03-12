@@ -35,7 +35,7 @@
 #include "Goknar/IO/IOManager.h"
 
 #include "Goknar/Renderer/Shader.h"
-#include "Goknar/Renderer/ShaderBuilderNew.h"
+#include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/PostProcessing.h"
 #include "Goknar/Renderer/RenderTarget.h"
 
@@ -114,7 +114,7 @@ void Renderer::PreInit()
 	//
 	//		testFrameBuffer.DrawBuffers();
 	//
-	//		postProcessingShader.SetVertexShaderScript(ShaderBuilderNew::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
+	//		postProcessingShader.SetVertexShaderScript(ShaderBuilder::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
 	//		postProcessingShader.SetFragmentShaderScript(R"(
 	//#version 440 core
 	//
@@ -1433,8 +1433,8 @@ void DeferredRenderingData::PreInit()
 
 void DeferredRenderingData::Init()
 {
-	deferredRenderingMeshShader->SetVertexShaderScript(ShaderBuilderNew::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
-	deferredRenderingMeshShader->SetFragmentShaderScript(ShaderBuilderNew::GetInstance()->DeferredRenderPass_GetFragmentShaderScript());
+	deferredRenderingMeshShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
+	deferredRenderingMeshShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->DeferredRenderPass_GetFragmentShaderScript());
 
 #if defined(GOKNAR_BUILD_DEBUG)
 	IOManager::WriteFile((ContentDir + "DeferredRendering.vert").c_str(), deferredRenderingMeshShader->GetVertexShaderScript().c_str());

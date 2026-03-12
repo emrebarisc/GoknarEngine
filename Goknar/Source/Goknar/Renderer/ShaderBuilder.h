@@ -1,5 +1,5 @@
-#ifndef __SHADERBUILDERNEW_H__
-#define __SHADERBUILDERNEW_H__
+#ifndef __SHADERBUILDER_H__
+#define __SHADERBUILDER_H__
 
 #include "Goknar/Core.h"
 
@@ -10,16 +10,16 @@ class Engine;
 class MaterialInitializationData;
 class Shader;
 
-class GOKNAR_API ShaderBuilderNew
+class GOKNAR_API ShaderBuilder
 {
 	friend Engine;
 
 public:
-	static ShaderBuilderNew* GetInstance()
+	static ShaderBuilder* GetInstance()
 	{
 		if (instance_ == nullptr)
 		{
-			instance_ = new ShaderBuilderNew();
+			instance_ = new ShaderBuilder();
 		}
 
 		return instance_;
@@ -67,10 +67,10 @@ private:
 		RenderPassType renderPassType{ RenderPassType::Forward };
 	};
 
-	static ShaderBuilderNew* instance_;
+	static ShaderBuilder* instance_;
 
-	ShaderBuilderNew() = default;
-	~ShaderBuilderNew();
+	ShaderBuilder() = default;
+	~ShaderBuilder();
 
 	std::string General_FS_GetScript(const FragmentShaderInitializationData& fragmentShaderInitializationData) const;
 	std::string General_VS_GetScript(const VertexShaderInitializationData& vertexShaderInitializationData) const;

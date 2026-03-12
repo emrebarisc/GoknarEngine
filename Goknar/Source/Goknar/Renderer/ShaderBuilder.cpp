@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ShaderBuilderNew.h"
+#include "ShaderBuilder.h"
 
 #include "Goknar/Application.h"
 #include "Goknar/Core.h"
@@ -17,13 +17,13 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Lights/LightManager/LightManager.h"
 
-ShaderBuilderNew* ShaderBuilderNew::instance_ = nullptr;
+ShaderBuilder* ShaderBuilder::instance_ = nullptr;
 
-ShaderBuilderNew::~ShaderBuilderNew()
+ShaderBuilder::~ShaderBuilder()
 {
 }
 
-std::string ShaderBuilderNew::General_FS_GetScript(const FragmentShaderInitializationData& fragmentShaderInitializationData) const
+std::string ShaderBuilder::General_FS_GetScript(const FragmentShaderInitializationData& fragmentShaderInitializationData) const
 {
 	std::string fragmentShader = "#version " + shaderVersion_ + "\n\n";
 	fragmentShader += General_FS_GetMaterialVariables(fragmentShaderInitializationData);
@@ -95,7 +95,7 @@ void main()
 	return fragmentShader;
 }
 
-std::string ShaderBuilderNew::General_VS_GetScript(const VertexShaderInitializationData& vertexShaderInitializationData) const
+std::string ShaderBuilder::General_VS_GetScript(const VertexShaderInitializationData& vertexShaderInitializationData) const
 {
 	std::string vertexShader = "#version " + shaderVersion_ + "\n\n";
 	vertexShader += VS_GetMainLayouts();
@@ -151,7 +151,7 @@ void main()
 	return vertexShader;
 }
 
-std::string ShaderBuilderNew::ForwardRenderPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilder::ForwardRenderPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	VertexShaderInitializationData vertexShaderInitializationData;
 	vertexShaderInitializationData.materialInitializationData = initializationData;
@@ -160,7 +160,7 @@ std::string ShaderBuilderNew::ForwardRenderPass_GetVertexShaderScript(MaterialIn
 	return General_VS_GetScript(vertexShaderInitializationData);
 }
 
-std::string ShaderBuilderNew::ForwardRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilder::ForwardRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	std::string outputVariables = FS_GetOutputVariables();
 	std::string outputVariableAssignments = FS_GetOutputVariableAssignments();
@@ -172,7 +172,7 @@ std::string ShaderBuilderNew::ForwardRenderPass_GetFragmentShaderScript(Material
 	return General_FS_GetScript(fragmentShaderInitializationData);
 }
 
-std::string ShaderBuilderNew::GeometryBufferPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilder::GeometryBufferPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	VertexShaderInitializationData vertexShaderInitializationData;
 	vertexShaderInitializationData.materialInitializationData = initializationData;
@@ -181,7 +181,7 @@ std::string ShaderBuilderNew::GeometryBufferPass_GetVertexShaderScript(MaterialI
 	return General_VS_GetScript(vertexShaderInitializationData);
 }
 
-std::string ShaderBuilderNew::GeometryBufferPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilder::GeometryBufferPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	std::string outputVariables = GeometryBufferPass_GetOutputVariables();
 	std::string outputVariableAssignments = GeometryBufferPass_GetOutputVariableAssignments();
@@ -193,7 +193,7 @@ std::string ShaderBuilderNew::GeometryBufferPass_GetFragmentShaderScript(Materia
 	return General_FS_GetScript(fragmentShaderInitializationData);
 }
 
-std::string ShaderBuilderNew::ShadowPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilder::ShadowPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	VertexShaderInitializationData vertexShaderInitializationData;
 	vertexShaderInitializationData.materialInitializationData = initializationData;
@@ -202,7 +202,7 @@ std::string ShaderBuilderNew::ShadowPass_GetVertexShaderScript(MaterialInitializ
 	return General_VS_GetScript(vertexShaderInitializationData);
 }
 
-std::string ShaderBuilderNew::ShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilder::ShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	std::string shadowPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
 	shadowPassFragmentShader += R"(
@@ -212,7 +212,7 @@ void main()
 	return shadowPassFragmentShader;
 }
 
-std::string ShaderBuilderNew::PointShadowPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilder::PointShadowPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	VertexShaderInitializationData vertexShaderInitializationData;
 	vertexShaderInitializationData.materialInitializationData = initializationData;
@@ -221,7 +221,7 @@ std::string ShaderBuilderNew::PointShadowPass_GetVertexShaderScript(MaterialInit
 	return General_VS_GetScript(vertexShaderInitializationData);
 }
 
-std::string ShaderBuilderNew::PointShadowPass_GetGeometryShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilder::PointShadowPass_GetGeometryShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	std::string pointShadowPassGeometryShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
 	pointShadowPassGeometryShader += R"(
@@ -250,7 +250,7 @@ void main()
 	return pointShadowPassGeometryShader;
 }
 
-std::string ShaderBuilderNew::PointShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilder::PointShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	std::string shadowPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
 	shadowPassFragmentShader += R"(
@@ -269,7 +269,7 @@ void main()
 	return shadowPassFragmentShader;
 }
 
-std::string ShaderBuilderNew::DeferredRenderPass_GetVertexShaderScript()
+std::string ShaderBuilder::DeferredRenderPass_GetVertexShaderScript()
 {
 	return 
 		R"(#version )" + std::string(DEFAULT_SHADER_VERSION) + "\n" +
@@ -284,7 +284,7 @@ void main()
 })";
 }
 
-std::string ShaderBuilderNew::DeferredRenderPass_GetFragmentShaderScript()
+std::string ShaderBuilder::DeferredRenderPass_GetFragmentShaderScript()
 {
 	std::string outputVariables = FS_GetOutputVariables();
 	std::string outputVariableAssignments = FS_GetOutputVariableAssignments();
@@ -294,7 +294,7 @@ std::string ShaderBuilderNew::DeferredRenderPass_GetFragmentShaderScript()
 	return General_FS_GetScript(fragmentShaderInitializationData);
 }
 
-std::string ShaderBuilderNew::FS_GetOutputVariables() const
+std::string ShaderBuilder::FS_GetOutputVariables() const
 {
 	std::string output = "\n// Base Material Variables\n";
 
@@ -305,12 +305,12 @@ std::string ShaderBuilderNew::FS_GetOutputVariables() const
 	return output;
 }
 
-std::string ShaderBuilderNew::FS_GetOutputVariableAssignments() const
+std::string ShaderBuilder::FS_GetOutputVariableAssignments() const
 {
 	return std::string("\t") + SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR + " = vec4(" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY + ", 1.f) * " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + ";";;
 }
 
-std::string ShaderBuilderNew::GeometryBufferPass_GetOutputVariables() const
+std::string ShaderBuilder::GeometryBufferPass_GetOutputVariables() const
 {
 	std::string variables = R"(
 
@@ -325,7 +325,7 @@ layout(location = 4) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMMISIVE_
 	return variables;
 }
 
-std::string ShaderBuilderNew::GeometryBufferPass_GetOutputVariableAssignments() const
+std::string ShaderBuilder::GeometryBufferPass_GetOutputVariableAssignments() const
 {
 	std::string assignments = 
 R"(
@@ -338,7 +338,7 @@ R"(
 	return assignments;
 }
 
-std::string ShaderBuilderNew::DeferredRenderPass_GetGBufferTextureUniforms() const
+std::string ShaderBuilder::DeferredRenderPass_GetGBufferTextureUniforms() const
 {
 	return R"(
 uniform sampler2D )" + std::string(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION) + R"(;
@@ -349,7 +349,7 @@ uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMMISIVE_COLOR + R"(;
 )";
 }
 
-std::string ShaderBuilderNew::DeferredRenderPass_GetGBufferVariables() const
+std::string ShaderBuilder::DeferredRenderPass_GetGBufferVariables() const
 {
 	return R"(
 vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
@@ -362,7 +362,7 @@ float )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
 )";
 }
 
-std::string ShaderBuilderNew::DeferredRenderPass_GetGBufferVariableAssignments() const
+std::string ShaderBuilder::DeferredRenderPass_GetGBufferVariableAssignments() const
 {
 	return R"(
 	vec4 )" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR) + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
@@ -381,7 +381,7 @@ std::string ShaderBuilderNew::DeferredRenderPass_GetGBufferVariableAssignments()
 )";
 }
 
-std::string ShaderBuilderNew::General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const
+std::string ShaderBuilder::General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const
 {
 	std::string materialVariableText = "\n// Base Material Variables\n";
 
@@ -466,7 +466,7 @@ std::string ShaderBuilderNew::General_FS_GetMaterialVariables(const FragmentShad
 	return materialVariableText;
 }
 
-std::string ShaderBuilderNew::FS_GetLightSpaceFragmentPositions(const FragmentShaderInitializationData& fragmentShaderInitializationData) const
+std::string ShaderBuilder::FS_GetLightSpaceFragmentPositions(const FragmentShaderInitializationData& fragmentShaderInitializationData) const
 {
 	std::string variableTypes = "in vec4 ";
 	if (fragmentShaderInitializationData.renderPassType == RenderPassType::Deferred)
@@ -482,7 +482,7 @@ std::string ShaderBuilderNew::FS_GetLightSpaceFragmentPositions(const FragmentSh
 	return lightSpaceFragmentPositions;
 }
 
-std::string ShaderBuilderNew::FS_GetDirectionalLightColorFunction() const
+std::string ShaderBuilder::FS_GetDirectionalLightColorFunction() const
 {
 	return R"(
 vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
@@ -536,7 +536,7 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 )";
 }
 
-std::string ShaderBuilderNew::FS_GetPointLightColorFunction() const
+std::string ShaderBuilder::FS_GetPointLightColorFunction() const
 {
 	return R"(
 vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
@@ -600,7 +600,7 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
 )";
 }
 
-std::string ShaderBuilderNew::FS_GetSpotLightColorFunction() const
+std::string ShaderBuilder::FS_GetSpotLightColorFunction() const
 {
 	return R"(
 vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, float coverageAngle, float falloffAngle)
@@ -677,7 +677,7 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 )";
 }
 
-std::string ShaderBuilderNew::FS_GetDirectionalLightStruct() const
+std::string ShaderBuilder::FS_GetDirectionalLightStruct() const
 {
 	std::string directionalLightStruct =
 		R"(
@@ -693,7 +693,7 @@ struct )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_STRUCT_N
 	return directionalLightStruct;
 }
 
-std::string ShaderBuilderNew::FS_GetPointLightStruct() const
+std::string ShaderBuilder::FS_GetPointLightStruct() const
 {
 	std::string pointLightStruct =
 		R"(
@@ -710,7 +710,7 @@ struct )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_STRUCT_NAME) +
 	return pointLightStruct;
 }
 
-std::string ShaderBuilderNew::FS_GetSpotLightStruct() const
+std::string ShaderBuilder::FS_GetSpotLightStruct() const
 {
 	std::string spotLightStruct =
 		R"(
@@ -728,7 +728,7 @@ struct )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_STRUCT_NAME) + 
 	return spotLightStruct;
 }
 
-std::string ShaderBuilderNew::FS_GetLightArrayUniforms() const
+std::string ShaderBuilder::FS_GetLightArrayUniforms() const
 {
 	return R"(
 layout (std140, binding = )" + std::to_string(DIRECTIONAL_LIGHT_UNIFORM_BIND_INDEX) + R"() uniform )" + SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_UNIFORM_NAME + R"(
@@ -751,7 +751,7 @@ layout (std140, binding = )" + std::to_string(SPOT_LIGHT_UNIFORM_BIND_INDEX) + R
 )";
 }
 
-std::string ShaderBuilderNew::FS_GetShadowMapUniforms() const
+std::string ShaderBuilder::FS_GetShadowMapUniforms() const
 {
 	return R"(
 uniform sampler2DShadow )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_SHADOW_MAP_ARRAY_NAME) + "[" + std::to_string(MAX_DIRECTIONAL_LIGHT_COUNT) + "]" + R"(;
@@ -760,7 +760,7 @@ uniform sampler2DShadow )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGH
 )";
 }
 
-std::string ShaderBuilderNew::General_FS_GetShaderTextureUniforms(MaterialInitializationData* initializationData, const Shader* shader) const
+std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	if (!shader)
 	{
@@ -808,22 +808,22 @@ std::string ShaderBuilderNew::General_FS_GetShaderTextureUniforms(MaterialInitia
 	return uniforms;
 }
 
-std::string ShaderBuilderNew::General_FS_GetDiffuseTextureSampling(const std::string& textureName) const
+std::string ShaderBuilder::General_FS_GetDiffuseTextureSampling(const std::string& textureName) const
 {
 	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + "); ");
 }
 
-std::string ShaderBuilderNew::General_FS_GetNormalTextureSampling(const std::string& textureName) const
+std::string ShaderBuilder::General_FS_GetNormalTextureSampling(const std::string& textureName) const
 {
 	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ") * 0.5f + vec4(0.5f); ");
 }
 
-std::string ShaderBuilderNew::General_FS_GetEmmisiveTextureSampling(const std::string& textureName) const
+std::string ShaderBuilder::General_FS_GetEmmisiveTextureSampling(const std::string& textureName) const
 {
 	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ").xyz; ");
 }
 
-std::string ShaderBuilderNew::FS_GetLightCalculationIterators() const
+std::string ShaderBuilder::FS_GetLightCalculationIterators() const
 {
 	return R"(
 	for(int directionalLightIndex = 0; directionalLightIndex < )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_COUNT_IN_USE_VARIABLE) + R"(; ++directionalLightIndex)
@@ -937,7 +937,7 @@ std::string ShaderBuilderNew::FS_GetLightCalculationIterators() const
 )";
 }
 
-std::string ShaderBuilderNew::FS_InitializeBaseColor(MaterialInitializationData* initializationData) const
+std::string ShaderBuilder::FS_InitializeBaseColor(MaterialInitializationData* initializationData) const
 {
 	std::string result = "";
 
@@ -965,7 +965,7 @@ std::string ShaderBuilderNew::FS_InitializeBaseColor(MaterialInitializationData*
 	return result;
 }
 
-std::string ShaderBuilderNew::FS_InitializeEmmisiveColor(MaterialInitializationData* initializationData) const
+std::string ShaderBuilder::FS_InitializeEmmisiveColor(MaterialInitializationData* initializationData) const
 {
 	std::string result = "";
 
@@ -988,7 +988,7 @@ std::string ShaderBuilderNew::FS_InitializeEmmisiveColor(MaterialInitializationD
 	return result;
 }
 
-std::string ShaderBuilderNew::VS_GetMainLayouts() const
+std::string ShaderBuilder::VS_GetMainLayouts() const
 {
 	std::string layouts = "\n\n";
 
@@ -1011,7 +1011,7 @@ std::string ShaderBuilderNew::VS_GetMainLayouts() const
 	return layouts;
 }
 
-std::string ShaderBuilderNew::VS_GetSkeletalMeshLayouts() const
+std::string ShaderBuilder::VS_GetSkeletalMeshLayouts() const
 {
 	std::string layouts = "\n\n";
 
@@ -1027,7 +1027,7 @@ std::string ShaderBuilderNew::VS_GetSkeletalMeshLayouts() const
 }
 
 
-std::string ShaderBuilderNew::VS_GetSkeletalMeshVariables() const
+std::string ShaderBuilder::VS_GetSkeletalMeshVariables() const
 {
 	std::string variables = "\n\n";
 
@@ -1040,7 +1040,7 @@ std::string ShaderBuilderNew::VS_GetSkeletalMeshVariables() const
 	return variables;
 }
 
-std::string ShaderBuilderNew::VS_GetSkeletalMeshUniforms(int boneCount) const
+std::string ShaderBuilder::VS_GetSkeletalMeshUniforms(int boneCount) const
 {
 	std::string uniforms = "\n\n";
 
@@ -1054,7 +1054,7 @@ std::string ShaderBuilderNew::VS_GetSkeletalMeshUniforms(int boneCount) const
 	return uniforms;
 }
 
-std::string ShaderBuilderNew::VS_GetUniforms() const
+std::string ShaderBuilder::VS_GetUniforms() const
 {
 	std::string uniforms = "\n\n";
 
@@ -1101,7 +1101,7 @@ std::string ShaderBuilderNew::VS_GetUniforms() const
 	return uniforms;
 }
 
-std::string ShaderBuilderNew::VS_GetLightShadowViewMatrixUniforms() const
+std::string ShaderBuilder::VS_GetLightShadowViewMatrixUniforms() const
 {
 	return R"(
 layout (std140, binding = )" + std::to_string(DIRECTIONAL_LIGHT_VIEW_MATRIX_UNIFORM_BIND_INDEX) + R"() uniform )" + SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_VIEW_MATRIX_UNIFORM_NAME + R"( 
@@ -1116,7 +1116,7 @@ layout (std140, binding = )" + std::to_string(SPOT_LIGHT_VIEW_MATRIX_UNIFORM_BIN
 )";
 }
 
-std::string ShaderBuilderNew::VS_GetLightOutputs() const
+std::string ShaderBuilder::VS_GetLightOutputs() const
 {
 	return R"(
 
@@ -1126,7 +1126,7 @@ out vec4 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::SPOT_LIGHT_SPACE_FRAGME
 )";
 }
 
-std::string ShaderBuilderNew::VS_GetSkeletalMeshWeightCalculation() const
+std::string ShaderBuilder::VS_GetSkeletalMeshWeightCalculation() const
 {
 	std::string weightCalculation = "";
 
@@ -1152,7 +1152,7 @@ std::string ShaderBuilderNew::VS_GetSkeletalMeshWeightCalculation() const
 	return weightCalculation;
 }
 
-std::string ShaderBuilderNew::VS_GetMain(const VertexShaderInitializationData& vertexShaderInitializationData, const std::string& vertexShaderModelMatrixVariable) const
+std::string ShaderBuilder::VS_GetMain(const VertexShaderInitializationData& vertexShaderInitializationData, const std::string& vertexShaderModelMatrixVariable) const
 {
 	std::string vsMain = VS_GetPosition();
 	vsMain += VS_GetPositionOffset(vertexShaderInitializationData.materialInitializationData);
@@ -1192,12 +1192,12 @@ std::string ShaderBuilderNew::VS_GetMain(const VertexShaderInitializationData& v
 	return vsMain;
 }
 
-std::string ShaderBuilderNew::VS_GetPosition() const
+std::string ShaderBuilder::VS_GetPosition() const
 {
 	return "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " = " + std::string(SHADER_VARIABLE_NAMES::VERTEX::POSITION) + ";\n";
 }
 
-std::string ShaderBuilderNew::VS_GetPositionOffset(MaterialInitializationData* initializationData) const
+std::string ShaderBuilder::VS_GetPositionOffset(MaterialInitializationData* initializationData) const
 {
 	std::string result = "";
 
@@ -1210,7 +1210,7 @@ std::string ShaderBuilderNew::VS_GetPositionOffset(MaterialInitializationData* i
 	return result;
 }
 
-std::string ShaderBuilderNew::VS_GetUV(MaterialInitializationData* initializationData) const
+std::string ShaderBuilder::VS_GetUV(MaterialInitializationData* initializationData) const
 {
 	std::string result = "";
 
@@ -1233,7 +1233,7 @@ std::string ShaderBuilderNew::VS_GetUV(MaterialInitializationData* initializatio
 	return result;
 }
 
-std::string ShaderBuilderNew::VS_GetLightSpaceFragmentPositionCalculations() const
+std::string ShaderBuilder::VS_GetLightSpaceFragmentPositionCalculations() const
 {
 	return R"(
 	
@@ -1252,7 +1252,7 @@ std::string ShaderBuilderNew::VS_GetLightSpaceFragmentPositionCalculations() con
 )";
 }
 
-std::string ShaderBuilderNew::VS_GetVertexNormalText(MaterialInitializationData* initializationData) const
+std::string ShaderBuilder::VS_GetVertexNormalText(MaterialInitializationData* initializationData) const
 {
 	std::string vertexNormalText = "";
 
@@ -1279,7 +1279,7 @@ std::string ShaderBuilderNew::VS_GetVertexNormalText(MaterialInitializationData*
 	return vertexNormalText;
 }
 
-std::string ShaderBuilderNew::VS_GetVertexColorText() const
+std::string ShaderBuilder::VS_GetVertexColorText() const
 {
 	std::string vertexColorText = "";
 

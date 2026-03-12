@@ -19,7 +19,7 @@
 #include "Physics/PhysicsWorld.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
-#include "Renderer/ShaderBuilderNew.h"
+#include "Renderer/ShaderBuilder.h"
 #include "UI/HUD.h"
 
 #define GOKNAR_EDITOR false
@@ -77,7 +77,7 @@ Engine::~Engine()
 
 	// Delete singletons
 	delete ObjectIDManager::GetInstance();
-	delete ShaderBuilderNew::GetInstance();
+	delete ShaderBuilder::GetInstance();
 	delete DynamicObjectFactory::GetInstance();
 
 	delete windowManager_;

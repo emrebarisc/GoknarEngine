@@ -6,7 +6,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Contents/Image.h"
 #include "Goknar/Renderer/Renderer.h"
-#include "Goknar/Renderer/ShaderBuilderNew.h"
+#include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/SkeletalMesh.h"
@@ -74,29 +74,29 @@ void Material::Build(MeshUnit* meshUnit)
 	{
 		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer] = gBufferShader;
 
-		std::string vertexShader = ShaderBuilderNew::GetInstance()->GeometryBufferPass_GetVertexShaderScript(initializationData_, gBufferShader);
+		std::string vertexShader = ShaderBuilder::GetInstance()->GeometryBufferPass_GetVertexShaderScript(initializationData_, gBufferShader);
 		gBufferShader->SetVertexShaderScript(vertexShader);
 
-		std::string fragmentShader = ShaderBuilderNew::GetInstance()->GeometryBufferPass_GetFragmentShaderScript(initializationData_, gBufferShader);
+		std::string fragmentShader = ShaderBuilder::GetInstance()->GeometryBufferPass_GetFragmentShaderScript(initializationData_, gBufferShader);
 		gBufferShader->SetFragmentShaderScript(fragmentShader);
 	}
 
 	if (forwardRenderingShader->GetShaderType() == ShaderType::Scene)
 	{
-		std::string vertexShader = ShaderBuilderNew::GetInstance()->ForwardRenderPass_GetVertexShaderScript(initializationData_, forwardRenderingShader);
+		std::string vertexShader = ShaderBuilder::GetInstance()->ForwardRenderPass_GetVertexShaderScript(initializationData_, forwardRenderingShader);
 		forwardRenderingShader->SetVertexShaderScript(vertexShader);
 
-		std::string fragmentShader = ShaderBuilderNew::GetInstance()->ForwardRenderPass_GetFragmentShaderScript(initializationData_, forwardRenderingShader);
+		std::string fragmentShader = ShaderBuilder::GetInstance()->ForwardRenderPass_GetFragmentShaderScript(initializationData_, forwardRenderingShader);
 		forwardRenderingShader->SetFragmentShaderScript(fragmentShader);
 	}
 
 	{
 		Shader* shadowShader = new Shader();
 
-		std::string shadowPassVertexShader = ShaderBuilderNew::GetInstance()->ShadowPass_GetVertexShaderScript(initializationData_, shadowShader);
+		std::string shadowPassVertexShader = ShaderBuilder::GetInstance()->ShadowPass_GetVertexShaderScript(initializationData_, shadowShader);
 		shadowShader->SetVertexShaderScript(shadowPassVertexShader);
 
-		std::string shadowPassFragmentShader = ShaderBuilderNew::GetInstance()->ShadowPass_GetFragmentShaderScript(initializationData_, shadowShader);
+		std::string shadowPassFragmentShader = ShaderBuilder::GetInstance()->ShadowPass_GetFragmentShaderScript(initializationData_, shadowShader);
 		shadowShader->SetFragmentShaderScript(shadowPassFragmentShader);
 
 		renderPassTypeShaderMap_[RenderPassType::Shadow] = shadowShader;
@@ -105,13 +105,13 @@ void Material::Build(MeshUnit* meshUnit)
 	{
 		Shader* pointLightShadowShader = new Shader();
 
-		std::string pointLightShadowPassVertexShader = ShaderBuilderNew::GetInstance()->PointShadowPass_GetVertexShaderScript(initializationData_, pointLightShadowShader);
+		std::string pointLightShadowPassVertexShader = ShaderBuilder::GetInstance()->PointShadowPass_GetVertexShaderScript(initializationData_, pointLightShadowShader);
 		pointLightShadowShader->SetVertexShaderScript(pointLightShadowPassVertexShader);
 
-		std::string pointLightShadowPassGeometryShader = ShaderBuilderNew::GetInstance()->PointShadowPass_GetGeometryShaderScript(initializationData_, pointLightShadowShader);
+		std::string pointLightShadowPassGeometryShader = ShaderBuilder::GetInstance()->PointShadowPass_GetGeometryShaderScript(initializationData_, pointLightShadowShader);
 		pointLightShadowShader->SetGeometryShaderScript(pointLightShadowPassGeometryShader);
 
-		std::string pointLightShadowPassFragmentShader = ShaderBuilderNew::GetInstance()->PointShadowPass_GetFragmentShaderScript(initializationData_, pointLightShadowShader);
+		std::string pointLightShadowPassFragmentShader = ShaderBuilder::GetInstance()->PointShadowPass_GetFragmentShaderScript(initializationData_, pointLightShadowShader);
 		pointLightShadowShader->SetFragmentShaderScript(pointLightShadowPassFragmentShader);
 
 		renderPassTypeShaderMap_[RenderPassType::PointLightShadow] = pointLightShadowShader;
