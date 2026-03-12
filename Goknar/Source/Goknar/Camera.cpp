@@ -166,120 +166,110 @@ void Camera::LookAt()
 
 void Camera::UpdateFrustumPlanes()
 {
-	//// Near plane: -1, 0, 0, d
-	//frustumPlanes_[0] = Vector4(
-	//	viewProjectionMatrix_.m[3] + viewProjectionMatrix_.m[0],
-	//	viewProjectionMatrix_.m[7] + viewProjectionMatrix_.m[4],
-	//	viewProjectionMatrix_.m[11] + viewProjectionMatrix_.m[8],
-	//	viewProjectionMatrix_.m[15] + viewProjectionMatrix_.m[12]); // Near plane (negative x)
+	// Left plane (w + x)
+	frustumPlanes_[0] = Vector4(
+		viewProjectionMatrix_.m[12] + viewProjectionMatrix_.m[0],
+		viewProjectionMatrix_.m[13] + viewProjectionMatrix_.m[1],
+		viewProjectionMatrix_.m[14] + viewProjectionMatrix_.m[2],
+		viewProjectionMatrix_.m[15] + viewProjectionMatrix_.m[3]);
 
-	//// Far plane: 1, 0, 0, d
-	//frustumPlanes_[1] = Vector4(
-	//	viewProjectionMatrix_.m[3] - viewProjectionMatrix_.m[0],
-	//	viewProjectionMatrix_.m[7] - viewProjectionMatrix_.m[4],
-	//	viewProjectionMatrix_.m[11] - viewProjectionMatrix_.m[8],
-	//	viewProjectionMatrix_.m[15] - viewProjectionMatrix_.m[12]); // Far plane (positive x)
+	// Right plane (w - x)
+	frustumPlanes_[1] = Vector4(
+		viewProjectionMatrix_.m[12] - viewProjectionMatrix_.m[0],
+		viewProjectionMatrix_.m[13] - viewProjectionMatrix_.m[1],
+		viewProjectionMatrix_.m[14] - viewProjectionMatrix_.m[2],
+		viewProjectionMatrix_.m[15] - viewProjectionMatrix_.m[3]);
 
-	//// Left plane: 0, 1, 0, d
-	//frustumPlanes_[2] = Vector4(
-	//	viewProjectionMatrix_.m[3],
-	//	viewProjectionMatrix_.m[7] + viewProjectionMatrix_.m[1],
-	//	viewProjectionMatrix_.m[11] + viewProjectionMatrix_.m[9],
-	//	viewProjectionMatrix_.m[15] + viewProjectionMatrix_.m[13]); // Left plane (positive y)
+	// Bottom plane (w + y)
+	frustumPlanes_[2] = Vector4(
+		viewProjectionMatrix_.m[12] + viewProjectionMatrix_.m[4],
+		viewProjectionMatrix_.m[13] + viewProjectionMatrix_.m[5],
+		viewProjectionMatrix_.m[14] + viewProjectionMatrix_.m[6],
+		viewProjectionMatrix_.m[15] + viewProjectionMatrix_.m[7]);
 
-	//// Right plane: 0, -1, 0, d
-	//frustumPlanes_[3] = Vector4(
-	//	viewProjectionMatrix_.m[3],
-	//	viewProjectionMatrix_.m[7] - viewProjectionMatrix_.m[1],
-	//	viewProjectionMatrix_.m[11] - viewProjectionMatrix_.m[9],
-	//	viewProjectionMatrix_.m[15] - viewProjectionMatrix_.m[13]); // Right plane (negative y)
+	// Top plane (w - y)
+	frustumPlanes_[3] = Vector4(
+		viewProjectionMatrix_.m[12] - viewProjectionMatrix_.m[4],
+		viewProjectionMatrix_.m[13] - viewProjectionMatrix_.m[5],
+		viewProjectionMatrix_.m[14] - viewProjectionMatrix_.m[6],
+		viewProjectionMatrix_.m[15] - viewProjectionMatrix_.m[7]);
 
-	//// Bottom plane: 0, 0, 1, d
-	//frustumPlanes_[4] = Vector4(
-	//	viewProjectionMatrix_.m[3],
-	//	viewProjectionMatrix_.m[7],
-	//	viewProjectionMatrix_.m[11] + viewProjectionMatrix_.m[2],
-	//	viewProjectionMatrix_.m[15] + viewProjectionMatrix_.m[14]); // Bottom plane (positive z)
+	// Near plane (w + z)
+	frustumPlanes_[4] = Vector4(
+		viewProjectionMatrix_.m[12] + viewProjectionMatrix_.m[8],
+		viewProjectionMatrix_.m[13] + viewProjectionMatrix_.m[9],
+		viewProjectionMatrix_.m[14] + viewProjectionMatrix_.m[10],
+		viewProjectionMatrix_.m[15] + viewProjectionMatrix_.m[11]);
 
-	//// Top plane: 0, 0, -1, d
-	//frustumPlanes_[5] = Vector4(
-	//	viewProjectionMatrix_.m[3],
-	//	viewProjectionMatrix_.m[7],
-	//	viewProjectionMatrix_.m[11] - viewProjectionMatrix_.m[2],
-	//	viewProjectionMatrix_.m[15] - viewProjectionMatrix_.m[14]); // Top plane (negative z)
+	// Far plane (w - z)
+	frustumPlanes_[5] = Vector4(
+		viewProjectionMatrix_.m[12] - viewProjectionMatrix_.m[8],
+		viewProjectionMatrix_.m[13] - viewProjectionMatrix_.m[9],
+		viewProjectionMatrix_.m[14] - viewProjectionMatrix_.m[10],
+		viewProjectionMatrix_.m[15] - viewProjectionMatrix_.m[11]);
 
-	//for (int frustumPlaneIndex = 0; frustumPlaneIndex < 6; ++frustumPlaneIndex)
-	//{
-	//	Vector4& frustumPlane = frustumPlanes_[frustumPlaneIndex];
-	//	float length = GoknarMath::Sqrt(frustumPlane.x * frustumPlane.x + frustumPlane.y * frustumPlane.y + frustumPlane.z * frustumPlane.z);
-	//	frustumPlane.x /= length;
-	//	frustumPlane.y /= length;
-	//	frustumPlane.z /= length;
-	//	frustumPlane.w /= length;
-	//}
+	for (int i = 0; i < 6; ++i)
+	{
+		Vector4& plane = frustumPlanes_[i];
+		float length = GoknarMath::Sqrt(plane.x * plane.x + plane.y * plane.y + plane.z * plane.z);
+		plane.x /= length;
+		plane.y /= length;
+		plane.z /= length;
+		plane.w /= length;
+	}
 }
 
 bool Camera::IsAABBVisible(const Box& aabb, const Matrix& worldTransformationMatrix) const
 {
-	//Vector3 localMin(aabb.GetMinX(), aabb.GetMinY(), aabb.GetMinZ());
-	//Vector3 localMax(aabb.GetMaxX(), aabb.GetMaxY(), aabb.GetMaxZ());
+	Vector3 localMin = aabb.GetMin();
+	Vector3 localMax = aabb.GetMax();
 
-	//Vector3 worldMin = Vector4(localMin, 1.f) * worldTransformationMatrix;
-	//Vector3 worldMax = Vector4(localMax, 1.f) * worldTransformationMatrix;
+	Vector3 localCorners[8] =
+	{
+		Vector3(localMin.x, localMin.y, localMin.z),
+		Vector3(localMin.x, localMin.y, localMax.z),
+		Vector3(localMin.x, localMax.y, localMin.z),
+		Vector3(localMin.x, localMax.y, localMax.z),
+		Vector3(localMax.x, localMin.y, localMin.z),
+		Vector3(localMax.x, localMin.y, localMax.z),
+		Vector3(localMax.x, localMax.y, localMin.z),
+		Vector3(localMax.x, localMax.y, localMax.z)
+	};
 
-	//Vector3 localCorners[8] =
-	//{
-	//	Vector3(localMin.x, localMin.y, localMin.z),
-	//	Vector3(localMin.x, localMin.y, localMax.z),
-	//	Vector3(localMin.x, localMax.y, localMin.z),
-	//	Vector3(localMin.x, localMax.y, localMax.z),
-	//	Vector3(localMax.x, localMin.y, localMin.z),
-	//	Vector3(localMax.x, localMin.y, localMax.z),
-	//	Vector3(localMax.x, localMax.y, localMin.z),
-	//	Vector3(localMax.x, localMax.y, localMax.z)
-	//};
+	Vector3 worldCorners[8];
+	for (int i = 0; i < 8; ++i)
+	{
+		Vector4 worldPos = worldTransformationMatrix * Vector4(localCorners[i], 1.f);
+		worldCorners[i] = Vector3(worldPos.x, worldPos.y, worldPos.z);
+	}
 
-	//for (int i = 1; i < 8; ++i)
-	//{
-	//	Vector3 transformedCorner = Vector4(localCorners[i], 0.f) * worldTransformationMatrix;
-	//	worldMin = Vector3::Min(worldMin, transformedCorner);
-	//	worldMax = Vector3::Max(worldMax, transformedCorner);
-	//}
+	for (int p = 0; p < 6; ++p)
+	{
+		const Vector4& plane = frustumPlanes_[p];
 
-	//Vector3 worldCorners[8] =
-	//{
-	//	Vector3(worldMin.x, worldMin.y, worldMin.z),
-	//	Vector3(worldMin.x, worldMin.y, worldMax.z),
-	//	Vector3(worldMin.x, worldMax.y, worldMin.z),
-	//	Vector3(worldMin.x, worldMax.y, worldMax.z),
-	//	Vector3(worldMax.x, worldMin.y, worldMin.z),
-	//	Vector3(worldMax.x, worldMin.y, worldMax.z),
-	//	Vector3(worldMax.x, worldMax.y, worldMin.z),
-	//	Vector3(worldMax.x, worldMax.y, worldMax.z)
-	//};
+		int cornersOutside = 0;
+		for (int i = 0; i < 8; ++i)
+		{
+			float distance = 
+				plane.x * worldCorners[i].x +
+				plane.y * worldCorners[i].y +
+				plane.z * worldCorners[i].z +
+				plane.w;
 
-	//for (int frustumPlaneIndex = 0; frustumPlaneIndex < 6; ++frustumPlaneIndex)
-	//{
-	//	const Vector4& plane = frustumPlanes_[frustumPlaneIndex];
-	//	bool allNegative = true;
-	//	for (const Vector3& corner : worldCorners)
-	//	{
-	//		float distance = plane.x * corner.x + plane.y * corner.y + plane.z * corner.z + plane.w;
-	//		if (distance > 0)
-	//		{
-	//			allNegative = false;
-	//			break;
-	//		}
-	//	}
+			if (distance < 0.f)
+			{
+				cornersOutside++;
+			}
+		}
 
-	//	if (allNegative)
-	//	{
-	//		return false;
-	//	}
-	//}
+		if (cornersOutside == 8)
+		{
+			return false;
+		}
+	}
+
 	return true;
 }
-
 
 Vector2i Camera::GetScreenPositionOfWorldPosition(const Vector3& worldPosition)
 {

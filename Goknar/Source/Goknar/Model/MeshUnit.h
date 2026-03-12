@@ -185,7 +185,7 @@ protected:
 	bool isInitialized_;
 
 private:
-	Box aabb_{ Box(Vector3(MAX_FLOAT, MAX_FLOAT, MAX_FLOAT), Vector3(MIN_FLOAT, MIN_FLOAT, MIN_FLOAT)) };
+	Box aabb_{ Box(Vector3(MAX_FLOAT, MAX_FLOAT, MAX_FLOAT), Vector3(-MAX_FLOAT, -MAX_FLOAT, -MAX_FLOAT)) };
 
 	VertexArray* vertices_;
 	FaceArray* faces_;

@@ -22,14 +22,14 @@ const float MAX_FLOAT = FLT_MAX;
 const int MAX_INT = INT_MAX;
 const unsigned int MAX_UINT = UINT_MAX;
 
-const float MIN_FLOAT = FLT_MIN;
+const float MIN_FLOAT = -MAX_FLOAT;
 const int MIN_INT = INT_MIN;
 #else
 const float MAX_FLOAT = std::numeric_limits<float>::max();
 const int MAX_INT = std::numeric_limits<int>::max();
 const unsigned int MAX_UINT = std::numeric_limits<unsigned int>::max();
 
-const float MIN_FLOAT = std::numeric_limits<float>::min();
+const float MIN_FLOAT = -MAX_FLOAT;
 const int MIN_INT = std::numeric_limits<int>::min();
 #endif // GOKNAR_PLATFORM_WINDOWS
 
