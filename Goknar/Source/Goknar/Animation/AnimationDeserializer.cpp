@@ -47,8 +47,16 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
         return false;
     }
 
-    tinyxml2::XMLElement* root = doc.FirstChildElement("AnimationGraph");
+    // Look for the generic "FileType" root element
+    tinyxml2::XMLElement* root = doc.FirstChildElement("FileType");
     if (!root)
+    {
+        return false;
+    }
+
+    // Verify that the FileType attribute is "AnimationGraph"
+    const char* fileTypeAttr = root->Attribute("FileType");
+    if (!fileTypeAttr || std::string(fileTypeAttr) != "AnimationGraph")
     {
         return false;
     }

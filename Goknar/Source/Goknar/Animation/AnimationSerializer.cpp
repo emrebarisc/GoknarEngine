@@ -16,7 +16,10 @@ bool AnimationSerializer::Serialize(const AnimationGraph* graph, const std::stri
     }
 
     tinyxml2::XMLDocument doc;
-    tinyxml2::XMLElement* root = doc.NewElement("AnimationGraph");
+    // Create the root element with the name "FileType"
+    tinyxml2::XMLElement* root = doc.NewElement("FileType");
+    // Set the requested attribute
+    root->SetAttribute("FileType", "AnimationGraph");
     doc.InsertEndChild(root);
 
     tinyxml2::XMLElement* variablesEl = doc.NewElement("Variables");
