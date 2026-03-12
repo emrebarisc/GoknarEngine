@@ -6,7 +6,6 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Contents/Image.h"
 #include "Goknar/Renderer/Renderer.h"
-#include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderBuilderNew.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Managers/ResourceManager.h"

@@ -19,7 +19,6 @@
 #include "Physics/PhysicsWorld.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
-#include "Renderer/ShaderBuilder.h"
 #include "Renderer/ShaderBuilderNew.h"
 #include "UI/HUD.h"
 
@@ -78,7 +77,6 @@ Engine::~Engine()
 
 	// Delete singletons
 	delete ObjectIDManager::GetInstance();
-	delete ShaderBuilder::GetInstance();
 	delete ShaderBuilderNew::GetInstance();
 	delete DynamicObjectFactory::GetInstance();
 
@@ -105,12 +103,6 @@ void Engine::PreInit() const
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Application Initialization: {} s.", elapsedTime);
-	lastFrameTimePoint = currentTimePoint;
-
-	ShaderBuilder::GetInstance()->Init();
-	currentTimePoint = std::chrono::steady_clock::now();
-	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Shader Builder Initialization: {} s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	resourceManager_->PreInit();

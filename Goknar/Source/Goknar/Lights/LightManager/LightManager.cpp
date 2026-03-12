@@ -11,7 +11,6 @@
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Renderer/Shader.h"
-#include "Goknar/Renderer/ShaderBuilder.h"
 
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"

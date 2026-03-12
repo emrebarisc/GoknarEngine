@@ -10,7 +10,6 @@
 #include "Goknar/Renderer/Framebuffer.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Shader.h"
-#include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"
 

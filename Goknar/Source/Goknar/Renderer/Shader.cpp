@@ -2,9 +2,8 @@
 
 #include "Shader.h"
 
-#include "ShaderBuilder.h"
-
 #include "Goknar/Application.h"
+#include "Goknar/GoknarAssert.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Camera.h"

@@ -6,7 +6,6 @@
 #include "Math/Matrix.h"
 
 #include "Goknar/Managers/ObjectIDManager.h"
-#include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 
 class GOKNAR_API SpotLight : public Light

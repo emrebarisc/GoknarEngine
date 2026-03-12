@@ -11,7 +11,6 @@
 
 #include "Managers/CameraManager.h"
 #include "IO/IOManager.h"
-#include "Renderer/ShaderBuilder.h"
 
 MeshUnit::MeshUnit() :
 	material_(nullptr), 
