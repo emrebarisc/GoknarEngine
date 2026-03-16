@@ -200,6 +200,11 @@ protected:
 	virtual void UpdateWorldTransformationMatrix();
 	virtual void UpdateChildrenTransformations();
 
+	bool GetIsPendingDestroy() const
+	{
+		return isPendingDestroy_;
+	}
+
 	Matrix worldTransformationMatrix_{ Matrix::IdentityMatrix };
 	Matrix worldTransformationMatrixWithoutScaling_{ Matrix::IdentityMatrix };
 
