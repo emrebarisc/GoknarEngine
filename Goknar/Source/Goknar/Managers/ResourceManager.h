@@ -19,7 +19,9 @@ enum class GOKNAR_API ResourceType : unsigned char
 	None = 0,
 	Image,
 	Model,
-	Audio
+	Audio,
+	CPP,
+	Header
 };
 
 class GOKNAR_API ResourceManagerUtils

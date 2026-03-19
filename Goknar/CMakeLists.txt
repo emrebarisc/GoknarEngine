@@ -138,7 +138,7 @@ target_include_directories(${APP_NAME} PUBLIC
 )
 
 
-target_compile_definitions(${APP_NAME} PUBLIC "CONTENT_DIR=\"Content/\"")
+target_compile_definitions(${APP_NAME} PUBLIC "PROJECT_DIR=\"./\"")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
 	file(COPY "EngineContent" DESTINATION ${CMAKE_BINARY_DIR}/)

@@ -23,7 +23,7 @@ Texture::Texture()
 
 Texture::Texture(std::string imagePath) : Texture()
 {
-	imagePath_ = CONTENT_DIR + imagePath;
+	imagePath_ = ContentDir + imagePath;
 }
 
 Texture::Texture(Image* image) :

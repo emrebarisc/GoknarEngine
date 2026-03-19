@@ -221,6 +221,14 @@ ResourceType ResourceManagerUtils::GetResourceType(const std::string& path)
 	{
 		return ResourceType::Audio;
 	}
+	else if (extension == "h")
+	{
+		return ResourceType::Header;
+	}
+	else if (extension == "cpp")
+	{
+		return ResourceType::CPP;
+	}
 	return ResourceType::None;
 }
 

@@ -1,15 +1,15 @@
 #include "Core.h"
 
-#ifdef CONTENT_DIR
-const std::string ContentDir = CONTENT_DIR;
+#ifdef PROJECT_DIR
+std::string ProjectDir = PROJECT_DIR;
 #else
-const std::string ContentDir = "";
+std::string ProjectDir = "";
 #endif
+
+std::string ContentDir = "";
 
 #if defined(GOKNAR_BUILD_DEBUG)
     #ifdef ENGINE_CONTENT_DIR
     const std::string EngineContentDir = ENGINE_CONTENT_DIR;
-    #else
-    const std::string EngineContentDir = "";
     #endif
 #endif

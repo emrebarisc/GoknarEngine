@@ -4,6 +4,7 @@
 
 #include "Camera.h"
 #include "Engine.h"
+#include "GoknarAssert.h"
 #include "Managers/CameraManager.h"
 #include "Renderer/Framebuffer.h"
 #include "Renderer/RenderBuffer.h"
@@ -53,6 +54,8 @@ void RenderTarget::Init()
 
 void RenderTarget::SetFrameSize(const Vector2& frameSize)
 {
+	GOKNAR_ASSERT(0 < frameSize.x || 0 < frameSize.y);
+
 	if ((frameSize_ - frameSize).Length() < EPSILON)
 	{
 		return;

@@ -272,6 +272,7 @@ private:
 
 	unsigned char removeStaticDataFromMemoryAfterTransferingToGPU_ : 1;
 	unsigned char drawOnWindow_ : 1;
+	unsigned char countDrawCallsInner_ : 1;
 };
 
 #endif

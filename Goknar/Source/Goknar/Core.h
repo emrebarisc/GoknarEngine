@@ -11,17 +11,12 @@
 #if defined(GOKNAR_BUILD_DEBUG)
 	#if defined(ENGINE_CONTENT_DIR)
 		extern const std::string EngineContentDir;
-	#else
-		extern const std::string EngineContentDir;
 #endif
 	
 #endif
 
-#ifdef CONTENT_DIR
-	extern const std::string ContentDir;
-#else
-	extern const std::string ContentDir;
-#endif
+extern std::string ProjectDir;
+extern std::string ContentDir;
 
 #ifdef GOKNAR_PLATFORM_WINDOWS
 	#define DEBUG_BREAK() __debugbreak()

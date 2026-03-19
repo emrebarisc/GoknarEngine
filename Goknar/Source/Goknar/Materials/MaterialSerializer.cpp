@@ -6,7 +6,9 @@ using namespace tinyxml2;
 
 void MaterialSerializer::Serialize(const std::string& filepath, const MaterialInitializationData* data)
 {
-    XMLDocument doc;
+    std::string contentDir = ContentDir + filepath;
+
+    tinyxml2::XMLDocument doc;
     
     // Create the root element with the generic name "FileType"
     XMLElement* root = doc.NewElement("FileType");
@@ -38,13 +40,18 @@ void MaterialSerializer::Serialize(const std::string& filepath, const MaterialIn
     AddTextElement("VertexShaderUniforms", data->vertexShaderUniforms);
     AddTextElement("FragmentShaderUniforms", data->fragmentShaderUniforms);
 
-    doc.SaveFile(filepath.c_str());
+    doc.SaveFile(contentDir.c_str());
 }
 
 void MaterialSerializer::Deserialize(const std::string& filepath, Material* owner, MaterialInitializationData* outData)
 {
-    XMLDocument doc;
-    if (doc.LoadFile(filepath.c_str()) != XML_SUCCESS) return;
+    std::string contentDir = ContentDir + filepath;
+
+    tinyxml2::XMLDocument doc;
+    if (doc.LoadFile(contentDir.c_str()) != XML_SUCCESS)
+    {
+        return;
+    }
 
     // Find the generic "FileType" element
     XMLElement* root = doc.FirstChildElement("FileType");
@@ -73,4 +80,32 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     outData->fragmentShaderFunctions = GetTextContent("FragmentShaderFunctions");
     outData->vertexShaderUniforms = GetTextContent("VertexShaderUniforms");
     outData->fragmentShaderUniforms = GetTextContent("FragmentShaderUniforms");
+}
+
+void MaterialSerializer::SerializeShaderFunction(tinyxml2::XMLDocument& doc, XMLElement* parent, const std::string& name, const ShaderFunctionAndResult& func)
+{
+    XMLElement* funcElement = doc.NewElement(name.c_str());
+
+    XMLElement* calc = doc.NewElement("Calculation");
+    calc->SetText(func.calculation.c_str());
+    funcElement->InsertEndChild(calc);
+
+    XMLElement* res = doc.NewElement("Result");
+    res->SetText(func.result.c_str());
+    funcElement->InsertEndChild(res);
+
+    parent->InsertEndChild(funcElement);
+}
+
+void MaterialSerializer::DeserializeShaderFunction(tinyxml2::XMLElement* parent, const std::string& name, ShaderFunctionAndResult& outFunc)
+{
+    XMLElement* funcElement = parent->FirstChildElement(name.c_str());
+    if (funcElement)
+    {
+        XMLElement* calc = funcElement->FirstChildElement("Calculation");
+        if (calc && calc->GetText()) outFunc.calculation = calc->GetText();
+
+        XMLElement* res = funcElement->FirstChildElement("Result");
+        if (res && res->GetText()) outFunc.result = res->GetText();
+    }
 }

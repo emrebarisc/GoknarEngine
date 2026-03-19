@@ -357,6 +357,11 @@ public:
         return nullptr;
     }
 
+    const NameToSkeletalAnimationMap& GetAnimationsMap() const
+    {
+        return nameToSkeletalAnimationMap_;
+    }
+
 private:
     void SetupTransforms(Bone* bone, const Matrix& parentTransform, std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap);
 
