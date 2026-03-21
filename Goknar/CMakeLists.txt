@@ -100,9 +100,6 @@ if(UNIX)
 endif()
 ##########################################################################################
 
-SET(ASSIMP_NO_EXPORT ON CACHE BOOL "Disable All Exporters")
-add_subdirectory(thirdparty/assimp/)
-
 SET(BUILD_BULLET2_DEMOS OFF CACHE BOOL "Disable Bullet3 BUILD_BULLET2_DEMOS")
 SET(BUILD_BULLET_ROBOTICS_EXTRA OFF CACHE BOOL "Disable Bullet3 BUILD_BULLET_ROBOTICS_EXTRA")
 SET(BUILD_BULLET_ROBOTICS_GUI_EXTRA OFF CACHE BOOL "Disable Bullet3 BUILD_BULLET_ROBOTICS_GUI_EXTRA")
@@ -131,7 +128,6 @@ target_link_libraries(${APP_NAME} PUBLIC GLAD)
 target_link_libraries(${APP_NAME} PUBLIC glfw)
 target_link_libraries(${APP_NAME} PUBLIC TINYXML)
 target_link_libraries(${APP_NAME} PUBLIC spdlog)
-target_link_libraries(${APP_NAME} PUBLIC assimp)
 target_link_libraries(${APP_NAME} PUBLIC BulletDynamics BulletCollision LinearMath)
 
 if(UNIX)
@@ -147,7 +143,6 @@ target_include_directories(${APP_NAME} PUBLIC
 	thirdparty/GLFW/include
 	thirdparty/spdlog/include
 	thirdparty/TinyXML/include
-	thirdparty/assimp/include
 	thirdparty/bullet3/src
 )
 
