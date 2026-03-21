@@ -50,22 +50,21 @@ public:
 	}
 
 private:
-	// --- Argument Formatting Helpers ---
-
-	// Default case: Pass standard types (int, float, char*) directly through
-	template <typename T>
-	inline static T&& FormatArg(T&& arg)
+	template<typename T>
+	static auto FormatArg(T&& arg)
 	{
-		return std::forward<T>(arg);
+		if constexpr (std::is_same_v<std::decay_t<T>, std::string>) {
+			return arg.c_str();
+		}
+		else {
+			return std::forward<T>(arg);
+		}
 	}
 
-	// Specialized case: Automatically extract c_str() from std::string
 	inline static const char* FormatArg(const std::string& arg)
 	{
 		return arg.c_str();
 	}
-
-	// -----------------------------------
 
 	static void OutputLogImpl(const std::string& name, LogType type, const std::string& message);
 
@@ -74,8 +73,6 @@ private:
 	{
 		char stackBuffer[1024];
 
-		// Unpack args through FormatArg. 
-		// If arg is a string, FormatArg converts it. Otherwise, it does nothing.
 		int result = std::snprintf(stackBuffer, sizeof(stackBuffer), format, FormatArg(std::forward<Args>(args))...);
 
 		if (result >= 0 && result < sizeof(stackBuffer))

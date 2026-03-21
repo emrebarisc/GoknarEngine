@@ -6,7 +6,7 @@
 
 #include "Goknar/Math/GoknarMath.h"
 
-class Vector3;
+struct Vector3;
 class Quaternion;
 
 struct Folder;

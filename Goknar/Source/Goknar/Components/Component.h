@@ -22,7 +22,7 @@ public:
 	virtual void Init();
 	virtual void PostInit();
 	virtual void BeginGame() {}
-	virtual void TickComponent(float deltaTime) {}
+	virtual void TickComponent(float) {}
 
 	void SetPivotPoint(const Vector3& pivotPoint);
 	inline const Vector3& GetPivotPoint() const

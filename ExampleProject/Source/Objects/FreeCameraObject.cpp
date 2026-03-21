@@ -27,7 +27,7 @@ void FreeCameraObject::BeginGame()
 	SetWorldRotation(Quaternion::FromEulerDegrees({ 5.f, 20.f, 25.f }));
 }
 
-void FreeCameraObject::Tick(float deltaTime)
+void FreeCameraObject::Tick(float)
 {
 
 }

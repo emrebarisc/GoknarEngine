@@ -5,7 +5,14 @@
 #include "Math/GoknarMath.h"
 #include "Physics/PhysicsTypes.h"
 
-#include "btBulletDynamicsCommon.h"
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4127)
+#endif
+#include <btBulletDynamicsCommon.h>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 class btGhostObject;
 class btGhostPairCallback;

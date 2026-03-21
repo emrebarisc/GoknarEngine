@@ -9,7 +9,7 @@
 #include "Goknar/Animation/AnimationState.h"
 #include "Goknar/Animation/AnimationTypes.h"
 
-struct SkeletalMeshInstance;
+class SkeletalMeshInstance;
 
 struct GOKNAR_API AnimationGraph
 {

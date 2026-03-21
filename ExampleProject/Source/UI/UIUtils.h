@@ -23,7 +23,7 @@ namespace UIUtils
 		return {(float)value.x, (float)value.y};
 	}
 
-	static bool IsCursorInCurrentWindow()
+	static inline bool IsCursorInCurrentWindow()
 	{
 		ImVec2 windowPos = ImGui::GetWindowPos();
 		ImVec2 windowSize = ImGui::GetWindowSize();

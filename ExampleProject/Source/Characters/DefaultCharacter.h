@@ -6,8 +6,8 @@
 
 #include "Goknar/Math/InterpolatingValue.h"
 
-class AnimationState;
-class AnimationGraph;
+struct AnimationState;
+struct AnimationGraph;
 class CameraComponent;
 class SkeletalMesh;
 

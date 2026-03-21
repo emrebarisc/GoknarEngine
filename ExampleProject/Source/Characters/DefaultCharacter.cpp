@@ -110,7 +110,6 @@ void DefaultCharacter::Tick(float deltaTime)
 	BaseCharacter::Tick(deltaTime);
 
 	const Vector2& cursorMovement = ((DefaultCharacterController*)controller_)->GetCursorDeltaMoveLastFrame();
-	float multiplier = mouseSensitivity_ * deltaTime;
 
 	Vector3 forwardVector = thirdPersonCameraComponent_->GetRelativeForwardVector();
 	Vector3 leftVector = thirdPersonCameraComponent_->GetRelativeLeftVector();

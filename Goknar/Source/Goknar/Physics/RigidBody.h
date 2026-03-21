@@ -9,7 +9,7 @@
 
 #include "LinearMath/btVector3.h"
 
-class btDefaultMotionState;
+struct btDefaultMotionState;
 class btRigidBody;
 
 struct GOKNAR_API RigidBodyInitializationData : public PhysicsObjectInitializationData

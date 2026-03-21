@@ -31,7 +31,7 @@ public:
 
 	virtual void SetIsActive(bool isActive) override;
 
-	virtual void PhysicsTick(float deltaTime) {}
+	virtual void PhysicsTick(float) {}
 
 	void SetupPhysicsObjectInitializationData();
 

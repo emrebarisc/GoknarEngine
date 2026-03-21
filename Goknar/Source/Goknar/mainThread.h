@@ -24,7 +24,7 @@
 #include "Engine.h"
 #include "Log.h"
 
-int main(int argc, char **argv)
+int main(int, char**)
 {
 #ifdef GOKNAR_PLATFORM_WINDOWS
 	int flag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);

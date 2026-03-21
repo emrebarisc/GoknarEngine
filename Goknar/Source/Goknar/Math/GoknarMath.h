@@ -210,7 +210,7 @@ struct GOKNAR_API Vector2
 
 	inline float Length() const
 	{
-		return sqrt(std::pow(x, 2) + std::pow(y, 2));
+		return sqrtf(std::powf(x, 2) + std::powf(y, 2));
 	}
 
 	static inline Vector2 Cross(const Vector2& v1, const Vector2& v2)
@@ -442,12 +442,12 @@ struct GOKNAR_API Vector3
 
 	inline float SquareLength() const
 	{
-		return std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2);
+		return std::powf(x, 2) + std::powf(y, 2) + std::powf(z, 2);
 	}
 
 	inline float Length() const
 	{
-		return sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2));
+		return sqrt(std::powf(x, 2) + std::powf(y, 2) + std::powf(z, 2));
 	}
 
 	static inline float Distance(const Vector3& vec1, const Vector3& vec2)
@@ -802,7 +802,7 @@ struct GOKNAR_API Vector4
 
 	inline float Length() const
 	{
-		return sqrt(std::pow(x, 2) + std::pow(y, 2) + std::pow(z, 2) + std::pow(w, 2));
+		return sqrtf(std::powf(x, 2) + std::powf(y, 2) + std::powf(z, 2) + std::powf(w, 2));
 	}
 
 	inline void Normalize()

@@ -8,7 +8,7 @@
 #include "Delegates/Delegate.h"
 #include "Model/SkeletalMesh.h"
 
-class SkeletalAnimation;
+struct SkeletalAnimation;
 class SocketComponent;
 
 struct GOKNAR_API PlayLoopData

@@ -85,7 +85,7 @@ void FreeCameraController::SetIsActive(bool isActive)
 
 void FreeCameraController::CursorMovement(double x, double y)
 {
-	Vector2 currentCursorPosition(x, y);
+	Vector2 currentCursorPosition((float)x, (float)y);
 
 	if (isRotatingTheCamera_)
 	{
@@ -107,9 +107,9 @@ void FreeCameraController::CursorMovement(double x, double y)
 	}
 }
 
-void FreeCameraController::ScrollListener(double x, double y)
+void FreeCameraController::ScrollListener(double, double y)
 {
-	MoveForward(y * movementSpeed_);
+	MoveForward((float)y * movementSpeed_);
 }
 
 void FreeCameraController::Yaw(float value)
@@ -128,7 +128,7 @@ void FreeCameraController::OnMouseRightClickPressed()
 {
 	double x, y;
 	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetMainWindow(), x, y);
-	previousCursorPositionForRotating_ = Vector2(x, y);
+	previousCursorPositionForRotating_ = Vector2((float)x, (float)y);
 	isRotatingTheCamera_ = true;
 }
 
@@ -136,7 +136,7 @@ void FreeCameraController::OnMouseMiddleClickPressed()
 {
 	double x, y;
 	engine->GetInputManager()->GetCursorPosition(engine->GetWindowManager()->GetMainWindow(), x, y);
-	previousCursorPositionFor2DMovement_ = Vector2(x, y);
+	previousCursorPositionFor2DMovement_ = Vector2((float)x, (float)y);
 	isMovingCameraIn2D_ = true;
 }
 

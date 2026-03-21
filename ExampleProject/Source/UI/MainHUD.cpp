@@ -195,7 +195,7 @@ void MainHUD::DrawMainHUD()
 	}
 }
 
-void MainHUD::OnKeyboardEvent(int key, int scanCode, int action, int mod)
+void MainHUD::OnKeyboardEvent(int key, int scanCode, int action, int)
 {
 	ImGuiIO& io = ImGui::GetIO();
 	bool is_down = (action == GLFW_PRESS || action == GLFW_REPEAT);
@@ -238,7 +238,7 @@ void MainHUD::OnCharPressed(unsigned int codePoint)
 void MainHUD::OnWindowSizeChanged(int width, int height)
 {
 	context_->windowSize = Vector2i(width, height);
-	Vector2 buttonSizeVector = context_->windowSize * 0.05f;
+	Vector2i buttonSizeVector = context_->windowSize * 0.05f;
 	context_->buttonSize = Vector2i(buttonSizeVector.x, buttonSizeVector.y);
 
 	ImGuiIO& io = ImGui::GetIO();
