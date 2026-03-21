@@ -66,7 +66,6 @@ struct UnifiedVertexHash {
 	}
 };
 
-// Helper to convert ufbx 3x4 affine matrix to Goknar 4x4 Matrix
 Matrix ConvertMatrix(const ufbx_matrix& m)
 {
 	return Matrix(
@@ -242,7 +241,6 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node)
 		{
 			Bone* childBone = skeletalMesh->GetBone(skeletalMesh->GetBoneId(childNodeName));
             
-            // Convert the local transform of the node
 			ufbx_matrix localMat = ufbx_transform_to_matrix(&childNode->local_transform);
 			childBone->transformation = ConvertMatrix(localMat);
 			
@@ -283,10 +281,9 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 			staticMesh->SetName(ufbxMesh->name.data);
 
-			// --- 1. GATHER UNIQUE VERTICES (Don't add to engine yet!) ---
 			std::unordered_map<UnifiedVertex, uint32_t, UnifiedVertexHash> uniqueVertices;
 			std::vector<uint32_t> unifiedIndices(ufbxMesh->num_indices);
-			std::vector<VertexData> tempVertices; // Store temporarily
+			std::vector<VertexData> tempVertices;
 			uint32_t currentVertexId = 0;
 
 			for (size_t i = 0; i < ufbxMesh->num_indices; ++i)
@@ -394,18 +391,76 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 					skeletalMesh->GetArmature()->root->transformation = rootTransformation;
 					SetupArmature(skeletalMesh, skeletalMesh->GetArmature()->root, rootBoneNode);
 
-					// [Your scene->anim_stacks loop goes here]
+					for (size_t animIndex = 0; animIndex < scene->anim_stacks.count; ++animIndex)
+					{
+						ufbx_anim_stack* animStack = scene->anim_stacks.data[animIndex];
+						SkeletalAnimation* skeletalAnimation = new SkeletalAnimation();
+
+						skeletalAnimation->name = animStack->name.data;
+
+						double durationInSeconds = animStack->time_end - animStack->time_begin;
+						double fps = 30.0;
+
+						int keyframeCount = (int)(durationInSeconds * fps);
+						if (keyframeCount <= 0) keyframeCount = 1;
+
+						skeletalAnimation->duration = keyframeCount;
+						skeletalAnimation->ticksPerSecond = fps;
+						skeletalAnimation->maxKeyframeCount = keyframeCount;
+
+						int channelCount = skeletalMesh->GetBoneNameToIdMap()->size();
+						skeletalAnimation->animationKeyframeCount = channelCount;
+						skeletalAnimation->animationKeyframes = new SkeletalAnimationKeyframe * [channelCount];
+
+						int channelIndex = 0;
+						for (const auto& bonePair : *(skeletalMesh->GetBoneNameToIdMap()))
+						{
+							std::string boneName = bonePair.first;
+							ufbx_node* animNode = ufbx_find_node(scene, boneName.c_str());
+							if (!animNode) continue;
+
+							SkeletalAnimationKeyframe* keyframe = new SkeletalAnimationKeyframe();
+							keyframe->affectedBoneName = boneName;
+
+							keyframe->positionKeySize = keyframeCount;
+							keyframe->positionKeys = new AnimationVectorKey[keyframeCount];
+							keyframe->rotationKeySize = keyframeCount;
+							keyframe->rotationKeys = new AnimationQuaternionKey[keyframeCount];
+							keyframe->scalingKeySize = keyframeCount;
+							keyframe->scalingKeys = new AnimationVectorKey[keyframeCount];
+
+							for (int k = 0; k < keyframeCount; ++k)
+							{
+								double timeInSeconds = animStack->time_begin + (double)k / fps;
+								ufbx_transform transform = ufbx_evaluate_transform(animStack->anim, animNode, timeInSeconds);
+
+								double timeInTicks = (double)k;
+
+								keyframe->positionKeys[k].time = timeInTicks;
+								keyframe->positionKeys[k].value = Vector3(transform.translation.x, transform.translation.y, transform.translation.z);
+
+								keyframe->rotationKeys[k].time = timeInTicks;
+								keyframe->rotationKeys[k].value = Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+
+								keyframe->scalingKeys[k].time = timeInTicks;
+								keyframe->scalingKeys[k].value = Vector3(transform.scale.x, transform.scale.y, transform.scale.z);
+							}
+
+							skeletalAnimation->AddSkeletalAnimationKeyframe(channelIndex, keyframe);
+							channelIndex++;
+						}
+
+						skeletalAnimation->animationKeyframeCount = channelIndex;
+						skeletalMesh->AddSkeletalAnimation(skeletalAnimation);
+					}
 				}
 			}
 
-			// --- 3. APPLY VERTEX DATA ---
-			// Now that the bones are fully allocated, safely push to the engine
 			for (const VertexData& vd : tempVertices)
 			{
 				staticMesh->AddVertexData(vd);
 			}
 
-			// --- 4. TRIANGULATE FACES ---
 			for (size_t faceIndex = 0; faceIndex < ufbxMesh->faces.count; ++faceIndex)
 			{
 				ufbx_face face = ufbxMesh->faces.data[faceIndex];
