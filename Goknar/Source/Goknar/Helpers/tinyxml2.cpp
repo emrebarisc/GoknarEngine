@@ -23,7 +23,7 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
-#if defined(GOKNAR_PLATFORM_UNIX)
+#if GOKNAR_PLATFORM_UNIX
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough="
 #endif
 
