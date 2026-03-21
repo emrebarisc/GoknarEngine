@@ -2,12 +2,16 @@
 #define __LOG_H__
 
 #include "Core.h"
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <chrono>
+#include <iomanip>
+#include <fstream>
+#include <mutex>
+#include <cstdio>
 
-#include <memory>
-
-#include "spdlog/spdlog.h"
-
-enum class GOKNAR_API LogType : unsigned char 
+enum class GOKNAR_API LogType : unsigned char
 {
 	None = 0,
 	Trace,
@@ -21,76 +25,101 @@ class GOKNAR_API Log
 {
 public:
 	static void Init();
+	static void Shutdown();
 
-	inline static std::shared_ptr<spdlog::logger>& GetCoreLogger()
+	template<typename... Arguments>
+	inline static void LogCore(LogType type, const char* format, Arguments&&... args)
 	{
-		return coreLogger_;
+		OutputLog("ENGINE", type, format, std::forward<Arguments>(args)...);
 	}
 
-	inline static std::shared_ptr<spdlog::logger>& GetClientLogger()
+	inline static void LogCore(LogType type, const std::string& message)
 	{
-		return clientLogger_;
+		OutputLogImpl("ENGINE", type, message);
 	}
 
 	template<typename... Arguments>
-	inline static void LogCore(LogType type, const Arguments&... args)
+	inline static void LogClient(LogType type, const char* format, Arguments&&... args)
 	{
-		coreLogger_->log(LogTypeToSpdlogType(type), args...);
+		OutputLog("APPLICATION", type, format, std::forward<Arguments>(args)...);
 	}
 
-	template<typename... Arguments>
-	inline static void LogClient(LogType type, const Arguments&... args)
+	inline static void LogClient(LogType type, const std::string& message)
 	{
-		clientLogger_->log(LogTypeToSpdlogType(type), args...);
+		OutputLogImpl("APPLICATION", type, message);
 	}
 
 private:
-	static spdlog::level::level_enum LogTypeToSpdlogType(LogType type)
+	// --- Argument Formatting Helpers ---
+
+	// Default case: Pass standard types (int, float, char*) directly through
+	template <typename T>
+	inline static T&& FormatArg(T&& arg)
 	{
-		spdlog::level::level_enum level = spdlog::level::level_enum::off;
-
-		switch (type)
-		{
-		case LogType::None:
-			break;
-		case LogType::Trace:
-			level = spdlog::level::level_enum::trace;
-			break;
-		case LogType::Info:
-			level = spdlog::level::level_enum::info;
-			break;
-		case LogType::Warn:
-			level = spdlog::level::level_enum::warn;
-			break;
-		case LogType::Error:
-			level = spdlog::level::level_enum::err;
-			break;
-		case LogType::Fatal:
-			level = spdlog::level::level_enum::critical;
-			break;
-		default:
-			break;
-		}
-
-		return level;
+		return std::forward<T>(arg);
 	}
 
-	static std::shared_ptr<spdlog::logger> coreLogger_;
-	static std::shared_ptr<spdlog::logger> clientLogger_;
+	// Specialized case: Automatically extract c_str() from std::string
+	inline static const char* FormatArg(const std::string& arg)
+	{
+		return arg.c_str();
+	}
+
+	// -----------------------------------
+
+	static void OutputLogImpl(const std::string& name, LogType type, const std::string& message);
+
+	template<typename... Args>
+	static void OutputLog(const std::string& name, LogType type, const char* format, Args&&... args)
+	{
+		char stackBuffer[1024];
+
+		// Unpack args through FormatArg. 
+		// If arg is a string, FormatArg converts it. Otherwise, it does nothing.
+		int result = std::snprintf(stackBuffer, sizeof(stackBuffer), format, FormatArg(std::forward<Args>(args))...);
+
+		if (result >= 0 && result < sizeof(stackBuffer))
+		{
+			OutputLogImpl(name, type, std::string(stackBuffer, result));
+		}
+		else if (result >= sizeof(stackBuffer))
+		{
+			size_t requiredSize = static_cast<size_t>(result) + 1;
+			std::string heapBuffer(requiredSize, '\0');
+
+			// We must format again if we had to allocate heap memory
+			std::snprintf(&heapBuffer[0], requiredSize, format, FormatArg(std::forward<Args>(args))...);
+			heapBuffer.pop_back();
+
+			OutputLogImpl(name, type, heapBuffer);
+		}
+		else
+		{
+			OutputLogImpl(name, type, "Log formatting error!");
+		}
+	}
+
+	static std::string GetTimestamp();
+	static const char* GetLevelString(LogType type);
+	static const char* GetColorCode(LogType type);
+	static const char* ResetColorCode();
+
+	static std::mutex logMutex_;
+	static std::ofstream fileSink_;
 };
 
 // Core log macros
-#define GOKNAR_CORE_TRACE(...)			::Log::LogCore(LogType::Trace, ##__VA_ARGS__)
-#define GOKNAR_CORE_INFO(...)			::Log::LogCore(LogType::Info, ##__VA_ARGS__)
-#define GOKNAR_CORE_WARN(...)			::Log::LogCore(LogType::Warn, ##__VA_ARGS__)
-#define GOKNAR_CORE_ERROR(...)			::Log::LogCore(LogType::Error, ##__VA_ARGS__)
-#define GOKNAR_CORE_FATAL(...)			::Log::LogCore(LogType::Fatal, ##__VA_ARGS__)
+#define GOKNAR_CORE_TRACE(...)			::Log::LogCore(LogType::Trace, __VA_ARGS__)
+#define GOKNAR_CORE_INFO(...)			::Log::LogCore(LogType::Info, __VA_ARGS__)
+#define GOKNAR_CORE_WARN(...)			::Log::LogCore(LogType::Warn, __VA_ARGS__)
+#define GOKNAR_CORE_ERROR(...)			::Log::LogCore(LogType::Error, __VA_ARGS__)
+#define GOKNAR_CORE_FATAL(...)			::Log::LogCore(LogType::Fatal, __VA_ARGS__)
 
 // Client log macros
-#define GOKNAR_TRACE(...)			::Log::LogClient(LogType::Trace, ##__VA_ARGS__)
-#define GOKNAR_INFO(...)			::Log::LogClient(LogType::Info, ##__VA_ARGS__)
-#define GOKNAR_WARN(...)			::Log::LogClient(LogType::Warn, ##__VA_ARGS__)
-#define GOKNAR_ERROR(...)			::Log::LogClient(LogType::Error, ##__VA_ARGS__)
-#define GOKNAR_FATAL(...)			::Log::LogClient(LogType::Fatal, ##__VA_ARGS__)
+#define GOKNAR_TRACE(...)			::Log::LogClient(LogType::Trace, __VA_ARGS__)
+#define GOKNAR_INFO(...)			::Log::LogClient(LogType::Info, __VA_ARGS__)
+#define GOKNAR_WARN(...)			::Log::LogClient(LogType::Warn, __VA_ARGS__)
+#define GOKNAR_ERROR(...)			::Log::LogClient(LogType::Error, __VA_ARGS__)
+#define GOKNAR_FATAL(...)			::Log::LogClient(LogType::Fatal, __VA_ARGS__)
 
 #endif

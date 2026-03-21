@@ -196,7 +196,7 @@ void WindowManager::SetMSAA(int MSAAValue)
 	MSAAValue_ = MSAAValue;
 	glfwWindowHint(GLFW_SAMPLES, MSAAValue);
 
-	GOKNAR_CORE_INFO("MSAA Value is set to {}", MSAAValue_);
+	GOKNAR_CORE_INFO("MSAA Value is set to %d", MSAAValue_);
 }
 
 void WindowManager::SetContextVersion(int major, int minor)

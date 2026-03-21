@@ -57,12 +57,12 @@ Game::Game() : Application()
 	}
 	else
 	{
-		GOKNAR_CORE_ERROR("Failed to load {}. Falling back to defaults.", configPath);
+		GOKNAR_CORE_ERROR("Failed to load %s. Falling back to defaults.", configPath);
 	}
 
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_WARN("Project is set up in {} seconds.", elapsedTime);
+	GOKNAR_CORE_WARN("Project is set up in %f seconds.", elapsedTime);
 
 	MaterialInitializer::Init();
 

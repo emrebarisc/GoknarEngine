@@ -55,7 +55,7 @@ void ExitOnProgramError(GEuint programId, const char* errorMessage)
 		logMessage[maxLength] = '\0';
 		glDeleteProgram(programId);
 
-		GOKNAR_CORE_ERROR("{0}", logMessage);
+		GOKNAR_CORE_ERROR("%s", logMessage);
 		GOKNAR_CORE_ASSERT(false, errorMessage);
 
 		delete[] logMessage;

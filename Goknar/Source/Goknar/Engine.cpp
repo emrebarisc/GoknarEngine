@@ -90,50 +90,50 @@ void Engine::PreInit() const
 	windowManager_->PreInit();
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Window Manager Initialization: {} s.", elapsedTime);
+	GOKNAR_CORE_INFO("Window Manager Initialization: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	inputManager_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Input Manager Initialization: {} s.", elapsedTime);
+	GOKNAR_CORE_INFO("Input Manager Initialization: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	application_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Application Initialization: {} s.", elapsedTime);
+	GOKNAR_CORE_INFO("Application Initialization: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	resourceManager_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Resource Manager Initialization: {} s.", elapsedTime);
+	GOKNAR_CORE_INFO("Resource Manager Initialization: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	cameraManager_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Camera Manager Initialization: {} s.", elapsedTime);
+	GOKNAR_CORE_INFO("Camera Manager Initialization: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	// TODO: CHECK IF NECESSARY!
 	objectManager_->Init();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Object Manager Initialization: {} s.", elapsedTime);
+	GOKNAR_CORE_INFO("Object Manager Initialization: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	physicsWorld_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Physics Initialization: {} s.", elapsedTime);
+	GOKNAR_CORE_INFO("Physics Initialization: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	renderer_->PreInit();
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_INFO("Renderer Initialization: {} s.", elapsedTime);
+	GOKNAR_CORE_INFO("Renderer Initialization: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 }
 

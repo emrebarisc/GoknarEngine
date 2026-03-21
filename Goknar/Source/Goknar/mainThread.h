@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_WARN("Setting Application: {} s.", elapsedTime);
+	GOKNAR_CORE_WARN("Setting Application: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	mainEngine->PreInit();
@@ -51,14 +51,14 @@ int main(int argc, char **argv)
 
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_WARN("Initialization: {} s.", elapsedTime);
+	GOKNAR_CORE_WARN("Initialization: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 
 	mainEngine->BeginGame();
 
 	currentTimePoint = std::chrono::steady_clock::now();
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_WARN("Begin Game Operations: {} s.", elapsedTime);
+	GOKNAR_CORE_WARN("Begin Game Operations: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
 	mainEngine->Run();
 

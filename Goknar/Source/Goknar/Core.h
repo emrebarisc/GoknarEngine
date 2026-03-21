@@ -64,7 +64,7 @@ extern std::string ContentDir;
 		case GL_INVALID_FRAMEBUFFER_OPERATION:	errorString = "INVALID_FRAMEBUFFER_OPERATION"; break;\
 		default:								errorString = "UNKNOWN";\
 		}\
-		GOKNAR_CORE_FATAL("{0}: Error Value: {1}\n", errorMessage, errorString); \
+		GOKNAR_CORE_FATAL("%s: Error Value: %s\n", errorMessage, errorString.c_str()); \
 		DEBUG_BREAK(); \
 		exit(EXIT_FAILURE); \
 	} \
