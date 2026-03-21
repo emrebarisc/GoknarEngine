@@ -46,12 +46,6 @@ public:
 protected:
 
 private:
-	void SetupAnimationGraph();
-	void SetupStandingState();
-	void SetupCrouchState();
-	void SetupStandingStrafingState();
-	void SetupCrouchStrafingState();
-
 	Weapon* weapon_{ nullptr };
 
 	SkeletalMesh* skeletalMesh_{ nullptr };
