@@ -37,7 +37,7 @@ endforeach()
 
 ######################################################################
 
-set(ENGINE_PATH ${CMAKE_BINARY_DIR}/../GoknarEngine/Goknar)
+set(ENGINE_PATH ${CMAKE_BINARY_DIR}/../../Goknar)
 
 # Setup the Executable or Library first so we can attach properties to it
 if(NOT ANDROID)
@@ -47,7 +47,6 @@ else()
     target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
 endif()
 
-# Force the executable to be placed in an 'Output' folder for ALL configurations and OS types
 set_target_properties(${APP_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Output"
     RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Output"
@@ -56,7 +55,6 @@ set_target_properties(${APP_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/Output"
 )
 
-# Set the Visual Studio Working Directory to match, so debugging via F5 works natively
 if(MSVC)
     set_target_properties(${APP_NAME} PROPERTIES 
         VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/Output"
@@ -84,7 +82,6 @@ if(WIN32 OR MSVC)
 elseif(UNIX AND NOT ANDROID)
     target_compile_definitions(${APP_NAME} PRIVATE GOKNAR_PLATFORM_UNIX)
     
-    # Safely linking UNIX system libraries
     target_link_libraries(${APP_NAME} PRIVATE dl glfw glut GLU GL)
 endif()
 
@@ -103,7 +100,6 @@ target_include_directories(${APP_NAME} PUBLIC
     ${PROJECT_SOURCE_DIR}/${SOURCE_DIR_NAME}
 )
 
-# Using target_compile_definitions instead of global add_compile_definitions is best practice
 target_compile_definitions(${APP_NAME} PUBLIC GOKNAR_BUILD_DLL GOKNAR_ENABLE_ASSERTS GLFW_INCLUDE_NONE)
 
 if(WIN32 OR MSVC)
