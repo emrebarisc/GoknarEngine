@@ -28,12 +28,12 @@ Game::Game() : Application()
 	REGISTER_CLASS(ObjectBase);
 	REGISTER_CLASS(RigidBody);
 
-	MaterialInitializer::Init();
-
 	engine->SetApplication(this);
 
+	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
+
 	ConfigManager config;
-	std::string configPath = projectPath + "Config/GameConfig.ini";
+	std::string configPath = "Config/GameConfig.ini";
 	if (config.ReadFile(configPath))
 	{
 		int width = config.GetInt("Graphics", "WindowWidth", 1920);
@@ -50,7 +50,7 @@ Game::Game() : Application()
 		engine->GetRenderer()->SetMainRenderType(mainRenderType);
 
 		std::string contentDir = config.GetString("Core", "ContentDir", "Content/");
-		ContentDir = projectPath + contentDir;
+		ContentDir = contentDir;
 
 		std::string mainScenePath = config.GetString("Core", "MainScene", "Scenes/DefaultScene.xml");
 		mainScene_->ReadSceneData(mainScenePath);
@@ -63,6 +63,8 @@ Game::Game() : Application()
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_WARN("Project is set up in {} seconds.", elapsedTime);
+
+	MaterialInitializer::Init();
 
 	lastFrameTimePoint = currentTimePoint;
 	
