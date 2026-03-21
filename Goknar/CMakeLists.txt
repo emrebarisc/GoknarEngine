@@ -66,6 +66,20 @@ else()
     target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
 endif()
 
+set_target_properties(${APP_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Output"
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Output"
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Output"
+    RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/Output"
+    RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/Output"
+)
+
+if(MSVC)
+    set_target_properties(${APP_NAME} PROPERTIES 
+        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/Output"
+    )
+endif()
+
 add_subdirectory(thirdparty/GLAD/)
 add_subdirectory(thirdparty/glfw/)
 add_subdirectory(thirdparty/spdlog/)
@@ -141,7 +155,7 @@ target_include_directories(${APP_NAME} PUBLIC
 target_compile_definitions(${APP_NAME} PUBLIC "PROJECT_DIR=\"./\"")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-	file(COPY "EngineContent" DESTINATION ${CMAKE_BINARY_DIR}/)
+	file(COPY "EngineContent" DESTINATION ${CMAKE_BINARY_DIR}/Output/)
 	target_compile_definitions(${APP_NAME} PUBLIC "ENGINE_CONTENT_DIR=\"EngineContent/\"")
 	add_compile_definitions(GOKNAR_BUILD_DEBUG GOKNAR_ENABLE_ASSERTS)
 	message("-------------------- Debug --------------------")
