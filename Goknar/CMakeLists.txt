@@ -82,7 +82,6 @@ endif()
 
 add_subdirectory(thirdparty/GLAD/)
 add_subdirectory(thirdparty/glfw/)
-add_subdirectory(thirdparty/spdlog/)
 add_subdirectory(thirdparty/TinyXML/)
 
 # Assimp
@@ -127,7 +126,6 @@ add_subdirectory(thirdparty/bullet3/)
 target_link_libraries(${APP_NAME} PUBLIC GLAD)
 target_link_libraries(${APP_NAME} PUBLIC glfw)
 target_link_libraries(${APP_NAME} PUBLIC TINYXML)
-target_link_libraries(${APP_NAME} PUBLIC spdlog)
 target_link_libraries(${APP_NAME} PUBLIC BulletDynamics BulletCollision LinearMath)
 
 if(UNIX)
@@ -141,7 +139,6 @@ target_include_directories(${APP_NAME} PUBLIC
 	thirdparty
 	thirdparty/GLAD/GLAD/include
 	thirdparty/GLFW/include
-	thirdparty/spdlog/include
 	thirdparty/TinyXML/include
 	thirdparty/bullet3/src
 )
