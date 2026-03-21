@@ -4,7 +4,6 @@
 #include <string>
 
 class StaticMesh;
-struct aiScene;
 
 class ModelLoader
 {

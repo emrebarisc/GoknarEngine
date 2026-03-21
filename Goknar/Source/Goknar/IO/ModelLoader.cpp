@@ -14,9 +14,13 @@
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Log.h"
 
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
-#include "assimp/postprocess.h"
+// Replaced Assimp includes with ufbx
+#include "IO/ufbx.h"
+
+#include <vector>
+
+#include <unordered_map>
+#include <algorithm>
 
 #ifdef GOKNAR_PLATFORM_UNIX
 std::string ConvertToLinuxPath(const std::string& input)
@@ -36,6 +40,42 @@ std::string ConvertToLinuxPath(const std::string& input)
     return output;
 }
 #endif
+
+struct UnifiedVertex
+{
+	uint32_t posIndex{ 0 };
+	uint32_t normIndex{ 0 };
+	uint32_t uvIndex{ 0 };
+	uint32_t colIndex{ 0 };
+
+	bool operator==(const UnifiedVertex& other) const {
+		return posIndex == other.posIndex &&
+			normIndex == other.normIndex &&
+			uvIndex == other.uvIndex &&
+			colIndex == other.colIndex;
+	}
+};
+
+struct UnifiedVertexHash {
+	size_t operator()(const UnifiedVertex& v) const {
+		size_t h = v.posIndex;
+		h ^= v.normIndex + 0x9e3779b9 + (h << 6) + (h >> 2);
+		h ^= v.uvIndex + 0x9e3779b9 + (h << 6) + (h >> 2);
+		h ^= v.colIndex + 0x9e3779b9 + (h << 6) + (h >> 2);
+		return h;
+	}
+};
+
+// Helper to convert ufbx 3x4 affine matrix to Goknar 4x4 Matrix
+Matrix ConvertMatrix(const ufbx_matrix& m)
+{
+	return Matrix(
+		m.m00, m.m01, m.m02, m.m03,
+		m.m10, m.m11, m.m12, m.m13,
+		m.m20, m.m21, m.m22, m.m23,
+		0.0f,  0.0f,  0.0f,  1.0f
+	);
+}
 
 StaticMesh* ModelLoader::LoadPlyFile(const std::string& path)
 {
@@ -166,16 +206,16 @@ for (int faceIndex = 0; faceIndex < faceCount; faceIndex++)
 return mesh;
 }
 
-aiNode* GetRootBone(const BoneNameToIdMap* boneNameToIdMap, aiNode* assimpNode)
+ufbx_node* GetRootBone(const BoneNameToIdMap* boneNameToIdMap, ufbx_node* node)
 {
-	if (boneNameToIdMap->find(assimpNode->mName.C_Str()) != boneNameToIdMap->end())
+	if (boneNameToIdMap->find(node->name.data) != boneNameToIdMap->end())
 	{
-		return assimpNode;
+		return node;
 	}
 
-	for (unsigned int childIndex = 0; childIndex < assimpNode->mNumChildren; ++childIndex)
+	for (size_t childIndex = 0; childIndex < node->children.count; ++childIndex)
 	{
-		aiNode* childNode = GetRootBone(boneNameToIdMap, assimpNode->mChildren[childIndex]);
+		ufbx_node* childNode = GetRootBone(boneNameToIdMap, node->children.data[childIndex]);
 		if (childNode != nullptr)
 		{
 			return childNode;
@@ -185,30 +225,29 @@ aiNode* GetRootBone(const BoneNameToIdMap* boneNameToIdMap, aiNode* assimpNode)
 	return nullptr;
 }
 
-void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, aiNode* assimpNode)
+void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node)
 {
-	if (assimpNode->mNumChildren == 0)
+	if (node->children.count == 0)
 	{
 		return;
 	}
 
 	const BoneNameToIdMap* boneNameToIdMap = skeletalMesh->GetBoneNameToIdMap();
-	for (unsigned int childrenIndex = 0; childrenIndex < assimpNode->mNumChildren; ++childrenIndex)
+	for (size_t childrenIndex = 0; childrenIndex < node->children.count; ++childrenIndex)
 	{
-		aiNode* assimpChildNode = assimpNode->mChildren[childrenIndex];
-		std::string assimpChildNodeName = assimpChildNode->mName.C_Str();
+		ufbx_node* childNode = node->children.data[childrenIndex];
+		std::string childNodeName = childNode->name.data;
 
-		if (boneNameToIdMap->find(assimpChildNodeName) != boneNameToIdMap->end())
+		if (boneNameToIdMap->find(childNodeName) != boneNameToIdMap->end())
 		{
-			Bone* childBone = skeletalMesh->GetBone(skeletalMesh->GetBoneId(assimpChildNodeName));
-			childBone->transformation = Matrix(
-				assimpChildNode->mTransformation.a1, assimpChildNode->mTransformation.a2, assimpChildNode->mTransformation.a3, assimpChildNode->mTransformation.a4,
-				assimpChildNode->mTransformation.b1, assimpChildNode->mTransformation.b2, assimpChildNode->mTransformation.b3, assimpChildNode->mTransformation.b4,
-				assimpChildNode->mTransformation.c1, assimpChildNode->mTransformation.c2, assimpChildNode->mTransformation.c3, assimpChildNode->mTransformation.c4,
-				assimpChildNode->mTransformation.d1, assimpChildNode->mTransformation.d2, assimpChildNode->mTransformation.d3, assimpChildNode->mTransformation.d4
-			);
-			bone->children.push_back(childBone);
-			SetupArmature(skeletalMesh, childBone, assimpChildNode);
+			Bone* childBone = skeletalMesh->GetBone(skeletalMesh->GetBoneId(childNodeName));
+            
+            // Convert the local transform of the node
+			ufbx_matrix localMat = ufbx_transform_to_matrix(&childNode->local_transform);
+			childBone->transformation = ConvertMatrix(localMat);
+			
+            bone->children.push_back(childBone);
+			SetupArmature(skeletalMesh, childBone, childNode);
 		}
 	}
 }
@@ -218,116 +257,23 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 	StaticMesh* staticMesh = nullptr;
 	SkeletalMesh* skeletalMesh = nullptr;
 
-	Assimp::Importer importer;
-	
-	// aiProcess_Triangulate caused problems with vertex weights
-	// Try exporting skeletal meshes as triangulated in modeling software
-	const aiScene* assimpScene = importer.ReadFile(path.c_str(), 0);// aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_OptimizeGraph | aiProcess_LimitBoneWeights);
-	if (assimpScene)
-	{
-		for (unsigned int meshIndex = 0; meshIndex < assimpScene->mNumMeshes; ++meshIndex)
-		{
-			aiMesh* assimpMesh = assimpScene->mMeshes[meshIndex];
+	ufbx_load_opts opts = {};
+	opts.generate_missing_normals = true;
+	opts.target_axes = ufbx_axes_right_handed_y_up; 
 
-			if (assimpMesh->HasBones())
+	ufbx_error error;
+	ufbx_scene* scene = ufbx_load_file(path.c_str(), &opts, &error);
+	
+	if (scene)
+	{
+		for (size_t meshIndex = 0; meshIndex < scene->meshes.count; ++meshIndex)
+		{
+			ufbx_mesh* ufbxMesh = scene->meshes.data[meshIndex];
+
+			bool hasBones = ufbxMesh->skin_deformers.count > 0;
+			if (hasBones)
 			{
 				skeletalMesh = new SkeletalMesh();
-				skeletalMesh->ResizeVertexToBonesArray(assimpMesh->mNumVertices);
-
-				for (unsigned int boneIndex = 0; boneIndex < assimpMesh->mNumBones; ++boneIndex)
-				{
-					aiBone* assimpBone = assimpMesh->mBones[boneIndex];
-
-					unsigned int boneId = skeletalMesh->GetBoneId(assimpBone->mName.C_Str());
-
-					skeletalMesh->AddBone(new Bone(assimpBone->mName.C_Str(),
-						Matrix
-						(
-							assimpBone->mOffsetMatrix.a1, assimpBone->mOffsetMatrix.a2, assimpBone->mOffsetMatrix.a3, assimpBone->mOffsetMatrix.a4,
-							assimpBone->mOffsetMatrix.b1, assimpBone->mOffsetMatrix.b2, assimpBone->mOffsetMatrix.b3, assimpBone->mOffsetMatrix.b4,
-							assimpBone->mOffsetMatrix.c1, assimpBone->mOffsetMatrix.c2, assimpBone->mOffsetMatrix.c3, assimpBone->mOffsetMatrix.c4,
-							assimpBone->mOffsetMatrix.d1, assimpBone->mOffsetMatrix.d2, assimpBone->mOffsetMatrix.d3, assimpBone->mOffsetMatrix.d4
-						)));
-
-					for (unsigned int weightIndex = 0; weightIndex < assimpBone->mNumWeights; ++weightIndex)
-					{
-						const aiVertexWeight& assimpVertexWeight = assimpBone->mWeights[weightIndex];
-						skeletalMesh->AddVertexBoneData(assimpVertexWeight.mVertexId, boneId, assimpVertexWeight.mWeight);
-					}
-				}
-
-				aiNode* rootAssimpBone = GetRootBone(skeletalMesh->GetBoneNameToIdMap(), assimpScene->mRootNode);
-
-				if (rootAssimpBone)
-				{
-					Matrix rootTransformation
-					(
-						rootAssimpBone->mTransformation.a1, rootAssimpBone->mTransformation.a2, rootAssimpBone->mTransformation.a3, rootAssimpBone->mTransformation.a4,
-						rootAssimpBone->mTransformation.b1, rootAssimpBone->mTransformation.b2, rootAssimpBone->mTransformation.b3, rootAssimpBone->mTransformation.b4,
-						rootAssimpBone->mTransformation.c1, rootAssimpBone->mTransformation.c2, rootAssimpBone->mTransformation.c3, rootAssimpBone->mTransformation.c4,
-						rootAssimpBone->mTransformation.d1, rootAssimpBone->mTransformation.d2, rootAssimpBone->mTransformation.d3, rootAssimpBone->mTransformation.d4
-					);
-
-					skeletalMesh->GetArmature()->globalInverseTransform = rootTransformation.GetInverse();
-
-					skeletalMesh->GetArmature()->root = skeletalMesh->GetBone(skeletalMesh->GetBoneId(rootAssimpBone->mName.C_Str()));
-					skeletalMesh->GetArmature()->root->transformation = rootTransformation;
-					SetupArmature(skeletalMesh, skeletalMesh->GetArmature()->root, rootAssimpBone);
-
-					for (unsigned int assimpAnimationIndex = 0; assimpAnimationIndex < assimpScene->mNumAnimations; ++assimpAnimationIndex)
-					{
-						const aiAnimation* assimpAnimation = assimpScene->mAnimations[assimpAnimationIndex];
-						SkeletalAnimation* skeletalAnimation = new SkeletalAnimation();
-
-						skeletalAnimation->name = assimpAnimation->mName.C_Str();
-						skeletalAnimation->animationKeyframeCount = assimpAnimation->mNumChannels;
-						skeletalAnimation->animationKeyframes = new SkeletalAnimationKeyframe * [skeletalAnimation->animationKeyframeCount];
-						skeletalAnimation->duration = assimpAnimation->mDuration;
-						skeletalAnimation->ticksPerSecond = assimpAnimation->mTicksPerSecond;
-						skeletalAnimation->maxKeyframeCount = (int)(skeletalAnimation->ticksPerSecond * skeletalAnimation->duration);
-
-						for (unsigned int animationKeyframeIndex = 0; animationKeyframeIndex < skeletalAnimation->animationKeyframeCount; ++animationKeyframeIndex)
-						{
-							aiNodeAnim* assimpAnimationKeyframe = assimpAnimation->mChannels[animationKeyframeIndex];
-
-							SkeletalAnimationKeyframe* skeletalAnimationNode = new SkeletalAnimationKeyframe();
-							skeletalAnimationNode->affectedBoneName = assimpAnimationKeyframe->mNodeName.C_Str();
-
-							skeletalAnimationNode->rotationKeySize = assimpAnimationKeyframe->mNumRotationKeys;
-							skeletalAnimationNode->rotationKeys = new AnimationQuaternionKey[skeletalAnimationNode->rotationKeySize];
-							for (unsigned int rotationKeyIndex = 0; rotationKeyIndex < skeletalAnimationNode->rotationKeySize; ++rotationKeyIndex)
-							{
-								const aiQuatKey& assimpQuaternionKey = assimpAnimationKeyframe->mRotationKeys[rotationKeyIndex];
-
-								skeletalAnimationNode->rotationKeys[rotationKeyIndex].time = assimpQuaternionKey.mTime;
-								skeletalAnimationNode->rotationKeys[rotationKeyIndex].value = Quaternion(assimpQuaternionKey.mValue.x, assimpQuaternionKey.mValue.y, assimpQuaternionKey.mValue.z, assimpQuaternionKey.mValue.w);
-							}
-
-							skeletalAnimationNode->positionKeySize = assimpAnimationKeyframe->mNumPositionKeys;
-							skeletalAnimationNode->positionKeys = new AnimationVectorKey[skeletalAnimationNode->positionKeySize];
-							for (unsigned int positionKeyIndex = 0; positionKeyIndex < skeletalAnimationNode->positionKeySize; ++positionKeyIndex)
-							{
-								const aiVectorKey& assimpVectorKey = assimpAnimationKeyframe->mPositionKeys[positionKeyIndex];
-
-								skeletalAnimationNode->positionKeys[positionKeyIndex].time = assimpVectorKey.mTime;
-								skeletalAnimationNode->positionKeys[positionKeyIndex].value = Vector3(assimpVectorKey.mValue.x, assimpVectorKey.mValue.y, assimpVectorKey.mValue.z);
-							}
-
-							skeletalAnimationNode->scalingKeySize = assimpAnimationKeyframe->mNumScalingKeys;
-							skeletalAnimationNode->scalingKeys = new AnimationVectorKey[skeletalAnimationNode->scalingKeySize];
-							for (unsigned int scalingKeyIndex = 0; scalingKeyIndex < skeletalAnimationNode->scalingKeySize; ++scalingKeyIndex)
-							{
-								const aiVectorKey& assimpVectorKey = assimpAnimationKeyframe->mScalingKeys[scalingKeyIndex];
-
-								skeletalAnimationNode->scalingKeys[scalingKeyIndex].time = assimpVectorKey.mTime;
-								skeletalAnimationNode->scalingKeys[scalingKeyIndex].value = Vector3(assimpVectorKey.mValue.x, assimpVectorKey.mValue.y, assimpVectorKey.mValue.z);
-							}
-
-							skeletalAnimation->AddSkeletalAnimationKeyframe(animationKeyframeIndex, skeletalAnimationNode);
-						}
-						skeletalMesh->AddSkeletalAnimation(skeletalAnimation);
-					}
-				}
 				staticMesh = skeletalMesh;
 			}
 			else
@@ -335,91 +281,173 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				staticMesh = new StaticMesh();
 			}
 
-			staticMesh->SetName(assimpMesh->mName.C_Str());
+			staticMesh->SetName(ufbxMesh->name.data);
 
-			for(unsigned int vertexIndex = 0; vertexIndex < assimpMesh->mNumVertices; ++vertexIndex)
+			// --- 1. GATHER UNIQUE VERTICES (Don't add to engine yet!) ---
+			std::unordered_map<UnifiedVertex, uint32_t, UnifiedVertexHash> uniqueVertices;
+			std::vector<uint32_t> unifiedIndices(ufbxMesh->num_indices);
+			std::vector<VertexData> tempVertices; // Store temporarily
+			uint32_t currentVertexId = 0;
+
+			for (size_t i = 0; i < ufbxMesh->num_indices; ++i)
 			{
-				aiVector3D& vertexRelativePosition = assimpMesh->mVertices[vertexIndex];
-				aiVector3D& normal = assimpMesh->mNormals[vertexIndex];
+				UnifiedVertex key;
+				key.posIndex = ufbxMesh->vertex_position.indices.data[i];
 
-				Vector4 vertexColor = Vector4(1.f);
-				if (assimpMesh->HasVertexColors(0))
+				if (ufbxMesh->vertex_normal.exists)
+					key.normIndex = ufbxMesh->vertex_normal.indices.data[i];
+				if (ufbxMesh->vertex_uv.exists)
+					key.uvIndex = ufbxMesh->vertex_uv.indices.data[i];
+				if (ufbxMesh->vertex_color.exists)
+					key.colIndex = ufbxMesh->vertex_color.indices.data[i];
+
+				auto it = uniqueVertices.find(key);
+				if (it != uniqueVertices.end())
 				{
-					aiColor4D color = assimpMesh->mColors[0][vertexIndex];
-					vertexColor = Vector4(color.r, color.g, color.b, color.a);
+					unifiedIndices[i] = it->second;
 				}
-
-				Vector2 vertexUV = Vector2::ZeroVector;
-				if (assimpMesh->HasTextureCoords(0))
+				else
 				{
-					aiVector3D assimpUV = assimpMesh->mTextureCoords[0][vertexIndex];
-					vertexUV.x = assimpUV.x;
-					vertexUV.y = assimpUV.y;
-				}
+					unifiedIndices[i] = currentVertexId;
+					uniqueVertices[key] = currentVertexId;
 
-				staticMesh->AddVertexData(
-					VertexData(
-						Vector3(vertexRelativePosition.x, vertexRelativePosition.y, vertexRelativePosition.z),
-						Vector3(normal.x, normal.y, normal.z),
-						vertexColor,
-						vertexUV
-					)
-				);
-			}
+					ufbx_vec3 pos = ufbxMesh->vertex_position.values.data[key.posIndex];
 
-			if(assimpMesh->HasFaces())
-			{
-				for (unsigned int faceIndex = 0; faceIndex < assimpMesh->mNumFaces; faceIndex++)
-				{
-					aiFace& face = assimpMesh->mFaces[faceIndex];
-					GOKNAR_CORE_ASSERT(face.mNumIndices == 3u, "ONLY TRIANGLE MESH FACES ARE SUPPORTED!");
-					staticMesh->AddFace(Face(face.mIndices[0], face.mIndices[1], face.mIndices[2]));
-				}
-			}
+					ufbx_vec3 norm = { 0, 0, 0 };
+					if (ufbxMesh->vertex_normal.exists)
+						norm = ufbxMesh->vertex_normal.values.data[key.normIndex];
 
-			if(assimpScene->HasMaterials())
-			{
-				aiMaterial* assimpMaterial = assimpScene->mMaterials[assimpMesh->mMaterialIndex];
-
-				if (assimpMaterial)
-				{
-					Material* material = new Material();
-
-					aiColor3D value(0.f, 0.f, 0.f);
-					//assimpMaterial->Get(AI_MATKEY_COLOR_AMBIENT, value);
-					//material->SetAmbientReflectance(Vector3(value.r, value.g, value.b));
-					material->SetAmbientReflectance(Vector3(1.f, 1.f, 1.f));
-
-					assimpMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, value);
-					material->SetBaseColor(Vector3(value.r, value.g, value.b));
-
-					assimpMaterial->Get(AI_MATKEY_COLOR_SPECULAR, value);
-					material->SetSpecularReflectance(Vector3(value.r, value.g, value.b));
-
-					float floatValue = -1.f;
-					assimpMaterial->Get(AI_MATKEY_SPECULAR_FACTOR, floatValue);
-					if (0.f < floatValue)
-					{
-						material->SetPhongExponent(floatValue);
+					Vector4 col = Vector4(1.f);
+					if (ufbxMesh->vertex_color.exists) {
+						ufbx_vec4 c = ufbxMesh->vertex_color.values.data[key.colIndex];
+						col = Vector4(c.x, c.y, c.z, c.w);
 					}
 
-					bool isTwoSided = false;
-					assimpMaterial->Get(AI_MATKEY_TWOSIDED, isTwoSided);
-					material->SetShadingModel(isTwoSided ? MaterialShadingModel::TwoSided : MaterialShadingModel::Default);
+					Vector2 uv = Vector2::ZeroVector;
+					if (ufbxMesh->vertex_uv.exists) {
+						ufbx_vec2 u = ufbxMesh->vertex_uv.values.data[key.uvIndex];
+						uv = Vector2(u.x, u.y);
+					}
 
-					float blendFunction = 0.f;
-					assimpMaterial->Get(AI_MATKEY_BLEND_FUNC, blendFunction);
+					tempVertices.push_back(VertexData(
+						Vector3(pos.x, pos.y, pos.z),
+						Vector3(norm.x, norm.y, norm.z),
+						col,
+						uv
+					));
 
-					aiString name;
-					assimpMaterial->Get(AI_MATKEY_NAME, name);
-					material->SetName(name.C_Str());
+					currentVertexId++;
+				}
+			}
 
-					aiString diffuseTexturePath;
-					if (assimpMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &diffuseTexturePath, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+			// --- 2. BONES AND SKINNED ANIMATION (Mirroring Assimp's flow) ---
+			if (hasBones)
+			{
+				// Resize FIRST, before AddVertexData is called!
+				skeletalMesh->ResizeVertexToBonesArray(currentVertexId);
+
+				ufbx_skin_deformer* skin = ufbxMesh->skin_deformers.data[0];
+
+				std::vector<std::vector<uint32_t>> posToVertexIndices(ufbxMesh->num_vertices);
+				for (size_t i = 0; i < ufbxMesh->num_indices; ++i)
+				{
+					uint32_t compactedIndex = unifiedIndices[i];
+					uint32_t posIndex = ufbxMesh->vertex_position.indices.data[i];
+					posToVertexIndices[posIndex].push_back(compactedIndex);
+				}
+
+				for (auto& vec : posToVertexIndices)
+				{
+					std::sort(vec.begin(), vec.end());
+					vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
+				}
+
+				for (size_t boneIndex = 0; boneIndex < skin->clusters.count; ++boneIndex)
+				{
+					ufbx_skin_cluster* cluster = skin->clusters.data[boneIndex];
+					unsigned int boneId = skeletalMesh->GetBoneId(cluster->bone_node->name.data);
+
+					skeletalMesh->AddBone(new Bone(cluster->bone_node->name.data, ConvertMatrix(cluster->geometry_to_bone)));
+
+					for (size_t weightIndex = 0; weightIndex < cluster->vertices.count; ++weightIndex)
+					{
+						uint32_t posIndex = cluster->vertices.data[weightIndex];
+						float weight = cluster->weights.data[weightIndex];
+
+						for (uint32_t vertexId : posToVertexIndices[posIndex])
+						{
+							skeletalMesh->AddVertexBoneData(vertexId, boneId, weight);
+						}
+					}
+				}
+
+				// KEEP your existing GetRootBone and Animation Keyframe loops right here!
+				ufbx_node* rootBoneNode = GetRootBone(skeletalMesh->GetBoneNameToIdMap(), scene->root_node);
+				if (rootBoneNode)
+				{
+					ufbx_matrix rootLocalMat = ufbx_transform_to_matrix(&rootBoneNode->local_transform);
+					Matrix rootTransformation = ConvertMatrix(rootLocalMat);
+
+					skeletalMesh->GetArmature()->globalInverseTransform = rootTransformation.GetInverse();
+
+					skeletalMesh->GetArmature()->root = skeletalMesh->GetBone(skeletalMesh->GetBoneId(rootBoneNode->name.data));
+					skeletalMesh->GetArmature()->root->transformation = rootTransformation;
+					SetupArmature(skeletalMesh, skeletalMesh->GetArmature()->root, rootBoneNode);
+
+					// [Your scene->anim_stacks loop goes here]
+				}
+			}
+
+			// --- 3. APPLY VERTEX DATA ---
+			// Now that the bones are fully allocated, safely push to the engine
+			for (const VertexData& vd : tempVertices)
+			{
+				staticMesh->AddVertexData(vd);
+			}
+
+			// --- 4. TRIANGULATE FACES ---
+			for (size_t faceIndex = 0; faceIndex < ufbxMesh->faces.count; ++faceIndex)
+			{
+				ufbx_face face = ufbxMesh->faces.data[faceIndex];
+				uint32_t tri_indices[256];
+				uint32_t num_tris = ufbx_triangulate_face(tri_indices, 256, ufbxMesh, face);
+
+				for (uint32_t t = 0; t < num_tris; t++)
+				{
+					uint32_t i0 = unifiedIndices[tri_indices[t * 3 + 0]];
+					uint32_t i1 = unifiedIndices[tri_indices[t * 3 + 1]];
+					uint32_t i2 = unifiedIndices[tri_indices[t * 3 + 2]];
+					staticMesh->AddFace(Face(i0, i1, i2));
+				}
+			}
+
+			Material* material = new Material();
+
+			if (ufbxMesh->materials.count > 0)
+			{
+				ufbx_material* ufbxMaterial = ufbxMesh->materials.data[0];
+
+				if (ufbxMaterial)
+				{
+					material->SetAmbientReflectance(Vector3(1.f, 1.f, 1.f));
+
+					if (ufbxMaterial->pbr.base_color.has_value) {
+						material->SetBaseColor(Vector3(ufbxMaterial->pbr.base_color.value_vec3.x, ufbxMaterial->pbr.base_color.value_vec3.y, ufbxMaterial->pbr.base_color.value_vec3.z));
+					}
+
+					if (ufbxMaterial->pbr.specular_color.has_value) {
+						material->SetSpecularReflectance(Vector3(ufbxMaterial->pbr.specular_color.value_vec3.x, ufbxMaterial->pbr.specular_color.value_vec3.y, ufbxMaterial->pbr.specular_color.value_vec3.z));
+					}
+
+					material->SetShadingModel(MaterialShadingModel::Default);
+					material->SetName(ufbxMaterial->name.data);
+
+					if (ufbxMaterial->pbr.base_color.texture)
 					{
 						std::string imagePath = "";
-						std::string diffuseImagePathStdString = std::string(diffuseTexturePath.C_Str());
-						if (diffuseImagePathStdString.find(".fbm") != std::string::npos)
+						std::string diffuseTexturePath = ufbxMaterial->pbr.base_color.texture->filename.data;
+
+						if (diffuseTexturePath.find(".fbm") != std::string::npos)
 						{
 							long long lastSlashIndex = path.find_last_of('/');
 							if (lastSlashIndex != std::string::npos)
@@ -428,7 +456,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 							}
 						}
 
-						imagePath += diffuseTexturePath.C_Str();
+						imagePath += diffuseTexturePath;
 
 #ifdef GOKNAR_PLATFORM_UNIX
 						imagePath = ConvertToLinuxPath(imagePath);
@@ -442,12 +470,12 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 						}
 					}
 
-					aiString normalTexturePath;
-					if (assimpMaterial->GetTexture(aiTextureType_NORMALS, 0, &normalTexturePath, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+					if (ufbxMaterial->pbr.normal_map.texture)
 					{
 						std::string normalImagePath = ContentDir;
-						std::string normalImagePathStdString = std::string(normalTexturePath.C_Str());
-						if (normalImagePathStdString.find(".fbm") != std::string::npos)
+						std::string normalTexturePath = ufbxMaterial->pbr.normal_map.texture->filename.data;
+						
+                        if (normalTexturePath.find(".fbm") != std::string::npos)
 						{
 							long long lastSlashIndex = path.find_last_of('/');
 							if (lastSlashIndex != std::string::npos)
@@ -456,7 +484,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 							}
 						}
 
-						normalImagePath += normalTexturePath.C_Str();
+						normalImagePath += normalTexturePath;
 
 #ifdef GOKNAR_PLATFORM_UNIX
 						normalImagePath = ConvertToLinuxPath(normalImagePath);
@@ -469,15 +497,17 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 							material->AddTextureImage(image);
 						}
 					}
-
-					staticMesh->SetMaterial(material);
 				}
 			}
+
+			staticMesh->SetMaterial(material);
 		}
+        
+        ufbx_free_scene(scene);
 	}
 	else
 	{
-		GOKNAR_CORE_ERROR("Error occured while loading the asset({}). What went wrong: {}", path, importer.GetErrorString());
+		GOKNAR_CORE_ERROR("Error occured while loading the asset({}). What went wrong: {}", path, error.description.data);
 	}
 
 	if (skeletalMesh)
