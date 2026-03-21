@@ -400,11 +400,10 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 						double durationInSeconds = animStack->time_end - animStack->time_begin;
 						double fps = 30.0;
-
 						int keyframeCount = (int)(durationInSeconds * fps);
 						if (keyframeCount <= 0) keyframeCount = 1;
 
-						skeletalAnimation->duration = keyframeCount;
+						skeletalAnimation->duration = durationInSeconds;
 						skeletalAnimation->ticksPerSecond = fps;
 						skeletalAnimation->maxKeyframeCount = keyframeCount;
 
@@ -434,15 +433,13 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 								double timeInSeconds = animStack->time_begin + (double)k / fps;
 								ufbx_transform transform = ufbx_evaluate_transform(animStack->anim, animNode, timeInSeconds);
 
-								double timeInTicks = (double)k;
-
-								keyframe->positionKeys[k].time = timeInTicks;
+								keyframe->positionKeys[k].time = timeInSeconds;
 								keyframe->positionKeys[k].value = Vector3(transform.translation.x, transform.translation.y, transform.translation.z);
 
-								keyframe->rotationKeys[k].time = timeInTicks;
+								keyframe->rotationKeys[k].time = timeInSeconds;
 								keyframe->rotationKeys[k].value = Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
 
-								keyframe->scalingKeys[k].time = timeInTicks;
+								keyframe->scalingKeys[k].time = timeInSeconds;
 								keyframe->scalingKeys[k].value = Vector3(transform.scale.x, transform.scale.y, transform.scale.z);
 							}
 

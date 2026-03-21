@@ -66,15 +66,14 @@ void SkeletalMeshInstance::PrepareForTheNextFrame()
 		return;
 	}
 
-	const float duration = animation.skeletalAnimation->duration;
-	const float ticksPerSec = animation.skeletalAnimation->ticksPerSecond;
+	const float durationInSeconds = animation.skeletalAnimation->duration;
+	const float fps = animation.skeletalAnimation->ticksPerSecond;
 
 	const float newElapsedTime = engine->GetElapsedTime() - animation.initialTimeInSeconds;
-	const float totalTicks = ticksPerSec * newElapsedTime;
 
-	float newKeyframeIndex = std::fmod(totalTicks, duration);
+	float newAnimationTime = std::fmod(newElapsedTime, durationInSeconds);
 
-	const bool loopedThisFrame = newKeyframeIndex < animation.animationTime;
+	const bool loopedThisFrame = newAnimationTime < animation.animationTime;
 
 	if (loopedThisFrame && animation.playLoopData.playOnce)
 	{
@@ -86,18 +85,18 @@ void SkeletalMeshInstance::PrepareForTheNextFrame()
 	}
 
 	animation.elapsedTimeInSeconds = newElapsedTime;
-	float oldKeyframeIndex = animation.animationTime;
-	animation.animationTime = newKeyframeIndex;
+	float oldAnimationTime = animation.animationTime;
+	animation.animationTime = newAnimationTime;
 
 	if (loopedThisFrame && !animation.playLoopData.callback.isNull())
 	{
 		animation.playLoopData.callback();
 	}
 
-	int startKeyframeIndex = (int)oldKeyframeIndex;
-	int endKeyframeIndex = (int)newKeyframeIndex;
+	int startFrameIndex = (int)(oldAnimationTime * fps);
+	int endFrameIndex = (int)(newAnimationTime * fps);
 
-	if (startKeyframeIndex != endKeyframeIndex)
+	if (startFrameIndex != endFrameIndex)
 	{
 		auto& callbackMap = animation.keyframeData.keyframeCallbackMap;
 
@@ -116,15 +115,16 @@ void SkeletalMeshInstance::PrepareForTheNextFrame()
 
 		if (loopedThisFrame)
 		{
-			triggerRange(startKeyframeIndex + 1, (int)duration);
-			triggerRange(0, endKeyframeIndex);
+			int maxFrames = (int)(durationInSeconds * fps);
+			triggerRange(startFrameIndex + 1, maxFrames);
+			triggerRange(0, endFrameIndex);
 		}
 		else
 		{
-			triggerRange(startKeyframeIndex + 1, endKeyframeIndex);
+			triggerRange(startFrameIndex + 1, endFrameIndex);
 		}
 
-		animation.currentKeyframe = endKeyframeIndex;
+		animation.currentKeyframe = endFrameIndex;
 	}
 }
 
