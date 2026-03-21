@@ -141,6 +141,17 @@ void DefaultCharacterController::RemoveInputDelegates()
 	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_LEFT, INPUT_ACTION::G_PRESS, fireDelegate_);
 
 	inputManager->RemoveCursorDelegate(cursorDelegate_);
+
+	if (!GetIsPendingDestroy())
+	{
+		stopMovingForwardDelegate_();
+		stopMovingBackwardDelegate_();
+		stopMovingLeftDelegate_();
+		stopMovingRightDelegate_();
+		stopRunningDelegate_();
+		jumpDelegate_();
+		stopStrafeDelegate_();
+	}
 }
 
 void DefaultCharacterController::MoveForward()

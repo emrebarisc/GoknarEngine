@@ -10,6 +10,7 @@
 #include "Goknar/ObjectBase.h"
 #include "Goknar/Math/GoknarMath.h"
 #include "Goknar/Factories/DynamicObjectFactory.h"
+#include "Goknar/Managers/ConfigManager.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Managers/WindowManager.h"
 #include "Goknar/Physics/RigidBody.h"
@@ -31,22 +32,41 @@ Game::Game() : Application()
 
 	engine->SetApplication(this);
 
-	engine->GetRenderer()->SetMainRenderType(RenderPassType::Deferred);
+	ConfigManager config;
+	std::string configPath = projectPath + "Config/GameConfig.ini";
+	if (config.ReadFile(configPath))
+	{
+		int width = config.GetInt("Graphics", "WindowWidth", 1920);
+		int height = config.GetInt("Graphics", "WindowHeight", 1080);
+		engine->GetWindowManager()->SetWindowSize(width, height);
 
-	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
-	mainScene_->ReadSceneData("Scenes/DefaultScene.xml");
+		std::string mainRenderTypeStr = config.GetString("Graphics", "MainRenderType", "Deferred");
+		RenderPassType mainRenderType = RenderPassType::Deferred;
+		if (mainRenderTypeStr == "Forward")
+		{
+			mainRenderType = RenderPassType::Forward;
+		}
+
+		engine->GetRenderer()->SetMainRenderType(mainRenderType);
+
+		std::string contentDir = config.GetString("Core", "ContentDir", "Content/");
+		ContentDir = projectPath + contentDir;
+
+		std::string mainScenePath = config.GetString("Core", "MainScene", "Scenes/DefaultScene.xml");
+		mainScene_->ReadSceneData(mainScenePath);
+	}
+	else
+	{
+		GOKNAR_CORE_ERROR("Failed to load {}. Falling back to defaults.", configPath);
+	}
 
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
-	GOKNAR_CORE_WARN("Scene is read in {} seconds.", elapsedTime);
+	GOKNAR_CORE_WARN("Project is set up in {} seconds.", elapsedTime);
 
 	lastFrameTimePoint = currentTimePoint;
 	
 	defaultCharacter_ = new DefaultCharacter();
-
-	engine->GetWindowManager()->SetWindowSize(1600, 900);
-	engine->GetWindowManager()->SetIsInFullscreen(false);
-
 	gameState_ = new GameState();
 
 	engine->SetHUD(new MainHUD());
