@@ -76,7 +76,6 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 		throw std::runtime_error("Error: Root could not be found.");
 	}
 
-	//Get BackgroundColor
 	tinyxml2::XMLElement* element = root->FirstChildElement("BackgroundColor");
 	if (element)
 	{
@@ -903,6 +902,7 @@ void SceneParser::SaveScene(Scene* scene, const std::string& filePath)
 {
 	tinyxml2::XMLDocument sceneXML;
 	tinyxml2::XMLNode* rootElement = sceneXML.NewElement("Scene");
+
 	sceneXML.InsertFirstChild(rootElement);
 
 	tinyxml2::XMLElement* subElement = sceneXML.NewElement("Assets");

@@ -48,7 +48,7 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
     }
 
     // Look for the generic "FileType" root element
-    tinyxml2::XMLElement* root = doc.FirstChildElement("FileType");
+    tinyxml2::XMLElement* root = doc.FirstChildElement("GameAsset");
     if (!root)
     {
         return false;

@@ -10,14 +10,11 @@ void MaterialSerializer::Serialize(const std::string& filepath, const MaterialIn
 
     tinyxml2::XMLDocument doc;
     
-    // Create the root element with the generic name "FileType"
-    XMLElement* root = doc.NewElement("FileType");
-    // Set the attribute as requested
+    XMLElement* root = doc.NewElement("GameAsset");
     root->SetAttribute("FileType", "MaterialData");
     root->SetAttribute("BoneCount", data->boneCount);
     doc.InsertFirstChild(root);
 
-    // Serialize ShaderFunctionAndResults
     SerializeShaderFunction(doc, root, "BaseColor", data->baseColor);
     SerializeShaderFunction(doc, root, "EmissiveColor", data->emmisiveColor);
     SerializeShaderFunction(doc, root, "FragmentNormal", data->fragmentNormal);
@@ -25,15 +22,15 @@ void MaterialSerializer::Serialize(const std::string& filepath, const MaterialIn
     SerializeShaderFunction(doc, root, "UV", data->uv);
     SerializeShaderFunction(doc, root, "VertexPositionOffset", data->vertexPositionOffset);
 
-    // Helper for long text strings
-    auto AddTextElement = [&](const char* name, const std::string& content) {
-        XMLElement* el = doc.NewElement(name);
-        // Use CData for shaders to prevent XML parsing errors with symbols like < or &
-        XMLText* text = doc.NewText(content.c_str());
-        text->SetCData(true);
-        el->InsertEndChild(text);
-        root->InsertEndChild(el);
-    };
+    auto AddTextElement = 
+        [&](const char* name, const std::string& content)
+        {
+            XMLElement* el = doc.NewElement(name);
+            XMLText* text = doc.NewText(content.c_str());
+            text->SetCData(true);
+            el->InsertEndChild(text);
+            root->InsertEndChild(el);
+        };
 
     AddTextElement("VertexShaderFunctions", data->vertexShaderFunctions);
     AddTextElement("FragmentShaderFunctions", data->fragmentShaderFunctions);
@@ -53,17 +50,17 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         return;
     }
 
-    // Find the generic "FileType" element
-    XMLElement* root = doc.FirstChildElement("FileType");
-    if (!root) return;
+    XMLElement* root = doc.FirstChildElement("GameAsset");
+    if (!root)
+    {
+        return;
+    }
 
-    // Verify this is actually MaterialData
     const char* fileTypeAttr = root->Attribute("FileType");
     if (!fileTypeAttr || std::string(fileTypeAttr) != "MaterialData") return;
 
     outData->boneCount = root->IntAttribute("BoneCount");
 
-    // Deserialize ShaderFunctionAndResults
     DeserializeShaderFunction(root, "BaseColor", outData->baseColor);
     DeserializeShaderFunction(root, "EmissiveColor", outData->emmisiveColor);
     DeserializeShaderFunction(root, "FragmentNormal", outData->fragmentNormal);
@@ -71,10 +68,12 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     DeserializeShaderFunction(root, "UV", outData->uv);
     DeserializeShaderFunction(root, "VertexPositionOffset", outData->vertexPositionOffset);
 
-    auto GetTextContent = [&](const char* name) -> std::string {
-        XMLElement* el = root->FirstChildElement(name);
-        return el && el->GetText() ? el->GetText() : "";
-    };
+    auto GetTextContent = 
+        [&](const char* name) -> std::string
+        {
+            XMLElement* el = root->FirstChildElement(name);
+            return el && el->GetText() ? el->GetText() : "";
+        };
 
     outData->vertexShaderFunctions = GetTextContent("VertexShaderFunctions");
     outData->fragmentShaderFunctions = GetTextContent("FragmentShaderFunctions");

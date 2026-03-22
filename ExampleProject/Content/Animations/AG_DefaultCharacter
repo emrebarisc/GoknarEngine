@@ -1,4 +1,4 @@
-<FileType FileType="AnimationGraph">
+<GameAsset FileType="AnimationGraph">
     <Variables>
         <Variable name="VelocityMagnitude" type="float" value="0"/>
         <Variable name="IsJumping" type="bool" value="false"/>

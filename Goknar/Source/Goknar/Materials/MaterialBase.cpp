@@ -12,7 +12,7 @@
 #include "Goknar/Managers/WindowManager.h"
 
 IMaterialBase::IMaterialBase() :  
-	baseColor_(Vector4::ZeroVector), 
+	baseColor_(Vector4{ 1.f }),
 	ambientReflectance_(Vector3::ZeroVector),
 	specularReflectance_(Vector3::ZeroVector),
 	emmisiveColor_(Vector3::ZeroVector),
