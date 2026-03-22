@@ -30,8 +30,8 @@ do
 done
 
 sync_directories() {
-    local dirs=("Content" "Config")
-    local destinations=("Output/Content" "Output/Config")
+    local dirs=("EditorContent" "Config")
+    local destinations=("Output/EditorContent" "Output/Config")
 
     if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
         gameName="${projectName}.exe"
@@ -84,22 +84,22 @@ mkdir -p "$directoryName" && cd "$directoryName"
 sync_directories
 echo "Files are synced."
 
-if [ "$build" = true ]; then
-    set_startup_project
-    
-    # Determine correct paths based on the OS to prevent translation bugs
-    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
-        # pwd -W forces Git Bash/MinGW to return a C:/ style Windows path
-        BUILD_PATH=$(pwd -W)
-        SOURCE_PATH=$(cd .. && pwd -W)
-    else
-        # Standard Unix paths for Linux/macOS
-        BUILD_PATH="$PWD"
-        SOURCE_PATH=$(cd .. && pwd)
-    fi
+set_startup_project
 
-    cmake -S "$SOURCE_PATH" -B "$BUILD_PATH" -DCMAKE_BUILD_TYPE=$configName && cmake --build "$BUILD_PATH" --config $configName --parallel 8
-    
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
+    # pwd -W forces Git Bash/MinGW to return a C:/ style Windows path
+    BUILD_PATH=$(pwd -W)
+    SOURCE_PATH=$(cd .. && pwd -W)
+else
+    # Standard Unix paths for Linux/macOS
+    BUILD_PATH="$PWD"
+    SOURCE_PATH=$(cd .. && pwd)
+fi
+
+cmake -S "$SOURCE_PATH" -B "$BUILD_PATH" -DCMAKE_BUILD_TYPE=$configName
+
+if [ "$build" = true ]; then
+    cmake --build "$BUILD_PATH" --config $configName --parallel 8
     echo ""
     read -p "Compilation finished. Press [Enter] to continue..."
 fi
