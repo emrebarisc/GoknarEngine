@@ -6,7 +6,7 @@ std::string ProjectDir = PROJECT_DIR;
 std::string ProjectDir = "";
 #endif
 
-std::string ContentDir = "";
+std::string ContentDir = "Content/";
 
 #if defined(GOKNAR_BUILD_DEBUG)
     #ifdef ENGINE_CONTENT_DIR
