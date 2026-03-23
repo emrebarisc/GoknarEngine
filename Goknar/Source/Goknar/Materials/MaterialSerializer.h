@@ -15,7 +15,7 @@ namespace tinyxml2
 class GOKNAR_API MaterialSerializer
 {
 public:
-    static void Serialize(const std::string& filepath, const MaterialInitializationData* data);
+    static void Serialize(const std::string& filepath, const Material* material);
     static void Deserialize(const std::string& filepath, Material* owner, MaterialInitializationData* outData);
 
 private:
