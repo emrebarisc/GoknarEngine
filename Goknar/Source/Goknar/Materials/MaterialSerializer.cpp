@@ -22,7 +22,7 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
 
     root->SetAttribute("FileType", "Material");
     doc.InsertFirstChild(root);
-    
+
     auto AddPropertyElement = [&](const char* name, const std::string& content)
         {
             XMLElement* el = doc.NewElement(name);
@@ -30,6 +30,7 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
             root->InsertEndChild(el);
         };
 
+    AddPropertyElement("Name", material->GetName());
     AddPropertyElement("BoneCount", std::to_string(materialInitializationData->boneCount));
 
     MaterialBlendModel blendModel = material->GetBlendModel();
@@ -61,14 +62,20 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
             AddPropertyElement(name, ss.str());
         };
 
+    auto SerializeVector4 = [&](const char* name, const Vector4& vec)
+        {
+            std::stringstream ss;
+            ss << vec.x << " " << vec.y << " " << vec.z << " " << vec.w;
+            AddPropertyElement(name, ss.str());
+        };
+
     SerializeVector3("AmbientReflectance", material->GetAmbientReflectance());
-
-    Vector4 baseColor = material->GetBaseColor();
-    SerializeVector3("DiffuseReflectance", Vector3(baseColor.x, baseColor.y, baseColor.z));
-
+    SerializeVector4("BaseColorValue", material->GetBaseColor());
     SerializeVector3("SpecularReflectance", material->GetSpecularReflectance());
+    SerializeVector3("EmmisiveColorValue", material->GetEmmisiveColor());
 
     AddPropertyElement("PhongExponent", std::to_string(material->GetPhongExponent()));
+    AddPropertyElement("Translucency", std::to_string(material->GetTranslucency()));
 
     SerializeShaderFunction(doc, root, "BaseColor", materialInitializationData->baseColor);
     SerializeShaderFunction(doc, root, "EmissiveColor", materialInitializationData->emmisiveColor);
@@ -116,7 +123,13 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     const char* fileTypeAttr = root->Attribute("FileType");
     if (!fileTypeAttr || std::string(fileTypeAttr) != "Material") return;
 
-    XMLElement* child = root->FirstChildElement("BoneCount");
+    XMLElement* child = root->FirstChildElement("Name");
+    if (child && child->GetText())
+    {
+        owner->SetName(child->GetText());
+    }
+
+    child = root->FirstChildElement("BoneCount");
     if (child && child->GetText())
     {
         materialInitializationData->boneCount = std::stoi(child->GetText());
@@ -181,6 +194,15 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         owner->SetBaseColor(diffuseReflectance);
     }
 
+    child = root->FirstChildElement("BaseColorValue");
+    if (child && child->GetText())
+    {
+        std::stringstream stream(child->GetText());
+        Vector4 baseColor;
+        stream >> baseColor.x >> baseColor.y >> baseColor.z >> baseColor.w;
+        owner->SetBaseColor(baseColor);
+    }
+
     child = root->FirstChildElement("SpecularReflectance");
     if (child && child->GetText())
     {
@@ -188,6 +210,15 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         Vector3 specularReflectance;
         stream >> specularReflectance.x >> specularReflectance.y >> specularReflectance.z;
         owner->SetSpecularReflectance(specularReflectance);
+    }
+
+    child = root->FirstChildElement("EmmisiveColorValue");
+    if (child && child->GetText())
+    {
+        std::stringstream stream(child->GetText());
+        Vector3 emmisiveColor;
+        stream >> emmisiveColor.x >> emmisiveColor.y >> emmisiveColor.z;
+        owner->SetEmmisiveColor(emmisiveColor);
     }
 
     child = root->FirstChildElement("PhongExponent");
@@ -201,6 +232,15 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     else
     {
         owner->SetPhongExponent(1.f);
+    }
+
+    child = root->FirstChildElement("Translucency");
+    if (child && child->GetText())
+    {
+        std::stringstream stream(child->GetText());
+        float translucency;
+        stream >> translucency;
+        owner->SetTranslucency(translucency);
     }
 
     DeserializeShaderFunction(root, "BaseColor", materialInitializationData->baseColor);
