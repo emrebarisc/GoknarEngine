@@ -12,6 +12,7 @@
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Materials/MaterialBase.h"
+#include "Goknar/Materials/MaterialSerializer.h"
 
 
 void AssetParser::ParseAssets(const std::string& filePath)
@@ -59,6 +60,8 @@ void AssetParser::ParseMeshes(tinyxml2::XMLElement* assetsElement)
 	
 	while (element)
 	{
+		MeshUnit* mesh = nullptr;
+
 		tinyxml2::XMLElement* child = element->FirstChildElement("Path");
 		if (child)
 		{
@@ -66,7 +69,27 @@ void AssetParser::ParseMeshes(tinyxml2::XMLElement* assetsElement)
 			stream << child->GetText() << std::endl;
 			stream >> path;
 
-			resourceManager->GetContent<MeshUnit>(path);
+			mesh = resourceManager->GetContent<MeshUnit>(path);
+			stream.clear();
+		}
+
+		if (!mesh)
+		{
+			continue;
+		}
+		
+		child = element->FirstChildElement("MaterialPath");
+		if (child)
+		{
+			std::string materialPath;
+			stream << child->GetText() << std::endl;
+			stream >> materialPath;
+
+			if (!materialPath.empty())
+			{
+				MaterialSerializer::Deserialize(materialPath, mesh->GetMaterial());
+			}
+
 			stream.clear();
 		}
 		element = element->NextSiblingElement("Mesh");

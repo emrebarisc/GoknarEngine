@@ -94,7 +94,7 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
     doc.SaveFile(contentDir.c_str());
 }
 
-void MaterialSerializer::Deserialize(const std::string& filepath, Material* owner, MaterialInitializationData* outData)
+void MaterialSerializer::Deserialize(const std::string& filepath, Material* owner)
 {
     std::string contentDir = ContentDir + filepath;
 
@@ -110,17 +110,19 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         return;
     }
 
+    MaterialInitializationData* materialInitializationData = owner->GetInitializationData();
+
     const char* fileTypeAttr = root->Attribute("FileType");
     if (!fileTypeAttr || std::string(fileTypeAttr) != "MaterialData") return;
 
     XMLElement* child = root->FirstChildElement("BoneCount");
     if (child && child->GetText())
     {
-        outData->boneCount = std::stoi(child->GetText());
+        materialInitializationData->boneCount = std::stoi(child->GetText());
     }
     else
     {
-        outData->boneCount = 0;
+        materialInitializationData->boneCount = 0;
     }
 
     XMLElement* child = root->FirstChildElement("BlendModel");
@@ -192,12 +194,12 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         owner->SetPhongExponent(1.f);
     }
 
-    DeserializeShaderFunction(root, "BaseColor", outData->baseColor);
-    DeserializeShaderFunction(root, "EmissiveColor", outData->emmisiveColor);
-    DeserializeShaderFunction(root, "FragmentNormal", outData->fragmentNormal);
-    DeserializeShaderFunction(root, "VertexNormal", outData->vertexNormal);
-    DeserializeShaderFunction(root, "UV", outData->uv);
-    DeserializeShaderFunction(root, "VertexPositionOffset", outData->vertexPositionOffset);
+    DeserializeShaderFunction(root, "BaseColor", materialInitializationData->baseColor);
+    DeserializeShaderFunction(root, "EmissiveColor", materialInitializationData->emmisiveColor);
+    DeserializeShaderFunction(root, "FragmentNormal", materialInitializationData->fragmentNormal);
+    DeserializeShaderFunction(root, "VertexNormal", materialInitializationData->vertexNormal);
+    DeserializeShaderFunction(root, "UV", materialInitializationData->uv);
+    DeserializeShaderFunction(root, "VertexPositionOffset", materialInitializationData->vertexPositionOffset);
 
     auto GetTextContent =
         [&](const char* name) -> std::string
@@ -206,10 +208,10 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
             return el && el->GetText() ? el->GetText() : "";
         };
 
-    outData->vertexShaderFunctions = GetTextContent("VertexShaderFunctions");
-    outData->fragmentShaderFunctions = GetTextContent("FragmentShaderFunctions");
-    outData->vertexShaderUniforms = GetTextContent("VertexShaderUniforms");
-    outData->fragmentShaderUniforms = GetTextContent("FragmentShaderUniforms");
+    materialInitializationData->vertexShaderFunctions = GetTextContent("VertexShaderFunctions");
+    materialInitializationData->fragmentShaderFunctions = GetTextContent("FragmentShaderFunctions");
+    materialInitializationData->vertexShaderUniforms = GetTextContent("VertexShaderUniforms");
+    materialInitializationData->fragmentShaderUniforms = GetTextContent("FragmentShaderUniforms");
 }
 
 void MaterialSerializer::SerializeShaderFunction(tinyxml2::XMLDocument& doc, XMLElement* parent, const std::string& name, const ShaderFunctionAndResult& func)
