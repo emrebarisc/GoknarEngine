@@ -1,42 +1,4 @@
 <Scene>
-    <Assets>
-        <Mesh>
-            <Path>Meshes/DefaultScene/SM_Arch.fbx</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/DefaultScene/SM_RadialStaircase.fbx</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/DefaultScene/SM_RadialStaircaseMirrored.fbx</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/DefaultScene/SM_RoundCorner.fbx</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/DefaultScene/SM_RadialStaircaseCollision.fbx</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/DefaultScene/SM_RadialStaircaseMirroredCollision.fbx</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/DefaultScene/SM_RoundCornerCollision.fbx</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/DefaultScene/SM_UnitCube.fbx</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/SM_Bullet.fbx</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/SM_Weapon.fbx</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/SM_Matilda.fbx</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/DefaultScene/SM_Block.fbx</Path>
-        </Mesh>
-    </Assets>
     <Lights>
         <DirectionalLight>
             <Direction>0.577350 0.577350 -0.577350</Direction>

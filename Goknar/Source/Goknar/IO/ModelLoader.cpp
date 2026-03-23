@@ -559,7 +559,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 	}
 	else
 	{
-		GOKNAR_CORE_ERROR("Error occured while loading the asset({}). What went wrong: {}", path, error.description.data);
+		GOKNAR_CORE_ERROR("\n\tError occured while loading the asset(%s)\n\tWhat went wrong: %s", path, error.description.data);
 	}
 
 	if (skeletalMesh)
