@@ -73,25 +73,24 @@ void AssetParser::ParseMeshes(tinyxml2::XMLElement* assetsElement)
 			stream.clear();
 		}
 
-		if (!mesh)
+		if (mesh)
 		{
-			continue;
+			child = element->FirstChildElement("MaterialPath");
+			if (child)
+			{
+				std::string materialPath;
+				stream << child->GetText() << std::endl;
+				stream >> materialPath;
+
+				if (!materialPath.empty())
+				{
+					MaterialSerializer::Deserialize(materialPath, mesh->GetMaterial());
+				}
+
+				stream.clear();
+			}
 		}
 		
-		child = element->FirstChildElement("MaterialPath");
-		if (child)
-		{
-			std::string materialPath;
-			stream << child->GetText() << std::endl;
-			stream >> materialPath;
-
-			if (!materialPath.empty())
-			{
-				MaterialSerializer::Deserialize(materialPath, mesh->GetMaterial());
-			}
-
-			stream.clear();
-		}
 		element = element->NextSiblingElement("Mesh");
 	}
 }
