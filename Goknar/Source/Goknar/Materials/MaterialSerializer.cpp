@@ -125,7 +125,7 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         materialInitializationData->boneCount = 0;
     }
 
-    XMLElement* child = root->FirstChildElement("BlendModel");
+    child = root->FirstChildElement("BlendModel");
     if (child && child->GetText())
     {
         std::string blendModel = child->GetText();
