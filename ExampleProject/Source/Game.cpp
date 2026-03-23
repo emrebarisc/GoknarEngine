@@ -23,6 +23,11 @@
 #include "Controllers/FreeCameraController.h"
 #include "UI/MainHUD.h"
 
+#include "Managers/ResourceManager.h"
+#include "Contents/Image.h"
+#include "Materials/MaterialSerializer.h"
+#include "Model/StaticMesh.h"
+
 Game::Game() : Application()
 {
 	REGISTER_CLASS(ObjectBase);

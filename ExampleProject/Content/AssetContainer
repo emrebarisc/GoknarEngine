@@ -2,27 +2,35 @@
     <Assets>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_Arch.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RadialStaircase.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RadialStaircaseMirrored.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RoundCorner.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RadialStaircaseCollision.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RadialStaircaseMirroredCollision.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RoundCornerCollision.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_UnitCube.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/SM_Bullet.fbx</Path>

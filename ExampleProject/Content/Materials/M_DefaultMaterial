@@ -1,0 +1,71 @@
+<GameAsset FileType="Material">
+    <BoneCount>0</BoneCount>
+    <BlendModel>Opaque</BlendModel>
+    <ShadingModel>Default</ShadingModel>
+    <Texture path="Textures/T_LightPlaceholder.png" name="placeholderTexture"/>
+    <AmbientReflectance>0 0 0</AmbientReflectance>
+    <DiffuseReflectance>0 0 0</DiffuseReflectance>
+    <SpecularReflectance>1 1 1</SpecularReflectance>
+    <PhongExponent>1.000000</PhongExponent>
+    <BaseColor>
+        <Calculation>
+    mat4 modelMatrix = finalModelMatrix;
+
+    float scaleX = length(vec3(modelMatrix[0].x, modelMatrix[0].y, modelMatrix[0].z));
+    float scaleY = length(vec3(modelMatrix[1].x, modelMatrix[1].y, modelMatrix[1].z));
+    float scaleZ = length(vec3(modelMatrix[2].x, modelMatrix[2].y, modelMatrix[2].z));
+    vec3 worldScale = vec3(scaleX, scaleY, scaleZ);
+
+    mat4 invModel = inverse(modelMatrix);
+
+    vec3 worldNormal = vertexNormal;
+    vec3 localNormal = normalize((vec4(worldNormal, 0.0) * modelMatrix).xyz); 
+    vec3 localPos = (invModel * fragmentPositionWorldSpace).xyz;
+    
+    vec3 absNormal = abs(localNormal);
+    
+    vec2 projectedUV;
+    if (absNormal.x &gt; absNormal.y &amp;&amp; absNormal.x &gt; absNormal.z)
+    {
+        projectedUV = localPos.zy * worldScale.zy;
+    }
+    else if (absNormal.y &gt; absNormal.x &amp;&amp; absNormal.y &gt; absNormal.z)
+    {
+        projectedUV = localPos.xz * worldScale.xz;
+    }
+    else
+    {
+        projectedUV = localPos.xy * worldScale.xy;
+    }
+
+    vec4 textureValue = texture2D(placeholderTexture, projectedUV);
+    float upsideValue = clamp(dot(vec3(0.0, 0.0, 1.0), worldNormal), 0.0, 1.0);
+    textureValue.xyz = textureValue.xyz * upsideValue + vec3(0.05) * (1.0 - upsideValue);
+</Calculation>
+        <Result>textureValue;</Result>
+    </BaseColor>
+    <EmissiveColor>
+        <Calculation></Calculation>
+        <Result></Result>
+    </EmissiveColor>
+    <FragmentNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </FragmentNormal>
+    <VertexNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexNormal>
+    <UV>
+        <Calculation></Calculation>
+        <Result></Result>
+    </UV>
+    <VertexPositionOffset>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexPositionOffset>
+    <VertexShaderFunctions><![CDATA[]]></VertexShaderFunctions>
+    <FragmentShaderFunctions><![CDATA[]]></FragmentShaderFunctions>
+    <VertexShaderUniforms><![CDATA[]]></VertexShaderUniforms>
+    <FragmentShaderUniforms><![CDATA[]]></FragmentShaderUniforms>
+</GameAsset>
