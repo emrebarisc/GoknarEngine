@@ -323,7 +323,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box1</Name>
-            <WorldPosition>10.996923 16.500351 0.624952</WorldPosition>
+            <WorldPosition>-15.000000 -2.000000 0.624952</WorldPosition>
             <EulerWorldRotation>-0.001953 0.001940 14.967640</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
@@ -347,7 +347,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box2</Name>
-            <WorldPosition>11.096281 15.168660 0.624932</WorldPosition>
+            <WorldPosition>-14.900642 -3.331691 0.624932</WorldPosition>
             <EulerWorldRotation>-0.006203 -0.001578 -19.919165</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
@@ -371,7 +371,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box3</Name>
-            <WorldPosition>12.243183 16.499050 0.624992</WorldPosition>
+            <WorldPosition>-13.753740 -2.001301 0.624992</WorldPosition>
             <EulerWorldRotation>0.001684 -0.000499 -4.876679</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
@@ -395,7 +395,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box4</Name>
-            <WorldPosition>12.551276 15.262458 0.624992</WorldPosition>
+            <WorldPosition>-13.445647 -3.237893 0.624992</WorldPosition>
             <EulerWorldRotation>-0.000865 -0.004706 9.913011</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
@@ -419,7 +419,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box5</Name>
-            <WorldPosition>11.482847 16.500315 1.624974</WorldPosition>
+            <WorldPosition>-14.514076 -2.000036 1.624974</WorldPosition>
             <EulerWorldRotation>0.000000 -0.009091 -0.053693</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
@@ -443,7 +443,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box6</Name>
-            <WorldPosition>11.484468 15.251822 1.624953</WorldPosition>
+            <WorldPosition>-14.512455 -3.248529 1.624953</WorldPosition>
             <EulerWorldRotation>-0.001118 -0.010880 19.971018</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
@@ -467,7 +467,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box7</Name>
-            <WorldPosition>11.473462 15.997696 2.624963</WorldPosition>
+            <WorldPosition>-14.523461 -2.502655 2.624963</WorldPosition>
             <EulerWorldRotation>0.012391 -0.016317 -19.977922</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>

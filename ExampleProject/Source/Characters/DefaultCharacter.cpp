@@ -54,7 +54,6 @@ DefaultCharacter::DefaultCharacter() :
 
 	thirdPersonCameraComponent_ = AddSubComponent<CameraComponent>();
 	thirdPersonCameraComponent_->SetCameraFollowsComponentRotation(false);
-	thirdPersonCameraComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 0.f, 0.f, 0.f }));
 	thirdPersonCameraComponent_->SetRelativePosition(Vector3::UpVector * 2.f - Vector3::LeftVector + thirdPersonCameraComponent_->GetRelativeForwardVector() * -8.f);
 	thirdPersonCameraComponent_->SetParent(GetRootComponent());
 
@@ -91,6 +90,10 @@ void DefaultCharacter::BeginGame()
 	engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult);
 
 	SetWorldPosition(raycastResult.hitPosition);
+
+	Quaternion spawnRotation = Quaternion::FromEulerDegrees(Vector3{ 0.f, 0.f, 180.f });
+	SetWorldRotation(spawnRotation);
+	thirdPersonCameraComponent_->SetRelativeRotation(spawnRotation);
 
 	Idle();
 
