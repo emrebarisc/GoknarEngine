@@ -2,6 +2,7 @@
 #define __MATH_H__
 
 #include "Goknar/Core.h"
+#include "Goknar/Math/MathDefines.h"
 
 #include <iostream>
 #include <random>
