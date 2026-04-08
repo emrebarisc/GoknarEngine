@@ -1,6 +1,9 @@
 <AssetContainer>
     <Assets>
         <Mesh>
+            <Path>Meshes/SK_DefaultCharacter.fbx</Path>
+        </Mesh>
+        <Mesh>
             <Path>Meshes/DefaultScene/SM_Arch.fbx</Path>
             <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
