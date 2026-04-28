@@ -22,6 +22,9 @@ class GOKNAR_API SceneParser
 public:
 	static void Parse(Scene* scene, const std::string& filePath);
 	static void SaveScene(Scene* scene, const std::string& filePath);
+	static void ApplyStaticMeshComponentMaterialPath(StaticMeshComponent* staticMeshComponent, const std::string& materialPath);
+	static std::string GetStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
+	static void ClearStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
 
 private:
 	static void ParseComponentValues(Component* component, tinyxml2::XMLElement* componentElement);

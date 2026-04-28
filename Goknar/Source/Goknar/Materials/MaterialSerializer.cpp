@@ -1,5 +1,6 @@
 #include "MaterialSerializer.h"
 
+#include <cmath>
 #include <sstream>
 
 #include "tinyxml2.h"
@@ -225,9 +226,16 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     if (child && child->GetText())
     {
         std::stringstream stream(child->GetText());
-        float phongExponent;
+        float phongExponent = 1.f;
         stream >> phongExponent;
-        owner->SetPhongExponent(phongExponent);
+        if (!stream.fail() && std::isfinite(phongExponent))
+        {
+            owner->SetPhongExponent(phongExponent);
+        }
+        else
+        {
+            owner->SetPhongExponent(1.f);
+        }
     }
     else
     {

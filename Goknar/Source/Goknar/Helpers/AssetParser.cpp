@@ -307,6 +307,10 @@ void AssetParser::SaveAssets(const std::string& filePath)
 			{
 				addPathAsset("Material", relativeAssetPath);
 			}
+			else if (gameAssetFileType == "MaterialFunction")
+			{
+				addPathAsset("MaterialFunction", relativeAssetPath);
+			}
 			else if (gameAssetFileType == "AnimationGraph")
 			{
 				addPathAsset("AnimationGraph", relativeAssetPath);

@@ -143,7 +143,7 @@ inline void IMeshInstance<MeshType>::SetMaterial(MaterialInstance* material)
 {
 	bool refreshInstanceOnRenderer = false;
 
-	if(material_ != nullptr)
+	if(material_ != nullptr && material != nullptr)
 	{
 		refreshInstanceOnRenderer = material_->GetBlendModel() != material->GetBlendModel();
 	}

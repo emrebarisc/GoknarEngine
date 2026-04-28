@@ -162,6 +162,8 @@ public:
 		materials_.push_back(std::unique_ptr<Material>(material));
 	}
 
+	void RemoveMaterial(Material* material);
+
 	const std::vector<std::unique_ptr<Material>>& GetMaterials() const
 	{
 		return materials_;
