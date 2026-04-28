@@ -176,6 +176,8 @@ void Material::PostInit()
 
 	engine->GetRenderer()->GetLightManager()->BindLightUniforms(renderPassTypeShaderMap_[RenderPassType::Forward]);
 
+#if !GOKNAR_BUILD_DEBUG
 	delete initializationData_;
 	initializationData_ = nullptr;
+#endif
 }
