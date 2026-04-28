@@ -1,6 +1,8 @@
- #include "pch.h"
+#include "pch.h"
 
 #include "MaterialBase.h"
+
+#include <cmath>
 
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
@@ -10,6 +12,31 @@
 #include "Goknar/Lights/LightManager/LightManager.h"
 
 #include "Goknar/Managers/WindowManager.h"
+
+namespace
+{
+	constexpr float kMinPhongExponent = 1.f;
+
+	RenderPassType GetMainRenderTypeSafe()
+	{
+		if (!engine || !engine->GetRenderer())
+		{
+			return RenderPassType::Forward;
+		}
+
+		return engine->GetRenderer()->GetMainRenderType();
+	}
+
+	float SanitizePhongExponent(float phongExponent)
+	{
+		if (!std::isfinite(phongExponent) || phongExponent < kMinPhongExponent)
+		{
+			return kMinPhongExponent;
+		}
+
+		return phongExponent;
+	}
+}
 
 IMaterialBase::IMaterialBase() :  
 	baseColor_(Vector4{ 1.f }),
@@ -43,9 +70,23 @@ IMaterialBase::~IMaterialBase()
 {
 }
 
+float IMaterialBase::GetPhongExponent() const
+{
+	float phongExponent = phongExponent_;
+
+	if (GetMainRenderTypeSafe() == RenderPassType::Deferred)
+	{
+		phongExponent = std::pow(2.f, phongExponent);
+	}
+
+	return SanitizePhongExponent(phongExponent);
+}
+
 void IMaterialBase::SetPhongExponent(float phongExponent)
 {
-	if(engine->GetRenderer()->GetMainRenderType() == RenderPassType::Deferred)
+	phongExponent = SanitizePhongExponent(phongExponent);
+
+	if(GetMainRenderTypeSafe() == RenderPassType::Deferred)
 	{
 		phongExponent = GoknarMath::Log(phongExponent) / LN_OF_2;
 	}
@@ -63,6 +104,7 @@ void IMaterialBase::Init()
 
 void IMaterialBase::PostInit()
 {
+	isInitialized_ = true;
 }
 
 void IMaterialBase::Render(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix) const

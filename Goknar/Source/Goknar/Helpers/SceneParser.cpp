@@ -2,8 +2,10 @@
 
 #include "SceneParser.h"
 
+#include <cmath>
 #include <sstream>
 #include <stdexcept>
+#include <unordered_map>
 
 #include "Goknar/Camera.h"
 #include "Goknar/Engine.h"
@@ -27,6 +29,9 @@
 #include "Goknar/Managers/ResourceManager.h"
 
 #include "Goknar/Materials/MaterialBase.h"
+#include "Goknar/Materials/Material.h"
+#include "Goknar/Materials/MaterialInstance.h"
+#include "Goknar/Materials/MaterialSerializer.h"
 
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/MeshUnit.h"
@@ -46,6 +51,54 @@
 #include "Goknar/Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 
 #include "tinyxml2.h"
+
+namespace
+{
+	std::unordered_map<const StaticMeshComponent*, std::string> staticMeshComponentMaterialPathMap;
+}
+
+void SceneParser::ApplyStaticMeshComponentMaterialPath(StaticMeshComponent* staticMeshComponent, const std::string& materialPath)
+{
+	if (!staticMeshComponent)
+	{
+		return;
+	}
+
+	if (materialPath.empty())
+	{
+		ClearStaticMeshComponentMaterialPath(staticMeshComponent);
+		return;
+	}
+
+	StaticMesh* mesh = staticMeshComponent->GetMeshInstance() ? staticMeshComponent->GetMeshInstance()->GetMesh() : nullptr;
+	if (!mesh)
+	{
+		staticMeshComponentMaterialPathMap[staticMeshComponent] = materialPath;
+		return;
+	}
+
+	Material* material = new Material();
+	MaterialSerializer::Deserialize(materialPath, material);
+	staticMeshComponent->GetMeshInstance()->SetMaterial(MaterialInstance::Create(material));
+
+	staticMeshComponentMaterialPathMap[staticMeshComponent] = materialPath;
+}
+
+std::string SceneParser::GetStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent)
+{
+	auto materialPathIterator = staticMeshComponentMaterialPathMap.find(staticMeshComponent);
+	if (materialPathIterator == staticMeshComponentMaterialPathMap.end())
+	{
+		return "";
+	}
+
+	return materialPathIterator->second;
+}
+
+void SceneParser::ClearStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent)
+{
+	staticMeshComponentMaterialPathMap.erase(staticMeshComponent);
+}
 
 void SceneParser::Parse(Scene* scene, const std::string& filePath)
 {
@@ -675,6 +728,10 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			}
 			float phongExponent;
 			stream >> phongExponent;
+			if (!std::isfinite(phongExponent) || phongExponent < 1.f)
+			{
+				phongExponent = 1.f;
+			}
 			material->SetPhongExponent(phongExponent);
 
 			element = element->NextSiblingElement("Material");
@@ -792,6 +849,7 @@ void SceneParser::ParseStaticMeshComponentValues(StaticMeshComponent* staticMesh
 			staticMeshComponent->SetMesh(staticMesh);
 		}
 	}
+	stream.clear();
 
 	dataElement = componentElement->FirstChildElement("RenderMask");
 	if (dataElement)
@@ -801,6 +859,20 @@ void SceneParser::ParseStaticMeshComponentValues(StaticMeshComponent* staticMesh
 		stream >> renderMaskString;
 		int renderMask = std::stoi(renderMaskString);
 		staticMeshComponent->GetMeshInstance()->SetRenderMask(renderMask);
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("MaterialPath");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		std::string materialPath;
+		stream >> materialPath;
+		ApplyStaticMeshComponentMaterialPath(staticMeshComponent, materialPath);
+	}
+	else
+	{
+		ClearStaticMeshComponentMaterialPath(staticMeshComponent);
 	}
 
 	stream.clear();
@@ -1326,6 +1398,14 @@ void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* c
 	tinyxml2::XMLElement* staticMeshInstanceRenderMaskElement = xmlDocument.NewElement("RenderMask");
 	staticMeshInstanceRenderMaskElement->SetText(staticMeshComponent->GetMeshInstance()->GetRenderMask());
 	parentElement->InsertEndChild(staticMeshInstanceRenderMaskElement);
+
+	const std::string materialPath = GetStaticMeshComponentMaterialPath(staticMeshComponent);
+	if (!materialPath.empty())
+	{
+		tinyxml2::XMLElement* staticMeshComponentMaterialPathElement = xmlDocument.NewElement("MaterialPath");
+		staticMeshComponentMaterialPathElement->SetText(materialPath.c_str());
+		parentElement->InsertEndChild(staticMeshComponentMaterialPathElement);
+	}
 }
 
 void SceneParser::GetXMLElement_BoxCollisionComponent(const BoxCollisionComponent* const boxCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)

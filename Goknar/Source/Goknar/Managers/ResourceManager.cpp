@@ -31,6 +31,39 @@ void ResourceManager::Init()
 void ResourceManager::PostInit()
 {
 	resourceContainer_->PostInit();
+
+	std::vector<std::unique_ptr<Material>>::const_iterator materialIterator = materials_.cbegin();
+	while (materialIterator != materials_.cend())
+	{
+		Material* material = materialIterator->get();
+
+		if (!material->GetIsInitialized())
+		{
+			material->Build(nullptr);
+			material->PreInit();
+			material->Init();
+			material->PostInit();
+		}
+
+		materialIterator++;
+	}
+}
+
+void ResourceManager::RemoveMaterial(Material* material)
+{
+	auto materialIterator =
+		std::find_if(
+			materials_.begin(),
+			materials_.end(),
+			[material](const std::unique_ptr<Material>& candidate)
+			{
+				return candidate.get() == material;
+			});
+
+	if (materialIterator != materials_.end())
+	{
+		materials_.erase(materialIterator);
+	}
 }
 
 Content* ResourceManager::LoadContent(const std::string& path)

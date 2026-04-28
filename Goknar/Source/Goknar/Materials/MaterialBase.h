@@ -87,10 +87,7 @@ public:
 		emmisiveColor_ = emmisiveColor;
 	}
 
-	float GetPhongExponent() const
-	{
-		return phongExponent_;
-	}
+	float GetPhongExponent() const;
 
 	void SetPhongExponent(float phongExponent);
 
@@ -144,6 +141,11 @@ public:
 		return &textureImages_;
 	}
 
+	bool GetIsInitialized() const
+	{
+		return isInitialized_;
+	}
+
 protected:
 	std::vector<const Image*> textureImages_;
 
@@ -159,6 +161,8 @@ protected:
 
 	MaterialBlendModel blendModel_{ MaterialBlendModel::Opaque };
 	MaterialShadingModel shadingModel_{ MaterialShadingModel::Default };
+
+	bool isInitialized_{ false };
 
 private:
 };
