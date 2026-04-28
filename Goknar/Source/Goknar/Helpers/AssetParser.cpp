@@ -1,9 +1,12 @@
 #include "pch.h"
 #include "AssetParser.h"
 
+#include <algorithm>
 #include <sstream>
 #include <stdexcept>
 #include <iostream>
+#include <filesystem>
+#include <map>
 
 #include "Goknar/Engine.h"
 #include "Goknar/Contents/Audio.h"
@@ -13,6 +16,73 @@
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Materials/MaterialSerializer.h"
+
+namespace
+{
+	std::string NormalizePath(const std::string& path)
+	{
+		return std::filesystem::path(path).lexically_normal().generic_string();
+	}
+
+	std::string GetRelativeContentPath(const std::filesystem::path& absolutePath)
+	{
+		std::string normalizedAbsolutePath = NormalizePath(absolutePath.generic_string());
+		std::string normalizedContentDir = NormalizePath(ContentDir);
+		if (!normalizedContentDir.empty() && normalizedContentDir.back() != '/')
+		{
+			normalizedContentDir += '/';
+		}
+
+		if (normalizedAbsolutePath.rfind(normalizedContentDir, 0) == 0)
+		{
+			return normalizedAbsolutePath.substr(normalizedContentDir.size());
+		}
+
+		return normalizedAbsolutePath;
+	}
+
+	std::map<std::string, std::string> LoadExistingMeshMaterialPaths(const std::string& assetContainerPath)
+	{
+		std::map<std::string, std::string> materialPathByMeshPath;
+
+		tinyxml2::XMLDocument existingDocument;
+		if (existingDocument.LoadFile(assetContainerPath.c_str()) != tinyxml2::XML_SUCCESS)
+		{
+			return materialPathByMeshPath;
+		}
+
+		tinyxml2::XMLElement* rootElement = existingDocument.FirstChildElement("AssetContainer");
+		tinyxml2::XMLElement* assetsElement = rootElement ? rootElement->FirstChildElement("Assets") : nullptr;
+		for (tinyxml2::XMLElement* meshElement = assetsElement ? assetsElement->FirstChildElement("Mesh") : nullptr;
+			meshElement != nullptr;
+			meshElement = meshElement->NextSiblingElement("Mesh"))
+		{
+			tinyxml2::XMLElement* pathElement = meshElement->FirstChildElement("Path");
+			tinyxml2::XMLElement* materialPathElement = meshElement->FirstChildElement("MaterialPath");
+			if (!pathElement || !pathElement->GetText() || !materialPathElement || !materialPathElement->GetText())
+			{
+				continue;
+			}
+
+			materialPathByMeshPath[pathElement->GetText()] = materialPathElement->GetText();
+		}
+
+		return materialPathByMeshPath;
+	}
+
+	std::string TryGetGameAssetFileType(const std::filesystem::path& absolutePath)
+	{
+		tinyxml2::XMLDocument document;
+		if (document.LoadFile(absolutePath.generic_string().c_str()) != tinyxml2::XML_SUCCESS)
+		{
+			return "";
+		}
+
+		tinyxml2::XMLElement* root = document.FirstChildElement("GameAsset");
+		const char* fileType = root ? root->Attribute("FileType") : nullptr;
+		return fileType ? fileType : "";
+	}
+}
 
 
 void AssetParser::ParseAssets(const std::string& filePath)
@@ -169,15 +239,82 @@ void AssetParser::SaveAssets(const std::string& filePath)
 	assetXML.InsertFirstChild(rootElement);
 
 	tinyxml2::XMLElement* assetsElement = assetXML.NewElement("Assets");
-	
-	SaveMeshes(assetXML, assetsElement);
-	SaveTextures(assetXML, assetsElement);
-	SaveMaterials(assetXML, assetsElement);
-	SaveAudio(assetXML, assetsElement);
+
+	const std::string fullPath = ContentDir + filePath;
+	const std::map<std::string, std::string> meshMaterialPaths = LoadExistingMeshMaterialPaths(fullPath);
+	const std::filesystem::path contentRoot = std::filesystem::path(ContentDir);
+
+	auto addPathAsset = [&](const char* elementName, const std::string& assetPath, const std::string* materialPath = nullptr)
+	{
+		tinyxml2::XMLElement* assetElement = assetXML.NewElement(elementName);
+		tinyxml2::XMLElement* pathElement = assetXML.NewElement("Path");
+		pathElement->SetText(assetPath.c_str());
+		assetElement->InsertEndChild(pathElement);
+
+		if (materialPath && !materialPath->empty())
+		{
+			tinyxml2::XMLElement* materialPathElement = assetXML.NewElement("MaterialPath");
+			materialPathElement->SetText(materialPath->c_str());
+			assetElement->InsertEndChild(materialPathElement);
+		}
+
+		assetsElement->InsertEndChild(assetElement);
+	};
+
+	if (std::filesystem::exists(contentRoot) && std::filesystem::is_directory(contentRoot))
+	{
+		for (const auto& entry : std::filesystem::recursive_directory_iterator(contentRoot, std::filesystem::directory_options::skip_permission_denied))
+		{
+			if (!entry.is_regular_file())
+			{
+				continue;
+			}
+
+			const std::string relativeAssetPath = GetRelativeContentPath(entry.path());
+			if (relativeAssetPath == filePath)
+			{
+				continue;
+			}
+
+			std::string extension = entry.path().extension().generic_string();
+			std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char character)
+				{
+					return static_cast<char>(std::tolower(character));
+				});
+
+			if (extension == ".fbx")
+			{
+				auto existingMaterialPathIterator = meshMaterialPaths.find(relativeAssetPath);
+				const std::string* materialPath = existingMaterialPathIterator != meshMaterialPaths.end() ? &existingMaterialPathIterator->second : nullptr;
+				addPathAsset("Mesh", relativeAssetPath, materialPath);
+				continue;
+			}
+
+			if (extension == ".png" || extension == ".jpg")
+			{
+				addPathAsset("Texture", relativeAssetPath);
+				continue;
+			}
+
+			if (extension == ".wav")
+			{
+				addPathAsset("Audio", relativeAssetPath);
+				continue;
+			}
+
+			const std::string gameAssetFileType = TryGetGameAssetFileType(entry.path());
+			if (gameAssetFileType == "Material")
+			{
+				addPathAsset("Material", relativeAssetPath);
+			}
+			else if (gameAssetFileType == "AnimationGraph")
+			{
+				addPathAsset("AnimationGraph", relativeAssetPath);
+			}
+		}
+	}
 
 	rootElement->InsertEndChild(assetsElement);
-
-	std::string fullPath = ContentDir + filePath;
 	assetXML.SaveFile(fullPath.c_str());
 }
 

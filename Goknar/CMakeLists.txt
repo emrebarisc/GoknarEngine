@@ -147,7 +147,11 @@ target_include_directories(${APP_NAME} PUBLIC
 target_compile_definitions(${APP_NAME} PUBLIC "PROJECT_DIR=\"./\"")
 
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-	file(COPY "EngineContent" DESTINATION ${CMAKE_BINARY_DIR}/Output/)
+	if(DEFINED GOKNAR_ENGINE_CONTENT_SOURCE_DIR AND EXISTS "${GOKNAR_ENGINE_CONTENT_SOURCE_DIR}")
+		file(COPY "${GOKNAR_ENGINE_CONTENT_SOURCE_DIR}" DESTINATION ${CMAKE_BINARY_DIR}/Output/)
+	else()
+		file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/EngineContent" DESTINATION ${CMAKE_BINARY_DIR}/Output/)
+	endif()
 	target_compile_definitions(${APP_NAME} PUBLIC "ENGINE_CONTENT_DIR=\"EngineContent/\"")
 	add_compile_definitions(GOKNAR_BUILD_DEBUG GOKNAR_ENABLE_ASSERTS)
 	message("-------------------- Debug --------------------")
