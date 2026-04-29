@@ -55,6 +55,26 @@
 namespace
 {
 	std::unordered_map<const StaticMeshComponent*, std::string> staticMeshComponentMaterialPathMap;
+	std::unordered_map<std::string, Material*> sharedMaterialPathMap;
+}
+
+Material* SceneParser::GetOrCreateSharedMaterial(const std::string& materialPath)
+{
+	if (materialPath.empty())
+	{
+		return nullptr;
+	}
+
+	auto sharedMaterialIterator = sharedMaterialPathMap.find(materialPath);
+	if (sharedMaterialIterator != sharedMaterialPathMap.end())
+	{
+		return sharedMaterialIterator->second;
+	}
+
+	Material* material = new Material();
+	MaterialSerializer::Deserialize(materialPath, material);
+	sharedMaterialPathMap[materialPath] = material;
+	return material;
 }
 
 void SceneParser::ApplyStaticMeshComponentMaterialPath(StaticMeshComponent* staticMeshComponent, const std::string& materialPath)
@@ -77,9 +97,11 @@ void SceneParser::ApplyStaticMeshComponentMaterialPath(StaticMeshComponent* stat
 		return;
 	}
 
-	Material* material = new Material();
-	MaterialSerializer::Deserialize(materialPath, material);
-	staticMeshComponent->GetMeshInstance()->SetMaterial(MaterialInstance::Create(material));
+	Material* material = GetOrCreateSharedMaterial(materialPath);
+	if (material)
+	{
+		staticMeshComponent->GetMeshInstance()->SetMaterial(MaterialInstance::Create(material));
+	}
 
 	staticMeshComponentMaterialPathMap[staticMeshComponent] = materialPath;
 }

@@ -16,12 +16,14 @@ class Scene;
 class SphereCollisionComponent;
 class StaticMeshComponent;
 class ObjectBase;
+class Material;
 
 class GOKNAR_API SceneParser
 {
 public:
 	static void Parse(Scene* scene, const std::string& filePath);
 	static void SaveScene(Scene* scene, const std::string& filePath);
+	static Material* GetOrCreateSharedMaterial(const std::string& materialPath);
 	static void ApplyStaticMeshComponentMaterialPath(StaticMeshComponent* staticMeshComponent, const std::string& materialPath);
 	static std::string GetStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
 	static void ClearStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
