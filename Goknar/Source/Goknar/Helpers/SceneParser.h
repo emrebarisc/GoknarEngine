@@ -27,6 +27,7 @@ public:
 	static void ApplyStaticMeshComponentMaterialPath(StaticMeshComponent* staticMeshComponent, const std::string& materialPath);
 	static std::string GetStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
 	static void ClearStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
+	static void ClearCaches();
 
 private:
 	static void ParseComponentValues(Component* component, tinyxml2::XMLElement* componentElement);

@@ -77,7 +77,10 @@ Renderer::~Renderer()
 
 	glDeleteBuffers(1, &staticVertexBufferId_);
 	glDeleteBuffers(1, &skeletalVertexBufferId_);
+	glDeleteBuffers(1, &dynamicVertexBufferId_);
 	glDeleteBuffers(1, &staticIndexBufferId_);
+	glDeleteBuffers(1, &skeletalIndexBufferId_);
+	glDeleteBuffers(1, &dynamicIndexBufferId_);
 }
 
 //static FrameBuffer testFrameBuffer;

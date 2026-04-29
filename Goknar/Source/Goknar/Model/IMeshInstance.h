@@ -28,6 +28,11 @@ public:
 
 	inline virtual ~IMeshInstance()
 	{
+		if (material_)
+		{
+			material_->Destroy();
+			material_ = nullptr;
+		}
 	}
 
 	inline void PreInit();
@@ -141,11 +146,22 @@ inline void IMeshInstance<MeshType>::PostInit()
 template<class MeshType>
 inline void IMeshInstance<MeshType>::SetMaterial(MaterialInstance* material)
 {
+	if (material_ == material)
+	{
+		return;
+	}
+
 	bool refreshInstanceOnRenderer = false;
 
 	if(material_ != nullptr && material != nullptr)
 	{
 		refreshInstanceOnRenderer = material_->GetBlendModel() != material->GetBlendModel();
+	}
+
+	if (material_)
+	{
+		material_->Destroy();
+		material_ = nullptr;
 	}
 	
 	material_ = material;
@@ -224,6 +240,13 @@ inline void IMeshInstance<MeshType>::Destroy()
 	{
 		RemoveMeshInstanceFromRenderer();
 	}
+
+	if (material_)
+	{
+		material_->Destroy();
+		material_ = nullptr;
+	}
+
 	delete this;
 }
 

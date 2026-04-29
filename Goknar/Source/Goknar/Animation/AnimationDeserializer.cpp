@@ -97,6 +97,7 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
                 node->animationName = nodeEl->Attribute("animationName");
                 node->loop = nodeEl->BoolAttribute("loop");
                 idToNodeMap_[nodeId] = node;
+                state->AddNode(node);
             }
         }
     }

@@ -131,10 +131,13 @@ void AnimationSerializer::CollectNodes(const std::shared_ptr<AnimationNode>& nod
     visited.insert(node.get());
     outNodes.push_back(node);
 
-    for (const auto& transition : node->outboundConnections)
-    {
-        CollectNodes(transition->target, visited, outNodes);
-    }
+	for (const auto& transition : node->outboundConnections)
+	{
+		if (const auto target = transition->target.lock())
+		{
+			CollectNodes(target, visited, outNodes);
+		}
+	}
 }
 
 void AnimationSerializer::SerializeState(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* parent, const std::shared_ptr<AnimationState>& state)
@@ -191,9 +194,11 @@ void AnimationSerializer::SerializeNode(tinyxml2::XMLDocument* doc, tinyxml2::XM
 
 void AnimationSerializer::SerializeNodeTransition(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* parent, const std::shared_ptr<AnimationTransition<AnimationNode>>& transition)
 {
-    tinyxml2::XMLElement* transEl = doc->NewElement("Transition");
-    transEl->SetAttribute("targetId", GetNodeId(transition->target.get()));
-    transEl->SetAttribute("transitWhenAnimationDone", transition->transitWhenAnimationDone);
+	const std::shared_ptr<AnimationNode> target = transition->target.lock();
+
+	tinyxml2::XMLElement* transEl = doc->NewElement("Transition");
+	transEl->SetAttribute("targetId", GetNodeId(target.get()));
+	transEl->SetAttribute("transitWhenAnimationDone", transition->transitWhenAnimationDone);
 
     tinyxml2::XMLElement* conditionsEl = doc->NewElement("Conditions");
     for (const auto& condition : transition->conditions)
@@ -211,9 +216,11 @@ void AnimationSerializer::SerializeNodeTransition(tinyxml2::XMLDocument* doc, ti
 
 void AnimationSerializer::SerializeStateTransition(tinyxml2::XMLDocument* doc, tinyxml2::XMLElement* parent, const std::shared_ptr<AnimationTransition<AnimationState>>& transition)
 {
-    tinyxml2::XMLElement* transEl = doc->NewElement("Transition");
-    transEl->SetAttribute("targetId", GetStateId(transition->target.get()));
-    transEl->SetAttribute("transitWhenAnimationDone", transition->transitWhenAnimationDone);
+	const std::shared_ptr<AnimationState> target = transition->target.lock();
+
+	tinyxml2::XMLElement* transEl = doc->NewElement("Transition");
+	transEl->SetAttribute("targetId", GetStateId(target.get()));
+	transEl->SetAttribute("transitWhenAnimationDone", transition->transitWhenAnimationDone);
 
     tinyxml2::XMLElement* conditionsEl = doc->NewElement("Conditions");
     for (const auto& condition : transition->conditions)

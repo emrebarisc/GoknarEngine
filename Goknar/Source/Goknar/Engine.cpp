@@ -10,6 +10,7 @@
 #include "Components/Component.h"
 #include "Debug/DebugDrawer.h"
 #include "Factories/DynamicObjectFactory.h"
+#include "Helpers/SceneParser.h"
 #include "Managers/CameraManager.h"
 #include "Managers/InputManager.h"
 #include "Managers/ObjectIDManager.h"
@@ -68,6 +69,8 @@ Engine::~Engine()
 
 	delete objectManager_;
 	objectManager_ = nullptr;
+
+	SceneParser::ClearCaches();
 
 	delete resourceManager_;
 	resourceManager_ = nullptr;
