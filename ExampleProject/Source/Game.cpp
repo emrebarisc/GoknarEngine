@@ -10,6 +10,7 @@
 #include "Goknar/ObjectBase.h"
 #include "Goknar/Math/GoknarMath.h"
 #include "Goknar/Factories/DynamicObjectFactory.h"
+#include "Goknar/Helpers/AssetParser.h"
 #include "Goknar/Managers/ConfigManager.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Managers/WindowManager.h"
@@ -18,7 +19,6 @@
 
 #include "GameState.h"
 #include "Characters/DefaultCharacter.h"
-#include "Data/MaterialInitializer.h"
 #include "Objects/FreeCameraObject.h"
 #include "Controllers/FreeCameraController.h"
 #include "UI/MainHUD.h"
@@ -34,6 +34,8 @@ Game::Game() : Application()
 	REGISTER_CLASS(RigidBody);
 
 	engine->SetApplication(this);
+
+	AssetParser::ParseAssets("AssetContainer");
 
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
 
@@ -68,8 +70,6 @@ Game::Game() : Application()
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	float elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_WARN("Project is set up in %f seconds.", elapsedTime);
-
-	MaterialInitializer::Init();
 
 	lastFrameTimePoint = currentTimePoint;
 	

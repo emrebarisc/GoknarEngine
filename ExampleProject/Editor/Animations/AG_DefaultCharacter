@@ -1,0 +1,47 @@
+<GameAsset FileType="AnimationGraphEditorReflection">
+    <Canvas Scale="1" ScrollX="0" ScrollY="0"/>
+    <States>
+        <State Index="0" PosX="50" PosY="50">
+            <Nodes>
+                <Node Index="0" PosX="50" PosY="50"/>
+                <Node Index="1" PosX="50" PosY="200"/>
+                <Node Index="2" PosX="50" PosY="350"/>
+                <Node Index="3" PosX="50" PosY="500"/>
+                <Node Index="4" PosX="50" PosY="650"/>
+                <Node Index="5" PosX="50" PosY="800"/>
+            </Nodes>
+        </State>
+        <State Index="1" PosX="50" PosY="200">
+            <Nodes>
+                <Node Index="0" PosX="50" PosY="50"/>
+                <Node Index="1" PosX="50" PosY="200"/>
+                <Node Index="2" PosX="50" PosY="350"/>
+                <Node Index="3" PosX="50" PosY="500"/>
+                <Node Index="4" PosX="50" PosY="650"/>
+                <Node Index="5" PosX="50" PosY="800"/>
+                <Node Index="6" PosX="50" PosY="950"/>
+                <Node Index="7" PosX="50" PosY="1100"/>
+                <Node Index="8" PosX="50" PosY="1250"/>
+            </Nodes>
+        </State>
+        <State Index="2" PosX="50" PosY="350">
+            <Nodes>
+                <Node Index="0" PosX="50" PosY="50"/>
+                <Node Index="1" PosX="50" PosY="200"/>
+            </Nodes>
+        </State>
+        <State Index="3" PosX="50" PosY="500">
+            <Nodes>
+                <Node Index="0" PosX="50" PosY="50"/>
+                <Node Index="1" PosX="50" PosY="200"/>
+                <Node Index="2" PosX="50" PosY="350"/>
+                <Node Index="3" PosX="50" PosY="500"/>
+                <Node Index="4" PosX="50" PosY="650"/>
+                <Node Index="5" PosX="50" PosY="800"/>
+                <Node Index="6" PosX="50" PosY="950"/>
+                <Node Index="7" PosX="50" PosY="1100"/>
+                <Node Index="8" PosX="50" PosY="1250"/>
+            </Nodes>
+        </State>
+    </States>
+</GameAsset>
