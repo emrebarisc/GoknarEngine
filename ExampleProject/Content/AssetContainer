@@ -1,22 +1,29 @@
 <AssetContainer>
     <Assets>
-        <Mesh>
-            <Path>Meshes/SK_DefaultCharacter.fbx</Path>
-        </Mesh>
+        <AnimationGraph>
+            <Path>Animations/AG_DefaultCharacter</Path>
+        </AnimationGraph>
+        <Material>
+            <Path>Materials/M_DefaultMaterial</Path>
+        </Material>
+        <Material>
+            <Path>Materials/M_Matilda</Path>
+        </Material>
+        <Material>
+            <Path>Materials/M_Panner</Path>
+        </Material>
+        <Material>
+            <Path>Materials/M_PhysicsBlocks</Path>
+        </Material>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_Arch.fbx</Path>
             <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
+            <Path>Meshes/DefaultScene/SM_Block.fbx</Path>
+        </Mesh>
+        <Mesh>
             <Path>Meshes/DefaultScene/SM_RadialStaircase.fbx</Path>
-            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/DefaultScene/SM_RadialStaircaseMirrored.fbx</Path>
-            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/DefaultScene/SM_RoundCorner.fbx</Path>
             <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
@@ -24,7 +31,15 @@
             <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
+            <Path>Meshes/DefaultScene/SM_RadialStaircaseMirrored.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+        </Mesh>
+        <Mesh>
             <Path>Meshes/DefaultScene/SM_RadialStaircaseMirroredCollision.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/DefaultScene/SM_RoundCorner.fbx</Path>
             <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
@@ -36,16 +51,26 @@
             <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
-            <Path>Meshes/SM_Bullet.fbx</Path>
+            <Path>Meshes/SK_DefaultCharacter.fbx</Path>
+            <MaterialPath>Materials/M_DefaultCharacter</MaterialPath>
         </Mesh>
         <Mesh>
-            <Path>Meshes/SM_Weapon.fbx</Path>
+            <Path>Meshes/SM_Bullet.fbx</Path>
         </Mesh>
         <Mesh>
             <Path>Meshes/SM_Matilda.fbx</Path>
         </Mesh>
         <Mesh>
-            <Path>Meshes/DefaultScene/SM_Block.fbx</Path>
+            <Path>Meshes/SM_Weapon.fbx</Path>
         </Mesh>
+        <Texture Name="darkPlaceholder">
+            <Path>Textures/T_DarkPlaceholder.png</Path>
+        </Texture>
+        <Texture Name="lightPlaceholder">
+            <Path>Textures/T_LightPlaceholder.png</Path>
+        </Texture>
+        <Texture Name="matildaTexture">
+            <Path>Textures/T_Matilda.png</Path>
+        </Texture>
     </Assets>
 </AssetContainer>

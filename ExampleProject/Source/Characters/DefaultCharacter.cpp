@@ -72,6 +72,7 @@ DefaultCharacter::DefaultCharacter() :
 
 	animationGraph_ = new AnimationGraph();
 	animationGraph_->relativeSkeletalMeshInstance = skeletalMeshComponent_->GetMeshInstance();
+	AnimationDeserializer().Deserialize(animationGraph_, "Animations/AG_DefaultCharacter");
 }
 
 DefaultCharacter::~DefaultCharacter()
@@ -102,8 +103,6 @@ void DefaultCharacter::BeginGame()
 
 	cameraHeightOffset_.Reset(Vector3{ 0.f, 0.f, 1.f });
 	cameraHeightOffset_.speed = 8.f;
-
-	AnimationDeserializer().Deserialize(animationGraph_, "Animations/AG_DefaultCharacter");
 
 	animationGraph_->Init();
 }

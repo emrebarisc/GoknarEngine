@@ -2,7 +2,7 @@
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
-    <Texture path="Textures/T_DarkPlaceholder.png" name="placeholderTexture"/>
+    <Texture path="Textures/T_DarkPlaceholder.png"/>
     <BaseColorValue>1.0 1.0 1.0 1.0</BaseColorValue>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
     <Translucency>0</Translucency>
@@ -41,7 +41,7 @@
                 projectedUV = localPos.xy * worldScale.xy;
             }
 
-            vec4 textureValue = texture2D(placeholderTexture, projectedUV);
+            vec4 textureValue = texture2D(darkPlaceholder, projectedUV);
             float upsideValue = clamp(dot(vec3(0.0, 0.0, 1.0), worldNormal), 0.0, 1.0);
             textureValue.xyz = textureValue.xyz * upsideValue + vec3(0.05) * (1.0 - upsideValue);
         </Calculation>

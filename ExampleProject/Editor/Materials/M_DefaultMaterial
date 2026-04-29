@@ -1,0 +1,102 @@
+<GameAsset FileType="MaterialEditorReflection">
+    <Canvas Scale="1" ScrollX="0" ScrollY="0"/>
+    <Nodes>
+        <Node Id="1" Name="Material Output" Category="Master" PosX="400" PosY="80" SizeX="200" SizeY="150" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="2" NodeId="1" Name="Base Color" Type="Vector4" Kind="Input">
+                    <DefaultValue type="Vector4" x="1" y="1" z="1" w="1"/>
+                </Pin>
+                <Pin Id="3" NodeId="1" Name="Emissive" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+                <Pin Id="4" NodeId="1" Name="Normal" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="1"/>
+                </Pin>
+                <Pin Id="5" NodeId="1" Name="World Position Offset" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs/>
+        </Node>
+        <Node Id="6" Name="Texture Sample" Category="Texture" PosX="120" PosY="620" SizeX="200" SizeY="80" IsUniform="1">
+            <StringData><![CDATA[placeholderTexture]]></StringData>
+            <Inputs>
+                <Pin Id="7" NodeId="6" Name="UV" Type="Vector2" Kind="Input">
+                    <DefaultValue type="Vector2" x="0" y="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="8" NodeId="6" Name="Color" Type="Vector4" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="9" Name="Vector3 Constant" Category="Constants" PosX="120" PosY="80" SizeX="160" SizeY="120" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="10" NodeId="9" Name="X" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="11" NodeId="9" Name="Y" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="12" NodeId="9" Name="Z" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="13" NodeId="9" Name="Out" Type="Vector3" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="15" Name="Custom GLSL" Category="Custom" PosX="120" PosY="260" SizeX="250" SizeY="80" IsUniform="1">
+            <StringData><![CDATA[
+            mat4 modelMatrix = finalModelMatrix;
+
+            float scaleX = length(vec3(modelMatrix[0].x, modelMatrix[0].y, modelMatrix[0].z));
+            float scaleY = length(vec3(modelMatrix[1].x, modelMatrix[1].y, modelMatrix[1].z));
+            float scaleZ = length(vec3(modelMatrix[2].x, modelMatrix[2].y, modelMatrix[2].z));
+            vec3 worldScale = vec3(scaleX, scaleY, scaleZ);
+
+            mat4 invModel = inverse(modelMatrix);
+
+            vec3 worldNormal = vertexNormal;
+            vec3 localNormal = normalize((vec4(worldNormal, 0.0) * modelMatrix).xyz);
+            vec3 localPos = (invModel * fragmentPositionWorldSpace).xyz;
+
+            vec3 absNormal = abs(localNormal);
+
+            vec2 projectedUV;
+            if (absNormal.x > absNormal.y && absNormal.x > absNormal.z)
+            {
+                projectedUV = localPos.zy * worldScale.zy;
+            }
+            else if (absNormal.y > absNormal.x && absNormal.y > absNormal.z)
+            {
+                projectedUV = localPos.xz * worldScale.xz;
+            }
+            else
+            {
+                projectedUV = localPos.xy * worldScale.xy;
+            }
+
+            vec4 textureValue = texture2D(placeholderTexture, projectedUV);
+            float upsideValue = clamp(dot(vec3(0.0, 0.0, 1.0), worldNormal), 0.0, 1.0);
+            textureValue.xyz = textureValue.xyz * upsideValue + vec3(0.05) * (1.0 - upsideValue);
+        
+RETURN_RESULT:textureValue;]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="16" NodeId="15" Name="Out" Type="Any" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+    </Nodes>
+    <Links>
+        <Link Id="14" StartPinId="13" EndPinId="3"/>
+        <Link Id="17" StartPinId="16" EndPinId="2"/>
+    </Links>
+</GameAsset>
