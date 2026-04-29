@@ -73,11 +73,9 @@ MainHUD::~MainHUD()
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::F, INPUT_ACTION::G_PRESS, onFocusInputPressedDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::ESCAPE, INPUT_ACTION::G_PRESS, onCancelInputPressedDelegate_);
 
-	ImGui_DestroyFontsTexture();
-	ImGui_DestroyDeviceObjects();
 	ImGui_Shutdown();
 
-	delete context_;
+	UIContext::Destroy();
 }
 
 void MainHUD::PreInit()
