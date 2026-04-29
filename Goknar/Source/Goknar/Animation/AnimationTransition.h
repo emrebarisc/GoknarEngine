@@ -40,7 +40,7 @@ struct GOKNAR_API AnimationTransition
 		return false;
 	}
 
-	std::shared_ptr<T> target{ nullptr };
+	std::weak_ptr<T> target{};
 
 	bool transitWhenAnimationDone{ false };
 

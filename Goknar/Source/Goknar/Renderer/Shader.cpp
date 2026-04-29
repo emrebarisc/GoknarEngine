@@ -164,7 +164,19 @@ Shader::Shader()
 
 Shader::~Shader()
 {
-	glDeleteProgram(programId_);
+	namedValues_.clear();
+	vertexShaderPath_.clear();
+	fragmentShaderPath_.clear();
+	geometryShaderPath_.clear();
+	vertexShaderScript_.clear();
+	fragmentShaderScript_.clear();
+	geometryShaderScript_.clear();
+
+	if (programId_)
+	{
+		glDeleteProgram(programId_);
+		programId_ = 0;
+	}
 	//engine->GetApplication()->GetMainScene()->RemoveShader(this);
 }
 
@@ -242,9 +254,12 @@ void Shader::PreInit()
 
 	glDetachShader(programId_, vertexShaderId);
 	glDetachShader(programId_, fragmentShaderId);
+	glDeleteShader(vertexShaderId);
+	glDeleteShader(fragmentShaderId);
 	if (containsGeometryShader)
 	{
 		glDetachShader(programId_, geometryShaderId);
+		glDeleteShader(geometryShaderId);
 	}
 }
 
@@ -265,8 +280,9 @@ void Shader::Init()
 
 void Shader::PostInit()
 {
-	//vertexShaderScript_.clear();
-	//fragmentShaderScript_.clear();
+	vertexShaderScript_.clear();
+	fragmentShaderScript_.clear();
+	geometryShaderScript_.clear();
 }
 
 void Shader::Bind() const

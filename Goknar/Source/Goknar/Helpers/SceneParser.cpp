@@ -125,6 +125,12 @@ void SceneParser::ClearStaticMeshComponentMaterialPath(const StaticMeshComponent
 	staticMeshComponentMaterialPathMap.erase(staticMeshComponent);
 }
 
+void SceneParser::ClearCaches()
+{
+	staticMeshComponentMaterialPathMap.clear();
+	sharedMaterialPathMap.clear();
+}
+
 void SceneParser::Parse(Scene* scene, const std::string& filePath)
 {
 	tinyxml2::XMLDocument xmlFile;
