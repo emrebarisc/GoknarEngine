@@ -16,9 +16,104 @@
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Texture.h"
 
+#include <algorithm>
+#include <sstream>
 #include <string>
 
 #include <glad/glad.h>
+
+namespace
+{
+	constexpr const char* MATERIAL_NODE_METADATA_PREFIX = "// GOKNAR_MATERIAL_NODE|";
+
+	std::string Trim(const std::string& value)
+	{
+		const size_t first = value.find_first_not_of(" \t\r\n");
+		if (first == std::string::npos)
+		{
+			return "";
+		}
+
+		const size_t last = value.find_last_not_of(" \t\r\n");
+		return value.substr(first, last - first + 1);
+	}
+
+	std::vector<std::string> SplitString(const std::string& value, char delimiter)
+	{
+		std::vector<std::string> parts;
+		std::stringstream stream(value);
+		std::string part;
+		while (std::getline(stream, part, delimiter))
+		{
+			parts.push_back(part);
+		}
+		return parts;
+	}
+
+	std::unordered_map<std::string, std::string> ParseMetadataFields(const std::string& metadataText)
+	{
+		std::unordered_map<std::string, std::string> fields;
+		for (const std::string& token : SplitString(metadataText, '|'))
+		{
+			const size_t separatorIndex = token.find('=');
+			if (separatorIndex == std::string::npos)
+			{
+				continue;
+			}
+
+			fields[Trim(token.substr(0, separatorIndex))] = Trim(token.substr(separatorIndex + 1));
+		}
+
+		return fields;
+	}
+
+	bool ParseFloatValue(const std::string& value, float& outValue)
+	{
+		std::stringstream stream(Trim(value));
+		stream >> outValue;
+		return !stream.fail();
+	}
+
+	bool ParseVector2Value(const std::string& value, Vector2& outValue)
+	{
+		const std::vector<std::string> components = SplitString(value, ',');
+		if (components.size() != 2)
+		{
+			return false;
+		}
+
+		return ParseFloatValue(components[0], outValue.x) && ParseFloatValue(components[1], outValue.y);
+	}
+
+	bool ParseVector3Value(const std::string& value, Vector3& outValue)
+	{
+		const std::vector<std::string> components = SplitString(value, ',');
+		if (components.size() != 3)
+		{
+			return false;
+		}
+
+		return
+			ParseFloatValue(components[0], outValue.x) &&
+			ParseFloatValue(components[1], outValue.y) &&
+			ParseFloatValue(components[2], outValue.z);
+	}
+
+	bool ParseVector4Value(const std::string& value, Vector4& outValue)
+	{
+		const std::vector<std::string> components = SplitString(value, ',');
+		if (components.size() != 4)
+		{
+			return false;
+		}
+
+		return
+			ParseFloatValue(components[0], outValue.x) &&
+			ParseFloatValue(components[1], outValue.y) &&
+			ParseFloatValue(components[2], outValue.z) &&
+			ParseFloatValue(components[3], outValue.w);
+	}
+}
 
 void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
 {
@@ -111,6 +206,8 @@ void Shader::PreInit()
 	}
 	//////////////////////////////////////
 
+	ParseStoredValuesFromShaderScripts();
+
 	const GEchar* vertexSource = (const GEchar*)vertexShaderScript_.c_str();
 	GEuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShaderId, 1, &vertexSource, 0);
@@ -185,84 +282,776 @@ void Shader::Unbind() const
 void Shader::Use() const
 {
 	Bind();
+	ApplyStoredValuesIfNeeded();
 }
 
 void Shader::SetBool(const char* name, bool value) const
 {
+	StoreNamedValue(name, value);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
 	Use();
-	GEint uniformLocation = glGetUniformLocation(programId_, name);
-	glUniform1i(uniformLocation, (int)value);
+	UploadBool(name, value);
 }
 
 void Shader::SetInt(const char* name, int value) const
 {
+	StoreNamedValue(name, value);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
 	Use();
-	GEint uniformLocation = glGetUniformLocation(programId_, name);
-	glUniform1i(uniformLocation, value);
+	UploadInt(name, value);
 }
 
 void Shader::SetIntVector(const char* name, const std::vector<int>& values) const
 {
-	int size = values.size();
-	if (size == 0)
+	if (values.empty())
 	{
 		return;
 	}
 
+	StoreNamedValue(name, values);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
 	Use();
-	GEint uniformLocation = glGetUniformLocation(programId_, name);
-	glUniform1iv(uniformLocation, size, &values[0]);
+	UploadIntVector(name, values);
 }
 
 void Shader::SetFloat(const char* name, float value) const
 {
+	StoreNamedValue(name, value);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
 	Use();
-	GEint uniformLocation = glGetUniformLocation(programId_, name);
-	glUniform1f(uniformLocation, value);
+	UploadFloat(name, value);
+}
+
+void Shader::SetVector2(const char* name, const Vector2& vector) const
+{
+	StoreNamedValue(name, vector);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
+	Use();
+	UploadVector2(name, vector);
 }
 
 void Shader::SetMatrix(const char* name, const Matrix& matrix) const
 {
+	StoreNamedValue(name, matrix);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
 	Use();
-	GEint uniformLocation = glGetUniformLocation(programId_, name);
-	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix.m[0]);
+	UploadMatrix(name, matrix);
 }
 
 void Shader::SetMatrixVector(const char* name, const std::vector<Matrix>& matrixVector) const
 {
-	int size = matrixVector.size();
-	if (size == 0)
+	if (matrixVector.empty())
 	{
 		return;
 	}
 
+	StoreNamedValue(name, matrixVector);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
 	Use();
-	GEint uniformLocation = glGetUniformLocation(programId_, name);
-	glUniformMatrix4fv(uniformLocation, size, GL_FALSE, &matrixVector[0].m[0]);
+	UploadMatrixVector(name, matrixVector);
 }
 
 void Shader::SetMatrixArray(const char* name, const Matrix* matrixArray, int size) const
 {
-	if (size == 0)
+	if (!matrixArray || size <= 0)
 	{
 		return;
 	}
 
-	Use();
-	GEint uniformLocation = glGetUniformLocation(programId_, name);
-	glUniformMatrix4fv(uniformLocation, size, GL_FALSE, &matrixArray[0].m[0]);
+	SetMatrixVector(name, std::vector<Matrix>(matrixArray, matrixArray + size));
 }
 
 void Shader::SetVector3(const char* name, const Vector3& vector) const
 {
+	StoreNamedValue(name, vector);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
 	Use();
-	GEint uniformLocation = glGetUniformLocation(programId_, name);
-	glUniform3fv(uniformLocation, 1, &vector.x);
+	UploadVector3(name, vector);
 }
 
 void Shader::SetVector4(const char* name, const Vector4& vector) const
 {
+	StoreNamedValue(name, vector);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
 	Use();
-	GEint uniformLocation = glGetUniformLocation(programId_, name);
+	UploadVector4(name, vector);
+}
+
+void Shader::SetArrayOfFloat(const char* name, const std::vector<float>& values) const
+{
+	if (values.empty())
+	{
+		return;
+	}
+
+	StoreNamedValue(name, values);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
+	Use();
+	UploadArrayOfFloat(name, values);
+}
+
+void Shader::SetArrayOfVector2(const char* name, const std::vector<Vector2>& values) const
+{
+	if (values.empty())
+	{
+		return;
+	}
+
+	StoreNamedValue(name, values);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
+	Use();
+	UploadArrayOfVector2(name, values);
+}
+
+void Shader::SetArrayOfVector3(const char* name, const std::vector<Vector3>& values) const
+{
+	if (values.empty())
+	{
+		return;
+	}
+
+	StoreNamedValue(name, values);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
+	Use();
+	UploadArrayOfVector3(name, values);
+}
+
+void Shader::SetArrayOfVector4(const char* name, const std::vector<Vector4>& values) const
+{
+	if (values.empty())
+	{
+		return;
+	}
+
+	StoreNamedValue(name, values);
+	if (!programId_)
+	{
+		storedValuesNeedUpload_ = true;
+		return;
+	}
+
+	Use();
+	UploadArrayOfVector4(name, values);
+}
+
+bool Shader::GetFloat(const char* name, float& outValue) const
+{
+	NamedShaderValue namedValue;
+	if (!TryGetNamedValue(name, namedValue))
+	{
+		return false;
+	}
+
+	if (const float* value = std::get_if<float>(&namedValue))
+	{
+		outValue = *value;
+		return true;
+	}
+
+	return false;
+}
+
+bool Shader::GetVector2(const char* name, Vector2& outValue) const
+{
+	NamedShaderValue namedValue;
+	if (!TryGetNamedValue(name, namedValue))
+	{
+		return false;
+	}
+
+	if (const Vector2* value = std::get_if<Vector2>(&namedValue))
+	{
+		outValue = *value;
+		return true;
+	}
+
+	return false;
+}
+
+bool Shader::GetVector3(const char* name, Vector3& outValue) const
+{
+	NamedShaderValue namedValue;
+	if (!TryGetNamedValue(name, namedValue))
+	{
+		return false;
+	}
+
+	if (const Vector3* value = std::get_if<Vector3>(&namedValue))
+	{
+		outValue = *value;
+		return true;
+	}
+
+	return false;
+}
+
+bool Shader::GetVector4(const char* name, Vector4& outValue) const
+{
+	NamedShaderValue namedValue;
+	if (!TryGetNamedValue(name, namedValue))
+	{
+		return false;
+	}
+
+	if (const Vector4* value = std::get_if<Vector4>(&namedValue))
+	{
+		outValue = *value;
+		return true;
+	}
+
+	return false;
+}
+
+bool Shader::GetArrayOfFloat(const char* name, std::vector<float>& outValues) const
+{
+	NamedShaderValue namedValue;
+	if (!TryGetNamedValue(name, namedValue))
+	{
+		return false;
+	}
+
+	if (const std::vector<float>* value = std::get_if<std::vector<float>>(&namedValue))
+	{
+		outValues = *value;
+		return true;
+	}
+
+	return false;
+}
+
+bool Shader::GetArrayOfVector2(const char* name, std::vector<Vector2>& outValues) const
+{
+	NamedShaderValue namedValue;
+	if (!TryGetNamedValue(name, namedValue))
+	{
+		return false;
+	}
+
+	if (const std::vector<Vector2>* value = std::get_if<std::vector<Vector2>>(&namedValue))
+	{
+		outValues = *value;
+		return true;
+	}
+
+	return false;
+}
+
+bool Shader::GetArrayOfVector3(const char* name, std::vector<Vector3>& outValues) const
+{
+	NamedShaderValue namedValue;
+	if (!TryGetNamedValue(name, namedValue))
+	{
+		return false;
+	}
+
+	if (const std::vector<Vector3>* value = std::get_if<std::vector<Vector3>>(&namedValue))
+	{
+		outValues = *value;
+		return true;
+	}
+
+	return false;
+}
+
+bool Shader::GetArrayOfVector4(const char* name, std::vector<Vector4>& outValues) const
+{
+	NamedShaderValue namedValue;
+	if (!TryGetNamedValue(name, namedValue))
+	{
+		return false;
+	}
+
+	if (const std::vector<Vector4>* value = std::get_if<std::vector<Vector4>>(&namedValue))
+	{
+		outValues = *value;
+		return true;
+	}
+
+	return false;
+}
+
+void Shader::ParseStoredValuesFromShaderScripts()
+{
+	ParseStoredValuesFromShaderScript(vertexShaderScript_);
+	ParseStoredValuesFromShaderScript(fragmentShaderScript_);
+	storedValuesNeedUpload_ = !namedValues_.empty();
+}
+
+void Shader::ParseStoredValuesFromShaderScript(const std::string& shaderScript)
+{
+	std::stringstream stream(shaderScript);
+	std::string line;
+	while (std::getline(stream, line))
+	{
+		const size_t markerIndex = line.find(MATERIAL_NODE_METADATA_PREFIX);
+		if (markerIndex == std::string::npos)
+		{
+			continue;
+		}
+
+		const std::unordered_map<std::string, std::string> fields =
+			ParseMetadataFields(line.substr(markerIndex + std::char_traits<char>::length(MATERIAL_NODE_METADATA_PREFIX)));
+
+		auto nameIterator = fields.find("name");
+		auto typeIterator = fields.find("type");
+		auto storageIterator = fields.find("storage");
+		auto valuesIterator = fields.find("values");
+		if (nameIterator == fields.end() ||
+			typeIterator == fields.end() ||
+			storageIterator == fields.end() ||
+			valuesIterator == fields.end() ||
+			storageIterator->second != "Uniform" ||
+			namedValues_.find(nameIterator->second) != namedValues_.end())
+		{
+			continue;
+		}
+
+		const std::string& name = nameIterator->second;
+		const std::string& type = typeIterator->second;
+		const bool isArray = fields.find("kind") != fields.end() && fields.at("kind") == "Array";
+
+		if (isArray)
+		{
+			if (type == "Float")
+			{
+				std::vector<float> values;
+				for (const std::string& entry : SplitString(valuesIterator->second, ';'))
+				{
+					float value = 0.0f;
+					if (ParseFloatValue(entry, value))
+					{
+						values.push_back(value);
+					}
+				}
+				if (!values.empty())
+				{
+					StoreNamedValue(name.c_str(), values);
+				}
+			}
+			else if (type == "Vector2")
+			{
+				std::vector<Vector2> values;
+				for (const std::string& entry : SplitString(valuesIterator->second, ';'))
+				{
+					Vector2 value(0.f);
+					if (ParseVector2Value(entry, value))
+					{
+						values.push_back(value);
+					}
+				}
+				if (!values.empty())
+				{
+					StoreNamedValue(name.c_str(), values);
+				}
+			}
+			else if (type == "Vector3")
+			{
+				std::vector<Vector3> values;
+				for (const std::string& entry : SplitString(valuesIterator->second, ';'))
+				{
+					Vector3 value(0.f);
+					if (ParseVector3Value(entry, value))
+					{
+						values.push_back(value);
+					}
+				}
+				if (!values.empty())
+				{
+					StoreNamedValue(name.c_str(), values);
+				}
+			}
+			else if (type == "Vector4")
+			{
+				std::vector<Vector4> values;
+				for (const std::string& entry : SplitString(valuesIterator->second, ';'))
+				{
+					Vector4 value(0.f);
+					if (ParseVector4Value(entry, value))
+					{
+						values.push_back(value);
+					}
+				}
+				if (!values.empty())
+				{
+					StoreNamedValue(name.c_str(), values);
+				}
+			}
+
+			continue;
+		}
+
+		if (type == "Float")
+		{
+			float value = 0.0f;
+			if (ParseFloatValue(valuesIterator->second, value))
+			{
+				StoreNamedValue(name.c_str(), value);
+			}
+		}
+		else if (type == "Vector2")
+		{
+			Vector2 value(0.f);
+			if (ParseVector2Value(valuesIterator->second, value))
+			{
+				StoreNamedValue(name.c_str(), value);
+			}
+		}
+		else if (type == "Vector3")
+		{
+			Vector3 value(0.f);
+			if (ParseVector3Value(valuesIterator->second, value))
+			{
+				StoreNamedValue(name.c_str(), value);
+			}
+		}
+		else if (type == "Vector4")
+		{
+			Vector4 value(0.f);
+			if (ParseVector4Value(valuesIterator->second, value))
+			{
+				StoreNamedValue(name.c_str(), value);
+			}
+		}
+	}
+}
+
+void Shader::ApplyStoredValuesIfNeeded() const
+{
+	if (!storedValuesNeedUpload_)
+	{
+		return;
+	}
+
+	ApplyStoredValues();
+}
+
+void Shader::ApplyStoredValues() const
+{
+	if (!programId_ || namedValues_.empty())
+	{
+		storedValuesNeedUpload_ = false;
+		return;
+	}
+
+	for (const auto& [name, value] : namedValues_)
+	{
+		std::visit([this, &name](const auto& storedValue)
+			{
+				using ValueType = std::decay_t<decltype(storedValue)>;
+				if constexpr (std::is_same_v<ValueType, bool>)
+				{
+					UploadBool(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, int>)
+				{
+					UploadInt(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, float>)
+				{
+					UploadFloat(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, Vector2>)
+				{
+					UploadVector2(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, Vector3>)
+				{
+					UploadVector3(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, Vector4>)
+				{
+					UploadVector4(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, Matrix>)
+				{
+					UploadMatrix(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, std::vector<int>>)
+				{
+					UploadIntVector(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, std::vector<float>>)
+				{
+					UploadArrayOfFloat(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, std::vector<Vector2>>)
+				{
+					UploadArrayOfVector2(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, std::vector<Vector3>>)
+				{
+					UploadArrayOfVector3(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, std::vector<Vector4>>)
+				{
+					UploadArrayOfVector4(name.c_str(), storedValue);
+				}
+				else if constexpr (std::is_same_v<ValueType, std::vector<Matrix>>)
+				{
+					UploadMatrixVector(name.c_str(), storedValue);
+				}
+			}, value);
+	}
+
+	storedValuesNeedUpload_ = false;
+}
+
+void Shader::StoreNamedValue(const char* name, const NamedShaderValue& value) const
+{
+	if (!name || !name[0])
+	{
+		return;
+	}
+
+	namedValues_[name] = value;
+}
+
+bool Shader::TryGetNamedValue(const char* name, NamedShaderValue& outValue) const
+{
+	if (!name || !name[0])
+	{
+		return false;
+	}
+
+	const auto iterator = namedValues_.find(name);
+	if (iterator == namedValues_.end())
+	{
+		return false;
+	}
+
+	outValue = iterator->second;
+	return true;
+}
+
+void Shader::UploadBool(const char* name, bool value) const
+{
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniform1i(uniformLocation, (int)value);
+}
+
+void Shader::UploadInt(const char* name, int value) const
+{
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniform1i(uniformLocation, value);
+}
+
+void Shader::UploadIntVector(const char* name, const std::vector<int>& values) const
+{
+	if (values.empty())
+	{
+		return;
+	}
+
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniform1iv(uniformLocation, (GLsizei)values.size(), values.data());
+}
+
+void Shader::UploadFloat(const char* name, float value) const
+{
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniform1f(uniformLocation, value);
+}
+
+void Shader::UploadVector2(const char* name, const Vector2& vector) const
+{
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniform2fv(uniformLocation, 1, &vector.x);
+}
+
+void Shader::UploadMatrix(const char* name, const Matrix& matrix) const
+{
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix.m[0]);
+}
+
+void Shader::UploadMatrixVector(const char* name, const std::vector<Matrix>& matrixVector) const
+{
+	if (matrixVector.empty())
+	{
+		return;
+	}
+
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniformMatrix4fv(uniformLocation, (GLsizei)matrixVector.size(), GL_FALSE, &matrixVector[0].m[0]);
+}
+
+void Shader::UploadVector3(const char* name, const Vector3& vector) const
+{
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniform3fv(uniformLocation, 1, &vector.x);
+}
+
+void Shader::UploadVector4(const char* name, const Vector4& vector) const
+{
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
 	glUniform4fv(uniformLocation, 1, &vector.x);
+}
+
+void Shader::UploadArrayOfFloat(const char* name, const std::vector<float>& values) const
+{
+	if (values.empty())
+	{
+		return;
+	}
+
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniform1fv(uniformLocation, (GLsizei)values.size(), values.data());
+}
+
+void Shader::UploadArrayOfVector2(const char* name, const std::vector<Vector2>& values) const
+{
+	if (values.empty())
+	{
+		return;
+	}
+
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniform2fv(uniformLocation, (GLsizei)values.size(), &values[0].x);
+}
+
+void Shader::UploadArrayOfVector3(const char* name, const std::vector<Vector3>& values) const
+{
+	if (values.empty())
+	{
+		return;
+	}
+
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniform3fv(uniformLocation, (GLsizei)values.size(), &values[0].x);
+}
+
+void Shader::UploadArrayOfVector4(const char* name, const std::vector<Vector4>& values) const
+{
+	if (values.empty())
+	{
+		return;
+	}
+
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniform4fv(uniformLocation, (GLsizei)values.size(), &values[0].x);
 }
