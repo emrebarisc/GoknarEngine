@@ -79,6 +79,12 @@ Game::Game() : Application()
 	engine->SetHUD(new MainHUD());
 }
 
+Game::~Game()
+{
+	delete gameState_;
+	gameState_ = nullptr;
+}
+
 void Game::PreInit()
 {
 	Application::PreInit();
