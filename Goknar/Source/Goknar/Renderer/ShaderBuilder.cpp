@@ -791,7 +791,7 @@ std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(MaterialInitializ
 			}
 			break;
 		case TextureUsage::Emmisive:
-			if (initializationData && initializationData->fragmentNormal.result.empty())
+			if (initializationData && initializationData->emmisiveColor.result.empty())
 			{
 				initializationData->emmisiveColor.result = General_FS_GetEmmisiveTextureSampling(texture->GetName());
 			}
