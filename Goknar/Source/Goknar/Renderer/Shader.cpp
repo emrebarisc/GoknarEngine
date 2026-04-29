@@ -34,7 +34,7 @@ void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
 		logMessage[maxLength] = '\0';
 		glDeleteShader(shaderId);
 
-		GOKNAR_CORE_ASSERT(false, "{}\nWhat went wrong: {}", errorMessage, logMessage);
+		GOKNAR_CORE_ASSERT(false, "%s\nWhat went wrong: \n%s", errorMessage, logMessage);
 
 		delete[] logMessage;
 	}
