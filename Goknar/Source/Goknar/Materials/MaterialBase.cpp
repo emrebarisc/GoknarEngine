@@ -15,7 +15,7 @@
 
 namespace
 {
-	constexpr float kMinPhongExponent = 1.f;
+	constexpr float MIN_PHONG_EXPONENT = 1.f;
 
 	RenderPassType GetMainRenderTypeSafe()
 	{
@@ -29,9 +29,9 @@ namespace
 
 	float SanitizePhongExponent(float phongExponent)
 	{
-		if (!std::isfinite(phongExponent) || phongExponent < kMinPhongExponent)
+		if (!std::isfinite(phongExponent) || phongExponent < MIN_PHONG_EXPONENT)
 		{
-			return kMinPhongExponent;
+			return MIN_PHONG_EXPONENT;
 		}
 
 		return phongExponent;

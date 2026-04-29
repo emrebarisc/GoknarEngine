@@ -7,10 +7,12 @@
 #include <iostream>
 #include <filesystem>
 #include <map>
+#include <set>
 
 #include "Goknar/Engine.h"
 #include "Goknar/Contents/Audio.h"
 #include "Goknar/Contents/Image.h"
+#include "Goknar/Helpers/ContentPathUtils.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Renderer/Texture.h"
@@ -26,19 +28,54 @@ namespace
 
 	std::string GetRelativeContentPath(const std::filesystem::path& absolutePath)
 	{
-		std::string normalizedAbsolutePath = NormalizePath(absolutePath.generic_string());
-		std::string normalizedContentDir = NormalizePath(ContentDir);
-		if (!normalizedContentDir.empty() && normalizedContentDir.back() != '/')
+		return ContentPathUtils::ToContentRelativePath(absolutePath.generic_string());
+	}
+
+	std::string TrimString(const std::string& value)
+	{
+		const size_t firstNonWhitespaceCharacterIndex = value.find_first_not_of(" \t\n\r");
+		if (firstNonWhitespaceCharacterIndex == std::string::npos)
 		{
-			normalizedContentDir += '/';
+			return "";
 		}
 
-		if (normalizedAbsolutePath.rfind(normalizedContentDir, 0) == 0)
+		const size_t lastNonWhitespaceCharacterIndex = value.find_last_not_of(" \t\n\r");
+		return value.substr(firstNonWhitespaceCharacterIndex, lastNonWhitespaceCharacterIndex - firstNonWhitespaceCharacterIndex + 1);
+	}
+
+	std::string GetElementText(const tinyxml2::XMLElement* element)
+	{
+		if (!element || !element->GetText())
 		{
-			return normalizedAbsolutePath.substr(normalizedContentDir.size());
+			return "";
 		}
 
-		return normalizedAbsolutePath;
+		return TrimString(element->GetText());
+	}
+
+	std::string GetTextureNameFromPath(const std::string& texturePath)
+	{
+		const std::string textureName = std::filesystem::path(texturePath).stem().string();
+		return textureName.empty() ? "Texture" : textureName;
+	}
+
+	std::string GetUniqueTextureName(const std::string& preferredTextureName, std::set<std::string>& usedTextureNames)
+	{
+		const std::string baseTextureName = preferredTextureName.empty() ? "Texture" : preferredTextureName;
+		const auto [baseTextureNameIterator, isBaseTextureNameInserted] = usedTextureNames.insert(baseTextureName);
+		if (isBaseTextureNameInserted)
+		{
+			return baseTextureName;
+		}
+
+		int textureNamePostfix = 1;
+		std::string uniqueTextureName;
+		do
+		{
+			uniqueTextureName = baseTextureName + "_" + std::to_string(textureNamePostfix++);
+		} while (!usedTextureNames.insert(uniqueTextureName).second);
+
+		return uniqueTextureName;
 	}
 
 	std::map<std::string, std::string> LoadExistingMeshMaterialPaths(const std::string& assetContainerPath)
@@ -70,6 +107,35 @@ namespace
 		return materialPathByMeshPath;
 	}
 
+	std::map<std::string, std::string> LoadExistingTextureNames(const std::string& assetContainerPath)
+	{
+		std::map<std::string, std::string> textureNameByTexturePath;
+
+		tinyxml2::XMLDocument existingDocument;
+		if (existingDocument.LoadFile(assetContainerPath.c_str()) != tinyxml2::XML_SUCCESS)
+		{
+			return textureNameByTexturePath;
+		}
+
+		tinyxml2::XMLElement* rootElement = existingDocument.FirstChildElement("AssetContainer");
+		tinyxml2::XMLElement* assetsElement = rootElement ? rootElement->FirstChildElement("Assets") : nullptr;
+		for (tinyxml2::XMLElement* textureElement = assetsElement ? assetsElement->FirstChildElement("Texture") : nullptr;
+			textureElement != nullptr;
+			textureElement = textureElement->NextSiblingElement("Texture"))
+		{
+			const std::string texturePath = GetElementText(textureElement->FirstChildElement("Path"));
+			if (texturePath.empty())
+			{
+				continue;
+			}
+
+			const char* textureNameAttribute = textureElement->Attribute("Name");
+			textureNameByTexturePath[texturePath] = textureNameAttribute ? TrimString(textureNameAttribute) : GetElementText(textureElement->FirstChildElement("Name"));
+		}
+
+		return textureNameByTexturePath;
+	}
+
 	std::string TryGetGameAssetFileType(const std::filesystem::path& absolutePath)
 	{
 		tinyxml2::XMLDocument document;
@@ -87,7 +153,7 @@ namespace
 
 void AssetParser::ParseAssets(const std::string& filePath)
 {
-	std::string fullPath = ContentDir + filePath;
+	const std::string fullPath = ContentPathUtils::ToAbsoluteContentPath(filePath);
 
 	tinyxml2::XMLDocument xmlFile;
 	tinyxml2::XMLError res;
@@ -139,7 +205,7 @@ void AssetParser::ParseMeshes(tinyxml2::XMLElement* assetsElement)
 			stream << child->GetText() << std::endl;
 			stream >> path;
 
-			mesh = resourceManager->GetContent<MeshUnit>(path);
+			mesh = resourceManager->GetContent<MeshUnit>(ContentPathUtils::ToContentRelativePath(path));
 			stream.clear();
 		}
 
@@ -151,6 +217,7 @@ void AssetParser::ParseMeshes(tinyxml2::XMLElement* assetsElement)
 				std::string materialPath;
 				stream << child->GetText() << std::endl;
 				stream >> materialPath;
+				materialPath = ContentPathUtils::ToContentRelativePath(materialPath);
 
 				if (!materialPath.empty())
 				{
@@ -167,22 +234,43 @@ void AssetParser::ParseMeshes(tinyxml2::XMLElement* assetsElement)
 
 void AssetParser::ParseTextures(tinyxml2::XMLElement* assetsElement)
 {
-	std::stringstream stream;
 	tinyxml2::XMLElement* element = assetsElement->FirstChildElement("Texture");
 	ResourceManager* resourceManager = engine->GetResourceManager();
+	std::set<std::string> usedTextureNames;
+
+	for (const Image* existingImage : resourceManager->GetResourceContainer()->GetImageArray())
+	{
+		if (!existingImage)
+		{
+			continue;
+		}
+
+		const std::string& existingTextureName = existingImage->GetName();
+		if (!existingTextureName.empty())
+		{
+			usedTextureNames.insert(existingTextureName);
+		}
+	}
 
 	while (element)
 	{
-		tinyxml2::XMLElement* child = element->FirstChildElement("Path");
-		if (child)
+		const std::string path = ContentPathUtils::ToContentRelativePath(GetElementText(element->FirstChildElement("Path")));
+		if (!path.empty())
 		{
-			std::string path;
-			stream << child->GetText() << std::endl;
-			stream >> path;
-			
-			//resourceManager->GetContent<Texture>(path);
-			stream.clear();
+			Image* image = resourceManager->GetContent<Image>(path);
+			if (image && image->GetName().empty())
+			{
+				const char* textureNameAttribute = element->Attribute("Name");
+				std::string textureName = textureNameAttribute ? TrimString(textureNameAttribute) : GetElementText(element->FirstChildElement("Name"));
+				if (textureName.empty())
+				{
+					textureName = GetTextureNameFromPath(path);
+				}
+
+				image->SetName(GetUniqueTextureName(textureName, usedTextureNames));
+			}
 		}
+
 		element = element->NextSiblingElement("Texture");
 	}
 }
@@ -201,6 +289,7 @@ void AssetParser::ParseMaterials(tinyxml2::XMLElement* assetsElement)
 			std::string path;
 			stream << child->GetText() << std::endl;
 			stream >> path;
+			path = ContentPathUtils::ToContentRelativePath(path);
 			
 			//resourceManager->GetContent<Material>(path);
 			stream.clear();
@@ -224,7 +313,7 @@ void AssetParser::ParseAudio(tinyxml2::XMLElement* assetsElement)
 			stream << child->GetText() << std::endl;
 			stream >> path;
 
-			resourceManager->GetContent<Audio>(path);
+			resourceManager->GetContent<Audio>(ContentPathUtils::ToContentRelativePath(path));
 
 			stream.clear();
 		}
@@ -240,15 +329,24 @@ void AssetParser::SaveAssets(const std::string& filePath)
 
 	tinyxml2::XMLElement* assetsElement = assetXML.NewElement("Assets");
 
-	const std::string fullPath = ContentDir + filePath;
+	const std::string relativeFilePath = ContentPathUtils::ToContentRelativePath(filePath);
+	const std::string fullPath = ContentPathUtils::ToAbsoluteContentPath(relativeFilePath);
 	const std::map<std::string, std::string> meshMaterialPaths = LoadExistingMeshMaterialPaths(fullPath);
+	const std::map<std::string, std::string> existingTextureNames = LoadExistingTextureNames(fullPath);
 	const std::filesystem::path contentRoot = std::filesystem::path(ContentDir);
+	std::set<std::string> usedTextureNames;
 
-	auto addPathAsset = [&](const char* elementName, const std::string& assetPath, const std::string* materialPath = nullptr)
+	auto addPathAsset = [&](const char* elementName, const std::string& assetPath, const std::string* materialPath = nullptr, const std::string* assetName = nullptr)
 	{
 		tinyxml2::XMLElement* assetElement = assetXML.NewElement(elementName);
 		tinyxml2::XMLElement* pathElement = assetXML.NewElement("Path");
 		pathElement->SetText(assetPath.c_str());
+
+		if (assetName && !assetName->empty())
+		{
+			assetElement->SetAttribute("Name", assetName->c_str());
+		}
+
 		assetElement->InsertEndChild(pathElement);
 
 		if (materialPath && !materialPath->empty())
@@ -271,7 +369,7 @@ void AssetParser::SaveAssets(const std::string& filePath)
 			}
 
 			const std::string relativeAssetPath = GetRelativeContentPath(entry.path());
-			if (relativeAssetPath == filePath)
+			if (relativeAssetPath == relativeFilePath)
 			{
 				continue;
 			}
@@ -292,7 +390,13 @@ void AssetParser::SaveAssets(const std::string& filePath)
 
 			if (extension == ".png" || extension == ".jpg")
 			{
-				addPathAsset("Texture", relativeAssetPath);
+				const auto existingTextureNameIterator = existingTextureNames.find(relativeAssetPath);
+				const std::string preferredTextureName =
+					existingTextureNameIterator != existingTextureNames.end() && !existingTextureNameIterator->second.empty() ?
+					existingTextureNameIterator->second :
+					GetTextureNameFromPath(relativeAssetPath);
+				const std::string resolvedTextureName = GetUniqueTextureName(preferredTextureName, usedTextureNames);
+				addPathAsset("Texture", relativeAssetPath, nullptr, &resolvedTextureName);
 				continue;
 			}
 
@@ -340,7 +444,7 @@ void AssetParser::SaveMeshes(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLEl
 		tinyxml2::XMLElement* meshElement = xmlDocument.NewElement("Mesh");
 		tinyxml2::XMLElement* pathElement = xmlDocument.NewElement("Path");
 		
-		std::string path = fullPath.substr(ContentDir.size());
+		std::string path = ContentPathUtils::ToContentRelativePath(fullPath);
 		pathElement->SetText(path.c_str());
 		
 		meshElement->InsertEndChild(pathElement);
