@@ -202,7 +202,7 @@ void AssetParser::ParseMaterials(tinyxml2::XMLElement* assetsElement)
 			stream << child->GetText() << std::endl;
 			stream >> path;
 			
-			resourceManager->GetContent<Material>(path);
+			//resourceManager->GetContent<Material>(path);
 			stream.clear();
 		}
 		element = element->NextSiblingElement("Material");

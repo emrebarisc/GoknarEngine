@@ -181,3 +181,19 @@ void Material::PostInit()
 	initializationData_ = nullptr;
 #endif
 }
+
+void Material::ResetForRebuild()
+{
+	for (auto& renderPassShaderPair : renderPassTypeShaderMap_)
+	{
+		delete renderPassShaderPair.second;
+	}
+
+	renderPassTypeShaderMap_.clear();
+	textureImages_.clear();
+
+	delete initializationData_;
+	initializationData_ = new MaterialInitializationData(this);
+
+	isInitialized_ = false;
+}
