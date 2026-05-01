@@ -103,7 +103,7 @@ void SceneParser::ApplyStaticMeshComponentMaterialPath(StaticMeshComponent* stat
 	Material* material = GetOrCreateSharedMaterial(relativeMaterialPath);
 	if (material)
 	{
-		staticMeshComponent->GetMeshInstance()->SetMaterial(MaterialInstance::Create(material));
+		staticMeshComponent->GetMeshInstance()->SetMaterial(0, MaterialInstance::Create(material));
 	}
 
 	staticMeshComponentMaterialPathMap[staticMeshComponent] = relativeMaterialPath;
@@ -975,7 +975,7 @@ void SceneParser::ParseMovingTriangleMeshCollisionComponentValues(MovingTriangle
 		std::string meshPath;
 		stream >> meshPath;
 
-		MeshUnit* relativeMesh = engine->GetResourceManager()->GetContent<MeshUnit>(ContentPathUtils::ToContentRelativePath(meshPath));
+		StaticMesh* relativeMesh = engine->GetResourceManager()->GetContent<StaticMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
 		if (relativeMesh)
 		{
 			movingTriangleMeshCollisionComponent->SetMesh(relativeMesh);
@@ -995,7 +995,7 @@ void SceneParser::ParseNonMovingTriangleMeshCollisionComponentValues(NonMovingTr
 		std::string meshPath;
 		stream >> meshPath;
 
-		MeshUnit* relativeMesh = engine->GetResourceManager()->GetContent<MeshUnit>(ContentPathUtils::ToContentRelativePath(meshPath));
+		StaticMesh* relativeMesh = engine->GetResourceManager()->GetContent<StaticMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
 		if(relativeMesh)
 		{
 			nonMovingTriangleMeshCollisionComponent->SetMesh(relativeMesh);

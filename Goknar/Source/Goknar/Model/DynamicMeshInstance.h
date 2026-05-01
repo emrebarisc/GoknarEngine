@@ -14,7 +14,7 @@ public:
 
 	virtual void Render(RenderPassType renderPassType = RenderPassType::Forward) override;
 
-	void UpdateVertexDataAt(int index, const VertexData& newVertexData);
+	void UpdateVertexDataAt(int meshIndex, int vertexIndex, const VertexData& newVertexData);
 
 protected:
 	void AddMeshInstanceToRenderer() override;

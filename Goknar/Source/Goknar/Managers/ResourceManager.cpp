@@ -5,7 +5,9 @@
 #include "GoknarAssert.h"
 #include "Contents/Audio.h"
 #include "Contents/Image.h"
-#include "Model/StaticMesh.h"
+#include "Model/Mesh.h"
+#include "Model/MeshUnit.h"
+#include "Model/SkeletalMeshUnit.h"
 #include "IO/IOManager.h"
 
 ResourceManager::ResourceManager() :
@@ -89,7 +91,7 @@ Content* ResourceManager::LoadContent(const std::string& path)
 		//ModelPrimitiveData* modelPrimitiveData = LoadModelPrimitiveData(path);
 		//if (modelPrimitiveData.HasAnimation())
 		//{
-		//	MeshUnit* mesh = modelPrimitiveData->ToMesh();
+		//	Mesh<MeshUnit>* mesh = modelPrimitiveData->ToMesh();
 		//	resourceContainer_->AddMesh(mesh);
 		//	content = mesh;
 		//}
@@ -99,7 +101,7 @@ Content* ResourceManager::LoadContent(const std::string& path)
 		//	resourceContainer_->AddAnimationData(animationData);
 		//	content = animationData;
 		//}
-		MeshUnit* mesh = IOManager::LoadModel(path);
+		Mesh<MeshUnit>* mesh = IOManager::LoadModel<Mesh<MeshUnit>>(path);
 		if (mesh)
 		{
 			mesh->SetPath(path);
@@ -143,7 +145,7 @@ ResourceContainer::~ResourceContainer()
 		delete image;
 	}
 
-	for (MeshUnit* mesh : meshArray_)
+	for (Mesh<MeshUnit>* mesh : meshArray_)
 	{
 		delete mesh;
 	}
@@ -161,7 +163,7 @@ void ResourceContainer::PreInit()
 		image->PreInit();
 	}
 
-	for (MeshUnit* mesh : meshArray_)
+	for (Mesh<MeshUnit>* mesh : meshArray_)
 	{
 		mesh->PreInit();
 	}
@@ -179,7 +181,7 @@ void ResourceContainer::Init()
 		image->Init();
 	}
 
-	for (MeshUnit* mesh : meshArray_)
+	for (Mesh<MeshUnit>* mesh : meshArray_)
 	{
 		mesh->Init();
 	}
@@ -197,7 +199,7 @@ void ResourceContainer::PostInit()
 		image->PostInit();
 	}
 
-	for (MeshUnit* mesh : meshArray_)
+	for (Mesh<MeshUnit>* mesh : meshArray_)
 	{
 		mesh->PostInit();
 	}
@@ -216,7 +218,7 @@ void ResourceContainer::AddImage(Image* image)
 	contentPathMap_[image->GetPath()] = image;
 }
 
-void ResourceContainer::AddMesh(MeshUnit* mesh)
+void ResourceContainer::AddMesh(Mesh<MeshUnit>* mesh)
 {
 	GOKNAR_CORE_ASSERT(!mesh->GetPath().empty());
 

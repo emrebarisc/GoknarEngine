@@ -11,8 +11,12 @@
 
 class Audio;
 class Content;
-class MeshUnit;
 class Image;
+
+class MeshUnit;
+
+template<typename T>
+class Mesh;
 
 enum class GOKNAR_API ResourceType : unsigned char
 {
@@ -54,8 +58,8 @@ public:
 		return imageArray_[index];
 	}
 
-	void AddMesh(MeshUnit* mesh);
-	MeshUnit* GetMesh(int index)
+	void AddMesh(Mesh<MeshUnit>* mesh);
+	Mesh<MeshUnit>* GetMesh(int index)
 	{
 		if (meshArray_.size() <= index)
 		{
@@ -90,7 +94,7 @@ public:
 		return imageArray_;
 	}
 
-	const std::vector<MeshUnit*>& GetMeshArray() const
+	const std::vector<Mesh<MeshUnit>*>& GetMeshArray() const
 	{
 		return meshArray_;
 	}
@@ -106,7 +110,7 @@ private:
 	std::map<std::string, Content*> contentPathMap_;
 
 	std::vector<Image*> imageArray_;
-	std::vector<MeshUnit*> meshArray_;
+	std::vector<Mesh<MeshUnit>*> meshArray_;
 	std::vector<Audio*> audioArray_;
 };
 

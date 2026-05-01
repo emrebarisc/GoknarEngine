@@ -28,11 +28,12 @@ public:
 
 	inline virtual ~IMeshInstance()
 	{
-		if (material_)
+		for (MaterialInstance* materialInstance : materials_)
 		{
-			material_->Destroy();
-			material_ = nullptr;
+			materialInstance->Destroy();
 		}
+
+		materials_.clear();
 	}
 
 	inline void PreInit();
@@ -61,10 +62,9 @@ public:
 		return mesh_;
 	}
 
-	inline void SetMaterial(MaterialInstance* material);
-	inline IMaterialBase* GetMaterial();
+	inline void SetMaterial(int index, MaterialInstance* material);
 
-	inline virtual void PreRender(RenderPassType renderPassType = RenderPassType::Forward);
+	inline virtual void PreRender(int subMeshId, RenderPassType renderPassType = RenderPassType::Forward);
 	inline virtual void Render(RenderPassType renderPassType = RenderPassType::Forward);
 
 	inline void SetIsRendered(bool isRendered)
@@ -97,6 +97,11 @@ public:
 		renderMask_ = renderMask;
 	}
 
+	const std::vector<MaterialInstance*>& GetMaterials() const
+	{
+		return materials_;
+	}
+
 	inline virtual void Destroy();
 
 protected:
@@ -107,7 +112,7 @@ protected:
 
 	RenderComponent* parentComponent_{ nullptr };
 
-	MaterialInstance* material_{ nullptr };
+	std::vector<MaterialInstance*> materials_{ nullptr };
 private:
 	unsigned int renderMask_{ 0b1 };
 
@@ -144,27 +149,27 @@ inline void IMeshInstance<MeshType>::PostInit()
 }
 
 template<class MeshType>
-inline void IMeshInstance<MeshType>::SetMaterial(MaterialInstance* material)
+inline void IMeshInstance<MeshType>::SetMaterial(int index, MaterialInstance* material)
 {
-	if (material_ == material)
+	if (materials_[index] == material)
 	{
 		return;
 	}
 
 	bool refreshInstanceOnRenderer = false;
 
-	if(material_ != nullptr && material != nullptr)
+	if(materials_[index] != nullptr && material != nullptr)
 	{
-		refreshInstanceOnRenderer = material_->GetBlendModel() != material->GetBlendModel();
+		refreshInstanceOnRenderer = materials_[index]->GetBlendModel() != material->GetBlendModel();
 	}
 
-	if (material_)
+	if (materials_[index])
 	{
-		material_->Destroy();
-		material_ = nullptr;
+		materials_[index]->Destroy();
+		materials_[index] = nullptr;
 	}
 	
-	material_ = material;
+	materials_[index] = material;
 
 	if(refreshInstanceOnRenderer)
 	{
@@ -174,44 +179,49 @@ inline void IMeshInstance<MeshType>::SetMaterial(MaterialInstance* material)
 }
 
 template<class MeshType>
-inline IMaterialBase* IMeshInstance<MeshType>::GetMaterial()
+inline void IMeshInstance<MeshType>::PreRender(int subMeshId, RenderPassType renderPassType)
 {
-	if (material_)
-	{
-		return material_;
-	}
+	IMaterialBase* material = nullptr;
 
-	if (mesh_)
+	if (subMeshId < materials_.size())
 	{
-		return mesh_->GetMaterial();
-	}
-
-	return nullptr;
-}
-
-template<class MeshType>
-inline void IMeshInstance<MeshType>::PreRender(RenderPassType renderPassType)
-{
-	if(material_)
-	{
-		material_->Use(renderPassType);
+		material = materials_[subMeshId];
 	}
 	else
 	{
-		mesh_->GetMaterial()->Use(renderPassType);
+		material = mesh_->GetSubMeshes()[subMeshId]->GetMaterial();
+	}
+
+	if (material)
+	{
+		material->Use(renderPassType);
 	}
 }
 
 template<class MeshType>
 inline void IMeshInstance<MeshType>::Render(RenderPassType renderPassType)
 {
-	if(material_)
+	size_t instanceMaterialSize = materials_.size();
+	const auto& subMeshes = mesh_->GetSubMeshes();
+	size_t subMeshSize = subMeshes.size();
+
+	for (size_t subMeshIndex = 0; subMeshIndex < subMeshSize; ++subMeshIndex)
 	{
-		material_->SetShaderVariables(renderPassType, parentComponent_->GetComponentToWorldTransformationMatrix());
-	}
-	else
-	{
-		mesh_->GetMaterial()->SetShaderVariables(renderPassType, parentComponent_->GetComponentToWorldTransformationMatrix());
+		IMaterialBase* material = nullptr;
+
+		if (subMeshIndex < instanceMaterialSize)
+		{
+			material = materials_[subMeshIndex];
+		}
+		else
+		{
+			material = subMeshes[subMeshIndex]->GetMaterial();
+		}
+
+		if (material)
+		{
+			material->SetShaderVariables(renderPassType, parentComponent_->GetComponentToWorldTransformationMatrix());
+		}
 	}
 }
 
@@ -241,11 +251,12 @@ inline void IMeshInstance<MeshType>::Destroy()
 		RemoveMeshInstanceFromRenderer();
 	}
 
-	if (material_)
+	for (MaterialInstance* materialInstance : materials_)
 	{
-		material_->Destroy();
-		material_ = nullptr;
+		materialInstance->Destroy();
 	}
+
+	materials_.clear();
 
 	delete this;
 }
