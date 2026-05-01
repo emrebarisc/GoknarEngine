@@ -3,6 +3,7 @@
 
 #include "Goknar/Core.h"
 #include <string>
+#include <vector>
 
 #include "TinyXML/include/tinyxml2.h"
 
@@ -13,7 +14,9 @@ class GOKNAR_API AssetParser
 public:
 	static void ParseAssets(const std::string& filePath);
 	static void SaveAssets(const std::string& filePath);
+	static std::vector<std::string> GetMeshMaterialPaths(const std::string& meshPath, const std::string& assetContainerPath = "AssetContainer");
 	static std::string GetMeshMaterialPath(const std::string& meshPath, const std::string& assetContainerPath = "AssetContainer");
+	static void SetMeshMaterialPaths(const std::string& meshPath, const std::vector<std::string>& materialPaths, const std::string& assetContainerPath = "AssetContainer");
 	static void SetMeshMaterialPath(const std::string& meshPath, const std::string& materialPath, const std::string& assetContainerPath = "AssetContainer");
 
 private:

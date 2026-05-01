@@ -4,6 +4,8 @@
 #include "Goknar/Core.h"
 #include "Goknar/Math/GoknarMath.h"
 
+#include <vector>
+
 #include "TinyXML/include/tinyxml2.h"
 
 class BoxCollisionComponent;
@@ -24,6 +26,8 @@ public:
 	static void Parse(Scene* scene, const std::string& filePath);
 	static void SaveScene(Scene* scene, const std::string& filePath);
 	static Material* GetOrCreateSharedMaterial(const std::string& materialPath);
+	static void ApplyStaticMeshComponentMaterialPaths(StaticMeshComponent* staticMeshComponent, const std::vector<std::string>& materialPaths);
+	static std::vector<std::string> GetStaticMeshComponentMaterialPaths(const StaticMeshComponent* staticMeshComponent);
 	static void ApplyStaticMeshComponentMaterialPath(StaticMeshComponent* staticMeshComponent, const std::string& materialPath);
 	static std::string GetStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
 	static void ClearStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
