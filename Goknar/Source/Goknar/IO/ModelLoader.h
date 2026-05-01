@@ -3,7 +3,7 @@
 
 #include <string>
 
-class StaticMesh;
+class Content;
 
 class ModelLoader
 {
@@ -14,8 +14,7 @@ public:
 protected:
 
 private:
-	template<typename T>
-	static T* LoadModel(const std::string& path);
+	static Content* LoadModel(const std::string& path);
 };
 
 #endif

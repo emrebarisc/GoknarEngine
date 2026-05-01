@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "Contents/Content.h"
 #include "Log.h"
 #include "ModelLoader.h"
 #include "Contents/Image.h"
@@ -138,8 +139,7 @@ bool IOManager::WritePpm(const char* filePath, int width, int height, const unsi
     return true;
 }
 
-template<typename T>
-T* IOManager::LoadModel(const std::string& path)
+Content* IOManager::LoadModel(const std::string& path)
 {
-    return ModelLoader::LoadModel<T>(path);
+    return ModelLoader::LoadModel(path);
 }
