@@ -11,9 +11,11 @@
 
 #include "Goknar/Engine.h"
 #include "Goknar/Contents/Audio.h"
+#include "Goknar/Contents/Content.h"
 #include "Goknar/Contents/Image.h"
 #include "Goknar/Helpers/ContentPathUtils.h"
 #include "Goknar/Managers/ResourceManager.h"
+#include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Materials/MaterialBase.h"
@@ -21,6 +23,25 @@
 
 namespace
 {
+	using MeshMaterialPathMap = std::map<std::string, std::vector<std::string>>;
+
+	Material* GetMeshMaterial(Content* content, size_t subMeshIndex)
+	{
+		if (StaticMesh* staticMesh = dynamic_cast<StaticMesh*>(content))
+		{
+			const auto& subMeshes = staticMesh->GetSubMeshes();
+			return subMeshIndex < subMeshes.size() ? subMeshes[subMeshIndex]->GetMaterial() : nullptr;
+		}
+
+		if (SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(content))
+		{
+			const auto& subMeshes = skeletalMesh->GetSubMeshes();
+			return subMeshIndex < subMeshes.size() ? subMeshes[subMeshIndex]->GetMaterial() : nullptr;
+		}
+
+		return nullptr;
+	}
+
 	std::string NormalizePath(const std::string& path)
 	{
 		return std::filesystem::path(path).lexically_normal().generic_string();
@@ -78,9 +99,110 @@ namespace
 		return uniqueTextureName;
 	}
 
-	std::map<std::string, std::string> LoadExistingMeshMaterialPaths(const std::string& assetContainerPath)
+	void TrimTrailingEmptyMaterialPaths(std::vector<std::string>& materialPaths)
 	{
-		std::map<std::string, std::string> materialPathByMeshPath;
+		while (!materialPaths.empty() && materialPaths.back().empty())
+		{
+			materialPaths.pop_back();
+		}
+	}
+
+	std::vector<std::string> NormalizeMaterialPaths(const std::vector<std::string>& materialPaths)
+	{
+		std::vector<std::string> normalizedMaterialPaths;
+		normalizedMaterialPaths.reserve(materialPaths.size());
+
+		for (const std::string& materialPath : materialPaths)
+		{
+			normalizedMaterialPaths.push_back(ContentPathUtils::ToContentRelativePath(materialPath));
+		}
+
+		TrimTrailingEmptyMaterialPaths(normalizedMaterialPaths);
+		return normalizedMaterialPaths;
+	}
+
+	std::vector<std::string> GetMaterialPathsFromElement(const tinyxml2::XMLElement* meshElement)
+	{
+		std::vector<std::string> materialPaths;
+		if (!meshElement)
+		{
+			return materialPaths;
+		}
+
+		const tinyxml2::XMLElement* materialPathsElement = meshElement->FirstChildElement("MaterialPaths");
+		if (materialPathsElement)
+		{
+			for (const tinyxml2::XMLElement* materialPathElement = materialPathsElement->FirstChildElement("MaterialPath");
+				materialPathElement != nullptr;
+				materialPathElement = materialPathElement->NextSiblingElement("MaterialPath"))
+			{
+				materialPaths.push_back(ContentPathUtils::ToContentRelativePath(GetElementText(materialPathElement)));
+			}
+
+			TrimTrailingEmptyMaterialPaths(materialPaths);
+			return materialPaths;
+		}
+
+		const std::string materialPath = ContentPathUtils::ToContentRelativePath(GetElementText(meshElement->FirstChildElement("MaterialPath")));
+		if (!materialPath.empty())
+		{
+			materialPaths.push_back(materialPath);
+		}
+
+		return materialPaths;
+	}
+
+	void RemoveMaterialPathElements(tinyxml2::XMLElement* meshElement)
+	{
+		if (!meshElement)
+		{
+			return;
+		}
+
+		if (tinyxml2::XMLElement* materialPathsElement = meshElement->FirstChildElement("MaterialPaths"))
+		{
+			meshElement->DeleteChild(materialPathsElement);
+		}
+
+		if (tinyxml2::XMLElement* materialPathElement = meshElement->FirstChildElement("MaterialPath"))
+		{
+			meshElement->DeleteChild(materialPathElement);
+		}
+	}
+
+	void WriteMaterialPaths(tinyxml2::XMLDocument& document, tinyxml2::XMLElement* meshElement, const std::vector<std::string>& materialPaths)
+	{
+		if (!meshElement || materialPaths.empty())
+		{
+			return;
+		}
+
+		if (materialPaths.size() == 1)
+		{
+			tinyxml2::XMLElement* materialPathElement = document.NewElement("MaterialPath");
+			materialPathElement->SetText(materialPaths[0].c_str());
+			meshElement->InsertEndChild(materialPathElement);
+			return;
+		}
+
+		tinyxml2::XMLElement* materialPathsElement = document.NewElement("MaterialPaths");
+		for (const std::string& materialPath : materialPaths)
+		{
+			tinyxml2::XMLElement* materialPathElement = document.NewElement("MaterialPath");
+			if (!materialPath.empty())
+			{
+				materialPathElement->SetText(materialPath.c_str());
+			}
+
+			materialPathsElement->InsertEndChild(materialPathElement);
+		}
+
+		meshElement->InsertEndChild(materialPathsElement);
+	}
+
+	MeshMaterialPathMap LoadExistingMeshMaterialPaths(const std::string& assetContainerPath)
+	{
+		MeshMaterialPathMap materialPathByMeshPath;
 
 		tinyxml2::XMLDocument existingDocument;
 		if (existingDocument.LoadFile(assetContainerPath.c_str()) != tinyxml2::XML_SUCCESS)
@@ -95,13 +217,18 @@ namespace
 			meshElement = meshElement->NextSiblingElement("Mesh"))
 		{
 			tinyxml2::XMLElement* pathElement = meshElement->FirstChildElement("Path");
-			tinyxml2::XMLElement* materialPathElement = meshElement->FirstChildElement("MaterialPath");
-			if (!pathElement || !pathElement->GetText() || !materialPathElement || !materialPathElement->GetText())
+			if (!pathElement || !pathElement->GetText())
 			{
 				continue;
 			}
 
-			materialPathByMeshPath[pathElement->GetText()] = materialPathElement->GetText();
+			const std::vector<std::string> materialPaths = GetMaterialPathsFromElement(meshElement);
+			if (materialPaths.empty())
+			{
+				continue;
+			}
+
+			materialPathByMeshPath[ContentPathUtils::ToContentRelativePath(pathElement->GetText())] = materialPaths;
 		}
 
 		return materialPathByMeshPath;
@@ -188,23 +315,29 @@ void AssetParser::ParseAssets(const std::string& filePath)
 	}
 }
 
-std::string AssetParser::GetMeshMaterialPath(const std::string& meshPath, const std::string& assetContainerPath)
+std::vector<std::string> AssetParser::GetMeshMaterialPaths(const std::string& meshPath, const std::string& assetContainerPath)
 {
 	const std::string relativeAssetContainerPath = ContentPathUtils::ToContentRelativePath(assetContainerPath);
 	const std::string fullAssetContainerPath = ContentPathUtils::ToAbsoluteContentPath(relativeAssetContainerPath);
-	const std::map<std::string, std::string> meshMaterialPaths = LoadExistingMeshMaterialPaths(fullAssetContainerPath);
+	const MeshMaterialPathMap meshMaterialPaths = LoadExistingMeshMaterialPaths(fullAssetContainerPath);
 	const std::string relativeMeshPath = ContentPathUtils::ToContentRelativePath(meshPath);
 
 	const auto meshMaterialPathIterator = meshMaterialPaths.find(relativeMeshPath);
-	return meshMaterialPathIterator != meshMaterialPaths.end() ? meshMaterialPathIterator->second : "";
+	return meshMaterialPathIterator != meshMaterialPaths.end() ? meshMaterialPathIterator->second : std::vector<std::string>{};
 }
 
-void AssetParser::SetMeshMaterialPath(const std::string& meshPath, const std::string& materialPath, const std::string& assetContainerPath)
+std::string AssetParser::GetMeshMaterialPath(const std::string& meshPath, const std::string& assetContainerPath)
+{
+	const std::vector<std::string> materialPaths = GetMeshMaterialPaths(meshPath, assetContainerPath);
+	return materialPaths.empty() ? "" : materialPaths[0];
+}
+
+void AssetParser::SetMeshMaterialPaths(const std::string& meshPath, const std::vector<std::string>& materialPaths, const std::string& assetContainerPath)
 {
 	const std::string relativeAssetContainerPath = ContentPathUtils::ToContentRelativePath(assetContainerPath);
 	const std::string fullAssetContainerPath = ContentPathUtils::ToAbsoluteContentPath(relativeAssetContainerPath);
 	const std::string relativeMeshPath = ContentPathUtils::ToContentRelativePath(meshPath);
-	const std::string relativeMaterialPath = ContentPathUtils::ToContentRelativePath(materialPath);
+	const std::vector<std::string> relativeMaterialPaths = NormalizeMaterialPaths(materialPaths);
 
 	if (relativeMeshPath.empty())
 	{
@@ -254,26 +387,21 @@ void AssetParser::SetMeshMaterialPath(const std::string& meshPath, const std::st
 		assetsElement->InsertEndChild(meshElement);
 	}
 
-	tinyxml2::XMLElement* materialPathElement = meshElement->FirstChildElement("MaterialPath");
-	if (relativeMaterialPath.empty())
-	{
-		if (materialPathElement)
-		{
-			meshElement->DeleteChild(materialPathElement);
-		}
-	}
-	else
-	{
-		if (!materialPathElement)
-		{
-			materialPathElement = assetContainerDocument.NewElement("MaterialPath");
-			meshElement->InsertEndChild(materialPathElement);
-		}
-
-		materialPathElement->SetText(relativeMaterialPath.c_str());
-	}
+	RemoveMaterialPathElements(meshElement);
+	WriteMaterialPaths(assetContainerDocument, meshElement, relativeMaterialPaths);
 
 	assetContainerDocument.SaveFile(fullAssetContainerPath.c_str());
+}
+
+void AssetParser::SetMeshMaterialPath(const std::string& meshPath, const std::string& materialPath, const std::string& assetContainerPath)
+{
+	if (materialPath.empty())
+	{
+		SetMeshMaterialPaths(meshPath, {}, assetContainerPath);
+		return;
+	}
+
+	SetMeshMaterialPaths(meshPath, { materialPath }, assetContainerPath);
 }
 
 void AssetParser::ParseMeshes(tinyxml2::XMLElement* assetsElement)
@@ -284,7 +412,7 @@ void AssetParser::ParseMeshes(tinyxml2::XMLElement* assetsElement)
 	
 	while (element)
 	{
-		MeshUnit* mesh = nullptr;
+		Content* mesh = nullptr;
 
 		tinyxml2::XMLElement* child = element->FirstChildElement("Path");
 		if (child)
@@ -293,26 +421,31 @@ void AssetParser::ParseMeshes(tinyxml2::XMLElement* assetsElement)
 			stream << child->GetText() << std::endl;
 			stream >> path;
 
-			mesh = resourceManager->GetContent<MeshUnit>(ContentPathUtils::ToContentRelativePath(path));
+			const std::string relativePath = ContentPathUtils::ToContentRelativePath(path);
+			mesh = resourceManager->GetContent<StaticMesh>(relativePath);
+			if (!mesh)
+			{
+				mesh = resourceManager->GetContent<SkeletalMesh>(relativePath);
+			}
 			stream.clear();
 		}
 
 		if (mesh)
 		{
-			child = element->FirstChildElement("MaterialPath");
-			if (child)
+			const std::vector<std::string> materialPaths = GetMaterialPathsFromElement(element);
+			for (size_t subMeshIndex = 0; subMeshIndex < materialPaths.size(); ++subMeshIndex)
 			{
-				std::string materialPath;
-				stream << child->GetText() << std::endl;
-				stream >> materialPath;
-				materialPath = ContentPathUtils::ToContentRelativePath(materialPath);
-
-				if (!materialPath.empty())
+				const std::string relativeMaterialPath = ContentPathUtils::ToContentRelativePath(materialPaths[subMeshIndex]);
+				if (relativeMaterialPath.empty())
 				{
-					MaterialSerializer::Deserialize(materialPath, mesh->GetMaterial());
+					continue;
 				}
 
-				stream.clear();
+				Material* material = GetMeshMaterial(mesh, subMeshIndex);
+				if (material)
+				{
+					MaterialSerializer::Deserialize(relativeMaterialPath, material);
+				}
 			}
 		}
 		
@@ -419,12 +552,12 @@ void AssetParser::SaveAssets(const std::string& filePath)
 
 	const std::string relativeFilePath = ContentPathUtils::ToContentRelativePath(filePath);
 	const std::string fullPath = ContentPathUtils::ToAbsoluteContentPath(relativeFilePath);
-	const std::map<std::string, std::string> meshMaterialPaths = LoadExistingMeshMaterialPaths(fullPath);
+	const MeshMaterialPathMap meshMaterialPaths = LoadExistingMeshMaterialPaths(fullPath);
 	const std::map<std::string, std::string> existingTextureNames = LoadExistingTextureNames(fullPath);
 	const std::filesystem::path contentRoot = std::filesystem::path(ContentDir);
 	std::set<std::string> usedTextureNames;
 
-	auto addPathAsset = [&](const char* elementName, const std::string& assetPath, const std::string* materialPath = nullptr, const std::string* assetName = nullptr)
+	auto addPathAsset = [&](const char* elementName, const std::string& assetPath, const std::vector<std::string>* materialPaths = nullptr, const std::string* assetName = nullptr)
 	{
 		tinyxml2::XMLElement* assetElement = assetXML.NewElement(elementName);
 		tinyxml2::XMLElement* pathElement = assetXML.NewElement("Path");
@@ -437,12 +570,7 @@ void AssetParser::SaveAssets(const std::string& filePath)
 
 		assetElement->InsertEndChild(pathElement);
 
-		if (materialPath && !materialPath->empty())
-		{
-			tinyxml2::XMLElement* materialPathElement = assetXML.NewElement("MaterialPath");
-			materialPathElement->SetText(materialPath->c_str());
-			assetElement->InsertEndChild(materialPathElement);
-		}
+		WriteMaterialPaths(assetXML, assetElement, materialPaths ? *materialPaths : std::vector<std::string>{});
 
 		assetsElement->InsertEndChild(assetElement);
 	};
@@ -471,8 +599,8 @@ void AssetParser::SaveAssets(const std::string& filePath)
 			if (extension == ".fbx")
 			{
 				auto existingMaterialPathIterator = meshMaterialPaths.find(relativeAssetPath);
-				const std::string* materialPath = existingMaterialPathIterator != meshMaterialPaths.end() ? &existingMaterialPathIterator->second : nullptr;
-				addPathAsset("Mesh", relativeAssetPath, materialPath);
+				const std::vector<std::string>* materialPaths = existingMaterialPathIterator != meshMaterialPaths.end() ? &existingMaterialPathIterator->second : nullptr;
+				addPathAsset("Mesh", relativeAssetPath, materialPaths);
 				continue;
 			}
 
@@ -516,9 +644,9 @@ void AssetParser::SaveAssets(const std::string& filePath)
 
 void AssetParser::SaveMeshes(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
 {
-	const std::vector<Mesh<MeshUnit>*>& meshArray = engine->GetResourceManager()->GetResourceContainer()->GetMeshArray();
+	const std::vector<Content*>& meshArray = engine->GetResourceManager()->GetResourceContainer()->GetMeshArray();
 
-	for (Mesh<MeshUnit>* mesh : meshArray)
+	for (Content* mesh : meshArray)
 	{
 		std::string fullPath = mesh->GetPath();
 

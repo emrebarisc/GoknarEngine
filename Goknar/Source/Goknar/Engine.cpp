@@ -180,8 +180,6 @@ void Engine::Run()
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
-		// Initialize dynamically created object and components /////
-
 		if (hasUninitializedComponents_)
 		{
 			PreInitComponents();
@@ -297,9 +295,6 @@ void Engine::BeginGame()
 
 void Engine::PreInitObjects()
 {
-	// Looping over vector via member size optimizes size() call and
-	// Protects objectsToBeInitialized_ modification in mid air
-	// For example creating new object on BeginGame() function
 	for (int objectIndex = 0; objectIndex < objectsToBeInitializedSize_; ++objectIndex)
 	{
 		objectsToBeInitialized_[objectIndex]->PreInit();
@@ -310,9 +305,6 @@ void Engine::PreInitObjects()
 
 void Engine::InitObjects()
 {
-	// Looping over vector via member size optimizes size() call and
-	// Protects objectsToBeInitialized_ modification in mid air
-	// For example creating new object on BeginGame() function
 	for (int objectIndex = 0; objectIndex < objectsToBeInitializedSize_; ++objectIndex)
 	{
 		objectsToBeInitialized_[objectIndex]->Init();
@@ -323,9 +315,6 @@ void Engine::InitObjects()
 
 void Engine::PostInitObjects()
 {
-	// Looping over vector via member size optimizes size() call and
-	// Protects objectsToBeInitialized_ modification in mid air
-	// For example creating new object on BeginGame() function
 	for (int objectIndex = 0; objectIndex < objectsToBeInitializedSize_; ++objectIndex)
 	{
 		objectsToBeInitialized_[objectIndex]->PostInit();
@@ -354,9 +343,6 @@ void Engine::BeginGameObjects()
 
 void Engine::PreInitComponents()
 {
-	// Looping over vector via member size optimizes size() call and
-	// Protects componentsToBeInitialized_ modification in mid air
-	// For example creating new components on BeginGame() function
 	for (int componentIndex = 0; componentIndex < componentsToBeInitializedSize_; ++componentIndex)
 	{
 		componentsToBeInitialized_[componentIndex]->PreInit();
@@ -471,10 +457,6 @@ void Engine::ClearMemory()
 
 void Engine::DestroyAllPendingObjectAndComponents()
 {
-	// Destroy objects and components using indexed for loop
-	// calculating size at every iteration
-	// in order to handle newly pending objects and components
-	// added in other object or component's destroy call
 	for (int objectIndex = 0; objectIndex < objectsPendingDestroy_.size(); ++objectIndex)
 	{
 		DestroyObject(objectsPendingDestroy_[objectIndex]);
