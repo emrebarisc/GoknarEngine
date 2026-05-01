@@ -22,7 +22,13 @@ public:
 	virtual void Init();
 	virtual void PostInit();
 
-	void AddMesh(T* meshUnit);
+	virtual void AddMesh(T* meshUnit);
+
+	const T* GetMesh(int index) const
+	{
+		return subMeshes_[index];
+	}
+
 	const std::vector<T*>& GetSubMeshes() const
 	{
 		return subMeshes_;

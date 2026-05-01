@@ -110,18 +110,18 @@ void SkeletalMeshInstance::PrepareForTheNextFrame()
 	}
 }
 
-void SkeletalMeshInstance::Render(RenderPassType renderPassType)
+void SkeletalMeshInstance::Render(int subMeshIndex, RenderPassType renderPassType)
 {
-	SetRenderOperations(renderPassType);
+	SetRenderOperations(subMeshIndex, renderPassType);
 }
 
-void SkeletalMeshInstance::SetRenderOperations(RenderPassType renderPassType)
+void SkeletalMeshInstance::SetRenderOperations(int subMeshIndex, RenderPassType renderPassType)
 {
 	for (SkeletalMeshUnit* subMesh : mesh_->GetSubMeshes())
 	{
 		subMesh->GetMaterial()->GetShader(renderPassType)->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
 	}
-	IMeshInstance::Render(renderPassType);
+	IMeshInstance::Render(subMeshIndex, renderPassType);
 }
 
 void SkeletalMeshInstance::SetMesh(SkeletalMesh* skeletalMesh)

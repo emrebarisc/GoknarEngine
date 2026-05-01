@@ -64,8 +64,8 @@ public:
 
 	inline void SetMaterial(int index, MaterialInstance* material);
 
-	inline virtual void PreRender(int subMeshId, RenderPassType renderPassType = RenderPassType::Forward);
-	inline virtual void Render(RenderPassType renderPassType = RenderPassType::Forward);
+	inline virtual void PreRender(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward);
+	inline virtual void Render(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward);
 
 	inline void SetIsRendered(bool isRendered)
 	{
@@ -100,6 +100,18 @@ public:
 	const std::vector<MaterialInstance*>& GetMaterials() const
 	{
 		return materials_;
+	}
+
+	const IMaterialBase* GetMaterial(int index) const
+	{
+		IMaterialBase* material = materials_[index];
+
+		if (!material)
+		{
+			material = mesh_->GetMesh(index)->GetMaterial();
+		}
+
+		return material;
 	}
 
 	inline virtual void Destroy();
@@ -179,17 +191,15 @@ inline void IMeshInstance<MeshType>::SetMaterial(int index, MaterialInstance* ma
 }
 
 template<class MeshType>
-inline void IMeshInstance<MeshType>::PreRender(int subMeshId, RenderPassType renderPassType)
+inline void IMeshInstance<MeshType>::PreRender(int subMeshIndex, RenderPassType renderPassType)
 {
-	IMaterialBase* material = nullptr;
+	const auto& subMeshes = mesh_->GetSubMeshes();
 
-	if (subMeshId < materials_.size())
+	IMaterialBase* material = materials_[subMeshIndex];
+
+	if (!material)
 	{
-		material = materials_[subMeshId];
-	}
-	else
-	{
-		material = mesh_->GetSubMeshes()[subMeshId]->GetMaterial();
+		material = subMeshes[subMeshIndex]->GetMaterial();
 	}
 
 	if (material)
@@ -199,29 +209,20 @@ inline void IMeshInstance<MeshType>::PreRender(int subMeshId, RenderPassType ren
 }
 
 template<class MeshType>
-inline void IMeshInstance<MeshType>::Render(RenderPassType renderPassType)
+inline void IMeshInstance<MeshType>::Render(int subMeshIndex, RenderPassType renderPassType)
 {
-	size_t instanceMaterialSize = materials_.size();
 	const auto& subMeshes = mesh_->GetSubMeshes();
-	size_t subMeshSize = subMeshes.size();
 
-	for (size_t subMeshIndex = 0; subMeshIndex < subMeshSize; ++subMeshIndex)
+	IMaterialBase* material = materials_[subMeshIndex];
+
+	if (!material)
 	{
-		IMaterialBase* material = nullptr;
+		material = subMeshes[subMeshIndex]->GetMaterial();
+	}
 
-		if (subMeshIndex < instanceMaterialSize)
-		{
-			material = materials_[subMeshIndex];
-		}
-		else
-		{
-			material = subMeshes[subMeshIndex]->GetMaterial();
-		}
-
-		if (material)
-		{
-			material->SetShaderVariables(renderPassType, parentComponent_->GetComponentToWorldTransformationMatrix());
-		}
+	if (material)
+	{
+		material->SetShaderVariables(renderPassType, parentComponent_->GetComponentToWorldTransformationMatrix());
 	}
 }
 
@@ -234,6 +235,8 @@ inline void IMeshInstance<MeshType>::SetMesh(MeshType* mesh)
 	}
 
 	mesh_ = mesh;
+
+	materials_.resize(mesh_->GetSubMeshes().size(), nullptr);
 
 	if (isInitialized_)
 	{
@@ -253,6 +256,11 @@ inline void IMeshInstance<MeshType>::Destroy()
 
 	for (MaterialInstance* materialInstance : materials_)
 	{
+		if (!materialInstance)
+		{
+			continue;
+		}
+
 		materialInstance->Destroy();
 	}
 

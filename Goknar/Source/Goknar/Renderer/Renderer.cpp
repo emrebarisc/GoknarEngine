@@ -541,7 +541,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			const StaticMesh* staticMesh = staticMeshInstance->GetMesh();
 			const std::vector<MeshUnit*> subMeshes = staticMesh->GetSubMeshes();
 			size_t subMeshSize = subMeshes.size();
-			for (int subMeshIndex = 0; subMeshSize < subMeshSize; ++subMeshIndex)
+			for (int subMeshIndex = 0; subMeshIndex < subMeshSize; ++subMeshIndex)
 			{
 				MeshUnit* subMesh = subMeshes[subMeshIndex];
 
@@ -550,7 +550,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				if (countDrawCallsInner_) ++drawCallCount;
 
 				staticMeshInstance->PreRender(subMeshIndex, renderPassType);
-				staticMeshInstance->Render(renderPassType);
+				staticMeshInstance->Render(subMeshIndex, renderPassType);
 
 				int facePointCount = subMesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
@@ -562,7 +562,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			const SkeletalMesh* staticMesh = skeletalMeshInstance->GetMesh();
 			const std::vector<SkeletalMeshUnit*> subMeshes = staticMesh->GetSubMeshes();
 			size_t subMeshSize = subMeshes.size();
-			for (int subMeshIndex = 0; subMeshSize < subMeshSize; ++subMeshIndex)
+			for (int subMeshIndex = 0; subMeshIndex < subMeshSize; ++subMeshIndex)
 			{
 				MeshUnit* subMesh = subMeshes[subMeshIndex];
 
@@ -571,7 +571,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				if (countDrawCallsInner_) ++drawCallCount;
 
 				skeletalMeshInstance->PreRender(subMeshIndex, renderPassType);
-				skeletalMeshInstance->Render(renderPassType);
+				skeletalMeshInstance->Render(subMeshIndex, renderPassType);
 
 				int facePointCount = subMesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
@@ -583,7 +583,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			const DynamicMesh* dynamicMesh = skeletalMeshInstance->GetMesh();
 			const std::vector<DynamicMeshUnit*> subMeshes = dynamicMesh->GetSubMeshes();
 			size_t subMeshSize = subMeshes.size();
-			for (int subMeshIndex = 0; subMeshSize < subMeshSize; ++subMeshIndex)
+			for (int subMeshIndex = 0; subMeshIndex < subMeshSize; ++subMeshIndex)
 			{
 				MeshUnit* subMesh = subMeshes[subMeshIndex];
 
@@ -592,7 +592,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				if (countDrawCallsInner_) ++drawCallCount;
 
 				skeletalMeshInstance->PreRender(subMeshIndex, renderPassType);
-				skeletalMeshInstance->Render(renderPassType);
+				skeletalMeshInstance->Render(subMeshIndex, renderPassType);
 
 				int facePointCount = subMesh->GetFaceCount() * 3;
 				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
@@ -726,7 +726,7 @@ void Renderer::AddStaticMeshToRenderer(StaticMesh* staticMesh)
 
 void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 {
-	MaterialBlendModel materialShadingModel = meshInstance->GetMaterials()[0]->GetBlendModel();
+	MaterialBlendModel materialShadingModel = meshInstance->GetMaterial(0)->GetBlendModel();
 	switch (materialShadingModel)
 	{
 	case MaterialBlendModel::Opaque:
@@ -743,7 +743,7 @@ void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 
 void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 {
-	MaterialBlendModel blendModel = staticMeshInstance->GetMaterials()[0]->GetBlendModel();
+	MaterialBlendModel blendModel = staticMeshInstance->GetMaterial(0)->GetBlendModel();
 
 	switch (blendModel)
 	{
@@ -787,7 +787,7 @@ void Renderer::AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh)
 
 void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
 {
-	MaterialBlendModel materialBlendModel = skeletalMeshInstance->GetMaterials()[0]->GetBlendModel();
+	MaterialBlendModel materialBlendModel = skeletalMeshInstance->GetMaterial(0)->GetBlendModel();
 	switch (materialBlendModel)
 	{
 	case MaterialBlendModel::Opaque:
@@ -804,7 +804,7 @@ void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstanc
 
 void Renderer::RemoveSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
 {
-	MaterialBlendModel blendModel = skeletalMeshInstance->GetMaterials()[0]->GetBlendModel();
+	MaterialBlendModel blendModel = skeletalMeshInstance->GetMaterial(0)->GetBlendModel();
 
 	switch (blendModel)
 	{
@@ -848,7 +848,7 @@ void Renderer::AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh)
 
 void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
-	MaterialBlendModel materialShadingModel = dynamicMeshInstance->GetMaterials()[0]->GetBlendModel();
+	MaterialBlendModel materialShadingModel = dynamicMeshInstance->GetMaterial(0)->GetBlendModel();
 	switch (materialShadingModel)
 	{
 	case MaterialBlendModel::Masked:
@@ -865,7 +865,7 @@ void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 
 void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
-	MaterialBlendModel blendModel = dynamicMeshInstance->GetMaterials()[0]->GetBlendModel();
+	MaterialBlendModel blendModel = dynamicMeshInstance->GetMaterial(0)->GetBlendModel();
 
 	switch (blendModel)
 	{

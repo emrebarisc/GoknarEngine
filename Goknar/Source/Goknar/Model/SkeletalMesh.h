@@ -237,6 +237,8 @@ public:
     virtual void Init() override;
     virtual void PostInit() override;
 
+    virtual void AddMesh(SkeletalMeshUnit* meshUnit) override;
+
     void AddBone(Bone* bone)
     {
         bones_.push_back(bone);
