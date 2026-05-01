@@ -91,7 +91,7 @@ public:
 		material_ = material;
 	}
 
-	Material* GetMaterial()
+	Material* GetMaterial() const
 	{
 		return material_;
 	}

@@ -45,6 +45,13 @@ void SkeletalMesh::PostInit()
 	Mesh::PostInit();
 }
 
+void SkeletalMesh::AddMesh(SkeletalMeshUnit* meshUnit)
+{
+	meshUnit->SetOwner(this);
+
+	Mesh::AddMesh(meshUnit);
+}
+
 void SkeletalMesh::GetBoneTransforms(std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap)
 {
 	SetupTransforms(armature_->root, Matrix::IdentityMatrix, transforms, skeletalAnimation, time, socketMap);

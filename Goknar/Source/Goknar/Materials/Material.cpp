@@ -42,9 +42,9 @@ Material::~Material()
 void Material::Build(MeshUnit* meshUnit)
 {
 	int ownerMeshBoneCount = 0;
-	if (SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(meshUnit))
+	if (SkeletalMeshUnit* skeletalMeshUnit = dynamic_cast<SkeletalMeshUnit*>(meshUnit))
 	{
-		ownerMeshBoneCount = skeletalMesh->GetBoneSize();
+		ownerMeshBoneCount = skeletalMeshUnit->GetOwner()->GetBoneSize();
 	}
 
 	initializationData_->boneCount = ownerMeshBoneCount;

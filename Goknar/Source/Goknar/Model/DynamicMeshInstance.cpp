@@ -14,9 +14,9 @@ DynamicMeshInstance::DynamicMeshInstance(RenderComponent* parentComponent) :
 
 }
 
-void DynamicMeshInstance::Render(RenderPassType renderPassType)
+void DynamicMeshInstance::Render(int subMeshIndex, RenderPassType renderPassType)
 {
-	IMeshInstance::Render(renderPassType);
+	IMeshInstance::Render(subMeshIndex, renderPassType);
 }
 
 void DynamicMeshInstance::UpdateVertexDataAt(int meshIndex, int vertexIndex, const VertexData& newVertexData)

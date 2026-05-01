@@ -124,6 +124,8 @@ void IMaterialBase::Use(RenderPassType renderPassType) const
 
 void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix) const
 {
+	Shader* shader = GetShader(renderPassType);
+
 	bool cullBackFaces = 
 		shadingModel_ == MaterialShadingModel::Default && 
 		(	renderPassType == RenderPassType::Forward ||
@@ -137,8 +139,6 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 	{
 		glDisable(GL_CULL_FACE);
 	}
-
-	Shader* shader = GetShader(renderPassType);
 
 	if (renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::GeometryBuffer)
 	{

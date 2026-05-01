@@ -5,6 +5,8 @@
 
 #include <vector>
 
+class SkeletalMesh;
+
 // THIS CLASS IS DIRECTLY SENT TO THE GPU
 // BE CAUTIOUS OF ADDING OR UPDATING DATA
 //
@@ -70,10 +72,22 @@ public:
         return vertexBoneDataArray_;
     }
 
+    void SetOwner(const SkeletalMesh* const owner)
+    {
+        owner_ = owner;
+    }
+
+    const SkeletalMesh* GetOwner() const
+    {
+        return owner_;
+    }
+
 protected:
 
 private:
     VertexBoneDataArray* vertexBoneDataArray_{ new VertexBoneDataArray() };
+
+    const SkeletalMesh* owner_;
 };
 
 #endif
