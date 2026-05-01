@@ -3,6 +3,18 @@
         <AnimationGraph>
             <Path>Animations/AG_DefaultCharacter</Path>
         </AnimationGraph>
+        <MaterialFunction>
+            <Path>MaterialFunctions/MF_WindDisplacement</Path>
+        </MaterialFunction>
+        <Material>
+            <Path>Materials/Environment/M_BirchBark</Path>
+        </Material>
+        <Material>
+            <Path>Materials/Environment/M_BirchLeaves</Path>
+        </Material>
+        <Material>
+            <Path>Materials/M_DefaultCharacter</Path>
+        </Material>
         <Material>
             <Path>Materials/M_DefaultMaterial</Path>
         </Material>
@@ -61,16 +73,29 @@
             <Path>Meshes/SM_Matilda.fbx</Path>
         </Mesh>
         <Mesh>
+            <Path>Meshes/SM_TreeBirch_01_Red.FBX</Path>
+            <MaterialPaths>
+                <MaterialPath>Materials/Environment/M_BirchLeaves</MaterialPath>
+                <MaterialPath>Materials/Environment/M_BirchBark</MaterialPath>
+            </MaterialPaths>
+        </Mesh>
+        <Mesh>
             <Path>Meshes/SM_Weapon.fbx</Path>
         </Mesh>
         <Texture Name="darkPlaceholder">
             <Path>Textures/T_DarkPlaceholder.png</Path>
+        </Texture>
+        <Texture Name="T_LeavesBushes">
+            <Path>Textures/T_LeavesBushes.PNG</Path>
         </Texture>
         <Texture Name="lightPlaceholder">
             <Path>Textures/T_LightPlaceholder.png</Path>
         </Texture>
         <Texture Name="matildaTexture">
             <Path>Textures/T_Matilda.png</Path>
+        </Texture>
+        <Texture Name="T_Tree_Birch_Rework_C">
+            <Path>Textures/T_Tree_Birch_Rework_C.PNG</Path>
         </Texture>
     </Assets>
 </AssetContainer>
