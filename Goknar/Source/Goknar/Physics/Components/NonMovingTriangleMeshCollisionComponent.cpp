@@ -7,7 +7,7 @@
 #include "ObjectBase.h"
 #include "GoknarAssert.h"
 #include "NonMovingTriangleMeshCollisionComponent.h"
-#include "Model/MeshUnit.h"
+#include "Model/StaticMesh.h"
 #include "Physics/PhysicsUtils.h"
 
 NonMovingTriangleMeshCollisionComponent::NonMovingTriangleMeshCollisionComponent(Component* parent) :
@@ -32,16 +32,18 @@ void NonMovingTriangleMeshCollisionComponent::PreInit()
 
 	bulletTriangleMesh_ = new btTriangleMesh(true, false);
 
-	const Box& relativeMeshAABB = relativeMesh_->GetAABB();
+	MeshUnit* subMesh = relativeMesh_->GetSubMeshes()[0];
+
+	const Box& relativeMeshAABB = subMesh->GetAABB();
 	bulletTriangleMesh_->setPremadeAabb(
 		PhysicsUtils::FromVector3ToBtVector3(relativeMeshAABB.GetMin()),
 		PhysicsUtils::FromVector3ToBtVector3(relativeMeshAABB.GetMax())
 	);
 
-	const VertexArray* vertexArray = relativeMesh_->GetVerticesPointer();
+	const VertexArray* vertexArray = subMesh->GetVerticesPointer();
 
-	const FaceArray* faceArray = relativeMesh_->GetFacesPointer();
-	int faceCount = relativeMesh_->GetFaceCount();
+	const FaceArray* faceArray = subMesh->GetFacesPointer();
+	int faceCount = subMesh->GetFaceCount();
 
 	for (int faceIndex = 0; faceIndex < faceCount; faceIndex++)
 	{

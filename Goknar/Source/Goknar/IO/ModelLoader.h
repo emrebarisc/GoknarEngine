@@ -14,8 +14,8 @@ public:
 protected:
 
 private:
-	static StaticMesh* LoadPlyFile(const std::string& path);
-	static StaticMesh* LoadModel(const std::string& path);
+	template<typename T>
+	static T* LoadModel(const std::string& path);
 };
 
 #endif

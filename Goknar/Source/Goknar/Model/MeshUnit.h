@@ -60,16 +60,16 @@ public:
 typedef std::vector<VertexData> VertexArray;
 typedef std::vector<Face> FaceArray;
 
-class GOKNAR_API MeshUnit : public Content
+class GOKNAR_API MeshUnit
 {
 public:
 	MeshUnit();
 
 	virtual ~MeshUnit();
 
-	virtual void PreInit() override;
-	virtual void Init() override;
-	virtual void PostInit() override;
+	virtual void PreInit();
+	virtual void Init();
+	virtual void PostInit();
 
 	bool GetIsInitialized() const
 	{

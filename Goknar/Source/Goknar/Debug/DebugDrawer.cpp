@@ -43,9 +43,9 @@ void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Color
 	lineStaticMeshComponent->SetMesh(lineMesh_);
 
 	StaticMeshInstance* lineMeshInstance = lineStaticMeshComponent->GetMeshInstance();
-	MaterialInstance* materialInstance = MaterialInstance::Create(lineMesh_->GetMaterial());
+	MaterialInstance* materialInstance = MaterialInstance::Create(lineMesh_->GetSubMeshes()[0]->GetMaterial());
 	materialInstance->SetBaseColor(color.ToVector4());
-	lineMeshInstance->SetMaterial(materialInstance);
+	lineMeshInstance->SetMaterial(0, materialInstance);
 	lineMeshInstance->SetIsCastingShadow(false);
 
 	Vector3 endToStart = end - start;
@@ -73,9 +73,9 @@ void DebugDrawer::DrawArrow(const Vector3& start, const Vector3& end, const Colo
 	arrowHeadStaticMeshComponent->SetMesh(arrowHeadMesh_);
 
 	StaticMeshInstance* arrowHeadMeshInstance = arrowHeadStaticMeshComponent->GetMeshInstance();
-	MaterialInstance* materialInstance = MaterialInstance::Create(arrowHeadMesh_->GetMaterial());
+	MaterialInstance* materialInstance = MaterialInstance::Create(arrowHeadMesh_->GetSubMeshes()[0]->GetMaterial());
 	materialInstance->SetBaseColor(color.ToVector4());
-	arrowHeadMeshInstance->SetMaterial(materialInstance);
+	arrowHeadMeshInstance->SetMaterial(0, materialInstance);
 	arrowHeadMeshInstance->SetIsCastingShadow(false);
 
 	Vector3 endToStart = end - start;
@@ -240,7 +240,7 @@ void DebugDrawer::DrawCollisionComponent(const MovingTriangleMeshCollisionCompon
 	DebugObject* collisionObject = new DebugObject();
 	collisionObject->SetName("DebugObject_TriangleMeshCollisionComponent");
 
-	const MeshUnit* mesh = movingTriangleMeshCollisionComponent->GetMesh();
+	const MeshUnit* mesh = movingTriangleMeshCollisionComponent->GetMesh()->GetSubMeshes()[0];
 	DrawMeshUnit(mesh, color, thickness, time, collisionObject);
 
 	collisionObject->SetWorldPosition(movingTriangleMeshCollisionComponent->GetWorldPosition());
@@ -255,7 +255,7 @@ void DebugDrawer::DrawCollisionComponent(const NonMovingTriangleMeshCollisionCom
 	DebugObject* collisionObject = new DebugObject();
 	collisionObject->SetName("DebugObject_TriangleMeshCollisionComponent");
 
-	const MeshUnit* mesh = nonMovingTriangleMeshCollisionComponent->GetMesh();
+	const MeshUnit* mesh = nonMovingTriangleMeshCollisionComponent->GetMesh()->GetSubMeshes()[0];
 	DrawMeshUnit(mesh, color, thickness, time, collisionObject);
 
 	collisionObject->SetWorldPosition(nonMovingTriangleMeshCollisionComponent->GetWorldPosition());

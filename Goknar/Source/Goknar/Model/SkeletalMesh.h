@@ -5,7 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "StaticMesh.h"
+#include "Mesh.h"
+#include "SkeletalMeshUnit.h"
 
 #include "Goknar/Core.h"
 #include "Goknar/GoknarAssert.h"
@@ -33,46 +34,6 @@ struct GOKNAR_API Armature
 {
     Bone* root{ nullptr };
     Matrix globalInverseTransform{ Matrix::IdentityMatrix };
-};
-
-// THIS CLASS IS DIRECTLY SENT TO THE GPU
-// BE CAUTIOUS OF ADDING OR UPDATING DATA
-//
-// MAX_BONE_SIZE_PER_VERTEX CANNOT EXCEED 4 
-// Since glVertexAttribPointer does not permit sizes more than 4
-#define MAX_BONE_SIZE_PER_VERTEX 4
-struct GOKNAR_API VertexBoneData
-{
-    void AddBoneData(unsigned int id, float weight)
-    {
-        int smallestIndex = -1;
-        float largestDifference = 0.f;
-        for (unsigned int i = 0; i < MAX_BONE_SIZE_PER_VERTEX; ++i)
-        {
-            if (boneIDs[i] == id && weights[i] != 0.f)
-            {
-                return;
-            }
-
-            float difference = weight - weights[i];
-            if (largestDifference < difference)
-            {
-                largestDifference = difference;
-                smallestIndex = i;
-            }
-        }
-
-        if (0 <= smallestIndex)
-        {
-            boneIDs[smallestIndex] = id;
-            weights[smallestIndex] = weight;
-        }
-
-        //GOKNAR_CORE_ASSERT(false, "Bone index size cannot be greater than " + std::to_string(MAX_BONE_SIZE_PER_VERTEX));
-    }
-
-    unsigned int boneIDs[MAX_BONE_SIZE_PER_VERTEX] = { 0 };
-    float weights[MAX_BONE_SIZE_PER_VERTEX] = { 0.f };
 };
 
 struct GOKNAR_API AnimationVectorKey
@@ -260,13 +221,12 @@ struct GOKNAR_API SkeletalAnimation
 	unsigned int maxKeyframeCount{ 0 };
 };
 
-typedef std::vector<VertexBoneData> VertexBoneDataArray;
 typedef std::unordered_map<std::string, unsigned int> BoneNameToIdMap;
 
 typedef std::vector<SkeletalAnimation*> SkeletalAnimationVector;
 typedef std::unordered_map<std::string, SkeletalAnimation*> NameToSkeletalAnimationMap;
 
-class GOKNAR_API SkeletalMesh : public StaticMesh
+class GOKNAR_API SkeletalMesh : public Mesh<SkeletalMeshUnit>
 {
 public:
 	SkeletalMesh();
@@ -276,16 +236,6 @@ public:
     virtual void PreInit() override;
     virtual void Init() override;
     virtual void PostInit() override;
-
-    void ResizeVertexToBonesArray(unsigned int size)
-    {
-        vertexBoneDataArray_->resize(size);
-    }
-
-    void AddVertexBoneData(unsigned int index, unsigned int id, float weight)
-    {
-        vertexBoneDataArray_->at(index).AddBoneData(id, weight);
-    }
 
     void AddBone(Bone* bone)
     {
@@ -314,11 +264,6 @@ public:
         }
 
         return boneId;
-    }
-
-    const VertexBoneDataArray* GetVertexBoneDataArray() const
-    {
-        return vertexBoneDataArray_;
     }
 
     const BoneNameToIdMap* GetBoneNameToIdMap() const
@@ -365,7 +310,6 @@ public:
 private:
     void SetupTransforms(Bone* bone, const Matrix& parentTransform, std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap);
 
-    VertexBoneDataArray* vertexBoneDataArray_{ new VertexBoneDataArray() };
     BoneNameToIdMap* boneNameToIdMap_{ new BoneNameToIdMap() };
 
     SkeletalAnimationVector skeletalAnimations_;

@@ -13,6 +13,8 @@ class GOKNAR_API AssetParser
 public:
 	static void ParseAssets(const std::string& filePath);
 	static void SaveAssets(const std::string& filePath);
+	static std::string GetMeshMaterialPath(const std::string& meshPath, const std::string& assetContainerPath = "AssetContainer");
+	static void SetMeshMaterialPath(const std::string& meshPath, const std::string& materialPath, const std::string& assetContainerPath = "AssetContainer");
 
 private:
 	static void ParseMeshes(tinyxml2::XMLElement* assetsElement);

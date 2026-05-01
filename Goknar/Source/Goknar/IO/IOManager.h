@@ -4,7 +4,9 @@
 #include "Goknar/Core.h"
 
 class Image;
-class StaticMesh;
+
+template<typename T>
+class Mesh;
 
 class GOKNAR_API IOManager
 {
@@ -20,8 +22,8 @@ public:
 	static bool WritePng(const char* filePath, int width, int height, int channels, const unsigned char* rawDataBuffer);
 	static bool WritePpm(const char* filePath, int width, int height, const unsigned char* rawDataBuffer);
 
-	static StaticMesh* LoadPlyFile(const std::string& path);
-	static StaticMesh* LoadModel(const std::string& path);
+	template<typename T>
+	static T* LoadModel(const std::string& path);
 
 protected:
 

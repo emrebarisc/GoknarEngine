@@ -138,12 +138,8 @@ bool IOManager::WritePpm(const char* filePath, int width, int height, const unsi
     return true;
 }
 
-StaticMesh* IOManager::LoadPlyFile(const std::string& path)
+template<typename T>
+T* IOManager::LoadModel(const std::string& path)
 {
-    return ModelLoader::LoadPlyFile(path);
-}
-
-StaticMesh* IOManager::LoadModel(const std::string& path)
-{
-    return ModelLoader::LoadModel(path);
+    return ModelLoader::LoadModel<T>(path);
 }

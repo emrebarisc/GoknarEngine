@@ -13,7 +13,6 @@ StaticMeshInstance::StaticMeshInstance(RenderComponent* parentComponent) :
 
 void StaticMeshInstance::Render(RenderPassType renderPassType)
 {
-	PreRender(renderPassType);
 	IMeshInstance::Render(renderPassType);
 }
 
