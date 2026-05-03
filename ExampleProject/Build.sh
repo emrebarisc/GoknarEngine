@@ -8,9 +8,6 @@ isUnix=true
 onlySyncFiles=false
 
 projectName=$(grep "^ProjectName=" Config/Build.ini | cut -d'=' -f2 | tr -d '\r' | tr -d ' ')
-if [ -z "$projectName" ]; then
-    projectName="ExampleProject"
-fi
 
 directoryName=""
 
@@ -79,7 +76,7 @@ else
 fi
 
 # Clean up binaries based on the exact gameName for the current OS
-rm -f "$directoryName/$configName/$gameName"
+rm -f "$directoryName/Output/$gameName"
 rm -f "$directoryName/$gameName"
 
 if [ "$cleanBuild" = true ]; then
@@ -112,15 +109,19 @@ if [ "$onlySyncFiles" = false ]; then
     fi
 
     if [ "$runAfterBuild" = true ]; then
-        # Check standard MSVC subfolder first, then fallback to root build folder (Linux/Make)
-        if [ -f "./$configName/$gameName" ]; then
-            echo "Running $gameName from $configName folder..."
-            "./$configName/$gameName"
+        # Prefer the Output folder since CMake routes all runtime binaries there.
+        if [ -f "./Output/$gameName" ]; then
+            echo "Running $gameName from Output folder..."
+            (
+                cd "./Output" || exit 1
+                "./$gameName"
+            )
         elif [ -f "./$gameName" ]; then
             echo "Running $gameName from root build folder..."
             "./$gameName"
         else
             echo "Error: Could not find the executable for $gameName."
+            echo "Expected one of: ./$gameName, or ./Output/$gameName."
             echo "Build may have failed."
         fi
     fi
