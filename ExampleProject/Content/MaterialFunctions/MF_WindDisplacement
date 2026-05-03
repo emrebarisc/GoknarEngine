@@ -4,7 +4,103 @@
     <GeneratedFunctionDefinitions><![CDATA[vec3 mf_MaterialFunctions_MF_WindDisplacement_out_0_Result()
 {
 	// --- Generated Material Function Calculations ---
-	return vec3(0.000000, 0.000000, 0.000000);
+	// Node: Multiply
+	float node_179_out_182 = elapsedTime * 2.000000f;
+	// Node: Float Constant
+	float node_184_out_185 = 3.141500f;
+	// Node: Vector3 Constant
+	vec3 node_120_out_124 = vec3(1.000000f, 1.000000f, 0.500000f);
+	// Node: Add
+	vec3 node_115_out_118 = position + node_120_out_124;
+	// Node: Length
+	float node_126_out_128 = length(node_115_out_118);
+	// Node: Multiply
+	float node_200_out_203 = node_184_out_185 * node_126_out_128;
+	// Node: Float Constant
+	float node_186_out_187 = 3.300000f;
+	// Node: Multiply
+	float node_206_out_209 = node_200_out_203 * node_186_out_187;
+	// Node: Float Constant
+	float node_224_out_225 = 0.130000f;
+	// Node: Multiply
+	float node_226_out_229 = node_206_out_209 * node_224_out_225;
+	// Node: Add
+	float node_242_out_245 = node_179_out_182 + node_226_out_229;
+	// Node: Sine
+	float node_248_out_250 = sin(node_242_out_245);
+	// Node: Vector3 Constant
+	vec3 node_140_out_144 = vec3(-1.000000f, 1.000000f, -0.500000f);
+	// Node: Add
+	vec3 node_130_out_133 = position + node_140_out_144;
+	// Node: Length
+	float node_149_out_151 = length(node_130_out_133);
+	// Node: Multiply
+	float node_212_out_215 = node_184_out_185 * node_149_out_151;
+	// Node: Float Constant
+	float node_188_out_189 = 3.200000f;
+	// Node: Multiply
+	float node_218_out_221 = node_212_out_215 * node_188_out_189;
+	// Node: Float Constant
+	float node_234_out_235 = 0.120000f;
+	// Node: Multiply
+	float node_236_out_239 = node_218_out_221 * node_234_out_235;
+	// Node: Add
+	float node_257_out_260 = node_179_out_182 + node_236_out_239;
+	// Node: Sine
+	float node_263_out_265 = sin(node_257_out_260);
+	// Node: Add
+	float node_252_out_255 = node_248_out_250 + node_263_out_265;
+	// Node: Vector3 Constant
+	vec3 node_135_out_139 = vec3(1.000000f, -1.000000f, 0.500000f);
+	// Node: Add
+	vec3 node_153_out_156 = position + node_135_out_139;
+	// Node: Length
+	float node_146_out_148 = length(node_153_out_156);
+	// Node: Multiply
+	float node_273_out_276 = node_184_out_185 * node_146_out_148;
+	// Node: Float Constant
+	float node_190_out_191 = 3.100000f;
+	// Node: Multiply
+	float node_279_out_282 = node_273_out_276 * node_190_out_191;
+	// Node: Float Constant
+	float node_290_out_291 = 0.240000f;
+	// Node: Multiply
+	float node_285_out_288 = node_279_out_282 * node_290_out_291;
+	// Node: Add
+	float node_293_out_296 = node_179_out_182 + node_285_out_288;
+	// Node: Sine
+	float node_299_out_301 = sin(node_293_out_296);
+	// Node: Add
+	float node_268_out_271 = node_252_out_255 + node_299_out_301;
+	// Node: Vector3 Constant
+	vec3 node_161_out_165 = vec3(-1.000000f, 1.000000f, -0.500000f);
+	// Node: Add
+	vec3 node_166_out_169 = position + node_161_out_165;
+	// Node: Length
+	float node_173_out_175 = length(node_166_out_169);
+	// Node: Multiply
+	float node_304_out_307 = node_184_out_185 * node_173_out_175;
+	// Node: Float Constant
+	float node_192_out_193 = 3.500000f;
+	// Node: Multiply
+	float node_312_out_315 = node_304_out_307 * node_192_out_193;
+	// Node: Float Constant
+	float node_310_out_311 = 0.320000f;
+	// Node: Multiply
+	float node_318_out_321 = node_312_out_315 * node_310_out_311;
+	// Node: Add
+	float node_324_out_327 = node_179_out_182 + node_318_out_321;
+	// Node: Sine
+	float node_330_out_332 = sin(node_324_out_327);
+	// Node: Add
+	float node_334_out_337 = node_268_out_271 + node_330_out_332;
+	// Node: Float Constant
+	float node_340_out_341 = 0.005000f;
+	// Node: Multiply
+	float node_342_out_345 = node_334_out_337 * node_340_out_341;
+	// Node: Multiply
+	vec4 node_348_out_351 = node_342_out_345 * color;
+	return node_348_out_351.xyz;
 }
 ]]></GeneratedFunctionDefinitions>
     <Inputs/>

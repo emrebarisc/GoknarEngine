@@ -17,14 +17,10 @@ CrosshairPanel::CrosshairPanel(HUD* hud) :
 
 CrosshairPanel::~CrosshairPanel()
 {
-    Game* game = (Game*)engine->GetApplication();
-    GameState* gameState = game->GetGameState();
 }
 
 void CrosshairPanel::Init()
 {
-    Game* game = (Game*)engine->GetApplication();
-    GameState* gameState = game->GetGameState();
 }
 
 void CrosshairPanel::Draw()
