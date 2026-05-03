@@ -1,0 +1,40 @@
+#version 440 core
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout(binding = 0, rgba16f) uniform writeonly image2D bloomUpsampleOutput;
+
+uniform sampler2D baseBloomInputTexture;
+uniform sampler2D nextMipBloomInputTexture;
+uniform float bloomScatter;
+
+void main()
+{
+	ivec2 pixelCoordinates = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 outputSize = imageSize(bloomUpsampleOutput);
+	if (pixelCoordinates.x >= outputSize.x || pixelCoordinates.y >= outputSize.y)
+	{
+		return;
+	}
+
+	vec2 uv = (vec2(pixelCoordinates) + vec2(0.5)) / vec2(outputSize);
+	vec2 lowerMipTexelSize = 1.0 / vec2(textureSize(nextMipBloomInputTexture, 0));
+
+	vec4 baseSample = texture(baseBloomInputTexture, uv);
+	vec4 lowerMipSum =
+		texture(nextMipBloomInputTexture, uv + lowerMipTexelSize * vec2(-1.0, -1.0)) +
+		texture(nextMipBloomInputTexture, uv + lowerMipTexelSize * vec2(0.0, -1.0)) * 2.0 +
+		texture(nextMipBloomInputTexture, uv + lowerMipTexelSize * vec2(1.0, -1.0)) +
+		texture(nextMipBloomInputTexture, uv + lowerMipTexelSize * vec2(-1.0, 0.0)) * 2.0 +
+		texture(nextMipBloomInputTexture, uv) * 4.0 +
+		texture(nextMipBloomInputTexture, uv + lowerMipTexelSize * vec2(1.0, 0.0)) * 2.0 +
+		texture(nextMipBloomInputTexture, uv + lowerMipTexelSize * vec2(-1.0, 1.0)) +
+		texture(nextMipBloomInputTexture, uv + lowerMipTexelSize * vec2(0.0, 1.0)) * 2.0 +
+		texture(nextMipBloomInputTexture, uv + lowerMipTexelSize * vec2(1.0, 1.0));
+
+	vec4 lowerMipSample = lowerMipSum / 16.0;
+	vec3 upsampledColor = baseSample.rgb + lowerMipSample.rgb * bloomScatter;
+	float propagatedStrength = max(baseSample.a, lowerMipSample.a);
+
+	imageStore(bloomUpsampleOutput, pixelCoordinates, vec4(upsampledColor, propagatedStrength));
+}

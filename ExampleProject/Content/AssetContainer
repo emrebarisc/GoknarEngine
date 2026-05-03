@@ -13,6 +13,9 @@
             <Path>Materials/Environment/M_BirchLeaves</Path>
         </Material>
         <Material>
+            <Path>Materials/Level/M_EmmisiveCube</Path>
+        </Material>
+        <Material>
             <Path>Materials/M_DefaultCharacter</Path>
         </Material>
         <Material>

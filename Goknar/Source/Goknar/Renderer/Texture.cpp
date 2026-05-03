@@ -185,9 +185,21 @@ void Texture::Bind(const Shader* shader) const
 		shader->SetInt(name_.c_str(), rendererTextureId_);
 	}
 
-	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
-	glBindTexture((int)textureBindTarget_, rendererTextureId_);
+	BindToTextureUnit(rendererTextureId_);
 	EXIT_ON_GL_ERROR("Texture::Bind");
+}
+
+void Texture::BindToTextureUnit(unsigned int textureUnit) const
+{
+	glActiveTexture(GL_TEXTURE0 + textureUnit);
+	glBindTexture((int)textureBindTarget_, rendererTextureId_);
+	EXIT_ON_GL_ERROR("Texture::BindToTextureUnit");
+}
+
+void Texture::BindAsImage(unsigned int imageUnit, TextureImageAccess access) const
+{
+	glBindImageTexture(imageUnit, rendererTextureId_, 0, GL_FALSE, 0, (int)access, (int)textureInternalFormat_);
+	EXIT_ON_GL_ERROR("Texture::BindAsImage");
 }
 
 void Texture::Unbind()
@@ -202,6 +214,8 @@ bool Texture::LoadTextureImage()
 
 void Texture::UpdateSizeOnGPU()
 {
+	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
+	glBindTexture((int)textureBindTarget_, rendererTextureId_);
 	glTexImage2D((int)textureImageTarget_, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
 
 	if (textureImageTarget_ == TextureImageTarget::TEXTURE_CUBE_MAP_POSITIVE_X)
@@ -211,4 +225,6 @@ void Texture::UpdateSizeOnGPU()
 			glTexImage2D((int)textureImageTarget_ + i, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
 		}
 	}
+
+	glBindTexture((int)textureBindTarget_, 0);
 }

@@ -3,42 +3,70 @@
 
 #include "Goknar/Core.h"
 
-class Shader;
-class StaticMesh;
+#include "Texture.h"
+
+class ComputeShader;
+class DeferredRenderingData;
+class FrameBuffer;
+class Texture;
 
 class GOKNAR_API PostProcessingEffect
 {
 public:
 	PostProcessingEffect();
-	~PostProcessingEffect();
+	virtual ~PostProcessingEffect();
 
-	void PreInit();
-	void Init();
-	void PostInit();
+	virtual void PreInit();
+	virtual void Init();
+	virtual void PostInit();
 
-	void SetShader(Shader* shader)
+	void SetComputeShader(ComputeShader* computeShader)
 	{
-		shader_ = shader;
+		computeShader_ = computeShader;
 	}
 
-	Shader* GetShader() const
+	ComputeShader* GetComputeShader() const
 	{
-		return shader_;
+		return computeShader_;
 	}
 
-	StaticMesh* GetPostProcessingMesh() const
+	FrameBuffer* GetOutputFrameBuffer() const
 	{
-		return postProcessingMesh_;
+		return outputFrameBuffer_;
 	}
 
-	void Render();
+	Texture* GetOutputTexture() const
+	{
+		return outputTexture_;
+	}
+
+	void SetIsEnabled(bool isEnabled)
+	{
+		isEnabled_ = isEnabled;
+	}
+
+	bool GetIsEnabled() const
+	{
+		return isEnabled_;
+	}
+
+	virtual Texture* Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height);
 
 protected:
+	void EnsureResources(int width, int height);
+	void RecreateOutputResources(int width, int height, TextureInternalFormat internalFormat = TextureInternalFormat::RGBA16F, TextureFormat textureFormat = TextureFormat::RGBA, TextureType textureType = TextureType::FLOAT);
+	virtual void OnRender(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height);
+
+	ComputeShader* computeShader_{ nullptr };
+
+	Texture* outputTexture_{ nullptr };
+	FrameBuffer* outputFrameBuffer_{ nullptr };
+
+	int width_{ 0 };
+	int height_{ 0 };
 
 private:
-	Shader* shader_{ nullptr };
-
-	StaticMesh* postProcessingMesh_;
+	bool isEnabled_{ true };
 };
 
 #endif

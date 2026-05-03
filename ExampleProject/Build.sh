@@ -75,10 +75,6 @@ else
     configName="Release"
 fi
 
-# Clean up binaries based on the exact gameName for the current OS
-rm -f "$directoryName/Output/$gameName"
-rm -f "$directoryName/$gameName"
-
 if [ "$cleanBuild" = true ]; then
     rm -rf "$directoryName"
 fi

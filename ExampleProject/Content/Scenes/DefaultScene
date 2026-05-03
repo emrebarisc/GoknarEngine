@@ -16,6 +16,15 @@
             <ShadowIntensity>0.1</ShadowIntensity>
             <ShadowMapResolution>1024 1024</ShadowMapResolution>
         </DirectionalLight>
+        <PointLight>
+            <Position>-15.000000 -12.000000 0.625000</Position>
+            <Color>1.000000 0.300000 0.000000</Color>
+            <Intensity>4</Intensity>
+            <Radius>25</Radius>
+            <IsCastingShadow>0</IsCastingShadow>
+            <ShadowIntensity>0</ShadowIntensity>
+            <ShadowMapResolution>1024 1024</ShadowMapResolution>
+        </PointLight>
     </Lights>
     <Objects>
         <ObjectBase>
@@ -324,8 +333,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box1</Name>
-            <WorldPosition>-15.023069 -2.000708 0.624970</WorldPosition>
-            <EulerWorldRotation>0.003781 0.001202 14.110275</EulerWorldRotation>
+            <WorldPosition>-15.024169 -1.998995 0.624973</WorldPosition>
+            <EulerWorldRotation>0.004020 0.000362 14.114535</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -349,8 +358,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box2</Name>
-            <WorldPosition>-14.890317 -3.321371 0.624926</WorldPosition>
-            <EulerWorldRotation>-0.007625 0.010327 -19.744741</EulerWorldRotation>
+            <WorldPosition>-14.887422 -3.318473 0.624970</WorldPosition>
+            <EulerWorldRotation>-0.004942 0.001147 -19.731642</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -374,8 +383,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box3</Name>
-            <WorldPosition>-13.772006 -2.007311 0.624956</WorldPosition>
-            <EulerWorldRotation>0.003585 -0.004324 -3.232510</EulerWorldRotation>
+            <WorldPosition>-13.773800 -2.007441 0.624960</WorldPosition>
+            <EulerWorldRotation>0.003341 -0.005034 -3.115145</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -399,8 +408,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box4</Name>
-            <WorldPosition>-13.422992 -3.224471 0.625000</WorldPosition>
-            <EulerWorldRotation>-0.000040 0.000000 9.615929</EulerWorldRotation>
+            <WorldPosition>-13.419549 -3.221469 0.624982</WorldPosition>
+            <EulerWorldRotation>0.000396 -0.001933 9.585629</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -424,8 +433,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box5</Name>
-            <WorldPosition>-14.593343 -2.036577 1.624957</WorldPosition>
-            <EulerWorldRotation>0.002946 0.001366 -0.121305</EulerWorldRotation>
+            <WorldPosition>-14.600994 -2.035853 1.624959</WorldPosition>
+            <EulerWorldRotation>0.003804 0.001120 0.044778</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -449,8 +458,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box6</Name>
-            <WorldPosition>-14.521333 -3.198730 1.624874</WorldPosition>
-            <EulerWorldRotation>0.001885 0.012895 19.234842</EulerWorldRotation>
+            <WorldPosition>-14.519764 -3.189265 1.624943</WorldPosition>
+            <EulerWorldRotation>-0.002767 0.005874 19.287516</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>5</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -474,8 +483,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box7</Name>
-            <WorldPosition>-14.586482 -2.526678 2.624870</WorldPosition>
-            <EulerWorldRotation>0.003104 0.008647 -18.512623</EulerWorldRotation>
+            <WorldPosition>-14.594340 -2.525585 2.624900</WorldPosition>
+            <EulerWorldRotation>0.002111 0.007390 -17.962572</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -499,8 +508,8 @@
         </RigidBody>
         <RigidBody>
             <Name>RigidBody</Name>
-            <WorldPosition>-14.972615 -9.028303 0.625000</WorldPosition>
-            <EulerWorldRotation>0.000021 -0.000014 30.668085</EulerWorldRotation>
+            <WorldPosition>-14.968678 -9.032318 0.625000</WorldPosition>
+            <EulerWorldRotation>0.000020 -0.000007 30.764921</EulerWorldRotation>
             <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -543,6 +552,31 @@
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/Environment/M_BirchLeaves</MaterialPath>
                     <RelativePosition>0.000000 0.000000 -2.000000</RelativePosition>
+                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
+                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>EmmisiveBox</Name>
+            <WorldPosition>-15.000000 -12.000000 0.625000</WorldPosition>
+            <EulerWorldRotation>0.000000 0.000000 -15.000003</EulerWorldRotation>
+            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
+                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
+                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/Level/M_EmmisiveCube</MaterialPath>
+                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
                     <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
                     <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>

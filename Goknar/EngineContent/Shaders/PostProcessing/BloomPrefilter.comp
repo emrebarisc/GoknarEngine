@@ -1,0 +1,31 @@
+#version 440 core
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout(binding = 0, rgba16f) uniform writeonly image2D bloomPrefilterOutput;
+
+uniform sampler2D emissiveInputTexture;
+uniform float bloomThreshold;
+uniform float bloomSoftKnee;
+uniform float bloomBrightnessBoost;
+
+void main()
+{
+	ivec2 pixelCoordinates = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 outputSize = imageSize(bloomPrefilterOutput);
+	if (pixelCoordinates.x >= outputSize.x || pixelCoordinates.y >= outputSize.y)
+	{
+		return;
+	}
+
+	vec2 uv = (vec2(pixelCoordinates) + vec2(0.5)) / vec2(outputSize);
+	vec3 emissiveColor = texture(emissiveInputTexture, uv).rgb;
+	float brightness = dot(emissiveColor, vec3(0.2126, 0.7152, 0.0722));
+	float softThreshold = smoothstep(bloomThreshold, bloomThreshold + bloomSoftKnee, brightness);
+	float normalizedBrightness = max(brightness - bloomThreshold, 0.0);
+	normalizedBrightness = normalizedBrightness / (normalizedBrightness + 1.0);
+	float bloomBoost = 1.0 + normalizedBrightness * bloomBrightnessBoost;
+	vec3 bloomColor = emissiveColor * softThreshold * bloomBoost;
+
+	imageStore(bloomPrefilterOutput, pixelCoordinates, vec4(bloomColor, normalizedBrightness));
+}

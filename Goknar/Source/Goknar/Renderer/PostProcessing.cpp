@@ -2,47 +2,113 @@
 
 #include "PostProcessing.h"
 
-#include "Shader.h"
+#include "ComputeShader.h"
+#include "Framebuffer.h"
 
-#include "Engine.h"
-#include "Model/StaticMesh.h"
-#include "Renderer/Renderer.h"
+#include "Goknar/GoknarAssert.h"
+
+#include <glad/glad.h>
 
 PostProcessingEffect::PostProcessingEffect()
 {
-	MeshUnit* meshUnit = new MeshUnit();
-
-	meshUnit->AddVertex(Vector3{ -1.f, -1.f, 0.f });
-	meshUnit->AddVertex(Vector3{ 3.f, -1.f, 0.f });
-	meshUnit->AddVertex(Vector3{ -1.f, 3.f, 0.f });
-	meshUnit->AddFace(Face{ 0, 1, 2 });
-
-	postProcessingMesh_ = new StaticMesh();
-	postProcessingMesh_->AddMesh(meshUnit);
 }
 
 PostProcessingEffect::~PostProcessingEffect()
 {
-	delete postProcessingMesh_;
+	delete outputTexture_;
+	delete outputFrameBuffer_;
+	delete computeShader_;
 }
 
 void PostProcessingEffect::PreInit()
 {
-	postProcessingMesh_->PreInit();
+	if (computeShader_)
+	{
+		computeShader_->PreInit();
+	}
 }
 
 void PostProcessingEffect::Init()
 {
-	postProcessingMesh_->Init();
+	if (computeShader_)
+	{
+		computeShader_->Init();
+	}
 }
 
 void PostProcessingEffect::PostInit()
 {
-	postProcessingMesh_->PostInit();
+	if (computeShader_)
+	{
+		computeShader_->PostInit();
+	}
 }
 
-void PostProcessingEffect::Render()
+Texture* PostProcessingEffect::Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height)
 {
-	shader_->Use();
-	engine->GetRenderer()->RenderStaticMesh(postProcessingMesh_);
+	if (!isEnabled_ || !computeShader_ || !inputTexture || width <= 0 || height <= 0)
+	{
+		return const_cast<Texture*>(inputTexture);
+	}
+
+	EnsureResources(width, height);
+	OnRender(deferredRenderingData, inputTexture, width, height);
+
+	return outputTexture_;
+}
+
+void PostProcessingEffect::EnsureResources(int width, int height)
+{
+	if (width_ == width && height_ == height && outputTexture_ && outputFrameBuffer_)
+	{
+		return;
+	}
+
+	RecreateOutputResources(width, height);
+}
+
+void PostProcessingEffect::RecreateOutputResources(int width, int height, TextureInternalFormat internalFormat, TextureFormat textureFormat, TextureType textureType)
+{
+	delete outputTexture_;
+	delete outputFrameBuffer_;
+
+	width_ = width;
+	height_ = height;
+
+	outputTexture_ = new Texture();
+	outputTexture_->SetName("postProcessOutputTexture");
+	outputTexture_->SetTextureDataType(TextureDataType::DYNAMIC);
+	outputTexture_->SetTextureFormat(textureFormat);
+	outputTexture_->SetTextureInternalFormat(internalFormat);
+	outputTexture_->SetTextureMinFilter(TextureMinFilter::LINEAR);
+	outputTexture_->SetTextureMagFilter(TextureMagFilter::LINEAR);
+	outputTexture_->SetWidth(width_);
+	outputTexture_->SetHeight(height_);
+	outputTexture_->SetGenerateMipmap(false);
+	outputTexture_->SetTextureType(textureType);
+	outputTexture_->PreInit();
+	outputTexture_->Init();
+	outputTexture_->PostInit();
+
+	outputFrameBuffer_ = new FrameBuffer();
+	outputFrameBuffer_->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT0, outputTexture_);
+	outputFrameBuffer_->PreInit();
+	outputFrameBuffer_->Init();
+	outputFrameBuffer_->PostInit();
+	outputFrameBuffer_->Bind();
+	outputFrameBuffer_->Attach();
+	outputFrameBuffer_->DrawBuffers();
+	outputFrameBuffer_->Unbind();
+}
+
+void PostProcessingEffect::OnRender(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height)
+{
+	GOKNAR_CORE_CHECK(deferredRenderingData != nullptr, "Deferred rendering data is required for post-processing.");
+
+	computeShader_->Use();
+	inputTexture->BindToTextureUnit(0);
+	computeShader_->SetInt("inputTexture", 0);
+	outputTexture_->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
+	computeShader_->Dispatch2D(width, height);
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
 }

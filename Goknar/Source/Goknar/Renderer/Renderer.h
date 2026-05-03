@@ -19,6 +19,7 @@ class Texture;
 class FrameBuffer;
 class RenderBuffer;
 class Shader;
+class BloomPostProcessingEffect;
 
 class DynamicMeshInstance;
 class StaticMeshInstance;
@@ -53,7 +54,7 @@ public:
 	void Unbind();
 
 	void GenerateBuffers();
-	void BindGBufferDepth(const RenderTarget* renderTarget);
+	void BindGBufferDepth(FrameBuffer* drawFrameBuffer);
 
 	void OnViewportSizeChanged(int width, int height);
 
@@ -85,7 +86,21 @@ public:
 
 	void SetShaderTextureUniforms();
 
-	void BindGBufferDepth(const RenderTarget* renderTarget);
+	void BindGBufferDepth(FrameBuffer* drawFrameBuffer);
+
+	void BeginSceneRender();
+	void EndSceneRender();
+	void BlitSceneTo(FrameBuffer* drawFrameBuffer) const;
+
+	Texture* GetSceneTexture() const
+	{
+		return sceneTexture;
+	}
+
+	FrameBuffer* GetSceneFrameBuffer() const
+	{
+		return sceneFrameBuffer;
+	}
 
 	void Render();
 
@@ -95,8 +110,13 @@ public:
 	GeometryBufferData* geometryBufferData{ nullptr };
 	StaticMesh* deferredRenderingMesh{ nullptr };
 	Shader* deferredRenderingMeshShader{ nullptr };
+	Texture* sceneTexture{ nullptr };
+	FrameBuffer* sceneFrameBuffer{ nullptr };
+	RenderBuffer* sceneDepthRenderbuffer{ nullptr };
 
 private:
+	void GenerateSceneBuffers();
+	void DestroySceneBuffers();
 };
 
 class GOKNAR_API Renderer
@@ -160,14 +180,14 @@ public:
 		return deferredRenderingData_;
 	}
 
-	void AddPostProcessingEffect(const PostProcessingEffect* postProcessingEffect)
+	void AddPostProcessingEffect(PostProcessingEffect* postProcessingEffect)
 	{
 		postProcessingEffects_.push_back(postProcessingEffect);
 	}
 
-	void RemovePostProcessingEffect(const PostProcessingEffect* postProcessingEffect)
+	void RemovePostProcessingEffect(PostProcessingEffect* postProcessingEffect)
 	{
-		std::vector<const PostProcessingEffect*>::const_iterator postProcessingEffectIterator = postProcessingEffects_.cbegin();
+		std::vector<PostProcessingEffect*>::const_iterator postProcessingEffectIterator = postProcessingEffects_.cbegin();
 		while (postProcessingEffectIterator != postProcessingEffects_.cend())
 		{
 			if (postProcessingEffect == *postProcessingEffectIterator)
@@ -217,6 +237,7 @@ private:
 	void BindDynamicVBO();
 	void SetAttribPointers();
 	void SetAttribPointersForSkeletalMesh();
+	void ApplyPostProcessing(DeferredRenderingData* deferredRenderingData, FrameBuffer* destinationFrameBuffer);
 
 	void SortTransparentInstances();
 
@@ -237,8 +258,9 @@ private:
 
 	DeferredRenderingData* deferredRenderingData_{ nullptr };
 
-	std::vector<const PostProcessingEffect*> postProcessingEffects_;
+	std::vector<PostProcessingEffect*> postProcessingEffects_;
 	std::vector<const RenderTarget*> renderTargets_;
+	BloomPostProcessingEffect* bloomPostProcessingEffect_{ nullptr };
 
 	const RenderTarget* currentRenderTarget_{ nullptr };
 

@@ -10,6 +10,13 @@
 class Shader;
 class Image;
 
+enum class TextureImageAccess
+{
+	READ_ONLY = GL_READ_ONLY,
+	WRITE_ONLY = GL_WRITE_ONLY,
+	READ_WRITE = GL_READ_WRITE
+};
+
 enum class TextureBindTarget
 {
 	TEXTURE_1D = GL_TEXTURE_1D,
@@ -176,6 +183,8 @@ public:
 	void PostInit();
 
 	void Bind(const Shader* shader = nullptr) const;
+	void BindToTextureUnit(unsigned int textureUnit) const;
+	void BindAsImage(unsigned int imageUnit, TextureImageAccess access) const;
 	void Unbind();
 
 	bool LoadTextureImage();

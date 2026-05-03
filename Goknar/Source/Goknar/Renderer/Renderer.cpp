@@ -34,6 +34,7 @@
 
 #include "Goknar/IO/IOManager.h"
 
+#include "Goknar/Renderer/BloomPostProcessingEffect.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/PostProcessing.h"
@@ -45,6 +46,36 @@
 #define VERTEX_UV_LOCATION 3
 #define BONE_ID_LOCATION 4
 #define BONE_WEIGHT_LOCATION 5
+
+namespace
+{
+	void BlitFrameBufferColor(const FrameBuffer* readFrameBuffer, FrameBuffer* drawFrameBuffer, int width, int height)
+	{
+		if (!readFrameBuffer || width <= 0 || height <= 0)
+		{
+			return;
+		}
+
+		readFrameBuffer->Bind(FrameBufferBindTarget::READ_FRAMEBUFFER);
+		glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+		if (drawFrameBuffer)
+		{
+			drawFrameBuffer->Bind(FrameBufferBindTarget::DRAW_FRAMEBUFFER);
+		}
+		else
+		{
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		}
+
+		glBlitFramebuffer(
+			0, 0, width, height,
+			0, 0, width, height,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
 
 Renderer::Renderer() :
 	staticVertexBufferId_(0),
@@ -70,6 +101,7 @@ Renderer::Renderer() :
 
 Renderer::~Renderer()
 {
+	delete bloomPostProcessingEffect_;
 	delete lightManager_;
 	delete deferredRenderingData_;
 
@@ -83,75 +115,8 @@ Renderer::~Renderer()
 	glDeleteBuffers(1, &dynamicIndexBufferId_);
 }
 
-//static FrameBuffer testFrameBuffer;
-//static Texture postProcessingTestTexture;
-//static PostProcessingEffect postProcessingEffect;
-//static Shader postProcessingShader;
-//static bool isInitializedBuffers = false;
-
 void Renderer::PreInit()
 {
-
-	//	if (!isInitializedBuffers)
-	//	{
-	//		postProcessingTestTexture.SetName("postProcessingTest");
-	//		postProcessingTestTexture.SetTextureDataType(TextureDataType::DYNAMIC);
-	//		postProcessingTestTexture.SetTextureFormat(TextureFormat::RGB);
-	//		postProcessingTestTexture.SetTextureInternalFormat(TextureInternalFormat::RGB);
-	//		postProcessingTestTexture.SetTextureMinFilter(TextureMinFilter::NEAREST);
-	//		postProcessingTestTexture.SetTextureMagFilter(TextureMagFilter::NEAREST);
-	//		postProcessingTestTexture.SetWidth(engine->GetWindowManager()->GetWindowSize().x);
-	//		postProcessingTestTexture.SetHeight(engine->GetWindowManager()->GetWindowSize().y);
-	//		postProcessingTestTexture.SetGenerateMipmap(false);
-	//		postProcessingTestTexture.SetTextureType(TextureType::FLOAT);
-	//		postProcessingTestTexture.PreInit();
-	//		postProcessingTestTexture.Init();
-	//		postProcessingTestTexture.PostInit();
-	//		testFrameBuffer.AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT0, &postProcessingTestTexture);
-	//
-	//		testFrameBuffer.PreInit();
-	//		testFrameBuffer.Init();
-	//		testFrameBuffer.PostInit();
-	//		testFrameBuffer.Bind();
-	//		testFrameBuffer.Attach();
-	//
-	//		testFrameBuffer.DrawBuffers();
-	//
-	//		postProcessingShader.SetVertexShaderScript(ShaderBuilder::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
-	//		postProcessingShader.SetFragmentShaderScript(R"(
-	//#version 440 core
-	//
-	//out vec4 fragmentColor;
-	//
-	//in mat4 finalModelMatrix;
-	//in vec4 fragmentPositionScreenSpace;
-	//in vec2 textureUV;
-	//
-	//uniform sampler2D postProcessingTest;
-	//
-	//void main()
-	//{
-	//	vec4 textureColor = texture(postProcessingTest, textureUV);
-	//	float grayValue = (textureColor.r + textureColor.g + textureColor.b) / 3.f;
-	//	fragmentColor = vec4(vec3(grayValue), 1.0);
-	//}
-	//)");
-	//		postProcessingShader.PreInit();
-	//		postProcessingShader.Init();
-	//		postProcessingShader.PostInit();
-	//		postProcessingEffect.SetShader(&postProcessingShader);
-	//
-	//		postProcessingShader.Use();
-	//		postProcessingTestTexture.Bind(&postProcessingShader);
-	//		postProcessingShader.Unbind();
-	//
-	//		postProcessingEffect.PreInit();
-	//		postProcessingEffect.Init();
-	//		postProcessingEffect.PostInit();
-	//
-	//		isInitializedBuffers = true;
-	//	}
-
 	lightManager_ = new LightManager();
 	lightManager_->PreInit();
 
@@ -161,6 +126,15 @@ void Renderer::PreInit()
 		deferredRenderingData_->PreInit();
 		deferredRenderingData_->Init();
 		engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::Create<DeferredRenderingData, &DeferredRenderingData::OnViewportSizeChanged>(deferredRenderingData_));
+
+		if (!bloomPostProcessingEffect_)
+		{
+			bloomPostProcessingEffect_ = new BloomPostProcessingEffect();
+			bloomPostProcessingEffect_->PreInit();
+			bloomPostProcessingEffect_->Init();
+			bloomPostProcessingEffect_->PostInit();
+			AddPostProcessingEffect(bloomPostProcessingEffect_);
+		}
 	}
 
 	glFrontFace(GL_CCW);
@@ -433,10 +407,8 @@ void Renderer::RenderCurrentFrame()
 				deferredRenderingData_ = renderTarget->GetDeferredRenderingData();
 
 				Render(RenderPassType::GeometryBuffer);
-
-				renderTargetFrameBuffer->Bind();
 				Render(RenderPassType::Deferred);
-				renderTargetFrameBuffer->Unbind();
+				ApplyPostProcessing(deferredRenderingData_, renderTargetFrameBuffer);
 			}
 
 		}
@@ -456,7 +428,6 @@ void Renderer::RenderCurrentFrame()
 		drawCallCount = 0;
 		if (GetMainRenderType() == RenderPassType::Forward)
 		{
-			//testFrameBuffer.Bind();
 			countDrawCallsInner_ = countDrawCalls;
 			Render(RenderPassType::Forward);
 		}
@@ -465,12 +436,9 @@ void Renderer::RenderCurrentFrame()
 			countDrawCallsInner_ = countDrawCalls;
 			Render(RenderPassType::GeometryBuffer);
 			countDrawCallsInner_ = false;
-			//testFrameBuffer.Bind();
 			Render(RenderPassType::Deferred);
+			ApplyPostProcessing(deferredRenderingData_, nullptr);
 		}
-
-		//testFrameBuffer.Unbind();
-		//postProcessingEffect.Render();
 	}
 	else
 	{
@@ -479,6 +447,37 @@ void Renderer::RenderCurrentFrame()
 	}
 
 	PrepareSkeletalMeshInstancesForTheNextFrame();
+}
+
+void Renderer::ApplyPostProcessing(DeferredRenderingData* deferredRenderingData, FrameBuffer* destinationFrameBuffer)
+{
+	if (!deferredRenderingData)
+	{
+		return;
+	}
+
+	const int width = deferredRenderingData->geometryBufferData->bufferWidth;
+	const int height = deferredRenderingData->geometryBufferData->bufferHeight;
+
+	Texture* finalTexture = deferredRenderingData->GetSceneTexture();
+	FrameBuffer* finalFrameBuffer = deferredRenderingData->GetSceneFrameBuffer();
+
+	for (PostProcessingEffect* postProcessingEffect : postProcessingEffects_)
+	{
+		if (!postProcessingEffect || !postProcessingEffect->GetIsEnabled())
+		{
+			continue;
+		}
+
+		Texture* effectOutputTexture = postProcessingEffect->Render(deferredRenderingData, finalTexture, width, height);
+		if (effectOutputTexture != nullptr && effectOutputTexture != finalTexture)
+		{
+			finalTexture = effectOutputTexture;
+			finalFrameBuffer = postProcessingEffect->GetOutputFrameBuffer();
+		}
+	}
+
+	BlitFrameBufferColor(finalFrameBuffer, destinationFrameBuffer, width, height);
 }
 
 void Renderer::Render(RenderPassType renderPassType)
@@ -514,6 +513,9 @@ void Renderer::Render(RenderPassType renderPassType)
 	case RenderPassType::Deferred:
 	{
 		GOKNAR_CORE_CHECK(deferredRenderingData_ != nullptr, "Main rendering is not set to deferred rendering but deferred rendering is called.");
+		deferredRenderingData_->BeginSceneRender();
+		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
+		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		deferredRenderingData_->Render();
 		break;
@@ -654,13 +656,7 @@ void Renderer::Render(RenderPassType renderPassType)
 	}
 	else
 	{
-		deferredRenderingData_->BindGBufferDepth(currentRenderTarget_);
-
-		if (currentRenderTarget_)
-		{
-			currentRenderTarget_->GetFrameBuffer()->Bind();
-			currentRenderTarget_->GetDepthRenderBuffer()->Bind();
-		}
+		deferredRenderingData_->BindGBufferDepth(deferredRenderingData_->GetSceneFrameBuffer());
 	}
 
 	if (renderPassType == RenderPassType::Forward ||
@@ -709,6 +705,11 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			deferredRenderingData_->deferredRenderingMeshShader->Use();
 		}
+	}
+
+	if (renderPassType == RenderPassType::Deferred)
+	{
+		deferredRenderingData_->EndSceneRender();
 	}
 
 	if (renderPassType == RenderPassType::GeometryBuffer)
@@ -1322,13 +1323,13 @@ void GeometryBufferData::OnViewportSizeChanged(int width, int height)
 	GenerateBuffers();
 }
 
-void GeometryBufferData::BindGBufferDepth(const RenderTarget* renderTarget)
+void GeometryBufferData::BindGBufferDepth(FrameBuffer* drawFrameBuffer)
 {
 	geometryFrameBuffer->Bind(FrameBufferBindTarget::READ_FRAMEBUFFER);
 
-	if (renderTarget)
+	if (drawFrameBuffer)
 	{
-		renderTarget->GetFrameBuffer()->Bind(FrameBufferBindTarget::DRAW_FRAMEBUFFER);
+		drawFrameBuffer->Bind(FrameBufferBindTarget::DRAW_FRAMEBUFFER);
 	}
 	else
 	{
@@ -1363,6 +1364,7 @@ DeferredRenderingData::~DeferredRenderingData()
 	delete geometryBufferData;
 	delete deferredRenderingMesh;
 	delete deferredRenderingMeshShader;
+	DestroySceneBuffers();
 }
 
 void DeferredRenderingData::PreInit()
@@ -1386,6 +1388,7 @@ void DeferredRenderingData::Init()
 	engine->GetRenderer()->BindShadowTextures(deferredRenderingMeshShader);
 
 	geometryBufferData->Init();
+	GenerateSceneBuffers();
 
 	SetShaderTextureUniforms();
 }
@@ -1398,6 +1401,16 @@ void DeferredRenderingData::BindGeometryBuffer()
 void DeferredRenderingData::UnbindGeometryBuffer()
 {
 	geometryBufferData->Unbind();
+}
+
+void DeferredRenderingData::BeginSceneRender()
+{
+	sceneFrameBuffer->Bind();
+}
+
+void DeferredRenderingData::EndSceneRender()
+{
+	sceneFrameBuffer->Unbind();
 }
 
 void DeferredRenderingData::SetShaderTextureUniforms()
@@ -1414,8 +1427,9 @@ void DeferredRenderingData::Render()
 {
 	engine->GetRenderer()->BindStaticVBO();
 
+	engine->GetRenderer()->BindShadowTextures(deferredRenderingMeshShader);
+	BindGeometryBufferTextures(deferredRenderingMeshShader);
 	SetShaderTextureUniforms();
-
 	engine->GetRenderer()->SetLightUniforms(deferredRenderingMeshShader);
 
 	MeshUnit* deferredRenderingMeshUnit = deferredRenderingMesh->GetSubMeshes()[0];
@@ -1436,6 +1450,8 @@ void DeferredRenderingData::OnViewportSizeChanged(int width, int height)
 	}
 
 	geometryBufferData->OnViewportSizeChanged(width, height);
+	DestroySceneBuffers();
+	GenerateSceneBuffers();
 	SetShaderTextureUniforms();
 
 	const std::vector<std::unique_ptr<Material>> &materials = engine->GetResourceManager()->GetMaterials();
@@ -1462,7 +1478,65 @@ void DeferredRenderingData::BindGeometryBufferTextures(Shader* shader)
 	geometryBufferData->emmisiveColorTexture->Bind(shader);
 }
 
-void DeferredRenderingData::BindGBufferDepth(const RenderTarget* renderTarget)
+void DeferredRenderingData::BindGBufferDepth(FrameBuffer* drawFrameBuffer)
 {
-	geometryBufferData->BindGBufferDepth(renderTarget);
+	geometryBufferData->BindGBufferDepth(drawFrameBuffer);
+}
+
+void DeferredRenderingData::BlitSceneTo(FrameBuffer* drawFrameBuffer) const
+{
+	BlitFrameBufferColor(sceneFrameBuffer, drawFrameBuffer, geometryBufferData->bufferWidth, geometryBufferData->bufferHeight);
+}
+
+void DeferredRenderingData::GenerateSceneBuffers()
+{
+	sceneFrameBuffer = new FrameBuffer();
+
+	sceneTexture = new Texture();
+	sceneTexture->SetName("sceneInputTexture");
+	sceneTexture->SetTextureDataType(TextureDataType::DYNAMIC);
+	sceneTexture->SetTextureFormat(TextureFormat::RGBA);
+	sceneTexture->SetTextureInternalFormat(TextureInternalFormat::RGBA16F);
+	sceneTexture->SetTextureMinFilter(TextureMinFilter::LINEAR);
+	sceneTexture->SetTextureMagFilter(TextureMagFilter::LINEAR);
+	sceneTexture->SetWidth(geometryBufferData->bufferWidth);
+	sceneTexture->SetHeight(geometryBufferData->bufferHeight);
+	sceneTexture->SetGenerateMipmap(false);
+	sceneTexture->SetTextureType(TextureType::FLOAT);
+	sceneTexture->PreInit();
+	sceneTexture->Init();
+	sceneTexture->PostInit();
+
+	sceneFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT0, sceneTexture);
+	sceneFrameBuffer->PreInit();
+	sceneFrameBuffer->Init();
+	sceneFrameBuffer->PostInit();
+	sceneFrameBuffer->Bind();
+	sceneFrameBuffer->Attach();
+	sceneFrameBuffer->DrawBuffers();
+
+	sceneDepthRenderbuffer = new RenderBuffer();
+	sceneDepthRenderbuffer->SetWidth(geometryBufferData->bufferWidth);
+	sceneDepthRenderbuffer->SetHeight(geometryBufferData->bufferHeight);
+	sceneDepthRenderbuffer->SetRenderBufferAttachment(RenderBufferAttachment::DEPTH_ATTACHMENT);
+	sceneDepthRenderbuffer->SetRenderBufferBindTarget(RenderBufferBindTarget::RENDERBUFFER);
+	sceneDepthRenderbuffer->SetRenderBufferInternalType(RenderBufferInternalType::DEPTH);
+	sceneDepthRenderbuffer->PreInit();
+	sceneDepthRenderbuffer->Init();
+	sceneDepthRenderbuffer->PostInit();
+	sceneDepthRenderbuffer->BindToFrameBuffer();
+
+	sceneFrameBuffer->Unbind();
+}
+
+void DeferredRenderingData::DestroySceneBuffers()
+{
+	delete sceneTexture;
+	sceneTexture = nullptr;
+
+	delete sceneFrameBuffer;
+	sceneFrameBuffer = nullptr;
+
+	delete sceneDepthRenderbuffer;
+	sceneDepthRenderbuffer = nullptr;
 }
