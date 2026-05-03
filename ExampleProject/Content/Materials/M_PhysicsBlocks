@@ -23,7 +23,7 @@
     </EmissiveColor>
     <FragmentNormal>
         <Calculation></Calculation>
-        <Result>vec3(0.000000, 0.000000, 1.000000);</Result>
+        <Result>vertexNormal;</Result>
     </FragmentNormal>
     <VertexNormal>
         <Calculation></Calculation>

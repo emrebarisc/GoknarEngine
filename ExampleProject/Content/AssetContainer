@@ -16,6 +16,12 @@
             <Path>Materials/Level/M_EmmisiveCube</Path>
         </Material>
         <Material>
+            <Path>Materials/Level/M_NeonBackground</Path>
+        </Material>
+        <Material>
+            <Path>Materials/Level/M_NeonText</Path>
+        </Material>
+        <Material>
             <Path>Materials/M_DefaultCharacter</Path>
         </Material>
         <Material>
@@ -87,6 +93,9 @@
         </Mesh>
         <Texture Name="darkPlaceholder">
             <Path>Textures/T_DarkPlaceholder.png</Path>
+        </Texture>
+        <Texture Name="T_Hello">
+            <Path>Textures/T_Hello.png</Path>
         </Texture>
         <Texture Name="T_LeavesBushes">
             <Path>Textures/T_LeavesBushes.PNG</Path>

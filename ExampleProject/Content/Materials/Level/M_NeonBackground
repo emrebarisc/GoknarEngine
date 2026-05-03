@@ -13,15 +13,13 @@
         <Calculation>
 	// --- Generated Node Graph Calculations ---
 	// Node: Vector3 Constant
-	vec3 node_6_out_10 = vec3(1.000000f, 0.300000f, 0.000000f);
-	// Node: Multiply
-	vec3 node_17_out_20 = node_6_out_10 * 3.000000f;
+	vec3 node_6_out_10 = vec3(0.800000f, 0.800000f, 0.800000f);
 </Calculation>
         <Result>vec4(node_6_out_10, 1.0f);</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
-        <Result>node_17_out_20;</Result>
+        <Result></Result>
     </EmissiveColor>
     <FragmentNormal>
         <Calculation></Calculation>
