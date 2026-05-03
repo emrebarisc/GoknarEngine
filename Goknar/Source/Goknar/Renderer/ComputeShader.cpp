@@ -154,6 +154,12 @@ void ComputeShader::SetVector2(const char* name, const Vector2& vector) const
 	UploadVector2(name, vector);
 }
 
+void ComputeShader::SetMatrix(const char* name, const Matrix& matrix) const
+{
+	Use();
+	UploadMatrix(name, matrix);
+}
+
 void ComputeShader::SetVector3(const char* name, const Vector3& vector) const
 {
 	Use();
@@ -208,6 +214,17 @@ void ComputeShader::UploadVector2(const char* name, const Vector2& vector) const
 	}
 
 	glUniform2fv(uniformLocation, 1, &vector.x);
+}
+
+void ComputeShader::UploadMatrix(const char* name, const Matrix& matrix) const
+{
+	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix.m[0]);
 }
 
 void ComputeShader::UploadVector3(const char* name, const Vector3& vector) const

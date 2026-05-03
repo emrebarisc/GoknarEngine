@@ -5,6 +5,7 @@
 
 #include "Goknar/Core.h"
 #include "Goknar/Math/GoknarMath.h"
+#include "Goknar/Math/Matrix.h"
 
 class GOKNAR_API ComputeShader
 {
@@ -52,6 +53,7 @@ public:
 	void SetInt(const char* name, int value) const;
 	void SetFloat(const char* name, float value) const;
 	void SetVector2(const char* name, const Vector2& vector) const;
+	void SetMatrix(const char* name, const Matrix& matrix) const;
 	void SetVector3(const char* name, const Vector3& vector) const;
 	void SetVector4(const char* name, const Vector4& vector) const;
 
@@ -60,6 +62,7 @@ private:
 	void UploadInt(const char* name, int value) const;
 	void UploadFloat(const char* name, float value) const;
 	void UploadVector2(const char* name, const Vector2& vector) const;
+	void UploadMatrix(const char* name, const Matrix& matrix) const;
 	void UploadVector3(const char* name, const Vector3& vector) const;
 	void UploadVector4(const char* name, const Vector4& vector) const;
 

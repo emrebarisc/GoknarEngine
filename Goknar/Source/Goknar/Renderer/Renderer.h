@@ -20,6 +20,7 @@ class FrameBuffer;
 class RenderBuffer;
 class Shader;
 class BloomPostProcessingEffect;
+class TemporalAntiAliasingPostProcessingEffect;
 
 class DynamicMeshInstance;
 class StaticMeshInstance;
@@ -260,6 +261,7 @@ private:
 
 	std::vector<PostProcessingEffect*> postProcessingEffects_;
 	std::vector<const RenderTarget*> renderTargets_;
+	TemporalAntiAliasingPostProcessingEffect* temporalAntiAliasingPostProcessingEffect_{ nullptr };
 	BloomPostProcessingEffect* bloomPostProcessingEffect_{ nullptr };
 
 	const RenderTarget* currentRenderTarget_{ nullptr };

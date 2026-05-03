@@ -6,6 +6,7 @@
 #include "Texture.h"
 
 class ComputeShader;
+class Camera;
 class DeferredRenderingData;
 class FrameBuffer;
 class Texture;
@@ -19,6 +20,7 @@ public:
 	virtual void PreInit();
 	virtual void Init();
 	virtual void PostInit();
+	virtual void PrepareFrame(const DeferredRenderingData* deferredRenderingData, Camera* camera);
 
 	void SetComputeShader(ComputeShader* computeShader)
 	{

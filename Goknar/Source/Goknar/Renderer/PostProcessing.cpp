@@ -44,6 +44,12 @@ void PostProcessingEffect::PostInit()
 	}
 }
 
+void PostProcessingEffect::PrepareFrame(const DeferredRenderingData* deferredRenderingData, Camera* camera)
+{
+	(void)deferredRenderingData;
+	(void)camera;
+}
+
 Texture* PostProcessingEffect::Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height)
 {
 	if (!isEnabled_ || !computeShader_ || !inputTexture || width <= 0 || height <= 0)
@@ -106,8 +112,9 @@ void PostProcessingEffect::OnRender(const DeferredRenderingData* deferredRenderi
 	GOKNAR_CORE_CHECK(deferredRenderingData != nullptr, "Deferred rendering data is required for post-processing.");
 
 	computeShader_->Use();
-	inputTexture->BindToTextureUnit(0);
-	computeShader_->SetInt("inputTexture", 0);
+	const int inputTextureUnit = static_cast<int>(inputTexture->GetRendererTextureId());
+	inputTexture->BindToTextureUnit(inputTextureUnit);
+	computeShader_->SetInt("inputTexture", inputTextureUnit);
 	outputTexture_->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
 	computeShader_->Dispatch2D(width, height);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);

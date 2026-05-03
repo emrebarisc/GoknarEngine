@@ -45,6 +45,8 @@ public:
 			projection_ = rhs->projection_;
 			projectionMatrix_ = rhs->projectionMatrix_;
 			viewMatrix_ = rhs->viewMatrix_;
+			viewProjectionMatrix_ = rhs->viewProjectionMatrix_;
+			temporalJitter_ = rhs->temporalJitter_;
 		}
 	}
 
@@ -72,6 +74,22 @@ public:
 	inline const Matrix& GetViewProjectionMatrix() const
 	{
 		return viewProjectionMatrix_;
+	}
+
+	void SetTemporalJitter(const Vector2& temporalJitter)
+	{
+		if ((temporalJitter_ - temporalJitter).Length() <= SMALLER_EPSILON)
+		{
+			return;
+		}
+
+		temporalJitter_ = temporalJitter;
+		UpdateProjectionMatrix();
+	}
+
+	const Vector2& GetTemporalJitter() const
+	{
+		return temporalJitter_;
 	}
 
 	void SetPosition(const Vector3& position, bool updateViewMatrix = true)
@@ -332,6 +350,7 @@ private:
 
 	CameraProjection projection_{ CameraProjection::Perspective };
 	CameraType cameraType_{ CameraType::Scene };
+	Vector2 temporalJitter_{ Vector2::ZeroVector };
 };
 
 #endif

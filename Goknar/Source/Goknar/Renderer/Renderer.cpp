@@ -39,6 +39,7 @@
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/PostProcessing.h"
 #include "Goknar/Renderer/RenderTarget.h"
+#include "Goknar/Renderer/TemporalAntiAliasingPostProcessingEffect.h"
 
 #define VERTEX_COLOR_LOCATION 0
 #define VERTEX_POSITION_LOCATION 1
@@ -101,6 +102,7 @@ Renderer::Renderer() :
 
 Renderer::~Renderer()
 {
+	delete temporalAntiAliasingPostProcessingEffect_;
 	delete bloomPostProcessingEffect_;
 	delete lightManager_;
 	delete deferredRenderingData_;
@@ -126,6 +128,15 @@ void Renderer::PreInit()
 		deferredRenderingData_->PreInit();
 		deferredRenderingData_->Init();
 		engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::Create<DeferredRenderingData, &DeferredRenderingData::OnViewportSizeChanged>(deferredRenderingData_));
+
+		if (!temporalAntiAliasingPostProcessingEffect_)
+		{
+			temporalAntiAliasingPostProcessingEffect_ = new TemporalAntiAliasingPostProcessingEffect();
+			temporalAntiAliasingPostProcessingEffect_->PreInit();
+			temporalAntiAliasingPostProcessingEffect_->Init();
+			temporalAntiAliasingPostProcessingEffect_->PostInit();
+			AddPostProcessingEffect(temporalAntiAliasingPostProcessingEffect_);
+		}
 
 		if (!bloomPostProcessingEffect_)
 		{
@@ -378,6 +389,16 @@ void Renderer::RenderCurrentFrame()
 
 	CameraManager* cameraManager = engine->GetCameraManager();
 	Camera* activeCamera = cameraManager->GetActiveCamera();
+	auto PreparePostProcessingFrame = [&](DeferredRenderingData* deferredRenderingData)
+		{
+			for (PostProcessingEffect* postProcessingEffect : postProcessingEffects_)
+			{
+				if (postProcessingEffect)
+				{
+					postProcessingEffect->PrepareFrame(deferredRenderingData, cameraManager->GetActiveCamera());
+				}
+			}
+		};
 	std::vector<const RenderTarget*>::const_iterator renderTargetIterator = renderTargets_.cbegin();
 	while (renderTargetIterator != renderTargets_.cend())
 	{
@@ -406,9 +427,15 @@ void Renderer::RenderCurrentFrame()
 			{
 				deferredRenderingData_ = renderTarget->GetDeferredRenderingData();
 
+				PreparePostProcessingFrame(deferredRenderingData_);
 				Render(RenderPassType::GeometryBuffer);
 				Render(RenderPassType::Deferred);
 				ApplyPostProcessing(deferredRenderingData_, renderTargetFrameBuffer);
+
+				if (cameraManager->GetActiveCamera())
+				{
+					cameraManager->GetActiveCamera()->SetTemporalJitter(Vector2::ZeroVector);
+				}
 			}
 
 		}
@@ -434,10 +461,16 @@ void Renderer::RenderCurrentFrame()
 		else if (GetMainRenderType() == RenderPassType::Deferred)
 		{
 			countDrawCallsInner_ = countDrawCalls;
+			PreparePostProcessingFrame(deferredRenderingData_);
 			Render(RenderPassType::GeometryBuffer);
 			countDrawCallsInner_ = false;
 			Render(RenderPassType::Deferred);
 			ApplyPostProcessing(deferredRenderingData_, nullptr);
+
+			if (cameraManager->GetActiveCamera())
+			{
+				cameraManager->GetActiveCamera()->SetTemporalJitter(Vector2::ZeroVector);
+			}
 		}
 	}
 	else

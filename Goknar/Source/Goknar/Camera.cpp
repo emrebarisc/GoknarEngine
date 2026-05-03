@@ -125,6 +125,17 @@ void Camera::UpdateProjectionMatrix()
 	float b = nearPlane_.z;
 	float t = nearPlane_.w;
 
+	if (0 < imageWidth_ && 0 < imageHeight_)
+	{
+		const float jitterOffsetX = temporalJitter_.x * ((r - l) / static_cast<float>(imageWidth_));
+		const float jitterOffsetY = temporalJitter_.y * ((t - b) / static_cast<float>(imageHeight_));
+
+		l += jitterOffsetX;
+		r += jitterOffsetX;
+		b += jitterOffsetY;
+		t += jitterOffsetY;
+	}
+
 	// Set the projection matrix as it is orthographic
 	projectionMatrix_ = Matrix(2.f / (r - l), 0.f, 0.f, -(r + l) / (r - l),
 		0.f, 2.f / (t - b), 0.f, -(t + b) / (t - b),
