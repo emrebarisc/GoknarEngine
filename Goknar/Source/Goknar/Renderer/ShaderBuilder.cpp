@@ -682,7 +682,7 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	
 	if(isTranslucent)
 	{
-		normalDotLightDirection = clamp(normalDotLightDirection * (1.f +)" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(), 0.f, 1.f);
+		normalDotLightDirection = clamp(normalDotLightDirection + )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(, 0.f, 1.f);
 	}
 
 	vec3 diffuseColor = intensity * normalDotLightDirection;
@@ -690,8 +690,7 @@ vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 	// To viewpoint vector
 	vec3 wo = normalize()" + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION + R"( - vec3()" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"());
 
-	// Half vector
-	vec3 halfVector = (wi + wo) * 0.5f;
+	vec3 halfVector = normalize(wi + wo);
 
 	// Specular
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"();
@@ -747,8 +746,7 @@ vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
 	// To viewpoint vector
 	vec3 wo = normalize()" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION) + R"( - vec3()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"());
 
-	// Half vector
-	vec3 halfVector = (wi + wo) * 0.5f;
+	vec3 halfVector = normalize(wi + wo);
 
 	vec3 intensityOverDistanceSquare = intensity / (wiLength * wiLength);
 
@@ -830,8 +828,7 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 	// To viewpoint vector
 	vec3 wo = normalize()" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION) + R"( - vec3()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"());
 
-	// Half vector
-	vec3 halfVector = (-wi + wo) * 0.5f;
+	vec3 halfVector = normalize(-wi + wo);
 
 	// Specular
 	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"(, halfVector)), )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"();
