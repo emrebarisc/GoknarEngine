@@ -13,6 +13,10 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* UV;
 		extern const char* BONE_IDS;
 		extern const char* WEIGHTS;
+		extern const char* INSTANCE_TRANSFORMATION_ROW_0;
+		extern const char* INSTANCE_TRANSFORMATION_ROW_1;
+		extern const char* INSTANCE_TRANSFORMATION_ROW_2;
+		extern const char* INSTANCE_TRANSFORMATION_ROW_3;
 
 		extern const char* MODIFIED_POSITION;
 	}
@@ -137,6 +141,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* WORLD_TRANSFORMATION_MATRIX;
 		extern const char* RELATIVE_TRANSFORMATION_MATRIX;
 		extern const char* MODEL_MATRIX;
+		extern const char* INSTANCE_TRANSFORMATION_MATRIX;
 		extern const char* VIEW_PROJECTION_MATRIX;
 		extern const char* TRANSFORMATION_MATRIX;
 		extern const char* VIEW_POSITION;

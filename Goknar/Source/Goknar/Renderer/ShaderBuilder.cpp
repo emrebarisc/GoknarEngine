@@ -101,6 +101,13 @@ std::string ShaderBuilder::General_VS_GetScript(const VertexShaderInitialization
 	vertexShader += VS_GetMainLayouts();
 
 	std::string vertexShaderModelMatrixVariable = std::string(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX);
+	const bool isInstancedStaticMesh = vertexShaderInitializationData.meshType == MeshType::InstancedStatic;
+
+	if (isInstancedStaticMesh)
+	{
+		vertexShader += VS_GetInstancedStaticMeshLayouts();
+		vertexShaderModelMatrixVariable = std::string(SHADER_VARIABLE_NAMES::POSITIONING::INSTANCE_TRANSFORMATION_MATRIX) + " * " + vertexShaderModelMatrixVariable;
+	}
 
 	if (0 < vertexShaderInitializationData.materialInitializationData->boneCount)
 	{
@@ -143,6 +150,10 @@ void main()
 	{
 		vertexShader += VS_GetSkeletalMeshWeightCalculation();
 	}
+	if (isInstancedStaticMesh)
+	{
+		vertexShader += VS_GetInstancedStaticMeshTransformationMatrixCalculation();
+	}
 	vertexShader += VS_GetMain(vertexShaderInitializationData, vertexShaderModelMatrixVariable);
 	vertexShader += R"(
 }
@@ -157,6 +168,16 @@ std::string ShaderBuilder::ForwardRenderPass_GetVertexShaderScript(MaterialIniti
 	vertexShaderInitializationData.materialInitializationData = initializationData;
 	vertexShaderInitializationData.shader = shader;
 	vertexShaderInitializationData.renderPassType = RenderPassType::Forward;
+	return General_VS_GetScript(vertexShaderInitializationData);
+}
+
+std::string ShaderBuilder::ForwardRenderPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	VertexShaderInitializationData vertexShaderInitializationData;
+	vertexShaderInitializationData.materialInitializationData = initializationData;
+	vertexShaderInitializationData.shader = shader;
+	vertexShaderInitializationData.renderPassType = RenderPassType::Forward;
+	vertexShaderInitializationData.meshType = MeshType::InstancedStatic;
 	return General_VS_GetScript(vertexShaderInitializationData);
 }
 
@@ -181,6 +202,16 @@ std::string ShaderBuilder::GeometryBufferPass_GetVertexShaderScript(MaterialInit
 	return General_VS_GetScript(vertexShaderInitializationData);
 }
 
+std::string ShaderBuilder::GeometryBufferPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	VertexShaderInitializationData vertexShaderInitializationData;
+	vertexShaderInitializationData.materialInitializationData = initializationData;
+	vertexShaderInitializationData.shader = shader;
+	vertexShaderInitializationData.renderPassType = RenderPassType::GeometryBuffer;
+	vertexShaderInitializationData.meshType = MeshType::InstancedStatic;
+	return General_VS_GetScript(vertexShaderInitializationData);
+}
+
 std::string ShaderBuilder::GeometryBufferPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	std::string outputVariables = GeometryBufferPass_GetOutputVariables();
@@ -202,6 +233,16 @@ std::string ShaderBuilder::ShadowPass_GetVertexShaderScript(MaterialInitializati
 	return General_VS_GetScript(vertexShaderInitializationData);
 }
 
+std::string ShaderBuilder::ShadowPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	VertexShaderInitializationData vertexShaderInitializationData;
+	vertexShaderInitializationData.materialInitializationData = initializationData;
+	vertexShaderInitializationData.shader = shader;
+	vertexShaderInitializationData.renderPassType = RenderPassType::Shadow;
+	vertexShaderInitializationData.meshType = MeshType::InstancedStatic;
+	return General_VS_GetScript(vertexShaderInitializationData);
+}
+
 std::string ShaderBuilder::ShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	std::string shadowPassFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
@@ -218,6 +259,16 @@ std::string ShaderBuilder::PointShadowPass_GetVertexShaderScript(MaterialInitial
 	vertexShaderInitializationData.materialInitializationData = initializationData;
 	vertexShaderInitializationData.shader = shader;
 	vertexShaderInitializationData.renderPassType = RenderPassType::PointLightShadow;
+	return General_VS_GetScript(vertexShaderInitializationData);
+}
+
+std::string ShaderBuilder::PointShadowPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	VertexShaderInitializationData vertexShaderInitializationData;
+	vertexShaderInitializationData.materialInitializationData = initializationData;
+	vertexShaderInitializationData.shader = shader;
+	vertexShaderInitializationData.renderPassType = RenderPassType::PointLightShadow;
+	vertexShaderInitializationData.meshType = MeshType::InstancedStatic;
 	return General_VS_GetScript(vertexShaderInitializationData);
 }
 
@@ -1011,6 +1062,29 @@ std::string ShaderBuilder::VS_GetMainLayouts() const
 	return layouts;
 }
 
+std::string ShaderBuilder::VS_GetInstancedStaticMeshLayouts() const
+{
+	std::string layouts = "\n\n";
+
+	layouts += "layout(location = 4) in vec4 ";
+	layouts += SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_0;
+	layouts += ";\n";
+
+	layouts += "layout(location = 5) in vec4 ";
+	layouts += SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_1;
+	layouts += ";\n";
+
+	layouts += "layout(location = 6) in vec4 ";
+	layouts += SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_2;
+	layouts += ";\n";
+
+	layouts += "layout(location = 7) in vec4 ";
+	layouts += SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_3;
+	layouts += ";\n";
+
+	return layouts;
+}
+
 std::string ShaderBuilder::VS_GetSkeletalMeshLayouts() const
 {
 	std::string layouts = "\n\n";
@@ -1052,6 +1126,15 @@ std::string ShaderBuilder::VS_GetSkeletalMeshUniforms(int boneCount) const
 	uniforms += ";\n";
 
 	return uniforms;
+}
+
+std::string ShaderBuilder::VS_GetInstancedStaticMeshTransformationMatrixCalculation() const
+{
+	return std::string("\tmat4 ") + SHADER_VARIABLE_NAMES::POSITIONING::INSTANCE_TRANSFORMATION_MATRIX + " = mat4(" +
+		SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_0 + ", " +
+		SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_1 + ", " +
+		SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_2 + ", " +
+		SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_3 + ");\n";
 }
 
 std::string ShaderBuilder::VS_GetUniforms() const

@@ -8,9 +8,11 @@
 
 #include "glad/glad.h"
 
+#include <unordered_map>
 #include <vector>
 
 class DynamicMesh;
+class InstancedStaticMesh;
 class StaticMesh;
 class SkeletalMesh;
 class LightManager;
@@ -23,6 +25,7 @@ class BloomPostProcessingEffect;
 class TemporalAntiAliasingPostProcessingEffect;
 
 class DynamicMeshInstance;
+class InstancedStaticMeshInstance;
 class StaticMeshInstance;
 class SkeletalMeshInstance;
 
@@ -140,9 +143,12 @@ public:
 	void RenderCurrentFrame();
 	void Render(RenderPassType renderPassType);
 
+	void AddInstancedStaticMeshToRenderer(InstancedStaticMesh* object);
 	void AddStaticMeshToRenderer(StaticMesh* object);
 	void AddStaticMeshInstance(StaticMeshInstance* object);
 	void RemoveStaticMeshInstance(StaticMeshInstance* object);
+	void AddInstancedStaticMeshInstance(InstancedStaticMeshInstance* object);
+	void RemoveInstancedStaticMeshInstance(InstancedStaticMeshInstance* object);
 
 	void AddSkeletalMeshToRenderer(SkeletalMesh* object);
 	void AddSkeletalMeshInstance(SkeletalMeshInstance* object);
@@ -153,6 +159,8 @@ public:
 	void RemoveDynamicMeshInstance(DynamicMeshInstance* object);
 
 	void UpdateDynamicMeshVertex(const DynamicMeshUnit* object, int vertexIndex, const VertexData& newVertexData);
+	void RefreshInstancedStaticMeshTransformations(const InstancedStaticMesh* object);
+	void UpdateInstancedStaticMeshTransformation(const InstancedStaticMesh* object, int transformationIndex, const Matrix& newTransformationMatrix);
 
 	void PrepareSkeletalMeshInstancesForTheCurrentFrame();
 	void PrepareSkeletalMeshInstancesForTheNextFrame();
@@ -234,20 +242,25 @@ public:
 
 private:
 	void BindStaticVBO();
+	bool BindInstancedStaticMesh(InstancedStaticMesh* instancedStaticMesh);
 	void BindSkeletalVBO();
 	void BindDynamicVBO();
 	void SetAttribPointers();
+	void SetAttribPointersForInstancedStaticMesh();
 	void SetAttribPointersForSkeletalMesh();
 	void ApplyPostProcessing(DeferredRenderingData* deferredRenderingData, FrameBuffer* destinationFrameBuffer);
 
 	void SortTransparentInstances();
 
 	std::vector<StaticMesh*> staticMeshes_;
+	std::vector<InstancedStaticMesh*> instancedStaticMeshes_;
 	std::vector<SkeletalMesh*> skeletalMeshes_;
 	std::vector<DynamicMesh*> dynamicMeshes_;
 
 	std::vector<StaticMeshInstance*> opaqueStaticMeshInstances_;
 	std::vector<StaticMeshInstance*> transparentStaticMeshInstances_;
+	std::vector<InstancedStaticMeshInstance*> opaqueInstancedStaticMeshInstances_;
+	std::vector<InstancedStaticMeshInstance*> transparentInstancedStaticMeshInstances_;
 
 	std::vector<SkeletalMeshInstance*> opaqueSkeletalMeshInstances_;
 	std::vector<SkeletalMeshInstance*> transparentSkeletalMeshInstances_;
@@ -281,6 +294,7 @@ private:
 
 	GEuint staticVertexBufferId_;
 	GEuint staticIndexBufferId_;
+	std::unordered_map<const InstancedStaticMesh*, GEuint> instancedStaticMeshTransformationBufferIdMap_;
 
 	GEuint skeletalVertexBufferId_;
 	GEuint skeletalIndexBufferId_;

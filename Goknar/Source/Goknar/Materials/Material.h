@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "MaterialBase.h"
+#include "Goknar/Model/MeshUnit.h"
 
 class MeshUnit;
 class Material;
@@ -59,6 +60,7 @@ struct GOKNAR_API MaterialInitializationData
 	}
 
 	int boneCount{ 0 };
+	MeshType meshType{ MeshType::None };
 };
 
 class GOKNAR_API Material : public IMaterialBase

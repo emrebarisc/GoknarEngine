@@ -2,6 +2,7 @@
 #define __SHADERBUILDER_H__
 
 #include "Goknar/Core.h"
+#include "Goknar/Model/MeshUnit.h"
 
 #include "Renderer/Renderer.h"
 #include "ShaderTypes.h"
@@ -26,15 +27,19 @@ public:
 	}
 
 	std::string ForwardRenderPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
+	std::string ForwardRenderPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string ForwardRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 
 	std::string GeometryBufferPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
+	std::string GeometryBufferPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string GeometryBufferPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	
 	std::string ShadowPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
+	std::string ShadowPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string ShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	
 	std::string PointShadowPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
+	std::string PointShadowPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string PointShadowPass_GetGeometryShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string PointShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 
@@ -65,6 +70,7 @@ private:
 		MaterialInitializationData* materialInitializationData{ nullptr };
 		const Shader* shader{ nullptr };
 		RenderPassType renderPassType{ RenderPassType::Forward };
+		MeshType meshType{ MeshType::None };
 	};
 
 	static ShaderBuilder* instance_;
@@ -106,9 +112,11 @@ private:
 	std::string DeferredRenderPass_GetGBufferVariableAssignments() const;
 
 	std::string VS_GetMainLayouts() const;
+	std::string VS_GetInstancedStaticMeshLayouts() const;
 	std::string VS_GetSkeletalMeshLayouts() const;
 	std::string VS_GetSkeletalMeshVariables() const;
 	std::string VS_GetSkeletalMeshUniforms(int boneCount) const;
+	std::string VS_GetInstancedStaticMeshTransformationMatrixCalculation() const;
 	std::string VS_GetUniforms() const;
 	std::string VS_GetLightShadowViewMatrixUniforms() const;
 	std::string VS_GetLightOutputs() const;

@@ -14,6 +14,10 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* UV = "uv";
 		const char* BONE_IDS = "boneIDs";
 		const char* WEIGHTS = "weights";
+		const char* INSTANCE_TRANSFORMATION_ROW_0 = "instanceTransformationRow0";
+		const char* INSTANCE_TRANSFORMATION_ROW_1 = "instanceTransformationRow1";
+		const char* INSTANCE_TRANSFORMATION_ROW_2 = "instanceTransformationRow2";
+		const char* INSTANCE_TRANSFORMATION_ROW_3 = "instanceTransformationRow3";
 
 		const char* MODIFIED_POSITION = "modifiedPosition";
 	}
@@ -131,6 +135,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* WORLD_TRANSFORMATION_MATRIX = "worldTransformationMatrix";
 		const char* RELATIVE_TRANSFORMATION_MATRIX = "relativeTransformationMatrix";
 		const char* MODEL_MATRIX = "modelMatrix";
+		const char* INSTANCE_TRANSFORMATION_MATRIX = "instanceTransformationMatrix";
 		const char* VIEW_PROJECTION_MATRIX = "viewProjectionMatrix";
 		const char* TRANSFORMATION_MATRIX = "transformationMatrix";
 		const char* VIEW_POSITION = "viewPosition";

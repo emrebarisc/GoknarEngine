@@ -16,6 +16,7 @@ enum class GOKNAR_API MeshType
 {
 	None = 0,
 	Static,
+	InstancedStatic,
 	Stream,
 	Dynamic
 };
@@ -175,6 +176,16 @@ public:
 	}
 
 	void ClearDataFromMemory();
+
+	void SetMeshType(MeshType meshType)
+	{
+		meshType_ = meshType;
+	}
+
+	MeshType GetMeshType() const
+	{
+		return meshType_;
+	}
 
 protected:
 	unsigned int baseVertex_;

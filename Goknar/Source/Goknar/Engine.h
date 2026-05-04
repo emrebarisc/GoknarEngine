@@ -21,6 +21,7 @@ class Shader;
 class WindowManager;
 
 class DynamicMesh;
+class InstancedStaticMesh;
 class StaticMesh;
 class SkeletalMesh;
 
@@ -71,6 +72,7 @@ public:
 		return renderer_;
 	}
 
+	void AddInstancedStaticMeshToRenderer(InstancedStaticMesh* instancedStaticMesh);
 	void AddStaticMeshToRenderer(StaticMesh* staticMesh);
 	void AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh);
 	void AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh);

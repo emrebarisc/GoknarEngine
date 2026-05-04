@@ -707,6 +707,11 @@ void Engine::Exit()
 	windowManager_->CloseWindow();
 }
 
+void Engine::AddInstancedStaticMeshToRenderer(InstancedStaticMesh* instancedStaticMesh)
+{
+	renderer_->AddInstancedStaticMeshToRenderer(instancedStaticMesh);
+}
+
 void Engine::AddStaticMeshToRenderer(StaticMesh* staticMesh)
 {
 	renderer_->AddStaticMeshToRenderer(staticMesh);

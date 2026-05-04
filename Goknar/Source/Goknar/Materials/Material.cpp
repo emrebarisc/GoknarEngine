@@ -48,6 +48,8 @@ void Material::Build(MeshUnit* meshUnit)
 	}
 
 	initializationData_->boneCount = ownerMeshBoneCount;
+	initializationData_->meshType = meshUnit ? meshUnit->GetMeshType() : MeshType::None;
+	const bool isInstancedStaticMesh = initializationData_->meshType == MeshType::InstancedStatic;
 
 	RenderPassType mainRenderPassType = engine->GetRenderer()->GetMainRenderType();
 	
@@ -74,7 +76,9 @@ void Material::Build(MeshUnit* meshUnit)
 	{
 		renderPassTypeShaderMap_[RenderPassType::GeometryBuffer] = gBufferShader;
 
-		std::string vertexShader = ShaderBuilder::GetInstance()->GeometryBufferPass_GetVertexShaderScript(initializationData_, gBufferShader);
+		std::string vertexShader = isInstancedStaticMesh ?
+			ShaderBuilder::GetInstance()->GeometryBufferPass_GetInstancedStaticMeshVertexShaderScript(initializationData_, gBufferShader) :
+			ShaderBuilder::GetInstance()->GeometryBufferPass_GetVertexShaderScript(initializationData_, gBufferShader);
 		gBufferShader->SetVertexShaderScript(vertexShader);
 
 		std::string fragmentShader = ShaderBuilder::GetInstance()->GeometryBufferPass_GetFragmentShaderScript(initializationData_, gBufferShader);
@@ -83,7 +87,9 @@ void Material::Build(MeshUnit* meshUnit)
 
 	if (forwardRenderingShader->GetShaderType() == ShaderType::Scene)
 	{
-		std::string vertexShader = ShaderBuilder::GetInstance()->ForwardRenderPass_GetVertexShaderScript(initializationData_, forwardRenderingShader);
+		std::string vertexShader = isInstancedStaticMesh ?
+			ShaderBuilder::GetInstance()->ForwardRenderPass_GetInstancedStaticMeshVertexShaderScript(initializationData_, forwardRenderingShader) :
+			ShaderBuilder::GetInstance()->ForwardRenderPass_GetVertexShaderScript(initializationData_, forwardRenderingShader);
 		forwardRenderingShader->SetVertexShaderScript(vertexShader);
 
 		std::string fragmentShader = ShaderBuilder::GetInstance()->ForwardRenderPass_GetFragmentShaderScript(initializationData_, forwardRenderingShader);
@@ -93,7 +99,9 @@ void Material::Build(MeshUnit* meshUnit)
 	{
 		Shader* shadowShader = new Shader();
 
-		std::string shadowPassVertexShader = ShaderBuilder::GetInstance()->ShadowPass_GetVertexShaderScript(initializationData_, shadowShader);
+		std::string shadowPassVertexShader = isInstancedStaticMesh ?
+			ShaderBuilder::GetInstance()->ShadowPass_GetInstancedStaticMeshVertexShaderScript(initializationData_, shadowShader) :
+			ShaderBuilder::GetInstance()->ShadowPass_GetVertexShaderScript(initializationData_, shadowShader);
 		shadowShader->SetVertexShaderScript(shadowPassVertexShader);
 
 		std::string shadowPassFragmentShader = ShaderBuilder::GetInstance()->ShadowPass_GetFragmentShaderScript(initializationData_, shadowShader);
@@ -105,7 +113,9 @@ void Material::Build(MeshUnit* meshUnit)
 	{
 		Shader* pointLightShadowShader = new Shader();
 
-		std::string pointLightShadowPassVertexShader = ShaderBuilder::GetInstance()->PointShadowPass_GetVertexShaderScript(initializationData_, pointLightShadowShader);
+		std::string pointLightShadowPassVertexShader = isInstancedStaticMesh ?
+			ShaderBuilder::GetInstance()->PointShadowPass_GetInstancedStaticMeshVertexShaderScript(initializationData_, pointLightShadowShader) :
+			ShaderBuilder::GetInstance()->PointShadowPass_GetVertexShaderScript(initializationData_, pointLightShadowShader);
 		pointLightShadowShader->SetVertexShaderScript(pointLightShadowPassVertexShader);
 
 		std::string pointLightShadowPassGeometryShader = ShaderBuilder::GetInstance()->PointShadowPass_GetGeometryShaderScript(initializationData_, pointLightShadowShader);

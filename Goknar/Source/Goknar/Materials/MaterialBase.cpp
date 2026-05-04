@@ -126,6 +126,11 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 {
 	Shader* shader = GetShader(renderPassType);
 
+	if (!shader)
+	{
+		return;
+	}
+
 	bool cullBackFaces = 
 		shadingModel_ == MaterialShadingModel::Default && 
 		(	renderPassType == RenderPassType::Forward ||
