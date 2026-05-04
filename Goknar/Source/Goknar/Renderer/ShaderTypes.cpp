@@ -168,7 +168,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* OUT_NORMAL = "normal_GBuffer";
 		const char* OUT_DIFFUSE = "diffuse_GBuffer";
 		const char* OUT_SPECULAR_PHONG = "specularAndPhong_GBuffer";
-		const char* OUT_EMMISIVE_COLOR = "emmisiveColor_GBuffer";
+		const char* OUT_EMISIVE_COLOR = "emmisiveColor_GBuffer";
 	}
 
 	inline namespace FRAGMENT_SHADER_OUTS
