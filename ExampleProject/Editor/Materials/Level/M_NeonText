@@ -100,7 +100,7 @@
             <Inputs/>
             <Outputs>
                 <Pin Id="32" NodeId="31" Name="Value" Type="Float" Kind="Output">
-                    <DefaultValue type="Float" x="2.5"/>
+                    <DefaultValue type="Float" x="2.125"/>
                 </Pin>
             </Outputs>
         </Node>

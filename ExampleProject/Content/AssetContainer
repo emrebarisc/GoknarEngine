@@ -16,19 +16,31 @@
             <Path>Materials/Environment/M_Grass</Path>
         </Material>
         <Material>
+            <Path>Materials/Environment/M_Plants</Path>
+        </Material>
+        <Material>
+            <Path>Materials/Environment/M_Props</Path>
+        </Material>
+        <Material>
             <Path>Materials/Environment/M_Stone</Path>
+        </Material>
+        <Material>
+            <Path>Materials/Environment/M_Terrain</Path>
         </Material>
         <Material>
             <Path>Materials/Environment/M_TreeBark</Path>
         </Material>
         <Material>
+            <Path>Materials/Environment/Trees/M_Tree</Path>
+        </Material>
+        <Material>
+            <Path>Materials/Environment/Trees/M_TreeBody</Path>
+        </Material>
+        <Material>
+            <Path>Materials/Environment/Trees/M_TreeLeaves</Path>
+        </Material>
+        <Material>
             <Path>Materials/Level/M_EmmisiveCube</Path>
-        </Material>
-        <Material>
-            <Path>Materials/Level/M_NeonBackground</Path>
-        </Material>
-        <Material>
-            <Path>Materials/Level/M_NeonText</Path>
         </Material>
         <Material>
             <Path>Materials/M_DefaultCharacter</Path>
@@ -51,6 +63,7 @@
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_Block.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RadialStaircase.fbx</Path>
@@ -81,8 +94,21 @@
             <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
-            <Path>Meshes/Plants/SM_Grass.fbx</Path>
-            <MaterialPath>Materials/Environment/M_Grass</MaterialPath>
+            <Path>Meshes/Environment/Plants/SM_Grass.fbx</Path>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/Environment/Trees/SM_Tree_01.FBX</Path>
+            <MaterialPaths>
+                <MaterialPath>Materials/Environment/Trees/M_TreeLeaves</MaterialPath>
+                <MaterialPath>Materials/Environment/Trees/M_TreeBody</MaterialPath>
+            </MaterialPaths>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/Environment/Trees/SM_Tree_02.FBX</Path>
+            <MaterialPaths>
+                <MaterialPath>Materials/Environment/Trees/M_TreeLeaves</MaterialPath>
+                <MaterialPath>Materials/Environment/Trees/M_TreeBody</MaterialPath>
+            </MaterialPaths>
         </Mesh>
         <Mesh>
             <Path>Meshes/SK_DefaultCharacter.fbx</Path>
@@ -92,41 +118,51 @@
             <Path>Meshes/SM_Bullet.fbx</Path>
         </Mesh>
         <Mesh>
-            <Path>Meshes/SM_HelloMesh.fbx</Path>
-        </Mesh>
-        <Mesh>
             <Path>Meshes/SM_Matilda.fbx</Path>
+            <MaterialPath>Materials/M_Matilda</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/SM_Terrain.fbx</Path>
+            <MaterialPath>Materials/Environment/M_Terrain</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/SM_TreeBirch_01_Red.FBX</Path>
-            <MaterialPaths>
-                <MaterialPath>Materials/Environment/M_BirchLeaves</MaterialPath>
-                <MaterialPath>Materials/Environment/M_BirchBark</MaterialPath>
-            </MaterialPaths>
         </Mesh>
         <Mesh>
             <Path>Meshes/SM_Weapon.fbx</Path>
         </Mesh>
+        <Texture Name="Stone_L">
+            <Path>Textures/Environment/Stone_L.PNG</Path>
+        </Texture>
+        <Texture Name="T_Tree_Banyan_01">
+            <Path>Textures/Environment/Trees/T_Tree_Banyan_01.PNG</Path>
+        </Texture>
+        <Texture Name="T_Tree_Banyan_01_N">
+            <Path>Textures/Environment/Trees/T_Tree_Banyan_01_N.PNG</Path>
+        </Texture>
+        <Texture Name="T_Tree_Tropic_02">
+            <Path>Textures/Environment/Trees/T_Tree_Tropic_02.PNG</Path>
+        </Texture>
+        <Texture Name="T_Tree_Tropic_02_N">
+            <Path>Textures/Environment/Trees/T_Tree_Tropic_02_N.PNG</Path>
+        </Texture>
+        <Texture Name="T_TerrainGroundAlbedo">
+            <Path>Textures/Environment/T_TerrainGroundAlbedo.PNG</Path>
+        </Texture>
+        <Texture Name="Forest_Pack_Atlas">
+            <Path>Textures/Forest_Pack_Atlas.png</Path>
+        </Texture>
+        <Texture Name="Forest_Pack_BaseColor">
+            <Path>Textures/Forest_Pack_BaseColor.png</Path>
+        </Texture>
         <Texture Name="darkPlaceholder">
             <Path>Textures/T_DarkPlaceholder.png</Path>
-        </Texture>
-        <Texture Name="T_Hello">
-            <Path>Textures/T_Hello.png</Path>
-        </Texture>
-        <Texture Name="T_LeavesBushes">
-            <Path>Textures/T_LeavesBushes.PNG</Path>
         </Texture>
         <Texture Name="lightPlaceholder">
             <Path>Textures/T_LightPlaceholder.png</Path>
         </Texture>
         <Texture Name="matildaTexture">
             <Path>Textures/T_Matilda.png</Path>
-        </Texture>
-        <Texture Name="T_Tree_Birch_Rework_C">
-            <Path>Textures/T_Tree_Birch_Rework_C.PNG</Path>
         </Texture>
     </Assets>
 </AssetContainer>

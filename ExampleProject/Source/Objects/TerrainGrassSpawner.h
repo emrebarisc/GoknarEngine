@@ -14,5 +14,6 @@ protected:
 	virtual void BeginGame() override;
 
 private:
-	InstancedStaticMeshComponent* instancedStaticMeshComponent_{ nullptr };
+	InstancedStaticMeshComponent* grassInstancedStaticMeshComponent_{ nullptr };
+	InstancedStaticMeshComponent* treeInstancedStaticMeshComponent_{ nullptr };
 };

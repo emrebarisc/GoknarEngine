@@ -25,30 +25,6 @@
             <ShadowIntensity>0</ShadowIntensity>
             <ShadowMapResolution>1024 1024</ShadowMapResolution>
         </PointLight>
-        <SpotLight>
-            <Position>4.000000 0.500000 3.000000</Position>
-            <Direction>0.750001 0.433012 0.499999</Direction>
-            <Color>1.000000 0.000000 0.000000</Color>
-            <Intensity>20</Intensity>
-            <CoverageAngle>20</CoverageAngle>
-            <FalloffAngle>10</FalloffAngle>
-            <Radius>100</Radius>
-            <IsCastingShadow>0</IsCastingShadow>
-            <ShadowIntensity>0</ShadowIntensity>
-            <ShadowMapResolution>1024 1024</ShadowMapResolution>
-        </SpotLight>
-        <SpotLight>
-            <Position>-2.000000 0.500000 3.000000</Position>
-            <Direction>0.750001 0.433012 0.499999</Direction>
-            <Color>1.000000 0.000000 0.000000</Color>
-            <Intensity>20</Intensity>
-            <CoverageAngle>20</CoverageAngle>
-            <FalloffAngle>10</FalloffAngle>
-            <Radius>100</Radius>
-            <IsCastingShadow>0</IsCastingShadow>
-            <ShadowIntensity>0</ShadowIntensity>
-            <ShadowMapResolution>1024 1024</ShadowMapResolution>
-        </SpotLight>
     </Lights>
     <Objects>
         <ObjectBase>
@@ -59,30 +35,6 @@
                     <MeshPath>Meshes/SM_Matilda.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/M_Matilda</MaterialPath>
-                </StaticMeshComponent>
-            </Components>
-        </ObjectBase>
-        <ObjectBase>
-            <Name>NeonBackground</Name>
-            <WorldPosition>4.499993 -1.000000 1.500000</WorldPosition>
-            <WorldScaling>0.050000 4.000000 3.000000</WorldScaling>
-            <Components>
-                <StaticMeshComponent>
-                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
-                    <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/Level/M_NeonBackground</MaterialPath>
-                </StaticMeshComponent>
-            </Components>
-        </ObjectBase>
-        <ObjectBase>
-            <Name>NeonText</Name>
-            <WorldPosition>4.460000 -1.000000 2.000000</WorldPosition>
-            <WorldScaling>1.000000 2.000000 1.000000</WorldScaling>
-            <Components>
-                <StaticMeshComponent>
-                    <MeshPath>Meshes/SM_HelloMesh.fbx</MeshPath>
-                    <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/Level/M_NeonText</MaterialPath>
                 </StaticMeshComponent>
             </Components>
         </ObjectBase>
@@ -294,8 +246,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box1</Name>
-            <WorldPosition>-14.985834 -2.000665 0.624974</WorldPosition>
-            <EulerWorldRotation>0.001742 0.005000 13.811661</EulerWorldRotation>
+            <WorldPosition>-14.930668 -1.994081 0.624984</WorldPosition>
+            <EulerWorldRotation>0.002835 0.004563 13.037132</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -312,8 +264,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box2</Name>
-            <WorldPosition>-14.874817 -3.309418 0.625008</WorldPosition>
-            <EulerWorldRotation>-0.003917 0.002705 -20.176891</EulerWorldRotation>
+            <WorldPosition>-14.853213 -3.292098 0.624989</WorldPosition>
+            <EulerWorldRotation>-0.004756 0.000656 -20.272913</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -330,8 +282,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box3</Name>
-            <WorldPosition>-13.728040 -2.004465 0.624971</WorldPosition>
-            <EulerWorldRotation>0.000400 0.003743 -3.001882</EulerWorldRotation>
+            <WorldPosition>-13.670953 -1.995782 0.624982</WorldPosition>
+            <EulerWorldRotation>0.000496 0.004064 -2.975981</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -348,8 +300,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box4</Name>
-            <WorldPosition>-13.400321 -3.217021 0.624977</WorldPosition>
-            <EulerWorldRotation>0.000011 -0.002869 9.453395</EulerWorldRotation>
+            <WorldPosition>-13.394597 -3.214412 0.624972</WorldPosition>
+            <EulerWorldRotation>-0.005636 -0.006304 9.326717</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -366,7 +318,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box5</Name>
-            <WorldPosition>-14.513785 -2.030875 1.624944</WorldPosition>
+            <WorldPosition>-14.388446 -2.006346 1.624957</WorldPosition>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -383,8 +335,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box6</Name>
-            <WorldPosition>-14.472881 -3.169637 1.625072</WorldPosition>
-            <EulerWorldRotation>-0.020898 0.015709 18.534540</EulerWorldRotation>
+            <WorldPosition>-14.410994 -3.129498 1.624996</WorldPosition>
+            <EulerWorldRotation>-0.004228 0.000902 16.812616</EulerWorldRotation>
             <Mass>5</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -401,8 +353,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box7</Name>
-            <WorldPosition>-14.479561 -2.517835 2.624908</WorldPosition>
-            <EulerWorldRotation>-0.013717 0.007308 -18.618921</EulerWorldRotation>
+            <WorldPosition>-14.322624 -2.482877 2.624893</WorldPosition>
+            <EulerWorldRotation>-0.001119 0.010969 -19.796362</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -419,8 +371,8 @@
         </RigidBody>
         <RigidBody>
             <Name>RigidBody</Name>
-            <WorldPosition>-14.945945 -9.054236 0.625000</WorldPosition>
-            <EulerWorldRotation>0.000021 -0.000014 31.302855</EulerWorldRotation>
+            <WorldPosition>-14.920160 -9.077944 0.625000</WorldPosition>
+            <EulerWorldRotation>0.000020 -0.000014 31.901041</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -432,26 +384,6 @@
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/M_Panner</MaterialPath>
-                </StaticMeshComponent>
-            </Components>
-        </RigidBody>
-        <RigidBody>
-            <Name>Tree_01</Name>
-            <WorldPosition>-11.903722 14.690770 0.125000</WorldPosition>
-            <Mass>0</Mass>
-            <CollisionGroup>4</CollisionGroup>
-            <CollisionMask>63</CollisionMask>
-            <Components>
-                <CapsuleCollisionComponent>
-                    <Radius>0.2</Radius>
-                    <Height>4</Height>
-                    <RelativePosition>0.000000 0.000000 2.000000</RelativePosition>
-                </CapsuleCollisionComponent>
-                <StaticMeshComponent>
-                    <MeshPath>Meshes/SM_TreeBirch_01_Red.FBX</MeshPath>
-                    <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/Environment/M_BirchLeaves</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 -2.000000</RelativePosition>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
@@ -470,6 +402,24 @@
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/Level/M_EmmisiveCube</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>RigidBody</Name>
+            <WorldPosition>-14.404238 15.643003 0.125006</WorldPosition>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <CapsuleCollisionComponent>
+                    <Radius>0.1</Radius>
+                    <Height>4</Height>
+                </CapsuleCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/Environment/Trees/SM_Tree_01.FBX</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <RelativeScaling>0.010000 0.010000 0.010000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>

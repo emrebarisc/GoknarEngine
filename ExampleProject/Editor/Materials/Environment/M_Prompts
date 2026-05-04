@@ -1,0 +1,49 @@
+<GameAsset FileType="MaterialEditorReflection">
+    <Canvas Scale="1" ScrollX="614" ScrollY="40"/>
+    <Nodes>
+        <Node Id="1" Name="Material Output" Category="Master" PosX="120" PosY="80" SizeX="200" SizeY="150" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="2" NodeId="1" Name="Base Color" Type="Vector4" Kind="Input">
+                    <DefaultValue type="Vector4" x="1" y="1" z="1" w="1"/>
+                </Pin>
+                <Pin Id="3" NodeId="1" Name="Emissive" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+                <Pin Id="4" NodeId="1" Name="Normal" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="1"/>
+                </Pin>
+                <Pin Id="5" NodeId="1" Name="World Position Offset" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs/>
+        </Node>
+        <Node Id="6" Name="Texture Sample" Category="Texture" PosX="-179" PosY="81" SizeX="220" SizeY="170" IsUniform="1">
+            <StringData><![CDATA[Textures/Forest_Pack_BaseColor.png]]></StringData>
+            <Inputs>
+                <Pin Id="7" NodeId="6" Name="UV" Type="Vector2" Kind="Input">
+                    <DefaultValue type="Vector2" x="0" y="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="8" NodeId="6" Name="Color" Type="Vector4" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="10" Name="textureUV" Category="Variables" PosX="-547" PosY="82" SizeX="320" SizeY="60" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="11" NodeId="10" Name="Value" Type="Vector2" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+    </Nodes>
+    <Links>
+        <Link Id="9" StartPinId="8" EndPinId="2"/>
+        <Link Id="12" StartPinId="11" EndPinId="7"/>
+    </Links>
+</GameAsset>

@@ -1,0 +1,49 @@
+<GameAsset FileType="MaterialEditorReflection">
+    <Canvas Scale="1" ScrollX="761" ScrollY="94"/>
+    <Nodes>
+        <Node Id="1" Name="Material Output" Category="Master" PosX="120" PosY="80" SizeX="200" SizeY="150" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="2" NodeId="1" Name="Base Color" Type="Vector4" Kind="Input">
+                    <DefaultValue type="Vector4" x="1" y="1" z="1" w="1"/>
+                </Pin>
+                <Pin Id="3" NodeId="1" Name="Emissive" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+                <Pin Id="4" NodeId="1" Name="Normal" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="1"/>
+                </Pin>
+                <Pin Id="5" NodeId="1" Name="World Position Offset" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs/>
+        </Node>
+        <Node Id="6" Name="textureUV" Category="Variables" PosX="-758" PosY="91" SizeX="320" SizeY="60" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="7" NodeId="6" Name="Value" Type="Vector2" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="8" Name="Texture Sample" Category="Texture" PosX="-392" PosY="90" SizeX="220" SizeY="170" IsUniform="1">
+            <StringData><![CDATA[Textures/Forest_Pack_Atlas.png]]></StringData>
+            <Inputs>
+                <Pin Id="9" NodeId="8" Name="UV" Type="Vector2" Kind="Input">
+                    <DefaultValue type="Vector2" x="0" y="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="10" NodeId="8" Name="Color" Type="Vector4" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+    </Nodes>
+    <Links>
+        <Link Id="11" StartPinId="7" EndPinId="9"/>
+        <Link Id="12" StartPinId="10" EndPinId="2"/>
+    </Links>
+</GameAsset>

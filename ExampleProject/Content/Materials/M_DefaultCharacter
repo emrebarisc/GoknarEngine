@@ -19,7 +19,7 @@
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
-        <Result>vec3(0.000000, 0.000000, 0.000000);</Result>
+        <Result></Result>
     </EmissiveColor>
     <FragmentNormal>
         <Calculation></Calculation>
@@ -35,7 +35,7 @@
     </UV>
     <VertexPositionOffset>
         <Calculation></Calculation>
-        <Result>vec3(0.000000, 0.000000, 0.000000);</Result>
+        <Result></Result>
     </VertexPositionOffset>
     <VertexShaderFunctions><![CDATA[]]></VertexShaderFunctions>
     <FragmentShaderFunctions><![CDATA[]]></FragmentShaderFunctions>

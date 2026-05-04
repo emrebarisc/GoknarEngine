@@ -1,0 +1,70 @@
+<GameAsset FileType="Material">
+    <Name></Name>
+    <BoneCount>0</BoneCount>
+    <BlendModel>Opaque</BlendModel>
+    <ShadingModel>Default</ShadingModel>
+    <Texture path="Textures/Environment/Stone_L.PNG"/>
+    <Texture path="Textures/Environment/T_TerrainGroundAlbedo.PNG"/>
+    <AmbientReflectance>0 0 0</AmbientReflectance>
+    <BaseColorValue>1 1 1 1</BaseColorValue>
+    <SpecularReflectance>0 0 0</SpecularReflectance>
+    <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
+    <PhongExponent>1.000000</PhongExponent>
+    <Translucency>0.000000</Translucency>
+    <BaseColor>
+        <Calculation>
+	// --- Generated Node Graph Calculations ---
+	// Node: Multiply
+	vec2 node_77_out_80 = textureUV * 0.400000f;
+	// Node: Texture Sample
+	vec4 node_9_out_11 = texture(T_TerrainGroundAlbedo, node_77_out_80);
+	// Node: Vector3 Constant
+	vec3 node_19_out_23 = vec3(0.000000f, 0.000000f, 1.000000f);
+	// Node: Dot
+	float node_14_out_17 = dot(vertexNormal, node_19_out_23);
+	// Node: Float Constant
+	float node_39_out_40 = 0.750000f;
+	// Node: Divide
+	float node_35_out_38 = 1.000000f / node_39_out_40;
+	// Node: Multiply
+	float node_30_out_33 = node_14_out_17 * node_35_out_38;
+	// Node: Clamp
+	float node_43_out_47 = clamp(node_30_out_33, 0.000000f, 1.000000f);
+	// Node: Multiply
+	vec4 node_49_out_52 = node_9_out_11 * node_43_out_47;
+	// Node: Texture Sample
+	vec4 node_6_out_8 = texture(Stone_L, node_77_out_80);
+	// Node: Subtract
+	float node_55_out_58 = 1.000000f - node_43_out_47;
+	// Node: Multiply
+	vec4 node_60_out_63 = node_6_out_8 * node_55_out_58;
+	// Node: Add
+	vec4 node_66_out_69 = node_49_out_52 + node_60_out_63;
+</Calculation>
+        <Result>node_66_out_69;</Result>
+    </BaseColor>
+    <EmissiveColor>
+        <Calculation></Calculation>
+        <Result></Result>
+    </EmissiveColor>
+    <FragmentNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </FragmentNormal>
+    <VertexNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexNormal>
+    <UV>
+        <Calculation></Calculation>
+        <Result></Result>
+    </UV>
+    <VertexPositionOffset>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexPositionOffset>
+    <VertexShaderFunctions><![CDATA[]]></VertexShaderFunctions>
+    <FragmentShaderFunctions><![CDATA[]]></FragmentShaderFunctions>
+    <VertexShaderUniforms><![CDATA[]]></VertexShaderUniforms>
+    <FragmentShaderUniforms><![CDATA[]]></FragmentShaderUniforms>
+</GameAsset>

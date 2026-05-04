@@ -1,0 +1,64 @@
+<GameAsset FileType="MaterialEditorReflection">
+    <Canvas Scale="1" ScrollX="746" ScrollY="118"/>
+    <Nodes>
+        <Node Id="1" Name="Material Output" Category="Master" PosX="120" PosY="80" SizeX="200" SizeY="150" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="2" NodeId="1" Name="Base Color" Type="Vector4" Kind="Input">
+                    <DefaultValue type="Vector4" x="1" y="1" z="1" w="1"/>
+                </Pin>
+                <Pin Id="3" NodeId="1" Name="Emissive" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+                <Pin Id="4" NodeId="1" Name="Normal" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="1"/>
+                </Pin>
+                <Pin Id="5" NodeId="1" Name="World Position Offset" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs/>
+        </Node>
+        <Node Id="6" Name="Texture Sample" Category="Texture" PosX="-297" PosY="-13" SizeX="220" SizeY="170" IsUniform="1">
+            <StringData><![CDATA[Textures/Environment/Trees/T_Tree_Banyan_01.PNG]]></StringData>
+            <Inputs>
+                <Pin Id="7" NodeId="6" Name="UV" Type="Vector2" Kind="Input">
+                    <DefaultValue type="Vector2" x="0" y="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="8" NodeId="6" Name="Color" Type="Vector4" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="10" Name="Texture Sample" Category="Texture" PosX="-296" PosY="194" SizeX="220" SizeY="170" IsUniform="1">
+            <StringData><![CDATA[Textures/Environment/Trees/T_Tree_Banyan_01_N.PNG]]></StringData>
+            <Inputs>
+                <Pin Id="11" NodeId="10" Name="UV" Type="Vector2" Kind="Input">
+                    <DefaultValue type="Vector2" x="0" y="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="12" NodeId="10" Name="Color" Type="Vector4" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="14" Name="textureUV" Category="Variables" PosX="-731" PosY="94" SizeX="320" SizeY="60" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="15" NodeId="14" Name="Value" Type="Vector2" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+    </Nodes>
+    <Links>
+        <Link Id="9" StartPinId="8" EndPinId="2"/>
+        <Link Id="13" StartPinId="12" EndPinId="4"/>
+        <Link Id="16" StartPinId="15" EndPinId="7"/>
+        <Link Id="17" StartPinId="15" EndPinId="11"/>
+    </Links>
+</GameAsset>
