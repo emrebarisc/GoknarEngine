@@ -98,6 +98,10 @@ void Material::Build(MeshUnit* meshUnit)
 
 	{
 		Shader* shadowShader = new Shader();
+		for (const Image* image : textureImages_)
+		{
+			shadowShader->AddTexture(image->GetGeneratedTexture());
+		}
 
 		std::string shadowPassVertexShader = isInstancedStaticMesh ?
 			ShaderBuilder::GetInstance()->ShadowPass_GetInstancedStaticMeshVertexShaderScript(initializationData_, shadowShader) :
@@ -112,12 +116,15 @@ void Material::Build(MeshUnit* meshUnit)
 
 	{
 		Shader* pointLightShadowShader = new Shader();
+		for (const Image* image : textureImages_)
+		{
+			pointLightShadowShader->AddTexture(image->GetGeneratedTexture());
+		}
 
 		std::string pointLightShadowPassVertexShader = isInstancedStaticMesh ?
 			ShaderBuilder::GetInstance()->PointShadowPass_GetInstancedStaticMeshVertexShaderScript(initializationData_, pointLightShadowShader) :
 			ShaderBuilder::GetInstance()->PointShadowPass_GetVertexShaderScript(initializationData_, pointLightShadowShader);
 		pointLightShadowShader->SetVertexShaderScript(pointLightShadowPassVertexShader);
-
 		std::string pointLightShadowPassGeometryShader = ShaderBuilder::GetInstance()->PointShadowPass_GetGeometryShaderScript(initializationData_, pointLightShadowShader);
 		pointLightShadowShader->SetGeometryShaderScript(pointLightShadowPassGeometryShader);
 
