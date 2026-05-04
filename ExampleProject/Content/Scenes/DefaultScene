@@ -25,44 +25,69 @@
             <ShadowIntensity>0</ShadowIntensity>
             <ShadowMapResolution>1024 1024</ShadowMapResolution>
         </PointLight>
+        <SpotLight>
+            <Position>4.000000 0.500000 3.000000</Position>
+            <Direction>0.750001 0.433012 0.499999</Direction>
+            <Color>1.000000 0.000000 0.000000</Color>
+            <Intensity>20</Intensity>
+            <CoverageAngle>20</CoverageAngle>
+            <FalloffAngle>10</FalloffAngle>
+            <Radius>100</Radius>
+            <IsCastingShadow>0</IsCastingShadow>
+            <ShadowIntensity>0</ShadowIntensity>
+            <ShadowMapResolution>1024 1024</ShadowMapResolution>
+        </SpotLight>
+        <SpotLight>
+            <Position>-2.000000 0.500000 3.000000</Position>
+            <Direction>0.750001 0.433012 0.499999</Direction>
+            <Color>1.000000 0.000000 0.000000</Color>
+            <Intensity>20</Intensity>
+            <CoverageAngle>20</CoverageAngle>
+            <FalloffAngle>10</FalloffAngle>
+            <Radius>100</Radius>
+            <IsCastingShadow>0</IsCastingShadow>
+            <ShadowIntensity>0</ShadowIntensity>
+            <ShadowMapResolution>1024 1024</ShadowMapResolution>
+        </SpotLight>
     </Lights>
     <Objects>
         <ObjectBase>
             <Name>ObjectBase</Name>
             <WorldPosition>0.000000 2.000000 0.125000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
-            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Components>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/SM_Matilda.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/M_Matilda</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </ObjectBase>
         <ObjectBase>
             <Name>NeonBackground</Name>
             <WorldPosition>4.499993 -1.000000 1.500000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
             <WorldScaling>0.050000 4.000000 3.000000</WorldScaling>
             <Components>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/Level/M_NeonBackground</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
+                </StaticMeshComponent>
+            </Components>
+        </ObjectBase>
+        <ObjectBase>
+            <Name>NeonText</Name>
+            <WorldPosition>4.460000 -1.000000 2.000000</WorldPosition>
+            <WorldScaling>1.000000 2.000000 1.000000</WorldScaling>
+            <Components>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/SM_HelloMesh.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/Level/M_NeonText</MaterialPath>
                 </StaticMeshComponent>
             </Components>
         </ObjectBase>
         <RigidBody>
             <Name>Floor</Name>
-            <WorldPosition>0.000000 0.000000 0.000000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
             <WorldScaling>40.000000 40.000000 0.250000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -70,23 +95,16 @@
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>SideWall1</Name>
             <WorldPosition>19.875000 0.000000 2.625000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
             <WorldScaling>0.250000 40.000000 5.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -94,23 +112,16 @@
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>SideWall2</Name>
             <WorldPosition>-19.875000 0.000000 2.625000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
             <WorldScaling>0.250000 40.000000 5.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -118,23 +129,16 @@
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>SideWall3</Name>
             <WorldPosition>0.000000 19.875000 2.625000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
             <WorldScaling>40.000000 0.250000 5.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -142,23 +146,16 @@
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>SideWall4</Name>
             <WorldPosition>0.000000 -19.875000 2.625000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
             <WorldScaling>40.000000 0.250000 5.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -166,23 +163,16 @@
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Platform1</Name>
             <WorldPosition>0.000000 4.000000 1.625000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
             <WorldScaling>6.000000 3.000000 3.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -190,23 +180,16 @@
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>RadialStaircase1</Name>
             <WorldPosition>-3.000000 4.000000 0.125145</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
             <WorldScaling>3.000000 3.000000 3.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -214,16 +197,10 @@
             <Components>
                 <NonMovingTriangleMeshCollisionComponent>
                     <Mesh>Meshes/DefaultScene/SM_RadialStaircaseCollision.fbx</Mesh>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </NonMovingTriangleMeshCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_RadialStaircase.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
@@ -238,16 +215,10 @@
             <Components>
                 <NonMovingTriangleMeshCollisionComponent>
                     <Mesh>Meshes/DefaultScene/SM_RoundCornerCollision.fbx</Mesh>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </NonMovingTriangleMeshCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_RoundCorner.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
@@ -262,23 +233,16 @@
             <Components>
                 <NonMovingTriangleMeshCollisionComponent>
                     <Mesh>Meshes/DefaultScene/SM_RoundCornerCollision.fbx</Mesh>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </NonMovingTriangleMeshCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_RoundCorner.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Platform2</Name>
             <WorldPosition>6.000000 -2.000000 1.625000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
             <WorldScaling>3.000000 6.000000 3.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -286,23 +250,16 @@
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Platform3</Name>
             <WorldPosition>0.000000 -8.000000 1.625000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
             <WorldScaling>6.000000 3.000000 3.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -310,16 +267,10 @@
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
@@ -334,224 +285,159 @@
             <Components>
                 <NonMovingTriangleMeshCollisionComponent>
                     <Mesh>Meshes/DefaultScene/SM_RadialStaircaseMirroredCollision.fbx</Mesh>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </NonMovingTriangleMeshCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_RadialStaircaseMirrored.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box1</Name>
-            <WorldPosition>-15.018787 -2.000926 0.624974</WorldPosition>
-            <EulerWorldRotation>-0.000428 0.003743 14.175322</EulerWorldRotation>
-            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
+            <WorldPosition>-14.985834 -2.000665 0.624974</WorldPosition>
+            <EulerWorldRotation>0.001742 0.005000 13.811661</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box2</Name>
-            <WorldPosition>-14.884109 -3.318764 0.624972</WorldPosition>
-            <EulerWorldRotation>-0.005686 0.000355 -19.868372</EulerWorldRotation>
-            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
+            <WorldPosition>-14.874817 -3.309418 0.625008</WorldPosition>
+            <EulerWorldRotation>-0.003917 0.002705 -20.176891</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box3</Name>
-            <WorldPosition>-13.768147 -2.007277 0.624990</WorldPosition>
-            <EulerWorldRotation>-0.000828 0.000464 -3.017826</EulerWorldRotation>
-            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
+            <WorldPosition>-13.728040 -2.004465 0.624971</WorldPosition>
+            <EulerWorldRotation>0.000400 0.003743 -3.001882</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box4</Name>
-            <WorldPosition>-13.413198 -3.220955 0.624978</WorldPosition>
-            <EulerWorldRotation>-0.002360 -0.000649 9.537392</EulerWorldRotation>
-            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
+            <WorldPosition>-13.400321 -3.217021 0.624977</WorldPosition>
+            <EulerWorldRotation>0.000011 -0.002869 9.453395</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box5</Name>
-            <WorldPosition>-14.589962 -2.043094 1.624956</WorldPosition>
-            <EulerWorldRotation>-0.001037 0.003033 0.085399</EulerWorldRotation>
-            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
+            <WorldPosition>-14.513785 -2.030875 1.624944</WorldPosition>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box6</Name>
-            <WorldPosition>-14.505501 -3.193614 1.624956</WorldPosition>
-            <EulerWorldRotation>-0.005962 0.001708 19.067656</EulerWorldRotation>
-            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
+            <WorldPosition>-14.472881 -3.169637 1.625072</WorldPosition>
+            <EulerWorldRotation>-0.020898 0.015709 18.534540</EulerWorldRotation>
             <Mass>5</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box7</Name>
-            <WorldPosition>-14.569726 -2.534093 2.624915</WorldPosition>
-            <EulerWorldRotation>-0.001035 0.002172 -17.688822</EulerWorldRotation>
-            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
+            <WorldPosition>-14.479561 -2.517835 2.624908</WorldPosition>
+            <EulerWorldRotation>-0.013717 0.007308 -18.618921</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>RigidBody</Name>
-            <WorldPosition>-14.962764 -9.038321 0.625000</WorldPosition>
-            <EulerWorldRotation>0.000021 -0.000014 30.910778</EulerWorldRotation>
-            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
+            <WorldPosition>-14.945945 -9.054236 0.625000</WorldPosition>
+            <EulerWorldRotation>0.000021 -0.000014 31.302855</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/M_Panner</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Tree_01</Name>
             <WorldPosition>-11.903722 14.690770 0.125000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
-            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -560,16 +446,12 @@
                     <Radius>0.2</Radius>
                     <Height>4</Height>
                     <RelativePosition>0.000000 0.000000 2.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </CapsuleCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/SM_TreeBirch_01_Red.FBX</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/Environment/M_BirchLeaves</MaterialPath>
                     <RelativePosition>0.000000 0.000000 -2.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
@@ -577,41 +459,19 @@
             <Name>EmmisiveBox</Name>
             <WorldPosition>-15.000000 -12.000000 0.625000</WorldPosition>
             <EulerWorldRotation>0.000000 0.000000 -15.000003</EulerWorldRotation>
-            <WorldScaling>1.000000 1.000000 1.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
                 <BoxCollisionComponent>
                     <HalfSize>0.500000 0.500000 0.500000</HalfSize>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </BoxCollisionComponent>
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/Level/M_EmmisiveCube</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
-        <ObjectBase>
-            <Name>NeonText</Name>
-            <WorldPosition>4.500000 -1.000000 2.000000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 0.000000</EulerWorldRotation>
-            <WorldScaling>0.100000 2.000000 1.000000</WorldScaling>
-            <Components>
-                <StaticMeshComponent>
-                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
-                    <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 0.000000</RelativePosition>
-                    <EulerRelativeRotation>0.000000 0.000000 0.000000</EulerRelativeRotation>
-                    <RelativeScaling>1.000000 1.000000 1.000000</RelativeScaling>
-                </StaticMeshComponent>
-            </Components>
-        </ObjectBase>
     </Objects>
 </Scene>

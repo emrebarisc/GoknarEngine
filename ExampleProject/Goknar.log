@@ -1,0 +1,100 @@
+
+---------- Log Session Started: 22:22:28 ----------
+[22:22:28] [ERROR] ENGINE: 
+	Error occured while loading the asset(EngineContent/Debug/Meshes/SM_Line.fbx)
+	What went wrong: File not found
+[22:22:28] [ERROR] ENGINE: 
+	Error occured while loading the asset(EngineContent/Debug/Meshes/SM_ArrowHead.fbx)
+	What went wrong: File not found
+[22:22:29] [WARN] ENGINE: Project is set up in 0.009900 seconds.
+[22:22:29] [WARN] ENGINE: Setting Application: 1.600322 s.
+[22:22:30] [INFO] ENGINE: MSAA Value is set to 4
+[22:22:30] [INFO] ENGINE: Window Manager Initialization: 0.433582 s.
+[22:22:30] [INFO] ENGINE: Input Manager Initialization: 0.000529 s.
+[22:22:30] [INFO] ENGINE: Application Initialization: 0.015693 s.
+[22:22:30] [INFO] ENGINE: Resource Manager Initialization: 0.137652 s.
+[22:22:30] [INFO] ENGINE: Camera Manager Initialization: 0.000470 s.
+[22:22:30] [INFO] ENGINE: Object Manager Initialization: 0.000213 s.
+[22:22:30] [INFO] ENGINE: Physics Initialization: 0.004714 s.
+[22:22:30] [ERROR] ENGINE: File is not found on {}.
+[22:22:30] [ERROR] ENGINE: Compute info
+------------
+(0) : error C7006: no work group size specified
+
+[22:22:30] [ERROR] ENGINE: Assertion Failed!
+[22:22:30] [ERROR] ENGINE: Compute shader program link error!
+
+---------- Log Session Started: 22:42:14 ----------
+[22:42:14] [ERROR] ENGINE: 
+	Error occured while loading the asset(EngineContent/Debug/Meshes/SM_Line.fbx)
+	What went wrong: File not found
+[22:42:14] [ERROR] ENGINE: 
+	Error occured while loading the asset(EngineContent/Debug/Meshes/SM_ArrowHead.fbx)
+	What went wrong: File not found
+[22:42:16] [WARN] ENGINE: Project is set up in 0.018648 seconds.
+[22:42:16] [WARN] ENGINE: Setting Application: 1.502374 s.
+[22:42:16] [INFO] ENGINE: MSAA Value is set to 4
+[22:42:16] [INFO] ENGINE: Window Manager Initialization: 0.482422 s.
+[22:42:16] [INFO] ENGINE: Input Manager Initialization: 0.000351 s.
+[22:42:16] [INFO] ENGINE: Application Initialization: 0.022687 s.
+[22:42:16] [INFO] ENGINE: Resource Manager Initialization: 0.173627 s.
+[22:42:16] [INFO] ENGINE: Camera Manager Initialization: 0.000388 s.
+[22:42:16] [INFO] ENGINE: Object Manager Initialization: 0.000376 s.
+[22:42:16] [INFO] ENGINE: Physics Initialization: 0.014062 s.
+[22:42:16] [ERROR] ENGINE: File is not found on {}.
+[22:42:16] [ERROR] ENGINE: Compute info
+------------
+(0) : error C7006: no work group size specified
+
+[22:42:16] [ERROR] ENGINE: Assertion Failed!
+[22:42:16] [ERROR] ENGINE: Compute shader program link error!
+
+---------- Log Session Started: 01:11:27 ----------
+[01:11:27] [ERROR] ENGINE: 
+	Error occured while loading the asset(EngineContent/Debug/Meshes/SM_Line.fbx)
+	What went wrong: File not found
+[01:11:27] [ERROR] ENGINE: 
+	Error occured while loading the asset(EngineContent/Debug/Meshes/SM_ArrowHead.fbx)
+	What went wrong: File not found
+[01:11:30] [WARN] ENGINE: Project is set up in 1.052398 seconds.
+[01:11:30] [WARN] ENGINE: Setting Application: 2.555732 s.
+[01:11:30] [INFO] ENGINE: MSAA Value is set to 4
+[01:11:30] [INFO] ENGINE: Window Manager Initialization: 0.399971 s.
+[01:11:30] [INFO] ENGINE: Input Manager Initialization: 0.002390 s.
+[01:11:30] [INFO] ENGINE: Application Initialization: 0.014488 s.
+[01:11:30] [INFO] ENGINE: Resource Manager Initialization: 0.138219 s.
+[01:11:30] [INFO] ENGINE: Camera Manager Initialization: 0.000326 s.
+[01:11:30] [INFO] ENGINE: Object Manager Initialization: 0.000253 s.
+[01:11:30] [INFO] ENGINE: Physics Initialization: 0.001641 s.
+[01:11:30] [ERROR] ENGINE: File is not found on {}.
+[01:11:30] [ERROR] ENGINE: Compute info
+------------
+(0) : error C7006: no work group size specified
+
+[01:11:30] [ERROR] ENGINE: Assertion Failed!
+[01:11:30] [ERROR] ENGINE: Compute shader program link error!
+
+---------- Log Session Started: 11:03:52 ----------
+[11:03:52] [ERROR] ENGINE: 
+	Error occured while loading the asset(EngineContent/Debug/Meshes/SM_Line.fbx)
+	What went wrong: File not found
+[11:03:52] [ERROR] ENGINE: 
+	Error occured while loading the asset(EngineContent/Debug/Meshes/SM_ArrowHead.fbx)
+	What went wrong: File not found
+[11:03:54] [WARN] ENGINE: Project is set up in 0.009969 seconds.
+[11:03:54] [WARN] ENGINE: Setting Application: 1.527666 s.
+[11:03:54] [INFO] ENGINE: MSAA Value is set to 4
+[11:03:54] [INFO] ENGINE: Window Manager Initialization: 0.406585 s.
+[11:03:54] [INFO] ENGINE: Input Manager Initialization: 0.000459 s.
+[11:03:54] [INFO] ENGINE: Application Initialization: 0.012431 s.
+[11:03:54] [INFO] ENGINE: Resource Manager Initialization: 0.148489 s.
+[11:03:54] [INFO] ENGINE: Camera Manager Initialization: 0.000483 s.
+[11:03:54] [INFO] ENGINE: Object Manager Initialization: 0.000256 s.
+[11:03:54] [INFO] ENGINE: Physics Initialization: 0.004225 s.
+[11:03:54] [ERROR] ENGINE: File is not found on {}.
+[11:03:54] [ERROR] ENGINE: Compute info
+------------
+(0) : error C7006: no work group size specified
+
+[11:03:54] [ERROR] ENGINE: Assertion Failed!
+[11:03:54] [ERROR] ENGINE: Compute shader program link error!

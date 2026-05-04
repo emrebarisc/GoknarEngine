@@ -1,0 +1,38 @@
+<GameAsset FileType="Material">
+    <BoneCount>0</BoneCount>
+    <BlendModel>Masked</BlendModel>
+    <ShadingModel>TwoSided</ShadingModel>
+    <Texture path="Textures/Environment/T_Stone_02.png"/>
+    <AmbientReflectance>0 0 0</AmbientReflectance>
+    <DiffuseReflectance>0.235294 0.0392157 0.0392157</DiffuseReflectance>
+    <SpecularReflectance>0 0 0</SpecularReflectance>
+    <PhongExponent>1.000000</PhongExponent>
+    <BaseColor>
+        <Calculation></Calculation>
+        <Result></Result>
+    </BaseColor>
+    <EmissiveColor>
+        <Calculation></Calculation>
+        <Result></Result>
+    </EmissiveColor>
+    <FragmentNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </FragmentNormal>
+    <VertexNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexNormal>
+    <UV>
+        <Calculation></Calculation>
+        <Result></Result>
+    </UV>
+    <VertexPositionOffset>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexPositionOffset>
+    <VertexShaderFunctions><![CDATA[]]></VertexShaderFunctions>
+    <FragmentShaderFunctions><![CDATA[]]></FragmentShaderFunctions>
+    <VertexShaderUniforms><![CDATA[]]></VertexShaderUniforms>
+    <FragmentShaderUniforms><![CDATA[]]></FragmentShaderUniforms>
+</GameAsset>

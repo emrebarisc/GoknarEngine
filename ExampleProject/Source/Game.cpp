@@ -28,10 +28,15 @@
 #include "Materials/MaterialSerializer.h"
 #include "Model/StaticMesh.h"
 
+#include "Objects/Terrain.h"
+#include "Objects/TerrainGrassSpawner.h"
+
 Game::Game() : Application()
 {
 	REGISTER_CLASS(ObjectBase);
 	REGISTER_CLASS(RigidBody);
+	REGISTER_CLASS(Terrain);
+	REGISTER_CLASS(TerrainGrassSpawner);
 
 	engine->SetApplication(this);
 

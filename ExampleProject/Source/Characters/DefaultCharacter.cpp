@@ -87,7 +87,7 @@ void DefaultCharacter::BeginGame()
 
 	engine->GetPhysicsWorld()->RaycastClosest(raycastData, raycastResult);
 
-	SetWorldPosition(raycastResult.hitPosition);
+	SetWorldPosition(raycastResult.hitPosition + Vector3{0.f, 0.f, 1.f});
 
 	Quaternion spawnRotation = Quaternion::FromEulerDegrees(Vector3{ 0.f, 0.f, 180.f });
 	SetWorldRotation(spawnRotation);

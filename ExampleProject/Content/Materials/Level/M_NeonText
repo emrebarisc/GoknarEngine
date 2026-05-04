@@ -1,7 +1,7 @@
 <GameAsset FileType="Material">
     <Name></Name>
     <BoneCount>0</BoneCount>
-    <BlendModel>Transparent</BlendModel>
+    <BlendModel>Masked</BlendModel>
     <ShadingModel>Default</ShadingModel>
     <Texture path="Textures/T_Hello.png"/>
     <AmbientReflectance>0 0 0</AmbientReflectance>
@@ -14,26 +14,33 @@
         <Calculation>
 	// --- Generated Node Graph Calculations ---
 	// Node: Mask
-	float node_34_out_36 = textureUV.x;
-	float node_34_out_37 = textureUV.y;
-	float node_34_out_38 = 0.0f;
-	float node_34_out_39 = 0.0f;
+	float node_67_out_69 = textureUV.x;
+	float node_67_out_70 = textureUV.y;
+	float node_67_out_71 = 0.0f;
+	float node_67_out_72 = 0.0f;
 	// Node: Multiply
-	float node_57_out_60 = node_34_out_37 * -1.000000f;
+	float node_81_out_84 = node_67_out_69 * -1.000000f;
 	// Node: Vector2 Constant
-	vec2 node_41_out_44 = vec2(node_57_out_60, node_34_out_36);
+	vec2 node_74_out_77 = vec2(node_67_out_70, node_81_out_84);
 	// Node: Texture Sample
-	vec4 node_8_out_10 = texture(T_Hello, node_41_out_44);
+	vec4 node_8_out_10 = texture(T_Hello, node_74_out_77);
 	// Node: Vector4 Constant
 	vec4 node_17_out_22 = vec4(1.000000f, 0.500000f, 0.500000f, 1.000000f);
 	// Node: Multiply
 	vec4 node_12_out_15 = node_8_out_10 * node_17_out_22;
+	// Node: Mask
+	float node_126_out_128 = node_12_out_15.x;
+	float node_126_out_129 = node_12_out_15.y;
+	float node_126_out_130 = node_12_out_15.z;
+	float node_126_out_131 = node_12_out_15.w;
+	// Node: Vector4 Constant
+	vec4 node_119_out_124 = vec4(0.000000f, 0.000000f, 0.000000f, node_126_out_128);
 	// Node: Float Constant
 	float node_31_out_32 = 2.500000f;
 	// Node: Multiply
 	vec4 node_25_out_28 = node_12_out_15 * node_31_out_32;
 </Calculation>
-        <Result>node_12_out_15;</Result>
+        <Result>node_119_out_124;</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>

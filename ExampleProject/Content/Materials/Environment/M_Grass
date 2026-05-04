@@ -1,0 +1,79 @@
+<GameAsset FileType="Material">
+    <Name></Name>
+    <BoneCount>0</BoneCount>
+    <BlendModel>Opaque</BlendModel>
+    <ShadingModel>TwoSided</ShadingModel>
+    <AmbientReflectance>0 0 0</AmbientReflectance>
+    <BaseColorValue>0.1 0.115 0.1 1</BaseColorValue>
+    <SpecularReflectance>0 0 0</SpecularReflectance>
+    <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
+    <PhongExponent>1.000000</PhongExponent>
+    <Translucency>1.000000</Translucency>
+    <BaseColor>
+        <Calculation>
+	// --- Generated Node Graph Calculations ---
+	// Node: Custom GLSL
+
+            vec4 modifiedVertexColor = vertexColor;
+            modifiedVertexColor = min(modifiedVertexColor + 0.25f, 1.f);
+            vec4 colorResult = modifiedVertexColor * baseColor + (1.f - modifiedVertexColor) * vec4(0.125f);
+        
+
+#define node_12_out_13 (colorResult)
+</Calculation>
+        <Result>node_12_out_13;</Result>
+    </BaseColor>
+    <EmissiveColor>
+        <Calculation></Calculation>
+        <Result></Result>
+    </EmissiveColor>
+    <FragmentNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </FragmentNormal>
+    <VertexNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexNormal>
+    <UV>
+        <Calculation></Calculation>
+        <Result></Result>
+    </UV>
+    <VertexPositionOffset>
+        <Calculation>
+	// --- Generated Node Graph Calculations ---
+	// Node: Custom GLSL
+
+            const float PI = 3.1415f;
+
+            vec3 scaledWorldPosition = position;
+
+            vec3 origin1 = scaledWorldPosition + vec3(1.f, 1.f, 0.5f);
+            vec3 origin2 = scaledWorldPosition + vec3(-1.f, 1.f, -0.5f);
+            vec3 origin3 = scaledWorldPosition + vec3(1.f, -1.f, 0.5f);
+            vec3 origin4 = scaledWorldPosition + vec3(-1.f, -1.f, -0.5f); 
+
+            float distance1 = length(origin1);
+            float distance2 = length(origin2);
+            float distance3 = length(origin3);
+            float distance4 = length(origin4);
+
+            float scaledTime = elapsedTime * 2.f;
+
+            float wave =    sin(3.3f * PI * distance1 * 0.13f + scaledTime) +
+            sin(3.2f * PI * distance2 * 0.12f + scaledTime) +
+            sin(3.1f * PI * distance3 * 0.24f + scaledTime) +
+            sin(3.5f * PI * distance4 * 0.32f + scaledTime);
+
+            wave *= 0.01f;
+        
+
+#define node_15_out_16 (vec3(wave * color))
+</Calculation>
+        <Result>node_15_out_16;</Result>
+    </VertexPositionOffset>
+    <VertexShaderFunctions><![CDATA[]]></VertexShaderFunctions>
+    <FragmentShaderFunctions><![CDATA[]]></FragmentShaderFunctions>
+    <VertexShaderUniforms><![CDATA[]]></VertexShaderUniforms>
+    <FragmentShaderUniforms><![CDATA[]]></FragmentShaderUniforms>
+</GameAsset>
