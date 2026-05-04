@@ -21,6 +21,9 @@ namespace
 		mipLevel.texture->SetTextureInternalFormat(TextureInternalFormat::RGBA16F);
 		mipLevel.texture->SetTextureMinFilter(TextureMinFilter::LINEAR);
 		mipLevel.texture->SetTextureMagFilter(TextureMagFilter::LINEAR);
+		mipLevel.texture->SetTextureWrappingR(TextureWrapping::CLAMP_TO_EDGE);
+		mipLevel.texture->SetTextureWrappingS(TextureWrapping::CLAMP_TO_EDGE);
+		mipLevel.texture->SetTextureWrappingT(TextureWrapping::CLAMP_TO_EDGE);
 		mipLevel.texture->SetWidth(width);
 		mipLevel.texture->SetHeight(height);
 		mipLevel.texture->SetGenerateMipmap(false);
