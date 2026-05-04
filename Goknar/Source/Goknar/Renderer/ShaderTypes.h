@@ -30,7 +30,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* METALLIC;
 		extern const char* SPECULAR;
 		extern const char* ROUGHNESS;
-		extern const char* EMMISIVE_COLOR;
+		extern const char* EMISIVE_COLOR;
 		extern const char* AMBIENT_OCCLUSION;
 	}
 

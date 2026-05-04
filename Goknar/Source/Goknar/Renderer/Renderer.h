@@ -70,7 +70,7 @@ public:
 	Texture* worldNormalTexture{ nullptr };
 	Texture* diffuseTexture{ nullptr };
 	Texture* specularTexture{ nullptr };
-	Texture* emmisiveColorTexture{ nullptr };
+	Texture* emisiveColorTexture{ nullptr };
 
 	int bufferWidth{ 1920 };
 	int bufferHeight{ 1080 };

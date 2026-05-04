@@ -75,13 +75,13 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
     SerializeVector3("AmbientReflectance", material->GetAmbientReflectance());
     SerializeVector4("BaseColorValue", material->GetBaseColor());
     SerializeVector3("SpecularReflectance", material->GetSpecularReflectance());
-    SerializeVector3("EmmisiveColorValue", material->GetEmmisiveColor());
+    SerializeVector3("EmmisiveColorValue", material->GetEmisiveColor());
 
     AddPropertyElement("PhongExponent", std::to_string(material->GetPhongExponent()));
     AddPropertyElement("Translucency", std::to_string(material->GetTranslucency()));
 
     SerializeShaderFunction(doc, root, "BaseColor", materialInitializationData->baseColor);
-    SerializeShaderFunction(doc, root, "EmissiveColor", materialInitializationData->emmisiveColor);
+    SerializeShaderFunction(doc, root, "EmissiveColor", materialInitializationData->emisiveColor);
     SerializeShaderFunction(doc, root, "FragmentNormal", materialInitializationData->fragmentNormal);
     SerializeShaderFunction(doc, root, "VertexNormal", materialInitializationData->vertexNormal);
     SerializeShaderFunction(doc, root, "UV", materialInitializationData->uv);
@@ -214,13 +214,13 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         owner->SetSpecularReflectance(specularReflectance);
     }
 
-    child = root->FirstChildElement("EmmisiveColorValue");
+    child = root->FirstChildElement("EmisiveColorValue");
     if (child && child->GetText())
     {
         std::stringstream stream(child->GetText());
         Vector3 emmisiveColor;
         stream >> emmisiveColor.x >> emmisiveColor.y >> emmisiveColor.z;
-        owner->SetEmmisiveColor(emmisiveColor);
+        owner->SetEmisiveColor(emmisiveColor);
     }
 
     child = root->FirstChildElement("PhongExponent");
@@ -253,7 +253,7 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     }
 
     DeserializeShaderFunction(root, "BaseColor", materialInitializationData->baseColor);
-    DeserializeShaderFunction(root, "EmissiveColor", materialInitializationData->emmisiveColor);
+    DeserializeShaderFunction(root, "EmissiveColor", materialInitializationData->emisiveColor);
     DeserializeShaderFunction(root, "FragmentNormal", materialInitializationData->fragmentNormal);
     DeserializeShaderFunction(root, "VertexNormal", materialInitializationData->vertexNormal);
     DeserializeShaderFunction(root, "UV", materialInitializationData->uv);

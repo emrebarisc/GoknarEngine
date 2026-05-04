@@ -157,7 +157,7 @@ Texture* BloomPostProcessingEffect::Render(const DeferredRenderingData* deferred
 	EnsureBloomResources(width, height);
 	EnsureResources(width, height);
 
-	Texture* emissiveTexture = deferredRenderingData->geometryBufferData->emmisiveColorTexture;
+	Texture* emissiveTexture = deferredRenderingData->geometryBufferData->emisiveColorTexture;
 	if (!emissiveTexture || bloomDownsampleMipChain_.empty())
 	{
 		return const_cast<Texture*>(inputTexture);

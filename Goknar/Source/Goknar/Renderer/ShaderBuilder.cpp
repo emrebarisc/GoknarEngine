@@ -521,7 +521,7 @@ std::string ShaderBuilder::DeferredRenderPass_GetGBufferVariables() const
 	return R"(
 vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
 vec4 )" + SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR + R"(;
-vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::EMMISIVE_COLOR + R"(;
+vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR + R"(;
 vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"(;
 vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(;
 float )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"(;
@@ -617,7 +617,7 @@ std::string ShaderBuilder::General_FS_GetMaterialVariables(const FragmentShaderI
 		materialVariableText += ";\n";
 
 		materialVariableText += "uniform vec3 ";
-		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::EMMISIVE_COLOR;
+		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR;
 		materialVariableText += ";\n";
 
 		materialVariableText += "in vec3 ";
@@ -1143,20 +1143,20 @@ std::string ShaderBuilder::FS_InitializeEmmisiveColor(MaterialInitializationData
 {
 	std::string result = "";
 
-	if (initializationData && !initializationData->emmisiveColor.calculation.empty())
+	if (initializationData && !initializationData->emisiveColor.calculation.empty())
 	{
-		result += initializationData->emmisiveColor.calculation + "\n";
+		result += initializationData->emisiveColor.calculation + "\n";
 	}
 	
 	result += std::string("\n\tvec3 ") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + " = ";
 
-	if (initializationData && !initializationData->emmisiveColor.result.empty())
+	if (initializationData && !initializationData->emisiveColor.result.empty())
 	{
-		result += initializationData->emmisiveColor.result;
+		result += initializationData->emisiveColor.result;
 	}
 	else
 	{
-		result += std::string(SHADER_VARIABLE_NAMES::MATERIAL::EMMISIVE_COLOR) + ";";
+		result += std::string(SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR) + ";";
 	}
 
 	return result;

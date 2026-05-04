@@ -77,14 +77,14 @@ public:
 		specularReflectance_ = specularReflectance;
 	}
 
-	const Vector3& GetEmmisiveColor() const
+	const Vector3& GetEmisiveColor() const
 	{
-		return emmisiveColor_;
+		return emisiveColor_;
 	}
 
-	void SetEmmisiveColor(const Vector3& emmisiveColor)
+	void SetEmisiveColor(const Vector3& emmisiveColor)
 	{
-		emmisiveColor_ = emmisiveColor;
+		emisiveColor_ = emmisiveColor;
 	}
 
 	float GetPhongExponent() const;
@@ -152,7 +152,7 @@ protected:
 	Vector4 baseColor_{ Vector4::ZeroVector };
 	Vector3 ambientReflectance_{ Vector3::ZeroVector };
 	Vector3 specularReflectance_{ Vector3::ZeroVector };
-	Vector3 emmisiveColor_{ Vector3::ZeroVector };
+	Vector3 emisiveColor_{ Vector3::ZeroVector };
 
 	std::string name_{ "" };
 

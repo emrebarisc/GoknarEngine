@@ -23,7 +23,7 @@ namespace
 		clonedMaterial->SetAmbientReflectance(sourceMaterial->GetAmbientReflectance());
 		clonedMaterial->SetBaseColor(sourceMaterial->GetBaseColor());
 		clonedMaterial->SetSpecularReflectance(sourceMaterial->GetSpecularReflectance());
-		clonedMaterial->SetEmmisiveColor(sourceMaterial->GetEmmisiveColor());
+		clonedMaterial->SetEmisiveColor(sourceMaterial->GetEmisiveColor());
 		clonedMaterial->SetPhongExponent(sourceMaterial->GetPhongExponent());
 		clonedMaterial->SetTranslucency(sourceMaterial->GetTranslucency());
 		clonedMaterial->SetBlendModel(sourceMaterial->GetBlendModel());
@@ -46,7 +46,7 @@ namespace
 		if (sourceInitializationData && clonedInitializationData)
 		{
 			clonedInitializationData->baseColor = sourceInitializationData->baseColor;
-			clonedInitializationData->emmisiveColor = sourceInitializationData->emmisiveColor;
+			clonedInitializationData->emisiveColor = sourceInitializationData->emisiveColor;
 			clonedInitializationData->fragmentNormal = sourceInitializationData->fragmentNormal;
 			clonedInitializationData->vertexNormal = sourceInitializationData->vertexNormal;
 			clonedInitializationData->uv = sourceInitializationData->uv;

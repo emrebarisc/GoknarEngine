@@ -31,7 +31,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* METALLIC = "metallic";
 		const char* SPECULAR = "specular";
 		const char* ROUGHNESS = "roughness";
-		const char* EMMISIVE_COLOR = "emmisiveColor";
+		const char* EMISIVE_COLOR = "emisiveColor";
 		const char* AMBIENT_OCCLUSION = "ambientOcclusion";
 	}
 

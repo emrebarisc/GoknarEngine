@@ -42,7 +42,7 @@ IMaterialBase::IMaterialBase() :
 	baseColor_(Vector4{ 1.f }),
 	ambientReflectance_(Vector3::ZeroVector),
 	specularReflectance_(Vector3::ZeroVector),
-	emmisiveColor_(Vector3::ZeroVector),
+	emisiveColor_(Vector3::ZeroVector),
 	blendModel_(MaterialBlendModel::Opaque),
 	shadingModel_(MaterialShadingModel::Default),
 	phongExponent_(1.f)
@@ -59,7 +59,7 @@ IMaterialBase::IMaterialBase(const IMaterialBase* other)
 	ambientReflectance_ = other->ambientReflectance_;
 	baseColor_ = other->baseColor_;
 	specularReflectance_ = other->specularReflectance_;
-	emmisiveColor_ = other->emmisiveColor_;
+	emisiveColor_ = other->emisiveColor_;
 	blendModel_ = other->blendModel_;
 	shadingModel_ = other->shadingModel_;
 	phongExponent_ = other->phongExponent_;
@@ -150,7 +150,7 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 		shader->SetVector4(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR, baseColor_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION, ambientReflectance_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);
-		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::EMMISIVE_COLOR, emmisiveColor_);
+		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR, emisiveColor_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, phongExponent_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY, translucency_);
 	}
