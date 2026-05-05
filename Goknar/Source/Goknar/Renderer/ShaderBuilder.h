@@ -90,7 +90,7 @@ private:
 	std::string FS_GetSpotLightStruct() const;
 	std::string FS_GetLightArrayUniforms() const;
 	std::string FS_GetShadowMapUniforms() const;
-	std::string FS_InitializeBaseColor(MaterialInitializationData* initializationData) const;
+	std::string FS_InitializeBaseColor(MaterialInitializationData* initializationData, bool discardTransparent = false) const;
 	std::string FS_InitializeEmmisiveColor(MaterialInitializationData* initializationData) const;
 
 	std::string General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const;

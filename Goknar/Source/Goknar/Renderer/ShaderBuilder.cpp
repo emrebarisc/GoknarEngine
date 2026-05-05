@@ -276,7 +276,7 @@ std::string ShaderBuilder::ShadowPass_GetFragmentShaderScript(MaterialInitializa
 void main()
 {
 )";
-		shadowPassFragmentShader += FS_InitializeBaseColor(initializationData);
+		shadowPassFragmentShader += FS_InitializeBaseColor(initializationData, true);
 		shadowPassFragmentShader += FS_InitializeEmmisiveColor(initializationData);
 		shadowPassFragmentShader += "\n\tif (1.f < length(" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR) + ")) discard;\n";
 		shadowPassFragmentShader += R"(
@@ -425,7 +425,7 @@ void main()
 
 	if (requiresAlphaTest)
 	{
-		shadowPassFragmentShader += FS_InitializeBaseColor(initializationData);
+		shadowPassFragmentShader += FS_InitializeBaseColor(initializationData, true);
 		shadowPassFragmentShader += FS_InitializeEmmisiveColor(initializationData);
 		shadowPassFragmentShader += "\n\tif (1.f < length(" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR) + ")) discard;\n";
 	}
@@ -1116,7 +1116,7 @@ std::string ShaderBuilder::FS_GetLightCalculationIterators() const
 )";
 }
 
-std::string ShaderBuilder::FS_InitializeBaseColor(MaterialInitializationData* initializationData) const
+std::string ShaderBuilder::FS_InitializeBaseColor(MaterialInitializationData* initializationData, bool discardTransparent) const
 {
 	std::string result = "";
 
@@ -1136,7 +1136,9 @@ std::string ShaderBuilder::FS_InitializeBaseColor(MaterialInitializationData* in
 		result += std::string(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR) + ";";
 	}
 
-	if (initializationData && (initializationData->owner->GetBlendModel() == MaterialBlendModel::Masked || initializationData->owner->GetBlendModel() == MaterialBlendModel::Transparent))
+	if (initializationData &&
+		(initializationData->owner->GetBlendModel() == MaterialBlendModel::Masked ||
+		 (discardTransparent && initializationData->owner->GetBlendModel() == MaterialBlendModel::Transparent)))
 	{
 		result += "\tif (" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR) + ".a < 0.5f) discard;\n";
 	}

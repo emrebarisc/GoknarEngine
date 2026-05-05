@@ -569,6 +569,10 @@ void Renderer::Render(RenderPassType renderPassType)
 	bool isShadowRender =
 		renderPassType == RenderPassType::Shadow ||
 		renderPassType == RenderPassType::PointLightShadow;
+	const RenderPassType meshUnitRenderPassType =
+		renderPassType == RenderPassType::Deferred ?
+		RenderPassType::Forward :
+		renderPassType;
 
 	auto RenderStaticMesh = [&](const StaticMeshRenderData& renderData)
 		{
@@ -580,8 +584,8 @@ void Renderer::Render(RenderPassType renderPassType)
 
 			if (countDrawCallsInner_) ++drawCallCount;
 
-			staticMeshInstance->PreRender(subMeshIndex, renderPassType);
-			staticMeshInstance->Render(subMeshIndex, renderPassType);
+			staticMeshInstance->PreRender(subMeshIndex, meshUnitRenderPassType);
+			staticMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
 
 			int facePointCount = subMesh->GetFaceCount() * 3;
 			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
@@ -612,8 +616,8 @@ void Renderer::Render(RenderPassType renderPassType)
 
 			if (countDrawCallsInner_) ++drawCallCount;
 
-			instancedStaticMeshInstance->PreRender(subMeshIndex, renderPassType);
-			instancedStaticMeshInstance->Render(subMeshIndex, renderPassType);
+			instancedStaticMeshInstance->PreRender(subMeshIndex, meshUnitRenderPassType);
+			instancedStaticMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
 
 			int facePointCount = subMesh->GetFaceCount() * 3;
 			glDrawElementsInstancedBaseVertex(
@@ -635,8 +639,8 @@ void Renderer::Render(RenderPassType renderPassType)
 
 			if (countDrawCallsInner_) ++drawCallCount;
 
-			skeletalMeshInstance->PreRender(subMeshIndex, renderPassType);
-			skeletalMeshInstance->Render(subMeshIndex, renderPassType);
+			skeletalMeshInstance->PreRender(subMeshIndex, meshUnitRenderPassType);
+			skeletalMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
 
 			int facePointCount = subMesh->GetFaceCount() * 3;
 			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
@@ -652,8 +656,8 @@ void Renderer::Render(RenderPassType renderPassType)
 
 			if (countDrawCallsInner_) ++drawCallCount;
 
-			dynamicMeshInstance->PreRender(subMeshIndex, renderPassType);
-			dynamicMeshInstance->Render(subMeshIndex, renderPassType);
+			dynamicMeshInstance->PreRender(subMeshIndex, meshUnitRenderPassType);
+			dynamicMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
 
 			int facePointCount = subMesh->GetFaceCount() * 3;
 			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
