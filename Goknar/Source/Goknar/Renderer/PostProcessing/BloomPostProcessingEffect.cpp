@@ -2,9 +2,9 @@
 
 #include "BloomPostProcessingEffect.h"
 
-#include "ComputeShader.h"
-#include "Framebuffer.h"
-#include "Renderer.h"
+#include "Renderer/ComputeShader.h"
+#include "Renderer/Framebuffer.h"
+#include "Renderer/Renderer.h"
 
 namespace
 {

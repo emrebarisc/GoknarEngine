@@ -36,12 +36,13 @@
 
 #include "Goknar/IO/IOManager.h"
 
-#include "Goknar/Renderer/BloomPostProcessingEffect.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
-#include "Goknar/Renderer/PostProcessing.h"
 #include "Goknar/Renderer/RenderTarget.h"
-#include "Goknar/Renderer/TemporalAntiAliasingPostProcessingEffect.h"
+#include "Goknar/Renderer/PostProcessing/PostProcessing.h"
+#include "Goknar/Renderer/PostProcessing/BloomPostProcessingEffect.h"
+#include "Goknar/Renderer/PostProcessing/ScreenSpaceReflectionPostProcessingEffect.h"
+#include "Goknar/Renderer/PostProcessing/TemporalAntiAliasingPostProcessingEffect.h"
 
 #include <unordered_set>
 
@@ -162,6 +163,15 @@ void Renderer::PreInit()
 			bloomPostProcessingEffect_->Init();
 			bloomPostProcessingEffect_->PostInit();
 			AddPostProcessingEffect(bloomPostProcessingEffect_);
+		}
+
+		if (!screenSpaceReflectionPostProcessingEffect_)
+		{
+			screenSpaceReflectionPostProcessingEffect_ = new ScreenSpaceReflectionPostProcessingEffect();
+			screenSpaceReflectionPostProcessingEffect_->PreInit();
+			screenSpaceReflectionPostProcessingEffect_->Init();
+			screenSpaceReflectionPostProcessingEffect_->PostInit();
+			AddPostProcessingEffect(screenSpaceReflectionPostProcessingEffect_);
 		}
 	}
 

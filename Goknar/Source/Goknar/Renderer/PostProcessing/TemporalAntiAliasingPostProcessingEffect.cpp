@@ -2,10 +2,10 @@
 
 #include "TemporalAntiAliasingPostProcessingEffect.h"
 
-#include "ComputeShader.h"
-#include "Framebuffer.h"
-#include "Renderer.h"
-#include "Texture.h"
+#include "Renderer/ComputeShader.h"
+#include "Renderer/Framebuffer.h"
+#include "Renderer/Renderer.h"
+#include "Renderer/Texture.h"
 
 #include "Goknar/Camera.h"
 #include "Goknar/Engine.h"

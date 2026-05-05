@@ -43,6 +43,9 @@
             <Path>Materials/PBRTests/M_PBR_GoldPolished</Path>
         </Material>
         <Material>
+            <Path>Materials/PBRTests/M_PBR_Mirror</Path>
+        </Material>
+        <Material>
             <Path>Materials/PBRTests/M_PBR_PlasticRough</Path>
         </Material>
         <Material>

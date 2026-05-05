@@ -1,5 +1,5 @@
 <GameAsset FileType="MaterialEditorReflection">
-    <Canvas Scale="0.94249994" ScrollX="115.64502" ScrollY="40.793213"/>
+    <Canvas Scale="1.1424998" ScrollX="71.967621" ScrollY="58.102966"/>
     <Nodes>
         <Node Id="1" Name="Material Output" Category="Master" PosX="400" PosY="80" SizeX="220" SizeY="220" IsUniform="1">
             <StringData><![CDATA[]]></StringData>
@@ -28,7 +28,7 @@
             </Inputs>
             <Outputs/>
         </Node>
-        <Node Id="9" Name="Vector4 Constant" Category="Constants" PosX="101.96291" PosY="-46.25996" SizeX="160" SizeY="145" IsUniform="1">
+        <Node Id="9" Name="Vector4 Constant" Category="Constants" PosX="101.08764" PosY="-23.502851" SizeX="160" SizeY="145" IsUniform="1">
             <StringData><![CDATA[]]></StringData>
             <Inputs>
                 <Pin Id="10" NodeId="9" Name="X" Type="Float" Kind="Input">
@@ -69,7 +69,7 @@
                 </Pin>
             </Outputs>
         </Node>
-        <Node Id="22" Name="Float Constant" Category="Constants" PosX="120" PosY="440" SizeX="150" SizeY="60" IsUniform="1">
+        <Node Id="22" Name="Float Constant" Category="Constants" PosX="111.77194" PosY="333.35141" SizeX="150" SizeY="60" IsUniform="1">
             <StringData><![CDATA[]]></StringData>
             <Inputs/>
             <Outputs>
@@ -78,7 +78,7 @@
                 </Pin>
             </Outputs>
         </Node>
-        <Node Id="25" Name="Float Constant" Category="Constants" PosX="120" PosY="620" SizeX="150" SizeY="60" IsUniform="1">
+        <Node Id="25" Name="Float Constant" Category="Constants" PosX="112.26227" PosY="401.30655" SizeX="150" SizeY="60" IsUniform="1">
             <StringData><![CDATA[]]></StringData>
             <Inputs/>
             <Outputs>
@@ -87,7 +87,7 @@
                 </Pin>
             </Outputs>
         </Node>
-        <Node Id="28" Name="Float Constant" Category="Constants" PosX="120" PosY="800" SizeX="150" SizeY="60" IsUniform="1">
+        <Node Id="28" Name="Float Constant" Category="Constants" PosX="113.38273" PosY="469.26239" SizeX="150" SizeY="60" IsUniform="1">
             <StringData><![CDATA[]]></StringData>
             <Inputs/>
             <Outputs>
@@ -96,7 +96,7 @@
                 </Pin>
             </Outputs>
         </Node>
-        <Node Id="31" Name="vertexNormal" Category="Variables" PosX="-117.39527" PosY="275.02057" SizeX="320" SizeY="60" IsUniform="1">
+        <Node Id="31" Name="vertexNormal" Category="Variables" PosX="-57.876648" PosY="263.642" SizeX="320" SizeY="60" IsUniform="1">
             <StringData><![CDATA[]]></StringData>
             <Inputs/>
             <Outputs>

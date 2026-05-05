@@ -23,6 +23,7 @@ class RenderBuffer;
 class Shader;
 class BloomPostProcessingEffect;
 class TemporalAntiAliasingPostProcessingEffect;
+class ScreenSpaceReflectionPostProcessingEffect;
 
 class DynamicMeshInstance;
 class InstancedStaticMeshInstance;
@@ -305,6 +306,7 @@ private:
 	std::vector<const RenderTarget*> renderTargets_;
 	TemporalAntiAliasingPostProcessingEffect* temporalAntiAliasingPostProcessingEffect_{ nullptr };
 	BloomPostProcessingEffect* bloomPostProcessingEffect_{ nullptr };
+	ScreenSpaceReflectionPostProcessingEffect* screenSpaceReflectionPostProcessingEffect_{ nullptr };
 
 	const RenderTarget* currentRenderTarget_{ nullptr };
 

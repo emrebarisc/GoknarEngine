@@ -1,0 +1,100 @@
+#include "pch.h"
+#include "ScreenSpaceReflectionPostProcessingEffect.h"
+#include "Goknar/Renderer/ComputeShader.h"
+#include "Goknar/Renderer/Framebuffer.h"
+#include "Goknar/Renderer/Renderer.h"
+#include "Goknar/Renderer/Texture.h"
+#include "Goknar/Camera.h"
+#include "Goknar/Data/DataEncryption.h"
+#include "Goknar/Engine.h"
+#include "Goknar/Managers/CameraManager.h"
+
+ScreenSpaceReflectionPostProcessingEffect::ScreenSpaceReflectionPostProcessingEffect()
+{
+    ComputeShader* ssrComputeShader = new ComputeShader();
+    const std::string projectShaderPath = ContentDir + "Shaders/PostProcessing/ScreenSpaceReflection.comp";
+    const std::string engineShaderPath = EngineContentDir + "Shaders/PostProcessing/ScreenSpaceReflection.comp";
+    const std::string shaderPath = DataEncryption::FileExists(projectShaderPath) ? projectShaderPath : engineShaderPath;
+    ssrComputeShader->SetComputeShaderPathAbsolute(shaderPath);
+    SetComputeShader(ssrComputeShader);
+}
+
+ScreenSpaceReflectionPostProcessingEffect::~ScreenSpaceReflectionPostProcessingEffect()
+{
+}
+
+void ScreenSpaceReflectionPostProcessingEffect::PreInit()
+{
+    PostProcessingEffect::PreInit();
+}
+
+void ScreenSpaceReflectionPostProcessingEffect::Init()
+{
+    PostProcessingEffect::Init();
+}
+
+void ScreenSpaceReflectionPostProcessingEffect::PostInit()
+{
+    PostProcessingEffect::PostInit();
+}
+
+Texture* ScreenSpaceReflectionPostProcessingEffect::Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height)
+{
+    if (!GetIsEnabled() || !GetComputeShader() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0)
+    {
+        return const_cast<Texture*>(inputTexture);
+    }
+
+    EnsureResources(width, height);
+
+    const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+    if (!activeCamera || !deferredRenderingData->geometryBufferData)
+    {
+        return const_cast<Texture*>(inputTexture);
+    }
+
+    Texture* worldPositionTexture = deferredRenderingData->geometryBufferData->worldPositionTexture;
+    Texture* worldNormalTexture = deferredRenderingData->geometryBufferData->worldNormalTexture;
+    Texture* aoMetallicRoughnessTexture = deferredRenderingData->geometryBufferData->ambientOcclusionMetallicRoughnessTexture;
+
+    if (!worldPositionTexture || !worldNormalTexture || !aoMetallicRoughnessTexture)
+    {
+        return const_cast<Texture*>(inputTexture);
+    }
+
+    const int inputTextureUnit = static_cast<int>(inputTexture->GetRendererTextureId());
+    const int worldPositionTextureUnit = static_cast<int>(worldPositionTexture->GetRendererTextureId());
+    const int worldNormalTextureUnit = static_cast<int>(worldNormalTexture->GetRendererTextureId());
+    const int aoMetallicRoughnessTextureUnit = static_cast<int>(aoMetallicRoughnessTexture->GetRendererTextureId());
+
+    GetComputeShader()->Use();
+
+    // Bind Textures
+    inputTexture->BindToTextureUnit(inputTextureUnit);
+    GetComputeShader()->SetInt("inputTexture", inputTextureUnit);
+
+    worldPositionTexture->BindToTextureUnit(worldPositionTextureUnit);
+    GetComputeShader()->SetInt("position_GBuffer", worldPositionTextureUnit);
+
+    worldNormalTexture->BindToTextureUnit(worldNormalTextureUnit);
+    GetComputeShader()->SetInt("normal_GBuffer", worldNormalTextureUnit);
+
+    aoMetallicRoughnessTexture->BindToTextureUnit(aoMetallicRoughnessTextureUnit);
+    GetComputeShader()->SetInt("aoMetallicRoughness_GBuffer", aoMetallicRoughnessTextureUnit);
+
+    // Bind Uniforms
+    GetComputeShader()->SetMatrix("viewProjectionMatrix", activeCamera->GetViewProjectionMatrix());
+    GetComputeShader()->SetVector3("viewPosition", activeCamera->GetPosition());
+    
+    GetComputeShader()->SetFloat("rayStepSize", rayStepSize_);
+    GetComputeShader()->SetInt("maxSteps", maxSteps_);
+    GetComputeShader()->SetFloat("thickness", thickness_);
+
+    // Bind Output Image and Dispatch
+    outputTexture_->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
+    GetComputeShader()->Dispatch2D(width, height);
+
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+
+    return outputTexture_;
+}

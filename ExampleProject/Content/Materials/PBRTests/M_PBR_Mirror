@@ -1,0 +1,64 @@
+<GameAsset FileType="Material">
+    <Name></Name>
+    <BoneCount>0</BoneCount>
+    <BlendModel>Opaque</BlendModel>
+    <ShadingModel>Default</ShadingModel>
+    <BaseColorValue>1 1 1 1</BaseColorValue>
+    <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
+    <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
+    <MetallicValue>0.000000</MetallicValue>
+    <RoughnessValue>0.500000</RoughnessValue>
+    <Translucency>0.000000</Translucency>
+    <BaseColor>
+        <Calculation>
+	// --- Generated Node Graph Calculations ---
+	// Node: Vector4 Constant
+	vec4 node_23_out_28 = vec4(1.000000f, 1.000000f, 1.000000f, 1.000000f);
+	// Node: Vector3 Constant
+	vec3 node_12_out_16 = vec3(0.000000f, 0.000000f, 0.000000f);
+	// Node: Float Constant
+	float node_30_out_31 = 1.000000f;
+	// Node: Float Constant
+	float node_34_out_35 = 1.000000f;
+	// Node: Float Constant
+	float node_37_out_38 = 0.000000f;
+</Calculation>
+        <Result>node_23_out_28;</Result>
+    </BaseColor>
+    <EmissiveColor>
+        <Calculation></Calculation>
+        <Result>node_12_out_16;</Result>
+    </EmissiveColor>
+    <AmbientOcclusion>
+        <Calculation></Calculation>
+        <Result>node_30_out_31;</Result>
+    </AmbientOcclusion>
+    <Metallic>
+        <Calculation></Calculation>
+        <Result>node_34_out_35;</Result>
+    </Metallic>
+    <Roughness>
+        <Calculation></Calculation>
+        <Result>node_37_out_38;</Result>
+    </Roughness>
+    <FragmentNormal>
+        <Calculation></Calculation>
+        <Result>vertexNormal;</Result>
+    </FragmentNormal>
+    <VertexNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexNormal>
+    <UV>
+        <Calculation></Calculation>
+        <Result></Result>
+    </UV>
+    <VertexPositionOffset>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexPositionOffset>
+    <VertexShaderFunctions><![CDATA[]]></VertexShaderFunctions>
+    <FragmentShaderFunctions><![CDATA[]]></FragmentShaderFunctions>
+    <VertexShaderUniforms><![CDATA[]]></VertexShaderUniforms>
+    <FragmentShaderUniforms><![CDATA[]]></FragmentShaderUniforms>
+</GameAsset>
