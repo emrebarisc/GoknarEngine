@@ -16,7 +16,5 @@ Goknar/Build/
 *.glsl
 *.frag
 *.vert
+*.log
 GameProject/Goknar.dll
-# Goknar/thirdparty/spdlog
-# Goknar/thirdparty/imgui
-# Goknar/thirdparty/GLFW
