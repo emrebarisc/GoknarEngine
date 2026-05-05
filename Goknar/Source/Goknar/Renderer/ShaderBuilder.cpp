@@ -17,6 +17,8 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Lights/LightManager/LightManager.h"
 
+#include <unordered_set>
+
 ShaderBuilder* ShaderBuilder::instance_ = nullptr;
 
 ShaderBuilder::~ShaderBuilder()
@@ -942,6 +944,8 @@ std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(MaterialInitializ
 
 	const std::vector<const Texture*>* textures = shader->GetTextures();
 
+	std::unordered_set<std::string> addedTextureNames;
+
 	std::vector<const Texture*>::const_iterator textureIterator = textures->cbegin();
 	while (textureIterator != textures->cend())
 	{
@@ -971,7 +975,11 @@ std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(MaterialInitializ
 			break;
 		}
 
-		uniforms += "uniform sampler2D " + texture->GetName() + ";\n";
+		if (addedTextureNames.find(texture->GetName()) == addedTextureNames.end())
+		{
+			uniforms += "uniform sampler2D " + texture->GetName() + ";\n";
+			addedTextureNames.insert(texture->GetName());
+		}
 
 		++textureIterator;
 	}

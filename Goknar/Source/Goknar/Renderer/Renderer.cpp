@@ -839,8 +839,18 @@ void Renderer::AddInstancedStaticMeshToRenderer(InstancedStaticMesh* instancedSt
 
 void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 {
-	MaterialBlendModel materialShadingModel = meshInstance->GetMaterial(0)->GetBlendModel();
-	switch (materialShadingModel)
+	MaterialBlendModel materialBlendModel = MaterialBlendModel::Opaque;
+
+	for (auto& subMesh : meshInstance->GetMesh()->GetSubMeshes())
+	{
+		if (subMesh->GetMaterial()->GetBlendModel() == MaterialBlendModel::Transparent)
+		{
+			materialBlendModel = MaterialBlendModel::Transparent;
+			break;
+		}
+	}
+
+	switch (materialBlendModel)
 	{
 	case MaterialBlendModel::Opaque:
 	case MaterialBlendModel::Masked:
@@ -856,9 +866,18 @@ void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 
 void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 {
-	MaterialBlendModel blendModel = staticMeshInstance->GetMaterial(0)->GetBlendModel();
+	MaterialBlendModel materialBlendModel = MaterialBlendModel::Opaque;
 
-	switch (blendModel)
+	for (auto& subMesh : staticMeshInstance->GetMesh()->GetSubMeshes())
+	{
+		if (subMesh->GetMaterial()->GetBlendModel() == MaterialBlendModel::Transparent)
+		{
+			materialBlendModel = MaterialBlendModel::Transparent;
+			break;
+		}
+	}
+
+	switch (materialBlendModel)
 	{
 	case MaterialBlendModel::Opaque:
 	case MaterialBlendModel::Masked:
@@ -894,7 +913,17 @@ void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 
 void Renderer::AddInstancedStaticMeshInstance(InstancedStaticMeshInstance* instancedStaticMeshInstance)
 {
-	MaterialBlendModel materialBlendModel = instancedStaticMeshInstance->GetMaterial(0)->GetBlendModel();
+	MaterialBlendModel materialBlendModel = MaterialBlendModel::Opaque;
+
+	for (auto& subMesh : instancedStaticMeshInstance->GetMesh()->GetSubMeshes())
+	{
+		if (subMesh->GetMaterial()->GetBlendModel() == MaterialBlendModel::Transparent)
+		{
+			materialBlendModel = MaterialBlendModel::Transparent;
+			break;
+		}
+	}
+
 	switch (materialBlendModel)
 	{
 	case MaterialBlendModel::Opaque:
@@ -911,9 +940,18 @@ void Renderer::AddInstancedStaticMeshInstance(InstancedStaticMeshInstance* insta
 
 void Renderer::RemoveInstancedStaticMeshInstance(InstancedStaticMeshInstance* instancedStaticMeshInstance)
 {
-	MaterialBlendModel blendModel = instancedStaticMeshInstance->GetMaterial(0)->GetBlendModel();
+	MaterialBlendModel materialBlendModel = MaterialBlendModel::Opaque;
 
-	switch (blendModel)
+	for (auto& subMesh : instancedStaticMeshInstance->GetMesh()->GetSubMeshes())
+	{
+		if (subMesh->GetMaterial()->GetBlendModel() == MaterialBlendModel::Transparent)
+		{
+			materialBlendModel = MaterialBlendModel::Transparent;
+			break;
+		}
+	}
+
+	switch (materialBlendModel)
 	{
 	case MaterialBlendModel::Opaque:
 	case MaterialBlendModel::Masked:
@@ -955,7 +993,17 @@ void Renderer::AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh)
 
 void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
 {
-	MaterialBlendModel materialBlendModel = skeletalMeshInstance->GetMaterial(0)->GetBlendModel();
+	MaterialBlendModel materialBlendModel = MaterialBlendModel::Opaque;
+
+	for (auto& subMesh : skeletalMeshInstance->GetMesh()->GetSubMeshes())
+	{
+		if (subMesh->GetMaterial()->GetBlendModel() == MaterialBlendModel::Transparent)
+		{
+			materialBlendModel = MaterialBlendModel::Transparent;
+			break;
+		}
+	}
+
 	switch (materialBlendModel)
 	{
 	case MaterialBlendModel::Opaque:
@@ -972,9 +1020,18 @@ void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstanc
 
 void Renderer::RemoveSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
 {
-	MaterialBlendModel blendModel = skeletalMeshInstance->GetMaterial(0)->GetBlendModel();
+	MaterialBlendModel materialBlendModel = MaterialBlendModel::Opaque;
 
-	switch (blendModel)
+	for (auto& subMesh : skeletalMeshInstance->GetMesh()->GetSubMeshes())
+	{
+		if (subMesh->GetMaterial()->GetBlendModel() == MaterialBlendModel::Transparent)
+		{
+			materialBlendModel = MaterialBlendModel::Transparent;
+			break;
+		}
+	}
+
+	switch (materialBlendModel)
 	{
 	case MaterialBlendModel::Masked:
 	case MaterialBlendModel::Opaque:
@@ -1016,8 +1073,18 @@ void Renderer::AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh)
 
 void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
-	MaterialBlendModel materialShadingModel = dynamicMeshInstance->GetMaterial(0)->GetBlendModel();
-	switch (materialShadingModel)
+	MaterialBlendModel materialBlendModel = MaterialBlendModel::Opaque;
+
+	for (auto& subMesh : dynamicMeshInstance->GetMesh()->GetSubMeshes())
+	{
+		if (subMesh->GetMaterial()->GetBlendModel() == MaterialBlendModel::Transparent)
+		{
+			materialBlendModel = MaterialBlendModel::Transparent;
+			break;
+		}
+	}
+
+	switch (materialBlendModel)
 	{
 	case MaterialBlendModel::Masked:
 	case MaterialBlendModel::Opaque:
@@ -1033,9 +1100,18 @@ void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 
 void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
-	MaterialBlendModel blendModel = dynamicMeshInstance->GetMaterial(0)->GetBlendModel();
+	MaterialBlendModel materialBlendModel = MaterialBlendModel::Opaque;
 
-	switch (blendModel)
+	for (auto& subMesh : dynamicMeshInstance->GetMesh()->GetSubMeshes())
+	{
+		if (subMesh->GetMaterial()->GetBlendModel() == MaterialBlendModel::Transparent)
+		{
+			materialBlendModel = MaterialBlendModel::Transparent;
+			break;
+		}
+	}
+
+	switch (materialBlendModel)
 	{
 	case MaterialBlendModel::Masked:
 	case MaterialBlendModel::Opaque:
@@ -1658,11 +1734,6 @@ void DeferredRenderingData::Init()
 {
 	deferredRenderingMeshShader->SetVertexShaderScript(ShaderBuilder::GetInstance()->DeferredRenderPass_GetVertexShaderScript());
 	deferredRenderingMeshShader->SetFragmentShaderScript(ShaderBuilder::GetInstance()->DeferredRenderPass_GetFragmentShaderScript());
-
-#if defined(GOKNAR_BUILD_DEBUG)
-	IOManager::WriteFile((ContentDir + "DeferredRendering.vert").c_str(), deferredRenderingMeshShader->GetVertexShaderScript().c_str());
-	IOManager::WriteFile((ContentDir + "DeferredRendering.frag").c_str(), deferredRenderingMeshShader->GetFragmentShaderScript().c_str());
-#endif
 
 	deferredRenderingMeshShader->PreInit();
 	deferredRenderingMeshShader->Init();
