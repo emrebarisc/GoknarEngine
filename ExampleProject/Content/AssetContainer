@@ -81,6 +81,7 @@
             <MaterialPaths>
                 <MaterialPath>Materials/Environment/Trees/M_TreeLeaves</MaterialPath>
                 <MaterialPath>Materials/Environment/Trees/M_TreeBody</MaterialPath>
+                <MaterialPath>Materials/Environment/Trees/M_TreeBody</MaterialPath>
             </MaterialPaths>
         </Mesh>
         <Mesh>
