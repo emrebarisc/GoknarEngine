@@ -27,12 +27,15 @@
 int main(int, char**)
 {
 #ifdef GOKNAR_PLATFORM_WINDOWS
+#ifdef GOKNAR_BUILD_DEBUG
 	int flag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
 	flag |= _CRTDBG_LEAK_CHECK_DF;
 	_CrtSetDbgFlag(flag);
 
 	_CrtMemState oldMemoryState;
 	_CrtMemCheckpoint(&oldMemoryState);
+	(void)oldMemoryState;
+#endif
 #endif
 
 	Engine* mainEngine = DBG_NEW Engine();

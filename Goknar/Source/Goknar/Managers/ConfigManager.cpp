@@ -1,9 +1,11 @@
 #include "pch.h"
 #include "ConfigManager.h"
 
-#include <fstream>
 #include <algorithm>
 #include <cctype>
+#include <sstream>
+
+#include "Goknar/Data/DataEncryption.h"
 
 std::string ConfigManager::Trim(const std::string& str)
 {
@@ -16,12 +18,13 @@ std::string ConfigManager::Trim(const std::string& str)
 
 bool ConfigManager::ReadFile(const std::string& filePath)
 {
-	std::ifstream file(filePath);
-	if (!file.is_open())
+	std::string fileContents;
+	if (!DataEncryption::ReadTextFile(filePath, fileContents))
 	{
 		return false;
 	}
 
+	std::istringstream file(fileContents);
 	std::string line;
 	std::string currentSection = "Default";
 
@@ -51,8 +54,6 @@ bool ConfigManager::ReadFile(const std::string& filePath)
 			}
 		}
 	}
-
-	file.close();
 	return true;
 }
 

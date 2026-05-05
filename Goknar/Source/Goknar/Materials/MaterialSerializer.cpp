@@ -5,6 +5,7 @@
 
 #include "tinyxml2.h"
 
+#include "Goknar/Data/DataEncryption.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Contents/Image.h"
 #include "Goknar/Helpers/ContentPathUtils.h"
@@ -12,6 +13,20 @@
 #include "Goknar/Materials/Material.h"
 
 using namespace tinyxml2;
+
+namespace
+{
+	bool LoadXmlDocumentFromPath(const std::string& filePath, tinyxml2::XMLDocument& document)
+	{
+		std::string fileContents;
+		if (!DataEncryption::ReadTextFile(filePath, fileContents))
+		{
+			return false;
+		}
+
+		return document.Parse(fileContents.c_str(), fileContents.size()) == XML_SUCCESS;
+	}
+}
 
 void MaterialSerializer::Serialize(const std::string& filepath, const Material* material)
 {
@@ -111,7 +126,7 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     const std::string contentPath = ContentPathUtils::ToAbsoluteContentPath(relativeFilePath);
 
     tinyxml2::XMLDocument doc;
-    if (doc.LoadFile(contentPath.c_str()) != XML_SUCCESS)
+    if (!LoadXmlDocumentFromPath(contentPath, doc))
     {
         return;
     }
