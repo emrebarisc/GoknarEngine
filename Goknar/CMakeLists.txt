@@ -22,6 +22,7 @@ set(SUBDIRS
 	#${SOURCE_DIR_NAME}/Goknar/Components/2D
 	${SOURCE_DIR_NAME}/Goknar/Contents
 	${SOURCE_DIR_NAME}/Goknar/Containers
+	${SOURCE_DIR_NAME}/Goknar/Data
 	${SOURCE_DIR_NAME}/Goknar/Debug
 	${SOURCE_DIR_NAME}/Goknar/Delegates
 	${SOURCE_DIR_NAME}/Goknar/Editor
@@ -83,6 +84,7 @@ endif()
 add_subdirectory(thirdparty/GLAD/)
 add_subdirectory(thirdparty/glfw/)
 add_subdirectory(thirdparty/TinyXML/)
+add_subdirectory(thirdparty/zlib/)
 
 # Assimp
 SET(ASSIMP_BUILD_ALL_IMPORTERS_BY_DEFAULT FALSE CACHE BOOL "Disable All Importers")
@@ -127,6 +129,7 @@ target_link_libraries(${APP_NAME} PUBLIC GLAD)
 target_link_libraries(${APP_NAME} PUBLIC glfw)
 target_link_libraries(${APP_NAME} PUBLIC TINYXML)
 target_link_libraries(${APP_NAME} PUBLIC BulletDynamics BulletCollision LinearMath)
+target_link_libraries(${APP_NAME} PUBLIC zlib)
 
 if(UNIX)
     SET(GCC_COVERAGE_LINK_FLAGS "-ldl -lglfw -lglut -lGLU -lGL")
@@ -141,7 +144,13 @@ target_include_directories(${APP_NAME} PUBLIC
 	thirdparty/GLFW/include
 	thirdparty/TinyXML/include
 	thirdparty/bullet3/src
+	thirdparty/zlib
 )
+
+option(GOKNAR_PUBLISHED_BUILD "Build the runtime to load packaged pak data." OFF)
+if(GOKNAR_PUBLISHED_BUILD)
+	target_compile_definitions(${APP_NAME} PUBLIC GOKNAR_PUBLISHED_BUILD=1)
+endif()
 
 
 target_compile_definitions(${APP_NAME} PUBLIC "PROJECT_DIR=\"./\"")
@@ -152,14 +161,37 @@ if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
 	else()
 		file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/EngineContent" DESTINATION ${CMAKE_BINARY_DIR}/Output/)
 	endif()
-	target_compile_definitions(${APP_NAME} PUBLIC "ENGINE_CONTENT_DIR=\"EngineContent/\"")
-	add_compile_definitions(GOKNAR_BUILD_DEBUG GOKNAR_ENABLE_ASSERTS)
 	message("-------------------- Debug --------------------")
 elseif(${CMAKE_BUILD_TYPE} STREQUAL Release)
-	add_compile_definitions(GOKNAR_BUILD_RELEASE)
 	message("-------------------- Release --------------------")
 endif()
 
-add_compile_definitions(GOKNAR_BUILD_DLL GLFW_INCLUDE_NONE)
+target_compile_definitions(${APP_NAME} PUBLIC
+	GOKNAR_BUILD_DLL
+	GLFW_INCLUDE_NONE
+	"$<$<CONFIG:Debug>:GOKNAR_BUILD_DEBUG>"
+	"$<$<CONFIG:Debug>:GOKNAR_ENABLE_ASSERTS>"
+	"$<$<CONFIG:Debug>:GOKNAR_ENABLE_LOGGING>"
+	"$<$<CONFIG:Debug>:ENGINE_CONTENT_DIR=\"EngineContent/\">"
+	"$<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>,$<CONFIG:MinSizeRel>>:GOKNAR_BUILD_RELEASE>"
+)
 
 target_precompile_headers(${APP_NAME} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:pch.h>")
+
+add_executable(GoknarPakTool Tools/PakToolMain.cpp)
+target_link_libraries(GoknarPakTool PRIVATE GOKNAR)
+set_target_properties(GoknarPakTool PROPERTIES
+	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Output"
+	RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Output"
+	RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Output"
+	RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "${CMAKE_BINARY_DIR}/Output"
+	RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/Output"
+)
+
+if(WIN32 OR MSVC)
+	add_custom_command(TARGET GoknarPakTool POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			$<TARGET_FILE:zlib>
+			$<TARGET_FILE_DIR:GoknarPakTool>
+	)
+endif()

@@ -10,3 +10,6 @@
 [submodule "ExampleProject/Thirdparty/Imgui/Repo"]
 	path = ExampleProject/Thirdparty/Imgui/Repo
 	url = https://github.com/ocornut/imgui
+[submodule "Goknar/thirdparty/zlib"]
+	path = Goknar/thirdparty/zlib
+	url = https://github.com/madler/zlib
