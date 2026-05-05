@@ -36,8 +36,27 @@
         <Material>
             <Path>Materials/Objects/M_TestTransparent</Path>
         </Material>
+        <Material>
+            <Path>Materials/PBRTests/M_PBR_EmissivePanel</Path>
+        </Material>
+        <Material>
+            <Path>Materials/PBRTests/M_PBR_GoldPolished</Path>
+        </Material>
+        <Material>
+            <Path>Materials/PBRTests/M_PBR_PlasticRough</Path>
+        </Material>
+        <Material>
+            <Path>Materials/PBRTests/M_PBR_PlasticSmooth</Path>
+        </Material>
+        <Material>
+            <Path>Materials/PBRTests/M_PBR_SteelBrushed</Path>
+        </Material>
+        <Material>
+            <Path>Materials/PBRTests/M_PBR_StoneOccluded</Path>
+        </Material>
         <Mesh>
             <Path>Meshes/Characters/SK_DefaultCharacter.fbx</Path>
+            <MaterialPath>Materials/Characters/M_DefaultCharacter</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_Arch.fbx</Path>
@@ -74,6 +93,9 @@
         <Mesh>
             <Path>Meshes/DefaultScene/SM_UnitCube.fbx</Path>
             <MaterialPath>Materials/Level/M_DefaultMaterial</MaterialPath>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/DefaultScene/SM_UnitSphere.fbx</Path>
         </Mesh>
         <Mesh>
             <Path>Meshes/Environment/Plants/SM_Grass.fbx</Path>

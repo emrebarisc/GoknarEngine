@@ -1,37 +1,45 @@
 <GameAsset FileType="Material">
-    <Name></Name>
+    <Name>M_PBR_SteelBrushed</Name>
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
-    <BaseColorValue>1 1 1 1</BaseColorValue>
+    <BaseColorValue>0.72 0.74 0.78 1</BaseColorValue>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
     <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
-    <MetallicValue>0.000000</MetallicValue>
-    <RoughnessValue>0.124035</RoughnessValue>
+    <MetallicValue>1.000000</MetallicValue>
+    <RoughnessValue>0.420000</RoughnessValue>
     <Translucency>0.000000</Translucency>
     <BaseColor>
         <Calculation>
 	// --- Generated Node Graph Calculations ---
 	// Node: Vector4 Constant
-	vec4 node_12_out_17 = vec4(1.000000f, 0.300000f, 0.000000f, 1.000000f);
+	vec4 node_9_out_14 = vec4(0.720000f, 0.740000f, 0.780000f, 1.000000f);
+	// Node: Vector3 Constant
+	vec3 node_16_out_20 = vec3(0.000000f, 0.000000f, 0.000000f);
+	// Node: Float Constant
+	float node_22_out_23 = 1.000000f;
+	// Node: Float Constant
+	float node_25_out_26 = 1.000000f;
+	// Node: Float Constant
+	float node_28_out_29 = 0.420000f;
 </Calculation>
-        <Result>node_12_out_17;</Result>
+        <Result>node_9_out_14;</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>node_16_out_20;</Result>
     </EmissiveColor>
     <AmbientOcclusion>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>node_22_out_23;</Result>
     </AmbientOcclusion>
     <Metallic>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>node_25_out_26;</Result>
     </Metallic>
     <Roughness>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>node_28_out_29;</Result>
     </Roughness>
     <FragmentNormal>
         <Calculation></Calculation>

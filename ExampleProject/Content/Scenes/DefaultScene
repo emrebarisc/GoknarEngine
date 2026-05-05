@@ -3,17 +3,9 @@
         <DirectionalLight>
             <Direction>0.577350 0.577350 -0.577350</Direction>
             <Color>1.000000 0.990000 0.900000</Color>
-            <Intensity>1</Intensity>
+            <Intensity>3</Intensity>
             <IsCastingShadow>1</IsCastingShadow>
             <ShadowIntensity>0.5</ShadowIntensity>
-            <ShadowMapResolution>8192 8192</ShadowMapResolution>
-        </DirectionalLight>
-        <DirectionalLight>
-            <Direction>-0.577350 -0.577350 -0.577350</Direction>
-            <Color>1.000000 0.990000 0.900000</Color>
-            <Intensity>0.5</Intensity>
-            <IsCastingShadow>0</IsCastingShadow>
-            <ShadowIntensity>0.1</ShadowIntensity>
             <ShadowMapResolution>1024 1024</ShadowMapResolution>
         </DirectionalLight>
         <PointLight>
@@ -27,6 +19,72 @@
         </PointLight>
     </Lights>
     <Objects>
+        <ObjectBase>
+            <Name>PBR_Test_Sphere_1</Name>
+            <WorldPosition>7.000000 4.000000 3.125000</WorldPosition>
+            <Components>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitSphere.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_PBR_EmissivePanel</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </ObjectBase>
+        <ObjectBase>
+            <Name>PBR_Test_Sphere_2</Name>
+            <WorldPosition>7.000000 2.000000 3.125000</WorldPosition>
+            <Components>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitSphere.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_PBR_GoldPolished</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </ObjectBase>
+        <ObjectBase>
+            <Name>PBR_Test_Sphere_3</Name>
+            <WorldPosition>7.000000 0.000000 3.125000</WorldPosition>
+            <Components>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitSphere.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_PBR_PlasticRough</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </ObjectBase>
+        <ObjectBase>
+            <Name>PBR_Test_Sphere_4</Name>
+            <WorldPosition>7.000000 -2.000000 3.125000</WorldPosition>
+            <Components>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitSphere.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_PBR_PlasticSmooth</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </ObjectBase>
+        <ObjectBase>
+            <Name>PBR_Test_Sphere_5</Name>
+            <WorldPosition>7.000000 -4.000000 3.125000</WorldPosition>
+            <Components>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitSphere.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_PBR_SteelBrushed</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </ObjectBase>
+        <ObjectBase>
+            <Name>PBR_Test_Sphere_6</Name>
+            <WorldPosition>7.000000 -6.000000 3.125000</WorldPosition>
+            <Components>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitSphere.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_PBR_StoneOccluded</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </ObjectBase>
         <RigidBody>
             <Name>Floor</Name>
             <WorldScaling>40.000000 40.000000 0.250000</WorldScaling>
@@ -235,8 +293,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box1</Name>
-            <WorldPosition>-14.927883 -2.003774 0.624985</WorldPosition>
-            <EulerWorldRotation>0.005599 0.001229 13.504030</EulerWorldRotation>
+            <WorldPosition>-14.934531 -2.010564 0.624989</WorldPosition>
+            <EulerWorldRotation>0.002495 0.001373 13.608582</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -252,8 +310,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box2</Name>
-            <WorldPosition>-14.839653 -3.274043 0.624977</WorldPosition>
-            <EulerWorldRotation>-0.003747 0.001714 -19.865181</EulerWorldRotation>
+            <WorldPosition>-14.840217 -3.274899 0.624982</WorldPosition>
+            <EulerWorldRotation>-0.002939 -0.000321 -20.348150</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -269,8 +327,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box3</Name>
-            <WorldPosition>-13.662955 -1.979716 0.624955</WorldPosition>
-            <EulerWorldRotation>0.004775 -0.002903 -2.167292</EulerWorldRotation>
+            <WorldPosition>-13.670632 -1.977516 0.624950</WorldPosition>
+            <EulerWorldRotation>0.003371 -0.006550 -1.875431</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -286,8 +344,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box4</Name>
-            <WorldPosition>-13.394103 -3.214080 0.624956</WorldPosition>
-            <EulerWorldRotation>-0.004722 -0.001646 8.846387</EulerWorldRotation>
+            <WorldPosition>-13.397404 -3.211782 0.624953</WorldPosition>
+            <EulerWorldRotation>-0.005190 -0.001455 8.690109</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -303,8 +361,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box5</Name>
-            <WorldPosition>-14.347503 -2.008132 1.624972</WorldPosition>
-            <EulerWorldRotation>0.005505 0.003668 1.593258</EulerWorldRotation>
+            <WorldPosition>-14.358920 -2.020818 1.624970</WorldPosition>
+            <EulerWorldRotation>0.003076 0.002814 2.034546</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -320,8 +378,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box6</Name>
-            <WorldPosition>-14.322649 -3.119257 1.624951</WorldPosition>
-            <EulerWorldRotation>-0.001850 0.002937 16.417744</EulerWorldRotation>
+            <WorldPosition>-14.326487 -3.125994 1.624954</WorldPosition>
+            <EulerWorldRotation>-0.002661 0.004549 15.946028</EulerWorldRotation>
             <Mass>5</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -337,8 +395,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box7</Name>
-            <WorldPosition>-14.147393 -2.501714 2.624875</WorldPosition>
-            <EulerWorldRotation>0.004490 0.010641 -16.449949</EulerWorldRotation>
+            <WorldPosition>-14.133121 -2.505782 2.624863</WorldPosition>
+            <EulerWorldRotation>0.000835 0.012977 -16.263975</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -354,8 +412,8 @@
         </RigidBody>
         <RigidBody>
             <Name>RigidBody</Name>
-            <WorldPosition>-14.868637 -9.122698 0.625000</WorldPosition>
-            <EulerWorldRotation>0.000019 -0.000014 33.080647</EulerWorldRotation>
+            <WorldPosition>-14.850039 -9.138037 0.625000</WorldPosition>
+            <EulerWorldRotation>0.000015 -0.000007 33.501015</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>

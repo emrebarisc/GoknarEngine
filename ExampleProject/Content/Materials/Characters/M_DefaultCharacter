@@ -3,24 +3,36 @@
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
-    <AmbientReflectance>0 0 0</AmbientReflectance>
     <BaseColorValue>1 1 1 1</BaseColorValue>
-    <SpecularReflectance>0 0 0</SpecularReflectance>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
-    <PhongExponent>1.000000</PhongExponent>
+    <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
+    <MetallicValue>0.000000</MetallicValue>
+    <RoughnessValue>0.816497</RoughnessValue>
     <Translucency>0.000000</Translucency>
     <BaseColor>
         <Calculation>
 	// --- Generated Node Graph Calculations ---
-	// Node: Vector3 Constant
-	vec3 node_6_out_10 = vec3(0.270000f, 0.180000f, 0.350000f);
+	// Node: Vector4 Constant
+	vec4 node_21_out_26 = vec4(0.700000f, 0.300000f, 0.300000f, 0.000000f);
 </Calculation>
-        <Result>vec4(node_6_out_10, 1.0f);</Result>
+        <Result>node_21_out_26;</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
         <Result></Result>
     </EmissiveColor>
+    <AmbientOcclusion>
+        <Calculation></Calculation>
+        <Result></Result>
+    </AmbientOcclusion>
+    <Metallic>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Metallic>
+    <Roughness>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Roughness>
     <FragmentNormal>
         <Calculation></Calculation>
         <Result>vertexNormal;</Result>
