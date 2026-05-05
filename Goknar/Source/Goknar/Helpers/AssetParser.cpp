@@ -13,6 +13,7 @@
 #include "Goknar/Contents/Audio.h"
 #include "Goknar/Contents/Content.h"
 #include "Goknar/Contents/Image.h"
+#include "Goknar/Data/DataEncryption.h"
 #include "Goknar/Helpers/ContentPathUtils.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/SkeletalMesh.h"
@@ -205,7 +206,9 @@ namespace
 		MeshMaterialPathMap materialPathByMeshPath;
 
 		tinyxml2::XMLDocument existingDocument;
-		if (existingDocument.LoadFile(assetContainerPath.c_str()) != tinyxml2::XML_SUCCESS)
+		std::string fileContents;
+		if (!DataEncryption::ReadTextFile(assetContainerPath, fileContents) ||
+			existingDocument.Parse(fileContents.c_str(), fileContents.size()) != tinyxml2::XML_SUCCESS)
 		{
 			return materialPathByMeshPath;
 		}
@@ -239,7 +242,9 @@ namespace
 		std::map<std::string, std::string> textureNameByTexturePath;
 
 		tinyxml2::XMLDocument existingDocument;
-		if (existingDocument.LoadFile(assetContainerPath.c_str()) != tinyxml2::XML_SUCCESS)
+		std::string fileContents;
+		if (!DataEncryption::ReadTextFile(assetContainerPath, fileContents) ||
+			existingDocument.Parse(fileContents.c_str(), fileContents.size()) != tinyxml2::XML_SUCCESS)
 		{
 			return textureNameByTexturePath;
 		}
@@ -266,7 +271,9 @@ namespace
 	std::string TryGetGameAssetFileType(const std::filesystem::path& absolutePath)
 	{
 		tinyxml2::XMLDocument document;
-		if (document.LoadFile(absolutePath.generic_string().c_str()) != tinyxml2::XML_SUCCESS)
+		std::string fileContents;
+		if (!DataEncryption::ReadTextFile(absolutePath.generic_string(), fileContents) ||
+			document.Parse(fileContents.c_str(), fileContents.size()) != tinyxml2::XML_SUCCESS)
 		{
 			return "";
 		}
@@ -287,7 +294,15 @@ void AssetParser::ParseAssets(const std::string& filePath)
 
 	try
 	{
-		res = xmlFile.LoadFile(fullPath.c_str());
+		std::string fileContents;
+		if (!DataEncryption::ReadTextFile(fullPath, fileContents))
+		{
+			res = tinyxml2::XML_ERROR_FILE_NOT_FOUND;
+		}
+		else
+		{
+			res = xmlFile.Parse(fileContents.c_str(), fileContents.size());
+		}
 		if (res)
 		{
 			throw std::runtime_error("Error: Asset XML file could not be loaded at " + fullPath + ".");
@@ -345,7 +360,12 @@ void AssetParser::SetMeshMaterialPaths(const std::string& meshPath, const std::v
 	}
 
 	tinyxml2::XMLDocument assetContainerDocument;
-	const tinyxml2::XMLError loadResult = assetContainerDocument.LoadFile(fullAssetContainerPath.c_str());
+	tinyxml2::XMLError loadResult = tinyxml2::XML_ERROR_FILE_NOT_FOUND;
+	std::string fileContents;
+	if (DataEncryption::ReadTextFile(fullAssetContainerPath, fileContents))
+	{
+		loadResult = assetContainerDocument.Parse(fileContents.c_str(), fileContents.size());
+	}
 	if (loadResult != tinyxml2::XML_SUCCESS)
 	{
 		assetContainerDocument.Clear();

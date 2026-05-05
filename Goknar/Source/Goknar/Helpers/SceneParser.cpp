@@ -20,6 +20,7 @@
 
 #include "Goknar/Factories/DynamicObjectFactory.h"
 
+#include "Goknar/Data/DataEncryption.h"
 #include "Goknar/Helpers/AssetParser.h"
 #include "Goknar/Helpers/ContentPathUtils.h"
 #include "Goknar/IO/ModelLoader.h"
@@ -448,7 +449,15 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 
 	try
 	{
-		res = xmlFile.LoadFile(filePath.c_str());
+		std::string fileContents;
+		if (!DataEncryption::ReadTextFile(filePath, fileContents))
+		{
+			res = tinyxml2::XML_ERROR_FILE_NOT_FOUND;
+		}
+		else
+		{
+			res = xmlFile.Parse(fileContents.c_str(), fileContents.size());
+		}
 		if (res)
 		{
 			throw std::runtime_error("Error: Scene XML file could not be loaded at " + filePath + ".");

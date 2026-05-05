@@ -5,6 +5,7 @@
 #include "Goknar/Application.h"
 #include "Goknar/Contents/Content.h"
 #include "Goknar/Contents/Image.h"
+#include "Goknar/Data/DataEncryption.h"
 #include "Goknar/Engine.h"
 #include "Goknar/GoknarAssert.h"
 #include "Goknar/Materials/Material.h"
@@ -131,9 +132,17 @@ Content* ModelLoader::LoadModel(const std::string& path)
 	ufbx_load_opts opts = {};
 	opts.generate_missing_normals = true;
 	opts.target_axes = ufbx_axes_right_handed_y_up;
+	opts.filename = ufbx_string{ path.c_str(), path.size() };
 
 	ufbx_error error;
-	ufbx_scene* scene = ufbx_load_file(path.c_str(), &opts, &error);
+	std::vector<uint8_t> modelBytes;
+	if (!DataEncryption::ReadBinaryFile(path, modelBytes))
+	{
+		GOKNAR_CORE_ERROR("\n\tError occured while loading the asset(%s)\n\tWhat went wrong: The file could not be read.", path.c_str());
+		return nullptr;
+	}
+
+	ufbx_scene* scene = ufbx_load_memory(modelBytes.data(), modelBytes.size(), &opts, &error);
 
 	if (scene)
 	{
@@ -531,8 +540,8 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 						for (int keyframeIndex = 0; keyframeIndex < keyframeCount; ++keyframeIndex)
 						{
-							double timeInSeconds = animStack->time_begin + (double)keyframeIndex / fps;
-							ufbx_transform transform = ufbx_evaluate_transform(animStack->anim, animNode, timeInSeconds);
+							double timeInSeconds = (double)keyframeIndex / fps;
+							ufbx_transform transform = ufbx_evaluate_transform(animStack->anim, animNode, animStack->time_begin + timeInSeconds);
 
 							keyframe->positionKeys[keyframeIndex].time = timeInSeconds;
 							keyframe->positionKeys[keyframeIndex].value = Vector3(transform.translation.x, transform.translation.y, transform.translation.z);

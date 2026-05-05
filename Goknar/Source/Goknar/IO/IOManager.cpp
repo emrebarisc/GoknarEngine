@@ -8,12 +8,42 @@
 #include "Log.h"
 #include "ModelLoader.h"
 #include "Contents/Image.h"
+#include "Goknar/Data/DataEncryption.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+
+namespace
+{
+	unsigned char* LoadImageBufferFromBytes(const std::vector<uint8_t>& imageBytes, int& width, int& height, int& channels)
+	{
+		if (imageBytes.empty())
+		{
+			return nullptr;
+		}
+
+		stbi_uc* stbBuffer = stbi_load_from_memory(
+			imageBytes.data(),
+			static_cast<int>(imageBytes.size()),
+			&width,
+			&height,
+			&channels,
+			0);
+		if (stbBuffer == nullptr)
+		{
+			return nullptr;
+		}
+
+		const size_t bufferSize = static_cast<size_t>(width) * static_cast<size_t>(height) * static_cast<size_t>(channels);
+		unsigned char* ownedBuffer = new unsigned char[bufferSize];
+		std::memcpy(ownedBuffer, stbBuffer, bufferSize);
+		stbi_image_free(stbBuffer);
+		return ownedBuffer;
+	}
+}
 
 IOManager::IOManager()
 {
@@ -26,28 +56,14 @@ IOManager::~IOManager()
 
 bool IOManager::ReadFile(const char* filePath, std::string& buffer)
 {
-    std::fstream file;
+	buffer.clear();
+	if (!DataEncryption::ReadTextFile(filePath, buffer))
+	{
+		GOKNAR_CORE_ERROR("File is not found on %s.", filePath);
+		return false;
+	}
 
-    file.open(filePath, std::ios::in);
-
-    if (file.is_open()) {
-        std::string currentLine;
-
-        while (getline(file, currentLine)) {
-            buffer += currentLine;
-            if (!file.eof())
-                buffer += "\n";
-        }
-
-        file.close();
-    }
-    else
-    {
-        GOKNAR_CORE_ERROR("File is not found on {}.", filePath);
-        return false;
-    }
-
-    return true;
+	return true;
 }
 
 bool IOManager::WriteFile(const char* filePath, const char* rawTextBuffer)
@@ -66,23 +82,34 @@ bool IOManager::WriteFile(const char* filePath, const char* rawTextBuffer)
 
 Image* IOManager::LoadImage(const std::string& filePath)
 {
-    int width;
-    int height;
-    int channels;
-    unsigned char* buffer = stbi_load(filePath.c_str(), &width, &height, &channels, 0);
+	std::vector<uint8_t> imageBytes;
+	if (!DataEncryption::ReadBinaryFile(filePath, imageBytes))
+	{
+		return nullptr;
+	}
 
-    if (buffer == nullptr)
-    {
-        return nullptr;
-    }
+	int width = 0;
+	int height = 0;
+	int channels = 0;
+	unsigned char* buffer = LoadImageBufferFromBytes(imageBytes, width, height, channels);
+	if (buffer == nullptr)
+	{
+		return nullptr;
+	}
 
-    Image* image = new Image(filePath, width, height, channels, buffer);
-    return image;
+	return new Image(filePath, width, height, channels, buffer);
 }
 
 bool IOManager::ReadImage(const char* filePath, int& width, int& height, int& channels, const unsigned char** rawDataBuffer)
 {
-	*rawDataBuffer = stbi_load(filePath, &width, &height, &channels, 0);
+	std::vector<uint8_t> imageBytes;
+	if (!DataEncryption::ReadBinaryFile(filePath, imageBytes))
+	{
+		*rawDataBuffer = nullptr;
+		return false;
+	}
+
+	*rawDataBuffer = LoadImageBufferFromBytes(imageBytes, width, height, channels);
 	return *rawDataBuffer != nullptr;
 }
 

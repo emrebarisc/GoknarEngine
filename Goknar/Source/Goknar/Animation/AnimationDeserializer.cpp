@@ -4,6 +4,7 @@
 #include "Goknar/Animation/AnimationNode.h"
 #include "Goknar/Animation/AnimationTransition.h"
 #include "Goknar/Animation/AnimationCondition.h"
+#include "Goknar/Data/DataEncryption.h"
 
 CompareOp AnimationDeserializer::StringToCompareOp(const std::string& opStr)
 {
@@ -42,7 +43,9 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
     }
 
     tinyxml2::XMLDocument doc;
-    if (doc.LoadFile(contentPath.c_str()) != tinyxml2::XML_SUCCESS)
+    std::string fileContents;
+    if (!DataEncryption::ReadTextFile(contentPath, fileContents) ||
+        doc.Parse(fileContents.c_str(), fileContents.size()) != tinyxml2::XML_SUCCESS)
     {
         return false;
     }
