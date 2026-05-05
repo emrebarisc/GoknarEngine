@@ -20,26 +20,26 @@
 #include "IO/ufbx.h"
 
 #include <vector>
-
 #include <unordered_map>
 #include <algorithm>
+#include <string>
 
 #ifdef GOKNAR_PLATFORM_UNIX
 std::string ConvertToLinuxPath(const std::string& input)
 {
-    std::string output;
-    output.reserve(input.size());
+	std::string output;
+	output.reserve(input.size());
 
-    for (char c : input) {
-		if(c == '\\')
+	for (char c : input) {
+		if (c == '\\')
 		{
 			c = '/';
 		}
 
 		output += c;
-    }
+	}
 
-    return output;
+	return output;
 }
 #endif
 
@@ -74,7 +74,7 @@ Matrix ConvertMatrix(const ufbx_matrix& m)
 		m.m00, m.m01, m.m02, m.m03,
 		m.m10, m.m11, m.m12, m.m13,
 		m.m20, m.m21, m.m22, m.m23,
-		0.0f,  0.0f,  0.0f,  1.0f
+		0.0f, 0.0f, 0.0f, 1.0f
 	);
 }
 
@@ -113,11 +113,11 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node)
 		if (boneNameToIdMap->find(childNodeName) != boneNameToIdMap->end())
 		{
 			Bone* childBone = skeletalMesh->GetBone(skeletalMesh->GetBoneId(childNodeName));
-            
+
 			ufbx_matrix localMat = ufbx_transform_to_matrix(&childNode->local_transform);
 			childBone->transformation = ConvertMatrix(localMat);
-			
-            bone->children.push_back(childBone);
+
+			bone->children.push_back(childBone);
 			SetupArmature(skeletalMesh, childBone, childNode);
 		}
 	}
@@ -161,247 +161,314 @@ Content* ModelLoader::LoadModel(const std::string& path)
 			ufbx_mesh* ufbxMesh = scene->meshes.data[meshIndex];
 			const bool hasBones = sceneHasBones && ufbxMesh->skin_deformers.count > 0;
 
-			MeshUnit* meshUnit = nullptr;
-			SkeletalMeshUnit* skeletalMeshUnit = nullptr;
-			if (sceneHasBones)
+			size_t numMaterials = ufbxMesh->materials.count;
+			if (numMaterials == 0) numMaterials = 1; // Fallback to 1 submesh if no materials exist
+
+			struct SubMeshData {
+				MeshUnit* meshUnit = nullptr;
+				SkeletalMeshUnit* skeletalMeshUnit = nullptr;
+				std::unordered_map<UnifiedVertex, uint32_t, UnifiedVertexHash> uniqueVertices;
+				std::vector<VertexData> tempVertices;
+				uint32_t currentVertexId = 0;
+				std::vector<size_t> originalFaceIndices;
+				std::vector<uint32_t> unifiedIndices;
+				std::vector<std::vector<uint32_t>> posToVertexIndices;
+			};
+
+			std::vector<SubMeshData> subMeshes(numMaterials);
+
+			for (size_t i = 0; i < numMaterials; ++i)
 			{
-				skeletalMeshUnit = new SkeletalMeshUnit();
-				meshUnit = skeletalMeshUnit;
-			}
-			else
-			{
-				meshUnit = new MeshUnit();
-			}
-
-			meshUnit->SetName(ufbxMesh->name.data);
-
-			std::unordered_map<UnifiedVertex, uint32_t, UnifiedVertexHash> uniqueVertices;
-			std::vector<uint32_t> unifiedIndices(ufbxMesh->num_indices);
-			std::vector<VertexData> tempVertices;
-			uint32_t currentVertexId = 0;
-
-			for (size_t i = 0; i < ufbxMesh->num_indices; ++i)
-			{
-				UnifiedVertex key;
-				key.posIndex = ufbxMesh->vertex_position.indices.data[i];
-
-				if (ufbxMesh->vertex_normal.exists)
+				if (hasBones)
 				{
-					key.normIndex = ufbxMesh->vertex_normal.indices.data[i];
-				}
-				if (ufbxMesh->vertex_uv.exists)
-				{
-					key.uvIndex = ufbxMesh->vertex_uv.indices.data[i];
-				}
-				if (ufbxMesh->vertex_color.exists)
-				{
-					key.colIndex = ufbxMesh->vertex_color.indices.data[i];
-				}
-
-				auto it = uniqueVertices.find(key);
-				if (it != uniqueVertices.end())
-				{
-					unifiedIndices[i] = it->second;
+					subMeshes[i].skeletalMeshUnit = new SkeletalMeshUnit();
+					subMeshes[i].meshUnit = subMeshes[i].skeletalMeshUnit;
 				}
 				else
 				{
-					unifiedIndices[i] = currentVertexId;
-					uniqueVertices[key] = currentVertexId;
-
-					ufbx_vec3 pos = ufbxMesh->vertex_position.values.data[key.posIndex];
-
-					ufbx_vec3 norm = { 0, 0, 0 };
-					if (ufbxMesh->vertex_normal.exists)
-					{
-						norm = ufbxMesh->vertex_normal.values.data[key.normIndex];
-					}
-
-					Vector4 col = Vector4(1.f);
-					if (ufbxMesh->vertex_color.exists)
-					{
-						ufbx_vec4 c = ufbxMesh->vertex_color.values.data[key.colIndex];
-						col = Vector4(c.x, c.y, c.z, c.w);
-					}
-
-					Vector2 uv = Vector2::ZeroVector;
-					if (ufbxMesh->vertex_uv.exists)
-					{
-						ufbx_vec2 u = ufbxMesh->vertex_uv.values.data[key.uvIndex];
-						uv = Vector2(u.x, u.y);
-					}
-
-					tempVertices.push_back(VertexData(
-						Vector3(pos.x, pos.y, pos.z),
-						Vector3(norm.x, norm.y, norm.z),
-						col,
-						uv
-					));
-
-					currentVertexId++;
+					subMeshes[i].meshUnit = new MeshUnit();
 				}
-			}
 
-			if (hasBones && skeletalMeshAsset && skeletalMeshUnit)
-			{
-				skeletalMeshUnit->ResizeVertexToBonesArray(currentVertexId);
-
-				ufbx_skin_deformer* skin = ufbxMesh->skin_deformers.data[0];
-				std::vector<std::vector<uint32_t>> posToVertexIndices(ufbxMesh->num_vertices);
-
-				for (size_t i = 0; i < ufbxMesh->num_indices; ++i)
+				std::string subMeshName = ufbxMesh->name.data;
+				if (numMaterials > 1)
 				{
-					uint32_t compactedIndex = unifiedIndices[i];
-					uint32_t posIndex = ufbxMesh->vertex_position.indices.data[i];
-					posToVertexIndices[posIndex].push_back(compactedIndex);
+					subMeshName += "_" + std::to_string(i);
 				}
+				subMeshes[i].meshUnit->SetName(subMeshName);
+				subMeshes[i].unifiedIndices.resize(ufbxMesh->num_indices, 0xFFFFFFFF);
 
-				for (auto& vec : posToVertexIndices)
+				if (hasBones)
 				{
-					std::sort(vec.begin(), vec.end());
-					vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
-				}
-
-				for (size_t boneIndex = 0; boneIndex < skin->clusters.count; ++boneIndex)
-				{
-					ufbx_skin_cluster* cluster = skin->clusters.data[boneIndex];
-					const std::string boneName = cluster->bone_node->name.data;
-					const BoneNameToIdMap* boneNameToIdMap = skeletalMeshAsset->GetBoneNameToIdMap();
-					if (boneNameToIdMap->find(boneName) == boneNameToIdMap->end())
-					{
-						skeletalMeshAsset->GetBoneId(boneName);
-						skeletalMeshAsset->AddBone(new Bone(boneName, ConvertMatrix(cluster->geometry_to_bone)));
-					}
-
-					const unsigned int boneId = skeletalMeshAsset->GetBoneId(boneName);
-
-					for (size_t weightIndex = 0; weightIndex < cluster->vertices.count; ++weightIndex)
-					{
-						uint32_t posIndex = cluster->vertices.data[weightIndex];
-						float weight = cluster->weights.data[weightIndex];
-
-						for (uint32_t vertexId : posToVertexIndices[posIndex])
-						{
-							skeletalMeshUnit->AddVertexBoneData(vertexId, boneId, weight);
-						}
-					}
+					subMeshes[i].posToVertexIndices.resize(ufbxMesh->num_vertices);
 				}
 			}
 
-			for (const VertexData& vertexData : tempVertices)
-			{
-				meshUnit->AddVertexData(vertexData);
-			}
-
-			if (meshUnit->GetVertexCount() <= 0)
-			{
-				delete meshUnit;
-				continue;
-			}
-
+			// 1. Distribute faces based on material index
 			for (size_t faceIndex = 0; faceIndex < ufbxMesh->faces.count; ++faceIndex)
 			{
-				ufbx_face face = ufbxMesh->faces.data[faceIndex];
-				uint32_t triIndices[256];
-				uint32_t triangleCount = ufbx_triangulate_face(triIndices, 256, ufbxMesh, face);
-
-				for (uint32_t triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
+				size_t matIndex = 0;
+				if (ufbxMesh->face_material.data && faceIndex < ufbxMesh->face_material.count)
 				{
-					uint32_t i0 = unifiedIndices[triIndices[triangleIndex * 3 + 0]];
-					uint32_t i1 = unifiedIndices[triIndices[triangleIndex * 3 + 1]];
-					uint32_t i2 = unifiedIndices[triIndices[triangleIndex * 3 + 2]];
-					meshUnit->AddFace(Face(i0, i1, i2));
+					int32_t matId = ufbxMesh->face_material.data[faceIndex];
+					if (matId >= 0 && matId < (int32_t)numMaterials)
+					{
+						matIndex = matId;
+					}
 				}
+				subMeshes[matIndex].originalFaceIndices.push_back(faceIndex);
 			}
 
-			Material* material = new Material();
-
-			if (ufbxMesh->materials.count > 0)
+			// 2. Build vertices, indices, and materials for each submesh
+			for (size_t matIndex = 0; matIndex < numMaterials; ++matIndex)
 			{
-				ufbx_material* ufbxMaterial = ufbxMesh->materials.data[0];
-				if (ufbxMaterial)
+				SubMeshData& subMesh = subMeshes[matIndex];
+
+				if (subMesh.originalFaceIndices.empty())
 				{
-					material->SetAmbientReflectance(Vector3(1.f, 1.f, 1.f));
+					delete subMesh.meshUnit;
+					subMesh.meshUnit = nullptr;
+					subMesh.skeletalMeshUnit = nullptr;
+					continue;
+				}
 
-					if (ufbxMaterial->pbr.base_color.has_value)
+				// Collect vertices uniquely per submesh
+				for (size_t faceIndex : subMesh.originalFaceIndices)
+				{
+					ufbx_face face = ufbxMesh->faces.data[faceIndex];
+					for (size_t i = 0; i < face.num_indices; ++i)
 					{
-						material->SetBaseColor(Vector3(ufbxMaterial->pbr.base_color.value_vec3.x, ufbxMaterial->pbr.base_color.value_vec3.y, ufbxMaterial->pbr.base_color.value_vec3.z));
-					}
+						uint32_t index_in_mesh = face.index_begin + i;
 
-					if (ufbxMaterial->pbr.specular_color.has_value)
-					{
-						material->SetSpecularReflectance(Vector3(ufbxMaterial->pbr.specular_color.value_vec3.x, ufbxMaterial->pbr.specular_color.value_vec3.y, ufbxMaterial->pbr.specular_color.value_vec3.z));
-					}
-
-					material->SetShadingModel(MaterialShadingModel::Default);
-					material->SetName(ufbxMaterial->name.data);
-
-					if (ufbxMaterial->pbr.base_color.texture)
-					{
-						std::string imagePath = "";
-						std::string diffuseTexturePath = ufbxMaterial->pbr.base_color.texture->filename.data;
-
-						if (diffuseTexturePath.find(".fbm") != std::string::npos)
+						if (subMesh.unifiedIndices[index_in_mesh] != 0xFFFFFFFF)
 						{
-							long long lastSlashIndex = path.find_last_of('/');
-							if (lastSlashIndex != std::string::npos)
+							continue;
+						}
+
+						UnifiedVertex key;
+						key.posIndex = ufbxMesh->vertex_position.indices.data[index_in_mesh];
+
+						if (ufbxMesh->vertex_normal.exists)
+							key.normIndex = ufbxMesh->vertex_normal.indices.data[index_in_mesh];
+						if (ufbxMesh->vertex_uv.exists)
+							key.uvIndex = ufbxMesh->vertex_uv.indices.data[index_in_mesh];
+						if (ufbxMesh->vertex_color.exists)
+							key.colIndex = ufbxMesh->vertex_color.indices.data[index_in_mesh];
+
+						auto it = subMesh.uniqueVertices.find(key);
+						if (it != subMesh.uniqueVertices.end())
+						{
+							subMesh.unifiedIndices[index_in_mesh] = it->second;
+						}
+						else
+						{
+							subMesh.unifiedIndices[index_in_mesh] = subMesh.currentVertexId;
+							subMesh.uniqueVertices[key] = subMesh.currentVertexId;
+
+							ufbx_vec3 pos = ufbxMesh->vertex_position.values.data[key.posIndex];
+
+							ufbx_vec3 norm = { 0, 0, 0 };
+							if (ufbxMesh->vertex_normal.exists)
+								norm = ufbxMesh->vertex_normal.values.data[key.normIndex];
+
+							Vector4 col = Vector4(1.f);
+							if (ufbxMesh->vertex_color.exists)
 							{
-								imagePath += path.substr(0, lastSlashIndex + 1);
+								ufbx_vec4 c = ufbxMesh->vertex_color.values.data[key.colIndex];
+								col = Vector4(c.x, c.y, c.z, c.w);
+							}
+
+							Vector2 uv = Vector2::ZeroVector;
+							if (ufbxMesh->vertex_uv.exists)
+							{
+								ufbx_vec2 u = ufbxMesh->vertex_uv.values.data[key.uvIndex];
+								uv = Vector2(u.x, u.y);
+							}
+
+							subMesh.tempVertices.push_back(VertexData(
+								Vector3(pos.x, pos.y, pos.z),
+								Vector3(norm.x, norm.y, norm.z),
+								col,
+								uv
+							));
+
+							if (hasBones)
+							{
+								subMesh.posToVertexIndices[key.posIndex].push_back(subMesh.currentVertexId);
+							}
+
+							subMesh.currentVertexId++;
+						}
+					}
+				}
+
+				// Inject temp vertices
+				for (const VertexData& vertexData : subMesh.tempVertices)
+				{
+					subMesh.meshUnit->AddVertexData(vertexData);
+				}
+
+				if (subMesh.meshUnit->GetVertexCount() <= 0)
+				{
+					delete subMesh.meshUnit;
+					subMesh.meshUnit = nullptr;
+					subMesh.skeletalMeshUnit = nullptr;
+					continue;
+				}
+
+				// Distribute Skin/Bone weights
+				if (hasBones && skeletalMeshAsset && subMesh.skeletalMeshUnit)
+				{
+					subMesh.skeletalMeshUnit->ResizeVertexToBonesArray(subMesh.currentVertexId);
+
+					ufbx_skin_deformer* skin = ufbxMesh->skin_deformers.data[0];
+
+					for (auto& vec : subMesh.posToVertexIndices)
+					{
+						if (!vec.empty()) {
+							std::sort(vec.begin(), vec.end());
+							vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
+						}
+					}
+
+					for (size_t boneIndex = 0; boneIndex < skin->clusters.count; ++boneIndex)
+					{
+						ufbx_skin_cluster* cluster = skin->clusters.data[boneIndex];
+						const std::string boneName = cluster->bone_node->name.data;
+						const BoneNameToIdMap* boneNameToIdMap = skeletalMeshAsset->GetBoneNameToIdMap();
+						if (boneNameToIdMap->find(boneName) == boneNameToIdMap->end())
+						{
+							skeletalMeshAsset->GetBoneId(boneName);
+							skeletalMeshAsset->AddBone(new Bone(boneName, ConvertMatrix(cluster->geometry_to_bone)));
+						}
+
+						const unsigned int boneId = skeletalMeshAsset->GetBoneId(boneName);
+
+						for (size_t weightIndex = 0; weightIndex < cluster->vertices.count; ++weightIndex)
+						{
+							uint32_t posIndex = cluster->vertices.data[weightIndex];
+							float weight = cluster->weights.data[weightIndex];
+
+							if (posIndex < subMesh.posToVertexIndices.size())
+							{
+								for (uint32_t vertexId : subMesh.posToVertexIndices[posIndex])
+								{
+									subMesh.skeletalMeshUnit->AddVertexBoneData(vertexId, boneId, weight);
+								}
+							}
+						}
+					}
+				}
+
+				// Triangulate local face data
+				for (size_t faceIndex : subMesh.originalFaceIndices)
+				{
+					ufbx_face face = ufbxMesh->faces.data[faceIndex];
+					uint32_t triIndices[256];
+					uint32_t triangleCount = ufbx_triangulate_face(triIndices, 256, ufbxMesh, face);
+
+					for (uint32_t triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
+					{
+						uint32_t originalMeshIndex0 = triIndices[triangleIndex * 3 + 0];
+						uint32_t originalMeshIndex1 = triIndices[triangleIndex * 3 + 1];
+						uint32_t originalMeshIndex2 = triIndices[triangleIndex * 3 + 2];
+
+						uint32_t i0 = subMesh.unifiedIndices[originalMeshIndex0];
+						uint32_t i1 = subMesh.unifiedIndices[originalMeshIndex1];
+						uint32_t i2 = subMesh.unifiedIndices[originalMeshIndex2];
+						subMesh.meshUnit->AddFace(Face(i0, i1, i2));
+					}
+				}
+
+				Material* material = new Material();
+
+				if (matIndex < ufbxMesh->materials.count)
+				{
+					ufbx_material* ufbxMaterial = ufbxMesh->materials.data[matIndex];
+					if (ufbxMaterial)
+					{
+						material->SetAmbientReflectance(Vector3(1.f, 1.f, 1.f));
+
+						if (ufbxMaterial->pbr.base_color.has_value)
+						{
+							material->SetBaseColor(Vector3(ufbxMaterial->pbr.base_color.value_vec3.x, ufbxMaterial->pbr.base_color.value_vec3.y, ufbxMaterial->pbr.base_color.value_vec3.z));
+						}
+
+						if (ufbxMaterial->pbr.specular_color.has_value)
+						{
+							material->SetSpecularReflectance(Vector3(ufbxMaterial->pbr.specular_color.value_vec3.x, ufbxMaterial->pbr.specular_color.value_vec3.y, ufbxMaterial->pbr.specular_color.value_vec3.z));
+						}
+
+						material->SetShadingModel(MaterialShadingModel::Default);
+						material->SetName(ufbxMaterial->name.data);
+
+						if (ufbxMaterial->pbr.base_color.texture)
+						{
+							std::string imagePath = "";
+							std::string diffuseTexturePath = ufbxMaterial->pbr.base_color.texture->filename.data;
+
+							if (diffuseTexturePath.find(".fbm") != std::string::npos)
+							{
+								long long lastSlashIndex = path.find_last_of('/');
+								if (lastSlashIndex != std::string::npos)
+								{
+									imagePath += path.substr(0, lastSlashIndex + 1);
+								}
+							}
+
+							imagePath += diffuseTexturePath;
+
+#ifdef GOKNAR_PLATFORM_UNIX
+							imagePath = ConvertToLinuxPath(imagePath);
+#endif
+
+							Image* image = engine->GetResourceManager()->GetContent<Image>(imagePath);
+							if (image)
+							{
+								image->SetTextureUsage(TextureUsage::Diffuse);
+								material->AddTextureImage(image);
 							}
 						}
 
-						imagePath += diffuseTexturePath;
-
-#ifdef GOKNAR_PLATFORM_UNIX
-						imagePath = ConvertToLinuxPath(imagePath);
-#endif
-
-						Image* image = engine->GetResourceManager()->GetContent<Image>(imagePath);
-						if (image)
+						if (ufbxMaterial->pbr.normal_map.texture)
 						{
-							image->SetTextureUsage(TextureUsage::Diffuse);
-							material->AddTextureImage(image);
-						}
-					}
+							std::string normalImagePath = ContentDir;
+							std::string normalTexturePath = ufbxMaterial->pbr.normal_map.texture->filename.data;
 
-					if (ufbxMaterial->pbr.normal_map.texture)
-					{
-						std::string normalImagePath = ContentDir;
-						std::string normalTexturePath = ufbxMaterial->pbr.normal_map.texture->filename.data;
-
-						if (normalTexturePath.find(".fbm") != std::string::npos)
-						{
-							long long lastSlashIndex = path.find_last_of('/');
-							if (lastSlashIndex != std::string::npos)
+							if (normalTexturePath.find(".fbm") != std::string::npos)
 							{
-								normalImagePath += path.substr(0, lastSlashIndex + 1);
+								long long lastSlashIndex = path.find_last_of('/');
+								if (lastSlashIndex != std::string::npos)
+								{
+									normalImagePath += path.substr(0, lastSlashIndex + 1);
+								}
 							}
-						}
 
-						normalImagePath += normalTexturePath;
+							normalImagePath += normalTexturePath;
 
 #ifdef GOKNAR_PLATFORM_UNIX
-						normalImagePath = ConvertToLinuxPath(normalImagePath);
+							normalImagePath = ConvertToLinuxPath(normalImagePath);
 #endif
 
-						Image* image = engine->GetResourceManager()->GetContent<Image>(normalImagePath);
-						if (image)
-						{
-							image->SetTextureUsage(TextureUsage::Normal);
-							material->AddTextureImage(image);
+							Image* image = engine->GetResourceManager()->GetContent<Image>(normalImagePath);
+							if (image)
+							{
+								image->SetTextureUsage(TextureUsage::Normal);
+								material->AddTextureImage(image);
+							}
 						}
 					}
 				}
-			}
 
-			meshUnit->SetMaterial(material);
+				subMesh.meshUnit->SetMaterial(material);
 
-			if (sceneHasBones && skeletalMeshAsset)
-			{
-				skeletalMeshAsset->AddMesh(skeletalMeshUnit);
-			}
-			else if (staticMeshAsset)
-			{
-				staticMeshAsset->AddMesh(meshUnit);
+				if (sceneHasBones && skeletalMeshAsset)
+				{
+					skeletalMeshAsset->AddMesh(subMesh.skeletalMeshUnit);
+				}
+				else if (staticMeshAsset)
+				{
+					staticMeshAsset->AddMesh(subMesh.meshUnit);
+				}
 			}
 		}
 
