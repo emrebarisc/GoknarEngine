@@ -19,7 +19,7 @@
         <PointLight>
             <Position>-15.000000 -12.000000 0.625000</Position>
             <Color>1.000000 0.300000 0.000000</Color>
-            <Intensity>4</Intensity>
+            <Intensity>8</Intensity>
             <Radius>25</Radius>
             <IsCastingShadow>0</IsCastingShadow>
             <ShadowIntensity>0</ShadowIntensity>
@@ -27,17 +27,6 @@
         </PointLight>
     </Lights>
     <Objects>
-        <ObjectBase>
-            <Name>ObjectBase</Name>
-            <WorldPosition>0.000000 2.000000 0.125000</WorldPosition>
-            <Components>
-                <StaticMeshComponent>
-                    <MeshPath>Meshes/SM_Matilda.fbx</MeshPath>
-                    <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/M_Matilda</MaterialPath>
-                </StaticMeshComponent>
-            </Components>
-        </ObjectBase>
         <RigidBody>
             <Name>Floor</Name>
             <WorldScaling>40.000000 40.000000 0.250000</WorldScaling>
@@ -246,8 +235,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box1</Name>
-            <WorldPosition>-14.930668 -1.994081 0.624984</WorldPosition>
-            <EulerWorldRotation>0.002835 0.004563 13.037132</EulerWorldRotation>
+            <WorldPosition>-14.926342 -1.994917 0.624981</WorldPosition>
+            <EulerWorldRotation>0.006709 0.002090 13.286008</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -258,14 +247,13 @@
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box2</Name>
-            <WorldPosition>-14.853213 -3.292098 0.624989</WorldPosition>
-            <EulerWorldRotation>-0.004756 0.000656 -20.272913</EulerWorldRotation>
+            <WorldPosition>-14.845083 -3.286494 0.624955</WorldPosition>
+            <EulerWorldRotation>-0.006919 0.002445 -19.782333</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -276,14 +264,13 @@
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box3</Name>
-            <WorldPosition>-13.670953 -1.995782 0.624982</WorldPosition>
-            <EulerWorldRotation>0.000496 0.004064 -2.975981</EulerWorldRotation>
+            <WorldPosition>-13.657970 -1.986676 0.624984</WorldPosition>
+            <EulerWorldRotation>0.002566 0.000683 -2.404942</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -294,14 +281,13 @@
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box4</Name>
-            <WorldPosition>-13.394597 -3.214412 0.624972</WorldPosition>
-            <EulerWorldRotation>-0.005636 -0.006304 9.326717</EulerWorldRotation>
+            <WorldPosition>-13.389835 -3.217750 0.624985</WorldPosition>
+            <EulerWorldRotation>-0.005459 -0.003524 9.016585</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -312,13 +298,13 @@
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box5</Name>
-            <WorldPosition>-14.388446 -2.006346 1.624957</WorldPosition>
+            <WorldPosition>-14.352530 -2.007464 1.624958</WorldPosition>
+            <EulerWorldRotation>0.005598 0.002568 0.715032</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -329,14 +315,13 @@
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box6</Name>
-            <WorldPosition>-14.410994 -3.129498 1.624996</WorldPosition>
-            <EulerWorldRotation>-0.004228 0.000902 16.812616</EulerWorldRotation>
+            <WorldPosition>-14.353600 -3.125831 1.624922</WorldPosition>
+            <EulerWorldRotation>-0.000426 0.006065 16.660223</EulerWorldRotation>
             <Mass>5</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -347,14 +332,13 @@
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>Box7</Name>
-            <WorldPosition>-14.322624 -2.482877 2.624893</WorldPosition>
-            <EulerWorldRotation>-0.001119 0.010969 -19.796362</EulerWorldRotation>
+            <WorldPosition>-14.215051 -2.491967 2.624842</WorldPosition>
+            <EulerWorldRotation>0.004422 0.012827 -17.915228</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -365,14 +349,13 @@
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_Block.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/M_PhysicsBlocks</MaterialPath>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
         <RigidBody>
             <Name>RigidBody</Name>
-            <WorldPosition>-14.920160 -9.077944 0.625000</WorldPosition>
-            <EulerWorldRotation>0.000020 -0.000014 31.901041</EulerWorldRotation>
+            <WorldPosition>-14.900857 -9.095561 0.625000</WorldPosition>
+            <EulerWorldRotation>0.000020 -0.000014 32.357536</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -383,7 +366,7 @@
                 <StaticMeshComponent>
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/M_Panner</MaterialPath>
+                    <MaterialPath>Materials/Level/M_Panner</MaterialPath>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
@@ -406,20 +389,36 @@
             </Components>
         </RigidBody>
         <RigidBody>
-            <Name>RigidBody</Name>
-            <WorldPosition>-14.404238 15.643003 0.125006</WorldPosition>
+            <Name>Matilda</Name>
+            <WorldPosition>0.000000 2.000000 0.125045</WorldPosition>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
                 <CapsuleCollisionComponent>
-                    <Radius>0.1</Radius>
+                    <Radius>0.2</Radius>
+                    <Height>2</Height>
+                </CapsuleCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/Objects/SM_Matilda.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Tree</Name>
+            <WorldPosition>-15.000000 16.000000 0.125012</WorldPosition>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <CapsuleCollisionComponent>
+                    <Radius>0.2</Radius>
                     <Height>4</Height>
                 </CapsuleCollisionComponent>
                 <StaticMeshComponent>
-                    <MeshPath>Meshes/Environment/Trees/SM_Tree_01.FBX</MeshPath>
+                    <MeshPath>Meshes/Environment/Trees/SM_TreeBirch_01_Red.FBX</MeshPath>
                     <RenderMask>1</RenderMask>
-                    <RelativeScaling>0.010000 0.010000 0.010000</RelativeScaling>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>

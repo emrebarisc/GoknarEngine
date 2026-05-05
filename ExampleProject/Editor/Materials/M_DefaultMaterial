@@ -20,7 +20,7 @@
             <Outputs/>
         </Node>
         <Node Id="6" Name="Texture Sample" Category="Texture" PosX="120" PosY="620" SizeX="200" SizeY="80" IsUniform="1">
-            <StringData><![CDATA[placeholderTexture]]></StringData>
+            <StringData><![CDATA[darkPlaceholder]]></StringData>
             <Inputs>
                 <Pin Id="7" NodeId="6" Name="UV" Type="Vector2" Kind="Input">
                     <DefaultValue type="Vector2" x="0" y="0"/>
@@ -82,7 +82,7 @@
                 projectedUV = localPos.xy * worldScale.xy;
             }
 
-            vec4 textureValue = texture2D(placeholderTexture, projectedUV);
+            vec4 textureValue = texture2D(darkPlaceholder, projectedUV);
             float upsideValue = clamp(dot(vec3(0.0, 0.0, 1.0), worldNormal), 0.0, 1.0);
             textureValue.xyz = textureValue.xyz * upsideValue + vec3(0.05) * (1.0 - upsideValue);
         

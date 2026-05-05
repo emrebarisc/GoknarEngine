@@ -4,34 +4,13 @@
             <Path>Animations/AG_DefaultCharacter</Path>
         </AnimationGraph>
         <MaterialFunction>
-            <Path>MaterialFunctions/MF_WindDisplacement</Path>
+            <Path>MaterialFunctions/Environment/MF_WindDisplacement</Path>
         </MaterialFunction>
         <Material>
-            <Path>Materials/Environment/M_BirchBark</Path>
-        </Material>
-        <Material>
-            <Path>Materials/Environment/M_BirchLeaves</Path>
+            <Path>Materials/Characters/M_DefaultCharacter</Path>
         </Material>
         <Material>
             <Path>Materials/Environment/M_Grass</Path>
-        </Material>
-        <Material>
-            <Path>Materials/Environment/M_Plants</Path>
-        </Material>
-        <Material>
-            <Path>Materials/Environment/M_Props</Path>
-        </Material>
-        <Material>
-            <Path>Materials/Environment/M_Stone</Path>
-        </Material>
-        <Material>
-            <Path>Materials/Environment/M_Terrain</Path>
-        </Material>
-        <Material>
-            <Path>Materials/Environment/M_TreeBark</Path>
-        </Material>
-        <Material>
-            <Path>Materials/Environment/Trees/M_Tree</Path>
         </Material>
         <Material>
             <Path>Materials/Environment/Trees/M_TreeBody</Path>
@@ -40,120 +19,82 @@
             <Path>Materials/Environment/Trees/M_TreeLeaves</Path>
         </Material>
         <Material>
+            <Path>Materials/Level/M_DefaultMaterial</Path>
+        </Material>
+        <Material>
             <Path>Materials/Level/M_EmmisiveCube</Path>
         </Material>
         <Material>
-            <Path>Materials/M_DefaultCharacter</Path>
+            <Path>Materials/Level/M_Panner</Path>
         </Material>
         <Material>
-            <Path>Materials/M_DefaultMaterial</Path>
+            <Path>Materials/Level/M_PhysicsBlocks</Path>
         </Material>
         <Material>
-            <Path>Materials/M_Matilda</Path>
-        </Material>
-        <Material>
-            <Path>Materials/M_Panner</Path>
-        </Material>
-        <Material>
-            <Path>Materials/M_PhysicsBlocks</Path>
+            <Path>Materials/Objects/M_Matilda</Path>
         </Material>
         <Mesh>
+            <Path>Meshes/Characters/SK_DefaultCharacter.fbx</Path>
+        </Mesh>
+        <Mesh>
             <Path>Meshes/DefaultScene/SM_Arch.fbx</Path>
-            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+            <MaterialPath>Materials/Level/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_Block.fbx</Path>
-            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+            <MaterialPath>Materials/Level/M_PhysicsBlocks</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RadialStaircase.fbx</Path>
-            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+            <MaterialPath>Materials/Level/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RadialStaircaseCollision.fbx</Path>
-            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+            <MaterialPath>Materials/Level/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RadialStaircaseMirrored.fbx</Path>
-            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+            <MaterialPath>Materials/Level/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RadialStaircaseMirroredCollision.fbx</Path>
-            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+            <MaterialPath>Materials/Level/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RoundCorner.fbx</Path>
-            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+            <MaterialPath>Materials/Level/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_RoundCornerCollision.fbx</Path>
-            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+            <MaterialPath>Materials/Level/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_UnitCube.fbx</Path>
-            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+            <MaterialPath>Materials/Level/M_DefaultMaterial</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/Environment/Plants/SM_Grass.fbx</Path>
         </Mesh>
         <Mesh>
-            <Path>Meshes/Environment/Trees/SM_Tree_01.FBX</Path>
+            <Path>Meshes/Environment/Trees/SM_TreeBirch_01_Red.FBX</Path>
             <MaterialPaths>
                 <MaterialPath>Materials/Environment/Trees/M_TreeLeaves</MaterialPath>
+                <MaterialPath>Materials/Environment/Trees/M_TreeBody</MaterialPath>
                 <MaterialPath>Materials/Environment/Trees/M_TreeBody</MaterialPath>
             </MaterialPaths>
         </Mesh>
         <Mesh>
-            <Path>Meshes/Environment/Trees/SM_Tree_02.FBX</Path>
-            <MaterialPaths>
-                <MaterialPath>Materials/Environment/Trees/M_TreeLeaves</MaterialPath>
-                <MaterialPath>Materials/Environment/Trees/M_TreeBody</MaterialPath>
-            </MaterialPaths>
+            <Path>Meshes/Objects/SM_Bullet.fbx</Path>
         </Mesh>
         <Mesh>
-            <Path>Meshes/SK_DefaultCharacter.fbx</Path>
-            <MaterialPath>Materials/M_DefaultCharacter</MaterialPath>
+            <Path>Meshes/Objects/SM_Matilda.fbx</Path>
+            <MaterialPath>Materials/Objects/M_Matilda</MaterialPath>
         </Mesh>
         <Mesh>
-            <Path>Meshes/SM_Bullet.fbx</Path>
+            <Path>Meshes/Objects/SM_Weapon.fbx</Path>
         </Mesh>
-        <Mesh>
-            <Path>Meshes/SM_Matilda.fbx</Path>
-            <MaterialPath>Materials/M_Matilda</MaterialPath>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/SM_Terrain.fbx</Path>
-            <MaterialPath>Materials/Environment/M_Terrain</MaterialPath>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/SM_TreeBirch_01_Red.FBX</Path>
-        </Mesh>
-        <Mesh>
-            <Path>Meshes/SM_Weapon.fbx</Path>
-        </Mesh>
-        <Texture Name="Stone_L">
-            <Path>Textures/Environment/Stone_L.PNG</Path>
-        </Texture>
-        <Texture Name="T_Tree_Banyan_01">
-            <Path>Textures/Environment/Trees/T_Tree_Banyan_01.PNG</Path>
-        </Texture>
-        <Texture Name="T_Tree_Banyan_01_N">
-            <Path>Textures/Environment/Trees/T_Tree_Banyan_01_N.PNG</Path>
-        </Texture>
-        <Texture Name="T_Tree_Tropic_02">
-            <Path>Textures/Environment/Trees/T_Tree_Tropic_02.PNG</Path>
-        </Texture>
-        <Texture Name="T_Tree_Tropic_02_N">
-            <Path>Textures/Environment/Trees/T_Tree_Tropic_02_N.PNG</Path>
-        </Texture>
-        <Texture Name="T_TerrainGroundAlbedo">
-            <Path>Textures/Environment/T_TerrainGroundAlbedo.PNG</Path>
-        </Texture>
-        <Texture Name="Forest_Pack_Atlas">
-            <Path>Textures/Forest_Pack_Atlas.png</Path>
-        </Texture>
-        <Texture Name="Forest_Pack_BaseColor">
-            <Path>Textures/Forest_Pack_BaseColor.png</Path>
+        <Texture Name="T_Tree_Birch_Rework">
+            <Path>Textures/Environment/Trees/T_Tree_Birch_Rework.PNG</Path>
         </Texture>
         <Texture Name="darkPlaceholder">
             <Path>Textures/T_DarkPlaceholder.png</Path>

@@ -3,7 +3,7 @@
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
-    <Texture path="Textures/Environment/Trees/T_Tree_Banyan_01.PNG"/>
+    <Texture path="Textures/Environment/Trees/T_Tree_Birch_Rework.PNG"/>
     <AmbientReflectance>0 0 0</AmbientReflectance>
     <BaseColorValue>1 1 1 1</BaseColorValue>
     <SpecularReflectance>0 0 0</SpecularReflectance>
@@ -14,9 +14,9 @@
         <Calculation>
 	// --- Generated Node Graph Calculations ---
 	// Node: Texture Sample
-	vec4 node_8_out_10 = texture(T_Tree_Banyan_01, textureUV);
+	vec4 node_11_out_13 = texture(T_Tree_Birch_Rework, textureUV);
 </Calculation>
-        <Result>node_8_out_10;</Result>
+        <Result>node_11_out_13;</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
@@ -24,7 +24,7 @@
     </EmissiveColor>
     <FragmentNormal>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>vertexNormal;</Result>
     </FragmentNormal>
     <VertexNormal>
         <Calculation></Calculation>

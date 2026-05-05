@@ -38,8 +38,18 @@
                 </Pin>
             </Outputs>
         </Node>
+        <Node Id="12" Name="vertexNormal" Category="Variables" PosX="-292.18185" PosY="201.81822" SizeX="320" SizeY="60" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="13" NodeId="12" Name="Value" Type="Vector3" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
     </Nodes>
     <Links>
         <Link Id="11" StartPinId="10" EndPinId="2"/>
+        <Link Id="14" StartPinId="13" EndPinId="4"/>
     </Links>
 </GameAsset>

@@ -45,7 +45,7 @@
                     <DefaultValue type="Float" x="0"/>
                 </Pin>
                 <Pin Id="19" NodeId="17" Name="B" Type="Any" Kind="Input">
-                    <DefaultValue type="Float" x="3"/>
+                    <DefaultValue type="Float" x="3.49"/>
                 </Pin>
             </Inputs>
             <Outputs>
