@@ -6,6 +6,9 @@ std::ofstream Log::fileSink_;
 
 void Log::Init()
 {
+#ifndef GOKNAR_ENABLE_LOGGING
+	return;
+#else
 	std::lock_guard<std::mutex> lock(logMutex_);
 
 	fileSink_.open("Goknar.log", std::ios::out | std::ios::app);
@@ -13,19 +16,30 @@ void Log::Init()
 	if (fileSink_.is_open()) {
 		fileSink_ << "\n---------- Log Session Started: " << GetTimestamp() << " ----------\n";
 	}
+#endif
 }
 
 void Log::Shutdown()
 {
+#ifndef GOKNAR_ENABLE_LOGGING
+	return;
+#else
 	std::lock_guard<std::mutex> lock(logMutex_);
 	if (fileSink_.is_open()) {
 		fileSink_ << "---------- Log Session Ended ----------\n";
 		fileSink_.close();
 	}
+#endif
 }
 
 void Log::OutputLogImpl(const std::string& name, LogType type, const std::string& message)
 {
+#ifndef GOKNAR_ENABLE_LOGGING
+	(void)name;
+	(void)type;
+	(void)message;
+	return;
+#else
 	if (type == LogType::None) return;
 
 	std::string timestamp = GetTimestamp();
@@ -43,6 +57,7 @@ void Log::OutputLogImpl(const std::string& name, LogType type, const std::string
 		fileSink_ << "[" << timestamp << "] [" << levelStr << "] "
 			<< name << ": " << message << std::endl;
 	}
+#endif
 }
 
 std::string Log::GetTimestamp()
