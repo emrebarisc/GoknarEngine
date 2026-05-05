@@ -34,6 +34,7 @@ class PostProcessingEffect;
 class RenderTarget;
 
 class DynamicMeshUnit;
+class SkeletalMeshUnit;
 
 enum class GOKNAR_API RenderPassType : unsigned int
 {
@@ -241,6 +242,34 @@ public:
 	bool countDrawCalls{ false };
 
 private:
+	struct StaticMeshRenderData
+	{
+		StaticMeshInstance* meshInstance{ nullptr };
+		MeshUnit* meshUnit{ nullptr };
+		int subMeshIndex{ 0 };
+	};
+
+	struct InstancedStaticMeshRenderData
+	{
+		InstancedStaticMeshInstance* meshInstance{ nullptr };
+		MeshUnit* meshUnit{ nullptr };
+		int subMeshIndex{ 0 };
+	};
+
+	struct SkeletalMeshRenderData
+	{
+		SkeletalMeshInstance* meshInstance{ nullptr };
+		SkeletalMeshUnit* meshUnit{ nullptr };
+		int subMeshIndex{ 0 };
+	};
+
+	struct DynamicMeshRenderData
+	{
+		DynamicMeshInstance* meshInstance{ nullptr };
+		DynamicMeshUnit* meshUnit{ nullptr };
+		int subMeshIndex{ 0 };
+	};
+
 	void BindStaticVBO();
 	bool BindInstancedStaticMesh(InstancedStaticMesh* instancedStaticMesh);
 	void BindSkeletalVBO();
@@ -252,21 +281,21 @@ private:
 
 	void SortTransparentInstances();
 
-	std::vector<StaticMesh*> staticMeshes_;
+	std::vector<MeshUnit*> staticMeshUnits_;
 	std::vector<InstancedStaticMesh*> instancedStaticMeshes_;
-	std::vector<SkeletalMesh*> skeletalMeshes_;
-	std::vector<DynamicMesh*> dynamicMeshes_;
+	std::vector<SkeletalMeshUnit*> skeletalMeshUnits_;
+	std::vector<DynamicMeshUnit*> dynamicMeshUnits_;
 
-	std::vector<StaticMeshInstance*> opaqueStaticMeshInstances_;
-	std::vector<StaticMeshInstance*> transparentStaticMeshInstances_;
-	std::vector<InstancedStaticMeshInstance*> opaqueInstancedStaticMeshInstances_;
-	std::vector<InstancedStaticMeshInstance*> transparentInstancedStaticMeshInstances_;
+	std::vector<StaticMeshRenderData> opaqueStaticMeshRenderData_;
+	std::vector<StaticMeshRenderData> transparentStaticMeshRenderData_;
+	std::vector<InstancedStaticMeshRenderData> opaqueInstancedStaticMeshRenderData_;
+	std::vector<InstancedStaticMeshRenderData> transparentInstancedStaticMeshRenderData_;
 
-	std::vector<SkeletalMeshInstance*> opaqueSkeletalMeshInstances_;
-	std::vector<SkeletalMeshInstance*> transparentSkeletalMeshInstances_;
+	std::vector<SkeletalMeshRenderData> opaqueSkeletalMeshRenderData_;
+	std::vector<SkeletalMeshRenderData> transparentSkeletalMeshRenderData_;
 
-	std::vector<DynamicMeshInstance*> opaqueDynamicMeshInstances_;
-	std::vector<DynamicMeshInstance*> transparentDynamicMeshInstances_;
+	std::vector<DynamicMeshRenderData> opaqueDynamicMeshRenderData_;
+	std::vector<DynamicMeshRenderData> transparentDynamicMeshRenderData_;
 
 	LightManager* lightManager_{ nullptr };
 

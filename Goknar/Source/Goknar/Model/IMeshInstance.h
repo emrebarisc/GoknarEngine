@@ -168,12 +168,12 @@ inline void IMeshInstance<MeshType>::SetMaterial(int index, MaterialInstance* ma
 		return;
 	}
 
-	bool refreshInstanceOnRenderer = false;
-
-	if(materials_[index] != nullptr && material != nullptr)
-	{
-		refreshInstanceOnRenderer = materials_[index]->GetBlendModel() != material->GetBlendModel();
-	}
+	const IMaterialBase* previousMaterial = materials_[index] ? static_cast<IMaterialBase*>(materials_[index]) : static_cast<IMaterialBase*>(mesh_->GetMesh(index)->GetMaterial());
+	const IMaterialBase* nextMaterial = material ? static_cast<IMaterialBase*>(material) : static_cast<IMaterialBase*>(mesh_->GetMesh(index)->GetMaterial());
+	const bool refreshInstanceOnRenderer =
+		previousMaterial != nullptr &&
+		nextMaterial != nullptr &&
+		previousMaterial->GetBlendModel() != nextMaterial->GetBlendModel();
 
 	if (materials_[index])
 	{
