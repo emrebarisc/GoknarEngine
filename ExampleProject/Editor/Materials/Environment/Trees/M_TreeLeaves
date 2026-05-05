@@ -1,5 +1,5 @@
 <GameAsset FileType="MaterialEditorReflection">
-    <Canvas Scale="0.89999998" ScrollX="684.92621" ScrollY="140.56429"/>
+    <Canvas Scale="0.74999994" ScrollX="1094.3319" ScrollY="348.57193"/>
     <Nodes>
         <Node Id="1" Name="Material Output" Category="Master" PosX="120" PosY="80" SizeX="200" SizeY="150" IsUniform="1">
             <StringData><![CDATA[]]></StringData>
@@ -19,7 +19,7 @@
             </Inputs>
             <Outputs/>
         </Node>
-        <Node Id="6" Name="vertexNormal" Category="Variables" PosX="-454" PosY="130" SizeX="320" SizeY="60" IsUniform="1">
+        <Node Id="6" Name="vertexNormal" Category="Variables" PosX="-286.22202" PosY="113.33337" SizeX="320" SizeY="60" IsUniform="1">
             <StringData><![CDATA[]]></StringData>
             <Inputs/>
             <Outputs>
@@ -38,7 +38,7 @@
             </Outputs>
         </Node>
         <Node Id="11" Name="Texture Sample" Category="Texture" PosX="-813.03577" PosY="-125.32141" SizeX="220" SizeY="170" IsUniform="1">
-            <StringData><![CDATA[Textures/Environment/Trees/T_Tree_Birch_Rework.PNG]]></StringData>
+            <StringData><![CDATA[Textures/Environment/Trees/T_LeavesBushes.PNG]]></StringData>
             <Inputs>
                 <Pin Id="12" NodeId="11" Name="UV" Type="Vector2" Kind="Input">
                     <DefaultValue type="Vector2" x="0" y="0"/>
@@ -88,6 +88,15 @@
                 </Pin>
             </Outputs>
         </Node>
+        <Node Id="28" Name="MF_WindDisplacement" Category="Functions" PosX="-184.36237" PosY="184.92863" SizeX="220" SizeY="80" IsUniform="1">
+            <StringData><![CDATA[MaterialFunctions/Environment/MF_WindDisplacement]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="29" NodeId="28" Name="Result" Type="Vector3" Kind="Output">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
     </Nodes>
     <Links>
         <Link Id="8" StartPinId="7" EndPinId="4"/>
@@ -95,5 +104,6 @@
         <Link Id="19" StartPinId="13" EndPinId="16"/>
         <Link Id="26" StartPinId="25" EndPinId="17"/>
         <Link Id="27" StartPinId="18" EndPinId="2"/>
+        <Link Id="30" StartPinId="29" EndPinId="5"/>
     </Links>
 </GameAsset>

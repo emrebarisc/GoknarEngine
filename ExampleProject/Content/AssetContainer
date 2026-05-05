@@ -74,12 +74,12 @@
         </Mesh>
         <Mesh>
             <Path>Meshes/Environment/Plants/SM_Grass.fbx</Path>
+            <MaterialPath>Materials/Environment/M_Grass</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/Environment/Trees/SM_TreeBirch_01_Red.FBX</Path>
             <MaterialPaths>
                 <MaterialPath>Materials/Environment/Trees/M_TreeLeaves</MaterialPath>
-                <MaterialPath>Materials/Environment/Trees/M_TreeBody</MaterialPath>
                 <MaterialPath>Materials/Environment/Trees/M_TreeBody</MaterialPath>
             </MaterialPaths>
         </Mesh>
@@ -93,6 +93,9 @@
         <Mesh>
             <Path>Meshes/Objects/SM_Weapon.fbx</Path>
         </Mesh>
+        <Texture Name="T_LeavesBushes">
+            <Path>Textures/Environment/Trees/T_LeavesBushes.PNG</Path>
+        </Texture>
         <Texture Name="T_Tree_Birch_Rework">
             <Path>Textures/Environment/Trees/T_Tree_Birch_Rework.PNG</Path>
         </Texture>
