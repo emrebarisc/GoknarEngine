@@ -1,0 +1,49 @@
+#version 440 core
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout(binding = 0, rgba16f) uniform writeonly image2D bloomDownsampleOutput;
+
+uniform sampler2D bloomDownsampleInputTexture;
+
+void main()
+{
+	ivec2 pixelCoordinates = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 outputSize = imageSize(bloomDownsampleOutput);
+	if (pixelCoordinates.x >= outputSize.x || pixelCoordinates.y >= outputSize.y)
+	{
+		return;
+	}
+
+	vec2 uv = (vec2(pixelCoordinates) + vec2(0.5)) / vec2(outputSize);
+	vec2 texelSize = 1.0 / vec2(textureSize(bloomDownsampleInputTexture, 0));
+
+	vec4 centerSample = texture(bloomDownsampleInputTexture, uv);
+	vec4 topLeftSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(-1.0, -1.0));
+	vec4 topRightSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(1.0, -1.0));
+	vec4 bottomLeftSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(-1.0, 1.0));
+	vec4 bottomRightSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(1.0, 1.0));
+	vec4 leftSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(-2.0, 0.0));
+	vec4 rightSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(2.0, 0.0));
+	vec4 topSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(0.0, -2.0));
+	vec4 bottomSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(0.0, 2.0));
+
+	vec4 sum =
+		centerSample * 4.0 +
+		topLeftSample +
+		topRightSample +
+		bottomLeftSample +
+		bottomRightSample +
+		leftSample +
+		rightSample +
+		topSample +
+		bottomSample;
+
+	vec3 downsampledColor = sum.rgb / 12.0;
+	float propagatedStrength = max(
+		max(max(centerSample.a, topLeftSample.a), max(topRightSample.a, bottomLeftSample.a)),
+		max(max(bottomRightSample.a, leftSample.a), max(rightSample.a, max(topSample.a, bottomSample.a)))
+	);
+
+	imageStore(bloomDownsampleOutput, pixelCoordinates, vec4(downsampledColor, propagatedStrength));
+}

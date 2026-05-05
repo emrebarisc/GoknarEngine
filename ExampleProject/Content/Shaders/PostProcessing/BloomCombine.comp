@@ -1,0 +1,29 @@
+#version 440 core
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout(binding = 0, rgba16f) uniform writeonly image2D postProcessOutput;
+
+uniform sampler2D sceneInputTexture;
+uniform sampler2D bloomInputTexture;
+uniform float bloomIntensity;
+uniform float bloomMaxIntensityBoost;
+uniform float bloomIntensityCurve;
+
+void main()
+{
+	ivec2 pixelCoordinates = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 outputSize = imageSize(postProcessOutput);
+	if (pixelCoordinates.x >= outputSize.x || pixelCoordinates.y >= outputSize.y)
+	{
+		return;
+	}
+
+	vec2 uv = (vec2(pixelCoordinates) + vec2(0.5)) / vec2(outputSize);
+	vec3 sceneColor = texture(sceneInputTexture, uv).rgb;
+	vec4 bloomSample = texture(bloomInputTexture, uv);
+	float adaptiveIntensity = bloomIntensity * mix(1.0, bloomMaxIntensityBoost, pow(clamp(bloomSample.a, 0.0, 1.0), bloomIntensityCurve));
+	vec3 bloomColor = bloomSample.rgb * adaptiveIntensity;
+
+	imageStore(postProcessOutput, pixelCoordinates, vec4(sceneColor + bloomColor, 1.0));
+}
