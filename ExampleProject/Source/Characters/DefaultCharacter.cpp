@@ -41,7 +41,7 @@ DefaultCharacter::DefaultCharacter() :
 
 	controller_ = new DefaultCharacterController(this);
 
-	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SK_DefaultCharacter.fbx");
+	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/Characters/SK_DefaultCharacter.fbx");
 
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
 	skeletalMeshComponent_->SetParent(GetRootComponent());

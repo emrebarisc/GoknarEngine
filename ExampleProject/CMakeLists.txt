@@ -5,6 +5,7 @@ set(APP_NAME ExampleProject)
 project(${APP_NAME})
 
 set(CMAKE_CXX_STANDARD 17)
+option(GOKNAR_PUBLISHED_BUILD "Build the runtime to load packaged pak data." OFF)
 
 set(SOURCE_DIR_NAME "Source")
 
@@ -100,9 +101,25 @@ target_include_directories(${APP_NAME} PUBLIC
     ${PROJECT_SOURCE_DIR}/${SOURCE_DIR_NAME}
 )
 
-target_compile_definitions(${APP_NAME} PUBLIC GOKNAR_BUILD_DLL GOKNAR_ENABLE_ASSERTS GLFW_INCLUDE_NONE)
+target_compile_definitions(${APP_NAME} PUBLIC
+    GOKNAR_BUILD_DLL
+    GLFW_INCLUDE_NONE
+    "$<$<CONFIG:Debug>:GOKNAR_BUILD_DEBUG>"
+    "$<$<CONFIG:Debug>:GOKNAR_ENABLE_ASSERTS>"
+    "$<$<CONFIG:Debug>:GOKNAR_ENABLE_LOGGING>"
+    "$<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>,$<CONFIG:MinSizeRel>>:GOKNAR_BUILD_RELEASE>"
+)
+if(GOKNAR_PUBLISHED_BUILD)
+    target_compile_definitions(${APP_NAME} PUBLIC GOKNAR_PUBLISHED_BUILD=1)
+endif()
 
 if(WIN32 OR MSVC)
     # Force Visual Studio Startup Project using the variable
     set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ${APP_NAME})
+
+    add_custom_command(TARGET ${APP_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:zlib>
+            $<TARGET_FILE_DIR:${APP_NAME}>
+    )
 endif()
