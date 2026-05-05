@@ -1,7 +1,7 @@
 <GameAsset FileType="Material">
     <Name></Name>
     <BoneCount>0</BoneCount>
-    <BlendModel>Transparent</BlendModel>
+    <BlendModel>Masked</BlendModel>
     <ShadingModel>TwoSided</ShadingModel>
     <Texture path="Textures/Environment/Trees/T_LeavesBushes.PNG"/>
     <AmbientReflectance>0 0 0</AmbientReflectance>

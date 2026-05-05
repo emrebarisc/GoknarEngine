@@ -33,6 +33,9 @@
         <Material>
             <Path>Materials/Objects/M_Matilda</Path>
         </Material>
+        <Material>
+            <Path>Materials/Objects/M_TestTransparent</Path>
+        </Material>
         <Mesh>
             <Path>Meshes/Characters/SK_DefaultCharacter.fbx</Path>
         </Mesh>
