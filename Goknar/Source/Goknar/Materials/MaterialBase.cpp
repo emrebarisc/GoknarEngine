@@ -15,37 +15,25 @@
 
 namespace
 {
-	constexpr float MIN_PHONG_EXPONENT = 1.f;
-
-	RenderPassType GetMainRenderTypeSafe()
+	float SanitizeNormalizedMaterialScalar(float value, float defaultValue)
 	{
-		if (!engine || !engine->GetRenderer())
+		if (!std::isfinite(value))
 		{
-			return RenderPassType::Forward;
+			return defaultValue;
 		}
 
-		return engine->GetRenderer()->GetMainRenderType();
-	}
-
-	float SanitizePhongExponent(float phongExponent)
-	{
-		if (!std::isfinite(phongExponent) || phongExponent < MIN_PHONG_EXPONENT)
-		{
-			return MIN_PHONG_EXPONENT;
-		}
-
-		return phongExponent;
+		return GoknarMath::Clamp(value, 0.f, 1.f);
 	}
 }
 
 IMaterialBase::IMaterialBase() :  
 	baseColor_(Vector4{ 1.f }),
-	ambientReflectance_(Vector3::ZeroVector),
-	specularReflectance_(Vector3::ZeroVector),
 	emisiveColor_(Vector3::ZeroVector),
+	ambientOcclusion_(1.f),
+	metallic_(0.f),
+	roughness_(0.5f),
 	blendModel_(MaterialBlendModel::Opaque),
-	shadingModel_(MaterialShadingModel::Default),
-	phongExponent_(1.f)
+	shadingModel_(MaterialShadingModel::Default)
 {
 }
 
@@ -56,13 +44,13 @@ IMaterialBase::IMaterialBase(const IMaterialBase* other)
 		return;
 	}
 
-	ambientReflectance_ = other->ambientReflectance_;
 	baseColor_ = other->baseColor_;
-	specularReflectance_ = other->specularReflectance_;
 	emisiveColor_ = other->emisiveColor_;
+	ambientOcclusion_ = other->ambientOcclusion_;
+	metallic_ = other->metallic_;
+	roughness_ = other->roughness_;
 	blendModel_ = other->blendModel_;
 	shadingModel_ = other->shadingModel_;
-	phongExponent_ = other->phongExponent_;
 	textureImages_ = other->textureImages_;
 }
 
@@ -70,28 +58,19 @@ IMaterialBase::~IMaterialBase()
 {
 }
 
-float IMaterialBase::GetPhongExponent() const
+void IMaterialBase::SetAmbientOcclusion(float ambientOcclusion)
 {
-	float phongExponent = phongExponent_;
-
-	if (GetMainRenderTypeSafe() == RenderPassType::Deferred)
-	{
-		phongExponent = std::pow(2.f, phongExponent);
-	}
-
-	return SanitizePhongExponent(phongExponent);
+	ambientOcclusion_ = SanitizeNormalizedMaterialScalar(ambientOcclusion, 1.f);
 }
 
-void IMaterialBase::SetPhongExponent(float phongExponent)
+void IMaterialBase::SetMetallic(float metallic)
 {
-	phongExponent = SanitizePhongExponent(phongExponent);
+	metallic_ = SanitizeNormalizedMaterialScalar(metallic, 0.f);
+}
 
-	if(GetMainRenderTypeSafe() == RenderPassType::Deferred)
-	{
-		phongExponent = GoknarMath::Log(phongExponent) / LN_OF_2;
-	}
-
-	phongExponent_ = phongExponent;
+void IMaterialBase::SetRoughness(float roughness)
+{
+	roughness_ = SanitizeNormalizedMaterialScalar(roughness, 0.5f);
 }
 
 void IMaterialBase::PreInit()
@@ -148,10 +127,10 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 	if (renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::GeometryBuffer)
 	{
 		shader->SetVector4(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR, baseColor_);
-		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION, ambientReflectance_);
-		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR, specularReflectance_);
+		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION, ambientOcclusion_);
+		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::METALLIC, metallic_);
+		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::ROUGHNESS, roughness_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR, emisiveColor_);
-		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT, phongExponent_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY, translucency_);
 	}
 	else if (renderPassType == RenderPassType::Shadow || renderPassType == RenderPassType::PointLightShadow)

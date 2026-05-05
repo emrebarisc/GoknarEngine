@@ -24,12 +24,10 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace MATERIAL
 	{
-		const char* PHONG_EXPONENT = "phongExponent";
 		const char* TRANSLUCENCY = "translucency";
 
 		const char* BASE_COLOR = "baseColor";
 		const char* METALLIC = "metallic";
-		const char* SPECULAR = "specular";
 		const char* ROUGHNESS = "roughness";
 		const char* EMISIVE_COLOR = "emisiveColor";
 		const char* AMBIENT_OCCLUSION = "ambientOcclusion";
@@ -125,7 +123,6 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* NORMAL = "normalTexture";
 		const char* AMBIENT_OCCLUSION = "ambientOcclusionTexture";
 		const char* METALLIC = "metallicTexture";
-		const char* SPECULAR = "specularTexture";
 		const char* ROUGHNESS = "roughnessTexture";
 	}
 
@@ -167,7 +164,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* OUT_POSITION = "position_GBuffer";
 		const char* OUT_NORMAL = "normal_GBuffer";
 		const char* OUT_DIFFUSE = "diffuse_GBuffer";
-		const char* OUT_SPECULAR_PHONG = "specularAndPhong_GBuffer";
+		const char* OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS = "aoMetallicRoughness_GBuffer";
 		const char* OUT_EMISIVE_COLOR = "emmisiveColor_GBuffer";
 	}
 

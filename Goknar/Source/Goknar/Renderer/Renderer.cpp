@@ -1120,13 +1120,14 @@ void Renderer::BindShadowTextures(Shader* shader)
 	std::vector<int> directionalLightTextureIndices;
 	const std::vector<DirectionalLight*>& directionalLights = scene->GetDirectionalLights();
 	size_t directionalLightCount = directionalLights.size();
+	directionalLightTextureIndices.resize(directionalLightCount, 0);
 	for (size_t i = 0; i < directionalLightCount; i++)
 	{
 		DirectionalLight* directionalLight = directionalLights[i];
 		if (directionalLight->GetIsShadowEnabled())
 		{
 			Texture* shadowTexture = directionalLight->GetShadowMapTexture();
-			directionalLightTextureIndices.push_back(shadowTexture->GetRendererTextureId());
+			directionalLightTextureIndices[i] = shadowTexture->GetRendererTextureId();
 			shadowTexture->Bind(shader);
 		}
 	}
@@ -1135,13 +1136,14 @@ void Renderer::BindShadowTextures(Shader* shader)
 	std::vector<int> pointLightTextureIndices;
 	const std::vector<PointLight*>& pointLights = scene->GetPointLights();
 	size_t pointLightCount = pointLights.size();
+	pointLightTextureIndices.resize(pointLightCount, 0);
 	for (size_t i = 0; i < pointLightCount; i++)
 	{
 		PointLight* pointLight = pointLights[i];
 		if (pointLight->GetIsShadowEnabled())
 		{
 			Texture* shadowTexture = pointLight->GetShadowMapTexture();
-			pointLightTextureIndices.push_back(shadowTexture->GetRendererTextureId());
+			pointLightTextureIndices[i] = shadowTexture->GetRendererTextureId();
 			shadowTexture->Bind(shader);
 		}
 	}
@@ -1150,13 +1152,14 @@ void Renderer::BindShadowTextures(Shader* shader)
 	std::vector<int> spotLightTextureIndices;
 	const std::vector<SpotLight*>& spotLights = scene->GetSpotLights();
 	size_t spotLightCount = spotLights.size();
+	spotLightTextureIndices.resize(spotLightCount, 0);
 	for (size_t i = 0; i < spotLightCount; i++)
 	{
 		SpotLight* spotLight = spotLights[i];
 		if (spotLight->GetIsShadowEnabled())
 		{
 			Texture* shadowTexture = spotLight->GetShadowMapTexture();
-			spotLightTextureIndices.push_back(shadowTexture->GetRendererTextureId());
+			spotLightTextureIndices[i] = shadowTexture->GetRendererTextureId();
 			shadowTexture->Bind(shader);
 		}
 	}
@@ -1408,7 +1411,7 @@ GeometryBufferData::~GeometryBufferData()
 	delete worldPositionTexture;
 	delete worldNormalTexture;
 	delete diffuseTexture;
-	delete specularTexture;
+	delete ambientOcclusionMetallicRoughnessTexture;
 	delete emisiveColorTexture;
 
 	delete depthRenderbuffer;
@@ -1457,8 +1460,8 @@ void GeometryBufferData::GenerateBuffers()
 	worldNormalTexture = new Texture();
 	worldNormalTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL);
 	worldNormalTexture->SetTextureDataType(TextureDataType::DYNAMIC);
-	worldNormalTexture->SetTextureFormat(TextureFormat::RGBA);
-	worldNormalTexture->SetTextureInternalFormat(TextureInternalFormat::RGBA16F);
+	worldNormalTexture->SetTextureFormat(TextureFormat::RGB);
+	worldNormalTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
 	worldNormalTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	worldNormalTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
 	worldNormalTexture->SetWidth(bufferWidth);
@@ -1485,21 +1488,21 @@ void GeometryBufferData::GenerateBuffers()
 	diffuseTexture->PostInit();
 	geometryFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT2, diffuseTexture);
 
-	specularTexture = new Texture();
-	specularTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG);
-	specularTexture->SetTextureDataType(TextureDataType::DYNAMIC);
-	specularTexture->SetTextureFormat(TextureFormat::RGBA);
-	specularTexture->SetTextureInternalFormat(TextureInternalFormat::RGBA);
-	specularTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
-	specularTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
-	specularTexture->SetWidth(bufferWidth);
-	specularTexture->SetHeight(bufferHeight);
-	specularTexture->SetGenerateMipmap(false);
-	specularTexture->SetTextureType(TextureType::UNSIGNED_BYTE);
-	specularTexture->PreInit();
-	specularTexture->Init();
-	specularTexture->PostInit();
-	geometryFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT3, specularTexture);
+	ambientOcclusionMetallicRoughnessTexture = new Texture();
+	ambientOcclusionMetallicRoughnessTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS);
+	ambientOcclusionMetallicRoughnessTexture->SetTextureDataType(TextureDataType::DYNAMIC);
+	ambientOcclusionMetallicRoughnessTexture->SetTextureFormat(TextureFormat::RGB);
+	ambientOcclusionMetallicRoughnessTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
+	ambientOcclusionMetallicRoughnessTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
+	ambientOcclusionMetallicRoughnessTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
+	ambientOcclusionMetallicRoughnessTexture->SetWidth(bufferWidth);
+	ambientOcclusionMetallicRoughnessTexture->SetHeight(bufferHeight);
+	ambientOcclusionMetallicRoughnessTexture->SetGenerateMipmap(false);
+	ambientOcclusionMetallicRoughnessTexture->SetTextureType(TextureType::UNSIGNED_BYTE);
+	ambientOcclusionMetallicRoughnessTexture->PreInit();
+	ambientOcclusionMetallicRoughnessTexture->Init();
+	ambientOcclusionMetallicRoughnessTexture->PostInit();
+	geometryFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT3, ambientOcclusionMetallicRoughnessTexture);
 
 	emisiveColorTexture = new Texture();
 	emisiveColorTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR);
@@ -1548,7 +1551,7 @@ void GeometryBufferData::OnViewportSizeChanged(int width, int height)
 	delete worldPositionTexture;
 	delete worldNormalTexture;
 	delete diffuseTexture;
-	delete specularTexture;
+	delete ambientOcclusionMetallicRoughnessTexture;
 	delete emisiveColorTexture;
 
 	delete geometryFrameBuffer;
@@ -1651,18 +1654,28 @@ void DeferredRenderingData::SetShaderTextureUniforms()
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION, geometryBufferData->worldPositionTexture->GetRendererTextureId());
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL, geometryBufferData->worldNormalTexture->GetRendererTextureId());
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE, geometryBufferData->diffuseTexture->GetRendererTextureId());
-	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG, geometryBufferData->specularTexture->GetRendererTextureId());
+	deferredRenderingMeshShader->SetInt(
+		SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS,
+		geometryBufferData->ambientOcclusionMetallicRoughnessTexture->GetRendererTextureId());
 	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR, geometryBufferData->emisiveColorTexture->GetRendererTextureId());
 }
 
 void DeferredRenderingData::Render()
 {
 	engine->GetRenderer()->BindStaticVBO();
-
 	engine->GetRenderer()->BindShadowTextures(deferredRenderingMeshShader);
 	BindGeometryBufferTextures(deferredRenderingMeshShader);
 	SetShaderTextureUniforms();
 	engine->GetRenderer()->SetLightUniforms(deferredRenderingMeshShader);
+
+	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+	if (activeCamera)
+	{
+		deferredRenderingMeshShader->SetVector3(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION, activeCamera->GetPosition());
+	}
+
+	deferredRenderingMeshShader->SetFloat(SHADER_VARIABLE_NAMES::TIMING::DELTA_TIME, engine->GetDeltaTime());
+	deferredRenderingMeshShader->SetFloat(SHADER_VARIABLE_NAMES::TIMING::ELAPSED_TIME, engine->GetElapsedTime());
 
 	MeshUnit* deferredRenderingMeshUnit = deferredRenderingMesh->GetSubMeshes()[0];
 	int facePointCount = deferredRenderingMeshUnit->GetFaceCount() * 3;
@@ -1706,7 +1719,7 @@ void DeferredRenderingData::BindGeometryBufferTextures(Shader* shader)
 	geometryBufferData->worldPositionTexture->Bind(shader);
 	geometryBufferData->worldNormalTexture->Bind(shader);
 	geometryBufferData->diffuseTexture->Bind(shader);
-	geometryBufferData->specularTexture->Bind(shader);
+	geometryBufferData->ambientOcclusionMetallicRoughnessTexture->Bind(shader);
 	geometryBufferData->emisiveColorTexture->Bind(shader);
 }
 

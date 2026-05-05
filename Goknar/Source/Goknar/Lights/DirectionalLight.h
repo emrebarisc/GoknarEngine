@@ -76,7 +76,7 @@ private:
 
 	Vector3 direction_{ Vector3::ForwardVector };
 
-	float shadowBiasValue_{ 0.0001f };
+	float shadowBiasValue_{ 0.0025f };
 };
 
 #endif

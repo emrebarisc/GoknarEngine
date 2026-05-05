@@ -23,12 +23,10 @@ inline namespace SHADER_VARIABLE_NAMES
 
 	inline namespace MATERIAL
 	{
-		extern const char* PHONG_EXPONENT;
 		extern const char* TRANSLUCENCY;
 
 		extern const char* BASE_COLOR;
 		extern const char* METALLIC;
-		extern const char* SPECULAR;
 		extern const char* ROUGHNESS;
 		extern const char* EMISIVE_COLOR;
 		extern const char* AMBIENT_OCCLUSION;
@@ -131,7 +129,6 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* NORMAL;
 		extern const char* AMBIENT_OCCLUSION;
 		extern const char* METALLIC;
-		extern const char* SPECULAR;
 		extern const char* ROUGHNESS;
 	}
 
@@ -174,7 +171,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* OUT_POSITION;
 		extern const char* OUT_NORMAL;
 		extern const char* OUT_DIFFUSE;
-		extern const char* OUT_SPECULAR_PHONG;
+		extern const char* OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS;
 		extern const char* OUT_EMISIVE_COLOR;
 	}
 

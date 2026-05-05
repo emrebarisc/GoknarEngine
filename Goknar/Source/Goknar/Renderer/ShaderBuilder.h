@@ -92,10 +92,16 @@ private:
 	std::string FS_GetShadowMapUniforms() const;
 	std::string FS_InitializeBaseColor(MaterialInitializationData* initializationData, bool discardTransparent = false) const;
 	std::string FS_InitializeEmmisiveColor(MaterialInitializationData* initializationData) const;
+	std::string FS_InitializeAmbientOcclusion(MaterialInitializationData* initializationData) const;
+	std::string FS_InitializeMetallic(MaterialInitializationData* initializationData) const;
+	std::string FS_InitializeRoughness(MaterialInitializationData* initializationData) const;
+	std::string FS_InitializeSurfaceNormal(MaterialInitializationData* initializationData) const;
+	std::string FS_GetPBRFunctions() const;
 
 	std::string General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const;
 	std::string General_FS_GetShaderTextureUniforms(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string General_FS_GetDiffuseTextureSampling(const std::string& textureName) const;
+	std::string General_FS_GetScalarTextureSampling(const std::string& textureName) const;
 	std::string General_FS_GetNormalTextureSampling(const std::string& textureName) const;
 	std::string General_FS_GetEmmisiveTextureSampling(const std::string& textureName) const;
 

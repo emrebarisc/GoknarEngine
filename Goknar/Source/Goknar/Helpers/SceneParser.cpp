@@ -1036,13 +1036,14 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				child = child->NextSiblingElement("Texture");
 			}
 
-			child = element->FirstChildElement("AmbientReflectance");
+			material->SetAmbientOcclusion(1.f);
+			child = element->FirstChildElement("AmbientOcclusionValue");
 			if (child)
 			{
 				stream << child->GetText() << std::endl;
-				Vector3 ambientReflectance;
-				stream >> ambientReflectance.x >> ambientReflectance.y >> ambientReflectance.z;
-				material->SetAmbientReflectance(ambientReflectance);
+				float ambientOcclusion = 1.f;
+				stream >> ambientOcclusion;
+				material->SetAmbientOcclusion(ambientOcclusion);
 			}
 
 			child = element->FirstChildElement("DiffuseReflectance");
@@ -1054,31 +1055,41 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				material->SetBaseColor(diffuseReflectance);
 			}
 
-			child = element->FirstChildElement("SpecularReflectance");
+			material->SetMetallic(0.f);
+			child = element->FirstChildElement("MetallicValue");
 			if (child)
 			{
 				stream << child->GetText() << std::endl;
-				Vector3 specularReflectance;
-				stream >> specularReflectance.x >> specularReflectance.y >> specularReflectance.z;
-				material->SetSpecularReflectance(specularReflectance);
+				float metallic = 0.f;
+				stream >> metallic;
+				material->SetMetallic(metallic);
 			}
 
-			child = element->FirstChildElement("PhongExponent");
+			material->SetRoughness(0.5f);
+			child = element->FirstChildElement("RoughnessValue");
 			if (child)
 			{
 				stream << child->GetText() << std::endl;
+				float roughness = 0.5f;
+				stream >> roughness;
+				material->SetRoughness(roughness);
 			}
 			else
 			{
-				stream << "1" << std::endl;
+				child = element->FirstChildElement("PhongExponent");
+				if (child)
+				{
+					stream << child->GetText() << std::endl;
+					float phongExponent = 1.f;
+					stream >> phongExponent;
+					if (!std::isfinite(phongExponent) || phongExponent < 1.f)
+					{
+						phongExponent = 1.f;
+					}
+
+					material->SetRoughness(std::sqrt(2.f / (phongExponent + 2.f)));
+				}
 			}
-			float phongExponent;
-			stream >> phongExponent;
-			if (!std::isfinite(phongExponent) || phongExponent < 1.f)
-			{
-				phongExponent = 1.f;
-			}
-			material->SetPhongExponent(phongExponent);
 
 			element = element->NextSiblingElement("Material");
 		}

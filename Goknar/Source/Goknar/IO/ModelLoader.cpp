@@ -395,27 +395,52 @@ Content* ModelLoader::LoadModel(const std::string& path)
 					ufbx_material* ufbxMaterial = ufbxMesh->materials.data[matIndex];
 					if (ufbxMaterial)
 					{
-						material->SetAmbientReflectance(Vector3(1.f, 1.f, 1.f));
+						material->SetAmbientOcclusion(1.f);
+						material->SetMetallic(0.f);
+						material->SetRoughness(0.5f);
 
 						if (ufbxMaterial->pbr.base_color.has_value)
 						{
 							material->SetBaseColor(Vector3(ufbxMaterial->pbr.base_color.value_vec3.x, ufbxMaterial->pbr.base_color.value_vec3.y, ufbxMaterial->pbr.base_color.value_vec3.z));
 						}
 
-						if (ufbxMaterial->pbr.specular_color.has_value)
+						if (ufbxMaterial->pbr.emission_color.has_value)
 						{
-							material->SetSpecularReflectance(Vector3(ufbxMaterial->pbr.specular_color.value_vec3.x, ufbxMaterial->pbr.specular_color.value_vec3.y, ufbxMaterial->pbr.specular_color.value_vec3.z));
+							material->SetEmisiveColor(Vector3(
+								ufbxMaterial->pbr.emission_color.value_vec3.x,
+								ufbxMaterial->pbr.emission_color.value_vec3.y,
+								ufbxMaterial->pbr.emission_color.value_vec3.z));
+						}
+
+						if (ufbxMaterial->pbr.metalness.has_value)
+						{
+							material->SetMetallic(ufbxMaterial->pbr.metalness.value_real);
+						}
+
+						if (ufbxMaterial->pbr.roughness.has_value)
+						{
+							material->SetRoughness(ufbxMaterial->pbr.roughness.value_real);
+						}
+
+						if (ufbxMaterial->pbr.ambient_occlusion.has_value)
+						{
+							material->SetAmbientOcclusion(ufbxMaterial->pbr.ambient_occlusion.value_real);
 						}
 
 						material->SetShadingModel(MaterialShadingModel::Default);
 						material->SetName(ufbxMaterial->name.data);
 
-						if (ufbxMaterial->pbr.base_color.texture)
+						auto LoadMaterialTexture = [&](const ufbx_texture* ufbxTexture, TextureUsage textureUsage)
 						{
-							std::string imagePath = "";
-							std::string diffuseTexturePath = ufbxMaterial->pbr.base_color.texture->filename.data;
+							if (!ufbxTexture)
+							{
+								return;
+							}
 
-							if (diffuseTexturePath.find(".fbm") != std::string::npos)
+							std::string imagePath = "";
+							std::string texturePath = ufbxTexture->filename.data;
+
+							if (texturePath.find(".fbm") != std::string::npos)
 							{
 								long long lastSlashIndex = path.find_last_of('/');
 								if (lastSlashIndex != std::string::npos)
@@ -424,7 +449,7 @@ Content* ModelLoader::LoadModel(const std::string& path)
 								}
 							}
 
-							imagePath += diffuseTexturePath;
+							imagePath += texturePath;
 
 #ifdef GOKNAR_PLATFORM_UNIX
 							imagePath = ConvertToLinuxPath(imagePath);
@@ -433,38 +458,17 @@ Content* ModelLoader::LoadModel(const std::string& path)
 							Image* image = engine->GetResourceManager()->GetContent<Image>(imagePath);
 							if (image)
 							{
-								image->SetTextureUsage(TextureUsage::Diffuse);
+								image->SetTextureUsage(textureUsage);
 								material->AddTextureImage(image);
 							}
-						}
+						};
 
-						if (ufbxMaterial->pbr.normal_map.texture)
-						{
-							std::string normalImagePath = ContentDir;
-							std::string normalTexturePath = ufbxMaterial->pbr.normal_map.texture->filename.data;
-
-							if (normalTexturePath.find(".fbm") != std::string::npos)
-							{
-								long long lastSlashIndex = path.find_last_of('/');
-								if (lastSlashIndex != std::string::npos)
-								{
-									normalImagePath += path.substr(0, lastSlashIndex + 1);
-								}
-							}
-
-							normalImagePath += normalTexturePath;
-
-#ifdef GOKNAR_PLATFORM_UNIX
-							normalImagePath = ConvertToLinuxPath(normalImagePath);
-#endif
-
-							Image* image = engine->GetResourceManager()->GetContent<Image>(normalImagePath);
-							if (image)
-							{
-								image->SetTextureUsage(TextureUsage::Normal);
-								material->AddTextureImage(image);
-							}
-						}
+						LoadMaterialTexture(ufbxMaterial->pbr.base_color.texture, TextureUsage::Diffuse);
+						LoadMaterialTexture(ufbxMaterial->pbr.normal_map.texture, TextureUsage::Normal);
+						LoadMaterialTexture(ufbxMaterial->pbr.emission_color.texture, TextureUsage::Emmisive);
+						LoadMaterialTexture(ufbxMaterial->pbr.ambient_occlusion.texture, TextureUsage::AmbientOcclusion);
+						LoadMaterialTexture(ufbxMaterial->pbr.metalness.texture, TextureUsage::Metallic);
+						LoadMaterialTexture(ufbxMaterial->pbr.roughness.texture, TextureUsage::Roughness);
 					}
 				}
 

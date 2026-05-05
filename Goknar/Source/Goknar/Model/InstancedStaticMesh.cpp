@@ -20,11 +20,11 @@ namespace
 
 		Material* clonedMaterial = new Material();
 		clonedMaterial->SetName(sourceMaterial->GetName());
-		clonedMaterial->SetAmbientReflectance(sourceMaterial->GetAmbientReflectance());
 		clonedMaterial->SetBaseColor(sourceMaterial->GetBaseColor());
-		clonedMaterial->SetSpecularReflectance(sourceMaterial->GetSpecularReflectance());
+		clonedMaterial->SetAmbientOcclusion(sourceMaterial->GetAmbientOcclusion());
+		clonedMaterial->SetMetallic(sourceMaterial->GetMetallic());
+		clonedMaterial->SetRoughness(sourceMaterial->GetRoughness());
 		clonedMaterial->SetEmisiveColor(sourceMaterial->GetEmisiveColor());
-		clonedMaterial->SetPhongExponent(sourceMaterial->GetPhongExponent());
 		clonedMaterial->SetTranslucency(sourceMaterial->GetTranslucency());
 		clonedMaterial->SetBlendModel(sourceMaterial->GetBlendModel());
 		clonedMaterial->SetShadingModel(sourceMaterial->GetShadingModel());
@@ -47,6 +47,9 @@ namespace
 		{
 			clonedInitializationData->baseColor = sourceInitializationData->baseColor;
 			clonedInitializationData->emisiveColor = sourceInitializationData->emisiveColor;
+			clonedInitializationData->ambientOcclusion = sourceInitializationData->ambientOcclusion;
+			clonedInitializationData->metallic = sourceInitializationData->metallic;
+			clonedInitializationData->roughness = sourceInitializationData->roughness;
 			clonedInitializationData->fragmentNormal = sourceInitializationData->fragmentNormal;
 			clonedInitializationData->vertexNormal = sourceInitializationData->vertexNormal;
 			clonedInitializationData->uv = sourceInitializationData->uv;

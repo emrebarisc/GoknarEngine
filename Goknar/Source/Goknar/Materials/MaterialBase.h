@@ -42,16 +42,6 @@ public:
 
 	virtual Shader* GetShader(RenderPassType renderPassType) const = 0;
 
-	const Vector3& GetAmbientReflectance() const
-	{
-		return ambientReflectance_;
-	}
-
-	void SetAmbientReflectance(const Vector3& ambientReflectance)
-	{
-		ambientReflectance_ = ambientReflectance;
-	}
-
 	const Vector4& GetBaseColor() const
 	{
 		return baseColor_;
@@ -67,15 +57,26 @@ public:
 		baseColor_ = diffuseReflectance;
 	}
 
-	const Vector3& GetSpecularReflectance() const
+	float GetAmbientOcclusion() const
 	{
-		return specularReflectance_;
+		return ambientOcclusion_;
 	}
 
-	void SetSpecularReflectance(const Vector3& specularReflectance)
+	void SetAmbientOcclusion(float ambientOcclusion);
+
+	float GetMetallic() const
 	{
-		specularReflectance_ = specularReflectance;
+		return metallic_;
 	}
+
+	void SetMetallic(float metallic);
+
+	float GetRoughness() const
+	{
+		return roughness_;
+	}
+
+	void SetRoughness(float roughness);
 
 	const Vector3& GetEmisiveColor() const
 	{
@@ -86,10 +87,6 @@ public:
 	{
 		emisiveColor_ = emmisiveColor;
 	}
-
-	float GetPhongExponent() const;
-
-	void SetPhongExponent(float phongExponent);
 
 	float GetTranslucency() const
 	{
@@ -150,14 +147,14 @@ protected:
 	std::vector<const Image*> textureImages_;
 
 	Vector4 baseColor_{ Vector4::ZeroVector };
-	Vector3 ambientReflectance_{ Vector3::ZeroVector };
-	Vector3 specularReflectance_{ Vector3::ZeroVector };
 	Vector3 emisiveColor_{ Vector3::ZeroVector };
 
 	std::string name_{ "" };
 
+	float ambientOcclusion_{ 1.f };
+	float metallic_{ 0.f };
+	float roughness_{ 0.5f };
 	float translucency_{ 0.f };
-	float phongExponent_{ 1.f };
 
 	MaterialBlendModel blendModel_{ MaterialBlendModel::Opaque };
 	MaterialShadingModel shadingModel_{ MaterialShadingModel::Default };

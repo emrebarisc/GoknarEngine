@@ -16,6 +16,10 @@ using namespace tinyxml2;
 
 namespace
 {
+	constexpr float DEFAULT_AMBIENT_OCCLUSION = 1.f;
+	constexpr float DEFAULT_METALLIC = 0.f;
+	constexpr float DEFAULT_ROUGHNESS = 0.5f;
+
 	bool LoadXmlDocumentFromPath(const std::string& filePath, tinyxml2::XMLDocument& document)
 	{
 		std::string fileContents;
@@ -25,6 +29,57 @@ namespace
 		}
 
 		return document.Parse(fileContents.c_str(), fileContents.size()) == XML_SUCCESS;
+	}
+
+	float ClampNormalizedScalar(float value, float defaultValue)
+	{
+		if (!std::isfinite(value))
+		{
+			return defaultValue;
+		}
+
+		return GoknarMath::Clamp(value, 0.f, 1.f);
+	}
+
+	float ConvertLegacyPhongExponentToRoughness(float phongExponent)
+	{
+		if (!std::isfinite(phongExponent) || phongExponent < 1.f)
+		{
+			return DEFAULT_ROUGHNESS;
+		}
+
+		return ClampNormalizedScalar(std::sqrt(2.f / (phongExponent + 2.f)), DEFAULT_ROUGHNESS);
+	}
+
+	const char* TextureUsageToString(TextureUsage textureUsage)
+	{
+		switch (textureUsage)
+		{
+		case TextureUsage::Diffuse: return "Diffuse";
+		case TextureUsage::Normal: return "Normal";
+		case TextureUsage::AmbientOcclusion: return "AmbientOcclusion";
+		case TextureUsage::Metallic: return "Metallic";
+		case TextureUsage::Specular: return "Specular";
+		case TextureUsage::Emmisive: return "Emmisive";
+		case TextureUsage::Roughness: return "Roughness";
+		case TextureUsage::Height: return "Height";
+		case TextureUsage::None:
+		default:
+			return "None";
+		}
+	}
+
+	TextureUsage StringToTextureUsage(const std::string& textureUsage)
+	{
+		if (textureUsage == "Diffuse") return TextureUsage::Diffuse;
+		if (textureUsage == "Normal") return TextureUsage::Normal;
+		if (textureUsage == "AmbientOcclusion") return TextureUsage::AmbientOcclusion;
+		if (textureUsage == "Metallic") return TextureUsage::Metallic;
+		if (textureUsage == "Specular") return TextureUsage::Specular;
+		if (textureUsage == "Emmisive") return TextureUsage::Emmisive;
+		if (textureUsage == "Roughness") return TextureUsage::Roughness;
+		if (textureUsage == "Height") return TextureUsage::Height;
+		return TextureUsage::None;
 	}
 }
 
@@ -68,6 +123,7 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
                 XMLElement* texElement = doc.NewElement("Texture");
                 const std::string texturePath = ContentPathUtils::ToContentRelativePath(image->GetPath());
                 texElement->SetAttribute("path", texturePath.c_str());
+                texElement->SetAttribute("usage", TextureUsageToString(image->GetTextureUsage()));
                 root->InsertEndChild(texElement);
             }
         }
@@ -87,16 +143,19 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
             AddPropertyElement(name, ss.str());
         };
 
-    SerializeVector3("AmbientReflectance", material->GetAmbientReflectance());
     SerializeVector4("BaseColorValue", material->GetBaseColor());
-    SerializeVector3("SpecularReflectance", material->GetSpecularReflectance());
     SerializeVector3("EmmisiveColorValue", material->GetEmisiveColor());
+    AddPropertyElement("AmbientOcclusionValue", std::to_string(material->GetAmbientOcclusion()));
+    AddPropertyElement("MetallicValue", std::to_string(material->GetMetallic()));
+    AddPropertyElement("RoughnessValue", std::to_string(material->GetRoughness()));
 
-    AddPropertyElement("PhongExponent", std::to_string(material->GetPhongExponent()));
     AddPropertyElement("Translucency", std::to_string(material->GetTranslucency()));
 
     SerializeShaderFunction(doc, root, "BaseColor", materialInitializationData->baseColor);
     SerializeShaderFunction(doc, root, "EmissiveColor", materialInitializationData->emisiveColor);
+    SerializeShaderFunction(doc, root, "AmbientOcclusion", materialInitializationData->ambientOcclusion);
+    SerializeShaderFunction(doc, root, "Metallic", materialInitializationData->metallic);
+    SerializeShaderFunction(doc, root, "Roughness", materialInitializationData->roughness);
     SerializeShaderFunction(doc, root, "FragmentNormal", materialInitializationData->fragmentNormal);
     SerializeShaderFunction(doc, root, "VertexNormal", materialInitializationData->vertexNormal);
     SerializeShaderFunction(doc, root, "UV", materialInitializationData->uv);
@@ -187,19 +246,27 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
 
             if (image)
             {
+                if (child->Attribute("usage"))
+                {
+                    image->SetTextureUsage(StringToTextureUsage(child->Attribute("usage")));
+                }
                 owner->AddTextureImage(image);
             }
         }
         child = child->NextSiblingElement("Texture");
     }
 
-    child = root->FirstChildElement("AmbientReflectance");
+    child = root->FirstChildElement("AmbientOcclusionValue");
     if (child && child->GetText())
     {
         std::stringstream stream(child->GetText());
-        Vector3 ambientReflectance;
-        stream >> ambientReflectance.x >> ambientReflectance.y >> ambientReflectance.z;
-        owner->SetAmbientReflectance(ambientReflectance);
+        float ambientOcclusion = DEFAULT_AMBIENT_OCCLUSION;
+        stream >> ambientOcclusion;
+        owner->SetAmbientOcclusion(ClampNormalizedScalar(ambientOcclusion, DEFAULT_AMBIENT_OCCLUSION));
+    }
+    else
+    {
+        owner->SetAmbientOcclusion(DEFAULT_AMBIENT_OCCLUSION);
     }
 
     child = root->FirstChildElement("DiffuseReflectance");
@@ -220,13 +287,17 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         owner->SetBaseColor(baseColor);
     }
 
-    child = root->FirstChildElement("SpecularReflectance");
+    child = root->FirstChildElement("MetallicValue");
     if (child && child->GetText())
     {
         std::stringstream stream(child->GetText());
-        Vector3 specularReflectance;
-        stream >> specularReflectance.x >> specularReflectance.y >> specularReflectance.z;
-        owner->SetSpecularReflectance(specularReflectance);
+        float metallic = DEFAULT_METALLIC;
+        stream >> metallic;
+        owner->SetMetallic(ClampNormalizedScalar(metallic, DEFAULT_METALLIC));
+    }
+    else
+    {
+        owner->SetMetallic(DEFAULT_METALLIC);
     }
 
     child = root->FirstChildElement("EmisiveColorValue");
@@ -238,24 +309,28 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         owner->SetEmisiveColor(emmisiveColor);
     }
 
-    child = root->FirstChildElement("PhongExponent");
+    child = root->FirstChildElement("RoughnessValue");
     if (child && child->GetText())
     {
         std::stringstream stream(child->GetText());
-        float phongExponent = 1.f;
-        stream >> phongExponent;
-        if (!stream.fail() && std::isfinite(phongExponent))
-        {
-            owner->SetPhongExponent(phongExponent);
-        }
-        else
-        {
-            owner->SetPhongExponent(1.f);
-        }
+        float roughness = DEFAULT_ROUGHNESS;
+        stream >> roughness;
+        owner->SetRoughness(ClampNormalizedScalar(roughness, DEFAULT_ROUGHNESS));
     }
     else
     {
-        owner->SetPhongExponent(1.f);
+        child = root->FirstChildElement("PhongExponent");
+        if (child && child->GetText())
+        {
+            std::stringstream stream(child->GetText());
+            float phongExponent = 1.f;
+            stream >> phongExponent;
+            owner->SetRoughness(ConvertLegacyPhongExponentToRoughness(phongExponent));
+        }
+        else
+        {
+            owner->SetRoughness(DEFAULT_ROUGHNESS);
+        }
     }
 
     child = root->FirstChildElement("Translucency");
@@ -269,6 +344,9 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
 
     DeserializeShaderFunction(root, "BaseColor", materialInitializationData->baseColor);
     DeserializeShaderFunction(root, "EmissiveColor", materialInitializationData->emisiveColor);
+    DeserializeShaderFunction(root, "AmbientOcclusion", materialInitializationData->ambientOcclusion);
+    DeserializeShaderFunction(root, "Metallic", materialInitializationData->metallic);
+    DeserializeShaderFunction(root, "Roughness", materialInitializationData->roughness);
     DeserializeShaderFunction(root, "FragmentNormal", materialInitializationData->fragmentNormal);
     DeserializeShaderFunction(root, "VertexNormal", materialInitializationData->vertexNormal);
     DeserializeShaderFunction(root, "UV", materialInitializationData->uv);

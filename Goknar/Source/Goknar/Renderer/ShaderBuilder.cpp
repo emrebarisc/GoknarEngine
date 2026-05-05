@@ -52,6 +52,7 @@ std::string ShaderBuilder::General_FS_GetScript(const FragmentShaderInitializati
 		fragmentShader += FS_GetShadowMapUniforms();
 		fragmentShader += FS_GetLightSpaceFragmentPositions(fragmentShaderInitializationData);
 
+		fragmentShader += FS_GetPBRFunctions();
 		fragmentShader += FS_GetDirectionalLightColorFunction();
 		fragmentShader += FS_GetPointLightColorFunction();
 		fragmentShader += FS_GetSpotLightColorFunction();
@@ -78,6 +79,10 @@ void main()
 	{
 		fragmentShader += FS_InitializeBaseColor(fragmentShaderInitializationData.materialInitializationData);
 		fragmentShader += FS_InitializeEmmisiveColor(fragmentShaderInitializationData.materialInitializationData);
+		fragmentShader += FS_InitializeAmbientOcclusion(fragmentShaderInitializationData.materialInitializationData);
+		fragmentShader += FS_InitializeMetallic(fragmentShaderInitializationData.materialInitializationData);
+		fragmentShader += FS_InitializeRoughness(fragmentShaderInitializationData.materialInitializationData);
+		fragmentShader += FS_InitializeSurfaceNormal(fragmentShaderInitializationData.materialInitializationData);
 	}
 	else if(fragmentShaderInitializationData.renderPassType == RenderPassType::Deferred)
 	{
@@ -87,7 +92,7 @@ void main()
 
 	if (includeLightOperations)
 	{
-		fragmentShader += "\t vec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + "; \n";;
+		fragmentShader += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = vec3(0.f);\n";
 		fragmentShader += FS_GetLightCalculationIterators();
 	}
 	fragmentShader += fragmentShaderInitializationData.outputVariableAssignments;
@@ -476,7 +481,9 @@ std::string ShaderBuilder::FS_GetOutputVariables() const
 
 std::string ShaderBuilder::FS_GetOutputVariableAssignments() const
 {
-	return std::string("\t") + SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR + " = vec4(" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY + ", 1.f) * " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + ";";;
+	return std::string("\t") + SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR +
+		" = vec4(CalculatePBRAmbientLight() + " + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY + " + " +
+		SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + ", " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + ".a);";
 }
 
 std::string ShaderBuilder::GeometryBufferPass_GetOutputVariables() const
@@ -484,9 +491,9 @@ std::string ShaderBuilder::GeometryBufferPass_GetOutputVariables() const
 	std::string variables = R"(
 
 layout(location = 0) out vec3 )" + std::string(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION) + R"(;
-layout(location = 1) out vec4 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
+layout(location = 1) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
 layout(location = 2) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(;
-layout(location = 3) out vec4 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(;
+layout(location = 3) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS + R"(;
 layout(location = 4) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR + R"(;
 
 )";
@@ -496,14 +503,33 @@ layout(location = 4) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_C
 
 std::string ShaderBuilder::GeometryBufferPass_GetOutputVariableAssignments() const
 {
-	std::string assignments = 
-R"(
-	)" + std::string(SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG) + " = vec4(" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + ", " + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"();
-	)" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"(.xyz;
-	)" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + " = vec4(" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + ", " + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"();
-	)" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + " = " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.xyz;
-	)" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR + " = " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + R"(;
-)";
+	std::string assignments = "\n";
+	assignments += "\t";
+	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION;
+	assignments += " = ";
+	assignments += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE;
+	assignments += ".xyz;\n";
+
+	assignments += "\t";
+	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL;
+	assignments += " = surfaceNormal;\n";
+
+	assignments += "\t";
+	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE;
+	assignments += " = ";
+	assignments += SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR;
+	assignments += ".xyz;\n";
+
+	assignments += "\t";
+	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS;
+	assignments += " = vec3(finalAmbientOcclusion, finalMetallic, finalRoughness);\n";
+
+	assignments += "\t";
+	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR;
+	assignments += " = ";
+	assignments += SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR;
+	assignments += ";\n";
+
 	return assignments;
 }
 
@@ -513,7 +539,7 @@ std::string ShaderBuilder::DeferredRenderPass_GetGBufferTextureUniforms() const
 uniform sampler2D )" + std::string(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION) + R"(;
 uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
 uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(;
-uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(;
+uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS + R"(;
 uniform sampler2D )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR + R"(;
 )";
 }
@@ -522,55 +548,59 @@ std::string ShaderBuilder::DeferredRenderPass_GetGBufferVariables() const
 {
 	return R"(
 vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
-vec4 )" + SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR + R"(;
-vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR + R"(;
-vec3 )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"(;
-vec3 )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(;
-float )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"(;
-float )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
+float )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"( = 0.f;
 )";
 }
 
 std::string ShaderBuilder::DeferredRenderPass_GetGBufferVariableAssignments() const
 {
-	return R"(
-	vec4 )" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR) + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
+	std::string assignments = "\n";
+	assignments += "\t";
+	assignments += SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR;
+	assignments += " = texture(";
+	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE;
+	assignments += ", ";
+	assignments += SHADER_VARIABLE_NAMES::TEXTURE::UV;
+	assignments += ");\n\n";
 
-	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"( = vec4(texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz, 1.f);
+	assignments += "\t";
+	assignments += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE;
+	assignments += " = vec4(texture(";
+	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION;
+	assignments += ", ";
+	assignments += SHADER_VARIABLE_NAMES::TEXTURE::UV;
+	assignments += ").xyz, 1.f);\n\n";
 
-	vec4 fragmentNormalAndPhongExponent = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
-	)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(= fragmentNormalAndPhongExponent.xyz;
-	)" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"(= pow(2.f, fragmentNormalAndPhongExponent.a);
+	assignments += "\tsurfaceNormal = normalize(texture(";
+	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL;
+	assignments += ", ";
+	assignments += SHADER_VARIABLE_NAMES::TEXTURE::UV;
+	assignments += ").xyz);\n\n";
+	assignments += "\tgeometryNormal = surfaceNormal;\n\n";
 
-	vec4 specularAndTranslucency = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_SPECULAR_PHONG + R"(, )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"();
-	)" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( = specularAndTranslucency.xyz;
-	)" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"( = specularAndTranslucency.a;
+	assignments += "\tvec3 ambientOcclusionMetallicRoughness = texture(";
+	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS;
+	assignments += ", ";
+	assignments += SHADER_VARIABLE_NAMES::TEXTURE::UV;
+	assignments += ").xyz;\n";
+	assignments += "\tfinalAmbientOcclusion = ambientOcclusionMetallicRoughness.x;\n";
+	assignments += "\tfinalMetallic = ambientOcclusionMetallicRoughness.y;\n";
+	assignments += "\tfinalRoughness = max(ambientOcclusionMetallicRoughness.z, 0.04f);\n\n";
 
-	vec3 )" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + R"( = texture()" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"().xyz;
-)";
+	assignments += "\t";
+	assignments += SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR;
+	assignments += " = texture(";
+	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR;
+	assignments += ", ";
+	assignments += SHADER_VARIABLE_NAMES::TEXTURE::UV;
+	assignments += ").xyz;\n";
+
+	return assignments;
 }
 
 std::string ShaderBuilder::General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const
 {
 	std::string materialVariableText = "\n// Base Material Variables\n";
-
-	materialVariableText += "//---------------------------------PBR------------------------------------\n";
-
-	materialVariableText += "uniform float ";
-	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::METALLIC;
-	materialVariableText += ";\n";
-
-	materialVariableText += "uniform float ";
-	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::ROUGHNESS;
-	materialVariableText += ";\n";
-
-	materialVariableText += "uniform float ";
-	materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION;
-	materialVariableText += ";\n";
-	materialVariableText += "//------------------------------------------------------------------------";
-	materialVariableText += "\n\n\n";
-	materialVariableText += "//------------------------------------------------------------------------";
-	materialVariableText += "\n\n\n";
 
 	materialVariableText += "uniform float ";
 	materialVariableText += SHADER_VARIABLE_NAMES::TIMING::DELTA_TIME;
@@ -596,6 +626,20 @@ std::string ShaderBuilder::General_FS_GetMaterialVariables(const FragmentShaderI
 	materialVariableText += SHADER_VARIABLE_NAMES::TEXTURE::UV;
 	materialVariableText += ";\n";
 
+	materialVariableText += "vec4 ";
+	materialVariableText += SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR;
+	materialVariableText += ";\n";
+
+	materialVariableText += "vec3 ";
+	materialVariableText += SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR;
+	materialVariableText += ";\n";
+
+	materialVariableText += "float finalAmbientOcclusion;\n";
+	materialVariableText += "float finalMetallic;\n";
+	materialVariableText += "float finalRoughness;\n";
+	materialVariableText += "vec3 geometryNormal;\n";
+	materialVariableText += "vec3 surfaceNormal;\n";
+
 	bool requiresAlphaTest = fragmentShaderInitializationData.materialInitializationData && 
 		(fragmentShaderInitializationData.materialInitializationData->owner->GetBlendModel() == MaterialBlendModel::Masked || 
 		 fragmentShaderInitializationData.materialInitializationData->owner->GetBlendModel() == MaterialBlendModel::Transparent);
@@ -614,8 +658,16 @@ std::string ShaderBuilder::General_FS_GetMaterialVariables(const FragmentShaderI
 		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR;
 		materialVariableText += ";\n";
 
-		materialVariableText += "uniform vec3 ";
-		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR;
+		materialVariableText += "uniform float ";
+		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION;
+		materialVariableText += ";\n";
+
+		materialVariableText += "uniform float ";
+		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::METALLIC;
+		materialVariableText += ";\n";
+
+		materialVariableText += "uniform float ";
+		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::ROUGHNESS;
 		materialVariableText += ";\n";
 
 		materialVariableText += "uniform vec3 ";
@@ -631,12 +683,8 @@ std::string ShaderBuilder::General_FS_GetMaterialVariables(const FragmentShaderI
 		materialVariableText += ";\n";
 
 		materialVariableText += "uniform float ";
-		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT;
-		materialVariableText += ";\n\n";
-
-		materialVariableText += "uniform float ";
 		materialVariableText += SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY;
-		materialVariableText += ";\n";
+		materialVariableText += ";\n\n";
 	}
 
 	return materialVariableText;
@@ -663,50 +711,7 @@ std::string ShaderBuilder::FS_GetDirectionalLightColorFunction() const
 	return R"(
 vec3 CalculateDirectionalLightColor(vec3 direction, vec3 intensity)
 {
-	vec3 wi = normalize(-direction);
-
-	float normalDotLightDirection = dot(wi, )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"();
-
-	bool isTranslucent = 0.f < )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
-	bool isBackface = normalDotLightDirection < 0.f;
-
-	if(isBackface)
-	{
-		if(!isTranslucent)
-		{
-			return vec3(0.f);
-		}
-		else
-		{
-			normalDotLightDirection = -normalDotLightDirection;
-		}
-	}
-	
-	if(isTranslucent)
-	{
-		normalDotLightDirection = clamp(normalDotLightDirection + )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(, 0.f, 1.f);
-	}
-
-	vec3 diffuseColor = intensity * normalDotLightDirection;
-
-	// To viewpoint vector
-	vec3 wo = normalize()" + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION + R"( - vec3()" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"());
-
-	vec3 halfVector = normalize(wi + wo);
-
-	// Specular
-	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"();
-	vec3 specularColor = )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( * cosAlphaPrimeToThePowerOfPhongExponent;
-	specularColor *= max(0, normalDotLightDirection) * intensity;
-	
-	vec3 finalIntensity = specularColor + diffuseColor;
-
-	if(isBackface && isTranslucent)
-	{
-		finalIntensity *= )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
-	}
-
-	return finalIntensity;
+	return CalculatePBRLighting(normalize(-direction), intensity);
 }
 )";
 }
@@ -716,60 +721,17 @@ std::string ShaderBuilder::FS_GetPointLightColorFunction() const
 	return R"(
 vec3 CalculatePointLightColor(vec3 position, vec3 intensity, float radius)
 {
-	// To light vector
-	vec3 wi = position - vec3()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"();
-	float wiLength = length(wi);
+	vec3 lightDirection = position - vec3()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"();
+	float lightDistance = length(lightDirection);
 
-	if(radius < wiLength)
+	if(radius < lightDistance || lightDistance <= 0.f)
 	{
 		return vec3(0.f);
 	}
 
-	wi /= wiLength;
-
-	float normalDotLightDirection = dot()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"(, wi);
-	
-	bool isTranslucent = 0.f < )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
-	bool isBackface = normalDotLightDirection < 0.f;
-
-	if(isBackface)
-	{
-		if(!isTranslucent)
-		{
-			return vec3(0.f);
-		}
-		else
-		{
-			normalDotLightDirection = -normalDotLightDirection;
-			normalDotLightDirection = clamp(normalDotLightDirection + )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(, 0.f, 1.f);
-		}
-	}
-
-	// To viewpoint vector
-	vec3 wo = normalize()" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION) + R"( - vec3()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"());
-
-	vec3 halfVector = normalize(wi + wo);
-
-	vec3 intensityOverDistanceSquare = intensity / (wiLength * wiLength);
-
-	// Diffuse
-	float cosThetaPrime = max(0.f, normalDotLightDirection);
-	vec3 diffuseColor = cosThetaPrime * intensityOverDistanceSquare;
-
-	// Specular
-	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot(vertexNormal, halfVector)), )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"();
-	vec3 specularColor = )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( * cosAlphaPrimeToThePowerOfPhongExponent;
-
-	specularColor *= cosThetaPrime * intensityOverDistanceSquare;
-
-	vec3 finalIntensity = specularColor + diffuseColor;
-
-	if(isBackface && isTranslucent)
-	{
-		finalIntensity *= )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
-	}
-
-	return finalIntensity;
+	lightDirection /= lightDistance;
+	vec3 radiance = intensity / (lightDistance * lightDistance);
+	return CalculatePBRLighting(lightDirection, radiance);
 }
 )";
 }
@@ -781,37 +743,20 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 {
 	float lightMultiplier = 0.f;
 
-	// To light vector
-	vec3 wi = vec3()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"() - position;
-	float wiLength = length(wi);
-	wi /= wiLength;
+	vec3 lightDirection = position - vec3()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"();
+	float lightDistance = length(lightDirection);
 
-	float normalDotLightDirection = dot(wi, )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"();
-	
-	bool isTranslucent = 0.f < )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
-	
-	bool isBackface = 0.f < normalDotLightDirection;
-
-	if(isBackface)
+	if(lightDistance <= 0.f)
 	{
-		if(!isTranslucent)
-		{
-			return vec3(0.f);
-		}
-		else
-		{
-			normalDotLightDirection = -normalDotLightDirection;
-			normalDotLightDirection = -clamp(-normalDotLightDirection + )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(, 0.f, 1.f);
-		}
+		return vec3(0.f);
 	}
-	
-	vec3 intensityOverDistanceSquare = intensity / (wiLength * wiLength);
 
-	vec3 diffuseColor = -normalDotLightDirection * intensityOverDistanceSquare;
+	lightDirection /= lightDistance;
+	vec3 lightToFragmentDirection = -lightDirection;
 
 	float cosCoverage = cos(coverageAngle);
 	float cosFalloff = cos(falloffAngle);
-	float cosTheta = abs(dot(wi, direction));
+	float cosTheta = dot(lightToFragmentDirection, direction);
 	
 	if(cosTheta < cosCoverage)
 	{
@@ -827,25 +772,8 @@ vec3 CalculateSpotLightColor(vec3 position, vec3 direction, vec3 intensity, floa
 		lightMultiplier = pow((cosTheta - cosCoverage) / (cosFalloff - cosCoverage), 4);
 	}
 
-	// To viewpoint vector
-	vec3 wo = normalize()" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION) + R"( - vec3()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"());
-
-	vec3 halfVector = normalize(-wi + wo);
-
-	// Specular
-	float cosAlphaPrimeToThePowerOfPhongExponent = pow(max(0.f, dot()" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + R"(, halfVector)), )" + SHADER_VARIABLE_NAMES::MATERIAL::PHONG_EXPONENT + R"();
-	vec3 specularColor = )" + SHADER_VARIABLE_NAMES::MATERIAL::SPECULAR + R"( * cosAlphaPrimeToThePowerOfPhongExponent;
-
-	specularColor *= intensityOverDistanceSquare;
-	
-	vec3 finalIntensity = (specularColor + diffuseColor) * lightMultiplier;
-
-	if(isBackface && isTranslucent)
-	{
-		finalIntensity *= )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
-	}
-
-	return finalIntensity;
+	vec3 radiance = (intensity / (lightDistance * lightDistance)) * lightMultiplier;
+	return CalculatePBRLighting(lightDirection, radiance);
 }
 )";
 }
@@ -959,16 +887,28 @@ std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(MaterialInitializ
 				initializationData->baseColor.result = General_FS_GetDiffuseTextureSampling(texture->GetName());
 			}
 			break;
-		case TextureUsage::Normal:
-			if (initializationData && initializationData->fragmentNormal.result.empty())
-			{
-				initializationData->fragmentNormal.result = General_FS_GetNormalTextureSampling(texture->GetName());
-			}
-			break;
 		case TextureUsage::Emmisive:
 			if (initializationData && initializationData->emisiveColor.result.empty())
 			{
 				initializationData->emisiveColor.result = General_FS_GetEmmisiveTextureSampling(texture->GetName());
+			}
+			break;
+		case TextureUsage::AmbientOcclusion:
+			if (initializationData && initializationData->ambientOcclusion.result.empty())
+			{
+				initializationData->ambientOcclusion.result = General_FS_GetScalarTextureSampling(texture->GetName());
+			}
+			break;
+		case TextureUsage::Metallic:
+			if (initializationData && initializationData->metallic.result.empty())
+			{
+				initializationData->metallic.result = General_FS_GetScalarTextureSampling(texture->GetName());
+			}
+			break;
+		case TextureUsage::Roughness:
+			if (initializationData && initializationData->roughness.result.empty())
+			{
+				initializationData->roughness.result = General_FS_GetScalarTextureSampling(texture->GetName());
 			}
 			break;
 		default:
@@ -992,9 +932,14 @@ std::string ShaderBuilder::General_FS_GetDiffuseTextureSampling(const std::strin
 	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + "); ");
 }
 
+std::string ShaderBuilder::General_FS_GetScalarTextureSampling(const std::string& textureName) const
+{
+	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ").r; ");
+}
+
 std::string ShaderBuilder::General_FS_GetNormalTextureSampling(const std::string& textureName) const
 {
-	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ") * 0.5f + vec4(0.5f); ");
+	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ").xyz * 2.f - vec3(1.f); ");
 }
 
 std::string ShaderBuilder::General_FS_GetEmmisiveTextureSampling(const std::string& textureName) const
@@ -1045,7 +990,7 @@ std::string ShaderBuilder::FS_GetLightCalculationIterators() const
 	{
 		if()" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"()
 		{
-			vec3 )" + SHADER_VARIABLE_NAMES::SHADOW::FRAGMENT_TO_LIGHT_VECTOR + R"( = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + ".xyz + " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + " * 0.025f - " + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + R"(;
+			vec3 )" + SHADER_VARIABLE_NAMES::SHADOW::FRAGMENT_TO_LIGHT_VECTOR + R"( = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"(.xyz + geometryNormal * 0.025f - )" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + R"(;
 			float )" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE + R"( = texture()" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_SHADOW_MAP_ARRAY_NAME + "[pointLightIndex], vec4(" + SHADER_VARIABLE_NAMES::SHADOW::FRAGMENT_TO_LIGHT_VECTOR + R"(, 0.025f)).x;
 			)" + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE + R"( *= )" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + R"(;
 			if(length()" + std::string(SHADER_VARIABLE_NAMES::SHADOW::FRAGMENT_TO_LIGHT_VECTOR) + ") < " + SHADER_VARIABLE_NAMES::SHADOW::SHADOW_VALUE + R"()
@@ -1125,7 +1070,7 @@ std::string ShaderBuilder::FS_InitializeBaseColor(MaterialInitializationData* in
 		result += initializationData->baseColor.calculation + "\n";
 	}
 	
-	result += std::string("\n\tvec4 ") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + " = ";
+	result += std::string("\n\t") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + " = ";
 
 	if (initializationData && !initializationData->baseColor.result.empty())
 	{
@@ -1155,7 +1100,7 @@ std::string ShaderBuilder::FS_InitializeEmmisiveColor(MaterialInitializationData
 		result += initializationData->emisiveColor.calculation + "\n";
 	}
 	
-	result += std::string("\n\tvec3 ") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + " = ";
+	result += std::string("\n\t") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + " = ";
 
 	if (initializationData && !initializationData->emisiveColor.result.empty())
 	{
@@ -1167,6 +1112,207 @@ std::string ShaderBuilder::FS_InitializeEmmisiveColor(MaterialInitializationData
 	}
 
 	return result;
+}
+
+std::string ShaderBuilder::FS_InitializeAmbientOcclusion(MaterialInitializationData* initializationData) const
+{
+	std::string result = "";
+
+	if (initializationData && !initializationData->ambientOcclusion.calculation.empty())
+	{
+		result += initializationData->ambientOcclusion.calculation + "\n";
+	}
+
+	result += "\n\tfinalAmbientOcclusion = ";
+
+	if (initializationData && !initializationData->ambientOcclusion.result.empty())
+	{
+		result += initializationData->ambientOcclusion.result;
+	}
+	else
+	{
+		result += std::string(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION) + ";";
+	}
+
+	result += "\tfinalAmbientOcclusion = clamp(finalAmbientOcclusion, 0.f, 1.f);\n";
+	return result;
+}
+
+std::string ShaderBuilder::FS_InitializeMetallic(MaterialInitializationData* initializationData) const
+{
+	std::string result = "";
+
+	if (initializationData && !initializationData->metallic.calculation.empty())
+	{
+		result += initializationData->metallic.calculation + "\n";
+	}
+
+	result += "\n\tfinalMetallic = ";
+
+	if (initializationData && !initializationData->metallic.result.empty())
+	{
+		result += initializationData->metallic.result;
+	}
+	else
+	{
+		result += std::string(SHADER_VARIABLE_NAMES::MATERIAL::METALLIC) + ";";
+	}
+
+	result += "\tfinalMetallic = clamp(finalMetallic, 0.f, 1.f);\n";
+	return result;
+}
+
+std::string ShaderBuilder::FS_InitializeRoughness(MaterialInitializationData* initializationData) const
+{
+	std::string result = "";
+
+	if (initializationData && !initializationData->roughness.calculation.empty())
+	{
+		result += initializationData->roughness.calculation + "\n";
+	}
+
+	result += "\n\tfinalRoughness = ";
+
+	if (initializationData && !initializationData->roughness.result.empty())
+	{
+		result += initializationData->roughness.result;
+	}
+	else
+	{
+		result += std::string(SHADER_VARIABLE_NAMES::MATERIAL::ROUGHNESS) + ";";
+	}
+
+	result += "\tfinalRoughness = clamp(finalRoughness, 0.04f, 1.f);\n";
+	return result;
+}
+
+std::string ShaderBuilder::FS_InitializeSurfaceNormal(MaterialInitializationData* initializationData) const
+{
+	std::string result = "";
+
+	result += "\n\tgeometryNormal = normalize(";
+	result += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
+	result += ");\n";
+
+	result += "\tsurfaceNormal = geometryNormal;\n";
+
+	if (initializationData && !initializationData->fragmentNormal.calculation.empty())
+	{
+		result += initializationData->fragmentNormal.calculation + "\n";
+	}
+
+	if (initializationData && !initializationData->fragmentNormal.result.empty())
+	{
+		result += "\n\tsurfaceNormal = ";
+		result += initializationData->fragmentNormal.result;
+	}
+
+	result += "\tsurfaceNormal = normalize(surfaceNormal);\n";
+	return result;
+}
+
+std::string ShaderBuilder::FS_GetPBRFunctions() const
+{
+	return R"(
+const float PI = 3.14159265359f;
+
+vec3 FresnelSchlick(float cosTheta, vec3 F0)
+{
+    return F0 + (vec3(1.f) - F0) * pow(clamp(1.f - cosTheta, 0.f, 1.f), 5.f);
+}
+
+float DistributionGGX(vec3 normal, vec3 halfVector, float roughness)
+{
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float normalDotHalf = max(dot(normal, halfVector), 0.f);
+    float normalDotHalf2 = normalDotHalf * normalDotHalf;
+
+    float denominator = normalDotHalf2 * (a2 - 1.f) + 1.f;
+    return a2 / max(PI * denominator * denominator, 0.0001f);
+}
+
+float GeometrySchlickGGX(float normalDotDirection, float roughness)
+{
+    float r = roughness + 1.f;
+    float k = (r * r) / 8.f;
+
+    return normalDotDirection / max(normalDotDirection * (1.f - k) + k, 0.0001f);
+}
+
+float GeometrySmith(vec3 normal, vec3 viewDirection, vec3 lightDirection, float roughness)
+{
+    float normalDotView = max(dot(normal, viewDirection), 0.f);
+    float normalDotLight = max(dot(normal, lightDirection), 0.f);
+
+    float ggxView = GeometrySchlickGGX(normalDotView, roughness);
+    float ggxLight = GeometrySchlickGGX(normalDotLight, roughness);
+
+    return ggxView * ggxLight;
+}
+
+vec3 CalculatePBRLighting(vec3 lightDirection, vec3 radiance)
+{
+    vec3 normal = surfaceNormal;
+    vec3 viewDirection = normalize()" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION) + R"( - vec3()" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"());
+    
+    float normalDotLight = dot(normal, lightDirection);
+    bool isBackface = normalDotLight < 0.f;
+
+    if(isBackface)
+    {
+        if()" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"( <= 0.f)
+        {
+            return vec3(0.f);
+        }
+        normal = -normal;
+        normalDotLight = -normalDotLight;
+    }
+
+    float normalDotView = max(dot(normal, viewDirection), 0.0001f);
+    float clampedNormalDotLight = max(normalDotLight, 0.f);
+    if(clampedNormalDotLight <= 0.f)
+    {
+        return vec3(0.f);
+    }
+
+    vec3 F0 = mix(vec3(0.04f), )" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.rgb, finalMetallic);
+    vec3 specular = vec3(0.f);
+    vec3 kS = vec3(0.f);
+
+    // Only calculate specular reflections for front-facing light
+    if(!isBackface) 
+    {
+        vec3 halfVector = normalize(viewDirection + lightDirection);
+        kS = FresnelSchlick(max(dot(halfVector, viewDirection), 0.f), F0);
+        
+        float NDF = DistributionGGX(normal, halfVector, finalRoughness);
+        float G = GeometrySmith(normal, viewDirection, lightDirection, finalRoughness);
+
+        vec3 numerator = NDF * G * kS;
+        float denominator = max(4.f * normalDotView * clampedNormalDotLight, 0.0001f);
+        specular = numerator / denominator;
+    }
+
+    vec3 kD = (vec3(1.f) - kS) * (1.f - finalMetallic);
+
+    // FIX: Divided base color by PI for energy conservation
+    vec3 directLighting = ((kD * )" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.rgb / PI) + specular) * radiance * clampedNormalDotLight;
+
+    if(isBackface)
+    {
+        directLighting *= )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"(;
+    }
+
+    return directLighting;
+}
+
+vec3 CalculatePBRAmbientLight()
+{
+    // A simple ambient approximation. 
+    return 0.12f * )" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.rgb * finalAmbientOcclusion;
+}
+)";
 }
 
 std::string ShaderBuilder::VS_GetMainLayouts() const
