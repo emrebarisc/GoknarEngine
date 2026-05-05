@@ -112,12 +112,30 @@ struct GOKNAR_API SkeletalAnimationKeyframe
 
     void GetInterpolatedScaling(Vector3& out, float time)
     {
-        int previousIndex = 0;
-        for (int scalingIndex = 0; scalingIndex < scalingKeySize; ++scalingIndex)
+        if (scalingKeySize <= 0 || !scalingKeys)
         {
-            if (scalingKeys[scalingIndex].time < time)
+            out = Vector3(1.f);
+            return;
+        }
+
+        if (scalingKeySize == 1 || time <= scalingKeys[0].time)
+        {
+            out = scalingKeys[0].value;
+            return;
+        }
+
+        if (scalingKeys[scalingKeySize - 1].time <= time)
+        {
+            out = scalingKeys[scalingKeySize - 1].value;
+            return;
+        }
+
+        int previousIndex = 0;
+        for (int scalingIndex = 0; scalingIndex < (scalingKeySize - 1); ++scalingIndex)
+        {
+            if (scalingKeys[scalingIndex + 1].time <= time)
             {
-                previousIndex = scalingIndex;
+                previousIndex = scalingIndex + 1;
             }
         }
 
@@ -137,12 +155,30 @@ struct GOKNAR_API SkeletalAnimationKeyframe
 
     void GetInterpolatedPosition(Vector3& out, float time)
     {
-        int previousIndex = 0;
-        for (int positionIndex = 0; positionIndex < positionKeySize; ++positionIndex)
+        if (positionKeySize <= 0 || !positionKeys)
         {
-            if (positionKeys[positionIndex].time < time)
+            out = Vector3::ZeroVector;
+            return;
+        }
+
+        if (positionKeySize == 1 || time <= positionKeys[0].time)
+        {
+            out = positionKeys[0].value;
+            return;
+        }
+
+        if (positionKeys[positionKeySize - 1].time <= time)
+        {
+            out = positionKeys[positionKeySize - 1].value;
+            return;
+        }
+
+        int previousIndex = 0;
+        for (int positionIndex = 0; positionIndex < (positionKeySize - 1); ++positionIndex)
+        {
+            if (positionKeys[positionIndex + 1].time <= time)
             {
-                previousIndex = positionIndex;
+                previousIndex = positionIndex + 1;
             }
         }
 
@@ -162,12 +198,30 @@ struct GOKNAR_API SkeletalAnimationKeyframe
 
     void GetInterpolatedRotation(Quaternion& out, float time)
     {
+        if (rotationKeySize <= 0 || !rotationKeys)
+        {
+            out = Quaternion::Identity;
+            return;
+        }
+
+        if (rotationKeySize == 1 || time <= rotationKeys[0].time)
+        {
+            out = rotationKeys[0].value;
+            return;
+        }
+
+        if (rotationKeys[rotationKeySize - 1].time <= time)
+        {
+            out = rotationKeys[rotationKeySize - 1].value;
+            return;
+        }
+
         int previousIndex = 0;
         for (int rotationIndex = 0; rotationIndex < (rotationKeySize - 1); ++rotationIndex)
         {
-            if (rotationKeys[rotationIndex].time < time)
+            if (rotationKeys[rotationIndex + 1].time <= time)
             {
-                previousIndex = rotationIndex;
+                previousIndex = rotationIndex + 1;
             }
         }
 
