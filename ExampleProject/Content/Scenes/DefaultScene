@@ -19,6 +19,13 @@
         </PointLight>
     </Lights>
     <Objects>
+        <ReflectionProbeObject>
+            <Name>ReflectionProbeObject</Name>
+            <WorldPosition>0.000000 -2.000000 0.625000</WorldPosition>
+            <WorldScaling>4.000000 4.000000 4.000000</WorldScaling>
+            <Size>10.000000 10.000000 10.000000</Size>
+            <Components/>
+        </ReflectionProbeObject>
         <ObjectBase>
             <Name>PBR_Test_Sphere_1</Name>
             <WorldPosition>7.000000 4.000000 3.125000</WorldPosition>
@@ -82,17 +89,6 @@
                     <MeshPath>Meshes/DefaultScene/SM_UnitSphere.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/PBRTests/M_PBR_StoneOccluded</MaterialPath>
-                </StaticMeshComponent>
-            </Components>
-        </ObjectBase>
-        <ObjectBase>
-            <Name>ObjectBase</Name>
-            <WorldPosition>4.000000 -4.000000 3.125000</WorldPosition>
-            <Components>
-                <StaticMeshComponent>
-                    <MeshPath>Meshes/DefaultScene/SM_UnitSphere.fbx</MeshPath>
-                    <RenderMask>1</RenderMask>
-                    <MaterialPath>Materials/PBRTests/M_PBR_Mirror</MaterialPath>
                 </StaticMeshComponent>
             </Components>
         </ObjectBase>
@@ -305,8 +301,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box1</Name>
-            <WorldPosition>-14.939899 -2.016010 0.624985</WorldPosition>
-            <EulerWorldRotation>0.002824 0.001147 13.494601</EulerWorldRotation>
+            <WorldPosition>-14.940734 -2.018414 0.624982</WorldPosition>
+            <EulerWorldRotation>0.006313 -0.000266 13.436064</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -322,8 +318,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box2</Name>
-            <WorldPosition>-14.841874 -3.275805 0.624984</WorldPosition>
-            <EulerWorldRotation>-0.002859 0.001066 -20.627310</EulerWorldRotation>
+            <WorldPosition>-14.844598 -3.275839 0.624975</WorldPosition>
+            <EulerWorldRotation>-0.003768 0.000656 -20.720564</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -339,8 +335,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box3</Name>
-            <WorldPosition>-13.676167 -1.979732 0.624948</WorldPosition>
-            <EulerWorldRotation>0.003930 -0.004856 -1.762854</EulerWorldRotation>
+            <WorldPosition>-13.676867 -1.980835 0.624950</WorldPosition>
+            <EulerWorldRotation>0.005944 -0.001045 -1.685457</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -356,8 +352,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box4</Name>
-            <WorldPosition>-13.400121 -3.211825 0.624958</WorldPosition>
-            <EulerWorldRotation>-0.003324 -0.002876 8.672925</EulerWorldRotation>
+            <WorldPosition>-13.402031 -3.213117 0.624954</WorldPosition>
+            <EulerWorldRotation>-0.004981 -0.002015 8.671031</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -373,8 +369,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box5</Name>
-            <WorldPosition>-14.373409 -2.028111 1.624971</WorldPosition>
-            <EulerWorldRotation>0.002761 0.002978 1.572648</EulerWorldRotation>
+            <WorldPosition>-14.381585 -2.035834 1.624970</WorldPosition>
+            <EulerWorldRotation>0.005755 0.003128 1.414712</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -390,8 +386,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box6</Name>
-            <WorldPosition>-14.337132 -3.135700 1.624965</WorldPosition>
-            <EulerWorldRotation>-0.001773 0.003934 15.598206</EulerWorldRotation>
+            <WorldPosition>-14.347928 -3.142009 1.624953</WorldPosition>
+            <EulerWorldRotation>-0.003297 0.004686 15.485872</EulerWorldRotation>
             <Mass>5</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -407,8 +403,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box7</Name>
-            <WorldPosition>-14.145435 -2.513570 2.624866</WorldPosition>
-            <EulerWorldRotation>0.000695 0.012882 -16.511845</EulerWorldRotation>
+            <WorldPosition>-14.159415 -2.523635 2.624861</WorldPosition>
+            <EulerWorldRotation>0.001754 0.013237 -16.468332</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -424,8 +420,8 @@
         </RigidBody>
         <RigidBody>
             <Name>RigidBody</Name>
-            <WorldPosition>-14.838334 -9.147565 0.625000</WorldPosition>
-            <EulerWorldRotation>0.000016 -0.000014 33.766235</EulerWorldRotation>
+            <WorldPosition>-14.828867 -9.154962 0.625000</WorldPosition>
+            <EulerWorldRotation>0.000016 -0.000014 33.978882</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -460,7 +456,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Matilda</Name>
-            <WorldPosition>0.000000 2.000000 0.125045</WorldPosition>
+            <WorldPosition>0.000000 2.000000 1.125000</WorldPosition>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -472,6 +468,7 @@
                 <StaticMeshComponent>
                     <MeshPath>Meshes/Objects/SM_Matilda.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
+                    <RelativePosition>0.000000 0.000000 -1.000000</RelativePosition>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
@@ -491,6 +488,24 @@
                     <MeshPath>Meshes/Environment/Trees/SM_TreeBirch_01_Red.FBX</MeshPath>
                     <RenderMask>1</RenderMask>
                     <RelativePosition>0.000000 0.000000 -2.000000</RelativePosition>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>RigidBody</Name>
+            <WorldPosition>0.000000 -2.000000 1.000000</WorldPosition>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <SphereCollisionComponent>
+                    <Radius>1</Radius>
+                </SphereCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitSphere.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_PBR_Mirror</MaterialPath>
+                    <RelativePosition>0.000000 0.000000 -1.000000</RelativePosition>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
