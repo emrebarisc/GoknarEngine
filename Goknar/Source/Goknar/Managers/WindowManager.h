@@ -72,6 +72,11 @@ public:
 		windowSizeDelegate_ += callback;
 	}
 
+	void RemoveWindowSizeCallback(const Delegate<void(int, int)>& callback)
+	{
+		windowSizeDelegate_ -= callback;
+	}
+
 private:
 	static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 

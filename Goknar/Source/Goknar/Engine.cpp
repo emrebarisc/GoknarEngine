@@ -418,41 +418,63 @@ void Engine::Tick(float deltaTime)
 
 void Engine::ClearMemory()
 {
-	std::vector<Component*>::iterator registeredComponentsIterator = registeredComponents_.begin();
-	for (; registeredComponentsIterator != registeredComponents_.end(); ++registeredComponentsIterator)
+	const std::vector<Component*> registeredComponentsSnapshot = registeredComponents_;
+	for (Component* component : registeredComponentsSnapshot)
 	{
-		Component* component = *registeredComponentsIterator;
-		component->Destroy();
+		if (component)
+		{
+			component->Destroy();
+		}
+	}
+
+	const std::vector<ObjectBase*> registeredObjectsSnapshot = registeredObjects_;
+	for (ObjectBase* object : registeredObjectsSnapshot)
+	{
+		if (object)
+		{
+			object->Destroy();
+		}
+	}
+
+	while (hasObjectsOrComponentsPendingDestroy_)
+	{
+		DestroyAllPendingObjectAndComponents();
+	}
+
+	for (Component* component : registeredComponents_)
+	{
+		if (!component)
+		{
+			continue;
+		}
+
 		component->DestroyInner();
+		delete component;
 	}
 
-	std::vector<ObjectBase*>::iterator registeredObjectsIterator = registeredObjects_.begin();
-	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
+	for (ObjectBase* object : registeredObjects_)
 	{
-		ObjectBase* object = *registeredObjectsIterator;
-		object->Destroy();
+		if (!object)
+		{
+			continue;
+		}
+
 		object->DestroyInner();
-	}
-
-	registeredComponentsIterator = registeredComponents_.begin();
-	for (; registeredComponentsIterator != registeredComponents_.end(); ++registeredComponentsIterator)
-	{
-		delete *registeredComponentsIterator;
-	}
-
-	registeredObjectsIterator = registeredObjects_.begin();
-	for (; registeredObjectsIterator != registeredObjects_.end(); ++registeredObjectsIterator)
-	{
-		delete *registeredObjectsIterator;
+		delete object;
 	}
 
 	registeredComponents_.clear();
 	tickableComponents_.clear();
 	componentsToBeInitialized_.clear();
+	componentsPendingDestroy_.clear();
+	hasUninitializedComponents_ = false;
 
 	registeredObjects_.clear();
 	tickableObjects_.clear();
 	objectsToBeInitialized_.clear();
+	objectsPendingDestroy_.clear();
+	hasUninitializedObjects_ = false;
+	hasObjectsOrComponentsPendingDestroy_ = false;
 }
 
 void Engine::DestroyAllPendingObjectAndComponents()

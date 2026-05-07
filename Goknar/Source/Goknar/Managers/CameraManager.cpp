@@ -12,6 +12,11 @@ CameraManager::~CameraManager()
 	{
 		delete camera;
 	}
+
+	for (Camera* camera : camerasToAddNextFrame_)
+	{
+		delete camera;
+	}
 }
 
 void CameraManager::PreInit()
@@ -121,6 +126,17 @@ bool CameraManager::DoesCameraExist(const Camera* camera)
 		}
 
 		++camerasIterator;
+	}
+
+	std::vector<Camera*>::const_iterator pendingCamerasIterator = camerasToAddNextFrame_.cbegin();
+	while (pendingCamerasIterator != camerasToAddNextFrame_.cend())
+	{
+		if (camera == *pendingCamerasIterator)
+		{
+			return true;
+		}
+
+		++pendingCamerasIterator;
 	}
 
 	return false;

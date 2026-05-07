@@ -19,16 +19,7 @@ RenderTarget::RenderTarget()
 RenderTarget::~RenderTarget()
 {
 	engine->GetRenderer()->RemoveRenderTarget(this);
-
-	if (engine->GetCameraManager()->DoesCameraExist(camera_))
-	{
-		camera_->Destroy();
-	}
-
-	delete texture_;
-	delete framebuffer_;
 	delete deferredRenderingData_;
-
 	delete depthRenderbuffer_;
 }
 
