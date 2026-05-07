@@ -76,6 +76,14 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* SPOT_LIGHT_VIEW_MATRIX_ARRAY_NAME = "spotLightViewMatrixArray";
 	}
 
+	inline namespace REFLECTION_PROBE
+	{
+		const char* HAS_REFLECTION_PROBE = "hasReflectionProbe";
+		const char* CUBEMAP = "reflectionProbeCubemap";
+		const char* USAGE = "reflectionProbeUsage";
+		const char* VIEW_MATRICES_ARRAY = "reflectionProbeViewMatrices";
+	}
+
 	inline namespace LIGHT_KEYWORDS
 	{
 		const char* POSITION = "position";

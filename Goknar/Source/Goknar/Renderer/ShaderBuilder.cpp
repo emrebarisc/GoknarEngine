@@ -21,6 +21,14 @@
 
 ShaderBuilder* ShaderBuilder::instance_ = nullptr;
 
+namespace
+{
+	bool MaterialUsesReflectionProbe(const MaterialInitializationData* initializationData)
+	{
+		return initializationData && initializationData->owner && initializationData->owner->GetUsesReflectionProbe();
+	}
+}
+
 ShaderBuilder::~ShaderBuilder()
 {
 }
@@ -33,7 +41,16 @@ std::string ShaderBuilder::General_FS_GetScript(const FragmentShaderInitializati
 
 	bool includeLightOperations =
 		fragmentShaderInitializationData.renderPassType == RenderPassType::Forward ||
+		fragmentShaderInitializationData.renderPassType == RenderPassType::Deferred ||
+		fragmentShaderInitializationData.renderPassType == RenderPassType::CubemapCapture;
+
+	const bool includeShadowOperations =
+		fragmentShaderInitializationData.renderPassType == RenderPassType::Forward ||
 		fragmentShaderInitializationData.renderPassType == RenderPassType::Deferred;
+
+	const bool includeReflectionProbeOperations =
+		fragmentShaderInitializationData.renderPassType == RenderPassType::Deferred ||
+		MaterialUsesReflectionProbe(fragmentShaderInitializationData.materialInitializationData);
 
 	if (fragmentShaderInitializationData.renderPassType == RenderPassType::Deferred)
 	{
@@ -49,10 +66,23 @@ std::string ShaderBuilder::General_FS_GetScript(const FragmentShaderInitializati
 		fragmentShader += FS_GetSpotLightStruct();
 
 		fragmentShader += FS_GetLightArrayUniforms();
-		fragmentShader += FS_GetShadowMapUniforms();
-		fragmentShader += FS_GetLightSpaceFragmentPositions(fragmentShaderInitializationData);
+		if (includeReflectionProbeOperations)
+		{
+			fragmentShader += FS_GetReflectionProbeUniforms();
+		}
 
-		fragmentShader += FS_GetPBRFunctions();
+		if (includeShadowOperations)
+		{
+			fragmentShader += FS_GetShadowMapUniforms();
+			fragmentShader += FS_GetLightSpaceFragmentPositions(fragmentShaderInitializationData);
+		}
+
+		if (includeReflectionProbeOperations && fragmentShaderInitializationData.renderPassType != RenderPassType::Deferred)
+		{
+			fragmentShader += "float " + std::string(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::USAGE) + " = 1.f;\n";
+		}
+
+		fragmentShader += FS_GetPBRFunctions(includeReflectionProbeOperations);
 		fragmentShader += FS_GetDirectionalLightColorFunction();
 		fragmentShader += FS_GetPointLightColorFunction();
 		fragmentShader += FS_GetSpotLightColorFunction();
@@ -75,7 +105,8 @@ void main()
 {
 )";
 	if (fragmentShaderInitializationData.renderPassType == RenderPassType::Forward ||
-		fragmentShaderInitializationData.renderPassType == RenderPassType::GeometryBuffer)
+		fragmentShaderInitializationData.renderPassType == RenderPassType::GeometryBuffer ||
+		fragmentShaderInitializationData.renderPassType == RenderPassType::CubemapCapture)
 	{
 		fragmentShader += FS_InitializeBaseColor(fragmentShaderInitializationData.materialInitializationData);
 		fragmentShader += FS_InitializeEmmisiveColor(fragmentShaderInitializationData.materialInitializationData);
@@ -93,7 +124,7 @@ void main()
 	if (includeLightOperations)
 	{
 		fragmentShader += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = vec3(0.f);\n";
-		fragmentShader += FS_GetLightCalculationIterators();
+		fragmentShader += FS_GetLightCalculationIterators(includeShadowOperations);
 	}
 	fragmentShader += fragmentShaderInitializationData.outputVariableAssignments;
 	fragmentShader += R"(
@@ -222,7 +253,7 @@ std::string ShaderBuilder::GeometryBufferPass_GetInstancedStaticMeshVertexShader
 std::string ShaderBuilder::GeometryBufferPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	std::string outputVariables = GeometryBufferPass_GetOutputVariables();
-	std::string outputVariableAssignments = GeometryBufferPass_GetOutputVariableAssignments();
+	std::string outputVariableAssignments = GeometryBufferPass_GetOutputVariableAssignments(initializationData);
 
 	FragmentShaderInitializationData fragmentShaderInitializationData(outputVariables, outputVariableAssignments);
 	fragmentShaderInitializationData.materialInitializationData = initializationData;
@@ -336,6 +367,9 @@ out vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_PO
 
 	if (requiresAlphaTest)
 	{
+		pointShadowPassGeometryShader += "in mat4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "[];\n";
+		pointShadowPassGeometryShader += "out mat4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "_GS;\n";
+
 		pointShadowPassGeometryShader += "in vec2 " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "[];\n";
 		pointShadowPassGeometryShader += "out vec2 " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "_GS;\n";
 
@@ -363,6 +397,7 @@ void main()
 
 	if (requiresAlphaTest)
 	{
+		pointShadowPassGeometryShader += "\t\t\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "_GS = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "[i];\n";
 		pointShadowPassGeometryShader += "\t\t\t" + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "_GS = " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "[i];\n";
 		pointShadowPassGeometryShader += "\t\t\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "_GS = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "[i];\n";
 		pointShadowPassGeometryShader += "\t\t\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "_GS = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "[i];\n";
@@ -389,6 +424,7 @@ std::string ShaderBuilder::PointShadowPass_GetFragmentShaderScript(MaterialIniti
 	
 	if (requiresAlphaTest)
 	{
+		shadowPassFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "_GS\n";
 		shadowPassFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "_GS\n";
 		shadowPassFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "_GS\n";
 		shadowPassFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "_GS\n";
@@ -443,6 +479,138 @@ void main()
 	return shadowPassFragmentShader;
 }
 
+std::string ShaderBuilder::CubemapRenderPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	VertexShaderInitializationData vertexShaderInitializationData;
+	vertexShaderInitializationData.materialInitializationData = initializationData;
+	vertexShaderInitializationData.shader = shader;
+	vertexShaderInitializationData.renderPassType = RenderPassType::CubemapCapture;
+	return General_VS_GetScript(vertexShaderInitializationData);
+}
+
+std::string ShaderBuilder::CubemapRenderPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	VertexShaderInitializationData vertexShaderInitializationData;
+	vertexShaderInitializationData.materialInitializationData = initializationData;
+	vertexShaderInitializationData.shader = shader;
+	vertexShaderInitializationData.renderPassType = RenderPassType::CubemapCapture;
+	vertexShaderInitializationData.meshType = MeshType::InstancedStatic;
+	return General_VS_GetScript(vertexShaderInitializationData);
+}
+
+std::string ShaderBuilder::CubemapRenderPass_GetGeometryShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	std::string cubemapPassGeometryShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
+	cubemapPassGeometryShader += R"(
+layout (triangles) in;
+layout (triangle_strip, max_vertices=18) out;
+
+uniform mat4 )" + std::string(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::VIEW_MATRICES_ARRAY) + R"([6];
+
+in mat4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + R"([];
+out mat4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + R"(_GS;
+
+out vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(_GS;
+out vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"(_GS;
+)";
+	cubemapPassGeometryShader += "in vec2 " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "[];\n";
+	cubemapPassGeometryShader += "out vec2 " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "_GS;\n\n";
+	cubemapPassGeometryShader += "in vec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "[];\n";
+	cubemapPassGeometryShader += "out vec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "_GS;\n\n";
+	cubemapPassGeometryShader += "in vec4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "[];\n";
+	cubemapPassGeometryShader += "out vec4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "_GS;\n";
+	cubemapPassGeometryShader += R"(
+
+void main()
+{
+	for(int face = 0; face < 6; ++face)
+	{
+		gl_Layer = face;
+		for(int i = 0; i < 3; ++i)
+		{
+			)" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + R"(_GS = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX + R"([i];
+			)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"(_GS = gl_in[i].gl_Position;
+			gl_Position = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + "_GS * " + SHADER_VARIABLE_NAMES::REFLECTION_PROBE::VIEW_MATRICES_ARRAY + R"([face];
+			)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE + R"(_GS = gl_Position;
+			)" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"(_GS = )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"([i];
+			)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(_GS = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"([i];
+			)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR + R"(_GS = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR + R"([i];
+			EmitVertex();
+		}
+		EndPrimitive();
+	}
+}
+)";
+
+	return cubemapPassGeometryShader;
+}
+
+std::string ShaderBuilder::CubemapRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	const bool materialUsesReflectionProbe = MaterialUsesReflectionProbe(initializationData);
+
+	std::string cubemapFragmentShader = "#version " + std::string(DEFAULT_SHADER_VERSION) + "\n";
+	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "_GS\n";
+	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + "_GS\n";
+	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + "_GS\n";
+	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "_GS\n";
+	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "_GS\n";
+	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "_GS\n\n";
+
+	std::string outputVariables = FS_GetOutputVariables();
+	std::string outputVariableAssignments = FS_GetOutputVariableAssignments();
+
+	FragmentShaderInitializationData fragmentShaderInitializationData(outputVariables, outputVariableAssignments);
+	fragmentShaderInitializationData.materialInitializationData = initializationData;
+	fragmentShaderInitializationData.shader = shader;
+	fragmentShaderInitializationData.renderPassType = RenderPassType::CubemapCapture;
+
+	cubemapFragmentShader += General_FS_GetMaterialVariables(fragmentShaderInitializationData);
+	cubemapFragmentShader += outputVariables;
+	cubemapFragmentShader += FS_GetDirectionalLightStruct();
+	cubemapFragmentShader += FS_GetPointLightStruct();
+	cubemapFragmentShader += FS_GetSpotLightStruct();
+	cubemapFragmentShader += FS_GetLightArrayUniforms();
+	if (materialUsesReflectionProbe)
+	{
+		cubemapFragmentShader += FS_GetReflectionProbeUniforms();
+		cubemapFragmentShader += "float " + std::string(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::USAGE) + " = 1.f;\n";
+	}
+	cubemapFragmentShader += FS_GetPBRFunctions(materialUsesReflectionProbe);
+	cubemapFragmentShader += FS_GetDirectionalLightColorFunction();
+	cubemapFragmentShader += FS_GetPointLightColorFunction();
+	cubemapFragmentShader += FS_GetSpotLightColorFunction();
+	cubemapFragmentShader += General_FS_GetShaderTextureUniforms(initializationData, shader);
+
+	if (initializationData && !initializationData->fragmentShaderFunctions.empty())
+	{
+		cubemapFragmentShader += initializationData->fragmentShaderFunctions;
+	}
+
+	if (initializationData && !initializationData->fragmentShaderUniforms.empty())
+	{
+		cubemapFragmentShader += initializationData->fragmentShaderUniforms;
+	}
+
+	cubemapFragmentShader += R"(
+void main()
+{
+)";
+	cubemapFragmentShader += FS_InitializeBaseColor(initializationData);
+	cubemapFragmentShader += FS_InitializeEmmisiveColor(initializationData);
+	cubemapFragmentShader += FS_InitializeAmbientOcclusion(initializationData);
+	cubemapFragmentShader += FS_InitializeMetallic(initializationData);
+	cubemapFragmentShader += FS_InitializeRoughness(initializationData);
+	cubemapFragmentShader += FS_InitializeSurfaceNormal(initializationData);
+	cubemapFragmentShader += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = vec3(0.f);\n";
+	cubemapFragmentShader += FS_GetLightCalculationIterators(false);
+	cubemapFragmentShader += outputVariableAssignments;
+	cubemapFragmentShader += R"(
+})";
+
+	return cubemapFragmentShader;
+}
+
 std::string ShaderBuilder::DeferredRenderPass_GetVertexShaderScript()
 {
 	return 
@@ -493,7 +661,7 @@ std::string ShaderBuilder::GeometryBufferPass_GetOutputVariables() const
 layout(location = 0) out vec3 )" + std::string(SHADER_VARIABLE_NAMES::GBUFFER::OUT_POSITION) + R"(;
 layout(location = 1) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_NORMAL + R"(;
 layout(location = 2) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE + R"(;
-layout(location = 3) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS + R"(;
+layout(location = 3) out vec4 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS + R"(;
 layout(location = 4) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR + R"(;
 
 )";
@@ -501,7 +669,7 @@ layout(location = 4) out vec3 )" + SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_C
 	return variables;
 }
 
-std::string ShaderBuilder::GeometryBufferPass_GetOutputVariableAssignments() const
+std::string ShaderBuilder::GeometryBufferPass_GetOutputVariableAssignments(MaterialInitializationData* initializationData) const
 {
 	std::string assignments = "\n";
 	assignments += "\t";
@@ -522,7 +690,9 @@ std::string ShaderBuilder::GeometryBufferPass_GetOutputVariableAssignments() con
 
 	assignments += "\t";
 	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS;
-	assignments += " = vec3(finalAmbientOcclusion, finalMetallic, finalRoughness);\n";
+	assignments += " = vec4(finalAmbientOcclusion, finalMetallic, finalRoughness, ";
+	assignments += MaterialUsesReflectionProbe(initializationData) ? "1.f" : "0.f";
+	assignments += ");\n";
 
 	assignments += "\t";
 	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR;
@@ -549,6 +719,7 @@ std::string ShaderBuilder::DeferredRenderPass_GetGBufferVariables() const
 	return R"(
 vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
 float )" + SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY + R"( = 0.f;
+float )" + SHADER_VARIABLE_NAMES::REFLECTION_PROBE::USAGE + R"( = 0.f;
 )";
 }
 
@@ -578,14 +749,17 @@ std::string ShaderBuilder::DeferredRenderPass_GetGBufferVariableAssignments() co
 	assignments += ").xyz);\n\n";
 	assignments += "\tgeometryNormal = surfaceNormal;\n\n";
 
-	assignments += "\tvec3 ambientOcclusionMetallicRoughness = texture(";
+	assignments += "\tvec4 ambientOcclusionMetallicRoughness = texture(";
 	assignments += SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS;
 	assignments += ", ";
 	assignments += SHADER_VARIABLE_NAMES::TEXTURE::UV;
-	assignments += ").xyz;\n";
+	assignments += ");\n";
 	assignments += "\tfinalAmbientOcclusion = ambientOcclusionMetallicRoughness.x;\n";
 	assignments += "\tfinalMetallic = ambientOcclusionMetallicRoughness.y;\n";
 	assignments += "\tfinalRoughness = max(ambientOcclusionMetallicRoughness.z, 0.04f);\n\n";
+	assignments += "\t";
+	assignments += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::USAGE;
+	assignments += " = ambientOcclusionMetallicRoughness.w;\n\n";
 
 	assignments += "\t";
 	assignments += SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR;
@@ -646,6 +820,7 @@ std::string ShaderBuilder::General_FS_GetMaterialVariables(const FragmentShaderI
 
 	bool includeMaterialVariables = fragmentShaderInitializationData.renderPassType == RenderPassType::Forward ||
 		fragmentShaderInitializationData.renderPassType == RenderPassType::GeometryBuffer ||
+		fragmentShaderInitializationData.renderPassType == RenderPassType::CubemapCapture ||
 		(requiresAlphaTest && (fragmentShaderInitializationData.renderPassType == RenderPassType::Shadow || fragmentShaderInitializationData.renderPassType == RenderPassType::PointLightShadow));
 
 	if(includeMaterialVariables)
@@ -861,6 +1036,14 @@ uniform sampler2DShadow )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGH
 )";
 }
 
+std::string ShaderBuilder::FS_GetReflectionProbeUniforms() const
+{
+	return R"(
+uniform bool )" + std::string(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE) + R"(;
+uniform samplerCube )" + std::string(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP) + R"(;
+)";
+}
+
 std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	if (!shader)
@@ -947,8 +1130,38 @@ std::string ShaderBuilder::General_FS_GetEmmisiveTextureSampling(const std::stri
 	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ").xyz; ");
 }
 
-std::string ShaderBuilder::FS_GetLightCalculationIterators() const
+std::string ShaderBuilder::FS_GetLightCalculationIterators(bool includeShadowing) const
 {
+	if (!includeShadowing)
+	{
+		return R"(
+	for(int directionalLightIndex = 0; directionalLightIndex < )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_COUNT_IN_USE_VARIABLE) + R"(; ++directionalLightIndex)
+	{
+		)" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY + R"( += CalculateDirectionalLightColor(
+			)" + SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_ARRAY_NAME + "[directionalLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + R"(,
+			)" + SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_ARRAY_NAME + "[directionalLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"();
+	}
+
+	for(int pointLightIndex = 0; pointLightIndex < )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_COUNT_IN_USE_VARIABLE) + R"(; ++pointLightIndex)
+	{
+		)" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY + R"( += CalculatePointLightColor(
+			)" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + R"(,
+			)" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"(,
+			)" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + R"();
+	}
+
+	for(int spotLightIndex = 0; spotLightIndex < )" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_COUNT_IN_USE_VARIABLE + R"(; ++spotLightIndex)
+	{
+		)" + SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY + R"( += CalculateSpotLightColor(
+			)" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_ARRAY_NAME + "[spotLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + R"(,
+			)" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_ARRAY_NAME + "[spotLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + R"(,
+			)" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_ARRAY_NAME + "[spotLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"(,
+			)" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_ARRAY_NAME + "[spotLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::COVERAGE_ANGLE + R"(,
+			)" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_ARRAY_NAME + "[spotLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::FALLOFF_ANGLE + R"();
+	}
+)";
+	}
+
 	return R"(
 	for(int directionalLightIndex = 0; directionalLightIndex < )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_COUNT_IN_USE_VARIABLE) + R"(; ++directionalLightIndex)
 	{
@@ -1211,8 +1424,28 @@ std::string ShaderBuilder::FS_InitializeSurfaceNormal(MaterialInitializationData
 	return result;
 }
 
-std::string ShaderBuilder::FS_GetPBRFunctions() const
+std::string ShaderBuilder::FS_GetPBRFunctions(bool includeReflectionProbe) const
 {
+	std::string reflectionProbeBlock;
+	if (includeReflectionProbe)
+	{
+		reflectionProbeBlock += "\tif(0.f < ";
+		reflectionProbeBlock += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::USAGE;
+		reflectionProbeBlock += " && ";
+		reflectionProbeBlock += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE;
+		reflectionProbeBlock += ")\n";
+		reflectionProbeBlock += "\t{\n";
+		reflectionProbeBlock += "\t\tvec3 reflectionDirection = reflect(-viewDirection, surfaceNormal);\n";
+		reflectionProbeBlock += "\t\tfloat maxMipLevel = max(float(textureQueryLevels(";
+		reflectionProbeBlock += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP;
+		reflectionProbeBlock += ") - 1), 0.f);\n";
+		reflectionProbeBlock += "\t\tfloat mipLevel = finalRoughness * maxMipLevel;\n";
+		reflectionProbeBlock += "\t\tspecularAmbient = textureLod(";
+		reflectionProbeBlock += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP;
+		reflectionProbeBlock += ", reflectionDirection, mipLevel).rgb * fresnel;\n";
+		reflectionProbeBlock += "\t}\n";
+	}
+
 	return R"(
 const float PI = 3.14159265359f;
 
@@ -1309,8 +1542,14 @@ vec3 CalculatePBRLighting(vec3 lightDirection, vec3 radiance)
 
 vec3 CalculatePBRAmbientLight()
 {
-    // A simple ambient approximation. 
-    return 0.12f * )" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.rgb * finalAmbientOcclusion;
+    vec3 viewDirection = normalize()" + std::string(SHADER_VARIABLE_NAMES::POSITIONING::VIEW_POSITION) + R"( - vec3()" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"());
+    vec3 F0 = mix(vec3(0.04f), )" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.rgb, finalMetallic);
+    vec3 fresnel = FresnelSchlick(max(dot(surfaceNormal, viewDirection), 0.f), F0);
+    vec3 diffuseAmbient = 0.12f * )" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.rgb * finalAmbientOcclusion;
+    vec3 specularAmbient = vec3(0.f);
+)" + reflectionProbeBlock + R"(
+    vec3 diffuseMultiplier = (vec3(1.f) - fresnel) * (1.f - finalMetallic);
+    return diffuseAmbient * diffuseMultiplier + specularAmbient * finalAmbientOcclusion;
 }
 )";
 }
@@ -1520,11 +1759,12 @@ std::string ShaderBuilder::VS_GetMain(const VertexShaderInitializationData& vert
 	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = vec4()" + SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION + R"(, 1.f)* )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";\n";
 	
 	bool isPointLightShadowPass = vertexShaderInitializationData.renderPassType == RenderPassType::PointLightShadow;
+	bool isCubemapRenderPass = vertexShaderInitializationData.renderPassType == RenderPassType::CubemapCapture;
 	bool requiresAlphaTest = vertexShaderInitializationData.materialInitializationData && 
 		(vertexShaderInitializationData.materialInitializationData->owner->GetBlendModel() == MaterialBlendModel::Masked ||
 		 vertexShaderInitializationData.materialInitializationData->owner->GetBlendModel() == MaterialBlendModel::Transparent);
 	
-	if (!isPointLightShadowPass || requiresAlphaTest)
+	if ((!isPointLightShadowPass && !isCubemapRenderPass) || requiresAlphaTest)
 	{
 		vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"( = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + " * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
 	}
@@ -1534,15 +1774,24 @@ std::string ShaderBuilder::VS_GetMain(const VertexShaderInitializationData& vert
 		vsMain += VS_GetLightSpaceFragmentPositionCalculations();
 	}
 
-	if (!isPointLightShadowPass || requiresAlphaTest)
+	if (!isPointLightShadowPass || requiresAlphaTest || isCubemapRenderPass)
 	{
 		vsMain += VS_GetUV(vertexShaderInitializationData.materialInitializationData);
 		vsMain += VS_GetVertexNormalText(vertexShaderInitializationData.materialInitializationData);
 		vsMain += VS_GetVertexColorText();
 
-		vsMain += R"(
+		if (isCubemapRenderPass)
+		{
+			vsMain += R"(
+	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
+	)";
+		}
+		else
+		{
+			vsMain += R"(
 	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"(;
 	)";
+		}
 	}
 	else
 	{

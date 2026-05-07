@@ -43,6 +43,11 @@ public:
 	std::string PointShadowPass_GetGeometryShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string PointShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 
+	std::string CubemapRenderPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
+	std::string CubemapRenderPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
+	std::string CubemapRenderPass_GetGeometryShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
+	std::string CubemapRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
+
 	std::string DeferredRenderPass_GetVertexShaderScript();
 	std::string DeferredRenderPass_GetFragmentShaderScript();
 protected:
@@ -90,13 +95,14 @@ private:
 	std::string FS_GetSpotLightStruct() const;
 	std::string FS_GetLightArrayUniforms() const;
 	std::string FS_GetShadowMapUniforms() const;
+	std::string FS_GetReflectionProbeUniforms() const;
 	std::string FS_InitializeBaseColor(MaterialInitializationData* initializationData, bool discardTransparent = false) const;
 	std::string FS_InitializeEmmisiveColor(MaterialInitializationData* initializationData) const;
 	std::string FS_InitializeAmbientOcclusion(MaterialInitializationData* initializationData) const;
 	std::string FS_InitializeMetallic(MaterialInitializationData* initializationData) const;
 	std::string FS_InitializeRoughness(MaterialInitializationData* initializationData) const;
 	std::string FS_InitializeSurfaceNormal(MaterialInitializationData* initializationData) const;
-	std::string FS_GetPBRFunctions() const;
+	std::string FS_GetPBRFunctions(bool includeReflectionProbe) const;
 
 	std::string General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const;
 	std::string General_FS_GetShaderTextureUniforms(MaterialInitializationData* initializationData, const Shader* shader) const;
@@ -105,13 +111,13 @@ private:
 	std::string General_FS_GetNormalTextureSampling(const std::string& textureName) const;
 	std::string General_FS_GetEmmisiveTextureSampling(const std::string& textureName) const;
 
-	std::string FS_GetLightCalculationIterators() const;
+	std::string FS_GetLightCalculationIterators(bool includeShadowing) const;
 
 	std::string FS_GetOutputVariables() const;
 	std::string FS_GetOutputVariableAssignments() const;
 
 	std::string GeometryBufferPass_GetOutputVariables() const;
-	std::string GeometryBufferPass_GetOutputVariableAssignments() const;
+	std::string GeometryBufferPass_GetOutputVariableAssignments(MaterialInitializationData* initializationData) const;
 
 	std::string DeferredRenderPass_GetGBufferTextureUniforms() const;
 	std::string DeferredRenderPass_GetGBufferVariables() const;

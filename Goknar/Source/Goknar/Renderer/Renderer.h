@@ -5,6 +5,7 @@
 #include "Goknar/Renderer/Types.h"
 
 #include "Goknar/Model/MeshUnit.h"
+#include "Goknar/Delegates/Delegate.h"
 
 #include "glad/glad.h"
 
@@ -20,6 +21,7 @@ class LightManager;
 class Texture;
 class FrameBuffer;
 class RenderBuffer;
+class ReflectionProbe;
 class Shader;
 class BloomPostProcessingEffect;
 class TemporalAntiAliasingPostProcessingEffect;
@@ -44,9 +46,10 @@ enum class GOKNAR_API RenderPassType : unsigned int
 	Shadow = 0b00000010,
 
 	// Needed for rendering point lights with geometry shaders
-	PointLightShadow,
-	GeometryBuffer = 0b00000100,
-	Deferred = 0b00001000
+	PointLightShadow = 0b00000100,
+	CubemapCapture = 0b00001000,
+	GeometryBuffer = 0b00010000,
+	Deferred = 0b00100000
 };
 
 class GOKNAR_API GeometryBufferData
@@ -175,6 +178,18 @@ public:
 	void BindShadowTextures(Shader* shader);
 	void BindGeometryBufferTextures(Shader* shader);
 	void SetLightUniforms(Shader* shader);
+	void SetReflectionProbeUniforms(Shader* shader) const;
+	void SetCubemapRenderPassShaderUniforms(const Shader* shader) const;
+	void CaptureReflectionProbes();
+	void BeginReflectionProbeCapture(const ReflectionProbe* reflectionProbe)
+	{
+		currentReflectionProbeCapture_ = reflectionProbe;
+	}
+
+	void EndReflectionProbeCapture()
+	{
+		currentReflectionProbeCapture_ = nullptr;
+	}
 
 	void SetMainRenderType(RenderPassType type)
 	{
@@ -238,6 +253,8 @@ public:
 	{
 		return drawOnWindow_;
 	}
+
+	const ReflectionProbe* GetClosestReflectionProbe(const Vector3& worldPosition) const;
 
 	int drawCallCount{ 0 };
 	bool countDrawCalls{ false };
@@ -307,8 +324,10 @@ private:
 	TemporalAntiAliasingPostProcessingEffect* temporalAntiAliasingPostProcessingEffect_{ nullptr };
 	BloomPostProcessingEffect* bloomPostProcessingEffect_{ nullptr };
 	ScreenSpaceReflectionPostProcessingEffect* screenSpaceReflectionPostProcessingEffect_{ nullptr };
+	Delegate<void(int, int)> deferredWindowSizeChangedDelegate_{};
 
 	const RenderTarget* currentRenderTarget_{ nullptr };
+	const ReflectionProbe* currentReflectionProbeCapture_{ nullptr };
 
 	unsigned int totalStaticMeshVertexSize_;
 	unsigned int totalStaticMeshFaceSize_;

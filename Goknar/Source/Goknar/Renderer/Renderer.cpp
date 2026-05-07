@@ -38,12 +38,14 @@
 
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
+#include "Goknar/Renderer/ReflectionProbe.h"
 #include "Goknar/Renderer/RenderTarget.h"
 #include "Goknar/Renderer/PostProcessing/PostProcessing.h"
 #include "Goknar/Renderer/PostProcessing/BloomPostProcessingEffect.h"
 #include "Goknar/Renderer/PostProcessing/ScreenSpaceReflectionPostProcessingEffect.h"
 #include "Goknar/Renderer/PostProcessing/TemporalAntiAliasingPostProcessingEffect.h"
 
+#include <cfloat>
 #include <unordered_set>
 
 #define VERTEX_COLOR_LOCATION 0
@@ -111,6 +113,11 @@ Renderer::Renderer() :
 
 Renderer::~Renderer()
 {
+	if (!deferredWindowSizeChangedDelegate_.isNull())
+	{
+		engine->GetWindowManager()->RemoveWindowSizeCallback(deferredWindowSizeChangedDelegate_);
+	}
+
 	delete temporalAntiAliasingPostProcessingEffect_;
 	delete bloomPostProcessingEffect_;
 	delete lightManager_;
@@ -145,7 +152,8 @@ void Renderer::PreInit()
 		deferredRenderingData_ = new DeferredRenderingData();
 		deferredRenderingData_->PreInit();
 		deferredRenderingData_->Init();
-		engine->GetWindowManager()->AddWindowSizeCallback(Delegate<void(int, int)>::Create<DeferredRenderingData, &DeferredRenderingData::OnViewportSizeChanged>(deferredRenderingData_));
+		deferredWindowSizeChangedDelegate_ = Delegate<void(int, int)>::Create<DeferredRenderingData, &DeferredRenderingData::OnViewportSizeChanged>(deferredRenderingData_);
+		engine->GetWindowManager()->AddWindowSizeCallback(deferredWindowSizeChangedDelegate_);
 
 		if (!temporalAntiAliasingPostProcessingEffect_)
 		{
@@ -393,6 +401,7 @@ void Renderer::RenderCurrentFrame()
 	countDrawCallsInner_ = false;
 
 	PrepareSkeletalMeshInstancesForTheCurrentFrame();
+	CaptureReflectionProbes();
 
 	DeferredRenderingData* mainDeferredRenderingData = deferredRenderingData_;
 
@@ -562,6 +571,14 @@ void Renderer::Render(RenderPassType renderPassType)
 		deferredRenderingData_->Render();
 		break;
 	}
+	case RenderPassType::CubemapCapture:
+	{
+		glDepthMask(GL_TRUE);
+		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
+		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		break;
+	}
 	case RenderPassType::Shadow:
 	case RenderPassType::PointLightShadow:
 	{
@@ -579,6 +596,9 @@ void Renderer::Render(RenderPassType renderPassType)
 	bool isShadowRender =
 		renderPassType == RenderPassType::Shadow ||
 		renderPassType == RenderPassType::PointLightShadow;
+	const bool skipFrustumCulling =
+		renderPassType == RenderPassType::PointLightShadow ||
+		renderPassType == RenderPassType::CubemapCapture;
 	const RenderPassType meshUnitRenderPassType =
 		renderPassType == RenderPassType::Deferred ?
 		RenderPassType::Forward :
@@ -590,7 +610,8 @@ void Renderer::Render(RenderPassType renderPassType)
 			MeshUnit* subMesh = renderData.meshUnit;
 			const int subMeshIndex = renderData.subMeshIndex;
 
-			if (!activeCamera->IsAABBVisible(subMesh->GetAABB(), staticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
+			if (!skipFrustumCulling &&
+				!activeCamera->IsAABBVisible(subMesh->GetAABB(), staticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
 
 			if (countDrawCallsInner_) ++drawCallCount;
 
@@ -645,7 +666,8 @@ void Renderer::Render(RenderPassType renderPassType)
 			SkeletalMeshUnit* subMesh = renderData.meshUnit;
 			const int subMeshIndex = renderData.subMeshIndex;
 
-			if (!activeCamera->IsAABBVisible(subMesh->GetAABB(), skeletalMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
+			if (!skipFrustumCulling &&
+				!activeCamera->IsAABBVisible(subMesh->GetAABB(), skeletalMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
 
 			if (countDrawCallsInner_) ++drawCallCount;
 
@@ -662,7 +684,8 @@ void Renderer::Render(RenderPassType renderPassType)
 			DynamicMeshUnit* subMesh = renderData.meshUnit;
 			const int subMeshIndex = renderData.subMeshIndex;
 
-			if (!activeCamera->IsAABBVisible(subMesh->GetAABB(), dynamicMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
+			if (!skipFrustumCulling &&
+				!activeCamera->IsAABBVisible(subMesh->GetAABB(), dynamicMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
 
 			if (countDrawCallsInner_) ++drawCallCount;
 
@@ -745,7 +768,8 @@ void Renderer::Render(RenderPassType renderPassType)
 	}
 
 	if (renderPassType == RenderPassType::Forward ||
-		renderPassType == RenderPassType::Deferred)
+		renderPassType == RenderPassType::Deferred ||
+		renderPassType == RenderPassType::CubemapCapture)
 	{
 		SortTransparentInstances();
 
@@ -1176,12 +1200,109 @@ void Renderer::BindShadowTextures(Shader* shader)
 	shader->SetIntVector(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_SHADOW_MAP_ARRAY_NAME, spotLightTextureIndices);
 }
 
+void Renderer::CaptureReflectionProbes()
+{
+	Scene* scene = engine->GetApplication()->GetMainScene();
+	if (!scene)
+	{
+		return;
+	}
+
+	for (ReflectionProbe* reflectionProbe : scene->GetReflectionProbes())
+	{
+		if (!reflectionProbe || !reflectionProbe->GetIsActive())
+		{
+			continue;
+		}
+
+		if (!reflectionProbe->GetCaptureEveryFrame() && !reflectionProbe->GetNeedsCapture())
+		{
+			continue;
+		}
+
+		reflectionProbe->Capture();
+	}
+}
+
 void Renderer::BindGeometryBufferTextures(Shader* shader)
 {
 	if (deferredRenderingData_)
 	{
 		shader->Use();
 		deferredRenderingData_->BindGeometryBufferTextures(shader);
+	}
+}
+
+const ReflectionProbe* Renderer::GetClosestReflectionProbe(const Vector3& worldPosition) const
+{
+	Scene* scene = engine->GetApplication()->GetMainScene();
+	if (!scene)
+	{
+		return nullptr;
+	}
+
+	const ReflectionProbe* closestReflectionProbe = nullptr;
+	const ReflectionProbe* closestContainingReflectionProbe = nullptr;
+	float closestDistanceSquared = FLT_MAX;
+	float closestContainingDistanceSquared = FLT_MAX;
+
+	for (const ReflectionProbe* reflectionProbe : scene->GetReflectionProbes())
+	{
+		if (!reflectionProbe || !reflectionProbe->GetIsActive() || !reflectionProbe->GetIsInitialized() || !reflectionProbe->GetCubemapTexture())
+		{
+			continue;
+		}
+
+		const float distanceSquared = (reflectionProbe->GetPosition() - worldPosition).SquareLength();
+		if (reflectionProbe->ContainsWorldPosition(worldPosition) && distanceSquared < closestContainingDistanceSquared)
+		{
+			closestContainingDistanceSquared = distanceSquared;
+			closestContainingReflectionProbe = reflectionProbe;
+		}
+
+		if (distanceSquared < closestDistanceSquared)
+		{
+			closestDistanceSquared = distanceSquared;
+			closestReflectionProbe = reflectionProbe;
+		}
+	}
+
+	return closestContainingReflectionProbe ? closestContainingReflectionProbe : closestReflectionProbe;
+}
+
+void Renderer::SetReflectionProbeUniforms(Shader* shader) const
+{
+	if (!shader)
+	{
+		return;
+	}
+
+	shader->Use();
+
+	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+	const ReflectionProbe* reflectionProbe =
+		activeCamera ?
+		GetClosestReflectionProbe(activeCamera->GetPosition()) :
+		nullptr;
+
+	if (!reflectionProbe)
+	{
+		shader->SetBool(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE, false);
+		shader->SetInt(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP, 0);
+		return;
+	}
+
+	Texture* cubemapTexture = reflectionProbe->GetCubemapTexture();
+	cubemapTexture->BindToTextureUnit(cubemapTexture->GetRendererTextureId());
+	shader->SetBool(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE, true);
+	shader->SetInt(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP, cubemapTexture->GetRendererTextureId());
+}
+
+void Renderer::SetCubemapRenderPassShaderUniforms(const Shader* shader) const
+{
+	if (currentReflectionProbeCapture_)
+	{
+		currentReflectionProbeCapture_->SetRenderPassShaderUniforms(shader);
 	}
 }
 
@@ -1501,8 +1622,8 @@ void GeometryBufferData::GenerateBuffers()
 	ambientOcclusionMetallicRoughnessTexture = new Texture();
 	ambientOcclusionMetallicRoughnessTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS);
 	ambientOcclusionMetallicRoughnessTexture->SetTextureDataType(TextureDataType::DYNAMIC);
-	ambientOcclusionMetallicRoughnessTexture->SetTextureFormat(TextureFormat::RGB);
-	ambientOcclusionMetallicRoughnessTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
+	ambientOcclusionMetallicRoughnessTexture->SetTextureFormat(TextureFormat::RGBA);
+	ambientOcclusionMetallicRoughnessTexture->SetTextureInternalFormat(TextureInternalFormat::RGBA);
 	ambientOcclusionMetallicRoughnessTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	ambientOcclusionMetallicRoughnessTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
 	ambientOcclusionMetallicRoughnessTexture->SetWidth(bufferWidth);
@@ -1677,6 +1798,7 @@ void DeferredRenderingData::Render()
 	BindGeometryBufferTextures(deferredRenderingMeshShader);
 	SetShaderTextureUniforms();
 	engine->GetRenderer()->SetLightUniforms(deferredRenderingMeshShader);
+	engine->GetRenderer()->SetReflectionProbeUniforms(deferredRenderingMeshShader);
 
 	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 	if (activeCamera)

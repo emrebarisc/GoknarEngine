@@ -37,6 +37,7 @@ void RenderTarget::Init()
 	if (!camera_)
 	{
 		camera_ = new Camera();
+		ownsCamera_ = true;
 	}
 
 	camera_->SetImageWidth(frameSize_.x);

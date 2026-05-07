@@ -11,6 +11,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Scene.h"
 #include "Goknar/ObjectBase.h"
+#include "Goknar/Objects/ReflectionProbeObject.h"
 
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/Components/DynamicMeshComponent.h"
@@ -1118,6 +1119,11 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 
 				ParseObjectBase(object, objectElement);
 
+				if (ReflectionProbeObject* reflectionProbeObject = dynamic_cast<ReflectionProbeObject*>(object))
+				{
+					ParseReflectionProbeObject(reflectionProbeObject, objectElement);
+				}
+
 				objectElement = objectElement->NextSiblingElement(objectFactoryName.c_str());
 			}
 			stream.clear();
@@ -1581,6 +1587,20 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 	}
 }
 
+void SceneParser::ParseReflectionProbeObject(ReflectionProbeObject* reflectionProbeObject, tinyxml2::XMLElement* objectElement)
+{
+	std::stringstream stream;
+
+	tinyxml2::XMLElement* child = objectElement->FirstChildElement("Size");
+	if (child)
+	{
+		stream << child->GetText() << std::endl;
+		Vector3 size;
+		stream >> size.x >> size.y >> size.z;
+		reflectionProbeObject->SetSize(size);
+	}
+}
+
 void SceneParser::GetXMLElement_DirectionalLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene)
 {
 	for (auto directionalLight : scene->GetDirectionalLights())
@@ -1734,8 +1754,17 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 		}
 
 		RigidBody* rigidBody = dynamic_cast<RigidBody*>(object);
+		ReflectionProbeObject* reflectionProbeObject = dynamic_cast<ReflectionProbeObject*>(object);
 
-		std::string objectTypeString = rigidBody ? "RigidBody" : "ObjectBase";
+		std::string objectTypeString = "ObjectBase";
+		if (rigidBody)
+		{
+			objectTypeString = "RigidBody";
+		}
+		else if (reflectionProbeObject)
+		{
+			objectTypeString = "ReflectionProbeObject";
+		}
 
 		tinyxml2::XMLElement* objectElement = xmlDocument.NewElement(objectTypeString.c_str());
 
@@ -1766,6 +1795,13 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 			tinyxml2::XMLElement* rigidBodyCollisionMaskElement = xmlDocument.NewElement("CollisionMask");
 			rigidBodyCollisionMaskElement->SetText((int)rigidBody->GetCollisionMask());
 			objectElement->InsertEndChild(rigidBodyCollisionMaskElement);
+		}
+
+		if (reflectionProbeObject)
+		{
+			tinyxml2::XMLElement* reflectionProbeSizeElement = xmlDocument.NewElement("Size");
+			reflectionProbeSizeElement->SetText(Serialize(reflectionProbeObject->GetSize()).c_str());
+			objectElement->InsertEndChild(reflectionProbeSizeElement);
 		}
 
 		tinyxml2::XMLElement* componentsElement = xmlDocument.NewElement("Components");

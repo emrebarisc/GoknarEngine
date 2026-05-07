@@ -35,6 +35,7 @@ Material::~Material()
 	delete renderPassTypeShaderMap_[RenderPassType::GeometryBuffer];
 	delete renderPassTypeShaderMap_[RenderPassType::Shadow];
 	delete renderPassTypeShaderMap_[RenderPassType::PointLightShadow];
+	delete renderPassTypeShaderMap_[RenderPassType::CubemapCapture];
 
 	delete initializationData_;
 }
@@ -134,6 +135,27 @@ void Material::Build(MeshUnit* meshUnit)
 		renderPassTypeShaderMap_[RenderPassType::PointLightShadow] = pointLightShadowShader;
 	}
 
+	{
+		Shader* cubemapCaptureShader = new Shader();
+		for (const Image* image : textureImages_)
+		{
+			cubemapCaptureShader->AddTexture(image->GetGeneratedTexture());
+		}
+
+		std::string cubemapCaptureVertexShader = isInstancedStaticMesh ?
+			ShaderBuilder::GetInstance()->CubemapRenderPass_GetInstancedStaticMeshVertexShaderScript(initializationData_, cubemapCaptureShader) :
+			ShaderBuilder::GetInstance()->CubemapRenderPass_GetVertexShaderScript(initializationData_, cubemapCaptureShader);
+		cubemapCaptureShader->SetVertexShaderScript(cubemapCaptureVertexShader);
+
+		std::string cubemapCaptureGeometryShader = ShaderBuilder::GetInstance()->CubemapRenderPass_GetGeometryShaderScript(initializationData_, cubemapCaptureShader);
+		cubemapCaptureShader->SetGeometryShaderScript(cubemapCaptureGeometryShader);
+
+		std::string cubemapCaptureFragmentShader = ShaderBuilder::GetInstance()->CubemapRenderPass_GetFragmentShaderScript(initializationData_, cubemapCaptureShader);
+		cubemapCaptureShader->SetFragmentShaderScript(cubemapCaptureFragmentShader);
+
+		renderPassTypeShaderMap_[RenderPassType::CubemapCapture] = cubemapCaptureShader;
+	}
+
 }
 
 void Material::PreInit()
@@ -141,6 +163,7 @@ void Material::PreInit()
 	renderPassTypeShaderMap_[RenderPassType::Forward]->PreInit();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->PreInit();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->PreInit();
+	renderPassTypeShaderMap_[RenderPassType::CubemapCapture]->PreInit();
 
 	if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Deferred)
 	{
@@ -168,6 +191,7 @@ void Material::Init()
 
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->Init();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->Init();
+	renderPassTypeShaderMap_[RenderPassType::CubemapCapture]->Init();
 
 	for (auto derivedMaterialInstance : derivedMaterialInstances_)
 	{
@@ -180,6 +204,7 @@ void Material::PostInit()
 	renderPassTypeShaderMap_[RenderPassType::Forward]->PostInit();
 	renderPassTypeShaderMap_[RenderPassType::Shadow]->PostInit();
 	renderPassTypeShaderMap_[RenderPassType::PointLightShadow]->PostInit();
+	renderPassTypeShaderMap_[RenderPassType::CubemapCapture]->PostInit();
 
 	if (engine->GetRenderer()->GetMainRenderType() == RenderPassType::Deferred)
 	{

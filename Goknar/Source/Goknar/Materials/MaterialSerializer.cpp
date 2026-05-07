@@ -112,6 +112,7 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
 
     MaterialShadingModel shadingModel = material->GetShadingModel();
     AddPropertyElement("ShadingModel", shadingModel == MaterialShadingModel::TwoSided ? "TwoSided" : "Default");
+    AddPropertyElement("UsesReflectionProbe", material->GetUsesReflectionProbe() ? "1" : "0");
 
     const std::vector<const Image*>* textureImages = material->GetTextureImages();
     if (textureImages)
@@ -233,6 +234,16 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         owner->SetShadingModel(shadingModel == "Default" ? MaterialShadingModel::Default :
             shadingModel == "TwoSided" ? MaterialShadingModel::TwoSided :
             owner->GetShadingModel());
+    }
+
+    child = root->FirstChildElement("UsesReflectionProbe");
+    if (child && child->GetText())
+    {
+        owner->SetUsesReflectionProbe(std::string(child->GetText()) == "1");
+    }
+    else
+    {
+        owner->SetUsesReflectionProbe(false);
     }
 
     child = root->FirstChildElement("Texture");

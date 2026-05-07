@@ -191,6 +191,7 @@ public:
 
 	void ReadFromFrameBuffer(GEuint framebuffer);
 	void Save(std::string path);
+	void GenerateMipmap() const;
 
 	GEuint GetRendererTextureId() const
 	{

@@ -18,6 +18,7 @@
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
+#include "Goknar/Renderer/ReflectionProbe.h"
 
 Scene::Scene()
 {
@@ -40,6 +41,11 @@ Scene::~Scene()
 	while (0 < spotLights_.size())
 	{
 		delete spotLights_[0];
+	}
+
+	while (0 < reflectionProbes_.size())
+	{
+		delete reflectionProbes_[0];
 	}
 
 	for (auto texture : textures_)
@@ -65,6 +71,11 @@ void Scene::PreInit()
 		spotLight->PreInit();
 	}
 
+	for (auto reflectionProbe : reflectionProbes_)
+	{
+		reflectionProbe->PreInit();
+	}
+
 	for (Texture* texture : textures_)
 	{
 		texture->PreInit();
@@ -88,6 +99,11 @@ void Scene::Init()
 		spotLight->Init();
 	}
 
+	for (auto reflectionProbe : reflectionProbes_)
+	{
+		reflectionProbe->Init();
+	}
+
 	for (Texture* texture : textures_)
 	{
 		texture->Init();
@@ -109,6 +125,11 @@ void Scene::PostInit()
 	for (auto spotLight : spotLights_)
 	{
 		spotLight->PostInit();
+	}
+
+	for (auto reflectionProbe : reflectionProbes_)
+	{
+		reflectionProbe->PostInit();
 	}
 
 	for (Texture* texture : textures_)
@@ -215,5 +236,25 @@ void Scene::RemoveSpotLight(SpotLight* spotLight)
 	if (lightManager)
 	{
 		lightManager->OnSpotLightRemoved(spotLight);
+	}
+}
+
+void Scene::AddReflectionProbe(ReflectionProbe* reflectionProbe)
+{
+	reflectionProbes_.push_back(reflectionProbe);
+}
+
+void Scene::RemoveReflectionProbe(ReflectionProbe* reflectionProbe)
+{
+	std::vector<ReflectionProbe*>::const_iterator reflectionProbeIterator = reflectionProbes_.cbegin();
+	while (reflectionProbeIterator != reflectionProbes_.cend())
+	{
+		if (*reflectionProbeIterator == reflectionProbe)
+		{
+			reflectionProbes_.erase(reflectionProbeIterator);
+			break;
+		}
+
+		++reflectionProbeIterator;
 	}
 }

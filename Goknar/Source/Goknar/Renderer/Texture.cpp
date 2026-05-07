@@ -74,6 +74,19 @@ void Texture::Save(std::string path)
 	IOManager::WritePng(path.c_str(), width_, height_, channels_, buffer_);
 }
 
+void Texture::GenerateMipmap() const
+{
+	if (!generateMipmap_ || textureFormat_ == TextureFormat::DEPTH || textureFormat_ == TextureFormat::DEPTH_STENCIL)
+	{
+		return;
+	}
+
+	glBindTexture((int)textureBindTarget_, rendererTextureId_);
+	glGenerateMipmap((int)textureBindTarget_);
+	glBindTexture((int)textureBindTarget_, 0);
+	EXIT_ON_GL_ERROR("Texture::GenerateMipmap");
+}
+
 void Texture::PreInit()
 {
 	// Skip if already initialized
@@ -224,6 +237,11 @@ void Texture::UpdateSizeOnGPU()
 		{
 			glTexImage2D((int)textureImageTarget_ + i, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
 		}
+	}
+
+	if (generateMipmap_ && textureFormat_ != TextureFormat::DEPTH && textureFormat_ != TextureFormat::DEPTH_STENCIL)
+	{
+		glGenerateMipmap((int)textureBindTarget_);
 	}
 
 	glBindTexture((int)textureBindTarget_, 0);

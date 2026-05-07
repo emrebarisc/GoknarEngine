@@ -118,6 +118,16 @@ public:
 		shadingModel_ = shadingModel;
 	}
 
+	bool GetUsesReflectionProbe() const
+	{
+		return usesReflectionProbe_;
+	}
+
+	void SetUsesReflectionProbe(bool usesReflectionProbe)
+	{
+		usesReflectionProbe_ = usesReflectionProbe;
+	}
+
 	inline void SetName(const std::string& name)
 	{
 		name_ = name;
@@ -158,6 +168,7 @@ protected:
 
 	MaterialBlendModel blendModel_{ MaterialBlendModel::Opaque };
 	MaterialShadingModel shadingModel_{ MaterialShadingModel::Default };
+	bool usesReflectionProbe_{ false };
 
 	bool isInitialized_{ false };
 

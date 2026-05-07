@@ -69,16 +69,27 @@ void FrameBuffer::Unbind()
 
 void FrameBuffer::DrawBuffers()
 {
-	int attachmentsSize = textureAttachments_.size();
-	unsigned int* buffers = new unsigned int[attachmentsSize];
+	std::vector<unsigned int> buffers;
+	buffers.reserve(textureAttachments_.size());
 
-	for (int attachmentIndex = 0; attachmentIndex < attachmentsSize; ++attachmentIndex)
+	for (const auto& textureAttachment : textureAttachments_)
 	{
-		buffers[attachmentIndex] = (unsigned int)textureAttachments_[attachmentIndex].first;
+		const unsigned int attachment = (unsigned int)textureAttachment.first;
+		if ((unsigned int)FrameBufferAttachment::COLOR_ATTACHMENT0 <= attachment &&
+			attachment <= GL_COLOR_ATTACHMENT31)
+		{
+			buffers.push_back(attachment);
+		}
 	}
 
-	glDrawBuffers(attachmentsSize, buffers);
-	delete[] buffers;
+	if (buffers.empty())
+	{
+		glDrawBuffer(GL_NONE);
+		glReadBuffer(GL_NONE);
+		return;
+	}
+
+	glDrawBuffers((GLsizei)buffers.size(), buffers.data());
 }
 
 void FrameBuffer::Attach()

@@ -8,6 +8,7 @@
 
 class DirectionalLight;
 class PointLight;
+class ReflectionProbe;
 class SpotLight;
 class Material;
 class ObjectBase;
@@ -57,6 +58,14 @@ public:
 		return spotLights_;
 	}
 
+	void AddReflectionProbe(ReflectionProbe* reflectionProbe);
+	void RemoveReflectionProbe(ReflectionProbe* reflectionProbe);
+
+	const std::vector<ReflectionProbe*>& GetReflectionProbes() const
+	{
+		return reflectionProbes_;
+	}
+
 	void AddTexture(Texture* texture)
 	{
 		textures_.push_back(texture);
@@ -98,6 +107,7 @@ private:
 	std::vector<PointLight*> pointLights_;
 	std::vector<DirectionalLight*> directionalLights_;
 	std::vector<SpotLight*> spotLights_;
+	std::vector<ReflectionProbe*> reflectionProbes_;
 
 	Vector3 ambientLight_;
 

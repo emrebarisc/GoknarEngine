@@ -132,6 +132,14 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* ROUGHNESS;
 	}
 
+	inline namespace REFLECTION_PROBE
+	{
+		extern const char* HAS_REFLECTION_PROBE;
+		extern const char* CUBEMAP;
+		extern const char* USAGE;
+		extern const char* VIEW_MATRICES_ARRAY;
+	}
+
 	inline namespace POSITIONING
 	{
 		extern const char* BONE_TRANSFORMATION_MATRIX;

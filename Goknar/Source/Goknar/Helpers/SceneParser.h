@@ -15,6 +15,7 @@ class MovingTriangleMeshCollisionComponent;
 class NonMovingTriangleMeshCollisionComponent;
 class InstancedStaticMeshComponent;
 class RigidBody;
+class ReflectionProbeObject;
 class Scene;
 class SphereCollisionComponent;
 class StaticMeshComponent;
@@ -46,6 +47,7 @@ private:
 
 	static void ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* objectElement);
 	static void ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* objectElement);
+	static void ParseReflectionProbeObject(ReflectionProbeObject* reflectionProbeObject, tinyxml2::XMLElement* objectElement);
 
 	static void GetXMLElement_Meshes(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 

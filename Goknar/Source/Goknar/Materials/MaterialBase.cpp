@@ -51,6 +51,7 @@ IMaterialBase::IMaterialBase(const IMaterialBase* other)
 	roughness_ = other->roughness_;
 	blendModel_ = other->blendModel_;
 	shadingModel_ = other->shadingModel_;
+	usesReflectionProbe_ = other->usesReflectionProbe_;
 	textureImages_ = other->textureImages_;
 }
 
@@ -113,7 +114,8 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 	bool cullBackFaces = 
 		shadingModel_ == MaterialShadingModel::Default && 
 		(	renderPassType == RenderPassType::Forward ||
-			renderPassType == RenderPassType::GeometryBuffer);
+			renderPassType == RenderPassType::GeometryBuffer ||
+			renderPassType == RenderPassType::CubemapCapture);
 
 	if (cullBackFaces)
 	{
@@ -124,7 +126,9 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 		glDisable(GL_CULL_FACE);
 	}
 
-	if (renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::GeometryBuffer)
+	if (renderPassType == RenderPassType::Forward ||
+		renderPassType == RenderPassType::GeometryBuffer ||
+		renderPassType == RenderPassType::CubemapCapture)
 	{
 		shader->SetVector4(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR, baseColor_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION, ambientOcclusion_);
@@ -137,10 +141,24 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 	{
 		engine->GetRenderer()->GetLightManager()->SetShadowRenderPassShaderUniforms(shader);
 	}
+	if (renderPassType == RenderPassType::CubemapCapture)
+	{
+		engine->GetRenderer()->SetCubemapRenderPassShaderUniforms(shader);
+	}
 
-	if (renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::Deferred)
+	if (renderPassType == RenderPassType::Forward)
 	{
 		engine->GetRenderer()->SetLightUniforms(shader);
+		if (usesReflectionProbe_)
+		{
+			engine->GetRenderer()->SetReflectionProbeUniforms(shader);
+		}
+	}
+	else if (renderPassType == RenderPassType::CubemapCapture)
+	{
+		engine->GetRenderer()->SetLightUniforms(shader);
+		shader->SetBool(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE, false);
+		shader->SetInt(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP, 0);
 	}
 
 	shader->SetMVP(worldAndRelativeTransformationMatrix);
