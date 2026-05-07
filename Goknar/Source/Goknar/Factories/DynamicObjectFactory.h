@@ -19,6 +19,7 @@ public:
         if (instance_ == nullptr)
         {
             instance_ = new DynamicObjectFactory();
+            RegisterBuiltInClasses();
         }
 
         return instance_;
@@ -47,6 +48,7 @@ public:
 
 private:
 	DynamicObjectFactory() {}
+    static void RegisterBuiltInClasses();
     static DynamicObjectFactory* instance_;
 
     std::unordered_map<std::string, CreateFunction> objectMap_;
