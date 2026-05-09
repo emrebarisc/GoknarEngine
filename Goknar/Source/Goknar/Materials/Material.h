@@ -19,9 +19,9 @@ struct GOKNAR_API ShaderFunctionAndResult
 struct GOKNAR_API MaterialInitializationData
 {
 	MaterialInitializationData() = delete;
-	MaterialInitializationData(const Material* ownerMaterial) : owner(ownerMaterial) {}
+	explicit MaterialInitializationData(const IMaterialBase* ownerMaterial) : owner(ownerMaterial) {}
 
-	const Material* owner;
+	const IMaterialBase* owner;
 	ShaderFunctionAndResult baseColor;
 	ShaderFunctionAndResult emisiveColor;
 	ShaderFunctionAndResult ambientOcclusion;
@@ -119,9 +119,6 @@ public:
 	{
 		return initializationData_;
 	}
-
-protected:
-
 
 private:
 	std::vector<MaterialInstance*> derivedMaterialInstances_;

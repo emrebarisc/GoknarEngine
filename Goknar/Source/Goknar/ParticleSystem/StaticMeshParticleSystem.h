@@ -1,0 +1,53 @@
+#ifndef __STATIC_MESH_PARTICLE_SYSTEM_H__
+#define __STATIC_MESH_PARTICLE_SYSTEM_H__
+
+#include "ParticleSystemBase.h"
+
+#include <vector>
+
+class IMaterialBase;
+class MeshUnit;
+class Shader;
+class StaticMesh;
+
+class GOKNAR_API StaticMeshParticleSystem : public ParticleSystemBase
+{
+public:
+	explicit StaticMeshParticleSystem(const GPUParticleSystemDesc& desc = GPUParticleSystemDesc());
+	~StaticMeshParticleSystem() override;
+
+	void Render(const Camera* activeCamera) const override;
+
+	void SetStaticMesh(const StaticMesh* staticMesh);
+	const StaticMesh* GetStaticMesh() const
+	{
+		return staticMesh_;
+	}
+
+protected:
+	void CreateRenderResources() override;
+	void DestroyRenderResources() override;
+	void OnInit() override;
+	void OnPostInit() override;
+	void RecreateDrawIndirectBuffer() override;
+	void DispatchFinalizePass() const override;
+
+private:
+	struct StaticMeshSubmeshRenderData
+	{
+		const MeshUnit* meshUnit{ nullptr };
+		const IMaterialBase* material{ nullptr };
+		Shader* renderShader{ nullptr };
+		std::uint32_t indexCount{ 0u };
+		std::uint32_t firstIndex{ 0u };
+		std::int32_t baseVertex{ 0 };
+	};
+
+	Shader* CreateRenderShaderForMaterial(const IMaterialBase* material) const;
+	void RefreshStaticMeshSubmeshRenderData();
+
+	const StaticMesh* staticMesh_{ nullptr };
+	std::vector<StaticMeshSubmeshRenderData> staticMeshSubmeshRenderData_{};
+};
+
+#endif

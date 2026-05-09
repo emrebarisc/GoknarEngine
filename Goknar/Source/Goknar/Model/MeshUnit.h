@@ -11,6 +11,7 @@
 
 class Shader;
 class Material;
+class IMaterialBase;
 
 enum class GOKNAR_API MeshType
 {
@@ -96,6 +97,8 @@ public:
 	{
 		return material_;
 	}
+
+	const IMaterialBase* GetMaterialBase() const;
 
 	void AddVertex(const Vector3& vertex)
 	{

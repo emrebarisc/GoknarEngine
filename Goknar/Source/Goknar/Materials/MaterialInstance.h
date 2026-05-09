@@ -16,6 +16,10 @@ public:
 	virtual void PostInit() override;
 
 	virtual Shader* GetShader(RenderPassType renderPassType) const override;
+	Material* GetParentMaterial() const
+	{
+		return parentMaterial_;
+	}
 
 	virtual void Destroy();
 

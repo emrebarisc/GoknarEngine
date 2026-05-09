@@ -66,14 +66,29 @@ public:
 		vertexShaderPath_ = ContentDir + vertexShaderPath;
 	}
 
+	void SetVertexShaderPathAbsolute(const std::string& vertexShaderPath)
+	{
+		vertexShaderPath_ = vertexShaderPath;
+	}
+
 	void SetFragmentShaderPath(const std::string& fragmentShaderPath)
 	{
 		fragmentShaderPath_ = ContentDir + fragmentShaderPath;
 	}
 
+	void SetFragmentShaderPathAbsolute(const std::string& fragmentShaderPath)
+	{
+		fragmentShaderPath_ = fragmentShaderPath;
+	}
+
 	void SetGeometryShaderPath(const std::string& geometryShaderPath)
 	{
 		geometryShaderPath_ = ContentDir + geometryShaderPath;
+	}
+
+	void SetGeometryShaderPathAbsolute(const std::string& geometryShaderPath)
+	{
+		geometryShaderPath_ = geometryShaderPath;
 	}
 
 	ShaderType GetShaderType() const

@@ -132,6 +132,21 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* ROUGHNESS;
 	}
 
+	inline namespace PARTICLE
+	{
+		extern const char* CAMERA_RIGHT;
+		extern const char* CAMERA_UP;
+		extern const char* PARTICLE_SIZE;
+		extern const char* POSITION_BUFFER_NAME;
+		extern const char* VELOCITY_BUFFER_NAME;
+		extern const char* COLOR_BUFFER_NAME;
+		extern const char* END_COLOR_BUFFER_NAME;
+		extern const char* LIFETIME_BUFFER_NAME;
+		extern const char* SIZE_BUFFER_NAME;
+		extern const char* ROTATION_BUFFER_NAME;
+		extern const char* ALIVE_INDEX_BUFFER_NAME;
+	}
+
 	inline namespace REFLECTION_PROBE
 	{
 		extern const char* HAS_REFLECTION_PROBE;

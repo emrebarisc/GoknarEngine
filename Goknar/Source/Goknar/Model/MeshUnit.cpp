@@ -5,6 +5,7 @@
 #include "Application.h"
 #include "Camera.h"
 #include "Engine.h"
+#include "Materials/MaterialBase.h"
 #include "Scene.h"
 #include "Materials/Material.h"
 #include "Renderer/Shader.h"
@@ -79,4 +80,9 @@ void MeshUnit::ClearDataFromMemory()
 	faces_->clear();
 	delete faces_;
 	faces_ = nullptr;
+}
+
+const IMaterialBase* MeshUnit::GetMaterialBase() const
+{
+	return material_;
 }

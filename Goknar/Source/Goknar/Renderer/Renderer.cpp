@@ -29,6 +29,7 @@
 #include "Goknar/Model/InstancedStaticMeshInstance.h"
 #include "Goknar/Model/StaticMeshInstance.h"
 #include "Goknar/Model/SkeletalMeshInstance.h"
+#include "Goknar/ParticleSystem/ParticleSystemBase.h"
 
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Managers/ResourceManager.h"
@@ -120,6 +121,7 @@ Renderer::~Renderer()
 
 	delete temporalAntiAliasingPostProcessingEffect_;
 	delete bloomPostProcessingEffect_;
+	delete screenSpaceReflectionPostProcessingEffect_;
 	delete lightManager_;
 	delete deferredRenderingData_;
 
@@ -815,6 +817,20 @@ void Renderer::Render(RenderPassType renderPassType)
 
 			RenderDynamicMesh(transparentDynamicMeshRenderData);
 		}
+
+		for (ParticleSystemBase* particleSystem : particleSystems_)
+		{
+			if (!particleSystem || !particleSystem->GetIsActive())
+			{
+				continue;
+			}
+
+			particleSystem->Render(activeCamera);
+			if (countDrawCallsInner_)
+			{
+				++drawCallCount;
+			}
+		}
 		glDepthMask(GL_TRUE);
 		glDisable(GL_BLEND);
 
@@ -1043,6 +1059,28 @@ void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstanc
 
 	removeRenderData(opaqueDynamicMeshRenderData_);
 	removeRenderData(transparentDynamicMeshRenderData_);
+}
+
+void Renderer::AddParticleSystem(ParticleSystemBase* particleSystem)
+{
+	if (!particleSystem)
+	{
+		return;
+	}
+
+	if (std::find(particleSystems_.begin(), particleSystems_.end(), particleSystem) != particleSystems_.end())
+	{
+		return;
+	}
+
+	particleSystems_.push_back(particleSystem);
+}
+
+void Renderer::RemoveParticleSystem(ParticleSystemBase* particleSystem)
+{
+	particleSystems_.erase(
+		std::remove(particleSystems_.begin(), particleSystems_.end(), particleSystem),
+		particleSystems_.end());
 }
 
 void Renderer::UpdateDynamicMeshVertex(const DynamicMeshUnit* object, int vertexIndex, const VertexData& newVertexData)
@@ -1341,6 +1379,11 @@ void Renderer::RenderStaticMesh(StaticMesh* staticMesh)
 		int facePointCount = subMesh->GetFaceCount() * 3;
 		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
 	}
+}
+
+void Renderer::BindStaticMeshBuffers()
+{
+	BindStaticVBO();
 }
 
 void Renderer::BindStaticVBO()

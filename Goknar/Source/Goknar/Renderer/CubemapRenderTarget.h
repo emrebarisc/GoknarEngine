@@ -9,7 +9,7 @@ class GOKNAR_API CubemapRenderTarget : public RenderTargetBase
 {
 public:
 	CubemapRenderTarget() = default;
-	~CubemapRenderTarget() override;
+	virtual ~CubemapRenderTarget() override;
 
 	void Init() override;
 	void SetFrameSize(const Vector2& frameSize) override;

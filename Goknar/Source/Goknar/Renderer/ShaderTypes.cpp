@@ -134,6 +134,21 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* ROUGHNESS = "roughnessTexture";
 	}
 
+	inline namespace PARTICLE
+	{
+		const char* CAMERA_RIGHT = "cameraRight";
+		const char* CAMERA_UP = "cameraUp";
+		const char* PARTICLE_SIZE = "particleSize";
+		const char* POSITION_BUFFER_NAME = "ParticlePositionBuffer";
+		const char* VELOCITY_BUFFER_NAME = "ParticleVelocityBuffer";
+		const char* COLOR_BUFFER_NAME = "ParticleColorBuffer";
+		const char* END_COLOR_BUFFER_NAME = "ParticleEndColorBuffer";
+		const char* LIFETIME_BUFFER_NAME = "ParticleLifetimeBuffer";
+		const char* SIZE_BUFFER_NAME = "ParticleSizeBuffer";
+		const char* ROTATION_BUFFER_NAME = "ParticleRotationBuffer";
+		const char* ALIVE_INDEX_BUFFER_NAME = "ParticleAliveIndexBuffer";
+	}
+
 	inline namespace POSITIONING
 	{
 		const char* BONE_TRANSFORMATION_MATRIX = "boneTransformationMatrix";

@@ -16,6 +16,7 @@
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/Components/DynamicMeshComponent.h"
 #include "Goknar/Components/InstancedStaticMeshComponent.h"
+#include "Goknar/Components/ParticleSystemComponent.h"
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Components/SkeletalMeshComponent.h"
 
@@ -25,6 +26,7 @@
 #include "Goknar/Helpers/AssetParser.h"
 #include "Goknar/Helpers/ContentPathUtils.h"
 #include "Goknar/IO/ModelLoader.h"
+#include "Goknar/Contents/Image.h"
 
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
@@ -1325,6 +1327,304 @@ void SceneParser::ParseInstancedStaticMeshComponentValues(InstancedStaticMeshCom
 	}
 }
 
+void SceneParser::ParseParticleSystemComponentValues(ParticleSystemComponent* particleSystemComponent, tinyxml2::XMLElement* componentElement)
+{
+	std::stringstream stream;
+	GPUParticleSpawnDesc spawnDesc = particleSystemComponent->GetSpawnDesc();
+
+	tinyxml2::XMLElement* dataElement = componentElement->FirstChildElement("RenderMode");
+
+	dataElement = componentElement->FirstChildElement("MaxParticleCount");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		std::uint32_t maxParticleCount = 0u;
+		stream >> maxParticleCount;
+		particleSystemComponent->SetMaxParticleCount(maxParticleCount);
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("Gravity");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		Vector3 gravity;
+		stream >> gravity.x >> gravity.y >> gravity.z;
+		particleSystemComponent->SetGravity(gravity);
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("ParticleSize");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		float particleSize = 0.f;
+		stream >> particleSize;
+		particleSystemComponent->SetParticleSize(particleSize);
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("PreviewParticleCount");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		std::uint32_t previewParticleCount = 0u;
+		stream >> previewParticleCount;
+		particleSystemComponent->SetPreviewParticleCount(previewParticleCount);
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("Looping");
+	if (dataElement && dataElement->GetText())
+	{
+		spawnDesc.looping = std::string(dataElement->GetText()) == "1" || std::string(dataElement->GetText()) == "true";
+	}
+
+	dataElement = componentElement->FirstChildElement("SpawnInterval");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.spawnInterval;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("SpawnCountPerInterval");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.spawnCountPerInterval;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("SpawnBoxExtents");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.spawnBoxExtents.x >> spawnDesc.spawnBoxExtents.y >> spawnDesc.spawnBoxExtents.z;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("LifetimeRange");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.lifetime.minValue >> spawnDesc.lifetime.maxValue;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("InitialVelocityMin");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.initialVelocity.minValue.x >> spawnDesc.initialVelocity.minValue.y >> spawnDesc.initialVelocity.minValue.z;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("InitialVelocityMax");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.initialVelocity.maxValue.x >> spawnDesc.initialVelocity.maxValue.y >> spawnDesc.initialVelocity.maxValue.z;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("InitialRotationMin");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.initialRotation.minValue.x >> spawnDesc.initialRotation.minValue.y >> spawnDesc.initialRotation.minValue.z;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("InitialRotationMax");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.initialRotation.maxValue.x >> spawnDesc.initialRotation.maxValue.y >> spawnDesc.initialRotation.maxValue.z;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("AccelerationMin");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.acceleration.minValue.x >> spawnDesc.acceleration.minValue.y >> spawnDesc.acceleration.minValue.z;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("AccelerationMax");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.acceleration.maxValue.x >> spawnDesc.acceleration.maxValue.y >> spawnDesc.acceleration.maxValue.z;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("VelocityLimit");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.velocityLimit;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("SizeByLifetime");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.sizeByLifetime.startValue >> spawnDesc.sizeByLifetime.endValue;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("SizeBySpeedRange");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.sizeBySpeedRange.x >> spawnDesc.sizeBySpeedRange.y;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("SizeBySpeed");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.sizeBySpeed.startValue >> spawnDesc.sizeBySpeed.endValue;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("ColorByLifetimeStart");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.colorByLifetime.startValue.x >> spawnDesc.colorByLifetime.startValue.y >> spawnDesc.colorByLifetime.startValue.z >> spawnDesc.colorByLifetime.startValue.w;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("ColorByLifetimeEnd");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.colorByLifetime.endValue.x >> spawnDesc.colorByLifetime.endValue.y >> spawnDesc.colorByLifetime.endValue.z >> spawnDesc.colorByLifetime.endValue.w;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("ColorBySpeedRange");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.colorBySpeedRange.x >> spawnDesc.colorBySpeedRange.y;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("ColorBySpeedStart");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.colorBySpeed.startValue.x >> spawnDesc.colorBySpeed.startValue.y >> spawnDesc.colorBySpeed.startValue.z >> spawnDesc.colorBySpeed.startValue.w;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("ColorBySpeedEnd");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.colorBySpeed.endValue.x >> spawnDesc.colorBySpeed.endValue.y >> spawnDesc.colorBySpeed.endValue.z >> spawnDesc.colorBySpeed.endValue.w;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("StartSpeedRange");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.initialVelocity.minValue.z >> spawnDesc.initialVelocity.maxValue.z;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("StartSizeRange");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.sizeByLifetime.startValue;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("EndSizeRange");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.sizeByLifetime.endValue;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("StartColorMin");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.colorByLifetime.startValue.x >> spawnDesc.colorByLifetime.startValue.y >> spawnDesc.colorByLifetime.startValue.z >> spawnDesc.colorByLifetime.startValue.w;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("EndColorMin");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.colorByLifetime.endValue.x >> spawnDesc.colorByLifetime.endValue.y >> spawnDesc.colorByLifetime.endValue.z >> spawnDesc.colorByLifetime.endValue.w;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("PreviewLifetime");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		float previewLifetime = 0.f;
+		stream >> previewLifetime;
+		spawnDesc.lifetime = GPUParticleValueRange<float>(previewLifetime, previewLifetime);
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("PreviewInitialSpeed");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		float previewInitialSpeed = 0.f;
+		stream >> previewInitialSpeed;
+		spawnDesc.initialVelocity = GPUParticleValueRange<Vector3>(
+			Vector3(0.f, 0.f, previewInitialSpeed),
+			Vector3(0.f, 0.f, previewInitialSpeed));
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("PreviewSpawnRadius");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		float previewSpawnRadius = 0.f;
+		stream >> previewSpawnRadius;
+		spawnDesc.spawnBoxExtents = Vector3(previewSpawnRadius, previewSpawnRadius, previewSpawnRadius);
+	}
+	stream.clear();
+
+	particleSystemComponent->SetSpawnDesc(spawnDesc);
+
+	dataElement = componentElement->FirstChildElement("StaticMeshPath");
+	if (StaticMeshParticleSystemComponent* staticMeshParticleSystemComponent = dynamic_cast<StaticMeshParticleSystemComponent*>(particleSystemComponent))
+	{
+		staticMeshParticleSystemComponent->SetStaticMeshPath(dataElement && dataElement->GetText() ? dataElement->GetText() : "");
+	}
+
+	dataElement = componentElement->FirstChildElement("BillboardTexturePath");
+	if (BillboardParticleSystemComponent* billboardParticleSystemComponent = dynamic_cast<BillboardParticleSystemComponent*>(particleSystemComponent))
+	{
+		billboardParticleSystemComponent->SetBillboardTexturePath(dataElement && dataElement->GetText() ? dataElement->GetText() : "");
+	}
+
+	dataElement = componentElement->FirstChildElement("BillboardMaterialPath");
+	if (BillboardParticleSystemComponent* billboardParticleSystemComponent = dynamic_cast<BillboardParticleSystemComponent*>(particleSystemComponent))
+	{
+		billboardParticleSystemComponent->SetBillboardMaterialPath(dataElement && dataElement->GetText() ? dataElement->GetText() : "");
+	}
+}
+
 void SceneParser::ParseBoxCollisionComponentValues(BoxCollisionComponent* boxCollisionComponent, tinyxml2::XMLElement* componentElement)
 {
 	std::stringstream stream;
@@ -1488,6 +1788,47 @@ void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* obje
 			ParseComponentValues(instancedStaticMeshComponent, componentElement);
 
 			componentElement = componentElement->NextSiblingElement("InstancedStaticMeshComponent");
+		}
+
+		componentElement = child->FirstChildElement("BillboardParticleSystemComponent");
+		while (componentElement)
+		{
+			BillboardParticleSystemComponent* particleSystemComponent = object->AddSubComponent<BillboardParticleSystemComponent>();
+			ParseParticleSystemComponentValues(particleSystemComponent, componentElement);
+
+			ParseComponentValues(particleSystemComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("BillboardParticleSystemComponent");
+		}
+
+		componentElement = child->FirstChildElement("StaticMeshParticleSystemComponent");
+		while (componentElement)
+		{
+			StaticMeshParticleSystemComponent* particleSystemComponent = object->AddSubComponent<StaticMeshParticleSystemComponent>();
+			ParseParticleSystemComponentValues(particleSystemComponent, componentElement);
+
+			ParseComponentValues(particleSystemComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("StaticMeshParticleSystemComponent");
+		}
+
+		componentElement = child->FirstChildElement("ParticleSystemComponent");
+		while (componentElement)
+		{
+			const tinyxml2::XMLElement* renderModeElement = componentElement->FirstChildElement("RenderMode");
+			const tinyxml2::XMLElement* staticMeshPathElement = componentElement->FirstChildElement("StaticMeshPath");
+			const bool shouldCreateStaticMeshParticleSystem =
+				(renderModeElement && renderModeElement->GetText() && std::string(renderModeElement->GetText()) == "StaticMesh") ||
+				(staticMeshPathElement && staticMeshPathElement->GetText() && staticMeshPathElement->GetText()[0] != '\0');
+
+			ParticleSystemComponent* particleSystemComponent = shouldCreateStaticMeshParticleSystem ?
+				static_cast<ParticleSystemComponent*>(object->AddSubComponent<StaticMeshParticleSystemComponent>()) :
+				static_cast<ParticleSystemComponent*>(object->AddSubComponent<BillboardParticleSystemComponent>());
+			ParseParticleSystemComponentValues(particleSystemComponent, componentElement);
+
+			ParseComponentValues(particleSystemComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("ParticleSystemComponent");
 		}
 	}
 }
@@ -1834,6 +2175,16 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 			componentElement = xmlDocument.NewElement("InstancedStaticMeshComponent");
 			GetXMLElement_InstancedStaticMeshComponent(instancedStaticMeshComponent, xmlDocument, componentElement);
 		}
+		else if (BillboardParticleSystemComponent* particleSystemComponent = dynamic_cast<BillboardParticleSystemComponent*>(component))
+		{
+			componentElement = xmlDocument.NewElement("BillboardParticleSystemComponent");
+			GetXMLElement_ParticleSystemComponent(particleSystemComponent, xmlDocument, componentElement);
+		}
+		else if (StaticMeshParticleSystemComponent* particleSystemComponent = dynamic_cast<StaticMeshParticleSystemComponent*>(component))
+		{
+			componentElement = xmlDocument.NewElement("StaticMeshParticleSystemComponent");
+			GetXMLElement_ParticleSystemComponent(particleSystemComponent, xmlDocument, componentElement);
+		}
 		else if (BoxCollisionComponent* boxCollisionComponent = dynamic_cast<BoxCollisionComponent*>(component))
 		{
 			componentElement = xmlDocument.NewElement("BoxCollisionComponent");
@@ -1945,6 +2296,158 @@ void SceneParser::GetXMLElement_InstancedStaticMeshComponent(const InstancedStat
 	}
 
 	parentElement->InsertEndChild(instanceTransformationsElement);
+}
+
+void SceneParser::GetXMLElement_ParticleSystemComponent(const ParticleSystemComponent* const particleSystemComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+	const GPUParticleSpawnDesc& spawnDesc = particleSystemComponent->GetSpawnDesc();
+	const auto serializeFloatRange =
+		[](const GPUParticleValueRange<float>& range) -> std::string
+		{
+			return std::to_string(range.minValue) + " " + std::to_string(range.maxValue);
+		};
+	const auto serializeFloatCurve =
+		[](const GPUParticleFloatCurve& curve) -> std::string
+		{
+			return std::to_string(curve.startValue) + " " + std::to_string(curve.endValue);
+		};
+	const auto serializeVector2 =
+		[](const Vector2& value) -> std::string
+		{
+			return std::to_string(value.x) + " " + std::to_string(value.y);
+		};
+	const auto serializeVector4 =
+		[](const Vector4& value) -> std::string
+		{
+			return
+				std::to_string(value.x) + " " +
+				std::to_string(value.y) + " " +
+				std::to_string(value.z) + " " +
+				std::to_string(value.w);
+		};
+
+	tinyxml2::XMLElement* maxParticleCountElement = xmlDocument.NewElement("MaxParticleCount");
+	maxParticleCountElement->SetText(particleSystemComponent->GetMaxParticleCount());
+	parentElement->InsertEndChild(maxParticleCountElement);
+
+	tinyxml2::XMLElement* gravityElement = xmlDocument.NewElement("Gravity");
+	gravityElement->SetText(Serialize(particleSystemComponent->GetGravity()).c_str());
+	parentElement->InsertEndChild(gravityElement);
+
+	tinyxml2::XMLElement* particleSizeElement = xmlDocument.NewElement("ParticleSize");
+	particleSizeElement->SetText(particleSystemComponent->GetParticleSize());
+	parentElement->InsertEndChild(particleSizeElement);
+
+	tinyxml2::XMLElement* previewParticleCountElement = xmlDocument.NewElement("PreviewParticleCount");
+	previewParticleCountElement->SetText(particleSystemComponent->GetPreviewParticleCount());
+	parentElement->InsertEndChild(previewParticleCountElement);
+
+	tinyxml2::XMLElement* loopingElement = xmlDocument.NewElement("Looping");
+	loopingElement->SetText(spawnDesc.looping ? 1 : 0);
+	parentElement->InsertEndChild(loopingElement);
+
+	tinyxml2::XMLElement* spawnIntervalElement = xmlDocument.NewElement("SpawnInterval");
+	spawnIntervalElement->SetText(spawnDesc.spawnInterval);
+	parentElement->InsertEndChild(spawnIntervalElement);
+
+	tinyxml2::XMLElement* spawnCountPerIntervalElement = xmlDocument.NewElement("SpawnCountPerInterval");
+	spawnCountPerIntervalElement->SetText(spawnDesc.spawnCountPerInterval);
+	parentElement->InsertEndChild(spawnCountPerIntervalElement);
+
+	tinyxml2::XMLElement* spawnBoxExtentsElement = xmlDocument.NewElement("SpawnBoxExtents");
+	spawnBoxExtentsElement->SetText(Serialize(spawnDesc.spawnBoxExtents).c_str());
+	parentElement->InsertEndChild(spawnBoxExtentsElement);
+
+	tinyxml2::XMLElement* lifetimeRangeElement = xmlDocument.NewElement("LifetimeRange");
+	lifetimeRangeElement->SetText(serializeFloatRange(spawnDesc.lifetime).c_str());
+	parentElement->InsertEndChild(lifetimeRangeElement);
+
+	tinyxml2::XMLElement* initialVelocityMinElement = xmlDocument.NewElement("InitialVelocityMin");
+	initialVelocityMinElement->SetText(Serialize(spawnDesc.initialVelocity.minValue).c_str());
+	parentElement->InsertEndChild(initialVelocityMinElement);
+
+	tinyxml2::XMLElement* initialVelocityMaxElement = xmlDocument.NewElement("InitialVelocityMax");
+	initialVelocityMaxElement->SetText(Serialize(spawnDesc.initialVelocity.maxValue).c_str());
+	parentElement->InsertEndChild(initialVelocityMaxElement);
+
+	tinyxml2::XMLElement* initialRotationMinElement = xmlDocument.NewElement("InitialRotationMin");
+	initialRotationMinElement->SetText(Serialize(spawnDesc.initialRotation.minValue).c_str());
+	parentElement->InsertEndChild(initialRotationMinElement);
+
+	tinyxml2::XMLElement* initialRotationMaxElement = xmlDocument.NewElement("InitialRotationMax");
+	initialRotationMaxElement->SetText(Serialize(spawnDesc.initialRotation.maxValue).c_str());
+	parentElement->InsertEndChild(initialRotationMaxElement);
+
+	tinyxml2::XMLElement* accelerationMinElement = xmlDocument.NewElement("AccelerationMin");
+	accelerationMinElement->SetText(Serialize(spawnDesc.acceleration.minValue).c_str());
+	parentElement->InsertEndChild(accelerationMinElement);
+
+	tinyxml2::XMLElement* accelerationMaxElement = xmlDocument.NewElement("AccelerationMax");
+	accelerationMaxElement->SetText(Serialize(spawnDesc.acceleration.maxValue).c_str());
+	parentElement->InsertEndChild(accelerationMaxElement);
+
+	tinyxml2::XMLElement* velocityLimitElement = xmlDocument.NewElement("VelocityLimit");
+	velocityLimitElement->SetText(spawnDesc.velocityLimit);
+	parentElement->InsertEndChild(velocityLimitElement);
+
+	tinyxml2::XMLElement* sizeByLifetimeElement = xmlDocument.NewElement("SizeByLifetime");
+	sizeByLifetimeElement->SetText(serializeFloatCurve(spawnDesc.sizeByLifetime).c_str());
+	parentElement->InsertEndChild(sizeByLifetimeElement);
+
+	tinyxml2::XMLElement* sizeBySpeedRangeElement = xmlDocument.NewElement("SizeBySpeedRange");
+	sizeBySpeedRangeElement->SetText(serializeVector2(spawnDesc.sizeBySpeedRange).c_str());
+	parentElement->InsertEndChild(sizeBySpeedRangeElement);
+
+	tinyxml2::XMLElement* sizeBySpeedElement = xmlDocument.NewElement("SizeBySpeed");
+	sizeBySpeedElement->SetText(serializeFloatCurve(spawnDesc.sizeBySpeed).c_str());
+	parentElement->InsertEndChild(sizeBySpeedElement);
+
+	tinyxml2::XMLElement* colorByLifetimeStartElement = xmlDocument.NewElement("ColorByLifetimeStart");
+	colorByLifetimeStartElement->SetText(serializeVector4(spawnDesc.colorByLifetime.startValue).c_str());
+	parentElement->InsertEndChild(colorByLifetimeStartElement);
+
+	tinyxml2::XMLElement* colorByLifetimeEndElement = xmlDocument.NewElement("ColorByLifetimeEnd");
+	colorByLifetimeEndElement->SetText(serializeVector4(spawnDesc.colorByLifetime.endValue).c_str());
+	parentElement->InsertEndChild(colorByLifetimeEndElement);
+
+	tinyxml2::XMLElement* colorBySpeedRangeElement = xmlDocument.NewElement("ColorBySpeedRange");
+	colorBySpeedRangeElement->SetText(serializeVector2(spawnDesc.colorBySpeedRange).c_str());
+	parentElement->InsertEndChild(colorBySpeedRangeElement);
+
+	tinyxml2::XMLElement* colorBySpeedStartElement = xmlDocument.NewElement("ColorBySpeedStart");
+	colorBySpeedStartElement->SetText(serializeVector4(spawnDesc.colorBySpeed.startValue).c_str());
+	parentElement->InsertEndChild(colorBySpeedStartElement);
+
+	tinyxml2::XMLElement* colorBySpeedEndElement = xmlDocument.NewElement("ColorBySpeedEnd");
+	colorBySpeedEndElement->SetText(serializeVector4(spawnDesc.colorBySpeed.endValue).c_str());
+	parentElement->InsertEndChild(colorBySpeedEndElement);
+
+	if (const StaticMeshParticleSystemComponent* staticMeshParticleSystemComponent = dynamic_cast<const StaticMeshParticleSystemComponent*>(particleSystemComponent))
+	{
+		if (!staticMeshParticleSystemComponent->GetStaticMeshPath().empty())
+		{
+			tinyxml2::XMLElement* staticMeshPathElement = xmlDocument.NewElement("StaticMeshPath");
+			staticMeshPathElement->SetText(staticMeshParticleSystemComponent->GetStaticMeshPath().c_str());
+			parentElement->InsertEndChild(staticMeshPathElement);
+		}
+	}
+
+	if (const BillboardParticleSystemComponent* billboardParticleSystemComponent = dynamic_cast<const BillboardParticleSystemComponent*>(particleSystemComponent))
+	{
+		if (!billboardParticleSystemComponent->GetBillboardTexturePath().empty())
+		{
+			tinyxml2::XMLElement* billboardTexturePathElement = xmlDocument.NewElement("BillboardTexturePath");
+			billboardTexturePathElement->SetText(billboardParticleSystemComponent->GetBillboardTexturePath().c_str());
+			parentElement->InsertEndChild(billboardTexturePathElement);
+		}
+
+		if (!billboardParticleSystemComponent->GetBillboardMaterialPath().empty())
+		{
+			tinyxml2::XMLElement* billboardMaterialPathElement = xmlDocument.NewElement("BillboardMaterialPath");
+			billboardMaterialPathElement->SetText(billboardParticleSystemComponent->GetBillboardMaterialPath().c_str());
+			parentElement->InsertEndChild(billboardMaterialPathElement);
+		}
+	}
 }
 
 void SceneParser::GetXMLElement_BoxCollisionComponent(const BoxCollisionComponent* const boxCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)

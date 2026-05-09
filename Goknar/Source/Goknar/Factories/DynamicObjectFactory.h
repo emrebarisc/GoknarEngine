@@ -2,12 +2,11 @@
 #define __DYNAMICOBJECTFACTORY_H__
 
 #include "Core.h"
+#include "Goknar/ObjectBase.h"
 
 #include <unordered_map>
 #include <functional>
 #include <string>
-
-class ObjectBase;
 
 class DynamicObjectFactory
 {
@@ -35,7 +34,13 @@ public:
         const auto& objectIterator = objectMap_.find(className);
         if (objectIterator != objectMap_.end())
         {
-            return objectIterator->second();
+            ObjectBase* object = objectIterator->second();
+            if (object)
+            {
+                object->SetClassName(className);
+            }
+
+            return object;
         }
 
         return nullptr;

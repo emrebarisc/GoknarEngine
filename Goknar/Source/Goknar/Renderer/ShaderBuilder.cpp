@@ -17,6 +17,7 @@
 #include "Goknar/Scene.h"
 #include "Goknar/Lights/LightManager/LightManager.h"
 
+#include <cctype>
 #include <unordered_set>
 
 ShaderBuilder* ShaderBuilder::instance_ = nullptr;
@@ -26,6 +27,25 @@ namespace
 	bool MaterialUsesReflectionProbe(const MaterialInitializationData* initializationData)
 	{
 		return initializationData && initializationData->owner && initializationData->owner->GetUsesReflectionProbe();
+	}
+
+	std::string TrimTrailingStatementTerminators(std::string expression)
+	{
+		while (!expression.empty() && std::isspace(static_cast<unsigned char>(expression.back())))
+		{
+			expression.pop_back();
+		}
+
+		while (!expression.empty() && expression.back() == ';')
+		{
+			expression.pop_back();
+			while (!expression.empty() && std::isspace(static_cast<unsigned char>(expression.back())))
+			{
+				expression.pop_back();
+			}
+		}
+
+		return expression;
 	}
 }
 
@@ -284,6 +304,7 @@ std::string ShaderBuilder::ShadowPass_GetInstancedStaticMeshVertexShaderScript(M
 std::string ShaderBuilder::ShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	bool requiresAlphaTest = initializationData && 
+		initializationData->owner &&
 		(initializationData->owner->GetBlendModel() == MaterialBlendModel::Masked ||
 		 initializationData->owner->GetBlendModel() == MaterialBlendModel::Transparent);
 
@@ -352,6 +373,7 @@ std::string ShaderBuilder::PointShadowPass_GetInstancedStaticMeshVertexShaderScr
 std::string ShaderBuilder::PointShadowPass_GetGeometryShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	bool requiresAlphaTest = initializationData && 
+		initializationData->owner &&
 		(initializationData->owner->GetBlendModel() == MaterialBlendModel::Masked ||
 		 initializationData->owner->GetBlendModel() == MaterialBlendModel::Transparent);
 
@@ -417,6 +439,7 @@ void main()
 std::string ShaderBuilder::PointShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	bool requiresAlphaTest = initializationData && 
+		initializationData->owner &&
 		(initializationData->owner->GetBlendModel() == MaterialBlendModel::Masked ||
 		 initializationData->owner->GetBlendModel() == MaterialBlendModel::Transparent);
 
@@ -609,6 +632,357 @@ void main()
 })";
 
 	return cubemapFragmentShader;
+}
+
+std::string ShaderBuilder::ParticleRenderPass_GetBillboardVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	std::string vertexShader = "#version " + shaderVersion_ + "\n\n";
+	vertexShader += VS_GetUniforms();
+	vertexShader += FS_GetDirectionalLightStruct();
+	vertexShader += FS_GetPointLightStruct();
+	vertexShader += FS_GetSpotLightStruct();
+	vertexShader += FS_GetLightArrayUniforms();
+	vertexShader += VS_GetLightShadowViewMatrixUniforms();
+	vertexShader += VS_GetLightOutputs();
+
+	vertexShader += R"(
+layout(std430, binding = 0) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::POSITION_BUFFER_NAME) + R"(
+{
+	vec4 particlePositions[];
+};
+
+layout(std430, binding = 1) readonly buffer ParticleVelocityBuffer
+{
+	vec4 particleVelocities[];
+};
+
+layout(std430, binding = 2) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::COLOR_BUFFER_NAME) + R"(
+{
+	vec4 particleColors[];
+};
+
+layout(std430, binding = 3) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::LIFETIME_BUFFER_NAME) + R"(
+{
+	vec2 particleLifetimes[];
+};
+
+layout(std430, binding = 4) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ALIVE_INDEX_BUFFER_NAME) + R"(
+{
+	uint aliveParticleIndices[];
+};
+
+layout(std430, binding = 7) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::END_COLOR_BUFFER_NAME) + R"(
+{
+	vec4 particleEndColors[];
+};
+
+layout(std430, binding = 8) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::SIZE_BUFFER_NAME) + R"(
+{
+	vec2 particleSizes[];
+};
+
+layout(std430, binding = 9) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ROTATION_BUFFER_NAME) + R"(
+{
+	vec4 particleRotations[];
+};
+
+uniform vec3 )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_RIGHT) + R"(;
+uniform vec3 )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_UP) + R"(;
+uniform float )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::PARTICLE_SIZE) + R"(;
+uniform vec2 particleSizeBySpeedRange;
+uniform vec2 particleSizeBySpeedValues;
+uniform vec2 particleColorBySpeedRange;
+uniform vec4 particleColorBySpeedStart;
+uniform vec4 particleColorBySpeedEnd;
+)";
+
+	MaterialInitializationData particleInitializationData(initializationData ? initializationData->owner : nullptr);
+	MaterialInitializationData* effectiveInitializationData = initializationData;
+	if (initializationData)
+	{
+		particleInitializationData = *initializationData;
+		if (particleInitializationData.uv.result.empty())
+		{
+			particleInitializationData.uv.result = "vec2(uv.x, 1.f - uv.y);";
+		}
+
+		effectiveInitializationData = &particleInitializationData;
+	}
+
+	if (effectiveInitializationData && !effectiveInitializationData->vertexShaderFunctions.empty())
+	{
+		vertexShader += effectiveInitializationData->vertexShaderFunctions;
+	}
+
+	if (effectiveInitializationData && !effectiveInitializationData->vertexShaderUniforms.empty())
+	{
+		vertexShader += effectiveInitializationData->vertexShaderUniforms;
+	}
+
+	vertexShader += R"(
+void main()
+{
+	const vec2 particleQuadCorners[6] = vec2[](
+		vec2(-1.0, -1.0),
+		vec2(1.0, -1.0),
+		vec2(1.0, 1.0),
+		vec2(-1.0, -1.0),
+		vec2(1.0, 1.0),
+		vec2(-1.0, 1.0));
+
+	uint particleIndex = aliveParticleIndices[gl_InstanceID];
+	vec4 startParticleColor = particleColors[particleIndex];
+	vec4 endParticleColor = particleEndColors[particleIndex];
+	vec2 particleLifetime = particleLifetimes[particleIndex];
+	vec2 particleSizeRange = particleSizes[particleIndex];
+	vec3 particleRotation = particleRotations[particleIndex].xyz;
+	float particleSpeed = length(particleVelocities[particleIndex].xyz);
+	float normalizedAge = 1.0 - clamp(particleLifetime.x / max(particleLifetime.y, 0.0001), 0.0, 1.0);
+	float normalizedSizeSpeed = clamp((particleSpeed - particleSizeBySpeedRange.x) / max(particleSizeBySpeedRange.y - particleSizeBySpeedRange.x, 0.0001), 0.0, 1.0);
+	float normalizedColorSpeed = clamp((particleSpeed - particleColorBySpeedRange.x) / max(particleColorBySpeedRange.y - particleColorBySpeedRange.x, 0.0001), 0.0, 1.0);
+	float currentParticleSize = mix(particleSizeRange.x, particleSizeRange.y, normalizedAge) * mix(particleSizeBySpeedValues.x, particleSizeBySpeedValues.y, normalizedSizeSpeed) * )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::PARTICLE_SIZE) + R"(;
+	vec4 currentParticleColor = mix(startParticleColor, endParticleColor, normalizedAge) * mix(particleColorBySpeedStart, particleColorBySpeedEnd, normalizedColorSpeed);
+
+	vec2 particleCorner = particleQuadCorners[gl_VertexID];
+	float particleRotationSin = sin(particleRotation.z);
+	float particleRotationCos = cos(particleRotation.z);
+	vec2 rotatedCorner = vec2(
+		particleCorner.x * particleRotationCos - particleCorner.y * particleRotationSin,
+		particleCorner.x * particleRotationSin + particleCorner.y * particleRotationCos);
+
+	vec2 uv = particleCorner * 0.5 + 0.5;
+	vec3 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + R"( = vec3(rotatedCorner, 0.0);
+)";
+
+	if (effectiveInitializationData)
+	{
+		vertexShader += VS_GetPositionOffset(effectiveInitializationData);
+		vertexShader += VS_GetUV(effectiveInitializationData);
+	}
+	else
+	{
+		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = vec2(uv.x, 1.f - uv.y);\n";
+	}
+
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX + ";\n";
+	vertexShader += "\tvec4 particleCenterWorldSpace = vec4(particlePositions[particleIndex].xyz, 1.0) * " + std::string(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX) + ";\n";
+	vertexShader += "\tvec3 cameraForward = normalize(cross(" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_RIGHT) + ", " + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_UP) + "));\n";
+	vertexShader += "\tvec3 billboardWorldOffset = " + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_RIGHT) + " * (" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + ".x * currentParticleSize) + " + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_UP) + " * (" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + ".y * currentParticleSize);\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = vec4(particleCenterWorldSpace.xyz + billboardWorldOffset, 1.0);\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + " = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + " = cameraForward;\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + " = currentParticleColor;\n";
+
+	vertexShader += VS_GetLightSpaceFragmentPositionCalculations();
+
+	vertexShader += R"(
+	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + R"(;
+}
+)";
+
+	return vertexShader;
+}
+
+std::string ShaderBuilder::ParticleRenderPass_GetStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	std::string vertexShader = "#version " + shaderVersion_ + "\n\n";
+	vertexShader += VS_GetMainLayouts();
+	vertexShader += VS_GetUniforms();
+	vertexShader += FS_GetDirectionalLightStruct();
+	vertexShader += FS_GetPointLightStruct();
+	vertexShader += FS_GetSpotLightStruct();
+	vertexShader += FS_GetLightArrayUniforms();
+	vertexShader += VS_GetLightShadowViewMatrixUniforms();
+	vertexShader += VS_GetLightOutputs();
+
+	vertexShader += R"(
+layout(std430, binding = 0) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::POSITION_BUFFER_NAME) + R"(
+{
+	vec4 particlePositions[];
+};
+
+layout(std430, binding = 1) readonly buffer ParticleVelocityBuffer
+{
+	vec4 particleVelocities[];
+};
+
+layout(std430, binding = 2) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::COLOR_BUFFER_NAME) + R"(
+{
+	vec4 particleColors[];
+};
+
+layout(std430, binding = 3) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::LIFETIME_BUFFER_NAME) + R"(
+{
+	vec2 particleLifetimes[];
+};
+
+layout(std430, binding = 4) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ALIVE_INDEX_BUFFER_NAME) + R"(
+{
+	uint aliveParticleIndices[];
+};
+
+layout(std430, binding = 7) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::END_COLOR_BUFFER_NAME) + R"(
+{
+	vec4 particleEndColors[];
+};
+
+layout(std430, binding = 8) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::SIZE_BUFFER_NAME) + R"(
+{
+	vec2 particleSizes[];
+};
+
+layout(std430, binding = 9) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ROTATION_BUFFER_NAME) + R"(
+{
+	vec4 particleRotations[];
+};
+
+uniform float )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::PARTICLE_SIZE) + R"(;
+uniform vec2 particleSizeBySpeedRange;
+uniform vec2 particleSizeBySpeedValues;
+uniform vec2 particleColorBySpeedRange;
+uniform vec4 particleColorBySpeedStart;
+uniform vec4 particleColorBySpeedEnd;
+)";
+
+	MaterialInitializationData particleInitializationData(initializationData ? initializationData->owner : nullptr);
+	MaterialInitializationData* effectiveInitializationData = initializationData;
+	if (initializationData)
+	{
+		particleInitializationData = *initializationData;
+		particleInitializationData.vertexNormal.result = "particleNormal";
+		effectiveInitializationData = &particleInitializationData;
+	}
+
+	if (initializationData && !initializationData->vertexShaderFunctions.empty())
+	{
+		vertexShader += initializationData->vertexShaderFunctions;
+	}
+
+	if (initializationData && !initializationData->vertexShaderUniforms.empty())
+	{
+		vertexShader += initializationData->vertexShaderUniforms;
+	}
+
+	vertexShader += R"(
+void main()
+{
+	uint particleIndex = aliveParticleIndices[gl_InstanceID];
+	vec4 startParticleColor = particleColors[particleIndex];
+	vec4 endParticleColor = particleEndColors[particleIndex];
+	vec2 particleLifetime = particleLifetimes[particleIndex];
+	vec2 particleSizeRange = particleSizes[particleIndex];
+	vec3 particleRotation = particleRotations[particleIndex].xyz;
+	float particleSpeed = length(particleVelocities[particleIndex].xyz);
+	float normalizedAge = 1.0 - clamp(particleLifetime.x / max(particleLifetime.y, 0.0001), 0.0, 1.0);
+	float normalizedSizeSpeed = clamp((particleSpeed - particleSizeBySpeedRange.x) / max(particleSizeBySpeedRange.y - particleSizeBySpeedRange.x, 0.0001), 0.0, 1.0);
+	float normalizedColorSpeed = clamp((particleSpeed - particleColorBySpeedRange.x) / max(particleColorBySpeedRange.y - particleColorBySpeedRange.x, 0.0001), 0.0, 1.0);
+	float currentParticleSize = mix(particleSizeRange.x, particleSizeRange.y, normalizedAge) * mix(particleSizeBySpeedValues.x, particleSizeBySpeedValues.y, normalizedSizeSpeed) * )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::PARTICLE_SIZE) + R"(;
+	vec4 currentParticleColor = mix(startParticleColor, endParticleColor, normalizedAge) * mix(particleColorBySpeedStart, particleColorBySpeedEnd, normalizedColorSpeed);
+	vec3 particlePosition = particlePositions[particleIndex].xyz;
+
+	float particleRotationSinX = sin(particleRotation.x);
+	float particleRotationCosX = cos(particleRotation.x);
+	float particleRotationSinY = sin(particleRotation.y);
+	float particleRotationCosY = cos(particleRotation.y);
+	float particleRotationSinZ = sin(particleRotation.z);
+	float particleRotationCosZ = cos(particleRotation.z);
+
+	mat3 particleRotationMatrixX = mat3(
+		1.0, 0.0, 0.0,
+		0.0, particleRotationCosX, -particleRotationSinX,
+		0.0, particleRotationSinX, particleRotationCosX);
+	mat3 particleRotationMatrixY = mat3(
+		particleRotationCosY, 0.0, particleRotationSinY,
+		0.0, 1.0, 0.0,
+		-particleRotationSinY, 0.0, particleRotationCosY);
+	mat3 particleRotationMatrixZ = mat3(
+		particleRotationCosZ, -particleRotationSinZ, 0.0,
+		particleRotationSinZ, particleRotationCosZ, 0.0,
+		0.0, 0.0, 1.0);
+	mat3 particleRotationMatrix = particleRotationMatrixZ * particleRotationMatrixY * particleRotationMatrixX;
+)";
+
+	vertexShader += VS_GetPosition();
+	if (effectiveInitializationData)
+	{
+		vertexShader += VS_GetPositionOffset(effectiveInitializationData);
+	}
+
+	vertexShader += "\tvec3 particleNormal = particleRotationMatrix * " + std::string(SHADER_VARIABLE_NAMES::VERTEX::NORMAL) + ";\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " = particleRotationMatrix * (" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " * currentParticleSize);\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " += particlePosition;\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX + ";\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = vec4(" + SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION + ", 1.f) * " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX + ";\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + " * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
+	vertexShader += VS_GetLightSpaceFragmentPositionCalculations();
+
+	if (effectiveInitializationData)
+	{
+		vertexShader += VS_GetUV(effectiveInitializationData);
+		vertexShader += VS_GetVertexNormalText(effectiveInitializationData);
+	}
+	else
+	{
+		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = vec2(" + SHADER_VARIABLE_NAMES::VERTEX::UV + ".x, 1.f - " + SHADER_VARIABLE_NAMES::VERTEX::UV + ".y);\n";
+		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + " = normalize(particleNormal * transpose(inverse(mat3(" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "))));\n";
+	}
+
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + " = vec4(" + SHADER_VARIABLE_NAMES::VERTEX::COLOR + ".rgb * currentParticleColor.rgb, " + SHADER_VARIABLE_NAMES::VERTEX::COLOR + ".a * currentParticleColor.a);\n";
+	vertexShader += "\tgl_Position = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + ";\n";
+	vertexShader += "}\n";
+
+	return vertexShader;
+}
+
+std::string ShaderBuilder::ParticleRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
+{
+	MaterialInitializationData particleInitializationData(initializationData ? initializationData->owner : nullptr);
+	if (initializationData)
+	{
+		particleInitializationData = *initializationData;
+	}
+
+	std::string particleBaseColorExpression;
+	if (initializationData && !initializationData->baseColor.result.empty())
+	{
+		particleBaseColorExpression = initializationData->baseColor.result;
+	}
+	else if (shader)
+	{
+		const std::vector<const Texture*>* textures = shader->GetTextures();
+		if (textures)
+		{
+			for (const Texture* texture : *textures)
+			{
+				if (texture && texture->GetTextureUsage() == TextureUsage::Diffuse)
+				{
+					particleBaseColorExpression = General_FS_GetDiffuseTextureSampling(texture->GetName());
+					break;
+				}
+			}
+		}
+	}
+
+	if (particleBaseColorExpression.empty())
+	{
+		particleBaseColorExpression = SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR;
+	}
+	else
+	{
+		particleBaseColorExpression = TrimTrailingStatementTerminators(particleBaseColorExpression);
+	}
+
+	particleInitializationData.baseColor.result =
+		"(" + particleBaseColorExpression + ") * " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + ";";
+
+	std::string outputVariables = FS_GetOutputVariables();
+	std::string outputVariableAssignments = FS_GetOutputVariableAssignments();
+
+	FragmentShaderInitializationData fragmentShaderInitializationData(outputVariables, outputVariableAssignments);
+	fragmentShaderInitializationData.materialInitializationData = &particleInitializationData;
+	fragmentShaderInitializationData.shader = shader;
+	fragmentShaderInitializationData.renderPassType = RenderPassType::Forward;
+	return General_FS_GetScript(fragmentShaderInitializationData);
 }
 
 std::string ShaderBuilder::DeferredRenderPass_GetVertexShaderScript()
@@ -814,8 +1188,9 @@ std::string ShaderBuilder::General_FS_GetMaterialVariables(const FragmentShaderI
 	materialVariableText += "vec3 geometryNormal;\n";
 	materialVariableText += "vec3 surfaceNormal;\n";
 
-	bool requiresAlphaTest = fragmentShaderInitializationData.materialInitializationData && 
-		(fragmentShaderInitializationData.materialInitializationData->owner->GetBlendModel() == MaterialBlendModel::Masked || 
+	bool requiresAlphaTest = fragmentShaderInitializationData.materialInitializationData &&
+		fragmentShaderInitializationData.materialInitializationData->owner &&
+		(fragmentShaderInitializationData.materialInitializationData->owner->GetBlendModel() == MaterialBlendModel::Masked ||
 		 fragmentShaderInitializationData.materialInitializationData->owner->GetBlendModel() == MaterialBlendModel::Transparent);
 
 	bool includeMaterialVariables = fragmentShaderInitializationData.renderPassType == RenderPassType::Forward ||
@@ -1094,6 +1469,12 @@ std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(MaterialInitializ
 				initializationData->roughness.result = General_FS_GetScalarTextureSampling(texture->GetName());
 			}
 			break;
+		case TextureUsage::Normal:
+			if (initializationData && initializationData->fragmentNormal.result.empty())
+			{
+				initializationData->fragmentNormal.result = General_FS_GetNormalTextureSampling(texture->GetName());
+			}
+			break;
 		default:
 			break;
 		}
@@ -1295,6 +1676,7 @@ std::string ShaderBuilder::FS_InitializeBaseColor(MaterialInitializationData* in
 	}
 
 	if (initializationData &&
+		initializationData->owner &&
 		(initializationData->owner->GetBlendModel() == MaterialBlendModel::Masked ||
 		 (discardTransparent && initializationData->owner->GetBlendModel() == MaterialBlendModel::Transparent)))
 	{
@@ -1760,7 +2142,8 @@ std::string ShaderBuilder::VS_GetMain(const VertexShaderInitializationData& vert
 	
 	bool isPointLightShadowPass = vertexShaderInitializationData.renderPassType == RenderPassType::PointLightShadow;
 	bool isCubemapRenderPass = vertexShaderInitializationData.renderPassType == RenderPassType::CubemapCapture;
-	bool requiresAlphaTest = vertexShaderInitializationData.materialInitializationData && 
+	bool requiresAlphaTest = vertexShaderInitializationData.materialInitializationData &&
+		vertexShaderInitializationData.materialInitializationData->owner &&
 		(vertexShaderInitializationData.materialInitializationData->owner->GetBlendModel() == MaterialBlendModel::Masked ||
 		 vertexShaderInitializationData.materialInitializationData->owner->GetBlendModel() == MaterialBlendModel::Transparent);
 	

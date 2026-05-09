@@ -17,6 +17,7 @@ class InstancedStaticMesh;
 class StaticMesh;
 class SkeletalMesh;
 class LightManager;
+class ParticleSystemBase;
 
 class Texture;
 class FrameBuffer;
@@ -162,6 +163,8 @@ public:
 	void AddDynamicMeshToRenderer(DynamicMesh* object);
 	void AddDynamicMeshInstance(DynamicMeshInstance* object);
 	void RemoveDynamicMeshInstance(DynamicMeshInstance* object);
+	void AddParticleSystem(ParticleSystemBase* particleSystem);
+	void RemoveParticleSystem(ParticleSystemBase* particleSystem);
 
 	void UpdateDynamicMeshVertex(const DynamicMeshUnit* object, int vertexIndex, const VertexData& newVertexData);
 	void RefreshInstancedStaticMeshTransformations(const InstancedStaticMesh* object);
@@ -243,6 +246,7 @@ public:
 	}
 
 	void RenderStaticMesh(StaticMesh* staticMesh);
+	void BindStaticMeshBuffers();
 
 	void SetDrawOnWindow(bool drawOnWindow)
 	{
@@ -314,6 +318,7 @@ private:
 
 	std::vector<DynamicMeshRenderData> opaqueDynamicMeshRenderData_;
 	std::vector<DynamicMeshRenderData> transparentDynamicMeshRenderData_;
+	std::vector<ParticleSystemBase*> particleSystems_;
 
 	LightManager* lightManager_{ nullptr };
 

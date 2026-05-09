@@ -48,6 +48,10 @@ public:
 	std::string CubemapRenderPass_GetGeometryShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string CubemapRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 
+	std::string ParticleRenderPass_GetBillboardVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
+	std::string ParticleRenderPass_GetStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
+	std::string ParticleRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
+
 	std::string DeferredRenderPass_GetVertexShaderScript();
 	std::string DeferredRenderPass_GetFragmentShaderScript();
 protected:

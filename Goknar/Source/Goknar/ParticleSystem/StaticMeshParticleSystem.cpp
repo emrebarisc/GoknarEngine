@@ -1,0 +1,303 @@
+#include "pch.h"
+
+#include "StaticMeshParticleSystem.h"
+
+#include "Goknar/Contents/Image.h"
+#include "Goknar/Engine.h"
+#include "Goknar/GoknarAssert.h"
+#include "Goknar/Materials/Material.h"
+#include "Goknar/Materials/MaterialInstance.h"
+#include "Goknar/Model/MeshUnit.h"
+#include "Goknar/Model/StaticMesh.h"
+#include "Goknar/Renderer/ComputeShader.h"
+#include "Goknar/Renderer/Renderer.h"
+#include "Goknar/Renderer/Shader.h"
+#include "Goknar/Renderer/ShaderBuilder.h"
+#include "Goknar/Renderer/ShaderTypes.h"
+
+#include <glad/glad.h>
+
+#include <limits>
+
+namespace
+{
+	const Material* ResolveMaterialTemplate(const IMaterialBase* material)
+	{
+		if (const Material* typedMaterial = dynamic_cast<const Material*>(material))
+		{
+			return typedMaterial;
+		}
+
+		if (const MaterialInstance* materialInstance = dynamic_cast<const MaterialInstance*>(material))
+		{
+			return materialInstance->GetParentMaterial();
+		}
+
+		return nullptr;
+	}
+
+	void AddMaterialTexturesToShader(const IMaterialBase* material, Shader* shader)
+	{
+		if (!material || !shader)
+		{
+			return;
+		}
+
+		const std::vector<const Image*>* textureImages = material->GetTextureImages();
+		if (!textureImages)
+		{
+			return;
+		}
+
+		for (const Image* textureImage : *textureImages)
+		{
+			if (!textureImage || !textureImage->GetGeneratedTexture())
+			{
+				continue;
+			}
+
+			shader->AddTexture(textureImage->GetGeneratedTexture());
+		}
+	}
+}
+
+StaticMeshParticleSystem::StaticMeshParticleSystem(const GPUParticleSystemDesc& desc) :
+	ParticleSystemBase(desc)
+{
+}
+
+StaticMeshParticleSystem::~StaticMeshParticleSystem()
+{
+	DestroyRenderResources();
+}
+
+void StaticMeshParticleSystem::Render(const Camera*) const
+{
+	if (!GetIsInitialized() || GetDrawIndirectBufferId() == 0 || staticMeshSubmeshRenderData_.empty() || !engine || !engine->GetRenderer())
+	{
+		return;
+	}
+
+	BindRenderBuffers();
+
+	glBindVertexArray(GetDummyVertexArrayObjectId());
+	engine->GetRenderer()->BindStaticMeshBuffers();
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, GetDrawIndirectBufferId());
+
+	for (std::uint32_t commandIndex = 0u; commandIndex < static_cast<std::uint32_t>(staticMeshSubmeshRenderData_.size()); ++commandIndex)
+	{
+		const StaticMeshSubmeshRenderData& renderData = staticMeshSubmeshRenderData_[commandIndex];
+		if (!renderData.renderShader)
+		{
+			continue;
+		}
+
+		renderData.renderShader->Use();
+		renderData.renderShader->SetMVP(Matrix::IdentityMatrix);
+		ApplyParticleStateToShader(renderData.renderShader);
+		ApplyMaterialStateToShader(renderData.renderShader, renderData.material);
+		engine->SetShaderEngineVariables(renderData.renderShader);
+
+		if (renderData.material && renderData.material->GetShadingModel() == MaterialShadingModel::TwoSided)
+		{
+			glDisable(GL_CULL_FACE);
+		}
+		else
+		{
+			glEnable(GL_CULL_FACE);
+		}
+
+		const void* indirectCommandOffset = reinterpret_cast<const void*>(
+			static_cast<std::uintptr_t>(commandIndex * sizeof(GPUParticleDrawElementsIndirectCommand)));
+		glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, indirectCommandOffset);
+	}
+
+	glEnable(GL_CULL_FACE);
+	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void StaticMeshParticleSystem::SetStaticMesh(const StaticMesh* staticMesh)
+{
+	if (staticMesh_ == staticMesh)
+	{
+		return;
+	}
+
+	staticMesh_ = staticMesh;
+
+	if (!GetIsInitialized())
+	{
+		return;
+	}
+
+	RefreshStaticMeshSubmeshRenderData();
+	OnPostInit();
+	RecreateDrawIndirectBuffer();
+	ResetSimulationState();
+}
+
+void StaticMeshParticleSystem::CreateRenderResources()
+{
+}
+
+void StaticMeshParticleSystem::DestroyRenderResources()
+{
+	for (StaticMeshSubmeshRenderData& renderData : staticMeshSubmeshRenderData_)
+	{
+		delete renderData.renderShader;
+		renderData.renderShader = nullptr;
+	}
+}
+
+void StaticMeshParticleSystem::OnInit()
+{
+	RefreshStaticMeshSubmeshRenderData();
+}
+
+void StaticMeshParticleSystem::OnPostInit()
+{
+	for (StaticMeshSubmeshRenderData& renderData : staticMeshSubmeshRenderData_)
+	{
+		if (renderData.renderShader)
+		{
+			renderData.renderShader->PostInit();
+		}
+	}
+}
+
+void StaticMeshParticleSystem::RecreateDrawIndirectBuffer()
+{
+	if (GetDrawIndirectBufferId() == 0)
+	{
+		return;
+	}
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, GetDrawIndirectBufferId());
+
+	if (!staticMeshSubmeshRenderData_.empty())
+	{
+		std::vector<GPUParticleDrawElementsIndirectCommand> drawCommands;
+		drawCommands.reserve(static_cast<std::size_t>(staticMeshSubmeshRenderData_.size()));
+
+		for (const StaticMeshSubmeshRenderData& renderData : staticMeshSubmeshRenderData_)
+		{
+			GPUParticleDrawElementsIndirectCommand drawCommand{};
+			drawCommand.indexCountPerInstance = renderData.indexCount;
+			drawCommand.instanceCount = 0u;
+			drawCommand.firstIndex = renderData.firstIndex;
+			drawCommand.baseVertex = renderData.baseVertex;
+			drawCommand.baseInstance = 0u;
+			drawCommands.push_back(drawCommand);
+		}
+
+		glBufferData(
+			GL_SHADER_STORAGE_BUFFER,
+			static_cast<GEsizeiptr>(drawCommands.size() * sizeof(GPUParticleDrawElementsIndirectCommand)),
+			drawCommands.data(),
+			GL_DYNAMIC_DRAW);
+	}
+	else
+	{
+		const GPUParticleDrawElementsIndirectCommand drawCommand{};
+		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUParticleDrawElementsIndirectCommand), &drawCommand, GL_DYNAMIC_DRAW);
+	}
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
+void StaticMeshParticleSystem::DispatchFinalizePass() const
+{
+	if (staticMeshSubmeshRenderData_.empty())
+	{
+		return;
+	}
+
+	BindFinalizeBuffers();
+
+	ComputeShader* finalizeComputeShader = GetFinalizeDrawElementsComputeShader();
+	if (!finalizeComputeShader)
+	{
+		return;
+	}
+
+	const GEuint commandCount = static_cast<GEuint>(staticMeshSubmeshRenderData_.size());
+	finalizeComputeShader->Use();
+	finalizeComputeShader->SetInt("commandCount", static_cast<int>(commandCount));
+
+	const GEuint groupCountX = (commandCount + kFinalizeDrawLocalSizeX - 1u) / kFinalizeDrawLocalSizeX;
+	finalizeComputeShader->Dispatch(groupCountX, 1u, 1u);
+}
+
+Shader* StaticMeshParticleSystem::CreateRenderShaderForMaterial(const IMaterialBase* material) const
+{
+	Shader* renderShader = new Shader();
+	AddMaterialTexturesToShader(material, renderShader);
+
+	MaterialInitializationData particleInitializationData(material);
+	MaterialInitializationData* particleInitializationDataPtr = nullptr;
+	if (const Material* materialTemplate = ResolveMaterialTemplate(material))
+	{
+		particleInitializationData = *materialTemplate->GetInitializationData();
+		particleInitializationData.owner = material;
+		particleInitializationDataPtr = &particleInitializationData;
+	}
+
+	renderShader->SetVertexShaderScript(
+		ShaderBuilder::GetInstance()->ParticleRenderPass_GetStaticMeshVertexShaderScript(particleInitializationDataPtr, renderShader));
+	renderShader->SetFragmentShaderScript(
+		ShaderBuilder::GetInstance()->ParticleRenderPass_GetFragmentShaderScript(particleInitializationDataPtr, renderShader));
+	renderShader->PreInit();
+	renderShader->Init();
+
+	if (engine && engine->GetRenderer())
+	{
+		engine->GetRenderer()->BindShadowTextures(renderShader);
+	}
+
+	return renderShader;
+}
+
+void StaticMeshParticleSystem::RefreshStaticMeshSubmeshRenderData()
+{
+	DestroyRenderResources();
+	staticMeshSubmeshRenderData_.clear();
+
+	if (!staticMesh_)
+	{
+		return;
+	}
+
+	const std::vector<MeshUnit*>& subMeshes = staticMesh_->GetSubMeshes();
+	for (const MeshUnit* subMesh : subMeshes)
+	{
+		if (!subMesh)
+		{
+			continue;
+		}
+
+		const std::uint32_t indexCount = subMesh->GetFaceCount() * 3u;
+		if (indexCount == 0u)
+		{
+			continue;
+		}
+
+		const std::uint32_t indexElementSizeInBytes = sizeof(Face::vertexIndices[0]);
+		GOKNAR_CORE_ASSERT(
+			subMesh->GetVertexStartingIndex() % indexElementSizeInBytes == 0u,
+			"Static mesh particle indirect draw expects index-buffer offsets aligned to index element size.");
+		GOKNAR_CORE_ASSERT(
+			subMesh->GetBaseVertex() <= static_cast<unsigned int>((std::numeric_limits<std::int32_t>::max)()),
+			"Static mesh particle indirect draw base vertex exceeds OpenGL indirect command range.");
+
+		StaticMeshSubmeshRenderData renderData;
+		renderData.meshUnit = subMesh;
+		renderData.material = subMesh->GetMaterialBase();
+		renderData.renderShader = CreateRenderShaderForMaterial(renderData.material);
+		renderData.indexCount = indexCount;
+		renderData.firstIndex = subMesh->GetVertexStartingIndex() / indexElementSizeInBytes;
+		renderData.baseVertex = static_cast<std::int32_t>(subMesh->GetBaseVertex());
+		staticMeshSubmeshRenderData_.push_back(renderData);
+	}
+
+}
