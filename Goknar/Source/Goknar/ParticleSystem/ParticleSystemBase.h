@@ -90,6 +90,7 @@ struct GOKNAR_API GPUParticleSpawnDesc
 	GPUParticleValueRange<float> lifetime{ 5.f, 5.f };
 	GPUParticleValueRange<Vector3> initialVelocity{ Vector3(0.f, 0.f, 2.f), Vector3(0.f, 0.f, 2.f) };
 	GPUParticleValueRange<Vector3> initialRotation{ Vector3::ZeroVector, Vector3::ZeroVector };
+	GPUParticleValueRange<Vector3> angularVelocity{ Vector3::ZeroVector, Vector3::ZeroVector };
 	GPUParticleValueRange<Vector3> acceleration{ Vector3::ZeroVector, Vector3::ZeroVector };
 	float velocityLimit{ 0.f };
 	GPUParticleFloatCurve sizeByLifetime{ 1.f, 0.f };
@@ -189,6 +190,7 @@ protected:
 	static constexpr GEuint kSizeBufferBindingIndex = 8;
 	static constexpr GEuint kRotationBufferBindingIndex = 9;
 	static constexpr GEuint kAccelerationBufferBindingIndex = 10;
+	static constexpr GEuint kAngularVelocityBufferBindingIndex = 11;
 
 	static constexpr GEuint kComputeLocalSizeX = 256;
 	static constexpr GEuint kFinalizeDrawLocalSizeX = 64;
@@ -254,6 +256,7 @@ private:
 	GEuint particleSizeBufferId_{ 0 };
 	GEuint particleRotationBufferId_{ 0 };
 	GEuint particleAccelerationBufferId_{ 0 };
+	GEuint particleAngularVelocityBufferId_{ 0 };
 	GEuint dummyVertexArrayObjectId_{ 0 };
 
 	std::uint32_t maxParticleCount_{ 0u };

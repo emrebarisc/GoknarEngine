@@ -1,0 +1,215 @@
+#version 440 core
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+layout(std430, binding = 0) buffer ParticlePositionBuffer
+{
+	vec4 particlePositions[];
+};
+
+layout(std430, binding = 1) buffer ParticleVelocityBuffer
+{
+	vec4 particleVelocities[];
+};
+
+layout(std430, binding = 2) buffer ParticleColorBuffer
+{
+	vec4 particleColors[];
+};
+
+layout(std430, binding = 3) buffer ParticleLifetimeBuffer
+{
+	vec2 particleLifetimes[];
+};
+
+layout(std430, binding = 4) buffer ParticleAliveIndexBuffer
+{
+	uint aliveParticleIndices[];
+};
+
+layout(std430, binding = 5) buffer ParticleCounterBuffer
+{
+	uint aliveCount;
+	uint spawnedCountThisFrame;
+	uint totalSpawnCount;
+	uint reserved;
+};
+
+layout(std430, binding = 7) buffer ParticleEndColorBuffer
+{
+	vec4 particleEndColors[];
+};
+
+layout(std430, binding = 8) buffer ParticleSizeBuffer
+{
+	vec2 particleSizes[];
+};
+
+layout(std430, binding = 9) buffer ParticleRotationBuffer
+{
+	vec4 particleRotations[];
+};
+
+layout(std430, binding = 10) buffer ParticleAccelerationBuffer
+{
+	vec4 particleAccelerations[];
+};
+
+layout(std430, binding = 11) buffer ParticleAngularVelocityBuffer
+{
+	vec4 particleAngularVelocities[];
+};
+
+uniform int particleCount;
+uniform float deltaTime;
+uniform vec3 gravity;
+uniform int requestedSpawnCount;
+uniform vec2 lifetimeRange;
+uniform vec3 initialVelocityMin;
+uniform vec3 initialVelocityMax;
+uniform vec3 initialRotationMin;
+uniform vec3 initialRotationMax;
+uniform vec3 angularVelocityMin;
+uniform vec3 angularVelocityMax;
+uniform vec3 accelerationMin;
+uniform vec3 accelerationMax;
+uniform float velocityLimit;
+uniform vec2 sizeByLifetime;
+uniform vec3 spawnBoxExtents;
+uniform vec4 colorByLifetimeStart;
+uniform vec4 colorByLifetimeEnd;
+uniform mat4 previousEmitterMatrix;
+uniform mat4 currentEmitterMatrix;
+
+uint Hash(uint value)
+{
+	value ^= value >> 16;
+	value *= 0x7feb352du;
+	value ^= value >> 15;
+	value *= 0x846ca68bu;
+	value ^= value >> 16;
+	return value;
+}
+
+float Random01(inout uint state)
+{
+	state = Hash(state + 0x9e3779b9u);
+	return float(state) / 4294967295.0;
+}
+
+float RandomRange(inout uint state, vec2 rangeValues)
+{
+	return mix(rangeValues.x, rangeValues.y, Random01(state));
+}
+
+vec3 RandomRange(inout uint state, vec3 minValue, vec3 maxValue)
+{
+	return vec3(
+		mix(minValue.x, maxValue.x, Random01(state)),
+		mix(minValue.y, maxValue.y, Random01(state)),
+		mix(minValue.z, maxValue.z, Random01(state)));
+}
+
+vec3 RandomPointInBox(inout uint state, vec3 extents)
+{
+	return vec3(
+		mix(-extents.x, extents.x, Random01(state)),
+		mix(-extents.y, extents.y, Random01(state)),
+		mix(-extents.z, extents.z, Random01(state)));
+}
+
+void ClampVelocity(inout vec4 velocity)
+{
+	if (velocityLimit <= 0.0)
+	{
+		return;
+	}
+
+	float speed = length(velocity.xyz);
+	if (speed > velocityLimit)
+	{
+		velocity.xyz = velocity.xyz * (velocityLimit / max(speed, 0.0001));
+	}
+}
+
+void PackAliveParticle(uint particleIndex)
+{
+	uint aliveSlot = atomicAdd(aliveCount, 1u);
+	aliveParticleIndices[aliveSlot] = particleIndex;
+}
+
+void main()
+{
+	uint particleIndex = gl_GlobalInvocationID.x;
+	if (particleIndex >= uint(particleCount))
+	{
+		return;
+	}
+
+	vec2 lifetime = particleLifetimes[particleIndex];
+	if (lifetime.x > 0.0)
+	{
+		vec4 velocity = particleVelocities[particleIndex];
+		vec4 position = particlePositions[particleIndex];
+		vec4 rotation = particleRotations[particleIndex];
+		vec3 acceleration = particleAccelerations[particleIndex].xyz;
+		vec3 angularVelocity = particleAngularVelocities[particleIndex].xyz;
+
+		velocity.xyz += (gravity + acceleration) * deltaTime;
+		ClampVelocity(velocity);
+		position.xyz += velocity.xyz * deltaTime;
+		rotation.xyz += angularVelocity * deltaTime;
+		lifetime.x = max(lifetime.x - deltaTime, 0.0);
+
+		particleVelocities[particleIndex] = velocity;
+		particlePositions[particleIndex] = position;
+		particleRotations[particleIndex] = rotation;
+		particleLifetimes[particleIndex] = lifetime;
+
+		if (lifetime.x > 0.0)
+		{
+			PackAliveParticle(particleIndex);
+		}
+		return;
+	}
+
+	if (requestedSpawnCount <= 0)
+	{
+		return;
+	}
+
+	uint spawnRequestIndex = atomicAdd(spawnedCountThisFrame, 1u);
+	if (spawnRequestIndex >= uint(requestedSpawnCount))
+	{
+		return;
+	}
+
+	uint spawnSequence = atomicAdd(totalSpawnCount, 1u);
+	uint randomState = Hash(spawnSequence * 1664525u + particleIndex * 1013904223u + 1u);
+
+	vec3 localSpawnPosition = RandomPointInBox(randomState, spawnBoxExtents);
+	float spawnLerpAlpha = Random01(randomState);
+	vec3 previousWorldPosition = (vec4(localSpawnPosition, 1.0) * previousEmitterMatrix).xyz;
+	vec3 currentWorldPosition = (vec4(localSpawnPosition, 1.0) * currentEmitterMatrix).xyz;
+
+	float initialLifetime = RandomRange(randomState, lifetimeRange);
+	vec3 initialVelocity = RandomRange(randomState, initialVelocityMin, initialVelocityMax);
+	vec3 initialRotation = RandomRange(randomState, initialRotationMin, initialRotationMax);
+	vec3 angularVelocity = RandomRange(randomState, angularVelocityMin, angularVelocityMax);
+	vec3 acceleration = RandomRange(randomState, accelerationMin, accelerationMax);
+
+	vec4 velocity = vec4(initialVelocity, 0.0);
+	ClampVelocity(velocity);
+
+	particlePositions[particleIndex] = vec4(mix(previousWorldPosition, currentWorldPosition, spawnLerpAlpha), 1.0);
+	particleVelocities[particleIndex] = velocity;
+	particleColors[particleIndex] = colorByLifetimeStart;
+	particleEndColors[particleIndex] = colorByLifetimeEnd;
+	particleLifetimes[particleIndex] = vec2(initialLifetime, initialLifetime);
+	particleSizes[particleIndex] = sizeByLifetime;
+	particleRotations[particleIndex] = vec4(initialRotation, 0.0);
+	particleAccelerations[particleIndex] = vec4(acceleration, 0.0);
+	particleAngularVelocities[particleIndex] = vec4(angularVelocity, 0.0);
+
+	PackAliveParticle(particleIndex);
+}

@@ -1,0 +1,39 @@
+#version 440 core
+
+layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+
+struct DrawElementsIndirectCommand
+{
+	uint count;
+	uint instanceCount;
+	uint firstIndex;
+	int baseVertex;
+	uint baseInstance;
+};
+
+layout(std430, binding = 5) readonly buffer ParticleCounterBuffer
+{
+	uint aliveCount;
+	uint spawnedCountThisFrame;
+	uint totalSpawnCount;
+	uint reserved;
+};
+
+layout(std430, binding = 6) buffer ParticleDrawIndirectBuffer
+{
+	DrawElementsIndirectCommand drawCommands[];
+};
+
+uniform int commandCount;
+
+void main()
+{
+	uint commandIndex = gl_GlobalInvocationID.x;
+	if (commandIndex >= uint(commandCount))
+	{
+		return;
+	}
+
+	drawCommands[commandIndex].instanceCount = aliveCount;
+	drawCommands[commandIndex].baseInstance = 0u;
+}

@@ -21,6 +21,7 @@
 
 #include "pch.h"
 
+#include "Application.h"
 #include "Engine.h"
 #include "Log.h"
 

@@ -301,8 +301,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box1</Name>
-            <WorldPosition>-14.940734 -2.018414 0.624982</WorldPosition>
-            <EulerWorldRotation>0.006313 -0.000266 13.436064</EulerWorldRotation>
+            <WorldPosition>-14.947535 -2.019261 0.624976</WorldPosition>
+            <EulerWorldRotation>0.006120 -0.000847 13.354502</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -318,8 +318,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box2</Name>
-            <WorldPosition>-14.844598 -3.275839 0.624975</WorldPosition>
-            <EulerWorldRotation>-0.003768 0.000656 -20.720564</EulerWorldRotation>
+            <WorldPosition>-14.846755 -3.274542 0.624970</WorldPosition>
+            <EulerWorldRotation>-0.003773 0.000956 -21.045105</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -335,8 +335,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box3</Name>
-            <WorldPosition>-13.676867 -1.980835 0.624950</WorldPosition>
-            <EulerWorldRotation>0.005944 -0.001045 -1.685457</EulerWorldRotation>
+            <WorldPosition>-13.682849 -1.975720 0.624955</WorldPosition>
+            <EulerWorldRotation>0.007114 -0.000519 -1.296997</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -352,8 +352,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box4</Name>
-            <WorldPosition>-13.402031 -3.213117 0.624954</WorldPosition>
-            <EulerWorldRotation>-0.004981 -0.002015 8.671031</EulerWorldRotation>
+            <WorldPosition>-13.406821 -3.213431 0.624960</WorldPosition>
+            <EulerWorldRotation>-0.003229 -0.004105 8.578175</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -369,8 +369,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box5</Name>
-            <WorldPosition>-14.381585 -2.035834 1.624970</WorldPosition>
-            <EulerWorldRotation>0.005755 0.003128 1.414712</EulerWorldRotation>
+            <WorldPosition>-14.403497 -2.043500 1.624954</WorldPosition>
+            <EulerWorldRotation>0.007733 0.000560 1.358666</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -386,8 +386,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box6</Name>
-            <WorldPosition>-14.347928 -3.142009 1.624953</WorldPosition>
-            <EulerWorldRotation>-0.003297 0.004686 15.485872</EulerWorldRotation>
+            <WorldPosition>-14.355824 -3.148380 1.624946</WorldPosition>
+            <EulerWorldRotation>-0.001513 0.002609 15.275599</EulerWorldRotation>
             <Mass>5</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -403,8 +403,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box7</Name>
-            <WorldPosition>-14.159415 -2.523635 2.624861</WorldPosition>
-            <EulerWorldRotation>0.001754 0.013237 -16.468332</EulerWorldRotation>
+            <WorldPosition>-14.166007 -2.538326 2.624866</WorldPosition>
+            <EulerWorldRotation>0.008797 0.004836 -15.909909</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -420,8 +420,8 @@
         </RigidBody>
         <RigidBody>
             <Name>RigidBody</Name>
-            <WorldPosition>-14.828867 -9.154962 0.625000</WorldPosition>
-            <EulerWorldRotation>0.000016 -0.000014 33.978882</EulerWorldRotation>
+            <WorldPosition>-14.806937 -9.171487 0.625000</WorldPosition>
+            <EulerWorldRotation>0.000016 -0.000014 34.461266</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>

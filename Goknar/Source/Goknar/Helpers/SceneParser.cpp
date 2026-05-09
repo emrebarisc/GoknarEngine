@@ -1444,6 +1444,22 @@ void SceneParser::ParseParticleSystemComponentValues(ParticleSystemComponent* pa
 	}
 	stream.clear();
 
+	dataElement = componentElement->FirstChildElement("AngularVelocityMin");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.angularVelocity.minValue.x >> spawnDesc.angularVelocity.minValue.y >> spawnDesc.angularVelocity.minValue.z;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("AngularVelocityMax");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.angularVelocity.maxValue.x >> spawnDesc.angularVelocity.maxValue.y >> spawnDesc.angularVelocity.maxValue.z;
+	}
+	stream.clear();
+
 	dataElement = componentElement->FirstChildElement("AccelerationMin");
 	if (dataElement && dataElement->GetText())
 	{
@@ -2377,6 +2393,14 @@ void SceneParser::GetXMLElement_ParticleSystemComponent(const ParticleSystemComp
 	tinyxml2::XMLElement* initialRotationMaxElement = xmlDocument.NewElement("InitialRotationMax");
 	initialRotationMaxElement->SetText(Serialize(spawnDesc.initialRotation.maxValue).c_str());
 	parentElement->InsertEndChild(initialRotationMaxElement);
+
+	tinyxml2::XMLElement* angularVelocityMinElement = xmlDocument.NewElement("AngularVelocityMin");
+	angularVelocityMinElement->SetText(Serialize(spawnDesc.angularVelocity.minValue).c_str());
+	parentElement->InsertEndChild(angularVelocityMinElement);
+
+	tinyxml2::XMLElement* angularVelocityMaxElement = xmlDocument.NewElement("AngularVelocityMax");
+	angularVelocityMaxElement->SetText(Serialize(spawnDesc.angularVelocity.maxValue).c_str());
+	parentElement->InsertEndChild(angularVelocityMaxElement);
 
 	tinyxml2::XMLElement* accelerationMinElement = xmlDocument.NewElement("AccelerationMin");
 	accelerationMinElement->SetText(Serialize(spawnDesc.acceleration.minValue).c_str());

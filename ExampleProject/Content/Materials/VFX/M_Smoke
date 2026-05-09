@@ -1,0 +1,65 @@
+<GameAsset FileType="Material">
+    <Name></Name>
+    <BoneCount>0</BoneCount>
+    <BlendModel>Transparent</BlendModel>
+    <ShadingModel>TwoSided</ShadingModel>
+    <UsesReflectionProbe>0</UsesReflectionProbe>
+    <Texture path="Textures/VFX/T_Smoke.jpg" usage="Diffuse"/>
+    <BaseColorValue>1 1 1 1</BaseColorValue>
+    <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
+    <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
+    <MetallicValue>0.000000</MetallicValue>
+    <RoughnessValue>0.500000</RoughnessValue>
+    <Translucency>1.000000</Translucency>
+    <BaseColor>
+        <Calculation>
+	// --- Generated Node Graph Calculations ---
+	// Node: Texture Sample
+	vec4 node_9_out_11 = texture(T_Smoke, textureUV);
+	// Node: Mask
+	float node_16_out_18 = node_9_out_11.x;
+	float node_16_out_19 = node_9_out_11.y;
+	float node_16_out_20 = node_9_out_11.z;
+	float node_16_out_21 = node_9_out_11.w;
+	// Node: Vector4 Constant
+	vec4 node_23_out_28 = vec4(node_16_out_18, node_16_out_19, node_16_out_20, node_16_out_18);
+</Calculation>
+        <Result>node_23_out_28;</Result>
+    </BaseColor>
+    <EmissiveColor>
+        <Calculation></Calculation>
+        <Result></Result>
+    </EmissiveColor>
+    <AmbientOcclusion>
+        <Calculation></Calculation>
+        <Result></Result>
+    </AmbientOcclusion>
+    <Metallic>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Metallic>
+    <Roughness>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Roughness>
+    <FragmentNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </FragmentNormal>
+    <VertexNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexNormal>
+    <UV>
+        <Calculation></Calculation>
+        <Result></Result>
+    </UV>
+    <VertexPositionOffset>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexPositionOffset>
+    <VertexShaderFunctions><![CDATA[]]></VertexShaderFunctions>
+    <FragmentShaderFunctions><![CDATA[]]></FragmentShaderFunctions>
+    <VertexShaderUniforms><![CDATA[]]></VertexShaderUniforms>
+    <FragmentShaderUniforms><![CDATA[]]></FragmentShaderUniforms>
+</GameAsset>

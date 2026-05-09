@@ -57,6 +57,12 @@
         <Material>
             <Path>Materials/PBRTests/M_PBR_StoneOccluded</Path>
         </Material>
+        <Material>
+            <Path>Materials/VFX/M_Particle</Path>
+        </Material>
+        <Material>
+            <Path>Materials/VFX/M_Smoke</Path>
+        </Material>
         <Mesh>
             <Path>Meshes/Characters/SK_DefaultCharacter.fbx</Path>
             <MaterialPath>Materials/Characters/M_DefaultCharacter</MaterialPath>
@@ -136,6 +142,9 @@
         </Texture>
         <Texture Name="matildaTexture">
             <Path>Textures/T_Matilda.png</Path>
+        </Texture>
+        <Texture Name="T_Smoke">
+            <Path>Textures/VFX/T_Smoke.jpg</Path>
         </Texture>
     </Assets>
 </AssetContainer>

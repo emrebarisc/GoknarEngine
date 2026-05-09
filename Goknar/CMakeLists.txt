@@ -38,6 +38,7 @@ set(SUBDIRS
 	${SOURCE_DIR_NAME}/Goknar/Model
 	#${SOURCE_DIR_NAME}/Goknar/Model/2D
 	${SOURCE_DIR_NAME}/Goknar/Objects
+	${SOURCE_DIR_NAME}/Goknar/ParticleSystem
 	${SOURCE_DIR_NAME}/Goknar/Physics
 	${SOURCE_DIR_NAME}/Goknar/Physics/Components
 	${SOURCE_DIR_NAME}/Goknar/Renderer

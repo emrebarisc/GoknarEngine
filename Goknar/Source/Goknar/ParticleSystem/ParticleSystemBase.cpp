@@ -76,6 +76,7 @@ namespace
 		sanitizedDesc.lifetime = SanitizeFloatRange(sanitizedDesc.lifetime, kMinimumLifetime);
 		sanitizedDesc.initialVelocity = SanitizeVector3Range(sanitizedDesc.initialVelocity);
 		sanitizedDesc.initialRotation = SanitizeVector3Range(sanitizedDesc.initialRotation);
+		sanitizedDesc.angularVelocity = SanitizeVector3Range(sanitizedDesc.angularVelocity);
 		sanitizedDesc.acceleration = SanitizeVector3Range(sanitizedDesc.acceleration);
 		sanitizedDesc.velocityLimit = (std::max)(0.f, sanitizedDesc.velocityLimit);
 		sanitizedDesc.sizeByLifetime = SanitizeFloatCurve(sanitizedDesc.sizeByLifetime, 0.f);
@@ -199,6 +200,8 @@ void ParticleSystemBase::Tick(float deltaTime)
 	updateComputeShader_->SetVector3("initialVelocityMax", spawnDesc_.initialVelocity.maxValue);
 	updateComputeShader_->SetVector3("initialRotationMin", spawnDesc_.initialRotation.minValue);
 	updateComputeShader_->SetVector3("initialRotationMax", spawnDesc_.initialRotation.maxValue);
+	updateComputeShader_->SetVector3("angularVelocityMin", spawnDesc_.angularVelocity.minValue);
+	updateComputeShader_->SetVector3("angularVelocityMax", spawnDesc_.angularVelocity.maxValue);
 	updateComputeShader_->SetVector3("accelerationMin", spawnDesc_.acceleration.minValue);
 	updateComputeShader_->SetVector3("accelerationMax", spawnDesc_.acceleration.maxValue);
 	updateComputeShader_->SetFloat("velocityLimit", spawnDesc_.velocityLimit);
@@ -250,6 +253,7 @@ void ParticleSystemBase::SetInitialParticleData(
 	glNamedBufferSubData(particleSizeBufferId_, 0, static_cast<GEsizeiptr>(sizes.size() * sizeof(GPUParticleSizeState)), sizes.data());
 	glNamedBufferSubData(particleRotationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
 	glNamedBufferSubData(particleAccelerationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	glNamedBufferSubData(particleAngularVelocityBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
 
 	activeParticleSlotCount_ = 0u;
 	for (std::uint32_t particleIndex = 0u; particleIndex < maxParticleCount_; ++particleIndex)
@@ -330,6 +334,7 @@ void ParticleSystemBase::BindSimulationBuffers() const
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kSizeBufferBindingIndex, particleSizeBufferId_);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kRotationBufferBindingIndex, particleRotationBufferId_);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kAccelerationBufferBindingIndex, particleAccelerationBufferId_);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kAngularVelocityBufferBindingIndex, particleAngularVelocityBufferId_);
 }
 
 void ParticleSystemBase::BindRenderBuffers() const
@@ -447,6 +452,7 @@ void ParticleSystemBase::ClearParticleDataBuffers(bool resetSpawnSequence)
 	glNamedBufferSubData(particleSizeBufferId_, 0, static_cast<GEsizeiptr>(zeroSizeData.size() * sizeof(GPUParticleSizeState)), zeroSizeData.data());
 	glNamedBufferSubData(particleRotationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
 	glNamedBufferSubData(particleAccelerationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	glNamedBufferSubData(particleAngularVelocityBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
 
 	if (resetSpawnSequence)
 	{
@@ -505,6 +511,10 @@ void ParticleSystemBase::CreateBuffers()
 
 	glGenBuffers(1, &particleAccelerationBufferId_);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleAccelerationBufferId_);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data(), GL_DYNAMIC_DRAW);
+
+	glGenBuffers(1, &particleAngularVelocityBufferId_);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleAngularVelocityBufferId_);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data(), GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -584,6 +594,12 @@ void ParticleSystemBase::DestroyBuffers()
 	{
 		glDeleteBuffers(1, &particleAccelerationBufferId_);
 		particleAccelerationBufferId_ = 0;
+	}
+
+	if (particleAngularVelocityBufferId_ != 0)
+	{
+		glDeleteBuffers(1, &particleAngularVelocityBufferId_);
+		particleAngularVelocityBufferId_ = 0;
 	}
 }
 
