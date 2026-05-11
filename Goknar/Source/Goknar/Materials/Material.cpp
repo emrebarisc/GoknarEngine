@@ -218,6 +218,11 @@ void Material::PostInit()
 	engine->GetRenderer()->GetLightManager()->BindLightUniforms(renderPassTypeShaderMap_[RenderPassType::Forward]);
 
 	isInitialized_ = true;
+
+#ifndef GOKNAR_EDITOR
+	delete initializationData_;
+	initializationData_ = nullptr;
+#endif
 }
 
 void Material::ResetForRebuild()
