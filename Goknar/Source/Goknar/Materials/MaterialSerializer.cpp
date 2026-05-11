@@ -279,16 +279,7 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     {
         owner->SetAmbientOcclusion(DEFAULT_AMBIENT_OCCLUSION);
     }
-
-    child = root->FirstChildElement("DiffuseReflectance");
-    if (child && child->GetText())
-    {
-        std::stringstream stream(child->GetText());
-        Vector3 diffuseReflectance;
-        stream >> diffuseReflectance.x >> diffuseReflectance.y >> diffuseReflectance.z;
-        owner->SetBaseColor(diffuseReflectance);
-    }
-
+    
     child = root->FirstChildElement("BaseColorValue");
     if (child && child->GetText())
     {
