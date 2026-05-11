@@ -49,6 +49,17 @@ void SphereCollisionComponent::TickComponent(float deltaTime)
 
 }
 
+Component* SphereCollisionComponent::Clone() const
+{
+	SphereCollisionComponent* clonedComponent = new SphereCollisionComponent((Component*)nullptr);
+	CopyValuesTo(clonedComponent);
+	clonedComponent->SetCollisionGroup(GetCollisionGroup());
+	clonedComponent->SetCollisionMask(GetCollisionMask());
+	clonedComponent->radius_ = radius_;
+
+	return clonedComponent;
+}
+
 void SphereCollisionComponent::SetRadius(float radius)
 {
 	radius_ = radius;

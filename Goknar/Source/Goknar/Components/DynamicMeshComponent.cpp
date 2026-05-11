@@ -15,6 +15,14 @@ DynamicMeshComponent::~DynamicMeshComponent()
 
 }
 
+Component* DynamicMeshComponent::Clone() const
+{
+	DynamicMeshComponent* clonedComponent = new DynamicMeshComponent((Component*)nullptr);
+	CopyMeshComponentValuesTo(clonedComponent);
+
+	return clonedComponent;
+}
+
 void DynamicMeshComponent::SetMesh(DynamicMesh* mesh)
 {
 	meshInstance_->SetMesh(mesh);

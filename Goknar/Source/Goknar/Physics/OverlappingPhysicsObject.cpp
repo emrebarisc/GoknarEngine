@@ -19,6 +19,15 @@ OverlappingPhysicsObject::~OverlappingPhysicsObject()
 {
 }
 
+ObjectBase* OverlappingPhysicsObject::Clone() const
+{
+    OverlappingPhysicsObject* clonedObject = new OverlappingPhysicsObject();
+    CopyValuesTo(clonedObject);
+    CopyPhysicsValuesTo(clonedObject);
+
+    return clonedObject;
+}
+
 void OverlappingPhysicsObject::PreInit()
 {
     PhysicsObject::PreInit();

@@ -15,6 +15,16 @@ void SocketComponent::Destroy()
 	attachedObjects_.clear();
 }
 
+Component* SocketComponent::Clone() const
+{
+	SocketComponent* clonedComponent = new SocketComponent((Component*)nullptr);
+	CopyValuesTo(clonedComponent);
+	clonedComponent->boneTransformationMatrix_ = boneTransformationMatrix_;
+	clonedComponent->boneAndRelativeTransformationMatrix_ = boneAndRelativeTransformationMatrix_;
+
+	return clonedComponent;
+}
+
 void SocketComponent::SetIsActive(bool isActive)
 {
 	Component::SetIsActive(isActive);

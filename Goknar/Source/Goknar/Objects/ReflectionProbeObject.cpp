@@ -18,6 +18,16 @@ ReflectionProbeObject::~ReflectionProbeObject()
 	delete reflectionProbe_;
 }
 
+ObjectBase* ReflectionProbeObject::Clone() const
+{
+	ReflectionProbeObject* clonedObject = new ReflectionProbeObject();
+	CopyValuesTo(clonedObject);
+	clonedObject->SetSize(size_);
+	clonedObject->SetIsActive(GetIsActive());
+
+	return clonedObject;
+}
+
 void ReflectionProbeObject::PreInit()
 {
 	ObjectBase::PreInit();

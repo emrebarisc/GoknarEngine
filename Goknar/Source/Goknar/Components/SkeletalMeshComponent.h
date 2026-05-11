@@ -14,6 +14,7 @@ public:
 	SkeletalMeshComponent(Component* parent);
 	virtual ~SkeletalMeshComponent();
 	
+	Component* Clone() const override;
 	void SetMesh(SkeletalMesh* mesh) override;
 protected:
 private:

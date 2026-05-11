@@ -41,6 +41,8 @@ public:
 	RigidBody();
 	virtual ~RigidBody();
 
+	ObjectBase* Clone() const override;
+
 	virtual void PreInit();
 	virtual void Init();
 	virtual void PostInit();

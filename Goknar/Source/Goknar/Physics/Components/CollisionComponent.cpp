@@ -66,3 +66,13 @@ void CollisionComponent::TickComponent(float deltaTime)
 {
 	Component::TickComponent(deltaTime);
 }
+
+Component* CollisionComponent::Clone() const
+{
+	CollisionComponent* clonedComponent = new CollisionComponent((Component*)nullptr);
+	CopyValuesTo(clonedComponent);
+	clonedComponent->collisionGroup_ = collisionGroup_;
+	clonedComponent->collisionMask_ = collisionMask_;
+
+	return clonedComponent;
+}

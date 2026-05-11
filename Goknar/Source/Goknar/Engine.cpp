@@ -87,7 +87,7 @@ Engine::~Engine()
 	windowManager_ = nullptr;
 }
 
-void Engine::PreInit() const
+void Engine::PreInit()
 {
 	std::chrono::steady_clock::time_point lastFrameTimePoint = std::chrono::steady_clock::now();
 	windowManager_->PreInit();
@@ -138,9 +138,12 @@ void Engine::PreInit() const
 	elapsedTime = std::chrono::duration_cast<std::chrono::duration<float>>(currentTimePoint - lastFrameTimePoint).count();
 	GOKNAR_CORE_INFO("Renderer Initialization: %f s.", elapsedTime);
 	lastFrameTimePoint = currentTimePoint;
+
+	PreInitComponents();
+	PreInitObjects();
 }
 
-void Engine::Init() const
+void Engine::Init()
 {
 	windowManager_->Init();
 
@@ -155,9 +158,12 @@ void Engine::Init() const
 	physicsWorld_->Init();
 
 	renderer_->Init();
+
+	InitComponents();
+	InitObjects();
 }
 
-void Engine::PostInit() const
+void Engine::PostInit()
 {
 	windowManager_->PostInit();
 
@@ -172,6 +178,9 @@ void Engine::PostInit() const
 	physicsWorld_->PostInit();
 
 	renderer_->PostInit();
+
+	PostInitComponents();
+	PostInitObjects();
 }
 
 void Engine::Run()
@@ -280,15 +289,6 @@ void Engine::Run()
 
 void Engine::BeginGame()
 {
-	PreInitComponents();
-	PreInitObjects();
-
-	InitComponents();
-	InitObjects();
-
-	PostInitComponents();
-	PostInitObjects();
-
 	BeginGameComponents();
 	BeginGameObjects();
 }

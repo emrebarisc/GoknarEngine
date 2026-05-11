@@ -23,6 +23,8 @@ public:
 	PhysicsObject();
 	virtual ~PhysicsObject();
 
+	ObjectBase* Clone() const override;
+
 	virtual void PreInit();
 	virtual void Init();
 	virtual void PostInit();
@@ -94,6 +96,7 @@ public:
 protected:
 	virtual void AddComponent(Component* component) override;
 	virtual void DestroyInner() override;
+	void CopyPhysicsValuesTo(PhysicsObject* physicsObject) const;
 
 	btCollisionObject* bulletCollisionObject_{ nullptr };
 	CollisionComponent* collisionComponent_{ nullptr };

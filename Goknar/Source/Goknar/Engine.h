@@ -38,9 +38,9 @@ public:
 	Engine();
 	~Engine();
 
-	void PreInit() const;
-	void Init() const;
-	void PostInit() const;
+	void PreInit();
+	void Init();
+	void PostInit();
 
 	void BeginGame();
 

@@ -60,6 +60,16 @@ void MultipleCollisionComponent::TickComponent(float deltaTime)
 	CollisionComponent::TickComponent(deltaTime);
 }
 
+Component* MultipleCollisionComponent::Clone() const
+{
+	MultipleCollisionComponent* clonedComponent = new MultipleCollisionComponent((Component*)nullptr);
+	CopyValuesTo(clonedComponent);
+	clonedComponent->SetCollisionGroup(GetCollisionGroup());
+	clonedComponent->SetCollisionMask(GetCollisionMask());
+
+	return clonedComponent;
+}
+
 void MultipleCollisionComponent::AddCollisionComponent(CollisionComponent* collisionComponent)
 {
 	if(!GetIsInitialized())

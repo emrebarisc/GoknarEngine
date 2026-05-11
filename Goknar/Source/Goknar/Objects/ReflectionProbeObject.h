@@ -11,6 +11,8 @@ public:
 	ReflectionProbeObject(const ObjectInitializer& objectInitializer = ObjectInitializer());
 	~ReflectionProbeObject() override;
 
+	ObjectBase* Clone() const override;
+
 	void PreInit() override;
 	void Init() override;
 	void PostInit() override;

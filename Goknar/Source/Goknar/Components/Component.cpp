@@ -22,6 +22,14 @@ Component::Component(ObjectBase* parentObjectBase) :
 {
 }
 
+Component* Component::Clone() const
+{
+	Component* clonedComponent = new Component((Component*)nullptr);
+	CopyValuesTo(clonedComponent);
+
+	return clonedComponent;
+}
+
 void Component::Destroy()
 {
 	if(isPendingDestroy_)
@@ -41,6 +49,25 @@ void Component::Destroy()
 
 void Component::DestroyInner()
 {
+}
+
+void Component::CopyValuesTo(Component* component) const
+{
+	if (!component)
+	{
+		return;
+	}
+
+	component->SetPivotPoint(pivotPoint_);
+	component->SetRelativePosition(relativePosition_, false);
+	component->SetRelativeRotation(relativeRotation_, false);
+	component->SetRelativeScaling(relativeScaling_, true);
+	if (component->isTickable_ != isTickable_)
+	{
+		component->SetIsTickable(isTickable_);
+	}
+	component->SetIsTickEnabled(isTickEnabled_);
+	component->SetIsActive(isActive_);
 }
 
 void Component::SetParent(ObjectBase* objectBase)

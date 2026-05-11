@@ -59,3 +59,14 @@ void MovingTriangleMeshCollisionComponent::TickComponent(float deltaTime)
 
 	
 }
+
+Component* MovingTriangleMeshCollisionComponent::Clone() const
+{
+	MovingTriangleMeshCollisionComponent* clonedComponent = new MovingTriangleMeshCollisionComponent((Component*)nullptr);
+	CopyValuesTo(clonedComponent);
+	clonedComponent->SetCollisionGroup(GetCollisionGroup());
+	clonedComponent->SetCollisionMask(GetCollisionMask());
+	clonedComponent->relativeMesh_ = relativeMesh_;
+
+	return clonedComponent;
+}

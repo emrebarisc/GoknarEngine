@@ -16,6 +16,8 @@ public:
 	OverlappingPhysicsObject();
 	virtual ~OverlappingPhysicsObject();
 
+	ObjectBase* Clone() const override;
+
 	virtual void PreInit() override;
 	virtual void Init() override;
 	virtual void PostInit() override;

@@ -15,6 +15,14 @@ SkeletalMeshComponent::~SkeletalMeshComponent()
 
 }
 
+Component* SkeletalMeshComponent::Clone() const
+{
+	SkeletalMeshComponent* clonedComponent = new SkeletalMeshComponent((Component*)nullptr);
+	CopyMeshComponentValuesTo(clonedComponent);
+
+	return clonedComponent;
+}
+
 void SkeletalMeshComponent::SetMesh(SkeletalMesh* mesh)
 {
 	meshInstance_->SetMesh(mesh);

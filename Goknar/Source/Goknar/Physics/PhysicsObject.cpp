@@ -22,6 +22,15 @@ PhysicsObject::~PhysicsObject()
     delete bulletCollisionObject_;
 }
 
+ObjectBase* PhysicsObject::Clone() const
+{
+	PhysicsObject* clonedPhysicsObject = new PhysicsObject();
+	CopyValuesTo(clonedPhysicsObject);
+	CopyPhysicsValuesTo(clonedPhysicsObject);
+
+	return clonedPhysicsObject;
+}
+
 void PhysicsObject::PreInit()
 {
     ObjectBase::PreInit();
@@ -64,6 +73,38 @@ void PhysicsObject::AddComponent(Component* component)
 void PhysicsObject::DestroyInner()
 {
     ObjectBase::DestroyInner();
+}
+
+void PhysicsObject::CopyPhysicsValuesTo(PhysicsObject* physicsObject) const
+{
+	if (!physicsObject)
+	{
+		return;
+	}
+
+	physicsObject->collisionGroup_ = collisionGroup_;
+	physicsObject->collisionMask_ = collisionMask_;
+	physicsObject->tag_ = tag_;
+	physicsObject->physicsTickEnabled_ = physicsTickEnabled_;
+
+	if (!physicsObject->physicsObjectInitializationData_)
+	{
+		physicsObject->physicsObjectInitializationData_ = new PhysicsObjectInitializationData();
+	}
+
+	if (physicsObjectInitializationData_)
+	{
+		*physicsObject->physicsObjectInitializationData_ = *physicsObjectInitializationData_;
+		return;
+	}
+
+	if (bulletCollisionObject_)
+	{
+		physicsObject->physicsObjectInitializationData_->ccdMotionThreshold = bulletCollisionObject_->getCcdMotionThreshold();
+		physicsObject->physicsObjectInitializationData_->ccdSweptSphereRadius = bulletCollisionObject_->getCcdSweptSphereRadius();
+		physicsObject->physicsObjectInitializationData_->collisionFlag = bulletCollisionObject_->getCollisionFlags();
+		physicsObject->physicsObjectInitializationData_->activeState = bulletCollisionObject_->getActivationState();
+	}
 }
 
 void PhysicsObject::SetIsActive(bool isActive)

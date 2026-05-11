@@ -18,6 +18,7 @@ public:
 	virtual ~SocketComponent() = default;
 
 	virtual void Destroy() override;
+	Component* Clone() const override;
 
 	virtual const Matrix& GetRelativeTransformationMatrix() const override
 	{

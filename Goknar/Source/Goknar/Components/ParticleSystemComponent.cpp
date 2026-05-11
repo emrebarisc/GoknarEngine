@@ -256,6 +256,21 @@ void ParticleSystemComponent::DestroyInner()
 	Component::DestroyInner();
 }
 
+void ParticleSystemComponent::CopyParticleSystemValuesTo(ParticleSystemComponent* particleSystemComponent) const
+{
+	if (!particleSystemComponent)
+	{
+		return;
+	}
+
+	CopyValuesTo(particleSystemComponent);
+	particleSystemComponent->SetMaxParticleCount(maxParticleCount_);
+	particleSystemComponent->SetGravity(gravity_);
+	particleSystemComponent->SetParticleSize(particleSize_);
+	particleSystemComponent->SetSpawnDesc(spawnDesc_);
+	particleSystemComponent->SetPreviewParticleCount(previewParticleCount_);
+}
+
 void ParticleSystemComponent::CreateParticleSystem()
 {
 	if (particleSystem_)
@@ -326,6 +341,23 @@ void ParticleSystemComponent::SyncParticleSystemTransform() const
 BillboardParticleSystemComponent::BillboardParticleSystemComponent(Component* parent) :
 	ParticleSystemComponent(parent)
 {
+}
+
+Component* BillboardParticleSystemComponent::Clone() const
+{
+	BillboardParticleSystemComponent* clonedComponent = new BillboardParticleSystemComponent((Component*)nullptr);
+	CopyParticleSystemValuesTo(clonedComponent);
+	if (!billboardTexturePath_.empty())
+	{
+		clonedComponent->SetBillboardTexturePath(billboardTexturePath_);
+	}
+	else
+	{
+		clonedComponent->SetBillboardTexture(billboardTexture_);
+	}
+	clonedComponent->SetBillboardMaterialPath(billboardMaterialPath_);
+
+	return clonedComponent;
 }
 
 void BillboardParticleSystemComponent::SetBillboardTexture(Image* billboardTexture)
@@ -410,6 +442,22 @@ BillboardParticleSystem* BillboardParticleSystemComponent::GetBillboardParticleS
 StaticMeshParticleSystemComponent::StaticMeshParticleSystemComponent(Component* parent) :
 	ParticleSystemComponent(parent)
 {
+}
+
+Component* StaticMeshParticleSystemComponent::Clone() const
+{
+	StaticMeshParticleSystemComponent* clonedComponent = new StaticMeshParticleSystemComponent((Component*)nullptr);
+	CopyParticleSystemValuesTo(clonedComponent);
+	if (!staticMeshPath_.empty())
+	{
+		clonedComponent->SetStaticMeshPath(staticMeshPath_);
+	}
+	else
+	{
+		clonedComponent->SetStaticMesh(staticMesh_);
+	}
+
+	return clonedComponent;
 }
 
 void StaticMeshParticleSystemComponent::SetStaticMesh(StaticMesh* staticMesh)

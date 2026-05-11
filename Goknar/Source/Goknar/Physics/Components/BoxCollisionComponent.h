@@ -16,6 +16,7 @@ public:
 	
 	virtual void BeginGame() override;
 	virtual void TickComponent(float deltaTime) override;
+	Component* Clone() const override;
 
 	const Vector3& GetHalfSize() const
 	{

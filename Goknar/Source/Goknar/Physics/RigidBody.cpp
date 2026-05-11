@@ -22,6 +22,37 @@ RigidBody::~RigidBody()
     delete bulletMotionState_;
 }
 
+ObjectBase* RigidBody::Clone() const
+{
+    RigidBody* clonedRigidBody = new RigidBody();
+    CopyValuesTo(clonedRigidBody);
+    CopyPhysicsValuesTo(clonedRigidBody);
+    clonedRigidBody->mass_ = mass_;
+
+    if (!clonedRigidBody->rigidBodyInitializationData_)
+    {
+        clonedRigidBody->rigidBodyInitializationData_ = new RigidBodyInitializationData();
+    }
+
+    if (rigidBodyInitializationData_)
+    {
+        *clonedRigidBody->rigidBodyInitializationData_ = *rigidBodyInitializationData_;
+    }
+    else if (bulletRigidBody_)
+    {
+        clonedRigidBody->rigidBodyInitializationData_->linearFactor = bulletRigidBody_->getLinearFactor();
+        clonedRigidBody->rigidBodyInitializationData_->angularFactor = bulletRigidBody_->getAngularFactor();
+        clonedRigidBody->rigidBodyInitializationData_->velocity = bulletRigidBody_->getLinearVelocity();
+        clonedRigidBody->rigidBodyInitializationData_->angularVelocity = bulletRigidBody_->getAngularVelocity();
+        clonedRigidBody->rigidBodyInitializationData_->force = bulletRigidBody_->getTotalForce();
+        clonedRigidBody->rigidBodyInitializationData_->torque = bulletRigidBody_->getTotalTorque();
+        clonedRigidBody->rigidBodyInitializationData_->linearSleepingThreshold = bulletRigidBody_->getLinearSleepingThreshold();
+        clonedRigidBody->rigidBodyInitializationData_->angularSleepingThreshold = bulletRigidBody_->getAngularSleepingThreshold();
+    }
+
+    return clonedRigidBody;
+}
+
 void RigidBody::PreInit()
 {
     PhysicsObject::PreInit();

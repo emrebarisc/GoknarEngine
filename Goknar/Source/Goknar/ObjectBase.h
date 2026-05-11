@@ -52,6 +52,8 @@ public:
     {
 
     }
+
+	virtual ObjectBase* Clone() const;
 	
 	virtual void Destroy();
 
@@ -195,6 +197,7 @@ public:
 protected:
 	virtual void AddComponent(Component* component);
 	virtual void DestroyInner();
+	void CopyValuesTo(ObjectBase* object) const;
 
 	virtual void SetWorldTransformationMatrix(const Matrix& worldTransformationMatrix);
 	virtual void UpdateWorldTransformationMatrix();

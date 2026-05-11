@@ -15,6 +15,7 @@ public:
 	virtual ~CameraComponent() = default;
 
 	virtual void Destroy() override;
+	Component* Clone() const override;
 
 	Camera* GetCamera() const
 	{

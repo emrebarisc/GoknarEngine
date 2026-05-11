@@ -24,6 +24,8 @@ void CubemapRenderTarget::Init()
 	camera_->SetCameraType(CameraType::RenderTarget);
 	camera_->SetImageWidth(frameSize_.x);
 	camera_->SetImageHeight(frameSize_.y);
+	camera_->SetNearDistance(1.f);
+	camera_->SetFOV(90.f);
 
 	GenerateBuffers();
 }

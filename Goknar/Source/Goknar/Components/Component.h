@@ -23,6 +23,7 @@ public:
 	virtual void PostInit();
 	virtual void BeginGame() {}
 	virtual void TickComponent(float) {}
+	virtual Component* Clone() const;
 
 	void SetPivotPoint(const Vector3& pivotPoint);
 	inline const Vector3& GetPivotPoint() const
@@ -167,7 +168,7 @@ public:
 		return componentToWorldTransformationMatrix_;
 	}
 
-	inline unsigned int GetGUID()
+	inline unsigned int GetGUID() const
 	{
 		return GUID_;
 	}
@@ -178,6 +179,7 @@ protected:
 	Component(ObjectBase* parentObjectBase);
 	
 	virtual void DestroyInner();
+	void CopyValuesTo(Component* component) const;
 
 	inline virtual void UpdateRelativeTransformationMatrix()
 	{

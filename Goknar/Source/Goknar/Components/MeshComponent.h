@@ -45,6 +45,7 @@ public:
 protected:
 	inline MeshComponent(Component* parent);
 	inline void DestroyInner() override;
+	inline void CopyMeshComponentValuesTo(MeshComponent<MeshType, MeshInstanceType>* meshComponent) const;
 
 	MeshInstanceType* meshInstance_;
 private:
@@ -109,6 +110,62 @@ void MeshComponent<MeshType, MeshInstanceType>::SetIsActive(bool isActive)
 {
 	Component::SetIsActive(isActive);
 	meshInstance_->SetIsRendered(isActive);
+}
+
+template<class MeshType, class MeshInstanceType>
+void MeshComponent<MeshType, MeshInstanceType>::CopyMeshComponentValuesTo(MeshComponent<MeshType, MeshInstanceType>* meshComponent) const
+{
+	if (!meshComponent)
+	{
+		return;
+	}
+
+	CopyValuesTo(meshComponent);
+
+	if (!meshInstance_ || !meshComponent->meshInstance_)
+	{
+		return;
+	}
+
+	MeshType* mesh = meshInstance_->GetMesh();
+	if (mesh)
+	{
+		meshComponent->SetMesh(mesh);
+	}
+
+	meshComponent->meshInstance_->SetRenderMask(meshInstance_->GetRenderMask());
+	meshComponent->meshInstance_->SetIsRendered(meshInstance_->GetIsRendered());
+	meshComponent->meshInstance_->SetIsCastingShadow(meshInstance_->GetIsCastingShadow());
+
+	const std::vector<MaterialInstance*>& materials = meshInstance_->GetMaterials();
+	for (int materialIndex = 0; materialIndex < (int)materials.size(); ++materialIndex)
+	{
+		MaterialInstance* sourceMaterialInstance = materials[materialIndex];
+		if (!sourceMaterialInstance)
+		{
+			continue;
+		}
+
+		Material* parentMaterial = sourceMaterialInstance->GetParentMaterial();
+		if (!parentMaterial)
+		{
+			continue;
+		}
+
+		MaterialInstance* clonedMaterialInstance = MaterialInstance::Create(parentMaterial);
+		clonedMaterialInstance->SetName(sourceMaterialInstance->GetName());
+		clonedMaterialInstance->SetBaseColor(sourceMaterialInstance->GetBaseColor());
+		clonedMaterialInstance->SetAmbientOcclusion(sourceMaterialInstance->GetAmbientOcclusion());
+		clonedMaterialInstance->SetMetallic(sourceMaterialInstance->GetMetallic());
+		clonedMaterialInstance->SetRoughness(sourceMaterialInstance->GetRoughness());
+		clonedMaterialInstance->SetEmisiveColor(sourceMaterialInstance->GetEmisiveColor());
+		clonedMaterialInstance->SetTranslucency(sourceMaterialInstance->GetTranslucency());
+		clonedMaterialInstance->SetBlendModel(sourceMaterialInstance->GetBlendModel());
+		clonedMaterialInstance->SetShadingModel(sourceMaterialInstance->GetShadingModel());
+		clonedMaterialInstance->SetUsesReflectionProbe(sourceMaterialInstance->GetUsesReflectionProbe());
+
+		meshComponent->meshInstance_->SetMaterial(materialIndex, clonedMaterialInstance);
+	}
 }
 
 #endif

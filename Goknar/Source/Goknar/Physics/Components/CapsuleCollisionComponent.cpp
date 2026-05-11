@@ -50,6 +50,18 @@ void CapsuleCollisionComponent::TickComponent(float deltaTime)
 
 }
 
+Component* CapsuleCollisionComponent::Clone() const
+{
+	CapsuleCollisionComponent* clonedComponent = new CapsuleCollisionComponent((Component*)nullptr);
+	CopyValuesTo(clonedComponent);
+	clonedComponent->SetCollisionGroup(GetCollisionGroup());
+	clonedComponent->SetCollisionMask(GetCollisionMask());
+	clonedComponent->radius_ = radius_;
+	clonedComponent->height_ = height_;
+
+	return clonedComponent;
+}
+
 void CapsuleCollisionComponent::SetRadius(float radius)
 {
 	GOKNAR_CORE_CHECK(!GetIsInitialized(), "Trying to set radius after initialization. Use scaling instead.");

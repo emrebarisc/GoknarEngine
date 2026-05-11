@@ -14,6 +14,7 @@ public:
 	InstancedStaticMeshComponent(Component* parent);
 	virtual ~InstancedStaticMeshComponent();
 
+	Component* Clone() const override;
 	void SetMesh(InstancedStaticMesh* mesh) override;
 };
 

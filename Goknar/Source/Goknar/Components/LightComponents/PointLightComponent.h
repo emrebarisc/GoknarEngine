@@ -13,6 +13,7 @@ public:
 	virtual ~PointLightComponent();
 
 	virtual void Destroy() override;
+	Component* Clone() const override;
 
 	PointLight* GetPointLight() const
 	{

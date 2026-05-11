@@ -29,6 +29,7 @@ public:
 	void PostInit() override;
 	void TickComponent(float deltaTime) override;
 	void SetIsActive(bool isActive) override;
+	Component* Clone() const override = 0;
 
 	void SetMaxParticleCount(std::uint32_t maxParticleCount);
 	std::uint32_t GetMaxParticleCount() const
@@ -70,6 +71,7 @@ public:
 
 protected:
 	void DestroyInner() override;
+	void CopyParticleSystemValuesTo(ParticleSystemComponent* particleSystemComponent) const;
 
 	virtual ParticleSystemBase* CreateParticleSystemInstance(const GPUParticleSystemDesc& particleSystemDesc) const = 0;
 	virtual void SyncParticleSystemRenderSettings() const {}
@@ -95,6 +97,7 @@ class GOKNAR_API BillboardParticleSystemComponent : public ParticleSystemCompone
 public:
 	BillboardParticleSystemComponent() = delete;
 	explicit BillboardParticleSystemComponent(Component* parent);
+	Component* Clone() const override;
 
 	void SetBillboardTexture(Image* billboardTexture);
 	const Image* GetBillboardTexture() const
@@ -139,6 +142,7 @@ class GOKNAR_API StaticMeshParticleSystemComponent : public ParticleSystemCompon
 public:
 	StaticMeshParticleSystemComponent() = delete;
 	explicit StaticMeshParticleSystemComponent(Component* parent);
+	Component* Clone() const override;
 
 	void SetStaticMesh(StaticMesh* staticMesh);
 	const StaticMesh* GetStaticMesh() const

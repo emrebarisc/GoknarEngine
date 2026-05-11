@@ -14,6 +14,7 @@ public:
 	DynamicMeshComponent(Component* parent);
 	virtual ~DynamicMeshComponent();
 
+	Component* Clone() const override;
 	void SetMesh(DynamicMesh* mesh) override;
 
 protected:

@@ -33,6 +33,48 @@ PhysicsMovementComponent::~PhysicsMovementComponent()
 	delete bulletKinematicCharacterController_;
 }
 
+Component* PhysicsMovementComponent::Clone() const
+{
+	PhysicsMovementComponent* clonedComponent = new PhysicsMovementComponent((Component*)nullptr);
+	CopyValuesTo(clonedComponent);
+	clonedComponent->movementDirection_ = movementDirection_;
+	clonedComponent->movementSpeed_ = movementSpeed_;
+
+	if (!clonedComponent->initializationData_)
+	{
+		clonedComponent->initializationData_ = new PhysicsMovementComponentInitializationData();
+	}
+
+	if (initializationData_)
+	{
+		*clonedComponent->initializationData_ = *initializationData_;
+	}
+	else if (bulletKinematicCharacterController_)
+	{
+		clonedComponent->initializationData_->movementDirection = movementDirection_;
+		clonedComponent->initializationData_->angularVelocity = GetAngularVelocity();
+		clonedComponent->initializationData_->linearVelocity = GetLinearVelocity();
+		clonedComponent->initializationData_->gravity = GetGravity();
+		clonedComponent->initializationData_->linearDamping = GetLinearDamping();
+		clonedComponent->initializationData_->angularDamping = GetAngularDamping();
+		clonedComponent->initializationData_->stepHeight = GetStepHeight();
+		clonedComponent->initializationData_->fallSpeed = GetFallSpeed();
+		clonedComponent->initializationData_->jumpSpeed = GetJumpSpeed();
+		clonedComponent->initializationData_->slopeRadians = GetMaxSlope();
+		clonedComponent->initializationData_->maxPenetrationDepth = GetMaxPenetrationDepth();
+		clonedComponent->initializationData_->isMovementDirectionSet = true;
+		clonedComponent->initializationData_->isAngularVelocitySet = true;
+		clonedComponent->initializationData_->isLinearVelocitySet = true;
+	}
+
+	if (forceMovementData_)
+	{
+		clonedComponent->forceMovementData_ = new ForceMovementData(*forceMovementData_);
+	}
+
+	return clonedComponent;
+}
+
 void PhysicsMovementComponent::Destroy()
 {
 	Component::Destroy();

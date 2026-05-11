@@ -2,6 +2,8 @@
 
 #include "ObjectBase.h"
 
+#include <unordered_map>
+
 #include "Goknar/Engine.h"
 #include "Goknar/GoknarAssert.h"
 #include "Goknar/Log.h"
@@ -29,6 +31,14 @@ ObjectBase::ObjectBase(const ObjectInitializer& objectInitializer) :
 
 ObjectBase::~ObjectBase()
 {
+}
+
+ObjectBase* ObjectBase::Clone() const
+{
+	ObjectBase* clonedObject = new ObjectBase();
+	CopyValuesTo(clonedObject);
+
+	return clonedObject;
 }
 
 void ObjectBase::PreInit()
@@ -85,6 +95,90 @@ void ObjectBase::DestroyInner()
 	if (parent_)
 	{
 		parent_->RemoveChild(this);
+	}
+}
+
+void ObjectBase::CopyValuesTo(ObjectBase* object) const
+{
+	if (!object)
+	{
+		return;
+	}
+
+	object->SetName(name_);
+	object->SetWorldPosition(worldPosition_, false);
+	object->SetWorldRotation(worldRotation_, false);
+	object->SetWorldScaling(worldScaling_, false);
+	object->UpdateWorldTransformationMatrix();
+	if (object->isTickable_ != isTickable_)
+	{
+		object->SetIsTickable(isTickable_);
+	}
+	object->SetIsTickEnabled(isTickEnabled_);
+	object->isActive_ = isActive_;
+
+	std::unordered_map<const Component*, Component*> clonedComponents;
+
+	const auto cloneComponent =
+		[object, &clonedComponents](const Component* component)
+		{
+			if (!component || clonedComponents.find(component) != clonedComponents.end())
+			{
+				return;
+			}
+
+			Component* clonedComponent = component->Clone();
+			if (!clonedComponent)
+			{
+				return;
+			}
+
+			object->AddComponent(clonedComponent);
+			clonedComponents[component] = clonedComponent;
+		};
+
+	cloneComponent(rootComponent_);
+
+	for (Component* component : components_)
+	{
+		cloneComponent(component);
+	}
+
+	for (const auto& clonedComponentPair : clonedComponents)
+	{
+		const Component* sourceComponent = clonedComponentPair.first;
+		Component* clonedComponent = clonedComponentPair.second;
+		Component* sourceParent = sourceComponent->GetParent();
+		auto clonedParentIterator = clonedComponents.find(sourceParent);
+
+		if (clonedParentIterator != clonedComponents.end())
+		{
+			clonedComponent->SetParent(clonedParentIterator->second);
+		}
+		else
+		{
+			clonedComponent->SetParent((Component*)nullptr);
+		}
+	}
+
+	auto clonedRootComponentIterator = clonedComponents.find(rootComponent_);
+	if (clonedRootComponentIterator != clonedComponents.end())
+	{
+		object->SetRootComponent(clonedRootComponentIterator->second);
+	}
+
+	for (ObjectBase* child : children_)
+	{
+		if (!child)
+		{
+			continue;
+		}
+
+		ObjectBase* clonedChild = child->Clone();
+		if (clonedChild)
+		{
+			clonedChild->SetParent(object, SnappingRule::KeepWorldAll, false);
+		}
 	}
 }
 

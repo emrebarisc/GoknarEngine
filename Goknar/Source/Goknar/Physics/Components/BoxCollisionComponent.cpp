@@ -51,6 +51,17 @@ void BoxCollisionComponent::TickComponent(float deltaTime)
 	
 }
 
+Component* BoxCollisionComponent::Clone() const
+{
+	BoxCollisionComponent* clonedComponent = new BoxCollisionComponent((Component*)nullptr);
+	CopyValuesTo(clonedComponent);
+	clonedComponent->SetCollisionGroup(GetCollisionGroup());
+	clonedComponent->SetCollisionMask(GetCollisionMask());
+	clonedComponent->halfSize_ = halfSize_;
+
+	return clonedComponent;
+}
+
 void BoxCollisionComponent::SetHalfSize(const Vector3& halfSize)
 {
 	if (GetIsInitialized())
