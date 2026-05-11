@@ -155,7 +155,6 @@ void Material::Build(MeshUnit* meshUnit)
 
 		renderPassTypeShaderMap_[RenderPassType::CubemapCapture] = cubemapCaptureShader;
 	}
-
 }
 
 void Material::PreInit()

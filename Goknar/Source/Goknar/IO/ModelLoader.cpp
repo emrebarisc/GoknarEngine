@@ -44,6 +44,11 @@ std::string ConvertToLinuxPath(const std::string& input)
 }
 #endif
 
+namespace
+{
+	bool READ_FBX_MATERIALS = false;
+}
+
 struct UnifiedVertex
 {
 	uint32_t posIndex{ 0 };
@@ -389,8 +394,7 @@ Content* ModelLoader::LoadModel(const std::string& path)
 				}
 
 				Material* material = new Material();
-
-				if (matIndex < ufbxMesh->materials.count)
+				if (READ_FBX_MATERIALS && matIndex < ufbxMesh->materials.count)
 				{
 					ufbx_material* ufbxMaterial = ufbxMesh->materials.data[matIndex];
 					if (ufbxMaterial)
@@ -431,37 +435,37 @@ Content* ModelLoader::LoadModel(const std::string& path)
 						material->SetName(ufbxMaterial->name.data);
 
 						auto LoadMaterialTexture = [&](const ufbx_texture* ufbxTexture, TextureUsage textureUsage)
-						{
-							if (!ufbxTexture)
 							{
-								return;
-							}
-
-							std::string imagePath = "";
-							std::string texturePath = ufbxTexture->filename.data;
-
-							if (texturePath.find(".fbm") != std::string::npos)
-							{
-								long long lastSlashIndex = path.find_last_of('/');
-								if (lastSlashIndex != std::string::npos)
+								if (!ufbxTexture)
 								{
-									imagePath += path.substr(0, lastSlashIndex + 1);
+									return;
 								}
-							}
 
-							imagePath += texturePath;
+								std::string imagePath = "";
+								std::string texturePath = ufbxTexture->filename.data;
+
+								if (texturePath.find(".fbm") != std::string::npos)
+								{
+									long long lastSlashIndex = path.find_last_of('/');
+									if (lastSlashIndex != std::string::npos)
+									{
+										imagePath += path.substr(0, lastSlashIndex + 1);
+									}
+								}
+
+								imagePath += texturePath;
 
 #ifdef GOKNAR_PLATFORM_UNIX
-							imagePath = ConvertToLinuxPath(imagePath);
+								imagePath = ConvertToLinuxPath(imagePath);
 #endif
 
-							Image* image = engine->GetResourceManager()->GetContent<Image>(imagePath);
-							if (image)
-							{
-								image->SetTextureUsage(textureUsage);
-								material->AddTextureImage(image);
-							}
-						};
+								Image* image = engine->GetResourceManager()->GetContent<Image>(imagePath);
+								if (image)
+								{
+									image->SetTextureUsage(textureUsage);
+									material->AddTextureImage(image);
+								}
+							};
 
 						LoadMaterialTexture(ufbxMaterial->pbr.base_color.texture, TextureUsage::Diffuse);
 						LoadMaterialTexture(ufbxMaterial->pbr.normal_map.texture, TextureUsage::Normal);
