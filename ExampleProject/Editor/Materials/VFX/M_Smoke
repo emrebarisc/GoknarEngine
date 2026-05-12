@@ -28,7 +28,7 @@
             </Inputs>
             <Outputs/>
         </Node>
-        <Node Id="9" Name="Texture Sample" Category="Texture" PosX="-656.52942" PosY="81.588242" SizeX="220" SizeY="170" IsUniform="1">
+        <Node Id="9" Name="Texture Sample" Category="Texture" PosX="-656.52942" PosY="81.588242" SizeX="220" SizeY="170" IsUniform="1" UseTextureAtlas="true">
             <StringData><![CDATA[Textures/VFX/T_Smoke.jpg]]></StringData>
             <Inputs>
                 <Pin Id="10" NodeId="9" Name="UV" Type="Vector2" Kind="Input">

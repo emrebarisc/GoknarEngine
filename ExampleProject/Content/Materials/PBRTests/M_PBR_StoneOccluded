@@ -1,8 +1,9 @@
-<GameAsset FileType="Material">
+<GameAsset FileType="Material" UseTextureAtlas="true">
     <Name>M_PBR_StoneOccluded</Name>
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
+    <UsesReflectionProbe>0</UsesReflectionProbe>
     <BaseColorValue>0.4 0.43 0.46 1</BaseColorValue>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
     <AmbientOcclusionValue>0.350000</AmbientOcclusionValue>
@@ -10,36 +11,24 @@
     <RoughnessValue>0.920000</RoughnessValue>
     <Translucency>0.000000</Translucency>
     <BaseColor>
-        <Calculation>
-	// --- Generated Node Graph Calculations ---
-	// Node: Vector4 Constant
-	vec4 node_9_out_14 = vec4(0.400000f, 0.430000f, 0.460000f, 1.000000f);
-	// Node: Vector3 Constant
-	vec3 node_16_out_20 = vec3(0.000000f, 0.000000f, 0.000000f);
-	// Node: Float Constant
-	float node_22_out_23 = 0.350000f;
-	// Node: Float Constant
-	float node_25_out_26 = 0.000000f;
-	// Node: Float Constant
-	float node_28_out_29 = 0.920000f;
-</Calculation>
-        <Result>node_9_out_14;</Result>
+        <Calculation></Calculation>
+        <Result>vec4(0.4, 0.43, 0.46, 1.0);</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
-        <Result>node_16_out_20;</Result>
+        <Result>vec3(0.0, 0.0, 0.0);</Result>
     </EmissiveColor>
     <AmbientOcclusion>
         <Calculation></Calculation>
-        <Result>node_22_out_23;</Result>
+        <Result>0.35;</Result>
     </AmbientOcclusion>
     <Metallic>
         <Calculation></Calculation>
-        <Result>node_25_out_26;</Result>
+        <Result>0.0;</Result>
     </Metallic>
     <Roughness>
         <Calculation></Calculation>
-        <Result>node_28_out_29;</Result>
+        <Result>0.92;</Result>
     </Roughness>
     <FragmentNormal>
         <Calculation></Calculation>

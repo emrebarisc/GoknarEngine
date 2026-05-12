@@ -1,8 +1,9 @@
-<GameAsset FileType="Material">
+<GameAsset FileType="Material" UseTextureAtlas="true">
     <Name></Name>
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
+    <UsesReflectionProbe>0</UsesReflectionProbe>
     <BaseColorValue>1 1 1 1</BaseColorValue>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
     <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
@@ -10,12 +11,8 @@
     <RoughnessValue>0.124035</RoughnessValue>
     <Translucency>0.000000</Translucency>
     <BaseColor>
-        <Calculation>
-	// --- Generated Node Graph Calculations ---
-	// Node: Vector4 Constant
-	vec4 node_12_out_17 = vec4(1.000000f, 0.300000f, 0.000000f, 1.000000f);
-</Calculation>
-        <Result>node_12_out_17;</Result>
+        <Calculation></Calculation>
+        <Result>vec4(1.0, 0.3, 0.0, 1.0);</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>

@@ -1,17 +1,20 @@
-<GameAsset FileType="Material">
+<GameAsset FileType="Material" UseTextureAtlas="true">
+    <Name></Name>
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
-    <Texture path="Textures/T_DarkPlaceholder.png"/>
-    <BaseColorValue>1.0 1.0 1.0 1.0</BaseColorValue>
+    <UsesReflectionProbe>0</UsesReflectionProbe>
+    <Texture path="Textures/T_DarkPlaceholder.png" usage="Diffuse" UseTextureAtlas="true"/>
+    <BaseColorValue>1 1 1 1</BaseColorValue>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
-    <Translucency>0</Translucency>
-    <AmbientReflectance>0 0 0</AmbientReflectance>
-    <DiffuseReflectance>0 0 0</DiffuseReflectance>
-    <SpecularReflectance>1 1 1</SpecularReflectance>
-    <PhongExponent>1.000000</PhongExponent>
+    <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
+    <MetallicValue>0.000000</MetallicValue>
+    <RoughnessValue>0.816497</RoughnessValue>
+    <Translucency>0.000000</Translucency>
     <BaseColor>
         <Calculation>
+    // Optimized shader graph calculations
+
             mat4 modelMatrix = finalModelMatrix;
 
             float scaleX = length(vec3(modelMatrix[0].x, modelMatrix[0].y, modelMatrix[0].z));
@@ -41,16 +44,31 @@
                 projectedUV = localPos.xy * worldScale.xy;
             }
 
-            vec4 textureValue = texture2D(darkPlaceholder, projectedUV);
+            vec2 atlasUV = vec2(fract(projectedUV.x), fract(projectedUV.y)) * darkPlaceholder_UVTransform.xy + darkPlaceholder_UVTransform.zw;
+            vec4 textureValue = texture(darkPlaceholder, atlasUV);
             float upsideValue = clamp(dot(vec3(0.0, 0.0, 1.0), worldNormal), 0.0, 1.0);
             textureValue.xyz = textureValue.xyz * upsideValue + vec3(0.05) * (1.0 - upsideValue);
-        </Calculation>
-        <Result>textureValue;</Result>
+        
+#define customResult (textureValue)
+</Calculation>
+        <Result>customResult;</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>vec3(0.0, 0.0, 0.0);</Result>
     </EmissiveColor>
+    <AmbientOcclusion>
+        <Calculation></Calculation>
+        <Result></Result>
+    </AmbientOcclusion>
+    <Metallic>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Metallic>
+    <Roughness>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Roughness>
     <FragmentNormal>
         <Calculation></Calculation>
         <Result></Result>
@@ -72,3 +90,4 @@
     <VertexShaderUniforms><![CDATA[]]></VertexShaderUniforms>
     <FragmentShaderUniforms><![CDATA[]]></FragmentShaderUniforms>
 </GameAsset>
+

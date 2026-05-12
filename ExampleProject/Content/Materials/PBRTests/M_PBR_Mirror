@@ -1,4 +1,4 @@
-<GameAsset FileType="Material">
+<GameAsset FileType="Material" UseTextureAtlas="true">
     <Name></Name>
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
@@ -11,36 +11,24 @@
     <RoughnessValue>0.500000</RoughnessValue>
     <Translucency>0.000000</Translucency>
     <BaseColor>
-        <Calculation>
-	// --- Generated Node Graph Calculations ---
-	// Node: Vector4 Constant
-	vec4 node_23_out_28 = vec4(1.000000f, 1.000000f, 1.000000f, 1.000000f);
-	// Node: Vector3 Constant
-	vec3 node_12_out_16 = vec3(0.000000f, 0.000000f, 0.000000f);
-	// Node: Float Constant
-	float node_30_out_31 = 1.000000f;
-	// Node: Float Constant
-	float node_34_out_35 = 1.000000f;
-	// Node: Float Constant
-	float node_37_out_38 = 0.000000f;
-</Calculation>
-        <Result>node_23_out_28;</Result>
+        <Calculation></Calculation>
+        <Result>vec4(1.0, 1.0, 1.0, 1.0);</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
-        <Result>node_12_out_16;</Result>
+        <Result>vec3(0.0, 0.0, 0.0);</Result>
     </EmissiveColor>
     <AmbientOcclusion>
         <Calculation></Calculation>
-        <Result>node_30_out_31;</Result>
+        <Result>1.0;</Result>
     </AmbientOcclusion>
     <Metallic>
         <Calculation></Calculation>
-        <Result>node_34_out_35;</Result>
+        <Result>1.0;</Result>
     </Metallic>
     <Roughness>
         <Calculation></Calculation>
-        <Result>node_37_out_38;</Result>
+        <Result>0.0;</Result>
     </Roughness>
     <FragmentNormal>
         <Calculation></Calculation>

@@ -1,7 +1,7 @@
 <GameAsset FileType="MaterialEditorReflection">
     <Canvas Scale="0.79999995" ScrollX="516.19995" ScrollY="116"/>
     <Nodes>
-        <Node Id="1" Name="Material Output" Category="Master" PosX="120" PosY="80" SizeX="200" SizeY="150" IsUniform="1">
+        <Node Id="1" Name="Material Output" Category="Master" PosX="120" PosY="80" SizeX="200" SizeY="220" IsUniform="1">
             <StringData><![CDATA[]]></StringData>
             <Inputs>
                 <Pin Id="2" NodeId="1" Name="Base Color" Type="Vector4" Kind="Input">
@@ -15,6 +15,15 @@
                 </Pin>
                 <Pin Id="5" NodeId="1" Name="World Position Offset" Type="Vector3" Kind="Input">
                     <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+                <Pin Id="16" NodeId="1" Name="Ambient Occlusion" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="1"/>
+                </Pin>
+                <Pin Id="17" NodeId="1" Name="Metallic" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="18" NodeId="1" Name="Roughness" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="0.5"/>
                 </Pin>
             </Inputs>
             <Outputs/>
@@ -37,7 +46,7 @@
                 </Pin>
             </Outputs>
         </Node>
-        <Node Id="11" Name="Texture Sample" Category="Texture" PosX="-142.74995" PosY="-21.249994" SizeX="220" SizeY="170" IsUniform="1">
+        <Node Id="11" Name="Texture Sample" Category="Texture" PosX="-142.74995" PosY="-21.249994" SizeX="220" SizeY="170" IsUniform="1" UseTextureAtlas="true">
             <StringData><![CDATA[Textures/Environment/Trees/T_Tree_Birch_Rework.PNG]]></StringData>
             <Inputs>
                 <Pin Id="12" NodeId="11" Name="UV" Type="Vector2" Kind="Input">

@@ -1,4 +1,4 @@
-<GameAsset FileType="Material">
+<GameAsset FileType="Material" UseTextureAtlas="true">
     <Name></Name>
     <BoneCount>0</BoneCount>
     <BlendModel>Transparent</BlendModel>
@@ -12,27 +12,15 @@
     <Translucency>1.000000</Translucency>
     <BaseColor>
         <Calculation>
-	// --- Generated Node Graph Calculations ---
-	// Node: Vector2 Constant
-	vec2 node_22_out_25 = vec2(0.500000f, 0.500000f);
-	// Node: Subtract
-	vec2 node_17_out_20 = textureUV - node_22_out_25;
-	// Node: Dot
-	float node_41_out_44 = dot(node_17_out_20, node_17_out_20);
-	// Node: Subtract
-	float node_74_out_77 = 1.000000f - node_41_out_44;
-	// Node: Pow
-	float node_83_out_86 = pow(node_74_out_77, 16.000000f);
-	// Node: Vector4 Constant
-	vec4 node_53_out_58 = vec4(node_83_out_86, node_83_out_86, node_83_out_86, node_83_out_86);
-	// Node: Vector3 Constant
-	vec3 node_9_out_13 = vec3(0.200000f, 0.200000f, 0.200000f);
+	// Optimized shader graph calculations
+	vec2 difference = (textureUV - vec2(0.5, 0.5));
+	float powOut = pow((1.0 - dot(difference, difference)), 16.0);
 </Calculation>
-        <Result>node_53_out_58;</Result>
+        <Result>vec4(powOut, powOut, powOut, powOut);</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
-        <Result>node_9_out_13;</Result>
+        <Result>vec3(0.2, 0.2, 0.2);</Result>
     </EmissiveColor>
     <AmbientOcclusion>
         <Calculation></Calculation>

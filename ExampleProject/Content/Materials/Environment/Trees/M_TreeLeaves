@@ -1,31 +1,40 @@
-<GameAsset FileType="Material">
+<GameAsset FileType="Material" UseTextureAtlas="true">
     <Name></Name>
     <BoneCount>0</BoneCount>
     <BlendModel>Masked</BlendModel>
     <ShadingModel>TwoSided</ShadingModel>
-    <Texture path="Textures/Environment/Trees/T_LeavesBushes.PNG"/>
-    <AmbientReflectance>0 0 0</AmbientReflectance>
+    <UsesReflectionProbe>0</UsesReflectionProbe>
+    <Texture path="Textures/Environment/Trees/T_LeavesBushes.PNG" usage="Diffuse" UseTextureAtlas="true"/>
     <BaseColorValue>1 1 1 1</BaseColorValue>
-    <SpecularReflectance>0 0 0</SpecularReflectance>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
-    <PhongExponent>1.000000</PhongExponent>
+    <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
+    <MetallicValue>0.000000</MetallicValue>
+    <RoughnessValue>0.816497</RoughnessValue>
     <Translucency>0.500000</Translucency>
     <BaseColor>
         <Calculation>
-	// --- Generated Node Graph Calculations ---
-	// Node: Texture Sample
-	vec4 node_11_out_13 = texture(T_LeavesBushes, textureUV);
-	// Node: Vector4 Constant
-	vec4 node_20_out_25 = vec4(0.700000f, 0.300000f, 0.300000f, 1.000000f);
-	// Node: Multiply
-	vec4 node_15_out_18 = node_11_out_13 * node_20_out_25;
+	// Optimized shader graph calculations
+	vec4 t_LeavesBushesSample = texture(T_LeavesBushes, (vec2(fract((textureUV).x), fract((textureUV).y)) * T_LeavesBushes_UVTransform.xy + T_LeavesBushes_UVTransform.zw));
+	vec4 product = (t_LeavesBushesSample * vec4(0.7, 0.3, 0.3, 1.0));
 </Calculation>
-        <Result>node_15_out_18;</Result>
+        <Result>product;</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
         <Result></Result>
     </EmissiveColor>
+    <AmbientOcclusion>
+        <Calculation></Calculation>
+        <Result></Result>
+    </AmbientOcclusion>
+    <Metallic>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Metallic>
+    <Roughness>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Roughness>
     <FragmentNormal>
         <Calculation></Calculation>
         <Result>vertexNormal;</Result>
@@ -40,11 +49,10 @@
     </UV>
     <VertexPositionOffset>
         <Calculation>
-	// --- Generated Node Graph Calculations ---
-	// Node: MF_WindDisplacement
-	vec3 node_28_out_29 = mf_MaterialFunctions_MF_WindDisplacement_out_0_Result();
+	// Optimized shader graph calculations
+	vec3 mF_WindDisplacementResult = mf_MaterialFunctions_MF_WindDisplacement_out_0_Result();
 </Calculation>
-        <Result>node_28_out_29;</Result>
+        <Result>mF_WindDisplacementResult;</Result>
     </VertexPositionOffset>
     <VertexShaderFunctions><![CDATA[vec3 mf_MaterialFunctions_MF_WindDisplacement_out_0_Result()
 {

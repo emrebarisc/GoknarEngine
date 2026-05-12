@@ -1,10 +1,10 @@
-<GameAsset FileType="Material">
+<GameAsset FileType="Material" UseTextureAtlas="true">
     <Name></Name>
     <BoneCount>0</BoneCount>
     <BlendModel>Transparent</BlendModel>
     <ShadingModel>TwoSided</ShadingModel>
     <UsesReflectionProbe>0</UsesReflectionProbe>
-    <Texture path="Textures/VFX/T_Smoke.jpg" usage="Diffuse"/>
+    <Texture path="Textures/VFX/T_Smoke.jpg" usage="Diffuse" UseTextureAtlas="true"/>
     <BaseColorValue>1 1 1 1</BaseColorValue>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
     <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
@@ -13,18 +13,12 @@
     <Translucency>1.000000</Translucency>
     <BaseColor>
         <Calculation>
-	// --- Generated Node Graph Calculations ---
-	// Node: Texture Sample
-	vec4 node_9_out_11 = texture(T_Smoke, textureUV);
-	// Node: Mask
-	float node_16_out_18 = node_9_out_11.x;
-	float node_16_out_19 = node_9_out_11.y;
-	float node_16_out_20 = node_9_out_11.z;
-	float node_16_out_21 = node_9_out_11.w;
-	// Node: Vector4 Constant
-	vec4 node_23_out_28 = vec4(node_16_out_18, node_16_out_19, node_16_out_20, node_16_out_18);
+	// Optimized shader graph calculations
+	vec4 t_SmokeSample = texture(T_Smoke, (vec2(fract((textureUV).x), fract((textureUV).y)) * T_Smoke_UVTransform.xy + T_Smoke_UVTransform.zw));
+	float maskedX = (t_SmokeSample).x;
+	vec4 vector4_ConstantOut = vec4(maskedX, (t_SmokeSample).y, (t_SmokeSample).z, maskedX);
 </Calculation>
-        <Result>node_23_out_28;</Result>
+        <Result>vector4_ConstantOut;</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>

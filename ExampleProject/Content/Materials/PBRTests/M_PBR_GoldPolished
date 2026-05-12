@@ -1,8 +1,9 @@
-<GameAsset FileType="Material">
+<GameAsset FileType="Material" UseTextureAtlas="true">
     <Name>M_PBR_GoldPolished</Name>
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
+    <UsesReflectionProbe>0</UsesReflectionProbe>
     <BaseColorValue>1 0.765 0.336 1</BaseColorValue>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
     <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
@@ -10,36 +11,24 @@
     <RoughnessValue>0.080000</RoughnessValue>
     <Translucency>0.000000</Translucency>
     <BaseColor>
-        <Calculation>
-	// --- Generated Node Graph Calculations ---
-	// Node: Vector4 Constant
-	vec4 node_9_out_14 = vec4(1.000000f, 0.765000f, 0.336000f, 1.000000f);
-	// Node: Vector3 Constant
-	vec3 node_16_out_20 = vec3(0.000000f, 0.000000f, 0.000000f);
-	// Node: Float Constant
-	float node_22_out_23 = 1.000000f;
-	// Node: Float Constant
-	float node_25_out_26 = 1.000000f;
-	// Node: Float Constant
-	float node_28_out_29 = 0.080000f;
-</Calculation>
-        <Result>node_9_out_14;</Result>
+        <Calculation></Calculation>
+        <Result>vec4(1.0, 0.765, 0.336, 1.0);</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
-        <Result>node_16_out_20;</Result>
+        <Result>vec3(0.0, 0.0, 0.0);</Result>
     </EmissiveColor>
     <AmbientOcclusion>
         <Calculation></Calculation>
-        <Result>node_22_out_23;</Result>
+        <Result>1.0;</Result>
     </AmbientOcclusion>
     <Metallic>
         <Calculation></Calculation>
-        <Result>node_25_out_26;</Result>
+        <Result>1.0;</Result>
     </Metallic>
     <Roughness>
         <Calculation></Calculation>
-        <Result>node_28_out_29;</Result>
+        <Result>0.08;</Result>
     </Roughness>
     <FragmentNormal>
         <Calculation></Calculation>

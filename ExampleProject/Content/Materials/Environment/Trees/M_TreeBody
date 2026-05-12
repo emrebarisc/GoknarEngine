@@ -1,27 +1,39 @@
-<GameAsset FileType="Material">
+<GameAsset FileType="Material" UseTextureAtlas="true">
     <Name></Name>
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
-    <Texture path="Textures/Environment/Trees/T_Tree_Birch_Rework.PNG"/>
-    <AmbientReflectance>0 0 0</AmbientReflectance>
+    <UsesReflectionProbe>0</UsesReflectionProbe>
+    <Texture path="Textures/Environment/Trees/T_Tree_Birch_Rework.PNG" usage="Diffuse" UseTextureAtlas="true"/>
     <BaseColorValue>1 1 1 1</BaseColorValue>
-    <SpecularReflectance>0 0 0</SpecularReflectance>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
-    <PhongExponent>1.000000</PhongExponent>
+    <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
+    <MetallicValue>0.000000</MetallicValue>
+    <RoughnessValue>0.816497</RoughnessValue>
     <Translucency>0.000000</Translucency>
     <BaseColor>
         <Calculation>
-	// --- Generated Node Graph Calculations ---
-	// Node: Texture Sample
-	vec4 node_11_out_13 = texture(T_Tree_Birch_Rework, textureUV);
+	// Optimized shader graph calculations
+	vec4 t_Tree_Birch_ReworkSample = texture(T_Tree_Birch_Rework, (vec2(fract((textureUV).x), fract((textureUV).y)) * T_Tree_Birch_Rework_UVTransform.xy + T_Tree_Birch_Rework_UVTransform.zw));
 </Calculation>
-        <Result>node_11_out_13;</Result>
+        <Result>t_Tree_Birch_ReworkSample;</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
         <Result></Result>
     </EmissiveColor>
+    <AmbientOcclusion>
+        <Calculation></Calculation>
+        <Result></Result>
+    </AmbientOcclusion>
+    <Metallic>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Metallic>
+    <Roughness>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Roughness>
     <FragmentNormal>
         <Calculation></Calculation>
         <Result>vertexNormal;</Result>
