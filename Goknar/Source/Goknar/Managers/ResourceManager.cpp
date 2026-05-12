@@ -6,6 +6,7 @@
 #include "Contents/Audio.h"
 #include "Contents/Content.h"
 #include "Contents/Image.h"
+#include "Renderer/TextureAtlas.h"
 #include "IO/IOManager.h"
 
 ResourceManager::ResourceManager() :
@@ -119,12 +120,15 @@ Content* ResourceManager::LoadContent(const std::string& path)
 	return content;
 }
 
-ResourceContainer::ResourceContainer()
+ResourceContainer::ResourceContainer() :
+	imageTextureAtlas_(new TextureAtlas("DefaultImageTextureAtlas"))
 {
 }
 
 ResourceContainer::~ResourceContainer()
 {
+	delete imageTextureAtlas_;
+
 	for (Image* image : imageArray_)
 	{
 		delete image;
@@ -143,6 +147,15 @@ ResourceContainer::~ResourceContainer()
 
 void ResourceContainer::PreInit()
 {
+	isPreInitialized_ = true;
+
+	for (Image* image : imageArray_)
+	{
+		RegisterImageToTextureAtlas(image);
+	}
+
+	FlushImageTextureAtlas();
+
 	for (Image* image : imageArray_)
 	{
 		image->PreInit();
@@ -161,6 +174,13 @@ void ResourceContainer::PreInit()
 
 void ResourceContainer::Init()
 {
+	isInitialized_ = true;
+
+	if (imageTextureAtlas_)
+	{
+		imageTextureAtlas_->Init();
+	}
+
 	for (Image* image : imageArray_)
 	{
 		image->Init();
@@ -179,6 +199,13 @@ void ResourceContainer::Init()
 
 void ResourceContainer::PostInit()
 {
+	isPostInitialized_ = true;
+
+	if (imageTextureAtlas_)
+	{
+		imageTextureAtlas_->PostInit();
+	}
+
 	for (Image* image : imageArray_)
 	{
 		image->PostInit();
@@ -201,6 +228,46 @@ void ResourceContainer::AddImage(Image* image)
 
 	imageArray_.push_back(image);
 	contentPathMap_[image->GetPath()] = image;
+	RegisterImageToTextureAtlas(image);
+}
+
+bool ResourceContainer::RegisterImageToTextureAtlas(Image* image)
+{
+	if (!imageTextureAtlas_ || !image)
+	{
+		return false;
+	}
+
+	if (!(image->GetCanUseTextureAtlas() || useTextureAtlasForAllImages_))
+	{
+		return false;
+	}
+
+	return imageTextureAtlas_->AddImage(image);
+}
+
+void ResourceContainer::FlushImageTextureAtlas()
+{
+	// AssetParser can register atlas images while asset XML is being parsed,
+	// before the renderer has a valid OpenGL context. In that phase we only
+	// collect registrations. The first real GPU upload happens from
+	// ResourceContainer::PreInit(), where the engine's GL entry points are ready.
+	if (!isPreInitialized_ || !imageTextureAtlas_ || !imageTextureAtlas_->HasImages())
+	{
+		return;
+	}
+
+	imageTextureAtlas_->PreInit();
+
+	if (isInitialized_)
+	{
+		imageTextureAtlas_->Init();
+	}
+
+	if (isPostInitialized_)
+	{
+		imageTextureAtlas_->PostInit();
+	}
 }
 
 void ResourceContainer::AddMesh(Content* mesh)

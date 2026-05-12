@@ -5,6 +5,7 @@
 
 #include "Goknar/Engine.h"
 #include "Goknar/Contents/Image.h"
+#include "Goknar/Renderer/Texture.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
@@ -31,6 +32,8 @@ Material::~Material()
 		delete derivedMaterialInstance;
 	}
 
+	ClearMaterialTextureProxies();
+
 	delete renderPassTypeShaderMap_[RenderPassType::Forward];
 	delete renderPassTypeShaderMap_[RenderPassType::GeometryBuffer];
 	delete renderPassTypeShaderMap_[RenderPassType::Shadow];
@@ -40,8 +43,71 @@ Material::~Material()
 	delete initializationData_;
 }
 
+void Material::ClearMaterialTextureProxies()
+{
+	for (MaterialTextureProxy& materialTextureProxy : materialTextureProxies_)
+	{
+		if (materialTextureProxy.image && materialTextureProxy.texture)
+		{
+			const_cast<Image*>(materialTextureProxy.image)->UnregisterTextureAtlasProxy(materialTextureProxy.texture.get());
+		}
+	}
+
+	materialTextureProxies_.clear();
+}
+
+Texture* Material::GetTextureForShader(const Image* constImage, bool useTextureAtlas)
+{
+	if (!constImage)
+	{
+		return nullptr;
+	}
+
+	Image* image = const_cast<Image*>(constImage);
+	ResourceManager* resourceManager = engine ? engine->GetResourceManager() : nullptr;
+	ResourceContainer* resourceContainer = resourceManager ? resourceManager->GetResourceContainer() : nullptr;
+	const bool shouldUseTextureAtlas = useTextureAtlas || (resourceContainer && resourceContainer->GetUseTextureAtlasForAllImages());
+
+	if (!shouldUseTextureAtlas)
+	{
+		return image->GetOrCreateGeneratedTexture();
+	}
+
+	image->SetCanUseTextureAtlas(true);
+	if (resourceContainer)
+	{
+		resourceContainer->RegisterImageToTextureAtlas(image);
+	}
+
+	MaterialTextureProxy materialTextureProxy;
+	materialTextureProxy.image = image;
+	materialTextureProxy.texture = std::unique_ptr<Texture>(new Texture());
+
+	Texture* texture = materialTextureProxy.texture.get();
+	if (!image->GetName().empty())
+	{
+		texture->SetName(image->GetName());
+	}
+
+	texture->SetTextureImagePathAbsolute(image->GetPath());
+	texture->SetSize(image->GetWidth(), image->GetHeight());
+	texture->SetChannels(image->GetChannels());
+	texture->SetTextureUsage(image->GetTextureUsage());
+	texture->SetTextureWrappingR(image->GetTextureWrappingR());
+	texture->SetTextureWrappingT(image->GetTextureWrappingT());
+	texture->SetTextureWrappingS(image->GetTextureWrappingS());
+	texture->SetWaitsForTextureAtlas(true);
+
+	image->RegisterTextureAtlasProxy(texture);
+	materialTextureProxies_.push_back(std::move(materialTextureProxy));
+
+	return texture;
+}
+
 void Material::Build(MeshUnit* meshUnit)
 {
+	ClearMaterialTextureProxies();
+
 	int ownerMeshBoneCount = 0;
 	if (SkeletalMeshUnit* skeletalMeshUnit = dynamic_cast<SkeletalMeshUnit*>(meshUnit))
 	{
@@ -52,6 +118,48 @@ void Material::Build(MeshUnit* meshUnit)
 	initializationData_->meshType = meshUnit ? meshUnit->GetMeshType() : MeshType::None;
 	const bool isInstancedStaticMesh = initializationData_->meshType == MeshType::InstancedStatic;
 
+	std::vector<Texture*> materialTextures;
+	materialTextures.reserve(textureImages_.size());
+
+	bool hasTextureAtlasCandidate = false;
+	for (size_t textureImageIndex = 0; textureImageIndex < textureImages_.size(); ++textureImageIndex)
+	{
+		const Image* image = textureImages_[textureImageIndex];
+		const bool useTextureAtlas = GetTextureImageUsesTextureAtlas(textureImageIndex);
+		Texture* texture = GetTextureForShader(image, useTextureAtlas);
+		if (texture)
+		{
+			materialTextures.push_back(texture);
+		}
+
+		hasTextureAtlasCandidate = hasTextureAtlasCandidate || useTextureAtlas;
+	}
+
+	if (hasTextureAtlasCandidate)
+	{
+		ResourceManager* resourceManager = engine ? engine->GetResourceManager() : nullptr;
+		if (resourceManager && resourceManager->GetResourceContainer())
+		{
+			resourceManager->GetResourceContainer()->FlushImageTextureAtlas();
+		}
+	}
+
+	auto AddMaterialTexturesToShader = [&materialTextures](Shader* shader)
+	{
+		if (!shader)
+		{
+			return;
+		}
+
+		for (Texture* texture : materialTextures)
+		{
+			if (texture)
+			{
+				shader->AddTexture(texture);
+			}
+		}
+	};
+
 	RenderPassType mainRenderPassType = engine->GetRenderer()->GetMainRenderType();
 	
 	Shader* gBufferShader = nullptr;
@@ -61,16 +169,8 @@ void Material::Build(MeshUnit* meshUnit)
 	}
 
 	Shader* forwardRenderingShader = new Shader();
-
-	std::vector<const Image*>::iterator imageIterator = textureImages_.begin();
-	for (; imageIterator != textureImages_.end(); ++imageIterator)
-	{
-		forwardRenderingShader->AddTexture((*imageIterator)->GetGeneratedTexture());
-		if(gBufferShader)
-		{
-			gBufferShader->AddTexture((*imageIterator)->GetGeneratedTexture());
-		}
-	}
+	AddMaterialTexturesToShader(forwardRenderingShader);
+	AddMaterialTexturesToShader(gBufferShader);
 	renderPassTypeShaderMap_[RenderPassType::Forward] = forwardRenderingShader;
 	
 	if(gBufferShader)
@@ -99,10 +199,7 @@ void Material::Build(MeshUnit* meshUnit)
 
 	{
 		Shader* shadowShader = new Shader();
-		for (const Image* image : textureImages_)
-		{
-			shadowShader->AddTexture(image->GetGeneratedTexture());
-		}
+		AddMaterialTexturesToShader(shadowShader);
 
 		std::string shadowPassVertexShader = isInstancedStaticMesh ?
 			ShaderBuilder::GetInstance()->ShadowPass_GetInstancedStaticMeshVertexShaderScript(initializationData_, shadowShader) :
@@ -117,10 +214,7 @@ void Material::Build(MeshUnit* meshUnit)
 
 	{
 		Shader* pointLightShadowShader = new Shader();
-		for (const Image* image : textureImages_)
-		{
-			pointLightShadowShader->AddTexture(image->GetGeneratedTexture());
-		}
+		AddMaterialTexturesToShader(pointLightShadowShader);
 
 		std::string pointLightShadowPassVertexShader = isInstancedStaticMesh ?
 			ShaderBuilder::GetInstance()->PointShadowPass_GetInstancedStaticMeshVertexShaderScript(initializationData_, pointLightShadowShader) :
@@ -137,10 +231,7 @@ void Material::Build(MeshUnit* meshUnit)
 
 	{
 		Shader* cubemapCaptureShader = new Shader();
-		for (const Image* image : textureImages_)
-		{
-			cubemapCaptureShader->AddTexture(image->GetGeneratedTexture());
-		}
+		AddMaterialTexturesToShader(cubemapCaptureShader);
 
 		std::string cubemapCaptureVertexShader = isInstancedStaticMesh ?
 			ShaderBuilder::GetInstance()->CubemapRenderPass_GetInstancedStaticMeshVertexShaderScript(initializationData_, cubemapCaptureShader) :
@@ -233,7 +324,8 @@ void Material::ResetForRebuild()
 	}
 
 	renderPassTypeShaderMap_.clear();
-	textureImages_.clear();
+	ClearMaterialTextureProxies();
+	ClearTextureImages();
 
 	delete initializationData_;
 	initializationData_ = new MaterialInitializationData(this);

@@ -2,6 +2,7 @@
 #include "AssetParser.h"
 
 #include <algorithm>
+#include <cctype>
 #include <sstream>
 #include <stdexcept>
 #include <iostream>
@@ -19,6 +20,7 @@
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Renderer/Texture.h"
+#include "Goknar/Renderer/Shader.h"
 #include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Materials/MaterialSerializer.h"
 
@@ -73,6 +75,66 @@ namespace
 		}
 
 		return TrimString(element->GetText());
+	}
+
+	bool TryParseBool(const std::string& value, bool& outValue)
+	{
+		std::string normalizedValue = TrimString(value);
+		std::transform(normalizedValue.begin(), normalizedValue.end(), normalizedValue.begin(), [](unsigned char character)
+			{
+				return static_cast<char>(std::tolower(character));
+			});
+
+		if (normalizedValue == "true" || normalizedValue == "1" || normalizedValue == "yes" || normalizedValue == "enabled")
+		{
+			outValue = true;
+			return true;
+		}
+
+		if (normalizedValue == "false" || normalizedValue == "0" || normalizedValue == "no" || normalizedValue == "disabled")
+		{
+			outValue = false;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool ReadBoolAttributeOrElement(const tinyxml2::XMLElement* element, const char* name, bool defaultValue = false)
+	{
+		if (!element || !name)
+		{
+			return defaultValue;
+		}
+
+		bool parsedValue = defaultValue;
+		const char* attributeValue = element->Attribute(name);
+		if (attributeValue && TryParseBool(attributeValue, parsedValue))
+		{
+			return parsedValue;
+		}
+
+		const tinyxml2::XMLElement* childElement = element->FirstChildElement(name);
+		if (childElement && childElement->GetText() && TryParseBool(childElement->GetText(), parsedValue))
+		{
+			return parsedValue;
+		}
+
+		return defaultValue;
+	}
+
+	bool ReadTextureAtlasUsageInternal(const tinyxml2::XMLElement* textureElement, bool defaultValue = false)
+	{
+		if (!textureElement)
+		{
+			return defaultValue;
+		}
+
+		bool value = defaultValue;
+		value = ReadBoolAttributeOrElement(textureElement, "UseTextureAtlas", value);
+		value = ReadBoolAttributeOrElement(textureElement, "CanUseTextureAtlas", value);
+		value = ReadBoolAttributeOrElement(textureElement, "TextureAtlas", value);
+		return value;
 	}
 
 	std::string GetTextureNameFromPath(const std::string& texturePath)
@@ -255,7 +317,7 @@ namespace
 			textureElement != nullptr;
 			textureElement = textureElement->NextSiblingElement("Texture"))
 		{
-			const std::string texturePath = GetElementText(textureElement->FirstChildElement("Path"));
+			const std::string texturePath = ContentPathUtils::ToContentRelativePath(GetElementText(textureElement->FirstChildElement("Path")));
 			if (texturePath.empty())
 			{
 				continue;
@@ -266,6 +328,37 @@ namespace
 		}
 
 		return textureNameByTexturePath;
+	}
+
+
+	std::map<std::string, bool> LoadExistingTextureAtlasUsage(const std::string& assetContainerPath)
+	{
+		std::map<std::string, bool> textureAtlasUsageByTexturePath;
+
+		tinyxml2::XMLDocument existingDocument;
+		std::string fileContents;
+		if (!DataEncryption::ReadTextFile(assetContainerPath, fileContents) ||
+			existingDocument.Parse(fileContents.c_str(), fileContents.size()) != tinyxml2::XML_SUCCESS)
+		{
+			return textureAtlasUsageByTexturePath;
+		}
+
+		tinyxml2::XMLElement* rootElement = existingDocument.FirstChildElement("AssetContainer");
+		tinyxml2::XMLElement* assetsElement = rootElement ? rootElement->FirstChildElement("Assets") : nullptr;
+		for (tinyxml2::XMLElement* textureElement = assetsElement ? assetsElement->FirstChildElement("Texture") : nullptr;
+			textureElement != nullptr;
+			textureElement = textureElement->NextSiblingElement("Texture"))
+		{
+			const std::string texturePath = ContentPathUtils::ToContentRelativePath(GetElementText(textureElement->FirstChildElement("Path")));
+			if (texturePath.empty())
+			{
+				continue;
+			}
+
+			textureAtlasUsageByTexturePath[texturePath] = ReadTextureAtlasUsageInternal(textureElement, false);
+		}
+
+		return textureAtlasUsageByTexturePath;
 	}
 
 	std::string TryGetGameAssetFileType(const std::filesystem::path& absolutePath)
@@ -282,8 +375,92 @@ namespace
 		const char* fileType = root ? root->Attribute("FileType") : nullptr;
 		return fileType ? fileType : "";
 	}
+
 }
 
+
+bool AssetParser::ReadTextureAtlasUsage(const tinyxml2::XMLElement* textureElement, bool defaultValue)
+{
+	return ReadTextureAtlasUsageInternal(textureElement, defaultValue);
+}
+
+bool AssetParser::RegisterTextureToTextureAtlas(Texture* texture, bool useTextureNameForImage, bool flushAtlas)
+{
+	if (!texture || texture->GetTextureImagePath().empty())
+	{
+		return false;
+	}
+
+	ResourceManager* resourceManager = engine->GetResourceManager();
+	if (!resourceManager || !resourceManager->GetResourceContainer())
+	{
+		return false;
+	}
+
+	const std::string relativeTexturePath = ContentPathUtils::ToContentRelativePath(texture->GetTextureImagePath());
+	if (relativeTexturePath.empty())
+	{
+		return false;
+	}
+
+	Image* image = resourceManager->GetContent<Image>(relativeTexturePath);
+	if (!image)
+	{
+		return false;
+	}
+
+	image->SetCanUseTextureAtlas(true);
+	texture->SetWaitsForTextureAtlas(true);
+
+	if (useTextureNameForImage && !texture->GetName().empty())
+	{
+		image->SetName(texture->GetName());
+	}
+
+	image->RegisterTextureAtlasProxy(texture);
+	const bool registered = resourceManager->GetResourceContainer()->RegisterImageToTextureAtlas(image);
+	if (flushAtlas && registered)
+	{
+		resourceManager->GetResourceContainer()->FlushImageTextureAtlas();
+	}
+
+	return registered;
+}
+
+void AssetParser::RegisterMaterialTexturesToTextureAtlas(Material* material, bool flushAtlas)
+{
+	if (!material)
+	{
+		return;
+	}
+
+	Shader* shader = material->GetShader(RenderPassType::Forward);
+	if (!shader)
+	{
+		return;
+	}
+
+	const std::vector<const Texture*>* textures = shader->GetTextures();
+	if (!textures)
+	{
+		return;
+	}
+
+	bool registeredAnyTexture = false;
+	for (const Texture* constTexture : *textures)
+	{
+		registeredAnyTexture |= RegisterTextureToTextureAtlas(const_cast<Texture*>(constTexture), false, false);
+	}
+
+	if (flushAtlas && registeredAnyTexture)
+	{
+		ResourceManager* resourceManager = engine->GetResourceManager();
+		if (resourceManager && resourceManager->GetResourceContainer())
+		{
+			resourceManager->GetResourceContainer()->FlushImageTextureAtlas();
+		}
+	}
+}
 
 void AssetParser::ParseAssets(const std::string& filePath)
 {
@@ -465,6 +642,7 @@ void AssetParser::ParseMeshes(tinyxml2::XMLElement* assetsElement)
 				if (material)
 				{
 					MaterialSerializer::Deserialize(relativeMaterialPath, material);
+					AssetParser::RegisterMaterialTexturesToTextureAtlas(material);
 				}
 			}
 		}
@@ -499,21 +677,36 @@ void AssetParser::ParseTextures(tinyxml2::XMLElement* assetsElement)
 		if (!path.empty())
 		{
 			Image* image = resourceManager->GetContent<Image>(path);
-			if (image && image->GetName().empty())
+			if (image)
 			{
-				const char* textureNameAttribute = element->Attribute("Name");
-				std::string textureName = textureNameAttribute ? TrimString(textureNameAttribute) : GetElementText(element->FirstChildElement("Name"));
-				if (textureName.empty())
+				// Asset container textures are material-facing by default, so they are
+				// eligible for the atlas unless the asset XML opts out with
+				// UseTextureAtlas/CanUseTextureAtlas/TextureAtlas = false.
+				const bool useTextureAtlas = ReadTextureAtlasUsageInternal(element, true);
+				image->SetCanUseTextureAtlas(useTextureAtlas);
+				if (useTextureAtlas)
 				{
-					textureName = GetTextureNameFromPath(path);
+					resourceManager->GetResourceContainer()->RegisterImageToTextureAtlas(image);
 				}
 
-				image->SetName(GetUniqueTextureName(textureName, usedTextureNames));
+				if (image->GetName().empty())
+				{
+					const char* textureNameAttribute = element->Attribute("Name");
+					std::string textureName = textureNameAttribute ? TrimString(textureNameAttribute) : GetElementText(element->FirstChildElement("Name"));
+					if (textureName.empty())
+					{
+						textureName = GetTextureNameFromPath(path);
+					}
+
+					image->SetName(GetUniqueTextureName(textureName, usedTextureNames));
+				}
 			}
 		}
 
 		element = element->NextSiblingElement("Texture");
 	}
+
+	resourceManager->GetResourceContainer()->FlushImageTextureAtlas();
 }
 
 void AssetParser::ParseMaterials(tinyxml2::XMLElement* assetsElement)
@@ -574,10 +767,11 @@ void AssetParser::SaveAssets(const std::string& filePath)
 	const std::string fullPath = ContentPathUtils::ToAbsoluteContentPath(relativeFilePath);
 	const MeshMaterialPathMap meshMaterialPaths = LoadExistingMeshMaterialPaths(fullPath);
 	const std::map<std::string, std::string> existingTextureNames = LoadExistingTextureNames(fullPath);
+	const std::map<std::string, bool> existingTextureAtlasUsage = LoadExistingTextureAtlasUsage(fullPath);
 	const std::filesystem::path contentRoot = std::filesystem::path(ContentDir);
 	std::set<std::string> usedTextureNames;
 
-	auto addPathAsset = [&](const char* elementName, const std::string& assetPath, const std::vector<std::string>* materialPaths = nullptr, const std::string* assetName = nullptr)
+	auto addPathAsset = [&](const char* elementName, const std::string& assetPath, const std::vector<std::string>* materialPaths = nullptr, const std::string* assetName = nullptr, bool useTextureAtlas = true)
 	{
 		tinyxml2::XMLElement* assetElement = assetXML.NewElement(elementName);
 		tinyxml2::XMLElement* pathElement = assetXML.NewElement("Path");
@@ -586,6 +780,11 @@ void AssetParser::SaveAssets(const std::string& filePath)
 		if (assetName && !assetName->empty())
 		{
 			assetElement->SetAttribute("Name", assetName->c_str());
+		}
+
+		if (std::string(elementName) == "Texture")
+		{
+			assetElement->SetAttribute("UseTextureAtlas", useTextureAtlas ? "true" : "false");
 		}
 
 		assetElement->InsertEndChild(pathElement);
@@ -632,7 +831,9 @@ void AssetParser::SaveAssets(const std::string& filePath)
 					existingTextureNameIterator->second :
 					GetTextureNameFromPath(relativeAssetPath);
 				const std::string resolvedTextureName = GetUniqueTextureName(preferredTextureName, usedTextureNames);
-				addPathAsset("Texture", relativeAssetPath, nullptr, &resolvedTextureName);
+				const auto existingTextureAtlasUsageIterator = existingTextureAtlasUsage.find(relativeAssetPath);
+				const bool useTextureAtlas = existingTextureAtlasUsageIterator == existingTextureAtlasUsage.end() ? true : existingTextureAtlasUsageIterator->second;
+				addPathAsset("Texture", relativeAssetPath, nullptr, &resolvedTextureName, useTextureAtlas);
 				continue;
 			}
 
@@ -690,7 +891,47 @@ void AssetParser::SaveMeshes(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLEl
 
 void AssetParser::SaveTextures(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
 {
+	const std::vector<Image*>& imageArray = engine->GetResourceManager()->GetResourceContainer()->GetImageArray();
 
+	for (Image* image : imageArray)
+	{
+		if (!image)
+		{
+			continue;
+		}
+
+		std::string fullPath = image->GetPath();
+
+#ifdef ENGINE_CONTENT_DIR
+		if (fullPath.find(EngineContentDir) != std::string::npos)
+		{
+			continue;
+		}
+#endif
+
+		const std::string path = ContentPathUtils::ToContentRelativePath(fullPath);
+		if (path.empty())
+		{
+			continue;
+		}
+
+		tinyxml2::XMLElement* textureElement = xmlDocument.NewElement("Texture");
+		if (!image->GetName().empty())
+		{
+			textureElement->SetAttribute("Name", image->GetName().c_str());
+		}
+
+		if (image->GetCanUseTextureAtlas())
+		{
+			textureElement->SetAttribute("UseTextureAtlas", "true");
+		}
+
+		tinyxml2::XMLElement* pathElement = xmlDocument.NewElement("Path");
+		pathElement->SetText(path.c_str());
+		textureElement->InsertEndChild(pathElement);
+
+		parentElement->InsertEndChild(textureElement);
+	}
 }
 
 void AssetParser::SaveMaterials(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)

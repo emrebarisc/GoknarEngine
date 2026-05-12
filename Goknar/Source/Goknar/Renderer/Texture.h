@@ -195,8 +195,21 @@ public:
 
 	GEuint GetRendererTextureId() const
 	{
+		return GetEffectiveRendererTextureId();
+	}
+
+	GEuint GetOwnedRendererTextureId() const
+	{
 		return rendererTextureId_;
 	}
+
+	bool GetIsInitialized() const
+	{
+		return isInitialized_;
+	}
+
+	void UpdateBufferOnGPU();
+	void ClearBuffer();
 
 	int GetWidth() const
 	{
@@ -265,6 +278,50 @@ public:
 	void SetName(const std::string& name)
 	{
 		name_ = name;
+	}
+
+	void SetAtlasTexture(Texture* atlasTexture, float uMin, float vMin, float uMax, float vMax);
+
+	void SetWaitsForTextureAtlas(bool waitsForTextureAtlas)
+	{
+		waitsForTextureAtlas_ = waitsForTextureAtlas;
+	}
+
+	bool GetWaitsForTextureAtlas() const
+	{
+		return waitsForTextureAtlas_;
+	}
+
+	bool GetUsesAtlasTexture() const
+	{
+		return atlasTexture_ != nullptr;
+	}
+
+	const Texture* GetAtlasTexture() const
+	{
+		return atlasTexture_;
+	}
+
+	std::string GetAtlasUVTransformUniformName() const;
+
+	float GetAtlasUScale() const
+	{
+		return atlasUScale_;
+	}
+
+	float GetAtlasVScale() const
+	{
+		return atlasVScale_;
+	}
+
+	float GetAtlasUOffset() const
+	{
+		return atlasUOffset_;
+	}
+
+	float GetAtlasVOffset() const
+	{
+		return atlasVOffset_;
 	}
 
 	TextureBindTarget GetTextureBindTarget() const
@@ -441,11 +498,17 @@ protected:
 
 private:
 	void UpdateSizeOnGPU();
+	GEuint GetEffectiveRendererTextureId() const;
 
 	std::string name_{ "" };
 	std::string imagePath_{ "" };
 	const unsigned char* buffer_{ nullptr };
 	GEuint rendererTextureId_{ 0 };
+	Texture* atlasTexture_{ nullptr };
+	float atlasUScale_{ 1.0f };
+	float atlasVScale_{ 1.0f };
+	float atlasUOffset_{ 0.0f };
+	float atlasVOffset_{ 0.0f };
 
 	TextureBindTarget textureBindTarget_{ TextureBindTarget::TEXTURE_2D};
 	TextureImageTarget textureImageTarget_{ TextureImageTarget::TEXTURE_2D };
@@ -471,6 +534,7 @@ private:
 
 	bool isInitialized_{ false };
 	bool generateMipmap_{ true };
+	bool waitsForTextureAtlas_{ false };
 };
 
 #endif

@@ -8,6 +8,8 @@
 #include "TinyXML/include/tinyxml2.h"
 
 struct Vector3;
+class Material;
+class Texture;
 
 class GOKNAR_API AssetParser
 {
@@ -18,6 +20,10 @@ public:
 	static std::string GetMeshMaterialPath(const std::string& meshPath, const std::string& assetContainerPath = "AssetContainer");
 	static void SetMeshMaterialPaths(const std::string& meshPath, const std::vector<std::string>& materialPaths, const std::string& assetContainerPath = "AssetContainer");
 	static void SetMeshMaterialPath(const std::string& meshPath, const std::string& materialPath, const std::string& assetContainerPath = "AssetContainer");
+
+	static bool ReadTextureAtlasUsage(const tinyxml2::XMLElement* textureElement, bool defaultValue = true);
+	static bool RegisterTextureToTextureAtlas(Texture* texture, bool useTextureNameForImage = false, bool flushAtlas = false);
+	static void RegisterMaterialTexturesToTextureAtlas(Material* material, bool flushAtlas = true);
 
 private:
 	static void ParseMeshes(tinyxml2::XMLElement* assetsElement);

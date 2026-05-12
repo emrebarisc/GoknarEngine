@@ -47,6 +47,23 @@ namespace
 
 		return expression;
 	}
+
+	std::string GetTextureAtlasWrappedUVComponent(const std::string& uvExpression, char componentName, TextureWrapping wrapping)
+	{
+		const std::string component = uvExpression + "." + componentName;
+
+		switch (wrapping)
+		{
+		case TextureWrapping::REPEAT:
+			return "fract(" + component + ")";
+		case TextureWrapping::MIRRORED_REPEAT:
+			return "(1.0 - abs(fract(" + component + " * 0.5) * 2.0 - 1.0))";
+		case TextureWrapping::CLAMP_TO_EDGE:
+		case TextureWrapping::CLAMP_TO_BORDER:
+		default:
+			return "clamp(" + component + ", 0.0, 1.0)";
+		}
+	}
 }
 
 ShaderBuilder::~ShaderBuilder()
@@ -956,7 +973,7 @@ std::string ShaderBuilder::ParticleRenderPass_GetFragmentShaderScript(MaterialIn
 			{
 				if (texture && texture->GetTextureUsage() == TextureUsage::Diffuse)
 				{
-					particleBaseColorExpression = General_FS_GetDiffuseTextureSampling(texture->GetName());
+					particleBaseColorExpression = General_FS_GetDiffuseTextureSampling(texture);
 					break;
 				}
 			}
@@ -1436,43 +1453,48 @@ std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(MaterialInitializ
 	while (textureIterator != textures->cend())
 	{
 		const Texture* texture = *textureIterator;
+		if (!texture)
+		{
+			++textureIterator;
+			continue;
+		}
 
 		switch (texture->GetTextureUsage())
 		{
 		case TextureUsage::Diffuse:
 			if (initializationData && initializationData->baseColor.result.empty())
 			{
-				initializationData->baseColor.result = General_FS_GetDiffuseTextureSampling(texture->GetName());
+				initializationData->baseColor.result = General_FS_GetDiffuseTextureSampling(texture);
 			}
 			break;
 		case TextureUsage::Emmisive:
 			if (initializationData && initializationData->emisiveColor.result.empty())
 			{
-				initializationData->emisiveColor.result = General_FS_GetEmmisiveTextureSampling(texture->GetName());
+				initializationData->emisiveColor.result = General_FS_GetEmmisiveTextureSampling(texture);
 			}
 			break;
 		case TextureUsage::AmbientOcclusion:
 			if (initializationData && initializationData->ambientOcclusion.result.empty())
 			{
-				initializationData->ambientOcclusion.result = General_FS_GetScalarTextureSampling(texture->GetName());
+				initializationData->ambientOcclusion.result = General_FS_GetScalarTextureSampling(texture);
 			}
 			break;
 		case TextureUsage::Metallic:
 			if (initializationData && initializationData->metallic.result.empty())
 			{
-				initializationData->metallic.result = General_FS_GetScalarTextureSampling(texture->GetName());
+				initializationData->metallic.result = General_FS_GetScalarTextureSampling(texture);
 			}
 			break;
 		case TextureUsage::Roughness:
 			if (initializationData && initializationData->roughness.result.empty())
 			{
-				initializationData->roughness.result = General_FS_GetScalarTextureSampling(texture->GetName());
+				initializationData->roughness.result = General_FS_GetScalarTextureSampling(texture);
 			}
 			break;
 		case TextureUsage::Normal:
 			if (initializationData && initializationData->fragmentNormal.result.empty())
 			{
-				initializationData->fragmentNormal.result = General_FS_GetNormalTextureSampling(texture->GetName());
+				initializationData->fragmentNormal.result = General_FS_GetNormalTextureSampling(texture);
 			}
 			break;
 		default:
@@ -1482,6 +1504,10 @@ std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(MaterialInitializ
 		if (addedTextureNames.find(texture->GetName()) == addedTextureNames.end())
 		{
 			uniforms += "uniform sampler2D " + texture->GetName() + ";\n";
+			if ((texture->GetUsesAtlasTexture() || texture->GetWaitsForTextureAtlas()))
+			{
+				uniforms += "uniform vec4 " + texture->GetAtlasUVTransformUniformName() + ";\n";
+			}
 			addedTextureNames.insert(texture->GetName());
 		}
 
@@ -1489,6 +1515,44 @@ std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(MaterialInitializ
 	}
 
 	return uniforms;
+}
+
+std::string ShaderBuilder::General_FS_GetTextureUVExpression(const Texture* texture) const
+{
+	if (texture && (texture->GetUsesAtlasTexture() || texture->GetWaitsForTextureAtlas()))
+	{
+		const std::string baseUV = SHADER_VARIABLE_NAMES::TEXTURE::UV;
+		const std::string wrappedUV =
+			"vec2(" +
+			GetTextureAtlasWrappedUVComponent(baseUV, 'x', texture->GetTextureWrappingS()) +
+			", " +
+			GetTextureAtlasWrappedUVComponent(baseUV, 'y', texture->GetTextureWrappingT()) +
+			")";
+
+		return "(" + wrappedUV + " * " + texture->GetAtlasUVTransformUniformName() + ".xy + " + texture->GetAtlasUVTransformUniformName() + ".zw)";
+	}
+
+	return SHADER_VARIABLE_NAMES::TEXTURE::UV;
+}
+
+std::string ShaderBuilder::General_FS_GetDiffuseTextureSampling(const Texture* texture) const
+{
+	return texture ? std::string("texture(" + texture->GetName() + ", " + General_FS_GetTextureUVExpression(texture) + "); ") : "";
+}
+
+std::string ShaderBuilder::General_FS_GetScalarTextureSampling(const Texture* texture) const
+{
+	return texture ? std::string("texture(" + texture->GetName() + ", " + General_FS_GetTextureUVExpression(texture) + ").r; ") : "";
+}
+
+std::string ShaderBuilder::General_FS_GetNormalTextureSampling(const Texture* texture) const
+{
+	return texture ? std::string("texture(" + texture->GetName() + ", " + General_FS_GetTextureUVExpression(texture) + ").xyz * 2.f - vec3(1.f); ") : "";
+}
+
+std::string ShaderBuilder::General_FS_GetEmmisiveTextureSampling(const Texture* texture) const
+{
+	return texture ? std::string("texture(" + texture->GetName() + ", " + General_FS_GetTextureUVExpression(texture) + ").xyz; ") : "";
 }
 
 std::string ShaderBuilder::General_FS_GetDiffuseTextureSampling(const std::string& textureName) const

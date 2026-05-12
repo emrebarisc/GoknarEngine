@@ -1,8 +1,10 @@
 #ifndef __MATERIALBASE_H__
 #define __MATERIALBASE_H__
 
+#include <cstddef>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "Goknar/Core.h"
 #include "Math/GoknarMath.h"
@@ -10,6 +12,7 @@
 #include "Renderer/Shader.h"
 
 class Image;
+class Texture;
 
 enum class MaterialBlendModel
 {
@@ -138,14 +141,27 @@ public:
 		return name_;
 	}
 
-	void AddTextureImage(const Image* image)
-	{
-		textureImages_.push_back(image);
-	}
+	void AddTextureImage(const Image* image);
+	void AddTextureImage(const Image* image, bool useTextureAtlas);
 
 	const std::vector<const Image*>* GetTextureImages() const
 	{
 		return &textureImages_;
+	}
+
+	bool GetTextureImageUsesTextureAtlas(size_t textureImageIndex) const
+	{
+		return textureImageIndex < textureImageAtlasUsages_.size() ? textureImageAtlasUsages_[textureImageIndex] : useTextureAtlasForTextureImages_;
+	}
+
+	void SetUseTextureAtlasForTextureImages(bool useTextureAtlasForTextureImages)
+	{
+		useTextureAtlasForTextureImages_ = useTextureAtlasForTextureImages;
+	}
+
+	bool GetUseTextureAtlasForTextureImages() const
+	{
+		return useTextureAtlasForTextureImages_;
 	}
 
 	bool GetIsInitialized() const
@@ -154,7 +170,10 @@ public:
 	}
 
 protected:
+	void ClearTextureImages();
+
 	std::vector<const Image*> textureImages_;
+	std::vector<bool> textureImageAtlasUsages_;
 
 	Vector4 baseColor_{ Vector4::ZeroVector };
 	Vector3 emisiveColor_{ Vector3::ZeroVector };
@@ -169,6 +188,7 @@ protected:
 	MaterialBlendModel blendModel_{ MaterialBlendModel::Opaque };
 	MaterialShadingModel shadingModel_{ MaterialShadingModel::Default };
 	bool usesReflectionProbe_{ false };
+	bool useTextureAtlasForTextureImages_{ true };
 
 	bool isInitialized_{ false };
 

@@ -10,6 +10,7 @@
 class Engine;
 class MaterialInitializationData;
 class Shader;
+class Texture;
 
 class GOKNAR_API ShaderBuilder
 {
@@ -110,10 +111,15 @@ private:
 
 	std::string General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const;
 	std::string General_FS_GetShaderTextureUniforms(MaterialInitializationData* initializationData, const Shader* shader) const;
+	std::string General_FS_GetDiffuseTextureSampling(const Texture* texture) const;
+	std::string General_FS_GetScalarTextureSampling(const Texture* texture) const;
+	std::string General_FS_GetNormalTextureSampling(const Texture* texture) const;
+	std::string General_FS_GetEmmisiveTextureSampling(const Texture* texture) const;
 	std::string General_FS_GetDiffuseTextureSampling(const std::string& textureName) const;
 	std::string General_FS_GetScalarTextureSampling(const std::string& textureName) const;
 	std::string General_FS_GetNormalTextureSampling(const std::string& textureName) const;
 	std::string General_FS_GetEmmisiveTextureSampling(const std::string& textureName) const;
+	std::string General_FS_GetTextureUVExpression(const Texture* texture) const;
 
 	std::string FS_GetLightCalculationIterators(bool includeShadowing) const;
 

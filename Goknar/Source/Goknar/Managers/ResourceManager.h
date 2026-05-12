@@ -12,6 +12,7 @@
 class Audio;
 class Content;
 class Image;
+class TextureAtlas;
 
 enum class GOKNAR_API ResourceType : unsigned char
 {
@@ -44,6 +45,8 @@ public:
 	void PostInit();
 
 	void AddImage(Image* image);
+	bool RegisterImageToTextureAtlas(Image* image);
+	void FlushImageTextureAtlas();
 	Image* GetImage(int index) const
 	{
 		if (imageArray_.size() <= index)
@@ -99,6 +102,26 @@ public:
 		return audioArray_;
 	}
 
+	TextureAtlas* GetImageTextureAtlas() const
+	{
+		return imageTextureAtlas_;
+	}
+
+	void SetUseTextureAtlasForAllImages(bool useTextureAtlasForAllImages)
+	{
+		useTextureAtlasForAllImages_ = useTextureAtlasForAllImages;
+	}
+
+	bool GetUseTextureAtlasForAllImages() const
+	{
+		return useTextureAtlasForAllImages_;
+	}
+
+	bool GetIsPreInitialized() const
+	{
+		return isPreInitialized_;
+	}
+
 protected:
 
 private:
@@ -107,6 +130,12 @@ private:
 	std::vector<Image*> imageArray_;
 	std::vector<Content*> meshArray_;
 	std::vector<Audio*> audioArray_;
+
+	TextureAtlas* imageTextureAtlas_;
+	bool useTextureAtlasForAllImages_{ false };
+	bool isPreInitialized_{ false };
+	bool isInitialized_{ false };
+	bool isPostInitialized_{ false };
 };
 
 class GOKNAR_API ResourceManager

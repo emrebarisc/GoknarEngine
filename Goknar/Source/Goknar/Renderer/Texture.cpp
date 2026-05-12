@@ -15,6 +15,8 @@
 #include "Goknar/Log.h"
 #include "Goknar/Renderer/Shader.h"
 
+#include <cstring>
+
 Texture::Texture()
 {
 	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreaseTextureGUID();
@@ -29,7 +31,6 @@ Texture::Texture(std::string imagePath) : Texture()
 Texture::Texture(Image* image) :
 	Texture()
 {
-	buffer_ = image->GetBuffer();
 	width_ = image->GetWidth();
 	height_ = image->GetHeight();
 	channels_ = image->GetChannels();
@@ -37,6 +38,16 @@ Texture::Texture(Image* image) :
 	textureWrappingR_ = image->GetTextureWrappingR();
 	textureWrappingT_ = image->GetTextureWrappingT();
 	textureWrappingS_ = image->GetTextureWrappingS();
+	imagePath_ = image->GetPath();
+
+	const unsigned char* imageBuffer = image->GetBuffer();
+	if (imageBuffer && width_ > 0 && height_ > 0 && channels_ > 0)
+	{
+		const size_t bufferSize = static_cast<size_t>(width_) * static_cast<size_t>(height_) * static_cast<size_t>(channels_);
+		unsigned char* copiedBuffer = new unsigned char[bufferSize];
+		std::memcpy(copiedBuffer, imageBuffer, bufferSize);
+		buffer_ = copiedBuffer;
+	}
 
 	const std::string& imageName = image->GetName();
 	if (!imageName.empty())
@@ -89,8 +100,16 @@ void Texture::GenerateMipmap() const
 
 void Texture::PreInit()
 {
-	// Skip if already initialized
-	if (isInitialized_)
+	// Skip if already initialized or if this texture is an atlas proxy.
+	// Atlas proxies are logical texture handles used by materials; they must not
+	// upload their own GPU image while waiting for TextureAtlas::Build() to assign
+	// the shared atlas texture.
+	if (isInitialized_ || atlasTexture_ || rendererTextureId_ != 0)
+	{
+		return;
+	}
+
+	if (waitsForTextureAtlas_)
 	{
 		return;
 	}
@@ -193,25 +212,37 @@ void Texture::PostInit()
 
 void Texture::Bind(const Shader* shader) const
 {
+	const GEuint effectiveRendererTextureId = GetEffectiveRendererTextureId();
+
 	if (shader != nullptr)
 	{
-		shader->SetInt(name_.c_str(), rendererTextureId_);
+		shader->SetInt(name_.c_str(), static_cast<int>(effectiveRendererTextureId));
+
+		if (atlasTexture_)
+		{
+			Vector4 atlasUVTransform(0.f);
+			atlasUVTransform.x = atlasUScale_;
+			atlasUVTransform.y = atlasVScale_;
+			atlasUVTransform.z = atlasUOffset_;
+			atlasUVTransform.w = atlasVOffset_;
+			shader->SetVector4(GetAtlasUVTransformUniformName().c_str(), atlasUVTransform);
+		}
 	}
 
-	BindToTextureUnit(rendererTextureId_);
+	BindToTextureUnit(effectiveRendererTextureId);
 	EXIT_ON_GL_ERROR("Texture::Bind");
 }
 
 void Texture::BindToTextureUnit(unsigned int textureUnit) const
 {
 	glActiveTexture(GL_TEXTURE0 + textureUnit);
-	glBindTexture((int)textureBindTarget_, rendererTextureId_);
+	glBindTexture((int)textureBindTarget_, GetEffectiveRendererTextureId());
 	EXIT_ON_GL_ERROR("Texture::BindToTextureUnit");
 }
 
 void Texture::BindAsImage(unsigned int imageUnit, TextureImageAccess access) const
 {
-	glBindImageTexture(imageUnit, rendererTextureId_, 0, GL_FALSE, 0, (int)access, (int)textureInternalFormat_);
+	glBindImageTexture(imageUnit, GetEffectiveRendererTextureId(), 0, GL_FALSE, 0, (int)access, (int)textureInternalFormat_);
 	EXIT_ON_GL_ERROR("Texture::BindAsImage");
 }
 
@@ -227,6 +258,11 @@ bool Texture::LoadTextureImage()
 
 void Texture::UpdateSizeOnGPU()
 {
+	if (atlasTexture_)
+	{
+		return;
+	}
+
 	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
 	glBindTexture((int)textureBindTarget_, rendererTextureId_);
 	glTexImage2D((int)textureImageTarget_, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
@@ -245,4 +281,50 @@ void Texture::UpdateSizeOnGPU()
 	}
 
 	glBindTexture((int)textureBindTarget_, 0);
+}
+
+void Texture::SetAtlasTexture(Texture* atlasTexture, float uMin, float vMin, float uMax, float vMax)
+{
+	atlasTexture_ = atlasTexture;
+	atlasUScale_ = uMax - uMin;
+	atlasVScale_ = vMax - vMin;
+	atlasUOffset_ = uMin;
+	atlasVOffset_ = vMin;
+	generateMipmap_ = false;
+	waitsForTextureAtlas_ = false;
+
+	if (atlasTexture_)
+	{
+		textureBindTarget_ = atlasTexture_->GetTextureBindTarget();
+		textureImageTarget_ = atlasTexture_->GetTextureImageTarget();
+		textureFormat_ = atlasTexture_->GetTextureFormat();
+		textureInternalFormat_ = atlasTexture_->GetTextureInternalFormat();
+		textureType_ = atlasTexture_->GetTextureType();
+	}
+}
+
+std::string Texture::GetAtlasUVTransformUniformName() const
+{
+	return name_ + "_UVTransform";
+}
+
+GEuint Texture::GetEffectiveRendererTextureId() const
+{
+	return atlasTexture_ ? atlasTexture_->GetRendererTextureId() : rendererTextureId_;
+}
+
+void Texture::UpdateBufferOnGPU()
+{
+	if (rendererTextureId_ == 0 || atlasTexture_)
+	{
+		return;
+	}
+
+	UpdateSizeOnGPU();
+}
+
+void Texture::ClearBuffer()
+{
+	delete[] buffer_;
+	buffer_ = nullptr;
 }

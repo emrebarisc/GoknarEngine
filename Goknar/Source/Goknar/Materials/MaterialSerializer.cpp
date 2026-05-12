@@ -81,6 +81,51 @@ namespace
 		if (textureUsage == "Height") return TextureUsage::Height;
 		return TextureUsage::None;
 	}
+
+	bool StringToBool(const std::string& value, bool defaultValue)
+	{
+		if (value == "1" || value == "true" || value == "True" || value == "TRUE" || value == "yes" || value == "Yes")
+		{
+			return true;
+		}
+
+		if (value == "0" || value == "false" || value == "False" || value == "FALSE" || value == "no" || value == "No")
+		{
+			return false;
+		}
+
+		return defaultValue;
+	}
+
+	bool ReadBoolAttributeOrElement(const tinyxml2::XMLElement* element, const char* name, bool defaultValue)
+	{
+		if (!element || !name)
+		{
+			return defaultValue;
+		}
+
+		if (const char* attributeValue = element->Attribute(name))
+		{
+			return StringToBool(attributeValue, defaultValue);
+		}
+
+		const tinyxml2::XMLElement* childElement = element->FirstChildElement(name);
+		if (childElement && childElement->GetText())
+		{
+			return StringToBool(childElement->GetText(), defaultValue);
+		}
+
+		return defaultValue;
+	}
+
+	bool ReadTextureAtlasUsage(const tinyxml2::XMLElement* element, bool defaultValue)
+	{
+		bool value = defaultValue;
+		value = ReadBoolAttributeOrElement(element, "UseTextureAtlas", value);
+		value = ReadBoolAttributeOrElement(element, "CanUseTextureAtlas", value);
+		value = ReadBoolAttributeOrElement(element, "TextureAtlas", value);
+		return value;
+	}
 }
 
 void MaterialSerializer::Serialize(const std::string& filepath, const Material* material)
@@ -94,6 +139,7 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
     XMLElement* root = doc.NewElement("GameAsset");
 
     root->SetAttribute("FileType", "Material");
+    root->SetAttribute("UseTextureAtlas", material->GetUseTextureAtlasForTextureImages() ? "true" : "false");
     doc.InsertFirstChild(root);
 
     auto AddPropertyElement = [&](const char* name, const std::string& content)
@@ -117,14 +163,16 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
     const std::vector<const Image*>* textureImages = material->GetTextureImages();
     if (textureImages)
     {
-        for (const Image* image : *textureImages)
+        for (size_t textureImageIndex = 0; textureImageIndex < textureImages->size(); ++textureImageIndex)
         {
+            const Image* image = (*textureImages)[textureImageIndex];
             if (image)
             {
                 XMLElement* texElement = doc.NewElement("Texture");
                 const std::string texturePath = ContentPathUtils::ToContentRelativePath(image->GetPath());
                 texElement->SetAttribute("path", texturePath.c_str());
                 texElement->SetAttribute("usage", TextureUsageToString(image->GetTextureUsage()));
+                texElement->SetAttribute("UseTextureAtlas", material->GetTextureImageUsesTextureAtlas(textureImageIndex) ? "true" : "false");
                 root->InsertEndChild(texElement);
             }
         }
@@ -202,6 +250,9 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     const char* fileTypeAttr = root->Attribute("FileType");
     if (!fileTypeAttr || std::string(fileTypeAttr) != "Material") return;
 
+    const bool materialDefaultUseTextureAtlas = ReadTextureAtlasUsage(root, true);
+    owner->SetUseTextureAtlasForTextureImages(materialDefaultUseTextureAtlas);
+
     XMLElement* child = root->FirstChildElement("Name");
     if (child && child->GetText())
     {
@@ -246,6 +297,7 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         owner->SetUsesReflectionProbe(false);
     }
 
+    bool registeredTextureAtlasImage = false;
     child = root->FirstChildElement("Texture");
     while (child)
     {
@@ -261,10 +313,22 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
                 {
                     image->SetTextureUsage(StringToTextureUsage(child->Attribute("usage")));
                 }
-                owner->AddTextureImage(image);
+
+                const bool useTextureAtlas = ReadTextureAtlasUsage(child, materialDefaultUseTextureAtlas);
+                owner->AddTextureImage(image, useTextureAtlas);
+                registeredTextureAtlasImage = registeredTextureAtlasImage || useTextureAtlas;
             }
         }
         child = child->NextSiblingElement("Texture");
+    }
+
+    if (registeredTextureAtlasImage)
+    {
+        ResourceManager* resourceManager = engine ? engine->GetResourceManager() : nullptr;
+        if (resourceManager && resourceManager->GetResourceContainer())
+        {
+            resourceManager->GetResourceContainer()->FlushImageTextureAtlas();
+        }
     }
 
     child = root->FirstChildElement("AmbientOcclusionValue");

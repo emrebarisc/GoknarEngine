@@ -10,6 +10,8 @@
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Lights/LightManager/LightManager.h"
+#include "Goknar/Contents/Image.h"
+#include "Goknar/Managers/ResourceManager.h"
 
 #include "Goknar/Managers/WindowManager.h"
 
@@ -53,10 +55,46 @@ IMaterialBase::IMaterialBase(const IMaterialBase* other)
 	shadingModel_ = other->shadingModel_;
 	usesReflectionProbe_ = other->usesReflectionProbe_;
 	textureImages_ = other->textureImages_;
+	textureImageAtlasUsages_ = other->textureImageAtlasUsages_;
+	useTextureAtlasForTextureImages_ = other->useTextureAtlasForTextureImages_;
 }
 
 IMaterialBase::~IMaterialBase()
 {
+}
+
+void IMaterialBase::AddTextureImage(const Image* image)
+{
+	AddTextureImage(image, useTextureAtlasForTextureImages_);
+}
+
+void IMaterialBase::AddTextureImage(const Image* image, bool useTextureAtlas)
+{
+	if (!image)
+	{
+		return;
+	}
+
+	textureImages_.push_back(image);
+	textureImageAtlasUsages_.push_back(useTextureAtlas);
+
+	if (useTextureAtlas)
+	{
+		Image* mutableImage = const_cast<Image*>(image);
+		mutableImage->SetCanUseTextureAtlas(true);
+
+		ResourceManager* resourceManager = engine ? engine->GetResourceManager() : nullptr;
+		if (resourceManager && resourceManager->GetResourceContainer())
+		{
+			resourceManager->GetResourceContainer()->RegisterImageToTextureAtlas(mutableImage);
+		}
+	}
+}
+
+void IMaterialBase::ClearTextureImages()
+{
+	textureImages_.clear();
+	textureImageAtlasUsages_.clear();
 }
 
 void IMaterialBase::SetAmbientOcclusion(float ambientOcclusion)

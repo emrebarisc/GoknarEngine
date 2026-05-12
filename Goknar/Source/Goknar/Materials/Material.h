@@ -1,6 +1,7 @@
 #ifndef __MATERIAL_H__
 #define __MATERIAL_H__
 
+#include <memory>
 #include <vector>
 
 #include "MaterialBase.h"
@@ -9,6 +10,8 @@
 class MeshUnit;
 class Material;
 class MaterialInstance;
+class Image;
+class Texture;
 
 struct GOKNAR_API ShaderFunctionAndResult
 {
@@ -71,6 +74,10 @@ class GOKNAR_API Material : public IMaterialBase
 public:
 	Material();
 	Material(const Material* parent);
+	Material(const Material&) = delete;
+	Material& operator=(const Material&) = delete;
+	Material(Material&&) = delete;
+	Material& operator=(Material&&) = delete;
 	virtual ~Material();
 
 	void Build(MeshUnit* meshUnit);
@@ -121,7 +128,23 @@ public:
 	}
 
 private:
+	struct MaterialTextureProxy
+	{
+		MaterialTextureProxy() = default;
+		MaterialTextureProxy(const MaterialTextureProxy&) = delete;
+		MaterialTextureProxy& operator=(const MaterialTextureProxy&) = delete;
+		MaterialTextureProxy(MaterialTextureProxy&&) noexcept = default;
+		MaterialTextureProxy& operator=(MaterialTextureProxy&&) noexcept = default;
+
+		const Image* image{ nullptr };
+		std::unique_ptr<Texture> texture;
+	};
+
+	Texture* GetTextureForShader(const Image* image, bool useTextureAtlas);
+	void ClearMaterialTextureProxies();
+
 	std::vector<MaterialInstance*> derivedMaterialInstances_;
+	std::vector<MaterialTextureProxy> materialTextureProxies_;
 
 	std::unordered_map<RenderPassType, Shader*> renderPassTypeShaderMap_;
 
