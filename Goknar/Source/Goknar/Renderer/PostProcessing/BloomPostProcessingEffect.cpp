@@ -6,6 +6,9 @@
 #include "Renderer/Framebuffer.h"
 #include "Renderer/Renderer.h"
 
+#include "Goknar/Engine.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
+
 namespace
 {
 	constexpr int kBloomOutputImageUnit = 0;
@@ -178,7 +181,7 @@ Texture* BloomPostProcessingEffect::Render(const DeferredRenderingData* deferred
 	bloomPrefilterComputeShader_->SetFloat("bloomBrightnessBoost", bloomBrightnessBoost_);
 	firstMipLevel.texture->BindAsImage(kBloomOutputImageUnit, TextureImageAccess::WRITE_ONLY);
 	bloomPrefilterComputeShader_->Dispatch2D(firstMipLevel.width, firstMipLevel.height);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+	engine->GetGraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderImageAccess | GraphicsMemoryBarrier::TextureFetch);
 
 	if (1 < bloomDownsampleMipChain_.size())
 	{
@@ -192,7 +195,7 @@ Texture* BloomPostProcessingEffect::Render(const DeferredRenderingData* deferred
 			bloomDownsampleComputeShader_->SetInt("bloomDownsampleInputTexture", BindTextureUsingEngineTextureUnit(sourceMipLevel.texture));
 			targetMipLevel.texture->BindAsImage(kBloomOutputImageUnit, TextureImageAccess::WRITE_ONLY);
 			bloomDownsampleComputeShader_->Dispatch2D(targetMipLevel.width, targetMipLevel.height);
-			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+			engine->GetGraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderImageAccess | GraphicsMemoryBarrier::TextureFetch);
 		}
 	}
 
@@ -215,7 +218,7 @@ Texture* BloomPostProcessingEffect::Render(const DeferredRenderingData* deferred
 			bloomUpsampleComputeShader_->SetInt("nextMipBloomInputTexture", BindTextureUsingEngineTextureUnit(lowerMipTexture));
 			targetMipLevel.texture->BindAsImage(kBloomOutputImageUnit, TextureImageAccess::WRITE_ONLY);
 			bloomUpsampleComputeShader_->Dispatch2D(targetMipLevel.width, targetMipLevel.height);
-			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+			engine->GetGraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderImageAccess | GraphicsMemoryBarrier::TextureFetch);
 		}
 
 		finalBloomTexture = bloomUpsampleMipChain_.front().texture;
@@ -229,7 +232,7 @@ Texture* BloomPostProcessingEffect::Render(const DeferredRenderingData* deferred
 	GetComputeShader()->SetFloat("bloomIntensityCurve", bloomIntensityCurve_);
 	outputTexture_->BindAsImage(kBloomOutputImageUnit, TextureImageAccess::WRITE_ONLY);
 	GetComputeShader()->Dispatch2D(width, height);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+	engine->GetGraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderImageAccess | GraphicsMemoryBarrier::TextureFetch);
 
 	return outputTexture_;
 }

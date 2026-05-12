@@ -5,6 +5,7 @@
 #include "Goknar/Camera.h"
 #include "Goknar/Contents/Image.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Materials/Material.h"
 #include "Goknar/Materials/MaterialInstance.h"
 #include "Goknar/Renderer/ComputeShader.h"
@@ -13,8 +14,6 @@
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"
-
-#include <glad/glad.h>
 
 namespace
 {
@@ -85,13 +84,13 @@ void BillboardParticleSystem::Render(const Camera* activeCamera) const
 	ApplyMaterialStateToShader(renderShader_, particleMaterial_);
 	engine->SetShaderEngineVariables(renderShader_);
 
-	glDisable(GL_CULL_FACE);
-	glBindVertexArray(GetDummyVertexArrayObjectId());
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, GetDrawIndirectBufferId());
-	glDrawArraysIndirect(GL_TRIANGLES, nullptr);
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
-	glBindVertexArray(0);
-	glEnable(GL_CULL_FACE);
+	engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::CullFace, false);
+	engine->GetGraphicsAPI()->BindVertexArray(GetDummyVertexArrayObjectId());
+	engine->GetGraphicsAPI()->BindBuffer(GraphicsBufferTarget::DrawIndirectBuffer, GetDrawIndirectBufferId());
+	engine->GetGraphicsAPI()->DrawArraysIndirect(GraphicsPrimitive::Triangles, nullptr);
+	engine->GetGraphicsAPI()->BindBuffer(GraphicsBufferTarget::DrawIndirectBuffer, 0);
+	engine->GetGraphicsAPI()->BindVertexArray(0);
+	engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::CullFace, true);
 }
 
 void BillboardParticleSystem::SetParticleTexture(const Image* particleTexture)
@@ -202,9 +201,9 @@ void BillboardParticleSystem::RecreateDrawIndirectBuffer()
 	}
 
 	const GPUParticleDrawArraysIndirectCommand drawCommand{};
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, GetDrawIndirectBufferId());
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUParticleDrawArraysIndirectCommand), &drawCommand, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	engine->GetGraphicsAPI()->BindBuffer(GraphicsBufferTarget::ShaderStorageBuffer, GetDrawIndirectBufferId());
+	engine->GetGraphicsAPI()->BufferData(GraphicsBufferTarget::ShaderStorageBuffer, sizeof(GPUParticleDrawArraysIndirectCommand), &drawCommand, GraphicsBufferUsage::DynamicDraw);
+	engine->GetGraphicsAPI()->BindBuffer(GraphicsBufferTarget::ShaderStorageBuffer, 0);
 }
 
 void BillboardParticleSystem::DispatchFinalizePass() const

@@ -1,28 +1,27 @@
 #pragma once
 
-#include "glad/glad.h"
+#include <cstddef>
+#include <cstdint>
 
-typedef GLboolean GEboolean;
-typedef GLchar GEchar;
-typedef GLbyte GEbyte;
-typedef GLubyte GEubyte;
-typedef GLshort GEshort;
-typedef GLushort GEushort;
-typedef GLint GEint;
-typedef GLuint GEuint;
-typedef GLfixed GEfixed;
-typedef GLint64 GEint64;
-typedef GLuint64 GEuint64;
-typedef GLsizei GEsizei;
-typedef GLenum GEenum;
-typedef GLintptr GEintptr;
-typedef GLsizeiptr GEsizeiptr;
-typedef GLsync GEsync;
-typedef GLbitfield GEbitfield;
-typedef GLhalf GEhalf;
-typedef GLfloat GEfloat;
-typedef GLclampf GEclampf;
-typedef GLdouble GEdouble;
-typedef GLclampd GEclampd;
-
-typedef GLenum GEenum;
+typedef unsigned char GEboolean;
+typedef char GEchar;
+typedef std::int8_t GEbyte;
+typedef std::uint8_t GEubyte;
+typedef std::int16_t GEshort;
+typedef std::uint16_t GEushort;
+typedef int GEint;
+typedef unsigned int GEuint;
+typedef int GEfixed;
+typedef std::int64_t GEint64;
+typedef std::uint64_t GEuint64;
+typedef int GEsizei;
+typedef unsigned int GEenum;
+typedef std::intptr_t GEintptr;
+typedef std::ptrdiff_t GEsizeiptr;
+typedef void* GEsync;
+typedef std::uint32_t GEbitfield;
+typedef std::uint16_t GEhalf;
+typedef float GEfloat;
+typedef float GEclampf;
+typedef double GEdouble;
+typedef double GEclampd;

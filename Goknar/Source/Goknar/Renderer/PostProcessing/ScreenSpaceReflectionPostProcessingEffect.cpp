@@ -7,6 +7,7 @@
 #include "Goknar/Camera.h"
 #include "Goknar/Data/DataEncryption.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Managers/CameraManager.h"
 
 ScreenSpaceReflectionPostProcessingEffect::ScreenSpaceReflectionPostProcessingEffect()
@@ -94,7 +95,7 @@ Texture* ScreenSpaceReflectionPostProcessingEffect::Render(const DeferredRenderi
     outputTexture_->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
     GetComputeShader()->Dispatch2D(width, height);
 
-    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+    engine->GetGraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderImageAccess | GraphicsMemoryBarrier::TextureFetch);
 
     return outputTexture_;
 }

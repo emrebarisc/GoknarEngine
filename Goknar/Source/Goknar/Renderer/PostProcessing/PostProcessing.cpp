@@ -5,9 +5,9 @@
 #include "Renderer/ComputeShader.h"
 #include "Renderer/Framebuffer.h"
 
+#include "Goknar/Engine.h"
 #include "Goknar/GoknarAssert.h"
-
-#include <glad/glad.h>
+#include "Goknar/Graphics/IGraphicsAPI.h"
 
 PostProcessingEffect::PostProcessingEffect()
 {
@@ -117,5 +117,5 @@ void PostProcessingEffect::OnRender(const DeferredRenderingData* deferredRenderi
 	computeShader_->SetInt("inputTexture", inputTextureUnit);
 	outputTexture_->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
 	computeShader_->Dispatch2D(width, height);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+	engine->GetGraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderImageAccess | GraphicsMemoryBarrier::TextureFetch);
 }

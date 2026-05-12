@@ -9,6 +9,7 @@
 
 #include "Goknar/Camera.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Managers/CameraManager.h"
 
 namespace
@@ -83,15 +84,15 @@ namespace
 		}
 
 		sourceFrameBuffer->Bind(FrameBufferBindTarget::READ_FRAMEBUFFER);
-		glReadBuffer(GL_COLOR_ATTACHMENT0);
+		engine->GetGraphicsAPI()->ReadBuffer(FrameBufferAttachment::COLOR_ATTACHMENT0);
 		destinationFrameBuffer->Bind(FrameBufferBindTarget::DRAW_FRAMEBUFFER);
 
-		glBlitFramebuffer(
+		engine->GetGraphicsAPI()->BlitFrameBuffer(
 			0, 0, width, height,
 			0, 0, width, height,
-			GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			static_cast<GraphicsClearBufferFlags>(GraphicsClearBuffer::Color), GraphicsBlitFilter::Nearest);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		engine->GetGraphicsAPI()->BindFrameBuffer(FrameBufferBindTarget::FRAMEBUFFER, 0);
 	}
 }
 
@@ -211,7 +212,7 @@ Texture* TemporalAntiAliasingPostProcessingEffect::Render(const DeferredRenderin
 	GetComputeShader()->SetVector2("previousJitterUv", canUseHistory ? renderContext.previousJitterUv : currentJitterUv);
 	outputTexture_->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
 	GetComputeShader()->Dispatch2D(width, height);
-	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+	engine->GetGraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderImageAccess | GraphicsMemoryBarrier::TextureFetch);
 
 	const int writeHistoryIndex = 1 - renderContext.readHistoryIndex;
 	BlitTemporalColor(renderContext.outputFrameBuffer, renderContext.historyFrameBuffers[writeHistoryIndex], width, height);

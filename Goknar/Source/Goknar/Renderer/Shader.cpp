@@ -9,6 +9,7 @@
 #include "Goknar/Camera.h"
 #include "Goknar/GoknarAssert.h"
 #include "Goknar/Contents/Image.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
 #include "Goknar/IO/IOManager.h"
@@ -19,8 +20,6 @@
 #include <algorithm>
 #include <sstream>
 #include <string>
-
-#include <glad/glad.h>
 
 namespace
 {
@@ -117,43 +116,26 @@ namespace
 
 void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
 {
-	GEint isCompiled = GL_FALSE;
-	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &isCompiled);
-	if (isCompiled == GL_FALSE)
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	if (!graphicsAPI->GetShaderCompileStatus(shaderId))
 	{
-		GEint maxLength = 4096;
-		glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &maxLength);
+		const std::string logMessage = graphicsAPI->GetShaderInfoLog(shaderId);
+		graphicsAPI->DeleteShader(shaderId);
 
-		GEchar* logMessage = new GEchar[maxLength + (GEint)1];
-		glGetShaderInfoLog(shaderId, maxLength, &maxLength, logMessage);
-		logMessage[maxLength] = '\0';
-		glDeleteShader(shaderId);
-
-		GOKNAR_CORE_ASSERT(false, "%s\nWhat went wrong: \n%s", errorMessage, logMessage);
-
-		delete[] logMessage;
+		GOKNAR_CORE_ASSERT(false, "%s\nWhat went wrong: \n%s", errorMessage, logMessage.c_str());
 	}
 }
 
 void ExitOnProgramError(GEuint programId, const char* errorMessage)
 {
-	GLint isLinked = GL_FALSE;
-	glGetProgramiv(programId, GL_LINK_STATUS, &isLinked);
-
-	if (isLinked == GL_FALSE)
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	if (!graphicsAPI->GetProgramLinkStatus(programId))
 	{
-		GLint maxLength = 4096;
-		glGetShaderiv(programId, GL_INFO_LOG_LENGTH, &maxLength);
+		const std::string logMessage = graphicsAPI->GetProgramInfoLog(programId);
+		graphicsAPI->DeleteProgram(programId);
 
-		GLchar* logMessage = new GLchar[maxLength + (GEint)1];
-		glGetProgramInfoLog(programId, maxLength, &maxLength, logMessage);
-		logMessage[maxLength] = '\0';
-		glDeleteProgram(programId);
-
-		GOKNAR_CORE_ERROR("%s", logMessage);
+		GOKNAR_CORE_ERROR("%s", logMessage.c_str());
 		GOKNAR_CORE_ASSERT(false, errorMessage);
-
-		delete[] logMessage;
 	}
 }
 
@@ -174,7 +156,7 @@ Shader::~Shader()
 
 	if (programId_)
 	{
-		glDeleteProgram(programId_);
+		engine->GetGraphicsAPI()->DeleteProgram(programId_);
 		programId_ = 0;
 	}
 	//engine->GetApplication()->GetMainScene()->RemoveShader(this);
@@ -192,7 +174,8 @@ void Shader::SetMVP(const Matrix& worldAndRelativeTransformationMatrix) const
 
 void Shader::PreInit()
 {
-	programId_ = glCreateProgram();
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	programId_ = graphicsAPI->CreateProgram();
 
 	// TODO: Change custom shader creation
 	if (shaderType_ == ShaderType::Dependent || shaderType_ == ShaderType::SelfContained)
@@ -221,45 +204,45 @@ void Shader::PreInit()
 	ParseStoredValuesFromShaderScripts();
 
 	const GEchar* vertexSource = (const GEchar*)vertexShaderScript_.c_str();
-	GEuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShaderId, 1, &vertexSource, 0);
-	glCompileShader(vertexShaderId);
+	GEuint vertexShaderId = graphicsAPI->CreateShader(GraphicsShaderStage::Vertex);
+	graphicsAPI->SetShaderSource(vertexShaderId, 1, &vertexSource);
+	graphicsAPI->CompileShader(vertexShaderId);
 	ExitOnShaderIsNotCompiled(vertexShaderId, (std::string("Vertex shader compilation error!(" + vertexShaderPath_ + ").")).c_str());
 
-	glAttachShader(programId_, vertexShaderId);
+	graphicsAPI->AttachShader(programId_, vertexShaderId);
 
 	const GEchar* fragmentSource = (const GEchar*)fragmentShaderScript_.c_str();
-	GEuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShaderId, 1, &fragmentSource, 0);
-	glCompileShader(fragmentShaderId);
+	GEuint fragmentShaderId = graphicsAPI->CreateShader(GraphicsShaderStage::Fragment);
+	graphicsAPI->SetShaderSource(fragmentShaderId, 1, &fragmentSource);
+	graphicsAPI->CompileShader(fragmentShaderId);
 	ExitOnShaderIsNotCompiled(fragmentShaderId, (std::string("Fragment shader compilation error!(") + fragmentShaderPath_ + ").").c_str());
 
-	glAttachShader(programId_, fragmentShaderId);
+	graphicsAPI->AttachShader(programId_, fragmentShaderId);
 
 	GEuint geometryShaderId = 0;
 	bool containsGeometryShader = !geometryShaderScript_.empty();
 	if (containsGeometryShader)
 	{
 		const GEchar* geometrySource = (const GEchar*)geometryShaderScript_.c_str();
-		geometryShaderId = glCreateShader(GL_GEOMETRY_SHADER);
-		glShaderSource(geometryShaderId, 1, &geometrySource, 0);
-		glCompileShader(geometryShaderId);
+		geometryShaderId = graphicsAPI->CreateShader(GraphicsShaderStage::Geometry);
+		graphicsAPI->SetShaderSource(geometryShaderId, 1, &geometrySource);
+		graphicsAPI->CompileShader(geometryShaderId);
 		ExitOnShaderIsNotCompiled(geometryShaderId, (std::string("Geometry shader compilation error!(") + geometryShaderPath_ + ").").c_str());
 
-		glAttachShader(programId_, geometryShaderId);
+		graphicsAPI->AttachShader(programId_, geometryShaderId);
 	}
 
-	glLinkProgram(programId_);
+	graphicsAPI->LinkProgram(programId_);
 	ExitOnProgramError(programId_, "Shader program link error!");
 
-	glDetachShader(programId_, vertexShaderId);
-	glDetachShader(programId_, fragmentShaderId);
-	glDeleteShader(vertexShaderId);
-	glDeleteShader(fragmentShaderId);
+	graphicsAPI->DetachShader(programId_, vertexShaderId);
+	graphicsAPI->DetachShader(programId_, fragmentShaderId);
+	graphicsAPI->DeleteShader(vertexShaderId);
+	graphicsAPI->DeleteShader(fragmentShaderId);
 	if (containsGeometryShader)
 	{
-		glDetachShader(programId_, geometryShaderId);
-		glDeleteShader(geometryShaderId);
+		graphicsAPI->DetachShader(programId_, geometryShaderId);
+		graphicsAPI->DeleteShader(geometryShaderId);
 	}
 }
 
@@ -287,12 +270,12 @@ void Shader::PostInit()
 
 void Shader::Bind() const
 {
-	glUseProgram(programId_);
+	engine->GetGraphicsAPI()->UseProgram(programId_);
 }
 
 void Shader::Unbind() const
 {
-	glUseProgram(0);
+	engine->GetGraphicsAPI()->UseProgram(0);
 }
 
 void Shader::Use() const
@@ -901,24 +884,26 @@ bool Shader::TryGetNamedValue(const char* name, NamedShaderValue& outValue) cons
 
 void Shader::UploadBool(const char* name, bool value) const
 {
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniform1i(uniformLocation, (int)value);
+	graphicsAPI->SetUniform1i(uniformLocation, (int)value);
 }
 
 void Shader::UploadInt(const char* name, int value) const
 {
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniform1i(uniformLocation, value);
+	graphicsAPI->SetUniform1i(uniformLocation, value);
 }
 
 void Shader::UploadIntVector(const char* name, const std::vector<int>& values) const
@@ -928,46 +913,50 @@ void Shader::UploadIntVector(const char* name, const std::vector<int>& values) c
 		return;
 	}
 
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniform1iv(uniformLocation, (GLsizei)values.size(), values.data());
+	graphicsAPI->SetUniform1iv(uniformLocation, (GEsizei)values.size(), values.data());
 }
 
 void Shader::UploadFloat(const char* name, float value) const
 {
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniform1f(uniformLocation, value);
+	graphicsAPI->SetUniform1f(uniformLocation, value);
 }
 
 void Shader::UploadVector2(const char* name, const Vector2& vector) const
 {
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniform2fv(uniformLocation, 1, &vector.x);
+	graphicsAPI->SetUniform2fv(uniformLocation, 1, &vector.x);
 }
 
 void Shader::UploadMatrix(const char* name, const Matrix& matrix) const
 {
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &matrix.m[0]);
+	graphicsAPI->SetUniformMatrix4fv(uniformLocation, 1, false, &matrix.m[0]);
 }
 
 void Shader::UploadMatrixVector(const char* name, const std::vector<Matrix>& matrixVector) const
@@ -977,35 +966,38 @@ void Shader::UploadMatrixVector(const char* name, const std::vector<Matrix>& mat
 		return;
 	}
 
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniformMatrix4fv(uniformLocation, (GLsizei)matrixVector.size(), GL_FALSE, &matrixVector[0].m[0]);
+	graphicsAPI->SetUniformMatrix4fv(uniformLocation, (GEsizei)matrixVector.size(), false, &matrixVector[0].m[0]);
 }
 
 void Shader::UploadVector3(const char* name, const Vector3& vector) const
 {
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniform3fv(uniformLocation, 1, &vector.x);
+	graphicsAPI->SetUniform3fv(uniformLocation, 1, &vector.x);
 }
 
 void Shader::UploadVector4(const char* name, const Vector4& vector) const
 {
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniform4fv(uniformLocation, 1, &vector.x);
+	graphicsAPI->SetUniform4fv(uniformLocation, 1, &vector.x);
 }
 
 void Shader::UploadArrayOfFloat(const char* name, const std::vector<float>& values) const
@@ -1015,13 +1007,14 @@ void Shader::UploadArrayOfFloat(const char* name, const std::vector<float>& valu
 		return;
 	}
 
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniform1fv(uniformLocation, (GLsizei)values.size(), values.data());
+	graphicsAPI->SetUniform1fv(uniformLocation, (GEsizei)values.size(), values.data());
 }
 
 void Shader::UploadArrayOfVector2(const char* name, const std::vector<Vector2>& values) const
@@ -1031,13 +1024,14 @@ void Shader::UploadArrayOfVector2(const char* name, const std::vector<Vector2>& 
 		return;
 	}
 
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniform2fv(uniformLocation, (GLsizei)values.size(), &values[0].x);
+	graphicsAPI->SetUniform2fv(uniformLocation, (GEsizei)values.size(), &values[0].x);
 }
 
 void Shader::UploadArrayOfVector3(const char* name, const std::vector<Vector3>& values) const
@@ -1047,13 +1041,14 @@ void Shader::UploadArrayOfVector3(const char* name, const std::vector<Vector3>& 
 		return;
 	}
 
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniform3fv(uniformLocation, (GLsizei)values.size(), &values[0].x);
+	graphicsAPI->SetUniform3fv(uniformLocation, (GEsizei)values.size(), &values[0].x);
 }
 
 void Shader::UploadArrayOfVector4(const char* name, const std::vector<Vector4>& values) const
@@ -1063,11 +1058,12 @@ void Shader::UploadArrayOfVector4(const char* name, const std::vector<Vector4>& 
 		return;
 	}
 
-	const GEint uniformLocation = glGetUniformLocation(programId_, name);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	glUniform4fv(uniformLocation, (GLsizei)values.size(), &values[0].x);
+	graphicsAPI->SetUniform4fv(uniformLocation, (GEsizei)values.size(), &values[0].x);
 }

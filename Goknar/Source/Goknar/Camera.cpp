@@ -8,12 +8,6 @@
 #include "Math/Matrix.h"
 #include "Geometry/Box.h"
 
-#ifdef GOKNAR_PLATFORM_WINDOWS
-#include <GL/GLU.h>
-#elif defined(GOKNAR_PLATFORM_UNIX)
-#include <GL/gl.h>
-#endif
-
 Camera::Camera()
 {
 	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();

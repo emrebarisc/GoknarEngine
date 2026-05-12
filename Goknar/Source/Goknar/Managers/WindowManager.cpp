@@ -6,11 +6,11 @@
 #include "Goknar/GoknarAssert.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Managers/InputManager.h"
 
 #include <iostream>
 
-#include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
 WindowManager::WindowManager()
@@ -55,12 +55,12 @@ void WindowManager::PreInit()
 	{
 		glfwSetWindowSizeCallback(mainWindow_, WindowSizeCallback);
 
-		glfwSetInputMode(mainWindow_, GLFW_STICKY_KEYS, GL_TRUE);
+		glfwSetInputMode(mainWindow_, GLFW_STICKY_KEYS, GLFW_TRUE);
 		SetVSync(true);
 		glfwMakeContextCurrent(mainWindow_);
 
-		const int gladResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		GOKNAR_CORE_ASSERT(gladResult, "Failed to initialize GLAD!.");
+		const bool graphicsAPIResult = engine->GetGraphicsAPI()->Initialize(reinterpret_cast<GraphicsAPIProcAddressFunction>(glfwGetProcAddress));
+		GOKNAR_CORE_ASSERT(graphicsAPIResult, "Failed to initialize graphics API.");
 		glfwGetFramebufferSize(mainWindow_, &framebufferWidth_, &framebufferHeight_);
 	}
 	else
@@ -121,7 +121,7 @@ void WindowManager::FrameBufferSizeCallback(GLFWwindow* window, int width, int h
 	WindowManager* windowManager = engine->GetWindowManager();
 	windowManager->framebufferWidth_ = width;
 	windowManager->framebufferHeight_ = height;
-	glViewport(0, 0, width, height);
+	engine->GetGraphicsAPI()->SetViewport(0, 0, width, height);
 }
 
 void WindowManager::CloseWindow(GLFWwindow* window/* = nullptr*/)
@@ -192,11 +192,11 @@ void WindowManager::SetMSAA(int MSAAValue)
 {
 	if (MSAAValue == 0)
 	{
-		glDisable(GL_MULTISAMPLE);
+		engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::Multisample, false);
 	}
 	else
 	{
-		glEnable(GL_MULTISAMPLE);
+		engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::Multisample, true);
 	}
 
 	MSAAValue_ = MSAAValue;
@@ -277,6 +277,6 @@ void WindowManager::UpdateViewport()
 	Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 	if (activeCamera)
 	{
-		glViewport(0, 0, activeCamera->GetImageWidth(), activeCamera->GetImageHeight());
+		engine->GetGraphicsAPI()->SetViewport(0, 0, activeCamera->GetImageWidth(), activeCamera->GetImageHeight());
 	}
 }

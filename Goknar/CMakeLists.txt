@@ -28,6 +28,7 @@ set(SUBDIRS
 	${SOURCE_DIR_NAME}/Goknar/Editor
 	${SOURCE_DIR_NAME}/Goknar/Factories
 	${SOURCE_DIR_NAME}/Goknar/Geometry
+	${SOURCE_DIR_NAME}/Goknar/Graphics
 	${SOURCE_DIR_NAME}/Goknar/Helpers
 	${SOURCE_DIR_NAME}/Goknar/IO
 	${SOURCE_DIR_NAME}/Goknar/Lights

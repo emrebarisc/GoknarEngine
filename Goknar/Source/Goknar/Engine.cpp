@@ -10,6 +10,8 @@
 #include "Components/Component.h"
 #include "Debug/DebugDrawer.h"
 #include "Factories/DynamicObjectFactory.h"
+#include "Graphics/IGraphicsAPI.h"
+#include "Graphics/OpenGLGraphicsAPI.h"
 #include "Helpers/SceneParser.h"
 #include "Managers/CameraManager.h"
 #include "Managers/InputManager.h"
@@ -25,11 +27,21 @@
 
 GOKNAR_API Engine* engine;
 
+void GoknarCheckGraphicsAPIError(const char* errorMessage)
+{
+	if (engine && engine->GetGraphicsAPI())
+	{
+		engine->GetGraphicsAPI()->CheckErrors(errorMessage);
+	}
+}
+
 Engine::Engine()
 {
 	engine = this;
 
 	Log::Init();
+
+	graphicsAPI_ = new OpenGLGraphicsAPI();
 
 	windowManager_ = new WindowManager();
 
@@ -80,6 +92,9 @@ Engine::~Engine()
 	delete ObjectIDManager::GetInstance();
 	delete ShaderBuilder::GetInstance();
 	delete DynamicObjectFactory::GetInstance();
+
+	delete graphicsAPI_;
+	graphicsAPI_ = nullptr;
 
 	delete windowManager_;
 	windowManager_ = nullptr;

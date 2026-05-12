@@ -2,19 +2,22 @@
 
 #include "Framebuffer.h"
 
-#include "glad/glad.h"
-
-#ifdef GOKNAR_PLATFORM_WINDOWS
-#include <GL/GLU.h>
-#elif defined(GOKNAR_PLATFORM_UNIX)
-#include <GL/gl.h>
-#endif
-
+#include "Goknar/Engine.h"
 #include "Goknar/GoknarAssert.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Managers/ObjectIDManager.h"
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Renderer/RenderBuffer.h"
 #include "Goknar/Log.h"
+
+namespace
+{
+	bool IsColorAttachment(FrameBufferAttachment attachment)
+	{
+		return FrameBufferAttachment::COLOR_ATTACHMENT0 <= attachment &&
+			attachment <= FrameBufferAttachment::COLOR_ATTACHMENT9;
+	}
+}
 
 FrameBuffer::FrameBuffer()
 {
@@ -24,7 +27,7 @@ FrameBuffer::FrameBuffer()
 
 FrameBuffer::~FrameBuffer()
 {
-	glDeleteFramebuffers(1, &rendererFrameBufferId_);
+	engine->GetGraphicsAPI()->DeleteFrameBuffer(rendererFrameBufferId_);
 }
 
 void FrameBuffer::PreInit()
@@ -35,9 +38,9 @@ void FrameBuffer::PreInit()
 		return;
 	}
 
-	glGenFramebuffers(1, &rendererFrameBufferId_);
+	rendererFrameBufferId_ = engine->GetGraphicsAPI()->CreateFrameBuffer();
 
-	EXIT_ON_GL_ERROR("FrameBuffer::Init");
+	EXIT_ON_GRAPHICS_API_ERROR("FrameBuffer::Init");
 }
 
 void FrameBuffer::Init()
@@ -51,45 +54,43 @@ void FrameBuffer::PostInit()
 
 void FrameBuffer::Bind() const
 {
-	glBindFramebuffer((int)frameBufferBindTarget_, rendererFrameBufferId_);
-	EXIT_ON_GL_ERROR("FrameBuffer::Bind");
+	engine->GetGraphicsAPI()->BindFrameBuffer(frameBufferBindTarget_, rendererFrameBufferId_);
+	EXIT_ON_GRAPHICS_API_ERROR("FrameBuffer::Bind");
 }
 
 void FrameBuffer::Bind(FrameBufferBindTarget bindTarget) const
 {
-	glBindFramebuffer((int)bindTarget, rendererFrameBufferId_);
-	EXIT_ON_GL_ERROR("FrameBuffer::Bind(FramebufferBindTarget)");
+	engine->GetGraphicsAPI()->BindFrameBuffer(bindTarget, rendererFrameBufferId_);
+	EXIT_ON_GRAPHICS_API_ERROR("FrameBuffer::Bind(FramebufferBindTarget)");
 }
 
 void FrameBuffer::Unbind()
 {
-	glBindFramebuffer((int)frameBufferBindTarget_, 0);
-	EXIT_ON_GL_ERROR("FrameBuffer::Unbind");
+	engine->GetGraphicsAPI()->BindFrameBuffer(frameBufferBindTarget_, 0);
+	EXIT_ON_GRAPHICS_API_ERROR("FrameBuffer::Unbind");
 }
 
 void FrameBuffer::DrawBuffers()
 {
-	std::vector<unsigned int> buffers;
+	std::vector<FrameBufferAttachment> buffers;
 	buffers.reserve(textureAttachments_.size());
 
 	for (const auto& textureAttachment : textureAttachments_)
 	{
-		const unsigned int attachment = (unsigned int)textureAttachment.first;
-		if ((unsigned int)FrameBufferAttachment::COLOR_ATTACHMENT0 <= attachment &&
-			attachment <= GL_COLOR_ATTACHMENT31)
+		if (IsColorAttachment(textureAttachment.first))
 		{
-			buffers.push_back(attachment);
+			buffers.push_back(textureAttachment.first);
 		}
 	}
 
 	if (buffers.empty())
 	{
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
+		engine->GetGraphicsAPI()->DrawBufferNone();
+		engine->GetGraphicsAPI()->ReadBufferNone();
 		return;
 	}
 
-	glDrawBuffers((GLsizei)buffers.size(), buffers.data());
+	engine->GetGraphicsAPI()->DrawBuffers(buffers);
 }
 
 void FrameBuffer::Attach()
@@ -109,17 +110,17 @@ void FrameBuffer::AttachTextures()
 
 		if (textureTarget->GetTextureBindTarget() == TextureBindTarget::TEXTURE_CUBE_MAP)
 		{
-			glFramebufferTexture((int)frameBufferBindTarget_, (int)framebufferAttachment, textureTarget->GetRendererTextureId(), 0);
+			engine->GetGraphicsAPI()->AttachTextureToFrameBuffer(frameBufferBindTarget_, framebufferAttachment, textureTarget->GetRendererTextureId(), 0);
 		}
 		else
 		{
-			glFramebufferTexture2D((int)frameBufferBindTarget_, (int)framebufferAttachment, (int)textureTarget->GetTextureImageTarget(), textureTarget->GetRendererTextureId(), 0);
+			engine->GetGraphicsAPI()->AttachTexture2DToFrameBuffer(frameBufferBindTarget_, framebufferAttachment, textureTarget->GetTextureImageTarget(), textureTarget->GetRendererTextureId(), 0);
 		}
 
 		CheckStatus();
 	}
 
-	EXIT_ON_GL_ERROR("FrameBuffer::AttachToTexture");
+	EXIT_ON_GRAPHICS_API_ERROR("FrameBuffer::AttachToTexture");
 }
 
 void FrameBuffer::AttachRenderBuffers()
@@ -133,41 +134,16 @@ void FrameBuffer::AttachRenderBuffers()
 		CheckStatus();
 	}
 
-	EXIT_ON_GL_ERROR("FrameBuffer::AttachToTexture");
+	EXIT_ON_GRAPHICS_API_ERROR("FrameBuffer::AttachToTexture");
 }
 
 void FrameBuffer::CheckStatus()
 {
-	switch (glCheckFramebufferStatus(GL_FRAMEBUFFER))
+	std::string statusName;
+	if (engine->GetGraphicsAPI()->CheckFrameBufferStatus(FrameBufferBindTarget::FRAMEBUFFER, &statusName))
 	{
-	case GL_FRAMEBUFFER_UNDEFINED:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_UNDEFINED");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
-		break;
-	case GL_FRAMEBUFFER_UNSUPPORTED:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_UNSUPPORTED");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");
-		break;
-	case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
-		GOKNAR_CORE_ERROR("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");
-		break;
-	case GL_FRAMEBUFFER_COMPLETE:
-		//GOKNAR_CORE_INFO("GL_FRAMEBUFFER_COMPLETE");
-		break;
-	default:
-		break;
+		return;
 	}
+
+	GOKNAR_CORE_ERROR("%s", statusName.c_str());
 }

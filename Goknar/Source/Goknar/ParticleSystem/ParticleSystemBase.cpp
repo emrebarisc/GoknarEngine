@@ -5,6 +5,7 @@
 #include "Goknar/Data/DataEncryption.h"
 #include "Goknar/Engine.h"
 #include "Goknar/GoknarAssert.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Renderer/ComputeShader.h"
 #include "Goknar/Renderer/Renderer.h"
@@ -14,12 +15,15 @@
 #include <algorithm>
 #include <cmath>
 
-#include <glad/glad.h>
-
 namespace
 {
 	constexpr float kMinimumLifetime = 0.0001f;
 	constexpr float kMinimumSpawnInterval = 0.0001f;
+
+	IGraphicsAPI* GraphicsAPI()
+	{
+		return engine->GetGraphicsAPI();
+	}
 
 	GPUParticleValueRange<float> SanitizeFloatRange(const GPUParticleValueRange<float>& range, float minimumValue)
 	{
@@ -186,7 +190,7 @@ void ParticleSystemBase::Tick(float deltaTime)
 	activeParticleSlotCount_ = (std::max)(activeParticleSlotCount_, dispatchParticleCount);
 
 	DispatchResetPass();
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_COMMAND_BARRIER_BIT);
+	GraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderStorage | GraphicsMemoryBarrier::Command);
 
 	BindSimulationBuffers();
 
@@ -215,11 +219,11 @@ void ParticleSystemBase::Tick(float deltaTime)
 	const GEuint groupCountX = (dispatchParticleCount + kComputeLocalSizeX - 1u) / kComputeLocalSizeX;
 	updateComputeShader_->Dispatch(groupCountX, 1u, 1u);
 
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+	GraphicsAPI()->MemoryBarrier(static_cast<GraphicsMemoryBarrierFlags>(GraphicsMemoryBarrier::ShaderStorage));
 
 	DispatchFinalizePass();
 
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_COMMAND_BARRIER_BIT);
+	GraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderStorage | GraphicsMemoryBarrier::Command);
 
 	previousEmitterTransformMatrix_ = renderTransformMatrix_;
 }
@@ -245,15 +249,15 @@ void ParticleSystemBase::SetInitialParticleData(
 		endColors[particleIndex] = Vector4(colors[particleIndex].x, colors[particleIndex].y, colors[particleIndex].z, 0.f);
 	}
 
-	glNamedBufferSubData(particlePositionBufferId_, 0, static_cast<GEsizeiptr>(positions.size() * sizeof(Vector4)), positions.data());
-	glNamedBufferSubData(particleVelocityBufferId_, 0, static_cast<GEsizeiptr>(velocities.size() * sizeof(Vector4)), velocities.data());
-	glNamedBufferSubData(particleColorBufferId_, 0, static_cast<GEsizeiptr>(colors.size() * sizeof(Vector4)), colors.data());
-	glNamedBufferSubData(particleLifetimeBufferId_, 0, static_cast<GEsizeiptr>(lifetimes.size() * sizeof(GPUParticleLifetimeState)), lifetimes.data());
-	glNamedBufferSubData(particleEndColorBufferId_, 0, static_cast<GEsizeiptr>(endColors.size() * sizeof(Vector4)), endColors.data());
-	glNamedBufferSubData(particleSizeBufferId_, 0, static_cast<GEsizeiptr>(sizes.size() * sizeof(GPUParticleSizeState)), sizes.data());
-	glNamedBufferSubData(particleRotationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
-	glNamedBufferSubData(particleAccelerationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
-	glNamedBufferSubData(particleAngularVelocityBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	GraphicsAPI()->NamedBufferSubData(particlePositionBufferId_, 0, static_cast<GEsizeiptr>(positions.size() * sizeof(Vector4)), positions.data());
+	GraphicsAPI()->NamedBufferSubData(particleVelocityBufferId_, 0, static_cast<GEsizeiptr>(velocities.size() * sizeof(Vector4)), velocities.data());
+	GraphicsAPI()->NamedBufferSubData(particleColorBufferId_, 0, static_cast<GEsizeiptr>(colors.size() * sizeof(Vector4)), colors.data());
+	GraphicsAPI()->NamedBufferSubData(particleLifetimeBufferId_, 0, static_cast<GEsizeiptr>(lifetimes.size() * sizeof(GPUParticleLifetimeState)), lifetimes.data());
+	GraphicsAPI()->NamedBufferSubData(particleEndColorBufferId_, 0, static_cast<GEsizeiptr>(endColors.size() * sizeof(Vector4)), endColors.data());
+	GraphicsAPI()->NamedBufferSubData(particleSizeBufferId_, 0, static_cast<GEsizeiptr>(sizes.size() * sizeof(GPUParticleSizeState)), sizes.data());
+	GraphicsAPI()->NamedBufferSubData(particleRotationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	GraphicsAPI()->NamedBufferSubData(particleAccelerationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	GraphicsAPI()->NamedBufferSubData(particleAngularVelocityBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
 
 	activeParticleSlotCount_ = 0u;
 	for (std::uint32_t particleIndex = 0u; particleIndex < maxParticleCount_; ++particleIndex)
@@ -324,35 +328,35 @@ std::string ParticleSystemBase::ResolveShaderPath(const std::string& relativeSha
 
 void ParticleSystemBase::BindSimulationBuffers() const
 {
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kPositionBufferBindingIndex, particlePositionBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kVelocityBufferBindingIndex, particleVelocityBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kColorBufferBindingIndex, particleColorBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kLifetimeBufferBindingIndex, particleLifetimeBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kAliveIndexBufferBindingIndex, aliveIndexBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kCounterBufferBindingIndex, particleCounterBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kEndColorBufferBindingIndex, particleEndColorBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kSizeBufferBindingIndex, particleSizeBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kRotationBufferBindingIndex, particleRotationBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kAccelerationBufferBindingIndex, particleAccelerationBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kAngularVelocityBufferBindingIndex, particleAngularVelocityBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kPositionBufferBindingIndex, particlePositionBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kVelocityBufferBindingIndex, particleVelocityBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kColorBufferBindingIndex, particleColorBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kLifetimeBufferBindingIndex, particleLifetimeBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kAliveIndexBufferBindingIndex, aliveIndexBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kCounterBufferBindingIndex, particleCounterBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kEndColorBufferBindingIndex, particleEndColorBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kSizeBufferBindingIndex, particleSizeBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kRotationBufferBindingIndex, particleRotationBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kAccelerationBufferBindingIndex, particleAccelerationBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kAngularVelocityBufferBindingIndex, particleAngularVelocityBufferId_);
 }
 
 void ParticleSystemBase::BindRenderBuffers() const
 {
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kPositionBufferBindingIndex, particlePositionBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kVelocityBufferBindingIndex, particleVelocityBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kColorBufferBindingIndex, particleColorBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kLifetimeBufferBindingIndex, particleLifetimeBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kAliveIndexBufferBindingIndex, aliveIndexBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kEndColorBufferBindingIndex, particleEndColorBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kSizeBufferBindingIndex, particleSizeBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kRotationBufferBindingIndex, particleRotationBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kPositionBufferBindingIndex, particlePositionBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kVelocityBufferBindingIndex, particleVelocityBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kColorBufferBindingIndex, particleColorBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kLifetimeBufferBindingIndex, particleLifetimeBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kAliveIndexBufferBindingIndex, aliveIndexBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kEndColorBufferBindingIndex, particleEndColorBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kSizeBufferBindingIndex, particleSizeBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kRotationBufferBindingIndex, particleRotationBufferId_);
 }
 
 void ParticleSystemBase::BindFinalizeBuffers() const
 {
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kCounterBufferBindingIndex, particleCounterBufferId_);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, kDrawIndirectBufferBindingIndex, drawIndirectBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kCounterBufferBindingIndex, particleCounterBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kDrawIndirectBufferBindingIndex, drawIndirectBufferId_);
 }
 
 void ParticleSystemBase::ResetSimulationState() const
@@ -363,10 +367,10 @@ void ParticleSystemBase::ResetSimulationState() const
 	}
 
 	DispatchResetPass();
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_COMMAND_BARRIER_BIT);
+	GraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderStorage | GraphicsMemoryBarrier::Command);
 
 	DispatchFinalizePass();
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_COMMAND_BARRIER_BIT);
+	GraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderStorage | GraphicsMemoryBarrier::Command);
 }
 
 void ParticleSystemBase::ApplyParticleStateToShader(Shader* shader) const
@@ -443,21 +447,21 @@ void ParticleSystemBase::ClearParticleDataBuffers(bool resetSpawnSequence)
 	const std::vector<GPUParticleSizeState> zeroSizeData(maxParticleCount_, GPUParticleSizeState{});
 	const std::vector<std::uint32_t> zeroIndexData(maxParticleCount_, 0u);
 
-	glNamedBufferSubData(particlePositionBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
-	glNamedBufferSubData(particleVelocityBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
-	glNamedBufferSubData(particleColorBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
-	glNamedBufferSubData(particleLifetimeBufferId_, 0, static_cast<GEsizeiptr>(zeroLifetimeData.size() * sizeof(GPUParticleLifetimeState)), zeroLifetimeData.data());
-	glNamedBufferSubData(aliveIndexBufferId_, 0, static_cast<GEsizeiptr>(zeroIndexData.size() * sizeof(std::uint32_t)), zeroIndexData.data());
-	glNamedBufferSubData(particleEndColorBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
-	glNamedBufferSubData(particleSizeBufferId_, 0, static_cast<GEsizeiptr>(zeroSizeData.size() * sizeof(GPUParticleSizeState)), zeroSizeData.data());
-	glNamedBufferSubData(particleRotationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
-	glNamedBufferSubData(particleAccelerationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
-	glNamedBufferSubData(particleAngularVelocityBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	GraphicsAPI()->NamedBufferSubData(particlePositionBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	GraphicsAPI()->NamedBufferSubData(particleVelocityBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	GraphicsAPI()->NamedBufferSubData(particleColorBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	GraphicsAPI()->NamedBufferSubData(particleLifetimeBufferId_, 0, static_cast<GEsizeiptr>(zeroLifetimeData.size() * sizeof(GPUParticleLifetimeState)), zeroLifetimeData.data());
+	GraphicsAPI()->NamedBufferSubData(aliveIndexBufferId_, 0, static_cast<GEsizeiptr>(zeroIndexData.size() * sizeof(std::uint32_t)), zeroIndexData.data());
+	GraphicsAPI()->NamedBufferSubData(particleEndColorBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	GraphicsAPI()->NamedBufferSubData(particleSizeBufferId_, 0, static_cast<GEsizeiptr>(zeroSizeData.size() * sizeof(GPUParticleSizeState)), zeroSizeData.data());
+	GraphicsAPI()->NamedBufferSubData(particleRotationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	GraphicsAPI()->NamedBufferSubData(particleAccelerationBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
+	GraphicsAPI()->NamedBufferSubData(particleAngularVelocityBufferId_, 0, static_cast<GEsizeiptr>(zeroVector4Data.size() * sizeof(Vector4)), zeroVector4Data.data());
 
 	if (resetSpawnSequence)
 	{
 		const GPUParticleCounterState zeroCounterState{};
-		glNamedBufferSubData(particleCounterBufferId_, 0, sizeof(GPUParticleCounterState), &zeroCounterState);
+		GraphicsAPI()->NamedBufferSubData(particleCounterBufferId_, 0, sizeof(GPUParticleCounterState), &zeroCounterState);
 	}
 }
 
@@ -469,136 +473,108 @@ void ParticleSystemBase::CreateBuffers()
 	const std::vector<std::uint32_t> zeroIndexData(maxParticleCount_, 0u);
 	const GPUParticleCounterState zeroCounterState{};
 
-	glGenBuffers(1, &particlePositionBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particlePositionBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data(), GL_DYNAMIC_DRAW);
+	auto createStorageBuffer = [](GEuint& bufferId, GEsizeiptr size, const void* data)
+	{
+		bufferId = GraphicsAPI()->CreateBuffer();
+		GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ShaderStorageBuffer, bufferId);
+		GraphicsAPI()->BufferData(GraphicsBufferTarget::ShaderStorageBuffer, size, data, GraphicsBufferUsage::DynamicDraw);
+	};
 
-	glGenBuffers(1, &particleVelocityBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleVelocityBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data(), GL_DYNAMIC_DRAW);
+	createStorageBuffer(particlePositionBufferId_, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data());
+	createStorageBuffer(particleVelocityBufferId_, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data());
+	createStorageBuffer(particleColorBufferId_, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data());
+	createStorageBuffer(particleLifetimeBufferId_, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(GPUParticleLifetimeState)), zeroLifetimeData.data());
+	createStorageBuffer(aliveIndexBufferId_, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(std::uint32_t)), zeroIndexData.data());
+	createStorageBuffer(particleCounterBufferId_, sizeof(GPUParticleCounterState), &zeroCounterState);
+	createStorageBuffer(drawIndirectBufferId_, sizeof(GPUParticleDrawArraysIndirectCommand), nullptr);
+	createStorageBuffer(particleEndColorBufferId_, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data());
+	createStorageBuffer(particleSizeBufferId_, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(GPUParticleSizeState)), zeroSizeData.data());
+	createStorageBuffer(particleRotationBufferId_, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data());
+	createStorageBuffer(particleAccelerationBufferId_, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data());
+	createStorageBuffer(particleAngularVelocityBufferId_, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data());
 
-	glGenBuffers(1, &particleColorBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleColorBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data(), GL_DYNAMIC_DRAW);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ShaderStorageBuffer, 0);
 
-	glGenBuffers(1, &particleLifetimeBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleLifetimeBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(GPUParticleLifetimeState)), zeroLifetimeData.data(), GL_DYNAMIC_DRAW);
-
-	glGenBuffers(1, &aliveIndexBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, aliveIndexBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(std::uint32_t)), zeroIndexData.data(), GL_DYNAMIC_DRAW);
-
-	glGenBuffers(1, &particleCounterBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleCounterBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUParticleCounterState), &zeroCounterState, GL_DYNAMIC_DRAW);
-
-	glGenBuffers(1, &drawIndirectBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, drawIndirectBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUParticleDrawArraysIndirectCommand), nullptr, GL_DYNAMIC_DRAW);
-
-	glGenBuffers(1, &particleEndColorBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleEndColorBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data(), GL_DYNAMIC_DRAW);
-
-	glGenBuffers(1, &particleSizeBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleSizeBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(GPUParticleSizeState)), zeroSizeData.data(), GL_DYNAMIC_DRAW);
-
-	glGenBuffers(1, &particleRotationBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleRotationBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data(), GL_DYNAMIC_DRAW);
-
-	glGenBuffers(1, &particleAccelerationBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleAccelerationBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data(), GL_DYNAMIC_DRAW);
-
-	glGenBuffers(1, &particleAngularVelocityBufferId_);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, particleAngularVelocityBufferId_);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, static_cast<GEsizeiptr>(maxParticleCount_ * sizeof(Vector4)), zeroVector4Data.data(), GL_DYNAMIC_DRAW);
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-	glGenVertexArrays(1, &dummyVertexArrayObjectId_);
+	dummyVertexArrayObjectId_ = GraphicsAPI()->CreateVertexArray();
 }
 
 void ParticleSystemBase::DestroyBuffers()
 {
 	if (dummyVertexArrayObjectId_ != 0)
 	{
-		glDeleteVertexArrays(1, &dummyVertexArrayObjectId_);
+		GraphicsAPI()->DeleteVertexArray(dummyVertexArrayObjectId_);
 		dummyVertexArrayObjectId_ = 0;
 	}
 
 	if (particlePositionBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &particlePositionBufferId_);
+		GraphicsAPI()->DeleteBuffer(particlePositionBufferId_);
 		particlePositionBufferId_ = 0;
 	}
 
 	if (particleVelocityBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &particleVelocityBufferId_);
+		GraphicsAPI()->DeleteBuffer(particleVelocityBufferId_);
 		particleVelocityBufferId_ = 0;
 	}
 
 	if (particleColorBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &particleColorBufferId_);
+		GraphicsAPI()->DeleteBuffer(particleColorBufferId_);
 		particleColorBufferId_ = 0;
 	}
 
 	if (particleLifetimeBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &particleLifetimeBufferId_);
+		GraphicsAPI()->DeleteBuffer(particleLifetimeBufferId_);
 		particleLifetimeBufferId_ = 0;
 	}
 
 	if (aliveIndexBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &aliveIndexBufferId_);
+		GraphicsAPI()->DeleteBuffer(aliveIndexBufferId_);
 		aliveIndexBufferId_ = 0;
 	}
 
 	if (particleCounterBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &particleCounterBufferId_);
+		GraphicsAPI()->DeleteBuffer(particleCounterBufferId_);
 		particleCounterBufferId_ = 0;
 	}
 
 	if (drawIndirectBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &drawIndirectBufferId_);
+		GraphicsAPI()->DeleteBuffer(drawIndirectBufferId_);
 		drawIndirectBufferId_ = 0;
 	}
 
 	if (particleEndColorBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &particleEndColorBufferId_);
+		GraphicsAPI()->DeleteBuffer(particleEndColorBufferId_);
 		particleEndColorBufferId_ = 0;
 	}
 
 	if (particleSizeBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &particleSizeBufferId_);
+		GraphicsAPI()->DeleteBuffer(particleSizeBufferId_);
 		particleSizeBufferId_ = 0;
 	}
 
 	if (particleRotationBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &particleRotationBufferId_);
+		GraphicsAPI()->DeleteBuffer(particleRotationBufferId_);
 		particleRotationBufferId_ = 0;
 	}
 
 	if (particleAccelerationBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &particleAccelerationBufferId_);
+		GraphicsAPI()->DeleteBuffer(particleAccelerationBufferId_);
 		particleAccelerationBufferId_ = 0;
 	}
 
 	if (particleAngularVelocityBufferId_ != 0)
 	{
-		glDeleteBuffers(1, &particleAngularVelocityBufferId_);
+		GraphicsAPI()->DeleteBuffer(particleAngularVelocityBufferId_);
 		particleAngularVelocityBufferId_ = 0;
 	}
 }

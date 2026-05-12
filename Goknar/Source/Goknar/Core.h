@@ -47,28 +47,9 @@ extern std::string ContentDir;
 
 #define VA_ARGS(...) , ##__VA_ARGS__
 
-#define EXIT_ON_GL_ERROR(errorMessage) \
-{ \
-	const GLenum errorValue = glGetError(); \
-	if(errorValue != GL_NO_ERROR) \
-	{ \
-		std::string errorString = "NO_ERROR";\
-		switch (errorValue)\
-		{\
-		case GL_INVALID_ENUM:					errorString = "INVALID_ENUM"; break;\
-		case GL_INVALID_VALUE:					errorString = "INVALID_VALUE"; break;\
-		case GL_INVALID_OPERATION:				errorString = "INVALID_OPERATION"; break;\
-		case GL_STACK_OVERFLOW:					errorString = "STACK_OVERFLOW"; break;\
-		case GL_STACK_UNDERFLOW:				errorString = "STACK_UNDERFLOW"; break;\
-		case GL_OUT_OF_MEMORY:					errorString = "OUT_OF_MEMORY"; break;\
-		case GL_INVALID_FRAMEBUFFER_OPERATION:	errorString = "INVALID_FRAMEBUFFER_OPERATION"; break;\
-		default:								errorString = "UNKNOWN";\
-		}\
-		GOKNAR_CORE_FATAL("%s: Error Value: %s\n", errorMessage, errorString.c_str()); \
-		DEBUG_BREAK(); \
-		exit(EXIT_FAILURE); \
-	} \
-}
+GOKNAR_API void GoknarCheckGraphicsAPIError(const char* errorMessage);
+
+#define EXIT_ON_GRAPHICS_API_ERROR(errorMessage) GoknarCheckGraphicsAPIError(errorMessage)
 
 #define REGISTER_CLASS(className) \
     DynamicObjectFactory::GetInstance()->RegisterClass(#className, []() -> className* { return new className(); }); \

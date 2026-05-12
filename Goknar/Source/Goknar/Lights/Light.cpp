@@ -4,6 +4,8 @@
 
 #include "Goknar/Camera.h"
 #include "Goknar/GoknarAssert.h"
+#include "Goknar/Engine.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Renderer/Framebuffer.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Texture.h"
@@ -50,13 +52,13 @@ void Light::PreInit()
 		shadowMapFrameBuffer_->Bind();
 		shadowMapFrameBuffer_->Attach();
 
-		glDrawBuffer(GL_NONE);
-		glReadBuffer(GL_NONE);
+		engine->GetGraphicsAPI()->DrawBufferNone();
+		engine->GetGraphicsAPI()->ReadBufferNone();
 
 		shadowMapTexture_->Unbind();
 		shadowMapFrameBuffer_->Unbind();
 
-		EXIT_ON_GL_ERROR("Light::PreInit");
+		EXIT_ON_GRAPHICS_API_ERROR("Light::PreInit");
 	}
 }
 
@@ -66,7 +68,7 @@ void Light::Init()
 	{
 		shadowMapFrameBuffer_->Init();
 		shadowMapTexture_->Init();
-		EXIT_ON_GL_ERROR("Light::Init");
+		EXIT_ON_GRAPHICS_API_ERROR("Light::Init");
 	}
 }
 
@@ -76,6 +78,6 @@ void Light::PostInit()
 	{
 		shadowMapFrameBuffer_->PostInit();
 		shadowMapTexture_->PostInit();
-		EXIT_ON_GL_ERROR("Light::PostInit");
+		EXIT_ON_GRAPHICS_API_ERROR("Light::PostInit");
 	}
 }

@@ -146,5 +146,5 @@ void SpotLight::RenderShadowMap()
 
 	shadowMapFrameBuffer_->Unbind();
 
-	EXIT_ON_GL_ERROR("SpotLight::RenderShadowMap");
+	EXIT_ON_GRAPHICS_API_ERROR("SpotLight::RenderShadowMap");
 }

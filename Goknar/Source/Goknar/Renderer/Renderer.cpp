@@ -16,6 +16,8 @@
 
 #include "Goknar/Delegates/Delegate.h"
 
+#include "Goknar/Graphics/IGraphicsAPI.h"
+
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
@@ -62,6 +64,11 @@
 
 namespace
 {
+	IGraphicsAPI* GraphicsAPI()
+	{
+		return engine->GetGraphicsAPI();
+	}
+
 	void BlitFrameBufferColor(const FrameBuffer* readFrameBuffer, FrameBuffer* drawFrameBuffer, int width, int height)
 	{
 		if (!readFrameBuffer || width <= 0 || height <= 0)
@@ -70,7 +77,7 @@ namespace
 		}
 
 		readFrameBuffer->Bind(FrameBufferBindTarget::READ_FRAMEBUFFER);
-		glReadBuffer(GL_COLOR_ATTACHMENT0);
+		GraphicsAPI()->ReadBuffer(FrameBufferAttachment::COLOR_ATTACHMENT0);
 
 		if (drawFrameBuffer)
 		{
@@ -78,15 +85,15 @@ namespace
 		}
 		else
 		{
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			GraphicsAPI()->BindFrameBuffer(FrameBufferBindTarget::DRAW_FRAMEBUFFER, 0);
 		}
 
-		glBlitFramebuffer(
+		GraphicsAPI()->BlitFrameBuffer(
 			0, 0, width, height,
 			0, 0, width, height,
-			GL_COLOR_BUFFER_BIT, GL_NEAREST);
+			static_cast<GraphicsClearBufferFlags>(GraphicsClearBuffer::Color), GraphicsBlitFilter::Nearest);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		GraphicsAPI()->BindFrameBuffer(FrameBufferBindTarget::FRAMEBUFFER, 0);
 	}
 }
 
@@ -125,23 +132,23 @@ Renderer::~Renderer()
 	delete lightManager_;
 	delete deferredRenderingData_;
 
-	EXIT_ON_GL_ERROR("Renderer::~Renderer");
+	EXIT_ON_GRAPHICS_API_ERROR("Renderer::~Renderer");
 
-	glDeleteBuffers(1, &staticVertexBufferId_);
+	GraphicsAPI()->DeleteBuffer(staticVertexBufferId_);
 	for (const auto& [instancedStaticMesh, transformationBufferId] : instancedStaticMeshTransformationBufferIdMap_)
 	{
 		if (transformationBufferId != 0)
 		{
-			glDeleteBuffers(1, &transformationBufferId);
+			GraphicsAPI()->DeleteBuffer(transformationBufferId);
 		}
 	}
 	instancedStaticMeshTransformationBufferIdMap_.clear();
 
-	glDeleteBuffers(1, &skeletalVertexBufferId_);
-	glDeleteBuffers(1, &dynamicVertexBufferId_);
-	glDeleteBuffers(1, &staticIndexBufferId_);
-	glDeleteBuffers(1, &skeletalIndexBufferId_);
-	glDeleteBuffers(1, &dynamicIndexBufferId_);
+	GraphicsAPI()->DeleteBuffer(skeletalVertexBufferId_);
+	GraphicsAPI()->DeleteBuffer(dynamicVertexBufferId_);
+	GraphicsAPI()->DeleteBuffer(staticIndexBufferId_);
+	GraphicsAPI()->DeleteBuffer(skeletalIndexBufferId_);
+	GraphicsAPI()->DeleteBuffer(dynamicIndexBufferId_);
 }
 
 void Renderer::PreInit()
@@ -185,9 +192,9 @@ void Renderer::PreInit()
 		}
 	}
 
-	glFrontFace(GL_CCW);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
+	GraphicsAPI()->SetFrontFace(GraphicsFrontFace::CounterClockwise);
+	GraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::DepthTest, true);
+	GraphicsAPI()->SetDepthFunction(GraphicsDepthFunction::Lequal);
 
 	for (MeshUnit* subMesh : staticMeshUnits_)
 	{
@@ -227,16 +234,16 @@ void Renderer::SetStaticBufferData()
 	*/
 	unsigned long long sizeOfVertexData = sizeof(VertexData);
 
-	glGenBuffers(1, &staticVertexBufferId_);
-	glBindBuffer(GL_ARRAY_BUFFER, staticVertexBufferId_);
-	glBufferData(GL_ARRAY_BUFFER, totalStaticMeshVertexSize_ * sizeOfVertexData, nullptr, GL_STATIC_DRAW);
+	staticVertexBufferId_ = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, staticVertexBufferId_);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ArrayBuffer, totalStaticMeshVertexSize_ * sizeOfVertexData, nullptr, GraphicsBufferUsage::StaticDraw);
 
 	/*
 		Index buffer
 	*/
-	glGenBuffers(1, &staticIndexBufferId_);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticIndexBufferId_);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalStaticMeshFaceSize_ * sizeof(Face), nullptr, GL_STATIC_DRAW);
+	staticIndexBufferId_ = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, staticIndexBufferId_);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ElementArrayBuffer, totalStaticMeshFaceSize_ * sizeof(Face), nullptr, GraphicsBufferUsage::StaticDraw);
 
 	/*
 		Buffer Sub-Data
@@ -253,11 +260,11 @@ void Renderer::SetStaticBufferData()
 
 		const VertexArray* vertexArrayPtr = subMesh->GetVerticesPointer();
 		int vertexSizeInBytes = (int)vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
-		glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
+		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
 
 		const FaceArray* faceArrayPtr = subMesh->GetFacesPointer();
 		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
+		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ElementArrayBuffer, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
 
 		vertexOffset += vertexSizeInBytes;
 		faceOffset += faceSizeInBytes;
@@ -280,16 +287,16 @@ void Renderer::SetSkeletalBufferData()
 	*/
 	unsigned long long int sizeOfSkeletalMeshVertexData = sizeof(VertexData) + sizeof(VertexBoneData);
 
-	glGenBuffers(1, &skeletalVertexBufferId_);
-	glBindBuffer(GL_ARRAY_BUFFER, skeletalVertexBufferId_);
-	glBufferData(GL_ARRAY_BUFFER, totalSkeletalMeshVertexSize_ * sizeOfSkeletalMeshVertexData, nullptr, GL_STATIC_DRAW);
+	skeletalVertexBufferId_ = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, skeletalVertexBufferId_);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ArrayBuffer, totalSkeletalMeshVertexSize_ * sizeOfSkeletalMeshVertexData, nullptr, GraphicsBufferUsage::StaticDraw);
 
 	/*
 		Index buffer
 	*/
-	glGenBuffers(1, &skeletalIndexBufferId_);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skeletalIndexBufferId_);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalSkeletalMeshFaceSize_ * sizeof(Face), nullptr, GL_STATIC_DRAW);
+	skeletalIndexBufferId_ = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, skeletalIndexBufferId_);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ElementArrayBuffer, totalSkeletalMeshFaceSize_ * sizeof(Face), nullptr, GraphicsBufferUsage::StaticDraw);
 
 	/*
 		Buffer Sub-Data
@@ -312,22 +319,22 @@ void Renderer::SetSkeletalBufferData()
 			continue;
 		}
 
-		GLintptr vertexSizeInBytes = sizeof(vertexArrayPtr->at(0));
+		GEintptr vertexSizeInBytes = sizeof(vertexArrayPtr->at(0));
 
 		const VertexBoneDataArray* vertexBoneDataArray = subMesh->GetVertexBoneDataArray();
 		int vertexBoneDataArraySizeInBytes = sizeof(vertexBoneDataArray->at(0));
 		for (unsigned int i = 0; i < vertexArrayPtrSize; ++i)
 		{
-			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(i));
+			GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(i));
 			vertexOffset += vertexSizeInBytes;
 
-			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexBoneDataArraySizeInBytes, &vertexBoneDataArray->at(i));
+			GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, vertexOffset, vertexBoneDataArraySizeInBytes, &vertexBoneDataArray->at(i));
 			vertexOffset += vertexBoneDataArraySizeInBytes;
 		}
 
 		const FaceArray* faceArrayPtr = subMesh->GetFacesPointer();
 		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
+		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ElementArrayBuffer, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
 		faceOffset += faceSizeInBytes;
 
 		baseVertex += subMesh->GetVertexCount();
@@ -348,16 +355,16 @@ void Renderer::SetDynamicBufferData()
 	*/
 	unsigned long long sizeOfVertexData = sizeof(VertexData);
 
-	glGenBuffers(1, &dynamicVertexBufferId_);
-	glBindBuffer(GL_ARRAY_BUFFER, dynamicVertexBufferId_);
-	glBufferData(GL_ARRAY_BUFFER, totalDynamicMeshVertexSize_ * sizeOfVertexData, nullptr, GL_DYNAMIC_DRAW);
+	dynamicVertexBufferId_ = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, dynamicVertexBufferId_);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ArrayBuffer, totalDynamicMeshVertexSize_ * sizeOfVertexData, nullptr, GraphicsBufferUsage::DynamicDraw);
 
 	/*
 		Index buffer
 	*/
-	glGenBuffers(1, &dynamicIndexBufferId_);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dynamicIndexBufferId_);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, totalDynamicMeshFaceSize_ * sizeof(Face), nullptr, GL_DYNAMIC_DRAW);
+	dynamicIndexBufferId_ = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, dynamicIndexBufferId_);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ElementArrayBuffer, totalDynamicMeshFaceSize_ * sizeof(Face), nullptr, GraphicsBufferUsage::DynamicDraw);
 
 	/*
 		Buffer Sub-Data
@@ -375,11 +382,11 @@ void Renderer::SetDynamicBufferData()
 
 		const VertexArray* vertexArrayPtr = subMesh->GetVerticesPointer();
 		int vertexSizeInBytes = (int)vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
-		glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
+		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
 
 		const FaceArray* faceArrayPtr = subMesh->GetFacesPointer();
 		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
+		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ElementArrayBuffer, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
 
 		vertexOffset += vertexSizeInBytes;
 		faceOffset += faceSizeInBytes;
@@ -495,8 +502,8 @@ void Renderer::RenderCurrentFrame()
 	}
 	else
 	{
-		glClearColor(0.f, 0.f, 0.f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		GraphicsAPI()->ClearColor(0.f, 0.f, 0.f, 1.f);
+		GraphicsAPI()->Clear(GraphicsClearBuffer::Color | GraphicsClearBuffer::Depth);
 	}
 
 	PrepareSkeletalMeshInstancesForTheNextFrame();
@@ -545,10 +552,10 @@ void Renderer::Render(RenderPassType renderPassType)
 	{
 	case RenderPassType::Forward:
 	{
-		glDepthMask(GL_TRUE);
+		GraphicsAPI()->SetDepthMask(true);
 		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
-		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		GraphicsAPI()->ClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+		GraphicsAPI()->Clear(GraphicsClearBuffer::Color | GraphicsClearBuffer::Depth);
 		break;
 	}
 	case RenderPassType::GeometryBuffer:
@@ -557,9 +564,9 @@ void Renderer::Render(RenderPassType renderPassType)
 
 		deferredRenderingData_->BindGeometryBuffer();
 		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
-		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glDepthMask(GL_TRUE);
+		GraphicsAPI()->ClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+		GraphicsAPI()->Clear(GraphicsClearBuffer::Color | GraphicsClearBuffer::Depth);
+		GraphicsAPI()->SetDepthMask(true);
 		break;
 	}
 	case RenderPassType::Deferred:
@@ -567,23 +574,23 @@ void Renderer::Render(RenderPassType renderPassType)
 		GOKNAR_CORE_CHECK(deferredRenderingData_ != nullptr, "Main rendering is not set to deferred rendering but deferred rendering is called.");
 		deferredRenderingData_->BeginSceneRender();
 		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
-		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		GraphicsAPI()->ClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+		GraphicsAPI()->Clear(GraphicsClearBuffer::Color | GraphicsClearBuffer::Depth);
 		deferredRenderingData_->Render();
 		break;
 	}
 	case RenderPassType::CubemapCapture:
 	{
-		glDepthMask(GL_TRUE);
+		GraphicsAPI()->SetDepthMask(true);
 		const Colorf& sceneBackgroundColor = engine->GetApplication()->GetMainScene()->GetBackgroundColor();
-		glClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		GraphicsAPI()->ClearColor(sceneBackgroundColor.r, sceneBackgroundColor.g, sceneBackgroundColor.b, 1.f);
+		GraphicsAPI()->Clear(GraphicsClearBuffer::Color | GraphicsClearBuffer::Depth);
 		break;
 	}
 	case RenderPassType::Shadow:
 	case RenderPassType::PointLightShadow:
 	{
-		glClear(GL_DEPTH_BUFFER_BIT);
+		GraphicsAPI()->Clear(static_cast<GraphicsClearBufferFlags>(GraphicsClearBuffer::Depth));
 		break;
 	}
 	case RenderPassType::None:
@@ -620,7 +627,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			staticMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
 
 			int facePointCount = subMesh->GetFaceCount() * 3;
-			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
+			GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
 		};
 
 	auto RenderInstancedStaticMesh = [&](const InstancedStaticMeshRenderData& renderData)
@@ -652,10 +659,10 @@ void Renderer::Render(RenderPassType renderPassType)
 			instancedStaticMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
 
 			int facePointCount = subMesh->GetFaceCount() * 3;
-			glDrawElementsInstancedBaseVertex(
-				GL_TRIANGLES,
+			GraphicsAPI()->DrawElementsInstancedBaseVertex(
+				GraphicsPrimitive::Triangles,
 				facePointCount,
-				GL_UNSIGNED_INT,
+				GraphicsDataType::UnsignedInt,
 				(void*)(unsigned long long)subMesh->GetVertexStartingIndex(),
 				instanceCount,
 				subMesh->GetBaseVertex());
@@ -676,7 +683,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			skeletalMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
 
 			int facePointCount = subMesh->GetFaceCount() * 3;
-			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
+			GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
 		};
 
 	auto RenderDynamicMesh = [&](const DynamicMeshRenderData& renderData)
@@ -694,7 +701,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			dynamicMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
 
 			int facePointCount = subMesh->GetFaceCount() * 3;
-			glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
+			GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
 		};
 
 	if (renderPassType != RenderPassType::Deferred)
@@ -774,8 +781,8 @@ void Renderer::Render(RenderPassType renderPassType)
 	{
 		SortTransparentInstances();
 
-		glEnable(GL_BLEND);
-		glDepthMask(GL_FALSE);
+		GraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::Blend, true);
+		GraphicsAPI()->SetDepthMask(false);
 
 		BindStaticVBO();
 
@@ -830,8 +837,8 @@ void Renderer::Render(RenderPassType renderPassType)
 				++drawCallCount;
 			}
 		}
-		glDepthMask(GL_TRUE);
-		glDisable(GL_BLEND);
+		GraphicsAPI()->SetDepthMask(true);
+		GraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::Blend, false);
 
 		// After finishing transparent object rendering
 		// Use deferred rendering shader again if doing deferred rendering
@@ -1085,7 +1092,7 @@ void Renderer::RemoveParticleSystem(ParticleSystemBase* particleSystem)
 void Renderer::UpdateDynamicMeshVertex(const DynamicMeshUnit* object, int vertexIndex, const VertexData& newVertexData)
 {
 	int sizeOfVertexData = sizeof(VertexData);
-	glNamedBufferSubData(dynamicVertexBufferId_, object->GetRendererVertexOffset() + vertexIndex * sizeOfVertexData, sizeOfVertexData, &newVertexData);
+	GraphicsAPI()->NamedBufferSubData(dynamicVertexBufferId_, object->GetRendererVertexOffset() + vertexIndex * sizeOfVertexData, sizeOfVertexData, &newVertexData);
 }
 
 void Renderer::RefreshInstancedStaticMeshTransformations(const InstancedStaticMesh* instancedStaticMesh)
@@ -1098,18 +1105,18 @@ void Renderer::RefreshInstancedStaticMeshTransformations(const InstancedStaticMe
 	GEuint& transformationBufferId = instancedStaticMeshTransformationBufferIdMap_[instancedStaticMesh];
 	if (transformationBufferId == 0)
 	{
-		glGenBuffers(1, &transformationBufferId);
+		transformationBufferId = GraphicsAPI()->CreateBuffer();
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, transformationBufferId);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, transformationBufferId);
 
 	const std::vector<Matrix>& instanceTransformationMatrices = instancedStaticMesh->GetInstanceTransformationMatrices();
 	const void* bufferData = instanceTransformationMatrices.empty() ? nullptr : instanceTransformationMatrices.data();
-	glBufferData(
-		GL_ARRAY_BUFFER,
-		(GLsizeiptr)(instanceTransformationMatrices.size() * sizeof(Matrix)),
+	GraphicsAPI()->BufferData(
+		GraphicsBufferTarget::ArrayBuffer,
+		(GEsizeiptr)(instanceTransformationMatrices.size() * sizeof(Matrix)),
 		bufferData,
-		GL_DYNAMIC_DRAW);
+		GraphicsBufferUsage::DynamicDraw);
 
 	const_cast<InstancedStaticMesh*>(instancedStaticMesh)->ClearPendingFullTransformUpload();
 }
@@ -1127,10 +1134,10 @@ void Renderer::UpdateInstancedStaticMeshTransformation(const InstancedStaticMesh
 		return;
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, transformationBufferIterator->second);
-	glBufferSubData(
-		GL_ARRAY_BUFFER,
-		(GLintptr)(transformationIndex * sizeof(Matrix)),
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, transformationBufferIterator->second);
+	GraphicsAPI()->BufferSubData(
+		GraphicsBufferTarget::ArrayBuffer,
+		(GEintptr)(transformationIndex * sizeof(Matrix)),
 		sizeof(Matrix),
 		&newTransformationMatrix);
 }
@@ -1376,7 +1383,7 @@ void Renderer::RenderStaticMesh(StaticMesh* staticMesh)
 	for (MeshUnit* subMesh : staticMesh->GetSubMeshes())
 	{
 		int facePointCount = subMesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
+		GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
 	}
 }
 
@@ -1387,8 +1394,8 @@ void Renderer::BindStaticMeshBuffers()
 
 void Renderer::BindStaticVBO()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, staticVertexBufferId_);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, staticIndexBufferId_);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, staticVertexBufferId_);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, staticIndexBufferId_);
 	SetAttribPointers();
 }
 
@@ -1407,22 +1414,22 @@ bool Renderer::BindInstancedStaticMesh(InstancedStaticMesh* instancedStaticMesh)
 		return false;
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, bufferIterator->second);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, bufferIterator->second);
 	SetAttribPointersForInstancedStaticMesh();
 	return true;
 }
 
 void Renderer::BindSkeletalVBO()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, skeletalVertexBufferId_);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skeletalIndexBufferId_);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, skeletalVertexBufferId_);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, skeletalIndexBufferId_);
 	SetAttribPointersForSkeletalMesh();
 }
 
 void Renderer::BindDynamicVBO()
 {
-	glBindBuffer(GL_ARRAY_BUFFER, dynamicVertexBufferId_);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dynamicIndexBufferId_);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, dynamicVertexBufferId_);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, dynamicIndexBufferId_);
 	SetAttribPointers();
 }
 
@@ -1431,32 +1438,32 @@ void Renderer::SetAttribPointers()
 	GEsizei sizeOfVertexData = (GEsizei)sizeof(VertexData);
 	// Vertex color
 	long long offset = 0;
-	glEnableVertexAttribArray(VERTEX_COLOR_LOCATION);
-	glVertexAttribPointer(VERTEX_COLOR_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
+	GraphicsAPI()->EnableVertexAttribArray(VERTEX_COLOR_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(VERTEX_COLOR_LOCATION, 4, GraphicsDataType::Float, false, sizeOfVertexData, (void*)offset);
 
 	// Vertex position
 	offset += sizeof(VertexData::color);
-	glEnableVertexAttribArray(VERTEX_POSITION_LOCATION);
-	glVertexAttribPointer(VERTEX_POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
+	GraphicsAPI()->EnableVertexAttribArray(VERTEX_POSITION_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(VERTEX_POSITION_LOCATION, 3, GraphicsDataType::Float, false, sizeOfVertexData, (void*)offset);
 
 	// Vertex normal
 	offset += sizeof(VertexData::position);
-	glEnableVertexAttribArray(VERTEX_NORMAL_LOCATION);
-	glVertexAttribPointer(VERTEX_NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
+	GraphicsAPI()->EnableVertexAttribArray(VERTEX_NORMAL_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(VERTEX_NORMAL_LOCATION, 3, GraphicsDataType::Float, false, sizeOfVertexData, (void*)offset);
 
 	// Vertex UV
 	offset += sizeof(VertexData::normal);
-	glEnableVertexAttribArray(VERTEX_UV_LOCATION);
-	glVertexAttribPointer(VERTEX_UV_LOCATION, 2, GL_FLOAT, GL_FALSE, sizeOfVertexData, (void*)offset);
+	GraphicsAPI()->EnableVertexAttribArray(VERTEX_UV_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(VERTEX_UV_LOCATION, 2, GraphicsDataType::Float, false, sizeOfVertexData, (void*)offset);
 
-	glDisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_0_LOCATION);
-	glDisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_1_LOCATION);
-	glDisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_2_LOCATION);
-	glDisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_3_LOCATION);
-	glVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_0_LOCATION, 0);
-	glVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_1_LOCATION, 0);
-	glVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_2_LOCATION, 0);
-	glVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_3_LOCATION, 0);
+	GraphicsAPI()->DisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_0_LOCATION);
+	GraphicsAPI()->DisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_1_LOCATION);
+	GraphicsAPI()->DisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_2_LOCATION);
+	GraphicsAPI()->DisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_3_LOCATION);
+	GraphicsAPI()->SetVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_0_LOCATION, 0);
+	GraphicsAPI()->SetVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_1_LOCATION, 0);
+	GraphicsAPI()->SetVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_2_LOCATION, 0);
+	GraphicsAPI()->SetVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_3_LOCATION, 0);
 }
 
 void Renderer::SetAttribPointersForInstancedStaticMesh()
@@ -1464,24 +1471,24 @@ void Renderer::SetAttribPointersForInstancedStaticMesh()
 	GEsizei sizeOfInstanceTransformationData = (GEsizei)sizeof(Matrix);
 	long long offset = 0;
 
-	glEnableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_0_LOCATION);
-	glVertexAttribPointer(INSTANCE_TRANSFORMATION_ROW_0_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeOfInstanceTransformationData, (void*)offset);
-	glVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_0_LOCATION, 1);
+	GraphicsAPI()->EnableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_0_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(INSTANCE_TRANSFORMATION_ROW_0_LOCATION, 4, GraphicsDataType::Float, false, sizeOfInstanceTransformationData, (void*)offset);
+	GraphicsAPI()->SetVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_0_LOCATION, 1);
 	offset += sizeof(Vector4);
 
-	glEnableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_1_LOCATION);
-	glVertexAttribPointer(INSTANCE_TRANSFORMATION_ROW_1_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeOfInstanceTransformationData, (void*)offset);
-	glVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_1_LOCATION, 1);
+	GraphicsAPI()->EnableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_1_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(INSTANCE_TRANSFORMATION_ROW_1_LOCATION, 4, GraphicsDataType::Float, false, sizeOfInstanceTransformationData, (void*)offset);
+	GraphicsAPI()->SetVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_1_LOCATION, 1);
 	offset += sizeof(Vector4);
 
-	glEnableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_2_LOCATION);
-	glVertexAttribPointer(INSTANCE_TRANSFORMATION_ROW_2_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeOfInstanceTransformationData, (void*)offset);
-	glVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_2_LOCATION, 1);
+	GraphicsAPI()->EnableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_2_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(INSTANCE_TRANSFORMATION_ROW_2_LOCATION, 4, GraphicsDataType::Float, false, sizeOfInstanceTransformationData, (void*)offset);
+	GraphicsAPI()->SetVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_2_LOCATION, 1);
 	offset += sizeof(Vector4);
 
-	glEnableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_3_LOCATION);
-	glVertexAttribPointer(INSTANCE_TRANSFORMATION_ROW_3_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeOfInstanceTransformationData, (void*)offset);
-	glVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_3_LOCATION, 1);
+	GraphicsAPI()->EnableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_3_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(INSTANCE_TRANSFORMATION_ROW_3_LOCATION, 4, GraphicsDataType::Float, false, sizeOfInstanceTransformationData, (void*)offset);
+	GraphicsAPI()->SetVertexAttribDivisor(INSTANCE_TRANSFORMATION_ROW_3_LOCATION, 1);
 }
 
 void Renderer::SetAttribPointersForSkeletalMesh()
@@ -1490,38 +1497,38 @@ void Renderer::SetAttribPointersForSkeletalMesh()
 
 	long long offset = 0;
 	// Vertex color
-	glEnableVertexAttribArray(VERTEX_COLOR_LOCATION);
-	glVertexAttribPointer(VERTEX_COLOR_LOCATION, 4, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+	GraphicsAPI()->EnableVertexAttribArray(VERTEX_COLOR_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(VERTEX_COLOR_LOCATION, 4, GraphicsDataType::Float, false, sizeOfSkeletalMeshVertexData, (void*)offset);
 	offset += sizeof(VertexData::color);
 
 	// Vertex position
-	glEnableVertexAttribArray(VERTEX_POSITION_LOCATION);
-	glVertexAttribPointer(VERTEX_POSITION_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+	GraphicsAPI()->EnableVertexAttribArray(VERTEX_POSITION_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(VERTEX_POSITION_LOCATION, 3, GraphicsDataType::Float, false, sizeOfSkeletalMeshVertexData, (void*)offset);
 	offset += sizeof(VertexData::position);
 
 	// Vertex normal
-	glEnableVertexAttribArray(VERTEX_NORMAL_LOCATION);
-	glVertexAttribPointer(VERTEX_NORMAL_LOCATION, 3, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+	GraphicsAPI()->EnableVertexAttribArray(VERTEX_NORMAL_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(VERTEX_NORMAL_LOCATION, 3, GraphicsDataType::Float, false, sizeOfSkeletalMeshVertexData, (void*)offset);
 	offset += sizeof(VertexData::normal);
 
 	// Vertex UV
-	glEnableVertexAttribArray(VERTEX_UV_LOCATION);
-	glVertexAttribPointer(VERTEX_UV_LOCATION, 2, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
+	GraphicsAPI()->EnableVertexAttribArray(VERTEX_UV_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(VERTEX_UV_LOCATION, 2, GraphicsDataType::Float, false, sizeOfSkeletalMeshVertexData, (void*)offset);
 	offset += sizeof(VertexData::uv);
 
 	// Bone ID
-	glEnableVertexAttribArray(BONE_ID_LOCATION);
-	glVertexAttribIPointer(BONE_ID_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GL_UNSIGNED_INT, sizeOfSkeletalMeshVertexData, (void*)offset);
-	glVertexAttribDivisor(BONE_ID_LOCATION, 0);
+	GraphicsAPI()->EnableVertexAttribArray(BONE_ID_LOCATION);
+	GraphicsAPI()->SetVertexAttribIPointer(BONE_ID_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GraphicsDataType::UnsignedInt, sizeOfSkeletalMeshVertexData, (void*)offset);
+	GraphicsAPI()->SetVertexAttribDivisor(BONE_ID_LOCATION, 0);
 	offset += sizeof(VertexBoneData::boneIDs);
 
 	// Bone Weight
-	glEnableVertexAttribArray(BONE_WEIGHT_LOCATION);
-	glVertexAttribPointer(BONE_WEIGHT_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GL_FLOAT, GL_FALSE, sizeOfSkeletalMeshVertexData, (void*)offset);
-	glVertexAttribDivisor(BONE_WEIGHT_LOCATION, 0);
+	GraphicsAPI()->EnableVertexAttribArray(BONE_WEIGHT_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(BONE_WEIGHT_LOCATION, MAX_BONE_SIZE_PER_VERTEX, GraphicsDataType::Float, false, sizeOfSkeletalMeshVertexData, (void*)offset);
+	GraphicsAPI()->SetVertexAttribDivisor(BONE_WEIGHT_LOCATION, 0);
 
-	glDisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_2_LOCATION);
-	glDisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_3_LOCATION);
+	GraphicsAPI()->DisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_2_LOCATION);
+	GraphicsAPI()->DisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_3_LOCATION);
 }
 
 void Renderer::SortTransparentInstances()
@@ -1716,7 +1723,7 @@ void GeometryBufferData::GenerateBuffers()
 
 	geometryFrameBuffer->Unbind();
 
-	EXIT_ON_GL_ERROR("GeometryBufferData::GenerateBuffers");
+	EXIT_ON_GRAPHICS_API_ERROR("GeometryBufferData::GenerateBuffers");
 }
 
 void GeometryBufferData::OnViewportSizeChanged(int width, int height)
@@ -1746,13 +1753,13 @@ void GeometryBufferData::BindGBufferDepth(FrameBuffer* drawFrameBuffer)
 	}
 	else
 	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		GraphicsAPI()->BindFrameBuffer(FrameBufferBindTarget::DRAW_FRAMEBUFFER, 0);
 	}
 
-	glBlitFramebuffer(
+	GraphicsAPI()->BlitFrameBuffer(
 		0, 0, bufferWidth, bufferHeight,
 		0, 0, bufferWidth, bufferHeight,
-		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		static_cast<GraphicsClearBufferFlags>(GraphicsClearBuffer::Depth), GraphicsBlitFilter::Nearest);
 }
 
 DeferredRenderingData::DeferredRenderingData()
@@ -1853,7 +1860,7 @@ void DeferredRenderingData::Render()
 
 	MeshUnit* deferredRenderingMeshUnit = deferredRenderingMesh->GetSubMeshes()[0];
 	int facePointCount = deferredRenderingMeshUnit->GetFaceCount() * 3;
-	glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)deferredRenderingMeshUnit->GetVertexStartingIndex(), deferredRenderingMeshUnit->GetBaseVertex());
+	GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)deferredRenderingMeshUnit->GetVertexStartingIndex(), deferredRenderingMeshUnit->GetBaseVertex());
 }
 
 void DeferredRenderingData::OnViewportSizeChanged(int width, int height)

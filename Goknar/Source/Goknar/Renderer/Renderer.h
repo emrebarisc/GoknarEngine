@@ -7,8 +7,6 @@
 #include "Goknar/Model/MeshUnit.h"
 #include "Goknar/Delegates/Delegate.h"
 
-#include "glad/glad.h"
-
 #include <unordered_map>
 #include <vector>
 

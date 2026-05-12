@@ -2,16 +2,11 @@
 
 #include "RenderBuffer.h"
 
-#include "glad/glad.h"
-
-#ifdef GOKNAR_PLATFORM_WINDOWS
-#include <GL/GLU.h>
-#elif defined(GOKNAR_PLATFORM_UNIX)
-#include <GL/gl.h>
-#endif
-
+#include "Goknar/Engine.h"
 #include "Goknar/GoknarAssert.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Managers/ObjectIDManager.h"
+#include "Goknar/Renderer/Framebuffer.h"
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Log.h"
 
@@ -23,7 +18,7 @@ RenderBuffer::RenderBuffer()
 
 RenderBuffer::~RenderBuffer()
 {
-	glDeleteRenderbuffers(1, &rendererRenderBufferId_);
+	engine->GetGraphicsAPI()->DeleteRenderBuffer(rendererRenderBufferId_);
 }
 
 void RenderBuffer::PreInit()
@@ -33,11 +28,11 @@ void RenderBuffer::PreInit()
 		return;
 	}
 
-	glGenRenderbuffers(1, &rendererRenderBufferId_);
-	glBindRenderbuffer((int)renderBufferBindTarget_, rendererRenderBufferId_);
-	glRenderbufferStorage((int)renderBufferBindTarget_, (int)renderBufferInternalType_, width_, height_);
+	rendererRenderBufferId_ = engine->GetGraphicsAPI()->CreateRenderBuffer();
+	engine->GetGraphicsAPI()->BindRenderBuffer(renderBufferBindTarget_, rendererRenderBufferId_);
+	engine->GetGraphicsAPI()->RenderBufferStorage(renderBufferBindTarget_, renderBufferInternalType_, width_, height_);
 
-	EXIT_ON_GL_ERROR("RenderBuffer::Init");
+	EXIT_ON_GRAPHICS_API_ERROR("RenderBuffer::Init");
 }
 
 void RenderBuffer::Init()
@@ -51,26 +46,26 @@ void RenderBuffer::PostInit()
 
 void RenderBuffer::Bind() const
 {
-	glBindRenderbuffer((int)renderBufferBindTarget_, rendererRenderBufferId_);
+	engine->GetGraphicsAPI()->BindRenderBuffer(renderBufferBindTarget_, rendererRenderBufferId_);
 
-	EXIT_ON_GL_ERROR("RenderBuffer::Bind");
+	EXIT_ON_GRAPHICS_API_ERROR("RenderBuffer::Bind");
 }
 
 void RenderBuffer::BindToFrameBuffer() const
 {
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, (int)renderBufferAttachment_, (int)renderBufferBindTarget_, rendererRenderBufferId_);
+	engine->GetGraphicsAPI()->AttachRenderBufferToFrameBuffer(FrameBufferBindTarget::FRAMEBUFFER, renderBufferAttachment_, renderBufferBindTarget_, rendererRenderBufferId_);
 
-	EXIT_ON_GL_ERROR("RenderBuffer::BindToFrameBuffer");
+	EXIT_ON_GRAPHICS_API_ERROR("RenderBuffer::BindToFrameBuffer");
 }
 
 void RenderBuffer::Bind(RenderBufferBindTarget bindTarget) const
 {
-	glBindRenderbuffer((int)bindTarget, rendererRenderBufferId_);
-	EXIT_ON_GL_ERROR("RenderBuffer::Bind(RenderBufferBindTarget)");
+	engine->GetGraphicsAPI()->BindRenderBuffer(bindTarget, rendererRenderBufferId_);
+	EXIT_ON_GRAPHICS_API_ERROR("RenderBuffer::Bind(RenderBufferBindTarget)");
 }
 
 void RenderBuffer::Unbind() const
 {
-	glBindRenderbuffer((int)renderBufferBindTarget_, 0);
-	EXIT_ON_GL_ERROR("RenderBuffer::Unbind");
+	engine->GetGraphicsAPI()->BindRenderBuffer(renderBufferBindTarget_, 0);
+	EXIT_ON_GRAPHICS_API_ERROR("RenderBuffer::Unbind");
 }

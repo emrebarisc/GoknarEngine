@@ -7,6 +7,7 @@
 #include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Managers/CameraManager.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Log.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Scene.h"
@@ -27,79 +28,80 @@ LightManager::~LightManager()
 {
 	if (directionalLightUniformBufferId_)
 	{
-		glDeleteBuffers(1, &directionalLightUniformBufferId_);
+		engine->GetGraphicsAPI()->DeleteBuffer(directionalLightUniformBufferId_);
 	}
 
 	if (directionalLightViewMatrixUniformBufferId_)
 	{
-		glDeleteBuffers(1, &directionalLightViewMatrixUniformBufferId_);
+		engine->GetGraphicsAPI()->DeleteBuffer(directionalLightViewMatrixUniformBufferId_);
 	}
 
 	if (pointLightUniformBufferId_)
 	{
-		glDeleteBuffers(1, &pointLightUniformBufferId_);
+		engine->GetGraphicsAPI()->DeleteBuffer(pointLightUniformBufferId_);
 	}
 
 	if (spotLightUniformBufferId_)
 	{
-		glDeleteBuffers(1, &spotLightUniformBufferId_);
+		engine->GetGraphicsAPI()->DeleteBuffer(spotLightUniformBufferId_);
 	}
 
 	if (spotLightViewMatrixUniformBufferId_)
 	{
-		glDeleteBuffers(1, &spotLightViewMatrixUniformBufferId_);
+		engine->GetGraphicsAPI()->DeleteBuffer(spotLightViewMatrixUniformBufferId_);
 	}
 }
 
 void LightManager::PreInit()
 {
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
 	{
-		glGenBuffers(1, &directionalLightUniformBufferId_);
-		glBindBuffer(GL_UNIFORM_BUFFER, directionalLightUniformBufferId_);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(DirectionalLightBufferInfo), NULL, GL_DYNAMIC_DRAW);
+		directionalLightUniformBufferId_ = graphicsAPI->CreateBuffer();
+		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, directionalLightUniformBufferId_);
+		graphicsAPI->BufferData(GraphicsBufferTarget::UniformBuffer, sizeof(DirectionalLightBufferInfo), NULL, GraphicsBufferUsage::DynamicDraw);
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, DIRECTIONAL_LIGHT_UNIFORM_BIND_INDEX, directionalLightUniformBufferId_);
+		graphicsAPI->BindBufferBase(GraphicsBufferTarget::UniformBuffer, DIRECTIONAL_LIGHT_UNIFORM_BIND_INDEX, directionalLightUniformBufferId_);
 
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 
-		glGenBuffers(1, &directionalLightViewMatrixUniformBufferId_);
-		glBindBuffer(GL_UNIFORM_BUFFER, directionalLightViewMatrixUniformBufferId_);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(Matrix) * MAX_DIRECTIONAL_LIGHT_COUNT, NULL, GL_DYNAMIC_DRAW);
+		directionalLightViewMatrixUniformBufferId_ = graphicsAPI->CreateBuffer();
+		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, directionalLightViewMatrixUniformBufferId_);
+		graphicsAPI->BufferData(GraphicsBufferTarget::UniformBuffer, sizeof(Matrix) * MAX_DIRECTIONAL_LIGHT_COUNT, NULL, GraphicsBufferUsage::DynamicDraw);
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, DIRECTIONAL_LIGHT_VIEW_MATRIX_UNIFORM_BIND_INDEX, directionalLightViewMatrixUniformBufferId_);
+		graphicsAPI->BindBufferBase(GraphicsBufferTarget::UniformBuffer, DIRECTIONAL_LIGHT_VIEW_MATRIX_UNIFORM_BIND_INDEX, directionalLightViewMatrixUniformBufferId_);
 
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 	}
 
 	{
-		glGenBuffers(1, &pointLightUniformBufferId_);
-		glBindBuffer(GL_UNIFORM_BUFFER, pointLightUniformBufferId_);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(PointLightBufferInfo), NULL, GL_DYNAMIC_DRAW);
+		pointLightUniformBufferId_ = graphicsAPI->CreateBuffer();
+		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, pointLightUniformBufferId_);
+		graphicsAPI->BufferData(GraphicsBufferTarget::UniformBuffer, sizeof(PointLightBufferInfo), NULL, GraphicsBufferUsage::DynamicDraw);
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, POINT_LIGHT_UNIFORM_BIND_INDEX, pointLightUniformBufferId_);
+		graphicsAPI->BindBufferBase(GraphicsBufferTarget::UniformBuffer, POINT_LIGHT_UNIFORM_BIND_INDEX, pointLightUniformBufferId_);
 
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 	}
 
 	{
-		glGenBuffers(1, &spotLightUniformBufferId_);
-		glBindBuffer(GL_UNIFORM_BUFFER, spotLightUniformBufferId_);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(SpotLightBufferInfo), NULL, GL_DYNAMIC_DRAW);
+		spotLightUniformBufferId_ = graphicsAPI->CreateBuffer();
+		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, spotLightUniformBufferId_);
+		graphicsAPI->BufferData(GraphicsBufferTarget::UniformBuffer, sizeof(SpotLightBufferInfo), NULL, GraphicsBufferUsage::DynamicDraw);
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, SPOT_LIGHT_UNIFORM_BIND_INDEX, spotLightUniformBufferId_);
+		graphicsAPI->BindBufferBase(GraphicsBufferTarget::UniformBuffer, SPOT_LIGHT_UNIFORM_BIND_INDEX, spotLightUniformBufferId_);
 
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 
-		glGenBuffers(1, &spotLightViewMatrixUniformBufferId_);
-		glBindBuffer(GL_UNIFORM_BUFFER, spotLightViewMatrixUniformBufferId_);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(Matrix) * MAX_SPOT_LIGHT_COUNT, NULL, GL_DYNAMIC_DRAW);
+		spotLightViewMatrixUniformBufferId_ = graphicsAPI->CreateBuffer();
+		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, spotLightViewMatrixUniformBufferId_);
+		graphicsAPI->BufferData(GraphicsBufferTarget::UniformBuffer, sizeof(Matrix) * MAX_SPOT_LIGHT_COUNT, NULL, GraphicsBufferUsage::DynamicDraw);
 
-		glBindBufferBase(GL_UNIFORM_BUFFER, SPOT_LIGHT_VIEW_MATRIX_UNIFORM_BIND_INDEX, spotLightViewMatrixUniformBufferId_);
+		graphicsAPI->BindBufferBase(GraphicsBufferTarget::UniformBuffer, SPOT_LIGHT_VIEW_MATRIX_UNIFORM_BIND_INDEX, spotLightViewMatrixUniformBufferId_);
 
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 	}
 
-	EXIT_ON_GL_ERROR("LightManager::PreInit");
+	EXIT_ON_GRAPHICS_API_ERROR("LightManager::PreInit");
 }
 
 void LightManager::Init()
@@ -137,13 +139,14 @@ void LightManager::UpdateAllDirectionalLightDataOnGPU()
 	}
 	directionalLightBufferInfo.directionalLightCount = directionalLightIndex;
 
-	glBindBuffer(GL_UNIFORM_BUFFER, directionalLightUniformBufferId_);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(directionalLightBufferInfo.directionalLightInfo), &directionalLightBufferInfo);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, directionalLightUniformBufferId_);
+	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, 0, sizeof(directionalLightBufferInfo.directionalLightInfo), &directionalLightBufferInfo);
 
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(directionalLightBufferInfo.directionalLightInfo), sizeof(int), &directionalLightBufferInfo.directionalLightCount);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(directionalLightBufferInfo.directionalLightInfo), sizeof(int), &directionalLightBufferInfo.directionalLightCount);
+	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 
-	EXIT_ON_GL_ERROR("LightManager::InitializeDirectionalLights");
+	EXIT_ON_GRAPHICS_API_ERROR("LightManager::InitializeDirectionalLights");
 }
 
 void LightManager::UpdateAllPointLightDataOnGPU()
@@ -169,13 +172,14 @@ void LightManager::UpdateAllPointLightDataOnGPU()
 	}
 	pointLightBufferInfo.pointLightCount = pointLightIndex;
 
-	glBindBuffer(GL_UNIFORM_BUFFER, pointLightUniformBufferId_);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(pointLightBufferInfo.pointLightInfo), &pointLightBufferInfo);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, pointLightUniformBufferId_);
+	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, 0, sizeof(pointLightBufferInfo.pointLightInfo), &pointLightBufferInfo);
 
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(pointLightBufferInfo.pointLightInfo), sizeof(int), &pointLightBufferInfo.pointLightCount);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(pointLightBufferInfo.pointLightInfo), sizeof(int), &pointLightBufferInfo.pointLightCount);
+	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 
-	EXIT_ON_GL_ERROR("LightManager::InitializePointLights");
+	EXIT_ON_GRAPHICS_API_ERROR("LightManager::InitializePointLights");
 }
 
 void LightManager::UpdateAllSpotLightDataOnGPU()
@@ -203,13 +207,14 @@ void LightManager::UpdateAllSpotLightDataOnGPU()
 	}
 	spotLightBufferInfo.spotLightCount = spotLightIndex;
 
-	glBindBuffer(GL_UNIFORM_BUFFER, spotLightUniformBufferId_);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(spotLightBufferInfo.spotLightInfo), &spotLightBufferInfo);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, spotLightUniformBufferId_);
+	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, 0, sizeof(spotLightBufferInfo.spotLightInfo), &spotLightBufferInfo);
 
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(spotLightBufferInfo.spotLightInfo), sizeof(int), &spotLightBufferInfo.spotLightCount);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(spotLightBufferInfo.spotLightInfo), sizeof(int), &spotLightBufferInfo.spotLightCount);
+	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 
-	EXIT_ON_GL_ERROR("LightManager::InitializeSpotLights");
+	EXIT_ON_GRAPHICS_API_ERROR("LightManager::InitializeSpotLights");
 }
 
 void LightManager::RenderShadowMaps()
@@ -220,7 +225,7 @@ void LightManager::RenderShadowMaps()
 	Camera* mainCamera = engine->GetCameraManager()->GetActiveCamera();
 
 	// Only draw the depth buffer
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	engine->GetGraphicsAPI()->SetColorMask(false, false, false, false);
 
 	const std::vector<PointLight*> pointLights = mainScene->GetPointLights();
 	size_t pointLightCount = pointLights.size();
@@ -269,7 +274,7 @@ void LightManager::RenderShadowMaps()
 		spotLight->RenderShadowMap();
 	}
 
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	engine->GetGraphicsAPI()->SetColorMask(true, true, true, true);
 	cameraManager->SetActiveCamera(mainCamera);
 
 	BindShadowViewProjectionMatrices();
@@ -278,7 +283,7 @@ void LightManager::RenderShadowMaps()
 	UpdateAllPointLightDataOnGPU();
 	UpdateAllSpotLightDataOnGPU();
 
-	EXIT_ON_GL_ERROR("LightManager::RenderShadowMaps");
+	EXIT_ON_GRAPHICS_API_ERROR("LightManager::RenderShadowMaps");
 }
 
 void LightManager::SetShadowRenderPassShaderUniforms(const Shader* shader) const
@@ -300,22 +305,23 @@ void LightManager::BindShadowViewProjectionMatrices()
 	Scene* mainScene = engine->GetApplication()->GetMainScene();
 
 	const std::vector<DirectionalLight*> directionalLights = mainScene->GetDirectionalLights();
-	glBindBuffer(GL_UNIFORM_BUFFER, directionalLightViewMatrixUniformBufferId_);
+	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, directionalLightViewMatrixUniformBufferId_);
 	for (int directionalLightIndex = 0; directionalLightIndex < directionalLights.size(); ++directionalLightIndex)
 	{
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix) * directionalLightIndex, sizeof(Matrix), &directionalLights[directionalLightIndex]->GetBiasedShadowViewProjectionMatrix());
+		graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(Matrix) * directionalLightIndex, sizeof(Matrix), &directionalLights[directionalLightIndex]->GetBiasedShadowViewProjectionMatrix());
 	}
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 
 	const std::vector<SpotLight*> spotLights = mainScene->GetSpotLights();
-	glBindBuffer(GL_UNIFORM_BUFFER, spotLightViewMatrixUniformBufferId_);
+	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, spotLightViewMatrixUniformBufferId_);
 	for (int spotLightIndex = 0; spotLightIndex < spotLights.size(); ++spotLightIndex)
 	{
-		glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix) * spotLightIndex, sizeof(Matrix), &spotLights[spotLightIndex]->GetBiasedShadowViewProjectionMatrix());
+		graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(Matrix) * spotLightIndex, sizeof(Matrix), &spotLights[spotLightIndex]->GetBiasedShadowViewProjectionMatrix());
 	}
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 
-	EXIT_ON_GL_ERROR("LightManager::BindShadowViewProjectionMatrices");
+	EXIT_ON_GRAPHICS_API_ERROR("LightManager::BindShadowViewProjectionMatrices");
 }
 
 void LightManager::OnDirectionalLightAdded(DirectionalLight* directionalLight)

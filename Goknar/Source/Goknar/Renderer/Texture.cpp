@@ -2,18 +2,13 @@
 
 #include "Texture.h"
 
-#include "glad/glad.h"
-
-#ifdef GOKNAR_PLATFORM_WINDOWS
-#include <GL/GLU.h>
-#elif defined(GOKNAR_PLATFORM_UNIX)
-#include <GL/gl.h>
-#endif
-
 #include "Goknar/Contents/Image.h"
+#include "Goknar/Engine.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/IO/IOManager.h"
 #include "Goknar/Log.h"
 #include "Goknar/Renderer/Shader.h"
+#include "Goknar/Renderer/Framebuffer.h"
 
 #include <cstring>
 
@@ -63,7 +58,7 @@ Texture::~Texture()
 		atlasProxySourceImage_->UnregisterTextureAtlasProxy(this);
 	}
 
-	glDeleteTextures(1, &rendererTextureId_);
+	engine->GetGraphicsAPI()->DeleteTexture(rendererTextureId_);
 	delete[] buffer_;
 }
 
@@ -74,10 +69,10 @@ void Texture::ReadFromFrameBuffer(GEuint framebuffer)
 		return;
 	}
 	delete[] buffer_;
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	engine->GetGraphicsAPI()->BindFrameBuffer(FrameBufferBindTarget::FRAMEBUFFER, framebuffer);
 	buffer_ = new unsigned char[width_ * height_ * channels_];
-	glReadPixels(0, 0, width_, height_, (int)textureFormat_, GL_UNSIGNED_BYTE, (GLvoid*)buffer_);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	engine->GetGraphicsAPI()->ReadPixels(0, 0, width_, height_, textureFormat_, TextureType::UNSIGNED_BYTE, const_cast<unsigned char*>(buffer_));
+	engine->GetGraphicsAPI()->BindFrameBuffer(FrameBufferBindTarget::FRAMEBUFFER, 0);
 }
 
 void Texture::Save(std::string path)
@@ -97,10 +92,10 @@ void Texture::GenerateMipmap() const
 		return;
 	}
 
-	glBindTexture((int)textureBindTarget_, rendererTextureId_);
-	glGenerateMipmap((int)textureBindTarget_);
-	glBindTexture((int)textureBindTarget_, 0);
-	EXIT_ON_GL_ERROR("Texture::GenerateMipmap");
+	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, rendererTextureId_);
+	engine->GetGraphicsAPI()->GenerateMipmap(textureBindTarget_);
+	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, 0);
+	EXIT_ON_GRAPHICS_API_ERROR("Texture::GenerateMipmap");
 }
 
 void Texture::PreInit()
@@ -158,49 +153,47 @@ void Texture::PreInit()
 			textureInternalFormat_ = TextureInternalFormat::RGBA;
 		}
 
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		engine->GetGraphicsAPI()->SetBlendFunction(GraphicsBlendFactor::SourceAlpha, GraphicsBlendFactor::OneMinusSourceAlpha);
 	}
 
-	int textureBindTargetInt = (int)textureBindTarget_;
+	rendererTextureId_ = engine->GetGraphicsAPI()->CreateTexture();
+	engine->GetGraphicsAPI()->ActivateTextureUnit(rendererTextureId_);
+	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, rendererTextureId_);
 
-	glGenTextures(1, &rendererTextureId_);
-	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
-	glBindTexture(textureBindTargetInt, rendererTextureId_);
+	engine->GetGraphicsAPI()->PixelStore(GraphicsPixelStoreParameter::UnpackAlignment, 1);
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-	glTexImage2D((int)textureImageTarget_, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
+	engine->GetGraphicsAPI()->SetTextureImage2D(textureImageTarget_, 0, 0, textureInternalFormat_, width_, height_, 0, textureFormat_, textureType_, buffer_);
 
 	if (textureImageTarget_ == TextureImageTarget::TEXTURE_CUBE_MAP_POSITIVE_X)
 	{
 		for (int i = 1; i < 6; ++i)
 		{
-			glTexImage2D((int)textureImageTarget_ + i, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
+			engine->GetGraphicsAPI()->SetTextureImage2D(textureImageTarget_, i, 0, textureInternalFormat_, width_, height_, 0, textureFormat_, textureType_, buffer_);
 		}
 	}
 
-	glTexParameteri(textureBindTargetInt, GL_TEXTURE_COMPARE_MODE, (int)textureCompareMode_);
+	engine->GetGraphicsAPI()->SetTextureCompareMode(textureBindTarget_, textureCompareMode_);
 
 	if (textureCompareMode_ == TextureCompareMode::COMPARE_REF_TO_TEXTURE)
 	{
-		glTexParameteri(textureBindTargetInt, GL_TEXTURE_COMPARE_FUNC, (int)textureCompareFunc_);
+		engine->GetGraphicsAPI()->SetTextureCompareFunc(textureBindTarget_, textureCompareFunc_);
 	}
 
-	glTexParameteri(textureBindTargetInt, GL_TEXTURE_MIN_FILTER, (int)minFilter_);
-	glTexParameteri(textureBindTargetInt, GL_TEXTURE_MAG_FILTER, (int)magFilter_);
+	engine->GetGraphicsAPI()->SetTextureMinFilter(textureBindTarget_, minFilter_);
+	engine->GetGraphicsAPI()->SetTextureMagFilter(textureBindTarget_, magFilter_);
 
-	glTexParameteri(textureBindTargetInt, GL_TEXTURE_WRAP_S, (int)textureWrappingS_);
-	glTexParameteri(textureBindTargetInt, GL_TEXTURE_WRAP_T, (int)textureWrappingT_);
-	glTexParameteri(textureBindTargetInt, GL_TEXTURE_WRAP_R, (int)textureWrappingR_);
+	engine->GetGraphicsAPI()->SetTextureWrappingS(textureBindTarget_, textureWrappingS_);
+	engine->GetGraphicsAPI()->SetTextureWrappingT(textureBindTarget_, textureWrappingT_);
+	engine->GetGraphicsAPI()->SetTextureWrappingR(textureBindTarget_, textureWrappingR_);
 
 	if (generateMipmap_ && textureFormat_ != TextureFormat::DEPTH && textureFormat_ != TextureFormat::DEPTH_STENCIL)
 	{
-		glGenerateMipmap(textureBindTargetInt);
+		engine->GetGraphicsAPI()->GenerateMipmap(textureBindTarget_);
 	}
 	
-	glBindTexture(textureBindTargetInt, 0);
+	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, 0);
 	
-	EXIT_ON_GL_ERROR("Texture::Init");
+	EXIT_ON_GRAPHICS_API_ERROR("Texture::Init");
 
 	delete[] buffer_;
 	buffer_ = nullptr;
@@ -235,25 +228,25 @@ void Texture::Bind(const Shader* shader) const
 	}
 
 	BindToTextureUnit(effectiveRendererTextureId);
-	EXIT_ON_GL_ERROR("Texture::Bind");
+	EXIT_ON_GRAPHICS_API_ERROR("Texture::Bind");
 }
 
 void Texture::BindToTextureUnit(unsigned int textureUnit) const
 {
-	glActiveTexture(GL_TEXTURE0 + textureUnit);
-	glBindTexture((int)textureBindTarget_, GetEffectiveRendererTextureId());
-	EXIT_ON_GL_ERROR("Texture::BindToTextureUnit");
+	engine->GetGraphicsAPI()->ActivateTextureUnit(textureUnit);
+	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, GetEffectiveRendererTextureId());
+	EXIT_ON_GRAPHICS_API_ERROR("Texture::BindToTextureUnit");
 }
 
 void Texture::BindAsImage(unsigned int imageUnit, TextureImageAccess access) const
 {
-	glBindImageTexture(imageUnit, GetEffectiveRendererTextureId(), 0, GL_FALSE, 0, (int)access, (int)textureInternalFormat_);
-	EXIT_ON_GL_ERROR("Texture::BindAsImage");
+	engine->GetGraphicsAPI()->BindImageTexture(imageUnit, GetEffectiveRendererTextureId(), 0, false, 0, access, textureInternalFormat_);
+	EXIT_ON_GRAPHICS_API_ERROR("Texture::BindAsImage");
 }
 
 void Texture::Unbind()
 {
-	glBindTexture((int)textureBindTarget_, 0);
+	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, 0);
 }
 
 bool Texture::LoadTextureImage()
@@ -268,24 +261,24 @@ void Texture::UpdateSizeOnGPU()
 		return;
 	}
 
-	glActiveTexture(GL_TEXTURE0 + rendererTextureId_);
-	glBindTexture((int)textureBindTarget_, rendererTextureId_);
-	glTexImage2D((int)textureImageTarget_, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
+	engine->GetGraphicsAPI()->ActivateTextureUnit(rendererTextureId_);
+	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, rendererTextureId_);
+	engine->GetGraphicsAPI()->SetTextureImage2D(textureImageTarget_, 0, 0, textureInternalFormat_, width_, height_, 0, textureFormat_, textureType_, buffer_);
 
 	if (textureImageTarget_ == TextureImageTarget::TEXTURE_CUBE_MAP_POSITIVE_X)
 	{
 		for (int i = 1; i < 6; ++i)
 		{
-			glTexImage2D((int)textureImageTarget_ + i, 0, (int)textureInternalFormat_, width_, height_, 0, (int)textureFormat_, (int)textureType_, buffer_);
+			engine->GetGraphicsAPI()->SetTextureImage2D(textureImageTarget_, i, 0, textureInternalFormat_, width_, height_, 0, textureFormat_, textureType_, buffer_);
 		}
 	}
 
 	if (generateMipmap_ && textureFormat_ != TextureFormat::DEPTH && textureFormat_ != TextureFormat::DEPTH_STENCIL)
 	{
-		glGenerateMipmap((int)textureBindTarget_);
+		engine->GetGraphicsAPI()->GenerateMipmap(textureBindTarget_);
 	}
 
-	glBindTexture((int)textureBindTarget_, 0);
+	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, 0);
 }
 
 void Texture::SetAtlasTexture(Texture* atlasTexture, float uMin, float vMin, float uMax, float vMax)

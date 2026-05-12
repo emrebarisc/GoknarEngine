@@ -7,6 +7,7 @@
 
 class DebugDrawer;
 
+class IGraphicsAPI;
 class TimeDependentObject;
 class Application;
 class CameraManager;
@@ -71,6 +72,11 @@ public:
 	inline Renderer* GetRenderer() const
 	{
 		return renderer_;
+	}
+
+	inline IGraphicsAPI* GetGraphicsAPI() const
+	{
+		return graphicsAPI_;
 	}
 
 	void AddInstancedStaticMeshToRenderer(InstancedStaticMesh* instancedStaticMesh);
@@ -177,6 +183,7 @@ private:
 
 	DebugDrawer* debugDrawer_{ nullptr };
 
+	IGraphicsAPI* graphicsAPI_{ nullptr };
 	InputManager* inputManager_;
 	ResourceManager* resourceManager_;
 	ObjectManager* objectManager_;

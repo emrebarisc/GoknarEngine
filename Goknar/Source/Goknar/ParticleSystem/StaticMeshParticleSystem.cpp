@@ -5,6 +5,7 @@
 #include "Goknar/Contents/Image.h"
 #include "Goknar/Engine.h"
 #include "Goknar/GoknarAssert.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Materials/Material.h"
 #include "Goknar/Materials/MaterialInstance.h"
 #include "Goknar/Model/MeshUnit.h"
@@ -14,8 +15,6 @@
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
 #include "Goknar/Renderer/ShaderTypes.h"
-
-#include <glad/glad.h>
 
 #include <limits>
 
@@ -80,9 +79,9 @@ void StaticMeshParticleSystem::Render(const Camera*) const
 
 	BindRenderBuffers();
 
-	glBindVertexArray(GetDummyVertexArrayObjectId());
+	engine->GetGraphicsAPI()->BindVertexArray(GetDummyVertexArrayObjectId());
 	engine->GetRenderer()->BindStaticMeshBuffers();
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, GetDrawIndirectBufferId());
+	engine->GetGraphicsAPI()->BindBuffer(GraphicsBufferTarget::DrawIndirectBuffer, GetDrawIndirectBufferId());
 
 	for (std::uint32_t commandIndex = 0u; commandIndex < static_cast<std::uint32_t>(staticMeshSubmeshRenderData_.size()); ++commandIndex)
 	{
@@ -100,21 +99,21 @@ void StaticMeshParticleSystem::Render(const Camera*) const
 
 		if (renderData.material && renderData.material->GetShadingModel() == MaterialShadingModel::TwoSided)
 		{
-			glDisable(GL_CULL_FACE);
+			engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::CullFace, false);
 		}
 		else
 		{
-			glEnable(GL_CULL_FACE);
+			engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::CullFace, true);
 		}
 
 		const void* indirectCommandOffset = reinterpret_cast<const void*>(
 			static_cast<std::uintptr_t>(commandIndex * sizeof(GPUParticleDrawElementsIndirectCommand)));
-		glDrawElementsIndirect(GL_TRIANGLES, GL_UNSIGNED_INT, indirectCommandOffset);
+		engine->GetGraphicsAPI()->DrawElementsIndirect(GraphicsPrimitive::Triangles, GraphicsDataType::UnsignedInt, indirectCommandOffset);
 	}
 
-	glEnable(GL_CULL_FACE);
-	glBindBuffer(GL_DRAW_INDIRECT_BUFFER, 0);
-	glBindVertexArray(0);
+	engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::CullFace, true);
+	engine->GetGraphicsAPI()->BindBuffer(GraphicsBufferTarget::DrawIndirectBuffer, 0);
+	engine->GetGraphicsAPI()->BindVertexArray(0);
 }
 
 void StaticMeshParticleSystem::SetStaticMesh(const StaticMesh* staticMesh)
@@ -173,7 +172,7 @@ void StaticMeshParticleSystem::RecreateDrawIndirectBuffer()
 		return;
 	}
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, GetDrawIndirectBufferId());
+	engine->GetGraphicsAPI()->BindBuffer(GraphicsBufferTarget::ShaderStorageBuffer, GetDrawIndirectBufferId());
 
 	if (!staticMeshSubmeshRenderData_.empty())
 	{
@@ -191,19 +190,19 @@ void StaticMeshParticleSystem::RecreateDrawIndirectBuffer()
 			drawCommands.push_back(drawCommand);
 		}
 
-		glBufferData(
-			GL_SHADER_STORAGE_BUFFER,
+		engine->GetGraphicsAPI()->BufferData(
+			GraphicsBufferTarget::ShaderStorageBuffer,
 			static_cast<GEsizeiptr>(drawCommands.size() * sizeof(GPUParticleDrawElementsIndirectCommand)),
 			drawCommands.data(),
-			GL_DYNAMIC_DRAW);
+			GraphicsBufferUsage::DynamicDraw);
 	}
 	else
 	{
 		const GPUParticleDrawElementsIndirectCommand drawCommand{};
-		glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUParticleDrawElementsIndirectCommand), &drawCommand, GL_DYNAMIC_DRAW);
+		engine->GetGraphicsAPI()->BufferData(GraphicsBufferTarget::ShaderStorageBuffer, sizeof(GPUParticleDrawElementsIndirectCommand), &drawCommand, GraphicsBufferUsage::DynamicDraw);
 	}
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	engine->GetGraphicsAPI()->BindBuffer(GraphicsBufferTarget::ShaderStorageBuffer, 0);
 }
 
 void StaticMeshParticleSystem::DispatchFinalizePass() const

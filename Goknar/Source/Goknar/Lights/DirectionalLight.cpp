@@ -133,5 +133,5 @@ void DirectionalLight::RenderShadowMap()
 
 	shadowMapFrameBuffer_->Unbind();
 
-	EXIT_ON_GL_ERROR("DirectionalLight::RenderShadowMap");
+	EXIT_ON_GRAPHICS_API_ERROR("DirectionalLight::RenderShadowMap");
 }

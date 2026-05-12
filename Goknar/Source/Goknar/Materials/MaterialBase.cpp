@@ -6,6 +6,7 @@
 
 #include "Goknar/Application.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Log.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Renderer.h"
@@ -157,11 +158,11 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 
 	if (cullBackFaces)
 	{
-		glEnable(GL_CULL_FACE);
+		engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::CullFace, true);
 	}
 	else
 	{
-		glDisable(GL_CULL_FACE);
+		engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::CullFace, false);
 	}
 
 	if (renderPassType == RenderPassType::Forward ||
