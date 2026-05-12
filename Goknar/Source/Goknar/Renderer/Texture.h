@@ -302,6 +302,13 @@ public:
 		return atlasTexture_;
 	}
 
+	void SetTextureAtlasProxySourceImage(Image* image);
+
+	Image* GetTextureAtlasProxySourceImage() const
+	{
+		return atlasProxySourceImage_;
+	}
+
 	std::string GetAtlasUVTransformUniformName() const;
 
 	float GetAtlasUScale() const
@@ -505,6 +512,7 @@ private:
 	const unsigned char* buffer_{ nullptr };
 	GEuint rendererTextureId_{ 0 };
 	Texture* atlasTexture_{ nullptr };
+	Image* atlasProxySourceImage_{ nullptr };
 	float atlasUScale_{ 1.0f };
 	float atlasVScale_{ 1.0f };
 	float atlasUOffset_{ 0.0f };

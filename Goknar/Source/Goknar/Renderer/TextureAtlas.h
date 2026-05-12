@@ -141,7 +141,6 @@ private:
 	bool isPreInitialized_{ false };
 	bool isInitialized_{ false };
 	bool isPostInitialized_{ false };
-	bool textureRegisteredToScene_{ false };
 };
 
 #endif

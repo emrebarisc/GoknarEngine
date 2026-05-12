@@ -43,6 +43,7 @@ public:
 	void PostInit();
 
 	void BeginGame();
+	void InitializePendingObjectsAndComponents();
 
 	void PreInitObjects();
 	void InitObjects();
@@ -157,6 +158,7 @@ public:
 
 	void AddObjectToDestroy(ObjectBase* object);
 	void AddComponentToDestroy(Component* component);
+	void FlushPendingDestroy();
 
 	void Exit();
 

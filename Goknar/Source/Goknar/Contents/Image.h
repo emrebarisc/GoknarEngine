@@ -136,7 +136,6 @@ private:
 	void ApplyTextureAtlasRegionToTexture(Texture* texture, Texture* atlasTexture, const TextureAtlasRegion& atlasRegion, bool applyImageTextureProperties);
 
 	Texture* generatedTexture_;
-	bool generatedTextureRegisteredToScene_{ false };
 	std::vector<Texture*> atlasProxyTextures_;
 	TextureAtlas* textureAtlas_{ nullptr };
 	TextureAtlasRegion atlasRegion_;
@@ -157,4 +156,4 @@ private:
 	TextureWrapping textureWrappingS_{ TextureWrapping::REPEAT };
 };
 
-#endif 
+#endif

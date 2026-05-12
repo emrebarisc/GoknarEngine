@@ -31,7 +31,7 @@ void main()
 	vec2 texelSize = 1.0 / vec2(textureSize(bloomBlurInputTexture, 0));
 	vec2 blurDirection = horizontal == 1 ? vec2(texelSize.x, 0.0) : vec2(0.0, texelSize.y);
 
-	vec4 centerSample = texture(bloomBlurInputTexture, uv);
+	vec4 centerSample = textureLod(bloomBlurInputTexture, uv, 0.0);
 	float radiusFactor = pow(clamp(centerSample.a, 0.0, 1.0), bloomBlurRadiusCurve);
 	float blurRadius = mix(bloomMinBlurRadius, bloomMaxBlurRadius, radiusFactor);
 
@@ -40,8 +40,8 @@ void main()
 	for (int weightIndex = 1; weightIndex < 5; ++weightIndex)
 	{
 		vec2 sampleOffset = blurDirection * float(weightIndex) * blurRadius;
-		vec4 positiveSample = texture(bloomBlurInputTexture, uv + sampleOffset);
-		vec4 negativeSample = texture(bloomBlurInputTexture, uv - sampleOffset);
+		vec4 positiveSample = textureLod(bloomBlurInputTexture, uv + sampleOffset, 0.0);
+		vec4 negativeSample = textureLod(bloomBlurInputTexture, uv - sampleOffset, 0.0);
 		blurredColor += positiveSample.rgb * weights[weightIndex];
 		blurredColor += negativeSample.rgb * weights[weightIndex];
 		propagatedStrength = max(propagatedStrength, max(positiveSample.a, negativeSample.a));

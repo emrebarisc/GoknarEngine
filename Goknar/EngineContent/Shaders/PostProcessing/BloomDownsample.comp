@@ -18,15 +18,15 @@ void main()
 	vec2 uv = (vec2(pixelCoordinates) + vec2(0.5)) / vec2(outputSize);
 	vec2 texelSize = 1.0 / vec2(textureSize(bloomDownsampleInputTexture, 0));
 
-	vec4 centerSample = texture(bloomDownsampleInputTexture, uv);
-	vec4 topLeftSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(-1.0, -1.0));
-	vec4 topRightSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(1.0, -1.0));
-	vec4 bottomLeftSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(-1.0, 1.0));
-	vec4 bottomRightSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(1.0, 1.0));
-	vec4 leftSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(-2.0, 0.0));
-	vec4 rightSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(2.0, 0.0));
-	vec4 topSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(0.0, -2.0));
-	vec4 bottomSample = texture(bloomDownsampleInputTexture, uv + texelSize * vec2(0.0, 2.0));
+	vec4 centerSample = textureLod(bloomDownsampleInputTexture, uv, 0.0);
+	vec4 topLeftSample = textureLod(bloomDownsampleInputTexture, uv + texelSize * vec2(-1.0, -1.0), 0.0);
+	vec4 topRightSample = textureLod(bloomDownsampleInputTexture, uv + texelSize * vec2(1.0, -1.0), 0.0);
+	vec4 bottomLeftSample = textureLod(bloomDownsampleInputTexture, uv + texelSize * vec2(-1.0, 1.0), 0.0);
+	vec4 bottomRightSample = textureLod(bloomDownsampleInputTexture, uv + texelSize * vec2(1.0, 1.0), 0.0);
+	vec4 leftSample = textureLod(bloomDownsampleInputTexture, uv + texelSize * vec2(-2.0, 0.0), 0.0);
+	vec4 rightSample = textureLod(bloomDownsampleInputTexture, uv + texelSize * vec2(2.0, 0.0), 0.0);
+	vec4 topSample = textureLod(bloomDownsampleInputTexture, uv + texelSize * vec2(0.0, -2.0), 0.0);
+	vec4 bottomSample = textureLod(bloomDownsampleInputTexture, uv + texelSize * vec2(0.0, 2.0), 0.0);
 
 	vec4 sum =
 		centerSample * 4.0 +

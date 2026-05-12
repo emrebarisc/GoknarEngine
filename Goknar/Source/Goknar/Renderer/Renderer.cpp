@@ -511,7 +511,6 @@ void Renderer::ApplyPostProcessing(DeferredRenderingData* deferredRenderingData,
 
 	const int width = deferredRenderingData->geometryBufferData->bufferWidth;
 	const int height = deferredRenderingData->geometryBufferData->bufferHeight;
-
 	Texture* finalTexture = deferredRenderingData->GetSceneTexture();
 	FrameBuffer* finalFrameBuffer = deferredRenderingData->GetSceneFrameBuffer();
 

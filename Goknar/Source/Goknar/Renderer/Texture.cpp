@@ -58,6 +58,11 @@ Texture::Texture(Image* image) :
 
 Texture::~Texture()
 {
+	if (atlasProxySourceImage_)
+	{
+		atlasProxySourceImage_->UnregisterTextureAtlasProxy(this);
+	}
+
 	glDeleteTextures(1, &rendererTextureId_);
 	delete[] buffer_;
 }
@@ -303,6 +308,11 @@ void Texture::SetAtlasTexture(Texture* atlasTexture, float uMin, float vMin, flo
 	}
 }
 
+void Texture::SetTextureAtlasProxySourceImage(Image* image)
+{
+	atlasProxySourceImage_ = image;
+}
+
 std::string Texture::GetAtlasUVTransformUniformName() const
 {
 	return name_ + "_UVTransform";
@@ -310,7 +320,7 @@ std::string Texture::GetAtlasUVTransformUniformName() const
 
 GEuint Texture::GetEffectiveRendererTextureId() const
 {
-	return atlasTexture_ ? atlasTexture_->GetRendererTextureId() : rendererTextureId_;
+	return atlasTexture_ ? atlasTexture_->GetOwnedRendererTextureId() : rendererTextureId_;
 }
 
 void Texture::UpdateBufferOnGPU()

@@ -47,10 +47,7 @@ Image::Image(const std::string& path, int width, int height, int channels, unsig
 
 Image::~Image()
 {
-	if (generatedTexture_ && !generatedTextureRegisteredToScene_)
-	{
-		delete generatedTexture_;
-	}
+	delete generatedTexture_;
 
 	delete[] buffer_;
 	buffer_ = nullptr;
@@ -61,7 +58,6 @@ Texture* Image::GetOrCreateGeneratedTexture()
 	if (!generatedTexture_)
 	{
 		generatedTexture_ = hasAtlasRegion_ ? new Texture() : new Texture(this);
-		generatedTextureRegisteredToScene_ = false;
 
 		if (!name_.empty())
 		{
@@ -88,6 +84,7 @@ void Image::RegisterTextureAtlasProxy(Texture* texture)
 	{
 		atlasProxyTextures_.push_back(texture);
 	}
+	texture->SetTextureAtlasProxySourceImage(this);
 
 	if (!hasAtlasRegion_ && canUseTextureAtlas_)
 	{
@@ -111,6 +108,11 @@ void Image::UnregisterTextureAtlasProxy(Texture* texture)
 	atlasProxyTextures_.erase(
 		std::remove(atlasProxyTextures_.begin(), atlasProxyTextures_.end(), texture),
 		atlasProxyTextures_.end());
+
+	if (texture->GetTextureAtlasProxySourceImage() == this)
+	{
+		texture->SetTextureAtlasProxySourceImage(nullptr);
+	}
 }
 
 void Image::ApplyTextureAtlasRegionToTexture(Texture* texture, Texture* atlasTexture, const TextureAtlasRegion& atlasRegion, bool applyImageTextureProperties)
@@ -163,13 +165,10 @@ void Image::PreInit()
 {
 	if (generatedTexture_)
 	{
-		if (!generatedTextureRegisteredToScene_ &&
-			!generatedTexture_->GetUsesAtlasTexture() &&
+		if (!generatedTexture_->GetUsesAtlasTexture() &&
 			!generatedTexture_->GetWaitsForTextureAtlas())
 		{
 			generatedTexture_->PreInit();
-			engine->GetApplication()->GetMainScene()->AddTexture(generatedTexture_);
-			generatedTextureRegisteredToScene_ = true;
 		}
 
 		return;
@@ -183,8 +182,6 @@ void Image::PreInit()
 	}
 
 	generatedTexture_->PreInit();
-	engine->GetApplication()->GetMainScene()->AddTexture(generatedTexture_);
-	generatedTextureRegisteredToScene_ = true;
 }
 
 void Image::Init()

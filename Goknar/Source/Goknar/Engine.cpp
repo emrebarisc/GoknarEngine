@@ -23,8 +23,6 @@
 #include "Renderer/ShaderBuilder.h"
 #include "UI/HUD.h"
 
-#define GOKNAR_EDITOR false
-
 GOKNAR_API Engine* engine;
 
 Engine::Engine()
@@ -291,6 +289,49 @@ void Engine::BeginGame()
 {
 	BeginGameComponents();
 	BeginGameObjects();
+}
+
+void Engine::InitializePendingObjectsAndComponents()
+{
+	if (hasUninitializedComponents_)
+	{
+		PreInitComponents();
+	}
+
+	if (hasUninitializedObjects_)
+	{
+		PreInitObjects();
+	}
+
+	if (hasUninitializedComponents_)
+	{
+		InitComponents();
+	}
+
+	if (hasUninitializedObjects_)
+	{
+		InitObjects();
+	}
+
+	if (hasUninitializedComponents_)
+	{
+		PostInitComponents();
+	}
+
+	if (hasUninitializedObjects_)
+	{
+		PostInitObjects();
+	}
+
+	if (hasUninitializedComponents_)
+	{
+		BeginGameComponents();
+	}
+
+	if (hasUninitializedObjects_)
+	{
+		BeginGameObjects();
+	}
 }
 
 void Engine::PreInitObjects()
@@ -667,6 +708,14 @@ void Engine::AddComponentToDestroy(Component* component)
 {
 	hasObjectsOrComponentsPendingDestroy_ = true;
 	componentsPendingDestroy_.emplace_back(component);
+}
+
+void Engine::FlushPendingDestroy()
+{
+	if (hasObjectsOrComponentsPendingDestroy_)
+	{
+		DestroyAllPendingObjectAndComponents();
+	}
 }
 
 void Engine::RemoveComponent(Component* component)

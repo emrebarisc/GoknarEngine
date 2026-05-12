@@ -149,6 +149,7 @@ public:
 	void PreInit();
 	void Init();
 	void PostInit();
+	void InitializePendingMaterials();
 
 	ResourceContainer* GetResourceContainer() const
 	{

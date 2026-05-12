@@ -140,15 +140,114 @@ void Scene::PostInit()
 
 void Scene::ReadSceneData(const std::string& filePath)
 {
+	path_ = filePath;
     SceneParser::Parse(this, ContentDir + filePath);
 }
 
-void Scene::AddDirectionalLight(DirectionalLight* directionalLight)
+void Scene::AddObject(ObjectBase* object, bool isFromReferencedScene)
 {
-	directionalLights_.push_back(directionalLight);
+	if (!object)
+	{
+		return;
+	}
+
+	if (objectReferencedSceneState_.find(object) == objectReferencedSceneState_.end())
+	{
+		objects_.push_back(object);
+	}
+
+	objectReferencedSceneState_[object] = isFromReferencedScene;
+}
+
+void Scene::RemoveObject(ObjectBase* object)
+{
+	if (!object)
+	{
+		return;
+	}
+
+	const std::vector<ObjectBase*> childObjects = object->GetChildren();
+	for (ObjectBase* childObject : childObjects)
+	{
+		RemoveObject(childObject);
+	}
+
+	auto objectIterator = objects_.begin();
+	while (objectIterator != objects_.end())
+	{
+		if (*objectIterator == object)
+		{
+			objects_.erase(objectIterator);
+			break;
+		}
+
+		++objectIterator;
+	}
+
+	objectReferencedSceneState_.erase(object);
+
+	auto sceneReferenceIterator = sceneReferences_.begin();
+	while (sceneReferenceIterator != sceneReferences_.end())
+	{
+		if (sceneReferenceIterator->sceneRootObject == object)
+		{
+			sceneReferenceIterator = sceneReferences_.erase(sceneReferenceIterator);
+			continue;
+		}
+
+		++sceneReferenceIterator;
+	}
+}
+
+void Scene::DestroyObjects()
+{
+	std::vector<ObjectBase*> objectsToDestroy = objects_;
+	objects_.clear();
+	objectReferencedSceneState_.clear();
+	sceneReferences_.clear();
+
+	for (ObjectBase* object : objectsToDestroy)
+	{
+		if (object)
+		{
+			object->Destroy();
+		}
+	}
+}
+
+bool Scene::GetIsObjectFromReferencedScene(ObjectBase* object) const
+{
+	auto objectIterator = objectReferencedSceneState_.find(object);
+	return objectIterator != objectReferencedSceneState_.end() && objectIterator->second;
+}
+
+void Scene::AddSceneReference(const SceneReference& sceneReference)
+{
+	if (sceneReference.path.empty())
+	{
+		return;
+	}
+
+	sceneReferences_.push_back(sceneReference);
+}
+
+void Scene::AddDirectionalLight(DirectionalLight* directionalLight, bool isFromReferencedScene)
+{
+	if (!directionalLight)
+	{
+		return;
+	}
+
+	const bool isNewDirectionalLight = directionalLightReferencedSceneState_.find(directionalLight) == directionalLightReferencedSceneState_.end();
+	if (isNewDirectionalLight)
+	{
+		directionalLights_.push_back(directionalLight);
+	}
+
+	directionalLightReferencedSceneState_[directionalLight] = isFromReferencedScene;
 
 	LightManager* lightManager = engine->GetRenderer()->GetLightManager();
-	if (lightManager)
+	if (lightManager && isNewDirectionalLight)
 	{
 		lightManager->OnDirectionalLightAdded(directionalLight);
 	}
@@ -173,14 +272,33 @@ void Scene::RemoveDirectionalLight(DirectionalLight* directionalLight)
 	{
 		lightManager->OnDirectionalLightRemoved(directionalLight);
 	}
+
+	directionalLightReferencedSceneState_.erase(directionalLight);
 }
 
-void Scene::AddPointLight(PointLight* pointLight)
+bool Scene::GetIsDirectionalLightFromReferencedScene(DirectionalLight* directionalLight) const
 {
-	pointLights_.push_back(pointLight);
+	auto directionalLightIterator = directionalLightReferencedSceneState_.find(directionalLight);
+	return directionalLightIterator != directionalLightReferencedSceneState_.end() && directionalLightIterator->second;
+}
+
+void Scene::AddPointLight(PointLight* pointLight, bool isFromReferencedScene)
+{
+	if (!pointLight)
+	{
+		return;
+	}
+
+	const bool isNewPointLight = pointLightReferencedSceneState_.find(pointLight) == pointLightReferencedSceneState_.end();
+	if (isNewPointLight)
+	{
+		pointLights_.push_back(pointLight);
+	}
+
+	pointLightReferencedSceneState_[pointLight] = isFromReferencedScene;
 
 	LightManager* lightManager = engine->GetRenderer()->GetLightManager();
-	if (lightManager)
+	if (lightManager && isNewPointLight)
 	{
 		lightManager->OnPointLightAdded(pointLight);
 	}
@@ -205,14 +323,33 @@ void Scene::RemovePointLight(PointLight* pointLight)
 	{
 		lightManager->OnPointLightRemoved(pointLight);
 	}
+
+	pointLightReferencedSceneState_.erase(pointLight);
 }
 
-void Scene::AddSpotLight(SpotLight* spotLight)
+bool Scene::GetIsPointLightFromReferencedScene(PointLight* pointLight) const
 {
-	spotLights_.push_back(spotLight);
+	auto pointLightIterator = pointLightReferencedSceneState_.find(pointLight);
+	return pointLightIterator != pointLightReferencedSceneState_.end() && pointLightIterator->second;
+}
+
+void Scene::AddSpotLight(SpotLight* spotLight, bool isFromReferencedScene)
+{
+	if (!spotLight)
+	{
+		return;
+	}
+
+	const bool isNewSpotLight = spotLightReferencedSceneState_.find(spotLight) == spotLightReferencedSceneState_.end();
+	if (isNewSpotLight)
+	{
+		spotLights_.push_back(spotLight);
+	}
+
+	spotLightReferencedSceneState_[spotLight] = isFromReferencedScene;
 
 	LightManager* lightManager = engine->GetRenderer()->GetLightManager();
-	if (lightManager)
+	if (lightManager && isNewSpotLight)
 	{
 		lightManager->OnSpotLightAdded(spotLight);
 	}
@@ -237,6 +374,14 @@ void Scene::RemoveSpotLight(SpotLight* spotLight)
 	{
 		lightManager->OnSpotLightRemoved(spotLight);
 	}
+
+	spotLightReferencedSceneState_.erase(spotLight);
+}
+
+bool Scene::GetIsSpotLightFromReferencedScene(SpotLight* spotLight) const
+{
+	auto spotLightIterator = spotLightReferencedSceneState_.find(spotLight);
+	return spotLightIterator != spotLightReferencedSceneState_.end() && spotLightIterator->second;
 }
 
 void Scene::AddReflectionProbe(ReflectionProbe* reflectionProbe)

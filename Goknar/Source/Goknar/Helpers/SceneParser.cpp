@@ -83,6 +83,7 @@ namespace
 	{
 		std::string scenePath;
 		SceneTransform transform;
+		ObjectBase* sceneRootObject{ nullptr };
 		bool isReferencedScene{ false };
 		bool applySceneSettings{ true };
 	};
@@ -552,6 +553,76 @@ namespace
 		return false;
 	}
 
+	bool ParseSceneReference(Scene* scene, const SceneReference& sceneReference, const SceneParseContext& currentContext, bool addReferenceToScene)
+	{
+		if (!scene)
+		{
+			return false;
+		}
+
+		const std::string referencedScenePath = ResolveSceneReferencePath(sceneReference.path, currentContext.scenePath);
+		if (referencedScenePath.empty())
+		{
+			return false;
+		}
+
+		if (!SceneFileExists(referencedScenePath))
+		{
+			GOKNAR_CORE_WARN("Skipping missing scene reference %s.", referencedScenePath.c_str());
+			return false;
+		}
+
+		if (IsSceneInCurrentParseStack(referencedScenePath))
+		{
+			GOKNAR_CORE_WARN("Skipping recursive scene reference %s.", referencedScenePath.c_str());
+			return false;
+		}
+
+		SceneTransform relativeTransform;
+		relativeTransform.position = sceneReference.relativePosition;
+		relativeTransform.rotation = sceneReference.relativeRotation;
+		relativeTransform.scaling = sceneReference.relativeScaling;
+
+		SceneParseContext referencedSceneContext;
+		referencedSceneContext.scenePath = referencedScenePath;
+		referencedSceneContext.transform = ComposeTransform(currentContext.transform, relativeTransform);
+		referencedSceneContext.isReferencedScene = true;
+		referencedSceneContext.applySceneSettings = false;
+
+		ObjectBase* sceneRootObject = new ObjectBase();
+		std::string sceneRootObjectName = std::filesystem::path(referencedScenePath).stem().generic_string();
+		if (sceneRootObjectName.empty())
+		{
+			sceneRootObjectName = std::filesystem::path(referencedScenePath).filename().generic_string();
+		}
+		sceneRootObject->SetName(sceneRootObjectName.empty() ? "Scene" : sceneRootObjectName);
+		sceneRootObject->SetWorldPosition(referencedSceneContext.transform.position, false);
+		sceneRootObject->SetWorldRotation(referencedSceneContext.transform.rotation, false);
+		sceneRootObject->SetWorldScaling(referencedSceneContext.transform.scaling);
+		if (currentContext.sceneRootObject)
+		{
+			sceneRootObject->SetParent(currentContext.sceneRootObject, SnappingRule::KeepWorldAll);
+		}
+
+		scene->AddObject(sceneRootObject, true);
+		referencedSceneContext.sceneRootObject = sceneRootObject;
+
+		SceneReference resolvedSceneReference = sceneReference;
+		resolvedSceneReference.path = referencedScenePath;
+		resolvedSceneReference.sceneRootObject = sceneRootObject;
+
+		if (addReferenceToScene)
+		{
+			scene->AddSceneReference(resolvedSceneReference);
+		}
+
+		sceneParseContextStack.push_back(referencedSceneContext);
+		SceneParser::Parse(scene, ContentPathUtils::ToAbsoluteContentPath(referencedScenePath));
+		sceneParseContextStack.pop_back();
+
+		return true;
+	}
+
 	void ParseReferencedScenes(Scene* scene, tinyxml2::XMLElement* rootElement)
 	{
 		const tinyxml2::XMLElement* scenesElement = rootElement ? rootElement->FirstChildElement("Scenes") : nullptr;
@@ -565,39 +636,14 @@ namespace
 			sceneElement != nullptr;
 			sceneElement = sceneElement->NextSiblingElement("Scene"))
 		{
-			const std::string referencedScenePath = ResolveSceneReferencePath(ReadSceneReferencePath(sceneElement), currentContext.scenePath);
-			if (referencedScenePath.empty())
-			{
-				continue;
-			}
-
 			SceneReference sceneReference;
-			sceneReference.path = referencedScenePath;
+			sceneReference.path = ReadSceneReferencePath(sceneElement);
 			const SceneTransform relativeTransform = ReadSceneReferenceTransform(sceneElement);
 			sceneReference.relativePosition = relativeTransform.position;
 			sceneReference.relativeRotation = relativeTransform.rotation;
 			sceneReference.relativeScaling = relativeTransform.scaling;
 
-			if (!currentContext.isReferencedScene)
-			{
-				scene->AddSceneReference(sceneReference);
-			}
-
-			if (IsSceneInCurrentParseStack(referencedScenePath))
-			{
-				GOKNAR_CORE_WARN("Skipping recursive scene reference %s.", referencedScenePath.c_str());
-				continue;
-			}
-
-			SceneParseContext referencedSceneContext;
-			referencedSceneContext.scenePath = referencedScenePath;
-			referencedSceneContext.transform = ComposeTransform(currentContext.transform, relativeTransform);
-			referencedSceneContext.isReferencedScene = true;
-			referencedSceneContext.applySceneSettings = false;
-
-			sceneParseContextStack.push_back(referencedSceneContext);
-			SceneParser::Parse(scene, ContentPathUtils::ToAbsoluteContentPath(referencedScenePath));
-			sceneParseContextStack.pop_back();
+			ParseSceneReference(scene, sceneReference, currentContext, !currentContext.isReferencedScene);
 		}
 	}
 
@@ -667,6 +713,32 @@ void SceneParser::ClearCaches()
 	instancedStaticMeshSourcePathMap.clear();
 	staticMeshComponentMaterialPathMap.clear();
 	sharedMaterialPathMap.clear();
+}
+
+bool SceneParser::InsertSceneReference(Scene* scene, const SceneReference& sceneReference)
+{
+	if (!scene)
+	{
+		return false;
+	}
+
+	const bool pushedDefaultParseContext = sceneParseContextStack.empty();
+	if (pushedDefaultParseContext)
+	{
+		SceneParseContext parseContext;
+		parseContext.scenePath = ContentPathUtils::NormalizePath(ContentPathUtils::ToContentRelativePath(scene->GetPath()));
+		sceneParseContextStack.push_back(parseContext);
+	}
+
+	const SceneParseContext currentContext = sceneParseContextStack.back();
+	const bool parsedSceneReference = ParseSceneReference(scene, sceneReference, currentContext, true);
+
+	if (pushedDefaultParseContext)
+	{
+		sceneParseContextStack.pop_back();
+	}
+
+	return parsedSceneReference;
 }
 
 void SceneParser::Parse(Scene* scene, const std::string& filePath)
@@ -948,6 +1020,8 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				pointLight->SetShadowHeight(y);
 			}
 
+			scene->AddPointLight(pointLight, currentParseContext.isReferencedScene);
+
 			element = element->NextSiblingElement("PointLight");
 
 			stream.clear();
@@ -1033,6 +1107,8 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				directionalLight->SetShadowWidth(x);
 				directionalLight->SetShadowHeight(y);
 			}
+
+			scene->AddDirectionalLight(directionalLight, currentParseContext.isReferencedScene);
 
 			element = element->NextSiblingElement("DirectionalLight");
 
@@ -1141,6 +1217,8 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				spotLight->SetShadowWidth(x);
 				spotLight->SetShadowHeight(y);
 			}
+
+			scene->AddSpotLight(spotLight, currentParseContext.isReferencedScene);
 
 			element = element->NextSiblingElement("SpotLight");
 		}
@@ -1384,6 +1462,10 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				object->SetWorldPosition(TransformPoint(currentParseContext.transform, object->GetWorldPosition()), false);
 				object->SetWorldRotation(TransformRotation(currentParseContext.transform, object->GetWorldRotation()), false);
 				object->SetWorldScaling(TransformScaling(currentParseContext.transform, object->GetWorldScaling()));
+				if (currentParseContext.sceneRootObject)
+				{
+					object->SetParent(currentParseContext.sceneRootObject, SnappingRule::KeepWorldAll);
+				}
 
 				if (ReflectionProbeObject* reflectionProbeObject = dynamic_cast<ReflectionProbeObject*>(object))
 				{
@@ -2240,7 +2322,8 @@ void SceneParser::GetXMLElement_DirectionalLights(tinyxml2::XMLDocument& xmlDocu
 {
 	for (auto directionalLight : scene->GetDirectionalLights())
 	{
-		if (directionalLight->GetName().find("__Editor__") != std::string::npos)
+		if (directionalLight->GetName().find("__Editor__") != std::string::npos ||
+			scene->GetIsDirectionalLightFromReferencedScene(directionalLight))
 		{
 			continue;
 		}
@@ -2279,7 +2362,8 @@ void SceneParser::GetXMLElement_SpotLights(tinyxml2::XMLDocument& xmlDocument, t
 {
 	for (auto spotLight : scene->GetSpotLights())
 	{
-		if (spotLight->GetName().find("__Editor__") != std::string::npos)
+		if (spotLight->GetName().find("__Editor__") != std::string::npos ||
+			scene->GetIsSpotLightFromReferencedScene(spotLight))
 		{
 			continue;
 		}
@@ -2334,7 +2418,8 @@ void SceneParser::GetXMLElement_PointLights(tinyxml2::XMLDocument& xmlDocument, 
 {
 	for (auto pointLight : scene->GetPointLights())
 	{
-		if (pointLight->GetName().find("__Editor__") != std::string::npos)
+		if (pointLight->GetName().find("__Editor__") != std::string::npos ||
+			scene->GetIsPointLightFromReferencedScene(pointLight))
 		{
 			continue;
 		}
@@ -2390,12 +2475,22 @@ void SceneParser::GetXMLElement_SceneReferences(tinyxml2::XMLDocument& xmlDocume
 		tinyxml2::XMLElement* sceneElement = xmlDocument.NewElement("Scene");
 		sceneElement->SetAttribute("Path", sceneReference.path.c_str());
 
+		Vector3 relativePosition = sceneReference.relativePosition;
+		Quaternion relativeRotation = sceneReference.relativeRotation;
+		Vector3 relativeScaling = sceneReference.relativeScaling;
+		if (sceneReference.sceneRootObject)
+		{
+			relativePosition = sceneReference.sceneRootObject->GetWorldPosition();
+			relativeRotation = sceneReference.sceneRootObject->GetWorldRotation();
+			relativeScaling = sceneReference.sceneRootObject->GetWorldScaling();
+		}
+
 		WriteTransformElementsIfNeeded(
 			xmlDocument,
 			sceneElement,
-			sceneReference.relativePosition,
-			sceneReference.relativeRotation,
-			sceneReference.relativeScaling,
+			relativePosition,
+			relativeRotation,
+			relativeScaling,
 			"RelativePosition",
 			"EulerRelativeRotation",
 			"RelativeScaling");

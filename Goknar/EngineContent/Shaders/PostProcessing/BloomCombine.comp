@@ -20,8 +20,8 @@ void main()
 	}
 
 	vec2 uv = (vec2(pixelCoordinates) + vec2(0.5)) / vec2(outputSize);
-	vec3 sceneColor = texture(sceneInputTexture, uv).rgb;
-	vec4 bloomSample = texture(bloomInputTexture, uv);
+	vec3 sceneColor = textureLod(sceneInputTexture, uv, 0.0).rgb;
+	vec4 bloomSample = textureLod(bloomInputTexture, uv, 0.0);
 	float adaptiveIntensity = bloomIntensity * mix(1.0, bloomMaxIntensityBoost, pow(clamp(bloomSample.a, 0.0, 1.0), bloomIntensityCurve));
 	vec3 bloomColor = bloomSample.rgb * adaptiveIntensity;
 

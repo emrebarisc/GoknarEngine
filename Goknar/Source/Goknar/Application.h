@@ -1,6 +1,8 @@
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
+#include <string>
+
 #include "Core.h"
 
 class Scene;
@@ -24,6 +26,8 @@ public:
 	virtual void PostInit();
 
 	virtual void Run();
+
+	bool OpenScene(const std::string& path);
 
 	void SetMainScene(Scene* scene)
 	{
@@ -49,6 +53,10 @@ protected:
 	Scene* mainScene_;
 
 	AppType applicationType_;
+
+	bool isPreInitialized_{ false };
+	bool isInitialized_{ false };
+	bool isPostInitialized_{ false };
 };
 
 #endif

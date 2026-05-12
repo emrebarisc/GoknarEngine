@@ -6,13 +6,11 @@
 #include <vector>
 
 class ComputeShader;
-class FrameBuffer;
 class Texture;
 
 struct BloomMipLevel
 {
 	Texture* texture{ nullptr };
-	FrameBuffer* frameBuffer{ nullptr };
 	int width{ 0 };
 	int height{ 0 };
 };

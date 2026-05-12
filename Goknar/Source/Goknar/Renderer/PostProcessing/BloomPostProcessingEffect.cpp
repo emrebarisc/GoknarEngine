@@ -8,6 +8,15 @@
 
 namespace
 {
+	constexpr int kBloomOutputImageUnit = 0;
+
+	int BindTextureUsingEngineTextureUnit(const Texture* texture)
+	{
+		const int textureUnit = static_cast<int>(texture->GetRendererTextureId());
+		texture->BindToTextureUnit(textureUnit);
+		return textureUnit;
+	}
+
 	BloomMipLevel CreateBloomMipLevel(const std::string& textureName, int width, int height)
 	{
 		BloomMipLevel mipLevel{};
@@ -32,16 +41,6 @@ namespace
 		mipLevel.texture->Init();
 		mipLevel.texture->PostInit();
 
-		mipLevel.frameBuffer = new FrameBuffer();
-		mipLevel.frameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT0, mipLevel.texture);
-		mipLevel.frameBuffer->PreInit();
-		mipLevel.frameBuffer->Init();
-		mipLevel.frameBuffer->PostInit();
-		mipLevel.frameBuffer->Bind();
-		mipLevel.frameBuffer->Attach();
-		mipLevel.frameBuffer->DrawBuffers();
-		mipLevel.frameBuffer->Unbind();
-
 		return mipLevel;
 	}
 
@@ -50,9 +49,7 @@ namespace
 		for (BloomMipLevel& mipLevel : mipChain)
 		{
 			delete mipLevel.texture;
-			delete mipLevel.frameBuffer;
 			mipLevel.texture = nullptr;
-			mipLevel.frameBuffer = nullptr;
 		}
 
 		mipChain.clear();
@@ -152,7 +149,14 @@ void BloomPostProcessingEffect::PostInit()
 
 Texture* BloomPostProcessingEffect::Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height)
 {
-	if (!GetIsEnabled() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0)
+	if (!GetIsEnabled() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0 || bloomIntensity_ <= 0.f)
+	{
+		return const_cast<Texture*>(inputTexture);
+	}
+
+	Texture* emissiveTexture = deferredRenderingData->geometryBufferData ?
+		deferredRenderingData->geometryBufferData->emisiveColorTexture : nullptr;
+	if (!emissiveTexture)
 	{
 		return const_cast<Texture*>(inputTexture);
 	}
@@ -160,8 +164,7 @@ Texture* BloomPostProcessingEffect::Render(const DeferredRenderingData* deferred
 	EnsureBloomResources(width, height);
 	EnsureResources(width, height);
 
-	Texture* emissiveTexture = deferredRenderingData->geometryBufferData->emisiveColorTexture;
-	if (!emissiveTexture || bloomDownsampleMipChain_.empty())
+	if (bloomDownsampleMipChain_.empty())
 	{
 		return const_cast<Texture*>(inputTexture);
 	}
@@ -169,51 +172,48 @@ Texture* BloomPostProcessingEffect::Render(const DeferredRenderingData* deferred
 	const BloomMipLevel& firstMipLevel = bloomDownsampleMipChain_.front();
 
 	bloomPrefilterComputeShader_->Use();
-	const int emissiveTextureUnit = static_cast<int>(emissiveTexture->GetRendererTextureId());
-	emissiveTexture->BindToTextureUnit(emissiveTextureUnit);
-	bloomPrefilterComputeShader_->SetInt("emissiveInputTexture", emissiveTextureUnit);
+	bloomPrefilterComputeShader_->SetInt("emissiveInputTexture", BindTextureUsingEngineTextureUnit(emissiveTexture));
 	bloomPrefilterComputeShader_->SetFloat("bloomThreshold", bloomThreshold_);
 	bloomPrefilterComputeShader_->SetFloat("bloomSoftKnee", bloomSoftKnee_);
 	bloomPrefilterComputeShader_->SetFloat("bloomBrightnessBoost", bloomBrightnessBoost_);
-	firstMipLevel.texture->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
+	firstMipLevel.texture->BindAsImage(kBloomOutputImageUnit, TextureImageAccess::WRITE_ONLY);
 	bloomPrefilterComputeShader_->Dispatch2D(firstMipLevel.width, firstMipLevel.height);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
 
-	for (size_t mipLevelIndex = 1; mipLevelIndex < bloomDownsampleMipChain_.size(); ++mipLevelIndex)
+	if (1 < bloomDownsampleMipChain_.size())
 	{
-		const BloomMipLevel& sourceMipLevel = bloomDownsampleMipChain_[mipLevelIndex - 1];
-		const BloomMipLevel& targetMipLevel = bloomDownsampleMipChain_[mipLevelIndex];
-
 		bloomDownsampleComputeShader_->Use();
-		const int sourceTextureUnit = static_cast<int>(sourceMipLevel.texture->GetRendererTextureId());
-		sourceMipLevel.texture->BindToTextureUnit(sourceTextureUnit);
-		bloomDownsampleComputeShader_->SetInt("bloomDownsampleInputTexture", sourceTextureUnit);
-		targetMipLevel.texture->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
-		bloomDownsampleComputeShader_->Dispatch2D(targetMipLevel.width, targetMipLevel.height);
-		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+
+		for (size_t mipLevelIndex = 1; mipLevelIndex < bloomDownsampleMipChain_.size(); ++mipLevelIndex)
+		{
+			const BloomMipLevel& sourceMipLevel = bloomDownsampleMipChain_[mipLevelIndex - 1];
+			const BloomMipLevel& targetMipLevel = bloomDownsampleMipChain_[mipLevelIndex];
+
+			bloomDownsampleComputeShader_->SetInt("bloomDownsampleInputTexture", BindTextureUsingEngineTextureUnit(sourceMipLevel.texture));
+			targetMipLevel.texture->BindAsImage(kBloomOutputImageUnit, TextureImageAccess::WRITE_ONLY);
+			bloomDownsampleComputeShader_->Dispatch2D(targetMipLevel.width, targetMipLevel.height);
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
+		}
 	}
 
 	Texture* finalBloomTexture = bloomDownsampleMipChain_.front().texture;
-	if (1 < bloomDownsampleMipChain_.size())
+	if (!bloomUpsampleMipChain_.empty())
 	{
-		for (int mipLevelIndex = (int)bloomDownsampleMipChain_.size() - 2; mipLevelIndex >= 0; --mipLevelIndex)
+		bloomUpsampleComputeShader_->Use();
+		bloomUpsampleComputeShader_->SetFloat("bloomScatter", bloomScatter_);
+
+		for (int mipLevelIndex = static_cast<int>(bloomUpsampleMipChain_.size()) - 1; mipLevelIndex >= 0; --mipLevelIndex)
 		{
 			const BloomMipLevel& baseMipLevel = bloomDownsampleMipChain_[mipLevelIndex];
 			const Texture* lowerMipTexture =
-				mipLevelIndex == (int)bloomDownsampleMipChain_.size() - 2 ?
+				mipLevelIndex == static_cast<int>(bloomUpsampleMipChain_.size()) - 1 ?
 				bloomDownsampleMipChain_[mipLevelIndex + 1].texture :
 				bloomUpsampleMipChain_[mipLevelIndex + 1].texture;
 			const BloomMipLevel& targetMipLevel = bloomUpsampleMipChain_[mipLevelIndex];
 
-			bloomUpsampleComputeShader_->Use();
-			const int baseTextureUnit = static_cast<int>(baseMipLevel.texture->GetRendererTextureId());
-			const int lowerMipTextureUnit = static_cast<int>(lowerMipTexture->GetRendererTextureId());
-			baseMipLevel.texture->BindToTextureUnit(baseTextureUnit);
-			bloomUpsampleComputeShader_->SetInt("baseBloomInputTexture", baseTextureUnit);
-			lowerMipTexture->BindToTextureUnit(lowerMipTextureUnit);
-			bloomUpsampleComputeShader_->SetInt("nextMipBloomInputTexture", lowerMipTextureUnit);
-			bloomUpsampleComputeShader_->SetFloat("bloomScatter", bloomScatter_);
-			targetMipLevel.texture->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
+			bloomUpsampleComputeShader_->SetInt("baseBloomInputTexture", BindTextureUsingEngineTextureUnit(baseMipLevel.texture));
+			bloomUpsampleComputeShader_->SetInt("nextMipBloomInputTexture", BindTextureUsingEngineTextureUnit(lowerMipTexture));
+			targetMipLevel.texture->BindAsImage(kBloomOutputImageUnit, TextureImageAccess::WRITE_ONLY);
 			bloomUpsampleComputeShader_->Dispatch2D(targetMipLevel.width, targetMipLevel.height);
 			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
 		}
@@ -222,16 +222,12 @@ Texture* BloomPostProcessingEffect::Render(const DeferredRenderingData* deferred
 	}
 
 	GetComputeShader()->Use();
-	const int sceneInputTextureUnit = static_cast<int>(inputTexture->GetRendererTextureId());
-	const int bloomInputTextureUnit = static_cast<int>(finalBloomTexture->GetRendererTextureId());
-	inputTexture->BindToTextureUnit(sceneInputTextureUnit);
-	GetComputeShader()->SetInt("sceneInputTexture", sceneInputTextureUnit);
-	finalBloomTexture->BindToTextureUnit(bloomInputTextureUnit);
-	GetComputeShader()->SetInt("bloomInputTexture", bloomInputTextureUnit);
+	GetComputeShader()->SetInt("sceneInputTexture", BindTextureUsingEngineTextureUnit(inputTexture));
+	GetComputeShader()->SetInt("bloomInputTexture", BindTextureUsingEngineTextureUnit(finalBloomTexture));
 	GetComputeShader()->SetFloat("bloomIntensity", bloomIntensity_);
 	GetComputeShader()->SetFloat("bloomMaxIntensityBoost", bloomMaxIntensityBoost_);
 	GetComputeShader()->SetFloat("bloomIntensityCurve", bloomIntensityCurve_);
-	outputTexture_->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
+	outputTexture_->BindAsImage(kBloomOutputImageUnit, TextureImageAccess::WRITE_ONLY);
 	GetComputeShader()->Dispatch2D(width, height);
 	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_TEXTURE_FETCH_BARRIER_BIT);
 
@@ -253,12 +249,14 @@ void BloomPostProcessingEffect::RecreateBloomResources(int width, int height)
 	const int baseWidth = GoknarMath::Max(1, width / bloomBaseResolutionDivisor_);
 	const int baseHeight = GoknarMath::Max(1, height / bloomBaseResolutionDivisor_);
 
+	bloomDownsampleMipChain_.reserve(maxBloomMipCount_);
+	bloomUpsampleMipChain_.reserve(GoknarMath::Max(0, maxBloomMipCount_ - 1));
+
 	int mipWidth = baseWidth;
 	int mipHeight = baseHeight;
 	for (int mipLevelIndex = 0; mipLevelIndex < maxBloomMipCount_; ++mipLevelIndex)
 	{
 		bloomDownsampleMipChain_.push_back(CreateBloomMipLevel("bloomDownsampleMip_" + std::to_string(mipLevelIndex), mipWidth, mipHeight));
-		bloomUpsampleMipChain_.push_back(CreateBloomMipLevel("bloomUpsampleMip_" + std::to_string(mipLevelIndex), mipWidth, mipHeight));
 
 		if (mipWidth == 1 && mipHeight == 1)
 		{
@@ -267,6 +265,15 @@ void BloomPostProcessingEffect::RecreateBloomResources(int width, int height)
 
 		mipWidth = GoknarMath::Max(1, mipWidth / 2);
 		mipHeight = GoknarMath::Max(1, mipHeight / 2);
+	}
+
+	for (size_t mipLevelIndex = 0; mipLevelIndex + 1 < bloomDownsampleMipChain_.size(); ++mipLevelIndex)
+	{
+		const BloomMipLevel& downsampleMipLevel = bloomDownsampleMipChain_[mipLevelIndex];
+		bloomUpsampleMipChain_.push_back(CreateBloomMipLevel(
+			"bloomUpsampleMip_" + std::to_string(mipLevelIndex),
+			downsampleMipLevel.width,
+			downsampleMipLevel.height));
 	}
 }
 

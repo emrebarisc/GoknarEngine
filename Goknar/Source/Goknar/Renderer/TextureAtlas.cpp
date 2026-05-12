@@ -27,11 +27,7 @@ TextureAtlas::TextureAtlas(const std::string& name, int maxWidth, int maxHeight,
 
 TextureAtlas::~TextureAtlas()
 {
-	// Once registered, Scene follows the same ownership pattern as Image::PreInit-created textures.
-	if (!textureRegisteredToScene_)
-	{
-		delete atlasTexture_;
-	}
+	delete atlasTexture_;
 }
 
 bool TextureAtlas::AddImage(Image* image)
@@ -207,7 +203,7 @@ bool TextureAtlas::Build()
 		// scene/material textures are registered later in the initialization phase.
 	}
 
-	if (atlasTexture_->GetRendererTextureId() != 0)
+	if (atlasTexture_->GetOwnedRendererTextureId() != 0)
 	{
 		atlasTexture_->UpdateBufferOnGPU();
 		atlasTexture_->ClearBuffer();
@@ -230,15 +226,9 @@ void TextureAtlas::PreInit()
 		return;
 	}
 
-	if (atlasTexture_->GetRendererTextureId() == 0 && !atlasTexture_->GetIsInitialized())
+	if (atlasTexture_->GetOwnedRendererTextureId() == 0 && !atlasTexture_->GetIsInitialized())
 	{
 		atlasTexture_->PreInit();
-	}
-
-	if (!textureRegisteredToScene_)
-	{
-		engine->GetApplication()->GetMainScene()->AddTexture(atlasTexture_);
-		textureRegisteredToScene_ = true;
 	}
 
 	isPreInitialized_ = true;

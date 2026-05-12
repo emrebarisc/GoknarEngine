@@ -16,6 +16,7 @@ ResourceManager::ResourceManager() :
 
 ResourceManager::~ResourceManager()
 {
+	materials_.clear();
 	delete resourceContainer_;
 }
 
@@ -32,11 +33,15 @@ void ResourceManager::Init()
 void ResourceManager::PostInit()
 {
 	resourceContainer_->PostInit();
+	InitializePendingMaterials();
+}
 
-	std::vector<std::unique_ptr<Material>>::const_iterator materialIterator = materials_.cbegin();
-	while (materialIterator != materials_.cend())
+void ResourceManager::InitializePendingMaterials()
+{
+	size_t materialIndex = 0;
+	while (materialIndex < materials_.size())
 	{
-		Material* material = materialIterator->get();
+		Material* material = materials_[materialIndex].get();
 
 		if (!material->GetIsInitialized())
 		{
@@ -46,7 +51,7 @@ void ResourceManager::PostInit()
 			material->PostInit();
 		}
 
-		materialIterator++;
+		++materialIndex;
 	}
 }
 

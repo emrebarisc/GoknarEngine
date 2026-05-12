@@ -18,6 +18,7 @@ class ParticleSystemComponent;
 class RigidBody;
 class ReflectionProbeObject;
 class Scene;
+struct SceneReference;
 class SphereCollisionComponent;
 class StaticMeshComponent;
 class ObjectBase;
@@ -28,6 +29,7 @@ class GOKNAR_API SceneParser
 public:
 	static void Parse(Scene* scene, const std::string& filePath);
 	static void SaveScene(Scene* scene, const std::string& filePath);
+	static bool InsertSceneReference(Scene* scene, const SceneReference& sceneReference);
 	static Material* GetOrCreateSharedMaterial(const std::string& materialPath);
 	static void ApplyStaticMeshComponentMaterialPaths(StaticMeshComponent* staticMeshComponent, const std::vector<std::string>& materialPaths);
 	static std::vector<std::string> GetStaticMeshComponentMaterialPaths(const StaticMeshComponent* staticMeshComponent);
