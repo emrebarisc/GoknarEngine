@@ -91,7 +91,7 @@ bool TextureAtlas::Build()
 
 		if (item.paddedWidth > maxWidth_ || item.paddedHeight > maxHeight_)
 		{
-			GOKNAR_CORE_WARN("Image {0} is too large for TextureAtlas max size and will use a standalone texture.", image->GetPath());
+			GOKNAR_CORE_WARN("Image %s is too large for TextureAtlas max size and will use a standalone texture.", image->GetPath());
 			continue;
 		}
 
