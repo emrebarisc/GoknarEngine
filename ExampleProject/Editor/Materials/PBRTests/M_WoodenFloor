@@ -1,0 +1,276 @@
+<GameAsset FileType="MaterialEditorReflection">
+    <Canvas Scale="1.05" ScrollX="1646.6704" ScrollY="-46.780899"/>
+    <Nodes>
+        <Node Id="1" Name="Material Output" Category="Master" PosX="120" PosY="80" SizeX="220" SizeY="245" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="2" NodeId="1" Name="Base Color" Type="Vector4" Kind="Input">
+                    <DefaultValue type="Vector4" x="1" y="1" z="1" w="1"/>
+                </Pin>
+                <Pin Id="3" NodeId="1" Name="Emissive" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+                <Pin Id="4" NodeId="1" Name="Fragment Normal" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="1"/>
+                </Pin>
+                <Pin Id="5" NodeId="1" Name="Vertex Normal" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="1"/>
+                </Pin>
+                <Pin Id="6" NodeId="1" Name="Ambient Occlusion" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="1"/>
+                </Pin>
+                <Pin Id="7" NodeId="1" Name="Metallic" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="8" NodeId="1" Name="Roughness" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="0.5"/>
+                </Pin>
+                <Pin Id="9" NodeId="1" Name="World Position Offset" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs/>
+        </Node>
+        <Node Id="10" Name="textureUV" Category="Variables" PosX="-1466.6285" PosY="49.375355" SizeX="320" SizeY="60" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="11" NodeId="10" Name="Value" Type="Vector2" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="12" Name="Texture Sample" Category="Texture" PosX="-300" PosY="37" SizeX="220" SizeY="170" IsUniform="1" UseTextureAtlas="true">
+            <StringData><![CDATA[Textures/PBR/WoodFloor/T_WoodFloor_Color.jpg]]></StringData>
+            <Inputs>
+                <Pin Id="13" NodeId="12" Name="UV" Type="Vector2" Kind="Input">
+                    <DefaultValue type="Vector2" x="0" y="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="14" NodeId="12" Name="Color" Type="Vector4" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="17" Name="Texture Sample" Category="Texture" PosX="-674.42853" PosY="234" SizeX="220" SizeY="170" IsUniform="1" UseTextureAtlas="true">
+            <StringData><![CDATA[Textures/PBR/WoodFloor/T_WoodFloor_Normal.jpg]]></StringData>
+            <Inputs>
+                <Pin Id="18" NodeId="17" Name="UV" Type="Vector2" Kind="Input">
+                    <DefaultValue type="Vector2" x="0" y="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="19" NodeId="17" Name="Color" Type="Vector4" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="21" Name="Multiply" Category="Math" PosX="-408.00015" PosY="234.00008" SizeX="160" SizeY="95" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="22" NodeId="21" Name="A" Type="Any" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="23" NodeId="21" Name="B" Type="Any" Kind="Input">
+                    <DefaultValue type="Float" x="2"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="24" NodeId="21" Name="Out" Type="Any" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="26" Name="Float Constant" Category="Constants" PosX="-603.2381" PosY="414.95215" SizeX="150" SizeY="60" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="27" NodeId="26" Name="Value" Type="Float" Kind="Output">
+                    <DefaultValue type="Float" x="2"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="29" Name="Subtract" Category="Math" PosX="-187.99997" PosY="269.23807" SizeX="160" SizeY="95" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="30" NodeId="29" Name="A" Type="Any" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="31" NodeId="29" Name="B" Type="Any" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="32" NodeId="29" Name="Out" Type="Any" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="34" Name="Vector4 Constant" Category="Constants" PosX="-407.99997" PosY="341.61874" SizeX="160" SizeY="145" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="35" NodeId="34" Name="X" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="1"/>
+                </Pin>
+                <Pin Id="36" NodeId="34" Name="Y" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="1"/>
+                </Pin>
+                <Pin Id="37" NodeId="34" Name="Z" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="1"/>
+                </Pin>
+                <Pin Id="38" NodeId="34" Name="W" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="1"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="39" NodeId="34" Name="Out" Type="Vector4" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="45" Name="Texture Sample" Category="Texture" PosX="-666.74518" PosY="522.96405" SizeX="220" SizeY="170" IsUniform="1" UseTextureAtlas="true">
+            <StringData><![CDATA[Textures/PBR/WoodFloor/T_WoodFloor_ORM.jpg]]></StringData>
+            <Inputs>
+                <Pin Id="46" NodeId="45" Name="UV" Type="Vector2" Kind="Input">
+                    <DefaultValue type="Vector2" x="0" y="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="47" NodeId="45" Name="Color" Type="Vector4" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="49" Name="Mask" Category="Math" PosX="-400.49521" PosY="524.21405" SizeX="180" SizeY="150" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="50" NodeId="49" Name="Value" Type="Any" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="51" NodeId="49" Name="X" Type="Float" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="52" NodeId="49" Name="Y" Type="Float" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="53" NodeId="49" Name="Z" Type="Float" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="54" NodeId="49" Name="W" Type="Float" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="59" Name="Texture Sample" Category="Texture" PosX="-302.99521" PosY="734.21411" SizeX="220" SizeY="170" IsUniform="1" UseTextureAtlas="true">
+            <StringData><![CDATA[Textures/PBR/WoodFloor/T_WoodFloor_Displacement.jpg]]></StringData>
+            <Inputs>
+                <Pin Id="60" NodeId="59" Name="UV" Type="Vector2" Kind="Input">
+                    <DefaultValue type="Vector2" x="0" y="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="61" NodeId="59" Name="Color" Type="Vector4" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="62" Name="uv" Category="Variables" PosX="-1105.6744" PosY="735.46411" SizeX="320" SizeY="60" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="63" NodeId="62" Name="Value" Type="Vector2" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="66" Name="Multiply" Category="Math" PosX="-12.99515" PosY="759.21411" SizeX="160" SizeY="95" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="67" NodeId="66" Name="A" Type="Any" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="68" NodeId="66" Name="B" Type="Any" Kind="Input">
+                    <DefaultValue type="Float" x="0.0099999998"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="69" NodeId="66" Name="Out" Type="Any" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="72" Name="Multiply" Category="Math" PosX="-974.51331" PosY="48.227257" SizeX="160" SizeY="95" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="73" NodeId="72" Name="A" Type="Any" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="74" NodeId="72" Name="B" Type="Any" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="75" NodeId="72" Name="Out" Type="Any" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="77" Name="Vector2 Constant" Category="Constants" PosX="-1305.1016" PosY="196.46257" SizeX="160" SizeY="95" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="78" NodeId="77" Name="X" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="4"/>
+                </Pin>
+                <Pin Id="79" NodeId="77" Name="Y" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="2"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="80" NodeId="77" Name="Out" Type="Vector2" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="85" Name="Multiply" Category="Math" PosX="-646.78198" PosY="737.13464" SizeX="160" SizeY="95" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="86" NodeId="85" Name="A" Type="Any" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+                <Pin Id="87" NodeId="85" Name="B" Type="Any" Kind="Input">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="88" NodeId="85" Name="Out" Type="Any" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+    </Nodes>
+    <Links>
+        <Link Id="16" StartPinId="14" EndPinId="2"/>
+        <Link Id="25" StartPinId="19" EndPinId="22"/>
+        <Link Id="28" StartPinId="27" EndPinId="23"/>
+        <Link Id="33" StartPinId="24" EndPinId="30"/>
+        <Link Id="40" StartPinId="39" EndPinId="31"/>
+        <Link Id="41" StartPinId="32" EndPinId="4"/>
+        <Link Id="55" StartPinId="47" EndPinId="50"/>
+        <Link Id="56" StartPinId="51" EndPinId="6"/>
+        <Link Id="57" StartPinId="52" EndPinId="8"/>
+        <Link Id="58" StartPinId="53" EndPinId="7"/>
+        <Link Id="70" StartPinId="61" EndPinId="67"/>
+        <Link Id="71" StartPinId="69" EndPinId="9"/>
+        <Link Id="76" StartPinId="11" EndPinId="73"/>
+        <Link Id="81" StartPinId="80" EndPinId="74"/>
+        <Link Id="82" StartPinId="75" EndPinId="13"/>
+        <Link Id="83" StartPinId="75" EndPinId="18"/>
+        <Link Id="84" StartPinId="75" EndPinId="46"/>
+        <Link Id="89" StartPinId="63" EndPinId="86"/>
+        <Link Id="90" StartPinId="88" EndPinId="60"/>
+        <Link Id="91" StartPinId="80" EndPinId="87"/>
+    </Links>
+</GameAsset>

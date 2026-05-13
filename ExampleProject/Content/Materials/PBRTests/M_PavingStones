@@ -1,0 +1,69 @@
+<GameAsset FileType="Material" UseTextureAtlas="true">
+    <Name></Name>
+    <BoneCount>0</BoneCount>
+    <BlendModel>Opaque</BlendModel>
+    <ShadingModel>Default</ShadingModel>
+    <UsesReflectionProbe>0</UsesReflectionProbe>
+    <Texture path="Textures/PBR/PavingStones/T_PavingStones_Color.jpg" usage="Diffuse" UseTextureAtlas="true"/>
+    <Texture path="Textures/PBR/PavingStones/T_PavingStones_Normal.jpg" usage="Diffuse" UseTextureAtlas="true"/>
+    <Texture path="Textures/PBR/PavingStones/T_PavingStones_ORM.jpg" usage="Diffuse" UseTextureAtlas="true"/>
+    <Texture path="Textures/PBR/PavingStones/T_PAvingStones_Displacement.jpg" usage="Diffuse" UseTextureAtlas="true"/>
+    <BaseColorValue>1 1 1 1</BaseColorValue>
+    <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
+    <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
+    <MetallicValue>0.000000</MetallicValue>
+    <RoughnessValue>0.500000</RoughnessValue>
+    <Translucency>0.000000</Translucency>
+    <BaseColor>
+        <Calculation>
+	// Optimized shader graph calculations
+	vec2 textureUVValue = textureUV;
+	vec4 t_PavingStones_ColorSample = texture(T_PavingStones_Color, (vec2(fract((textureUVValue).x), fract((textureUVValue).y)) * T_PavingStones_Color_UVTransform.xy + T_PavingStones_Color_UVTransform.zw));
+	vec4 t_PavingStones_NormalSample = texture(T_PavingStones_Normal, (vec2(fract((textureUVValue).x), fract((textureUVValue).y)) * T_PavingStones_Normal_UVTransform.xy + T_PavingStones_Normal_UVTransform.zw));
+	vec4 difference = ((t_PavingStones_NormalSample * 2.0) - vec4(1.0, 1.0, 1.0, 1.0));
+	vec4 t_PavingStones_ORMSample = texture(T_PavingStones_ORM, (vec2(fract((textureUVValue).x), fract((textureUVValue).y)) * T_PavingStones_ORM_UVTransform.xy + T_PavingStones_ORM_UVTransform.zw));
+</Calculation>
+        <Result>t_PavingStones_ColorSample;</Result>
+    </BaseColor>
+    <EmissiveColor>
+        <Calculation></Calculation>
+        <Result></Result>
+    </EmissiveColor>
+    <AmbientOcclusion>
+        <Calculation></Calculation>
+        <Result>(t_PavingStones_ORMSample).x;</Result>
+    </AmbientOcclusion>
+    <Metallic>
+        <Calculation></Calculation>
+        <Result>(t_PavingStones_ORMSample).z;</Result>
+    </Metallic>
+    <Roughness>
+        <Calculation></Calculation>
+        <Result>(t_PavingStones_ORMSample).y;</Result>
+    </Roughness>
+    <FragmentNormal>
+        <Calculation></Calculation>
+        <Result>(difference).xyz;</Result>
+    </FragmentNormal>
+    <FragmentNormalIsTangentSpace>1</FragmentNormalIsTangentSpace>
+    <VertexNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexNormal>
+    <UV>
+        <Calculation></Calculation>
+        <Result></Result>
+    </UV>
+    <VertexPositionOffset>
+        <Calculation>
+	// Optimized shader graph calculations
+	vec4 t_PAvingStones_DisplacementSample = texture(T_PAvingStones_Displacement, (vec2(fract((uv).x), fract((uv).y)) * T_PAvingStones_Displacement_UVTransform.xy + T_PAvingStones_Displacement_UVTransform.zw));
+	float product = ((((t_PAvingStones_DisplacementSample).x * 2.0) - 1.0) * 0.1);
+</Calculation>
+        <Result>(product * vertexNormal);</Result>
+    </VertexPositionOffset>
+    <VertexShaderFunctions><![CDATA[]]></VertexShaderFunctions>
+    <FragmentShaderFunctions><![CDATA[]]></FragmentShaderFunctions>
+    <VertexShaderUniforms><![CDATA[]]></VertexShaderUniforms>
+    <FragmentShaderUniforms><![CDATA[]]></FragmentShaderUniforms>
+</GameAsset>

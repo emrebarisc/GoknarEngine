@@ -56,12 +56,13 @@
 #define VERTEX_POSITION_LOCATION 1
 #define VERTEX_NORMAL_LOCATION 2
 #define VERTEX_UV_LOCATION 3
-#define BONE_ID_LOCATION 4
-#define BONE_WEIGHT_LOCATION 5
-#define INSTANCE_TRANSFORMATION_ROW_0_LOCATION 4
-#define INSTANCE_TRANSFORMATION_ROW_1_LOCATION 5
-#define INSTANCE_TRANSFORMATION_ROW_2_LOCATION 6
-#define INSTANCE_TRANSFORMATION_ROW_3_LOCATION 7
+#define VERTEX_TANGENT_LOCATION 4
+#define BONE_ID_LOCATION 5
+#define BONE_WEIGHT_LOCATION 6
+#define INSTANCE_TRANSFORMATION_ROW_0_LOCATION 5
+#define INSTANCE_TRANSFORMATION_ROW_1_LOCATION 6
+#define INSTANCE_TRANSFORMATION_ROW_2_LOCATION 7
+#define INSTANCE_TRANSFORMATION_ROW_3_LOCATION 8
 
 namespace
 {
@@ -1459,6 +1460,12 @@ void Renderer::SetAttribPointers()
 	GraphicsAPI()->EnableVertexAttribArray(VERTEX_UV_LOCATION);
 	GraphicsAPI()->SetVertexAttribPointer(VERTEX_UV_LOCATION, 2, GraphicsDataType::Float, false, sizeOfVertexData, (void*)offset);
 
+	// Vertex tangent
+	offset += sizeof(VertexData::uv);
+	GraphicsAPI()->EnableVertexAttribArray(VERTEX_TANGENT_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(VERTEX_TANGENT_LOCATION, 4, GraphicsDataType::Float, false, sizeOfVertexData, (void*)offset);
+	GraphicsAPI()->SetVertexAttribDivisor(VERTEX_TANGENT_LOCATION, 0);
+
 	GraphicsAPI()->DisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_0_LOCATION);
 	GraphicsAPI()->DisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_1_LOCATION);
 	GraphicsAPI()->DisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_2_LOCATION);
@@ -1518,6 +1525,12 @@ void Renderer::SetAttribPointersForSkeletalMesh()
 	GraphicsAPI()->EnableVertexAttribArray(VERTEX_UV_LOCATION);
 	GraphicsAPI()->SetVertexAttribPointer(VERTEX_UV_LOCATION, 2, GraphicsDataType::Float, false, sizeOfSkeletalMeshVertexData, (void*)offset);
 	offset += sizeof(VertexData::uv);
+
+	// Vertex tangent
+	GraphicsAPI()->EnableVertexAttribArray(VERTEX_TANGENT_LOCATION);
+	GraphicsAPI()->SetVertexAttribPointer(VERTEX_TANGENT_LOCATION, 4, GraphicsDataType::Float, false, sizeOfSkeletalMeshVertexData, (void*)offset);
+	GraphicsAPI()->SetVertexAttribDivisor(VERTEX_TANGENT_LOCATION, 0);
+	offset += sizeof(VertexData::tangent);
 
 	// Bone ID
 	GraphicsAPI()->EnableVertexAttribArray(BONE_ID_LOCATION);

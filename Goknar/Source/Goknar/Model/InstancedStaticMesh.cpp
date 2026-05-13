@@ -51,6 +51,7 @@ namespace
 			clonedInitializationData->metallic = sourceInitializationData->metallic;
 			clonedInitializationData->roughness = sourceInitializationData->roughness;
 			clonedInitializationData->fragmentNormal = sourceInitializationData->fragmentNormal;
+			clonedInitializationData->fragmentNormalIsTangentSpace = sourceInitializationData->fragmentNormalIsTangentSpace;
 			clonedInitializationData->vertexNormal = sourceInitializationData->vertexNormal;
 			clonedInitializationData->uv = sourceInitializationData->uv;
 			clonedInitializationData->vertexPositionOffset = sourceInitializationData->vertexPositionOffset;

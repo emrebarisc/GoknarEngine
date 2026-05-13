@@ -4,6 +4,9 @@
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
     <UsesReflectionProbe>0</UsesReflectionProbe>
+    <Texture path="Textures/PBR/Tiles/T_Tiles_Color.jpg" usage="Diffuse" UseTextureAtlas="true"/>
+    <Texture path="Textures/PBR/Tiles/T_Tiles_Normal.jpg" usage="Diffuse" UseTextureAtlas="true"/>
+    <Texture path="Textures/PBR/Tiles/T_Tiles_ORM.jpg" usage="Diffuse" UseTextureAtlas="true"/>
     <BaseColorValue>1 1 1 1</BaseColorValue>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
     <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
@@ -11,8 +14,15 @@
     <RoughnessValue>0.500000</RoughnessValue>
     <Translucency>0.000000</Translucency>
     <BaseColor>
-        <Calculation></Calculation>
-        <Result></Result>
+        <Calculation>
+	// Optimized shader graph calculations
+	vec2 product = (textureUV * vec2(4.0, 4.0));
+	vec4 t_Tiles_ColorSample = texture(T_Tiles_Color, (vec2(fract((product).x), fract((product).y)) * T_Tiles_Color_UVTransform.xy + T_Tiles_Color_UVTransform.zw));
+	vec4 t_Tiles_NormalSample = texture(T_Tiles_Normal, (vec2(fract((product).x), fract((product).y)) * T_Tiles_Normal_UVTransform.xy + T_Tiles_Normal_UVTransform.zw));
+	vec4 difference = ((t_Tiles_NormalSample * 2.0) - vec4(1.0, 1.0, 1.0, 1.0));
+	vec4 t_Tiles_ORMSample = texture(T_Tiles_ORM, (vec2(fract((product).x), fract((product).y)) * T_Tiles_ORM_UVTransform.xy + T_Tiles_ORM_UVTransform.zw));
+</Calculation>
+        <Result>t_Tiles_ColorSample;</Result>
     </BaseColor>
     <EmissiveColor>
         <Calculation></Calculation>
@@ -20,20 +30,21 @@
     </EmissiveColor>
     <AmbientOcclusion>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>(t_Tiles_ORMSample).x;</Result>
     </AmbientOcclusion>
     <Metallic>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>(t_Tiles_ORMSample).z;</Result>
     </Metallic>
     <Roughness>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>(t_Tiles_ORMSample).y;</Result>
     </Roughness>
     <FragmentNormal>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>(difference).xyz;</Result>
     </FragmentNormal>
+    <FragmentNormalIsTangentSpace>1</FragmentNormalIsTangentSpace>
     <VertexNormal>
         <Calculation></Calculation>
         <Result></Result>

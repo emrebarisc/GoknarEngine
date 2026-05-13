@@ -55,12 +55,16 @@ struct UnifiedVertex
 	uint32_t normIndex{ 0 };
 	uint32_t uvIndex{ 0 };
 	uint32_t colIndex{ 0 };
+	uint32_t tangentIndex{ 0 };
+	uint32_t bitangentIndex{ 0 };
 
 	bool operator==(const UnifiedVertex& other) const {
 		return posIndex == other.posIndex &&
 			normIndex == other.normIndex &&
 			uvIndex == other.uvIndex &&
-			colIndex == other.colIndex;
+			colIndex == other.colIndex &&
+			tangentIndex == other.tangentIndex &&
+			bitangentIndex == other.bitangentIndex;
 	}
 };
 
@@ -70,6 +74,8 @@ struct UnifiedVertexHash {
 		h ^= v.normIndex + 0x9e3779b9 + (h << 6) + (h >> 2);
 		h ^= v.uvIndex + 0x9e3779b9 + (h << 6) + (h >> 2);
 		h ^= v.colIndex + 0x9e3779b9 + (h << 6) + (h >> 2);
+		h ^= v.tangentIndex + 0x9e3779b9 + (h << 6) + (h >> 2);
+		h ^= v.bitangentIndex + 0x9e3779b9 + (h << 6) + (h >> 2);
 		return h;
 	}
 };
@@ -136,6 +142,8 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 	ufbx_load_opts opts = {};
 	opts.generate_missing_normals = true;
+	opts.normalize_tangents = true;
+	opts.retain_vertex_attrib_w = true;
 	opts.target_axes = ufbx_axes_right_handed_y_up;
 	opts.filename = ufbx_string{ path.c_str(), path.size() };
 
@@ -267,6 +275,10 @@ Content* ModelLoader::LoadModel(const std::string& path)
 							key.uvIndex = ufbxMesh->vertex_uv.indices.data[index_in_mesh];
 						if (ufbxMesh->vertex_color.exists)
 							key.colIndex = ufbxMesh->vertex_color.indices.data[index_in_mesh];
+						if (ufbxMesh->vertex_tangent.exists)
+							key.tangentIndex = ufbxMesh->vertex_tangent.indices.data[index_in_mesh];
+						if (ufbxMesh->vertex_bitangent.exists)
+							key.bitangentIndex = ufbxMesh->vertex_bitangent.indices.data[index_in_mesh];
 
 						auto it = subMesh.uniqueVertices.find(key);
 						if (it != subMesh.uniqueVertices.end())
@@ -298,11 +310,34 @@ Content* ModelLoader::LoadModel(const std::string& path)
 								uv = Vector2(u.x, u.y);
 							}
 
+							Vector4 tangent = Vector4::ZeroVector;
+							if (ufbxMesh->vertex_tangent.exists)
+							{
+								ufbx_vec3 tan = ufbxMesh->vertex_tangent.values.data[key.tangentIndex];
+								Vector3 tangentDirection(tan.x, tan.y, tan.z);
+								float tangentSign = 1.f;
+
+								if (ufbxMesh->vertex_bitangent.exists)
+								{
+									ufbx_vec3 bitan = ufbxMesh->vertex_bitangent.values.data[key.bitangentIndex];
+									const Vector3 normalDirection(norm.x, norm.y, norm.z);
+									const Vector3 bitangentDirection(bitan.x, bitan.y, bitan.z);
+									tangentSign = Vector3::Cross(normalDirection, tangentDirection).Dot(bitangentDirection) < 0.f ? -1.f : 1.f;
+								}
+								else if (key.tangentIndex < ufbxMesh->vertex_tangent.values_w.count)
+								{
+									tangentSign = ufbxMesh->vertex_tangent.values_w.data[key.tangentIndex] < 0.f ? -1.f : 1.f;
+								}
+
+								tangent = Vector4(tangentDirection, tangentSign);
+							}
+
 							subMesh.tempVertices.push_back(VertexData(
 								Vector3(pos.x, pos.y, pos.z),
 								Vector3(norm.x, norm.y, norm.z),
 								col,
-								uv
+								uv,
+								tangent
 							));
 
 							if (hasBones)

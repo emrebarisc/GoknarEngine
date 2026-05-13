@@ -37,25 +37,25 @@
             <Path>Materials/Objects/M_TestTransparent</Path>
         </Material>
         <Material>
-            <Path>Materials/PBRTests/M_PBR_EmissivePanel</Path>
+            <Path>Materials/PBRTests/M_DiamondPlate</Path>
         </Material>
         <Material>
-            <Path>Materials/PBRTests/M_PBR_GoldPolished</Path>
+            <Path>Materials/PBRTests/M_Metal</Path>
         </Material>
         <Material>
-            <Path>Materials/PBRTests/M_PBR_Mirror</Path>
+            <Path>Materials/PBRTests/M_Mirror</Path>
         </Material>
         <Material>
-            <Path>Materials/PBRTests/M_PBR_PlasticRough</Path>
+            <Path>Materials/PBRTests/M_PavingStones</Path>
         </Material>
         <Material>
-            <Path>Materials/PBRTests/M_PBR_PlasticSmooth</Path>
+            <Path>Materials/PBRTests/M_Rock</Path>
         </Material>
         <Material>
-            <Path>Materials/PBRTests/M_PBR_SteelBrushed</Path>
+            <Path>Materials/PBRTests/M_Tiles</Path>
         </Material>
         <Material>
-            <Path>Materials/PBRTests/M_PBR_StoneOccluded</Path>
+            <Path>Materials/PBRTests/M_WoodenFloor</Path>
         </Material>
         <Material>
             <Path>Materials/VFX/M_Particle</Path>
@@ -128,22 +128,100 @@
         <Mesh>
             <Path>Meshes/Objects/SM_Weapon.fbx</Path>
         </Mesh>
-        <Texture Name="T_LeavesBushes">
+        <Texture Name="T_LeavesBushes" UseTextureAtlas="false">
             <Path>Textures/Environment/Trees/T_LeavesBushes.PNG</Path>
         </Texture>
-        <Texture Name="T_Tree_Birch_Rework">
+        <Texture Name="T_Tree_Birch_Rework" UseTextureAtlas="false">
             <Path>Textures/Environment/Trees/T_Tree_Birch_Rework.PNG</Path>
         </Texture>
-        <Texture Name="darkPlaceholder">
+        <Texture Name="T_DiamondPlate_Color" UseTextureAtlas="true">
+            <Path>Textures/PBR/DiamondPlate/T_DiamondPlate_Color.jpg</Path>
+        </Texture>
+        <Texture Name="T_DiamondPlate_Normal" UseTextureAtlas="true">
+            <Path>Textures/PBR/DiamondPlate/T_DiamondPlate_Normal.jpg</Path>
+        </Texture>
+        <Texture Name="T_DiamondPlate_ORMW" UseTextureAtlas="true">
+            <Path>Textures/PBR/DiamondPlate/T_DiamondPlate_ORMW.png</Path>
+        </Texture>
+        <Texture Name="T_MarbleDisplacement" UseTextureAtlas="true">
+            <Path>Textures/PBR/Marble/T_MarbleDisplacement.jpg</Path>
+        </Texture>
+        <Texture Name="T_Marble_Color" UseTextureAtlas="true">
+            <Path>Textures/PBR/Marble/T_Marble_Color.jpg</Path>
+        </Texture>
+        <Texture Name="T_Marble_Normal" UseTextureAtlas="true">
+            <Path>Textures/PBR/Marble/T_Marble_Normal.jpg</Path>
+        </Texture>
+        <Texture Name="T_Marble_Roughness" UseTextureAtlas="true">
+            <Path>Textures/PBR/Marble/T_Marble_Roughness.jpg</Path>
+        </Texture>
+        <Texture Name="T_Metal_Color" UseTextureAtlas="true">
+            <Path>Textures/PBR/Metal/T_Metal_Color.jpg</Path>
+        </Texture>
+        <Texture Name="T_Metal_Normal" UseTextureAtlas="true">
+            <Path>Textures/PBR/Metal/T_Metal_Normal.jpg</Path>
+        </Texture>
+        <Texture Name="T_Metal_ORMW" UseTextureAtlas="true">
+            <Path>Textures/PBR/Metal/T_Metal_ORMW.png</Path>
+        </Texture>
+        <Texture Name="T_PavingStones_Color" UseTextureAtlas="true">
+            <Path>Textures/PBR/PavingStones/T_PavingStones_Color.jpg</Path>
+        </Texture>
+        <Texture Name="T_PAvingStones_Displacement" UseTextureAtlas="true">
+            <Path>Textures/PBR/PavingStones/T_PAvingStones_Displacement.jpg</Path>
+        </Texture>
+        <Texture Name="T_PavingStones_Normal" UseTextureAtlas="true">
+            <Path>Textures/PBR/PavingStones/T_PavingStones_Normal.jpg</Path>
+        </Texture>
+        <Texture Name="T_PavingStones_ORM" UseTextureAtlas="true">
+            <Path>Textures/PBR/PavingStones/T_PavingStones_ORM.jpg</Path>
+        </Texture>
+        <Texture Name="T_Rock_Color" UseTextureAtlas="true">
+            <Path>Textures/PBR/Rock/T_Rock_Color.jpg</Path>
+        </Texture>
+        <Texture Name="T_Rock_Normal" UseTextureAtlas="true">
+            <Path>Textures/PBR/Rock/T_Rock_Normal.jpg</Path>
+        </Texture>
+        <Texture Name="T_Rock_ORM" UseTextureAtlas="true">
+            <Path>Textures/PBR/Rock/T_Rock_ORM.jpg</Path>
+        </Texture>
+        <Texture Name="T_Rock_WPO" UseTextureAtlas="true">
+            <Path>Textures/PBR/Rock/T_Rock_WPO.jpg</Path>
+        </Texture>
+        <Texture Name="T_Tiles_Color" UseTextureAtlas="true">
+            <Path>Textures/PBR/Tiles/T_Tiles_Color.jpg</Path>
+        </Texture>
+        <Texture Name="T_Tiles_Normal" UseTextureAtlas="true">
+            <Path>Textures/PBR/Tiles/T_Tiles_Normal.jpg</Path>
+        </Texture>
+        <Texture Name="T_Tiles_ORM" UseTextureAtlas="true">
+            <Path>Textures/PBR/Tiles/T_Tiles_ORM.jpg</Path>
+        </Texture>
+        <Texture Name="T_Tiles_WPO" UseTextureAtlas="true">
+            <Path>Textures/PBR/Tiles/T_Tiles_WPO.jpg</Path>
+        </Texture>
+        <Texture Name="T_WoodFloor_Color" UseTextureAtlas="true">
+            <Path>Textures/PBR/WoodFloor/T_WoodFloor_Color.jpg</Path>
+        </Texture>
+        <Texture Name="T_WoodFloor_Displacement" UseTextureAtlas="true">
+            <Path>Textures/PBR/WoodFloor/T_WoodFloor_Displacement.jpg</Path>
+        </Texture>
+        <Texture Name="T_WoodFloor_Normal" UseTextureAtlas="true">
+            <Path>Textures/PBR/WoodFloor/T_WoodFloor_Normal.jpg</Path>
+        </Texture>
+        <Texture Name="T_WoodFloor_ORM" UseTextureAtlas="true">
+            <Path>Textures/PBR/WoodFloor/T_WoodFloor_ORM.jpg</Path>
+        </Texture>
+        <Texture Name="darkPlaceholder" UseTextureAtlas="false">
             <Path>Textures/T_DarkPlaceholder.png</Path>
         </Texture>
-        <Texture Name="lightPlaceholder">
+        <Texture Name="lightPlaceholder" UseTextureAtlas="false">
             <Path>Textures/T_LightPlaceholder.png</Path>
         </Texture>
-        <Texture Name="matildaTexture">
+        <Texture Name="matildaTexture" UseTextureAtlas="false">
             <Path>Textures/T_Matilda.png</Path>
         </Texture>
-        <Texture Name="T_Smoke">
+        <Texture Name="T_Smoke" UseTextureAtlas="false">
             <Path>Textures/VFX/T_Smoke.jpg</Path>
         </Texture>
     </Assets>

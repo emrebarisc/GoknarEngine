@@ -492,6 +492,12 @@ out vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_PO
 		pointShadowPassGeometryShader += "in vec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "[];\n";
 		pointShadowPassGeometryShader += "out vec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "_GS;\n";
 
+		pointShadowPassGeometryShader += "in vec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + "[];\n";
+		pointShadowPassGeometryShader += "out vec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + "_GS;\n";
+
+		pointShadowPassGeometryShader += "in float " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + "[];\n";
+		pointShadowPassGeometryShader += "out float " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + "_GS;\n";
+
 		pointShadowPassGeometryShader += "in vec4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "[];\n";
 		pointShadowPassGeometryShader += "out vec4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "_GS;\n";
 
@@ -516,6 +522,8 @@ void main()
 		pointShadowPassGeometryShader += "\t\t\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "_GS = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "[i];\n";
 		pointShadowPassGeometryShader += "\t\t\t" + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "_GS = " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "[i];\n";
 		pointShadowPassGeometryShader += "\t\t\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "_GS = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "[i];\n";
+		pointShadowPassGeometryShader += "\t\t\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + "_GS = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + "[i];\n";
+		pointShadowPassGeometryShader += "\t\t\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + "_GS = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + "[i];\n";
 		pointShadowPassGeometryShader += "\t\t\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "_GS = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "[i];\n";
 		pointShadowPassGeometryShader += "\t\t\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + "_GS = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + "[i];\n";
 	}
@@ -553,6 +561,8 @@ std::string ShaderBuilder::PointShadowPass_GetFragmentShaderScript(MaterialIniti
 		shadowPassFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "_GS\n";
 		shadowPassFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "_GS\n";
 		shadowPassFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "_GS\n";
+		shadowPassFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + "_GS\n";
+		shadowPassFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + "_GS\n";
 		shadowPassFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "_GS\n";
 		shadowPassFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + "_GS\n";
 
@@ -643,6 +653,10 @@ out vec4 )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_PO
 	cubemapPassGeometryShader += "out vec2 " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "_GS;\n\n";
 	cubemapPassGeometryShader += "in vec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "[];\n";
 	cubemapPassGeometryShader += "out vec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "_GS;\n\n";
+	cubemapPassGeometryShader += "in vec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + "[];\n";
+	cubemapPassGeometryShader += "out vec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + "_GS;\n\n";
+	cubemapPassGeometryShader += "in float " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + "[];\n";
+	cubemapPassGeometryShader += "out float " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + "_GS;\n\n";
 	cubemapPassGeometryShader += "in vec4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "[];\n";
 	cubemapPassGeometryShader += "out vec4 " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "_GS;\n";
 	cubemapPassGeometryShader += R"(
@@ -660,6 +674,8 @@ void main()
 			)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE + R"(_GS = gl_Position;
 			)" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"(_GS = )" + SHADER_VARIABLE_NAMES::TEXTURE::UV + R"([i];
 			)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"(_GS = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL + R"([i];
+			)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT + R"(_GS = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT + R"([i];
+			)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN + R"(_GS = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN + R"([i];
 			)" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR + R"(_GS = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR + R"([i];
 			EmitVertex();
 		}
@@ -690,6 +706,8 @@ std::string ShaderBuilder::CubemapRenderPass_GetFragmentShaderScript(MaterialIni
 	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + "_GS\n";
 	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " " + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + "_GS\n";
 	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + "_GS\n";
+	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + "_GS\n";
+	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + "_GS\n";
 	cubemapFragmentShader += "#define " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + " " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + "_GS\n\n";
 
 	std::string outputVariables = FS_GetOutputVariables();
@@ -869,7 +887,6 @@ void main()
 
 	if (effectiveInitializationData)
 	{
-		vertexShader += VS_GetPositionOffset(effectiveInitializationData);
 		vertexShader += VS_GetUV(effectiveInitializationData);
 	}
 	else
@@ -880,10 +897,19 @@ void main()
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX + ";\n";
 	vertexShader += "\tvec4 particleCenterWorldSpace = vec4(particlePositions[particleIndex].xyz, 1.0) * " + std::string(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX) + ";\n";
 	vertexShader += "\tvec3 cameraForward = normalize(cross(" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_RIGHT) + ", " + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_UP) + "));\n";
+	vertexShader += "\tvec3 billboardWorldTangent = normalize(" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_RIGHT) + " * particleRotationCos + " + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_UP) + " * particleRotationSin);\n";
 	vertexShader += "\tvec3 billboardWorldOffset = " + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_RIGHT) + " * (" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + ".x * currentParticleSize) + " + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_UP) + " * (" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + ".y * currentParticleSize);\n";
-	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = vec4(particleCenterWorldSpace.xyz + billboardWorldOffset, 1.0);\n";
+	vertexShader += "\tvec4 particleWorldPosition = vec4(particleCenterWorldSpace.xyz + billboardWorldOffset, 1.0);\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = particleWorldPosition;\n";
+	if (effectiveInitializationData)
+	{
+		vertexShader += VS_GetWorldPositionOffsetText(effectiveInitializationData, "particleWorldPosition");
+	}
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = particleWorldPosition;\n";
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + " = " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + " = cameraForward;\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + " = billboardWorldTangent;\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + " = 1.f;\n";
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + " = currentParticleColor;\n";
 
 	vertexShader += VS_GetLightSpaceFragmentPositionCalculations();
@@ -962,7 +988,10 @@ uniform vec4 particleColorBySpeedEnd;
 	if (initializationData)
 	{
 		particleInitializationData = *initializationData;
-		particleInitializationData.vertexNormal.result = "particleNormal";
+		if (particleInitializationData.vertexNormal.result.empty())
+		{
+			particleInitializationData.vertexNormal.result = "particleNormal";
+		}
 		effectiveInitializationData = &particleInitializationData;
 	}
 
@@ -1016,16 +1045,18 @@ void main()
 )";
 
 	vertexShader += VS_GetPosition();
-	if (effectiveInitializationData)
-	{
-		vertexShader += VS_GetPositionOffset(effectiveInitializationData);
-	}
-
 	vertexShader += "\tvec3 particleNormal = particleRotationMatrix * " + std::string(SHADER_VARIABLE_NAMES::VERTEX::NORMAL) + ";\n";
+	vertexShader += "\tvec3 particleTangent = particleRotationMatrix * " + std::string(SHADER_VARIABLE_NAMES::VERTEX::TANGENT) + ".xyz;\n";
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " = particleRotationMatrix * (" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " * currentParticleSize);\n";
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " += particlePosition;\n";
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX + ";\n";
-	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = vec4(" + SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION + ", 1.f) * " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX + ";\n";
+	vertexShader += "\tvec4 particleWorldPosition = vec4(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + ", 1.f) * " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX + ";\n";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = particleWorldPosition;\n";
+	if (effectiveInitializationData)
+	{
+		vertexShader += VS_GetWorldPositionOffsetText(effectiveInitializationData, "particleWorldPosition");
+	}
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = particleWorldPosition;\n";
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + " = " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + " * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
 	vertexShader += VS_GetLightSpaceFragmentPositionCalculations();
 
@@ -1033,11 +1064,13 @@ void main()
 	{
 		vertexShader += VS_GetUV(effectiveInitializationData);
 		vertexShader += VS_GetVertexNormalText(effectiveInitializationData);
+		vertexShader += VS_GetVertexTangentText("particleTangent", std::string(SHADER_VARIABLE_NAMES::VERTEX::TANGENT) + ".w");
 	}
 	else
 	{
 		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = vec2(" + SHADER_VARIABLE_NAMES::VERTEX::UV + ".x, 1.f - " + SHADER_VARIABLE_NAMES::VERTEX::UV + ".y);\n";
 		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + " = normalize(particleNormal * transpose(inverse(mat3(" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "))));\n";
+		vertexShader += VS_GetVertexTangentText("particleTangent", std::string(SHADER_VARIABLE_NAMES::VERTEX::TANGENT) + ".w");
 	}
 
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + " = vec4(" + SHADER_VARIABLE_NAMES::VERTEX::COLOR + ".rgb * currentParticleColor.rgb, " + SHADER_VARIABLE_NAMES::VERTEX::COLOR + ".a * currentParticleColor.a);\n";
@@ -1295,6 +1328,8 @@ std::string ShaderBuilder::General_FS_GetMaterialVariables(const FragmentShaderI
 	materialVariableText += "float finalMetallic;\n";
 	materialVariableText += "float finalRoughness;\n";
 	materialVariableText += "vec3 geometryNormal;\n";
+	materialVariableText += "vec3 geometryTangent;\n";
+	materialVariableText += "vec3 geometryBitangent;\n";
 	materialVariableText += "vec3 surfaceNormal;\n";
 
 	bool requiresAlphaTest = fragmentShaderInitializationData.materialInitializationData &&
@@ -1335,6 +1370,14 @@ std::string ShaderBuilder::General_FS_GetMaterialVariables(const FragmentShaderI
 
 		materialVariableText += "in vec3 ";
 		materialVariableText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
+		materialVariableText += ";\n";
+
+		materialVariableText += "in vec3 ";
+		materialVariableText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT;
+		materialVariableText += ";\n";
+
+		materialVariableText += "in float ";
+		materialVariableText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN;
 		materialVariableText += ";\n";
 
 		materialVariableText += "in vec4 ";
@@ -1575,6 +1618,7 @@ void ShaderBuilder::ApplyTextureBackedMaterialDefaults(MaterialInitializationDat
 			if (initializationData->fragmentNormal.result.empty())
 			{
 				initializationData->fragmentNormal.result = General_FS_GetNormalTextureSampling(texture);
+				initializationData->fragmentNormalIsTangentSpace = true;
 			}
 			break;
 		default:
@@ -1641,7 +1685,7 @@ std::string ShaderBuilder::General_FS_GetScalarTextureSampling(const Texture* te
 
 std::string ShaderBuilder::General_FS_GetNormalTextureSampling(const Texture* texture) const
 {
-	return texture ? std::string("texture(" + texture->GetShaderUniformName() + ", " + General_FS_GetTextureUVExpression(texture) + ").xyz * 2.f - vec3(1.f); ") : "";
+	return texture ? std::string("normalize(texture(" + texture->GetShaderUniformName() + ", " + General_FS_GetTextureUVExpression(texture) + ").xyz * 2.f - vec3(1.f)); ") : "";
 }
 
 std::string ShaderBuilder::General_FS_GetEmmisiveTextureSampling(const Texture* texture) const
@@ -1661,7 +1705,7 @@ std::string ShaderBuilder::General_FS_GetScalarTextureSampling(const std::string
 
 std::string ShaderBuilder::General_FS_GetNormalTextureSampling(const std::string& textureName) const
 {
-	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ").xyz * 2.f - vec3(1.f); ");
+	return std::string("normalize(texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ").xyz * 2.f - vec3(1.f)); ");
 }
 
 std::string ShaderBuilder::General_FS_GetEmmisiveTextureSampling(const std::string& textureName) const
@@ -1940,6 +1984,21 @@ std::string ShaderBuilder::FS_InitializeSurfaceNormal(MaterialInitializationData
 	result += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
 	result += ");\n";
 
+	result += "\tgeometryTangent = ";
+	result += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT;
+	result += " - geometryNormal * dot(geometryNormal, ";
+	result += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT;
+	result += ");\n";
+	result += "\tif (dot(geometryTangent, geometryTangent) < 0.000001f)\n";
+	result += "\t{\n";
+	result += "\t\tvec3 tangentFallbackAxis = abs(geometryNormal.z) < 0.999f ? vec3(0.f, 0.f, 1.f) : vec3(0.f, 1.f, 0.f);\n";
+	result += "\t\tgeometryTangent = cross(tangentFallbackAxis, geometryNormal);\n";
+	result += "\t}\n";
+	result += "\tgeometryTangent = normalize(geometryTangent);\n";
+	result += "\tgeometryBitangent = normalize(cross(geometryNormal, geometryTangent)) * ";
+	result += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN;
+	result += ";\n";
+
 	if (initializationData && !initializationData->fragmentNormal.calculation.empty())
 	{
 		result += initializationData->fragmentNormal.calculation + "\n";
@@ -1947,9 +2006,21 @@ std::string ShaderBuilder::FS_InitializeSurfaceNormal(MaterialInitializationData
 
 	if (initializationData && !initializationData->fragmentNormal.result.empty())
 	{
-		result += "\n\tsurfaceNormal = ";
+		result += "\n\tvec3 fragmentNormalResult = normalize(";
 		result += TrimTrailingStatementTerminators(initializationData->fragmentNormal.result);
-		result += ";\n";
+		result += ");\n";
+
+		if (initializationData->fragmentNormalIsTangentSpace)
+		{
+			result += "\tsurfaceNormal = normalize(\n";
+			result += "\t\tfragmentNormalResult.x * geometryTangent +\n";
+			result += "\t\tfragmentNormalResult.y * geometryBitangent +\n";
+			result += "\t\tfragmentNormalResult.z * geometryNormal);\n";
+		}
+		else
+		{
+			result += "\tsurfaceNormal = fragmentNormalResult;\n";
+		}
 	}
 	else
 	{
@@ -2119,6 +2190,10 @@ std::string ShaderBuilder::VS_GetMainLayouts() const
 	layouts += SHADER_VARIABLE_NAMES::VERTEX::UV;
 	layouts += ";\n";
 
+	layouts += "layout(location = 4) in vec4 ";
+	layouts += SHADER_VARIABLE_NAMES::VERTEX::TANGENT;
+	layouts += ";\n";
+
 	return layouts;
 }
 
@@ -2126,19 +2201,19 @@ std::string ShaderBuilder::VS_GetInstancedStaticMeshLayouts() const
 {
 	std::string layouts = "\n\n";
 
-	layouts += "layout(location = 4) in vec4 ";
+	layouts += "layout(location = 5) in vec4 ";
 	layouts += SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_0;
 	layouts += ";\n";
 
-	layouts += "layout(location = 5) in vec4 ";
+	layouts += "layout(location = 6) in vec4 ";
 	layouts += SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_1;
 	layouts += ";\n";
 
-	layouts += "layout(location = 6) in vec4 ";
+	layouts += "layout(location = 7) in vec4 ";
 	layouts += SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_2;
 	layouts += ";\n";
 
-	layouts += "layout(location = 7) in vec4 ";
+	layouts += "layout(location = 8) in vec4 ";
 	layouts += SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_3;
 	layouts += ";\n";
 
@@ -2149,11 +2224,11 @@ std::string ShaderBuilder::VS_GetSkeletalMeshLayouts() const
 {
 	std::string layouts = "\n\n";
 
-	layouts += "layout(location = 4) in ivec4 ";
+	layouts += "layout(location = 5) in ivec4 ";
 	layouts += SHADER_VARIABLE_NAMES::VERTEX::BONE_IDS;
 	layouts += ";\n";
 
-	layouts += "layout(location = 5) in vec4 ";
+	layouts += "layout(location = 6) in vec4 ";
 	layouts += SHADER_VARIABLE_NAMES::VERTEX::WEIGHTS;
 	layouts += ";\n";
 
@@ -2233,6 +2308,14 @@ std::string ShaderBuilder::VS_GetUniforms() const
 	uniforms += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
 	uniforms += ";\n";
 
+	uniforms += "out vec3 ";
+	uniforms += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT;
+	uniforms += ";\n";
+
+	uniforms += "out float ";
+	uniforms += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN;
+	uniforms += ";\n";
+
 	uniforms += "out vec4 ";
 	uniforms += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR;
 	uniforms += ";\n";
@@ -2298,10 +2381,12 @@ std::string ShaderBuilder::VS_GetSkeletalMeshWeightCalculation() const
 std::string ShaderBuilder::VS_GetMain(const VertexShaderInitializationData& vertexShaderInitializationData, const std::string& vertexShaderModelMatrixVariable) const
 {
 	std::string vsMain = VS_GetPosition();
-	vsMain += VS_GetPositionOffset(vertexShaderInitializationData.materialInitializationData);
 
 	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + vertexShaderModelMatrixVariable + ";\n";
-	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"( = vec4()" + SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION + R"(, 1.f)* )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";\n";
+	vsMain += "\tvec4 materialWorldPosition = vec4(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + ", 1.f) * " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";\n";
+	vsMain += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = materialWorldPosition;\n";
+	vsMain += VS_GetWorldPositionOffsetText(vertexShaderInitializationData.materialInitializationData, "materialWorldPosition");
+	vsMain += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = materialWorldPosition;\n";
 
 	bool isPointLightShadowPass = vertexShaderInitializationData.renderPassType == RenderPassType::PointLightShadow;
 	bool isCubemapRenderPass = vertexShaderInitializationData.renderPassType == RenderPassType::CubemapCapture;
@@ -2324,6 +2409,7 @@ std::string ShaderBuilder::VS_GetMain(const VertexShaderInitializationData& vert
 	{
 		vsMain += VS_GetUV(vertexShaderInitializationData.materialInitializationData);
 		vsMain += VS_GetVertexNormalText(vertexShaderInitializationData.materialInitializationData);
+		vsMain += VS_GetVertexTangentText();
 		vsMain += VS_GetVertexColorText();
 
 		if (isCubemapRenderPass)
@@ -2354,7 +2440,7 @@ std::string ShaderBuilder::VS_GetPosition() const
 	return "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " = " + std::string(SHADER_VARIABLE_NAMES::VERTEX::POSITION) + ";\n";
 }
 
-std::string ShaderBuilder::VS_GetPositionOffset(MaterialInitializationData* initializationData) const
+std::string ShaderBuilder::VS_GetWorldPositionOffsetText(MaterialInitializationData* initializationData, const std::string& worldPositionVariableName) const
 {
 	std::string result = "";
 
@@ -2370,7 +2456,9 @@ std::string ShaderBuilder::VS_GetPositionOffset(MaterialInitializationData* init
 
 	if (!initializationData->vertexPositionOffset.result.empty())
 	{
-		result += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " += " + initializationData->vertexPositionOffset.result + ";\n";
+		result += "\t// World Position Offset is applied after final world transform; provide Vertex Normal when it changes surface slope.\n";
+		result += "\tvec3 materialWorldPositionOffset = " + TrimTrailingStatementTerminators(initializationData->vertexPositionOffset.result) + ";\n";
+		result += "\t" + worldPositionVariableName + ".xyz += materialWorldPositionOffset;\n";
 	}
 
 	return result;
@@ -2453,6 +2541,38 @@ std::string ShaderBuilder::VS_GetVertexNormalText(MaterialInitializationData* in
 	vertexNormalText += " * transpose(inverse(mat3(" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "))));\n";
 
 	return vertexNormalText;
+}
+
+std::string ShaderBuilder::VS_GetVertexTangentText(const std::string& tangentExpression, const std::string& tangentSignExpression) const
+{
+	const std::string tangentSource = tangentExpression.empty() ? std::string(SHADER_VARIABLE_NAMES::VERTEX::TANGENT) + ".xyz" : tangentExpression;
+	const std::string tangentSignSource = tangentSignExpression.empty() ? std::string(SHADER_VARIABLE_NAMES::VERTEX::TANGENT) + ".w" : tangentSignExpression;
+
+	std::string vertexTangentText = "";
+	vertexTangentText += "\n\tvec3 worldNormalForTangent = normalize(";
+	vertexTangentText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL;
+	vertexTangentText += ");\n";
+	vertexTangentText += "\tvec3 worldTangent = (";
+	vertexTangentText += tangentSource;
+	vertexTangentText += ") * transpose(inverse(mat3(";
+	vertexTangentText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX;
+	vertexTangentText += ")));\n";
+	vertexTangentText += "\tworldTangent = worldTangent - worldNormalForTangent * dot(worldNormalForTangent, worldTangent);\n";
+	vertexTangentText += "\tif (dot(worldTangent, worldTangent) < 0.000001f)\n";
+	vertexTangentText += "\t{\n";
+	vertexTangentText += "\t\tvec3 tangentFallbackAxis = abs(worldNormalForTangent.z) < 0.999f ? vec3(0.f, 0.f, 1.f) : vec3(0.f, 1.f, 0.f);\n";
+	vertexTangentText += "\t\tworldTangent = cross(tangentFallbackAxis, worldNormalForTangent);\n";
+	vertexTangentText += "\t}\n";
+	vertexTangentText += "\t";
+	vertexTangentText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT;
+	vertexTangentText += " = normalize(worldTangent);\n";
+	vertexTangentText += "\t";
+	vertexTangentText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN;
+	vertexTangentText += " = ";
+	vertexTangentText += tangentSignSource;
+	vertexTangentText += " < 0.f ? -1.f : 1.f;\n";
+
+	return vertexTangentText;
 }
 
 std::string ShaderBuilder::VS_GetVertexColorText() const

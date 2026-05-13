@@ -206,6 +206,7 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
     SerializeShaderFunction(doc, root, "Metallic", materialInitializationData->metallic);
     SerializeShaderFunction(doc, root, "Roughness", materialInitializationData->roughness);
     SerializeShaderFunction(doc, root, "FragmentNormal", materialInitializationData->fragmentNormal);
+    AddPropertyElement("FragmentNormalIsTangentSpace", materialInitializationData->fragmentNormalIsTangentSpace ? "1" : "0");
     SerializeShaderFunction(doc, root, "VertexNormal", materialInitializationData->vertexNormal);
     SerializeShaderFunction(doc, root, "UV", materialInitializationData->uv);
     SerializeShaderFunction(doc, root, "VertexPositionOffset", materialInitializationData->vertexPositionOffset);
@@ -414,6 +415,8 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     DeserializeShaderFunction(root, "Metallic", materialInitializationData->metallic);
     DeserializeShaderFunction(root, "Roughness", materialInitializationData->roughness);
     DeserializeShaderFunction(root, "FragmentNormal", materialInitializationData->fragmentNormal);
+    child = root->FirstChildElement("FragmentNormalIsTangentSpace");
+    materialInitializationData->fragmentNormalIsTangentSpace = child && child->GetText() ? std::string(child->GetText()) == "1" || std::string(child->GetText()) == "true" : false;
     DeserializeShaderFunction(root, "VertexNormal", materialInitializationData->vertexNormal);
     DeserializeShaderFunction(root, "UV", materialInitializationData->uv);
     DeserializeShaderFunction(root, "VertexPositionOffset", materialInitializationData->vertexPositionOffset);

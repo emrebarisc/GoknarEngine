@@ -146,10 +146,11 @@ private:
 	std::string VS_GetSkeletalMeshWeightCalculation() const;
 	std::string VS_GetMain(const VertexShaderInitializationData& vertexShaderInitializationData, const std::string& vertexShaderModelMatrixVariable) const;
 	std::string VS_GetPosition() const;
-	std::string VS_GetPositionOffset(MaterialInitializationData* initializationData) const;
+	std::string VS_GetWorldPositionOffsetText(MaterialInitializationData* initializationData, const std::string& worldPositionVariableName) const;
 	std::string VS_GetUV(MaterialInitializationData* initializationData) const;
 	std::string VS_GetLightSpaceFragmentPositionCalculations() const;
 	std::string VS_GetVertexNormalText(MaterialInitializationData* initializationData) const;
+	std::string VS_GetVertexTangentText(const std::string& tangentExpression = "", const std::string& tangentSignExpression = "") const;
 	std::string VS_GetVertexColorText() const;
 
 	std::string shaderVersion_{ DEFAULT_SHADER_VERSION };

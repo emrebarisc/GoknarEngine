@@ -1,0 +1,68 @@
+<GameAsset FileType="Material" UseTextureAtlas="true">
+    <Name></Name>
+    <BoneCount>0</BoneCount>
+    <BlendModel>Opaque</BlendModel>
+    <ShadingModel>Default</ShadingModel>
+    <UsesReflectionProbe>0</UsesReflectionProbe>
+    <Texture path="Textures/PBR/WoodFloor/T_WoodFloor_Color.jpg" usage="Diffuse" UseTextureAtlas="true"/>
+    <Texture path="Textures/PBR/WoodFloor/T_WoodFloor_Normal.jpg" usage="Diffuse" UseTextureAtlas="true"/>
+    <Texture path="Textures/PBR/WoodFloor/T_WoodFloor_ORM.jpg" usage="Diffuse" UseTextureAtlas="true"/>
+    <Texture path="Textures/PBR/WoodFloor/T_WoodFloor_Displacement.jpg" usage="Diffuse" UseTextureAtlas="true"/>
+    <BaseColorValue>1 1 1 1</BaseColorValue>
+    <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
+    <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
+    <MetallicValue>0.000000</MetallicValue>
+    <RoughnessValue>0.500000</RoughnessValue>
+    <Translucency>0.000000</Translucency>
+    <BaseColor>
+        <Calculation>
+	// Optimized shader graph calculations
+	vec2 product = (textureUV * vec2(4.0, 2.0));
+	vec4 t_WoodFloor_ColorSample = texture(T_WoodFloor_Color, (vec2(fract((product).x), fract((product).y)) * T_WoodFloor_Color_UVTransform.xy + T_WoodFloor_Color_UVTransform.zw));
+	vec4 t_WoodFloor_NormalSample = texture(T_WoodFloor_Normal, (vec2(fract((product).x), fract((product).y)) * T_WoodFloor_Normal_UVTransform.xy + T_WoodFloor_Normal_UVTransform.zw));
+	vec4 difference = ((t_WoodFloor_NormalSample * 2.0) - vec4(1.0, 1.0, 1.0, 1.0));
+	vec4 t_WoodFloor_ORMSample = texture(T_WoodFloor_ORM, (vec2(fract((product).x), fract((product).y)) * T_WoodFloor_ORM_UVTransform.xy + T_WoodFloor_ORM_UVTransform.zw));
+</Calculation>
+        <Result>t_WoodFloor_ColorSample;</Result>
+    </BaseColor>
+    <EmissiveColor>
+        <Calculation></Calculation>
+        <Result></Result>
+    </EmissiveColor>
+    <AmbientOcclusion>
+        <Calculation></Calculation>
+        <Result>(t_WoodFloor_ORMSample).x;</Result>
+    </AmbientOcclusion>
+    <Metallic>
+        <Calculation></Calculation>
+        <Result>(t_WoodFloor_ORMSample).z;</Result>
+    </Metallic>
+    <Roughness>
+        <Calculation></Calculation>
+        <Result>(t_WoodFloor_ORMSample).y;</Result>
+    </Roughness>
+    <FragmentNormal>
+        <Calculation></Calculation>
+        <Result>(difference).xyz;</Result>
+    </FragmentNormal>
+    <FragmentNormalIsTangentSpace>1</FragmentNormalIsTangentSpace>
+    <VertexNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexNormal>
+    <UV>
+        <Calculation></Calculation>
+        <Result></Result>
+    </UV>
+    <VertexPositionOffset>
+        <Calculation>
+	// Optimized shader graph calculations
+	vec4 t_WoodFloor_DisplacementSample = texture(T_WoodFloor_Displacement, (vec2(fract(((uv * vec2(4.0, 2.0))).x), fract(((uv * vec2(4.0, 2.0))).y)) * T_WoodFloor_Displacement_UVTransform.xy + T_WoodFloor_Displacement_UVTransform.zw));
+</Calculation>
+        <Result>((t_WoodFloor_DisplacementSample * 0.01)).xyz;</Result>
+    </VertexPositionOffset>
+    <VertexShaderFunctions><![CDATA[]]></VertexShaderFunctions>
+    <FragmentShaderFunctions><![CDATA[]]></FragmentShaderFunctions>
+    <VertexShaderUniforms><![CDATA[]]></VertexShaderUniforms>
+    <FragmentShaderUniforms><![CDATA[]]></FragmentShaderUniforms>
+</GameAsset>

@@ -1,0 +1,243 @@
+<Scene>
+    <Lights>
+        <DirectionalLight>
+            <Direction>0.577350 0.577350 -0.577350</Direction>
+            <Color>1.000000 0.990000 0.900000</Color>
+            <Intensity>4</Intensity>
+            <IsCastingShadow>1</IsCastingShadow>
+            <ShadowIntensity>0.5</ShadowIntensity>
+            <ShadowMapResolution>8192 8192</ShadowMapResolution>
+        </DirectionalLight>
+    </Lights>
+    <Objects>
+        <RigidBody>
+            <Name>Floor</Name>
+            <WorldScaling>10.000000 10.000000 0.100000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_Tiles</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Floor</Name>
+            <WorldScaling>10.000000 10.000000 0.100000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                    <RelativePosition>1.000000 0.000000 0.000000</RelativePosition>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_Tiles</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Floor</Name>
+            <WorldScaling>10.000000 10.000000 0.100000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                    <RelativePosition>1.000000 1.000000 0.000000</RelativePosition>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_Tiles</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Floor</Name>
+            <WorldScaling>10.000000 10.000000 0.100000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                    <RelativePosition>0.000000 1.000000 0.000000</RelativePosition>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_Tiles</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Floor</Name>
+            <WorldScaling>10.000000 10.000000 0.100000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                    <RelativePosition>-1.000000 0.000000 0.000000</RelativePosition>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_Tiles</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Floor</Name>
+            <WorldScaling>10.000000 10.000000 0.100000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                    <RelativePosition>-1.000000 1.000000 0.000000</RelativePosition>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_Tiles</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Floor</Name>
+            <WorldScaling>10.000000 10.000000 0.100000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                    <RelativePosition>-1.000000 -1.000000 0.000000</RelativePosition>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_Tiles</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Floor</Name>
+            <WorldScaling>10.000000 10.000000 0.100000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                    <RelativePosition>0.000000 -1.000000 0.000000</RelativePosition>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_Tiles</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Floor</Name>
+            <WorldScaling>10.000000 10.000000 0.100000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                    <RelativePosition>1.000000 -1.000000 0.000000</RelativePosition>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                    <MaterialPath>Materials/PBRTests/M_Tiles</MaterialPath>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Wall</Name>
+            <WorldPosition>15.000000 0.000000 1.500000</WorldPosition>
+            <WorldScaling>0.250000 30.000000 3.000000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Wall</Name>
+            <WorldPosition>-15.000000 0.000000 1.500000</WorldPosition>
+            <WorldScaling>0.250000 30.000000 3.000000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Wall</Name>
+            <WorldPosition>0.000000 -15.000000 1.500000</WorldPosition>
+            <WorldScaling>30.000000 0.250000 3.000000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+        <RigidBody>
+            <Name>Wall</Name>
+            <WorldPosition>0.000000 15.000000 1.500000</WorldPosition>
+            <WorldScaling>30.000000 0.250000 3.000000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+    </Objects>
+</Scene>

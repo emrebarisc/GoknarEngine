@@ -47,16 +47,18 @@ public:
 class GOKNAR_API VertexData
 {
 public:
-	VertexData() : position(Vector3::ZeroVector), normal(Vector3::ZeroVector), color(Vector4::ZeroVector), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& p) : position(p), normal(Vector3::ZeroVector), color(Vector4::ZeroVector), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& pos, const Vector3& n) : position(pos), normal(n), color(Vector4(1.f)), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& pos, const Vector3& n, const Vector4& c) : position(pos), normal(n), color(c), uv(Vector2::ZeroVector) { }
-	VertexData(const Vector3& pos, const Vector3& n, const Vector4& c, const Vector2& uvCoord) : position(pos), normal(n), color(c), uv(uvCoord) { }
+	VertexData() : color(Vector4::ZeroVector), position(Vector3::ZeroVector), normal(Vector3::ZeroVector), uv(Vector2::ZeroVector), tangent(Vector4::ZeroVector) { }
+	VertexData(const Vector3& p) : color(Vector4::ZeroVector), position(p), normal(Vector3::ZeroVector), uv(Vector2::ZeroVector), tangent(Vector4::ZeroVector) { }
+	VertexData(const Vector3& pos, const Vector3& n) : color(Vector4(1.f)), position(pos), normal(n), uv(Vector2::ZeroVector), tangent(Vector4::ZeroVector) { }
+	VertexData(const Vector3& pos, const Vector3& n, const Vector4& c) : color(c), position(pos), normal(n), uv(Vector2::ZeroVector), tangent(Vector4::ZeroVector) { }
+	VertexData(const Vector3& pos, const Vector3& n, const Vector4& c, const Vector2& uvCoord, const Vector4& tangentValue = Vector4::ZeroVector) :
+		color(c), position(pos), normal(n), uv(uvCoord), tangent(tangentValue) { }
 
 	Vector4 color;
 	Vector3 position;
 	Vector3 normal;
 	Vector2 uv;
+	Vector4 tangent;
 };
 
 typedef std::vector<VertexData> VertexArray;
@@ -121,6 +123,11 @@ public:
 	void SetVertexUV(int index, const Vector2& uv)
 	{
 		vertices_->at(index).uv = uv;
+	}
+
+	void SetVertexTangent(int index, const Vector4& tangent)
+	{
+		vertices_->at(index).tangent = tangent;
 	}
 
 	const VertexArray* GetVerticesPointer() const
@@ -199,6 +206,8 @@ protected:
 	bool isInitialized_;
 
 private:
+	void GenerateTangents();
+
 	Box aabb_{ Box(Vector3(MAX_FLOAT, MAX_FLOAT, MAX_FLOAT), Vector3(-MAX_FLOAT, -MAX_FLOAT, -MAX_FLOAT)) };
 
 	VertexArray* vertices_;

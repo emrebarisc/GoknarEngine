@@ -10,6 +10,7 @@ inline namespace SHADER_VARIABLE_NAMES
 	{
 		const char* POSITION = "position";
 		const char* NORMAL = "normal";
+		const char* TANGENT = "tangent";
 		const char* COLOR = "color";
 		const char* UV = "uv";
 		const char* BONE_IDS = "boneIDs";
@@ -174,6 +175,8 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* FRAGMENT_POSITION_SCREEN_SPACE = "fragmentPositionScreenSpace";
 		const char* FRAGMENT_POSITION_LIGHT_SPACE_PREFIX = "fragmentPositionLightSpace_";
 		const char* VERTEX_NORMAL = "vertexNormal";
+		const char* VERTEX_TANGENT = "vertexTangent";
+		const char* VERTEX_TANGENT_SIGN = "vertexTangentSign";
 		const char* VERTEX_COLOR = "vertexColor";
 		const char* BONE_IDS = "outBoneIDs";
 		const char* WEIGHTS = "outWeights";
