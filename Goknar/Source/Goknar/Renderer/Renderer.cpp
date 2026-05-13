@@ -49,6 +49,7 @@
 #include "Goknar/Renderer/PostProcessing/TemporalAntiAliasingPostProcessingEffect.h"
 
 #include <cfloat>
+#include <climits>
 #include <unordered_set>
 
 #define VERTEX_COLOR_LOCATION 0
@@ -611,6 +612,8 @@ void Renderer::Render(RenderPassType renderPassType)
 		renderPassType == RenderPassType::Deferred ?
 		RenderPassType::Forward :
 		renderPassType;
+
+	SortOpaqueInstances();
 
 	auto RenderStaticMesh = [&](const StaticMeshRenderData& renderData)
 		{
@@ -1529,6 +1532,57 @@ void Renderer::SetAttribPointersForSkeletalMesh()
 
 	GraphicsAPI()->DisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_2_LOCATION);
 	GraphicsAPI()->DisableVertexAttribArray(INSTANCE_TRANSFORMATION_ROW_3_LOCATION);
+}
+
+void Renderer::SortOpaqueInstances()
+{
+	auto getMaterialAtlasKey = [](const IMaterialBase* material) -> unsigned long long
+	{
+		if (!material)
+		{
+			return ULLONG_MAX;
+		}
+
+		const Shader* shader = material->GetShader(RenderPassType::Forward);
+		const std::vector<const Texture*>* textures = shader ? shader->GetTextures() : nullptr;
+		if (!textures || textures->empty())
+		{
+			return ULLONG_MAX - 1;
+		}
+
+		unsigned long long key = ULLONG_MAX - 2;
+		for (const Texture* texture : *textures)
+		{
+			if (!texture)
+			{
+				continue;
+			}
+
+			const unsigned long long textureKey = texture->GetUsesAtlasTexture() ?
+				(static_cast<unsigned long long>(texture->GetTextureAtlasCategory()) << 56) | static_cast<unsigned long long>((std::max)(texture->GetTextureAtlasIndex(), 0)) :
+				(1ull << 63) | static_cast<unsigned long long>(texture->GetRendererTextureId());
+			key = (std::min)(key, textureKey);
+		}
+
+		return key;
+	};
+
+	auto sortByAtlas = [&getMaterialAtlasKey](auto& renderDataList)
+	{
+		std::stable_sort(
+			renderDataList.begin(),
+			renderDataList.end(),
+			[&getMaterialAtlasKey](const auto& left, const auto& right)
+			{
+				return getMaterialAtlasKey(left.meshInstance->GetMaterial(left.subMeshIndex)) <
+					getMaterialAtlasKey(right.meshInstance->GetMaterial(right.subMeshIndex));
+			});
+	};
+
+	sortByAtlas(opaqueStaticMeshRenderData_);
+	sortByAtlas(opaqueInstancedStaticMeshRenderData_);
+	sortByAtlas(opaqueSkeletalMeshRenderData_);
+	sortByAtlas(opaqueDynamicMeshRenderData_);
 }
 
 void Renderer::SortTransparentInstances()

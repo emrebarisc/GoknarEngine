@@ -68,32 +68,53 @@ Texture* Image::GetOrCreateGeneratedTexture()
 		{
 			generatedTexture_->SetWaitsForTextureAtlas(true);
 		}
+
+		if (!textureAtlasCategories_.empty())
+		{
+			generatedTexture_->SetTextureAtlasCategory(textureAtlasCategories_.front());
+		}
 	}
 
 	return generatedTexture_;
 }
 
-void Image::RegisterTextureAtlasProxy(Texture* texture)
+void Image::RegisterTextureAtlasProxy(Texture* texture, TextureAtlasCategory category)
 {
 	if (!texture)
 	{
 		return;
 	}
 
-	if (std::find(atlasProxyTextures_.begin(), atlasProxyTextures_.end(), texture) == atlasProxyTextures_.end())
-	{
-		atlasProxyTextures_.push_back(texture);
-	}
-	texture->SetTextureAtlasProxySourceImage(this);
+	AddTextureAtlasCategory(category);
 
-	if (!hasAtlasRegion_ && canUseTextureAtlas_)
+	auto proxyIterator = std::find_if(
+		atlasProxyTextures_.begin(),
+		atlasProxyTextures_.end(),
+		[texture](const TextureAtlasProxy& proxy)
+		{
+			return proxy.texture == texture;
+		});
+
+	if (proxyIterator == atlasProxyTextures_.end())
+	{
+		atlasProxyTextures_.push_back({ texture, category });
+	}
+	else
+	{
+		proxyIterator->category = category;
+	}
+
+	texture->SetTextureAtlasProxySourceImage(this);
+	texture->SetTextureAtlasCategory(category);
+
+	if (!FindTextureAtlasBinding(category) && canUseTextureAtlas_)
 	{
 		texture->SetWaitsForTextureAtlas(true);
 	}
 
-	if (hasAtlasRegion_ && textureAtlas_)
+	if (const TextureAtlasBinding* binding = FindTextureAtlasBinding(category))
 	{
-		ApplyTextureAtlasRegionToTexture(texture, textureAtlas_->GetTexture(), atlasRegion_, false);
+		ApplyTextureAtlasRegionToTexture(texture, binding->atlasTexture, binding->atlasRegion, false);
 	}
 }
 
@@ -106,7 +127,13 @@ void Image::UnregisterTextureAtlasProxy(Texture* texture)
 	}
 
 	atlasProxyTextures_.erase(
-		std::remove(atlasProxyTextures_.begin(), atlasProxyTextures_.end(), texture),
+		std::remove_if(
+			atlasProxyTextures_.begin(),
+			atlasProxyTextures_.end(),
+			[texture](const TextureAtlasProxy& proxy)
+			{
+				return proxy.texture == texture;
+			}),
 		atlasProxyTextures_.end());
 
 	if (texture->GetTextureAtlasProxySourceImage() == this)
@@ -139,26 +166,107 @@ void Image::ApplyTextureAtlasRegionToTexture(Texture* texture, Texture* atlasTex
 	texture->SetChannels(channels_);
 	texture->SetTextureMinFilter(atlasTexture->GetTextureMinFilter());
 	texture->SetTextureMagFilter(atlasTexture->GetTextureMagFilter());
-	texture->SetAtlasTexture(atlasTexture, atlasRegion.uMin, atlasRegion.vMin, atlasRegion.uMax, atlasRegion.vMax);
+	texture->SetAtlasTexture(
+		atlasTexture,
+		atlasRegion.uMin,
+		atlasRegion.vMin,
+		atlasRegion.uMax,
+		atlasRegion.vMax,
+		atlasRegion.category,
+		atlasRegion.atlasIndex);
 }
 
-void Image::SetTextureAtlasRegion(TextureAtlas* textureAtlas, Texture* atlasTexture, const TextureAtlasRegion& atlasRegion)
+void Image::SetTextureAtlasRegion(
+	TextureAtlas* textureAtlas,
+	Texture* atlasTexture,
+	const TextureAtlasRegion& atlasRegion,
+	TextureAtlasCategory category,
+	int atlasIndex)
 {
 	if (!textureAtlas || !atlasTexture)
 	{
 		return;
 	}
 
+	AddTextureAtlasCategory(category);
+
+	TextureAtlasRegion resolvedRegion = atlasRegion;
+	resolvedRegion.category = category;
+	resolvedRegion.atlasIndex = atlasIndex;
+
+	TextureAtlasBinding* binding = FindMutableTextureAtlasBinding(category);
+	if (!binding)
+	{
+		textureAtlasBindings_.push_back(TextureAtlasBinding());
+		binding = &textureAtlasBindings_.back();
+	}
+
+	binding->textureAtlas = textureAtlas;
+	binding->atlasTexture = atlasTexture;
+	binding->atlasRegion = resolvedRegion;
+	binding->atlasIndex = atlasIndex;
+	binding->hasAtlasRegion = true;
+
 	textureAtlas_ = textureAtlas;
-	atlasRegion_ = atlasRegion;
+	atlasRegion_ = resolvedRegion;
 	hasAtlasRegion_ = true;
 
-	ApplyTextureAtlasRegionToTexture(GetOrCreateGeneratedTexture(), atlasTexture, atlasRegion, true);
-
-	for (Texture* atlasProxyTexture : atlasProxyTextures_)
+	if (textureAtlasCategories_.empty() || textureAtlasCategories_.front() == category)
 	{
-		ApplyTextureAtlasRegionToTexture(atlasProxyTexture, atlasTexture, atlasRegion, false);
+		ApplyTextureAtlasRegionToTexture(GetOrCreateGeneratedTexture(), atlasTexture, resolvedRegion, true);
 	}
+
+	for (const TextureAtlasProxy& atlasProxyTexture : atlasProxyTextures_)
+	{
+		if (atlasProxyTexture.category == category)
+		{
+			ApplyTextureAtlasRegionToTexture(atlasProxyTexture.texture, atlasTexture, resolvedRegion, false);
+		}
+	}
+}
+
+TextureAtlas* Image::GetTextureAtlas(TextureAtlasCategory category) const
+{
+	if (const TextureAtlasBinding* binding = FindTextureAtlasBinding(category))
+	{
+		return binding->textureAtlas;
+	}
+
+	return nullptr;
+}
+
+void Image::AddTextureAtlasCategory(TextureAtlasCategory category)
+{
+	if (std::find(textureAtlasCategories_.begin(), textureAtlasCategories_.end(), category) == textureAtlasCategories_.end())
+	{
+		textureAtlasCategories_.push_back(category);
+	}
+}
+
+const Image::TextureAtlasBinding* Image::FindTextureAtlasBinding(TextureAtlasCategory category) const
+{
+	for (const TextureAtlasBinding& binding : textureAtlasBindings_)
+	{
+		if (binding.hasAtlasRegion && binding.atlasRegion.category == category)
+		{
+			return &binding;
+		}
+	}
+
+	return nullptr;
+}
+
+Image::TextureAtlasBinding* Image::FindMutableTextureAtlasBinding(TextureAtlasCategory category)
+{
+	for (TextureAtlasBinding& binding : textureAtlasBindings_)
+	{
+		if (binding.hasAtlasRegion && binding.atlasRegion.category == category)
+		{
+			return &binding;
+		}
+	}
+
+	return nullptr;
 }
 
 void Image::PreInit()

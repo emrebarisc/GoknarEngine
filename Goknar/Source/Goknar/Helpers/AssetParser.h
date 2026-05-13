@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "TinyXML/include/tinyxml2.h"
+#include "Goknar/Renderer/TextureAtlasTypes.h"
 
 struct Vector3;
 class Material;
@@ -22,7 +23,11 @@ public:
 	static void SetMeshMaterialPath(const std::string& meshPath, const std::string& materialPath, const std::string& assetContainerPath = "AssetContainer");
 
 	static bool ReadTextureAtlasUsage(const tinyxml2::XMLElement* textureElement, bool defaultValue = true);
-	static bool RegisterTextureToTextureAtlas(Texture* texture, bool useTextureNameForImage = false, bool flushAtlas = false);
+	static bool RegisterTextureToTextureAtlas(
+		Texture* texture,
+		bool useTextureNameForImage = false,
+		bool flushAtlas = false,
+		TextureAtlasCategory category = TextureAtlasCategory::Opaque);
 	static void RegisterMaterialTexturesToTextureAtlas(Material* material, bool flushAtlas = true);
 
 private:

@@ -376,6 +376,13 @@ namespace
 		return fileType ? fileType : "";
 	}
 
+	TextureAtlasCategory GetTextureAtlasCategory(const Material* material)
+	{
+		return material && material->GetBlendModel() == MaterialBlendModel::Transparent ?
+			TextureAtlasCategory::Transparent :
+			TextureAtlasCategory::Opaque;
+	}
+
 }
 
 
@@ -384,7 +391,7 @@ bool AssetParser::ReadTextureAtlasUsage(const tinyxml2::XMLElement* textureEleme
 	return ReadTextureAtlasUsageInternal(textureElement, defaultValue);
 }
 
-bool AssetParser::RegisterTextureToTextureAtlas(Texture* texture, bool useTextureNameForImage, bool flushAtlas)
+bool AssetParser::RegisterTextureToTextureAtlas(Texture* texture, bool useTextureNameForImage, bool flushAtlas, TextureAtlasCategory category)
 {
 	if (!texture || texture->GetTextureImagePath().empty())
 	{
@@ -410,15 +417,23 @@ bool AssetParser::RegisterTextureToTextureAtlas(Texture* texture, bool useTextur
 	}
 
 	image->SetCanUseTextureAtlas(true);
-	texture->SetWaitsForTextureAtlas(true);
+	image->AddTextureAtlasCategory(category);
+	texture->SetTextureAtlasCategory(category);
 
 	if (useTextureNameForImage && !texture->GetName().empty())
 	{
 		image->SetName(texture->GetName());
 	}
 
-	image->RegisterTextureAtlasProxy(texture);
-	const bool registered = resourceManager->GetResourceContainer()->RegisterImageToTextureAtlas(image);
+	const bool registered = resourceManager->GetResourceContainer()->RegisterImageToTextureAtlas(image, category);
+	if (!registered)
+	{
+		texture->SetWaitsForTextureAtlas(false);
+		return false;
+	}
+
+	texture->SetWaitsForTextureAtlas(true);
+	image->RegisterTextureAtlasProxy(texture, category);
 	if (flushAtlas && registered)
 	{
 		resourceManager->GetResourceContainer()->FlushImageTextureAtlas();
@@ -447,9 +462,10 @@ void AssetParser::RegisterMaterialTexturesToTextureAtlas(Material* material, boo
 	}
 
 	bool registeredAnyTexture = false;
+	const TextureAtlasCategory category = GetTextureAtlasCategory(material);
 	for (const Texture* constTexture : *textures)
 	{
-		registeredAnyTexture |= RegisterTextureToTextureAtlas(const_cast<Texture*>(constTexture), false, false);
+		registeredAnyTexture |= RegisterTextureToTextureAtlas(const_cast<Texture*>(constTexture), false, false, category);
 	}
 
 	if (flushAtlas && registeredAnyTexture)

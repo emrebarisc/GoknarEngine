@@ -13,6 +13,16 @@
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Lights/LightManager/LightManager.h"
 
+namespace
+{
+	TextureAtlasCategory GetTextureAtlasCategory(MaterialBlendModel blendModel)
+	{
+		return blendModel == MaterialBlendModel::Transparent ?
+			TextureAtlasCategory::Transparent :
+			TextureAtlasCategory::Opaque;
+	}
+}
+
 Material::Material() :
 	IMaterialBase()
 {
@@ -67,6 +77,7 @@ Texture* Material::GetTextureForShader(const Image* constImage, bool useTextureA
 	ResourceManager* resourceManager = engine ? engine->GetResourceManager() : nullptr;
 	ResourceContainer* resourceContainer = resourceManager ? resourceManager->GetResourceContainer() : nullptr;
 	const bool shouldUseTextureAtlas = useTextureAtlas || (resourceContainer && resourceContainer->GetUseTextureAtlasForAllImages());
+	const TextureAtlasCategory atlasCategory = GetTextureAtlasCategory(blendModel_);
 
 	if (!shouldUseTextureAtlas)
 	{
@@ -74,9 +85,17 @@ Texture* Material::GetTextureForShader(const Image* constImage, bool useTextureA
 	}
 
 	image->SetCanUseTextureAtlas(true);
+	bool registeredToAtlas = false;
 	if (resourceContainer)
 	{
-		resourceContainer->RegisterImageToTextureAtlas(image);
+		registeredToAtlas = resourceContainer->RegisterImageToTextureAtlas(image, atlasCategory);
+	}
+
+	if (!registeredToAtlas)
+	{
+		Texture* standaloneTexture = image->GetOrCreateGeneratedTexture();
+		standaloneTexture->SetWaitsForTextureAtlas(false);
+		return standaloneTexture;
 	}
 
 	MaterialTextureProxy materialTextureProxy;
@@ -96,9 +115,10 @@ Texture* Material::GetTextureForShader(const Image* constImage, bool useTextureA
 	texture->SetTextureWrappingR(image->GetTextureWrappingR());
 	texture->SetTextureWrappingT(image->GetTextureWrappingT());
 	texture->SetTextureWrappingS(image->GetTextureWrappingS());
+	texture->SetTextureAtlasCategory(atlasCategory);
 	texture->SetWaitsForTextureAtlas(true);
 
-	image->RegisterTextureAtlasProxy(texture);
+	image->RegisterTextureAtlasProxy(texture, atlasCategory);
 	materialTextureProxies_.push_back(std::move(materialTextureProxy));
 
 	return texture;

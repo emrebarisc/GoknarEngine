@@ -6,7 +6,7 @@
 #include "Contents/Audio.h"
 #include "Contents/Content.h"
 #include "Contents/Image.h"
-#include "Renderer/TextureAtlas.h"
+#include "Renderer/TextureAtlasManager.h"
 #include "IO/IOManager.h"
 
 ResourceManager::ResourceManager() :
@@ -126,13 +126,13 @@ Content* ResourceManager::LoadContent(const std::string& path)
 }
 
 ResourceContainer::ResourceContainer() :
-	imageTextureAtlas_(new TextureAtlas("DefaultImageTextureAtlas"))
+	imageTextureAtlasManager_(new TextureAtlasManager())
 {
 }
 
 ResourceContainer::~ResourceContainer()
 {
-	delete imageTextureAtlas_;
+	delete imageTextureAtlasManager_;
 
 	for (Image* image : imageArray_)
 	{
@@ -156,7 +156,17 @@ void ResourceContainer::PreInit()
 
 	for (Image* image : imageArray_)
 	{
-		RegisterImageToTextureAtlas(image);
+		if (image->HasTextureAtlasCategories())
+		{
+			for (TextureAtlasCategory category : image->GetTextureAtlasCategories())
+			{
+				RegisterImageToTextureAtlas(image, category);
+			}
+		}
+		else
+		{
+			RegisterImageToTextureAtlas(image);
+		}
 	}
 
 	FlushImageTextureAtlas();
@@ -181,9 +191,9 @@ void ResourceContainer::Init()
 {
 	isInitialized_ = true;
 
-	if (imageTextureAtlas_)
+	if (imageTextureAtlasManager_)
 	{
-		imageTextureAtlas_->Init();
+		imageTextureAtlasManager_->Init();
 	}
 
 	for (Image* image : imageArray_)
@@ -206,9 +216,9 @@ void ResourceContainer::PostInit()
 {
 	isPostInitialized_ = true;
 
-	if (imageTextureAtlas_)
+	if (imageTextureAtlasManager_)
 	{
-		imageTextureAtlas_->PostInit();
+		imageTextureAtlasManager_->PostInit();
 	}
 
 	for (Image* image : imageArray_)
@@ -236,9 +246,9 @@ void ResourceContainer::AddImage(Image* image)
 	RegisterImageToTextureAtlas(image);
 }
 
-bool ResourceContainer::RegisterImageToTextureAtlas(Image* image)
+bool ResourceContainer::RegisterImageToTextureAtlas(Image* image, TextureAtlasCategory category)
 {
-	if (!imageTextureAtlas_ || !image)
+	if (!imageTextureAtlasManager_ || !image)
 	{
 		return false;
 	}
@@ -248,7 +258,8 @@ bool ResourceContainer::RegisterImageToTextureAtlas(Image* image)
 		return false;
 	}
 
-	return imageTextureAtlas_->AddImage(image);
+	image->AddTextureAtlasCategory(category);
+	return imageTextureAtlasManager_->AddImage(image, category);
 }
 
 void ResourceContainer::FlushImageTextureAtlas()
@@ -257,22 +268,27 @@ void ResourceContainer::FlushImageTextureAtlas()
 	// before the renderer has a valid OpenGL context. In that phase we only
 	// collect registrations. The first real GPU upload happens from
 	// ResourceContainer::PreInit(), where the engine's GL entry points are ready.
-	if (!isPreInitialized_ || !imageTextureAtlas_ || !imageTextureAtlas_->HasImages())
+	if (!isPreInitialized_ || !imageTextureAtlasManager_ || !imageTextureAtlasManager_->HasImages())
 	{
 		return;
 	}
 
-	imageTextureAtlas_->PreInit();
+	imageTextureAtlasManager_->PreInit();
 
 	if (isInitialized_)
 	{
-		imageTextureAtlas_->Init();
+		imageTextureAtlasManager_->Init();
 	}
 
 	if (isPostInitialized_)
 	{
-		imageTextureAtlas_->PostInit();
+		imageTextureAtlasManager_->PostInit();
 	}
+}
+
+TextureAtlas* ResourceContainer::GetImageTextureAtlas(TextureAtlasCategory category) const
+{
+	return imageTextureAtlasManager_ ? imageTextureAtlasManager_->GetFirstAtlas(category) : nullptr;
 }
 
 void ResourceContainer::AddMesh(Content* mesh)

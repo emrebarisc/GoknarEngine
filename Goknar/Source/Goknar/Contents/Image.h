@@ -71,15 +71,22 @@ public:
 	}
 
 	Texture* GetOrCreateGeneratedTexture();
-	void RegisterTextureAtlasProxy(Texture* texture);
+	void RegisterTextureAtlasProxy(Texture* texture, TextureAtlasCategory category = TextureAtlasCategory::Opaque);
 	void UnregisterTextureAtlasProxy(Texture* texture);
 
-	void SetTextureAtlasRegion(TextureAtlas* textureAtlas, Texture* atlasTexture, const TextureAtlasRegion& atlasRegion);
+	void SetTextureAtlasRegion(
+		TextureAtlas* textureAtlas,
+		Texture* atlasTexture,
+		const TextureAtlasRegion& atlasRegion,
+		TextureAtlasCategory category = TextureAtlasCategory::Opaque,
+		int atlasIndex = -1);
 
 	TextureAtlas* GetTextureAtlas() const
 	{
 		return textureAtlas_;
 	}
+
+	TextureAtlas* GetTextureAtlas(TextureAtlasCategory category) const;
 
 	const TextureAtlasRegion* GetTextureAtlasRegion() const
 	{
@@ -99,6 +106,17 @@ public:
 	bool GetCanUseTextureAtlas() const
 	{
 		return canUseTextureAtlas_;
+	}
+
+	void AddTextureAtlasCategory(TextureAtlasCategory category);
+	bool HasTextureAtlasCategories() const
+	{
+		return !textureAtlasCategories_.empty();
+	}
+
+	const std::vector<TextureAtlasCategory>& GetTextureAtlasCategories() const
+	{
+		return textureAtlasCategories_;
 	}
 
 	void ClearBuffer()
@@ -135,8 +153,28 @@ public:
 private:
 	void ApplyTextureAtlasRegionToTexture(Texture* texture, Texture* atlasTexture, const TextureAtlasRegion& atlasRegion, bool applyImageTextureProperties);
 
+	struct TextureAtlasProxy
+	{
+		Texture* texture{ nullptr };
+		TextureAtlasCategory category{ TextureAtlasCategory::Opaque };
+	};
+
+	struct TextureAtlasBinding
+	{
+		TextureAtlas* textureAtlas{ nullptr };
+		Texture* atlasTexture{ nullptr };
+		TextureAtlasRegion atlasRegion;
+		int atlasIndex{ -1 };
+		bool hasAtlasRegion{ false };
+	};
+
+	const TextureAtlasBinding* FindTextureAtlasBinding(TextureAtlasCategory category) const;
+	TextureAtlasBinding* FindMutableTextureAtlasBinding(TextureAtlasCategory category);
+
 	Texture* generatedTexture_;
-	std::vector<Texture*> atlasProxyTextures_;
+	std::vector<TextureAtlasProxy> atlasProxyTextures_;
+	std::vector<TextureAtlasCategory> textureAtlasCategories_;
+	std::vector<TextureAtlasBinding> textureAtlasBindings_;
 	TextureAtlas* textureAtlas_{ nullptr };
 	TextureAtlasRegion atlasRegion_;
 	bool hasAtlasRegion_{ false };

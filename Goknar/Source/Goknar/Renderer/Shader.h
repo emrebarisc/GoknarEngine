@@ -9,6 +9,7 @@
 #include "Goknar/Math/GoknarMath.h"
 #include "Goknar/Math/Matrix.h"
 
+#include <cstdint>
 #include <unordered_map>
 #include <variant>
 
@@ -118,6 +119,13 @@ public:
 		return programId_;
 	}
 
+	// Stable hash of the loaded/generated shader sources used by Shader.cpp's
+	// in-process linked-program cache. Valid after PreInit().
+	std::uint64_t GetSourceHash() const
+	{
+		return sourceHash_;
+	}
+
 	void PreInit();
 	void Init();
 	void PostInit();
@@ -204,6 +212,7 @@ private:
 	std::string geometryShaderScript_{ "" };
 
 	GEuint programId_{ 0 };
+	std::uint64_t sourceHash_{ 0 };
 
 	ShaderType shaderType_{ ShaderType::Scene };
 };

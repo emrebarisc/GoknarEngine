@@ -4,6 +4,7 @@
 #include "Goknar/Core.h"
 #include "Texture.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
@@ -21,6 +22,9 @@ struct GOKNAR_API TextureAtlasRegion
 	float vMin{ 0.0f };
 	float uMax{ 0.0f };
 	float vMax{ 0.0f };
+
+	TextureAtlasCategory category{ TextureAtlasCategory::Opaque };
+	int atlasIndex{ -1 };
 };
 
 class GOKNAR_API TextureAtlas
@@ -31,6 +35,11 @@ public:
 	~TextureAtlas();
 
 	bool AddImage(Image* image);
+	bool CanAddImage(Image* image) const;
+	bool ContainsImage(const Image* image) const
+	{
+		return std::find(images_.begin(), images_.end(), image) != images_.end();
+	}
 	bool Build();
 
 	bool HasImages() const
@@ -79,6 +88,26 @@ public:
 		return padding_;
 	}
 
+	TextureAtlasCategory GetCategory() const
+	{
+		return category_;
+	}
+
+	void SetCategory(TextureAtlasCategory category)
+	{
+		category_ = category;
+	}
+
+	int GetAtlasIndex() const
+	{
+		return atlasIndex_;
+	}
+
+	void SetAtlasIndex(int atlasIndex)
+	{
+		atlasIndex_ = atlasIndex;
+	}
+
 	int GetMaxWidth() const
 	{
 		return maxWidth_;
@@ -119,12 +148,16 @@ private:
 		int height{ 0 };
 	};
 
+	bool BuildPackingItems(const std::vector<Image*>& images, std::vector<PackingItem>& packableItems, long long& totalArea, int& widestPaddedImage, bool logWarnings) const;
+	bool TryFindPlacements(const std::vector<PackingItem>& packableItems, int& atlasWidth, int& atlasHeight, std::vector<PackingPlacement>& placements) const;
 	bool TryPack(const std::vector<PackingItem>& items, int atlasWidth, int maxAtlasHeight, std::vector<PackingPlacement>& placements, int& packedHeight) const;
 	void CopyImageToAtlas(const Image* image, const TextureAtlasRegion& region, unsigned char* atlasBuffer) const;
 
 	static int NextPowerOfTwo(int value);
 
 	std::string name_{ "textureAtlas" };
+	TextureAtlasCategory category_{ TextureAtlasCategory::Opaque };
+	int atlasIndex_{ -1 };
 	std::vector<Image*> images_;
 	std::map<const Image*, TextureAtlasRegion> regions_;
 
@@ -132,8 +165,8 @@ private:
 
 	int width_{ 0 };
 	int height_{ 0 };
-	int maxWidth_{ 4096 };
-	int maxHeight_{ 4096 };
+	int maxWidth_{ 8192 };
+	int maxHeight_{ 8192 };
 	int padding_{ 2 };
 
 	bool isBuilt_{ false };

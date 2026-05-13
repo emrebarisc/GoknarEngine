@@ -34,11 +34,11 @@ public:
 	std::string GeometryBufferPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string GeometryBufferPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string GeometryBufferPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
-	
+
 	std::string ShadowPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string ShadowPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string ShadowPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
-	
+
 	std::string PointShadowPass_GetVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string PointShadowPass_GetInstancedStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string PointShadowPass_GetGeometryShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
@@ -110,7 +110,8 @@ private:
 	std::string FS_GetPBRFunctions(bool includeReflectionProbe) const;
 
 	std::string General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const;
-	std::string General_FS_GetShaderTextureUniforms(MaterialInitializationData* initializationData, const Shader* shader) const;
+	void ApplyTextureBackedMaterialDefaults(MaterialInitializationData* initializationData, const Shader* shader) const;
+	std::string General_FS_GetShaderTextureUniforms(const MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string General_FS_GetDiffuseTextureSampling(const Texture* texture) const;
 	std::string General_FS_GetScalarTextureSampling(const Texture* texture) const;
 	std::string General_FS_GetNormalTextureSampling(const Texture* texture) const;

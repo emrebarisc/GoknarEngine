@@ -3,6 +3,7 @@
 
 #include "Goknar/Core.h"
 #include "Goknar/Managers/ObjectIDManager.h"
+#include "Goknar/Renderer/TextureAtlasTypes.h"
 #include "Types.h"
 
 #include <string>
@@ -215,7 +216,7 @@ public:
 	{
 		return width_;
 	}
-	
+
 	void SetWidth(int width)
 	{
 		width_ = width;
@@ -275,12 +276,21 @@ public:
 		return name_;
 	}
 
+	std::string GetShaderUniformName() const;
+
 	void SetName(const std::string& name)
 	{
 		name_ = name;
 	}
 
-	void SetAtlasTexture(Texture* atlasTexture, float uMin, float vMin, float uMax, float vMax);
+	void SetAtlasTexture(
+		Texture* atlasTexture,
+		float uMin,
+		float vMin,
+		float uMax,
+		float vMax,
+		TextureAtlasCategory atlasCategory = TextureAtlasCategory::Opaque,
+		int atlasIndex = -1);
 
 	void SetWaitsForTextureAtlas(bool waitsForTextureAtlas)
 	{
@@ -300,6 +310,21 @@ public:
 	const Texture* GetAtlasTexture() const
 	{
 		return atlasTexture_;
+	}
+
+	void SetTextureAtlasCategory(TextureAtlasCategory atlasCategory)
+	{
+		atlasCategory_ = atlasCategory;
+	}
+
+	TextureAtlasCategory GetTextureAtlasCategory() const
+	{
+		return atlasCategory_;
+	}
+
+	int GetTextureAtlasIndex() const
+	{
+		return atlasIndex_;
 	}
 
 	void SetTextureAtlasProxySourceImage(Image* image);
@@ -513,6 +538,8 @@ private:
 	GEuint rendererTextureId_{ 0 };
 	Texture* atlasTexture_{ nullptr };
 	Image* atlasProxySourceImage_{ nullptr };
+	TextureAtlasCategory atlasCategory_{ TextureAtlasCategory::Opaque };
+	int atlasIndex_{ -1 };
 	float atlasUScale_{ 1.0f };
 	float atlasVScale_{ 1.0f };
 	float atlasUOffset_{ 0.0f };

@@ -8,11 +8,13 @@
 #include <vector>
 
 #include "Goknar/Materials/Material.h"
+#include "Goknar/Renderer/TextureAtlasTypes.h"
 
 class Audio;
 class Content;
 class Image;
 class TextureAtlas;
+class TextureAtlasManager;
 
 enum class GOKNAR_API ResourceType : unsigned char
 {
@@ -45,7 +47,7 @@ public:
 	void PostInit();
 
 	void AddImage(Image* image);
-	bool RegisterImageToTextureAtlas(Image* image);
+	bool RegisterImageToTextureAtlas(Image* image, TextureAtlasCategory category = TextureAtlasCategory::Opaque);
 	void FlushImageTextureAtlas();
 	Image* GetImage(int index) const
 	{
@@ -104,7 +106,14 @@ public:
 
 	TextureAtlas* GetImageTextureAtlas() const
 	{
-		return imageTextureAtlas_;
+		return GetImageTextureAtlas(TextureAtlasCategory::Opaque);
+	}
+
+	TextureAtlas* GetImageTextureAtlas(TextureAtlasCategory category) const;
+
+	TextureAtlasManager* GetImageTextureAtlasManager() const
+	{
+		return imageTextureAtlasManager_;
 	}
 
 	void SetUseTextureAtlasForAllImages(bool useTextureAtlasForAllImages)
@@ -131,7 +140,7 @@ private:
 	std::vector<Content*> meshArray_;
 	std::vector<Audio*> audioArray_;
 
-	TextureAtlas* imageTextureAtlas_;
+	TextureAtlasManager* imageTextureAtlasManager_;
 	bool useTextureAtlasForAllImages_{ false };
 	bool isPreInitialized_{ false };
 	bool isInitialized_{ false };

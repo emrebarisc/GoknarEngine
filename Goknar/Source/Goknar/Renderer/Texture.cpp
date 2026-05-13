@@ -10,7 +10,35 @@
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Framebuffer.h"
 
+#include <cctype>
 #include <cstring>
+
+
+namespace
+{
+	bool IsValidIdentifierCharacter(char character)
+	{
+		return std::isalnum(static_cast<unsigned char>(character)) || character == '_';
+	}
+
+	std::string MakeValidGLSLIdentifier(const std::string& name, const std::string& fallback)
+	{
+		std::string result;
+		result.reserve(name.size() + fallback.size() + 1);
+
+		for (char character : name)
+		{
+			result.push_back(IsValidIdentifierCharacter(character) ? character : '_');
+		}
+
+		if (result.empty() || std::isdigit(static_cast<unsigned char>(result.front())))
+		{
+			result = fallback + (result.empty() ? std::string() : std::string("_") + result);
+		}
+
+		return result;
+	}
+}
 
 Texture::Texture()
 {
@@ -190,9 +218,9 @@ void Texture::PreInit()
 	{
 		engine->GetGraphicsAPI()->GenerateMipmap(textureBindTarget_);
 	}
-	
+
 	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, 0);
-	
+
 	EXIT_ON_GRAPHICS_API_ERROR("Texture::Init");
 
 	delete[] buffer_;
@@ -214,7 +242,7 @@ void Texture::Bind(const Shader* shader) const
 
 	if (shader != nullptr)
 	{
-		shader->SetInt(name_.c_str(), static_cast<int>(effectiveRendererTextureId));
+		shader->SetInt(GetShaderUniformName().c_str(), static_cast<int>(effectiveRendererTextureId));
 
 		if (atlasTexture_)
 		{
@@ -281,9 +309,18 @@ void Texture::UpdateSizeOnGPU()
 	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, 0);
 }
 
-void Texture::SetAtlasTexture(Texture* atlasTexture, float uMin, float vMin, float uMax, float vMax)
+void Texture::SetAtlasTexture(
+	Texture* atlasTexture,
+	float uMin,
+	float vMin,
+	float uMax,
+	float vMax,
+	TextureAtlasCategory atlasCategory,
+	int atlasIndex)
 {
 	atlasTexture_ = atlasTexture;
+	atlasCategory_ = atlasCategory;
+	atlasIndex_ = atlasTexture ? atlasIndex : -1;
 	atlasUScale_ = uMax - uMin;
 	atlasVScale_ = vMax - vMin;
 	atlasUOffset_ = uMin;
@@ -306,9 +343,14 @@ void Texture::SetTextureAtlasProxySourceImage(Image* image)
 	atlasProxySourceImage_ = image;
 }
 
+std::string Texture::GetShaderUniformName() const
+{
+	return MakeValidGLSLIdentifier(name_, std::string("texture") + std::to_string(GUID_));
+}
+
 std::string Texture::GetAtlasUVTransformUniformName() const
 {
-	return name_ + "_UVTransform";
+	return GetShaderUniformName() + "_UVTransform";
 }
 
 GEuint Texture::GetEffectiveRendererTextureId() const

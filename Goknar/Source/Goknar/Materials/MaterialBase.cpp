@@ -27,6 +27,13 @@ namespace
 
 		return GoknarMath::Clamp(value, 0.f, 1.f);
 	}
+
+	TextureAtlasCategory GetTextureAtlasCategory(MaterialBlendModel blendModel)
+	{
+		return blendModel == MaterialBlendModel::Transparent ?
+			TextureAtlasCategory::Transparent :
+			TextureAtlasCategory::Opaque;
+	}
 }
 
 IMaterialBase::IMaterialBase() :  
@@ -87,7 +94,7 @@ void IMaterialBase::AddTextureImage(const Image* image, bool useTextureAtlas)
 		ResourceManager* resourceManager = engine ? engine->GetResourceManager() : nullptr;
 		if (resourceManager && resourceManager->GetResourceContainer())
 		{
-			resourceManager->GetResourceContainer()->RegisterImageToTextureAtlas(mutableImage);
+			resourceManager->GetResourceContainer()->RegisterImageToTextureAtlas(mutableImage, GetTextureAtlasCategory(blendModel_));
 		}
 	}
 }

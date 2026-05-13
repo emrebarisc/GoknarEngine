@@ -299,6 +299,7 @@ private:
 	void SetAttribPointersForSkeletalMesh();
 	void ApplyPostProcessing(DeferredRenderingData* deferredRenderingData, FrameBuffer* destinationFrameBuffer);
 
+	void SortOpaqueInstances();
 	void SortTransparentInstances();
 
 	std::vector<MeshUnit*> staticMeshUnits_;

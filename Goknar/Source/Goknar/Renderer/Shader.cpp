@@ -18,6 +18,7 @@
 #include "Goknar/Renderer/Texture.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <sstream>
 #include <string>
 
@@ -112,6 +113,103 @@ namespace
 			ParseFloatValue(components[2], outValue.z) &&
 			ParseFloatValue(components[3], outValue.w);
 	}
+
+
+	std::uint64_t AppendToFNV1aHash(std::uint64_t hash, const std::string& value)
+	{
+		constexpr std::uint64_t fnvPrime = 1099511628211ull;
+		for (unsigned char character : value)
+		{
+			hash ^= static_cast<std::uint64_t>(character);
+			hash *= fnvPrime;
+		}
+
+		hash ^= 0xffu;
+		hash *= fnvPrime;
+		return hash;
+	}
+
+	std::uint64_t HashShaderSources(
+		const std::string& vertexShaderScript,
+		const std::string& fragmentShaderScript,
+		const std::string& geometryShaderScript)
+	{
+		constexpr std::uint64_t fnvOffsetBasis = 14695981039346656037ull;
+		std::uint64_t hash = fnvOffsetBasis;
+		hash = AppendToFNV1aHash(hash, vertexShaderScript);
+		hash = AppendToFNV1aHash(hash, fragmentShaderScript);
+		hash = AppendToFNV1aHash(hash, geometryShaderScript);
+		return hash;
+	}
+
+	struct CachedShaderProgram
+	{
+		GEuint programId{ 0 };
+		unsigned int referenceCount{ 0 };
+	};
+
+	std::unordered_map<std::uint64_t, CachedShaderProgram>& GetShaderProgramCache()
+	{
+		static std::unordered_map<std::uint64_t, CachedShaderProgram> shaderProgramCache;
+		return shaderProgramCache;
+	}
+
+	bool TryAcquireCachedShaderProgram(std::uint64_t sourceHash, GEuint& outProgramId)
+	{
+		auto& shaderProgramCache = GetShaderProgramCache();
+		auto cachedProgramIterator = shaderProgramCache.find(sourceHash);
+		if (cachedProgramIterator == shaderProgramCache.end() || cachedProgramIterator->second.programId == 0)
+		{
+			outProgramId = 0;
+			return false;
+		}
+
+		++cachedProgramIterator->second.referenceCount;
+		outProgramId = cachedProgramIterator->second.programId;
+		return true;
+	}
+
+	void RegisterCachedShaderProgram(std::uint64_t sourceHash, GEuint programId)
+	{
+		if (sourceHash == 0 || programId == 0)
+		{
+			return;
+		}
+
+		auto& shaderProgramCache = GetShaderProgramCache();
+		CachedShaderProgram& cachedProgram = shaderProgramCache[sourceHash];
+		cachedProgram.programId = programId;
+		cachedProgram.referenceCount = 1;
+	}
+
+	void ReleaseCachedShaderProgram(std::uint64_t sourceHash, GEuint programId)
+	{
+		if (programId == 0)
+		{
+			return;
+		}
+
+		auto& shaderProgramCache = GetShaderProgramCache();
+		auto cachedProgramIterator = shaderProgramCache.find(sourceHash);
+		if (cachedProgramIterator == shaderProgramCache.end() ||
+			cachedProgramIterator->second.programId != programId)
+		{
+			engine->GetGraphicsAPI()->DeleteProgram(programId);
+			return;
+		}
+
+		CachedShaderProgram& cachedProgram = cachedProgramIterator->second;
+		if (0 < cachedProgram.referenceCount)
+		{
+			--cachedProgram.referenceCount;
+		}
+
+		if (cachedProgram.referenceCount == 0)
+		{
+			engine->GetGraphicsAPI()->DeleteProgram(cachedProgram.programId);
+			shaderProgramCache.erase(cachedProgramIterator);
+		}
+	}
 }
 
 void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
@@ -156,7 +254,7 @@ Shader::~Shader()
 
 	if (programId_)
 	{
-		engine->GetGraphicsAPI()->DeleteProgram(programId_);
+		ReleaseCachedShaderProgram(sourceHash_, programId_);
 		programId_ = 0;
 	}
 	//engine->GetApplication()->GetMainScene()->RemoveShader(this);
@@ -175,7 +273,12 @@ void Shader::SetMVP(const Matrix& worldAndRelativeTransformationMatrix) const
 void Shader::PreInit()
 {
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	programId_ = graphicsAPI->CreateProgram();
+
+	if (programId_)
+	{
+		ReleaseCachedShaderProgram(sourceHash_, programId_);
+		programId_ = 0;
+	}
 
 	// TODO: Change custom shader creation
 	if (shaderType_ == ShaderType::Dependent || shaderType_ == ShaderType::SelfContained)
@@ -201,7 +304,16 @@ void Shader::PreInit()
 	}
 	//////////////////////////////////////
 
+	sourceHash_ = HashShaderSources(vertexShaderScript_, fragmentShaderScript_, geometryShaderScript_);
+
 	ParseStoredValuesFromShaderScripts();
+
+	if (TryAcquireCachedShaderProgram(sourceHash_, programId_))
+	{
+		return;
+	}
+
+	programId_ = graphicsAPI->CreateProgram();
 
 	const GEchar* vertexSource = (const GEchar*)vertexShaderScript_.c_str();
 	GEuint vertexShaderId = graphicsAPI->CreateShader(GraphicsShaderStage::Vertex);
@@ -244,6 +356,8 @@ void Shader::PreInit()
 		graphicsAPI->DetachShader(programId_, geometryShaderId);
 		graphicsAPI->DeleteShader(geometryShaderId);
 	}
+
+	RegisterCachedShaderProgram(sourceHash_, programId_);
 }
 
 void Shader::Init()

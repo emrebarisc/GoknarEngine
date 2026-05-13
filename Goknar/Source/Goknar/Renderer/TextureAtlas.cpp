@@ -56,6 +56,46 @@ bool TextureAtlas::AddImage(Image* image)
 	return true;
 }
 
+bool TextureAtlas::CanAddImage(Image* image) const
+{
+	if (!image)
+	{
+		return false;
+	}
+
+	if (std::find(images_.begin(), images_.end(), image) != images_.end())
+	{
+		return true;
+	}
+
+	if (!image->GetBuffer() ||
+		image->GetWidth() <= 0 ||
+		image->GetHeight() <= 0 ||
+		image->GetChannels() < 1 ||
+		4 < image->GetChannels() ||
+		image->GetWidth() + padding_ * 2 > maxWidth_ ||
+		image->GetHeight() + padding_ * 2 > maxHeight_)
+	{
+		return false;
+	}
+
+	std::vector<Image*> candidateImages = images_;
+	candidateImages.push_back(image);
+
+	std::vector<PackingItem> packableItems;
+	long long totalArea = 0;
+	int widestPaddedImage = 0;
+	if (!BuildPackingItems(candidateImages, packableItems, totalArea, widestPaddedImage, false))
+	{
+		return false;
+	}
+
+	std::vector<PackingPlacement> placements;
+	int atlasWidth = 0;
+	int atlasHeight = 0;
+	return TryFindPlacements(packableItems, atlasWidth, atlasHeight, placements);
+}
+
 bool TextureAtlas::Build()
 {
 	if (isBuilt_ && !needsRebuild_)
@@ -68,37 +108,7 @@ bool TextureAtlas::Build()
 
 	long long totalArea = 0;
 	int widestPaddedImage = 0;
-
-	for (Image* image : images_)
-	{
-		if (!image || !image->GetBuffer() || image->GetWidth() <= 0 || image->GetHeight() <= 0)
-		{
-			continue;
-		}
-
-		if (image->GetChannels() < 1 || image->GetChannels() > 4)
-		{
-			GOKNAR_CORE_WARN("Image {0} has unsupported channel count {1} and will not be packed into an atlas.", image->GetPath(), image->GetChannels());
-			continue;
-		}
-
-		PackingItem item;
-		item.image = image;
-		item.width = image->GetWidth();
-		item.height = image->GetHeight();
-		item.paddedWidth = item.width + padding_ * 2;
-		item.paddedHeight = item.height + padding_ * 2;
-
-		if (item.paddedWidth > maxWidth_ || item.paddedHeight > maxHeight_)
-		{
-			GOKNAR_CORE_WARN("Image %s is too large for TextureAtlas max size and will use a standalone texture.", image->GetPath());
-			continue;
-		}
-
-		packableItems.push_back(item);
-		totalArea += static_cast<long long>(item.paddedWidth) * static_cast<long long>(item.paddedHeight);
-		widestPaddedImage = (std::max)(widestPaddedImage, item.paddedWidth);
-	}
+	BuildPackingItems(images_, packableItems, totalArea, widestPaddedImage, true);
 
 	if (packableItems.empty())
 	{
@@ -107,54 +117,10 @@ bool TextureAtlas::Build()
 		return false;
 	}
 
-	std::sort(
-		packableItems.begin(),
-		packableItems.end(),
-		[](const PackingItem& left, const PackingItem& right)
-		{
-			if (left.paddedHeight == right.paddedHeight)
-			{
-				return left.paddedWidth > right.paddedWidth;
-			}
-
-			return left.paddedHeight > right.paddedHeight;
-		});
-
-	const int estimatedSquareSize = NextPowerOfTwo(static_cast<int>(std::ceil(std::sqrt(static_cast<double>(totalArea)))));
-	int candidateWidth = NextPowerOfTwo((std::max)(widestPaddedImage, estimatedSquareSize));
-	candidateWidth = (std::max)(1, (std::min)(candidateWidth, maxWidth_));
-
 	std::vector<PackingPlacement> placements;
-	int packedHeight = 0;
-	bool packed = false;
-
-	while (candidateWidth <= maxWidth_)
+	if (!TryFindPlacements(packableItems, width_, height_, placements))
 	{
-		placements.clear();
-		packedHeight = 0;
-
-		if (TryPack(packableItems, candidateWidth, maxHeight_, placements, packedHeight))
-		{
-			width_ = candidateWidth;
-			height_ = NextPowerOfTwo(packedHeight);
-			if (height_ <= maxHeight_)
-			{
-				packed = true;
-				break;
-			}
-		}
-
-		if (candidateWidth == maxWidth_)
-		{
-			break;
-		}
-
-		candidateWidth = (std::min)(candidateWidth * 2, maxWidth_);
-	}
-
-	if (!packed)
-	{
-		GOKNAR_CORE_WARN("TextureAtlas {0} could not pack {1} images. Images will use standalone textures.", name_, static_cast<int>(packableItems.size()));
+		GOKNAR_CORE_WARN("TextureAtlas %s could not pack %d images. Images will use standalone textures.", name_, static_cast<int>(packableItems.size()));
 		isBuilt_ = true;
 		needsRebuild_ = false;
 		return false;
@@ -194,11 +160,13 @@ bool TextureAtlas::Build()
 		region.vMin = static_cast<float>(region.y) / static_cast<float>(height_);
 		region.uMax = static_cast<float>(region.x + region.width) / static_cast<float>(width_);
 		region.vMax = static_cast<float>(region.y + region.height) / static_cast<float>(height_);
+		region.category = category_;
+		region.atlasIndex = atlasIndex_;
 
 		CopyImageToAtlas(placement.image, region, atlasBuffer);
 
 		regions_[placement.image] = region;
-		placement.image->SetTextureAtlasRegion(this, atlasTexture_, region);
+		placement.image->SetTextureAtlasRegion(this, atlasTexture_, region, category_, atlasIndex_);
 		// Keep the source buffer available so the atlas can be rebuilt if more
 		// scene/material textures are registered later in the initialization phase.
 	}
@@ -265,6 +233,112 @@ const TextureAtlasRegion* TextureAtlas::GetRegion(const Image* image) const
 	}
 
 	return &regionIterator->second;
+}
+
+bool TextureAtlas::BuildPackingItems(const std::vector<Image*>& images, std::vector<PackingItem>& packableItems, long long& totalArea, int& widestPaddedImage, bool logWarnings) const
+{
+	packableItems.clear();
+	totalArea = 0;
+	widestPaddedImage = 0;
+
+	for (Image* image : images)
+	{
+		if (!image || !image->GetBuffer() || image->GetWidth() <= 0 || image->GetHeight() <= 0)
+		{
+			continue;
+		}
+
+		if (image->GetChannels() < 1 || image->GetChannels() > 4)
+		{
+			if (logWarnings)
+			{
+				GOKNAR_CORE_WARN("Image %s has unsupported channel count {1} and will not be packed into an atlas.", image->GetPath(), image->GetChannels());
+			}
+			continue;
+		}
+
+		PackingItem item;
+		item.image = image;
+		item.width = image->GetWidth();
+		item.height = image->GetHeight();
+		item.paddedWidth = item.width + padding_ * 2;
+		item.paddedHeight = item.height + padding_ * 2;
+
+		if (item.paddedWidth > maxWidth_ || item.paddedHeight > maxHeight_)
+		{
+			if (logWarnings)
+			{
+				GOKNAR_CORE_WARN("Image %s is too large for TextureAtlas max size and will use a standalone texture.", image->GetPath());
+			}
+			continue;
+		}
+
+		packableItems.push_back(item);
+		totalArea += static_cast<long long>(item.paddedWidth) * static_cast<long long>(item.paddedHeight);
+		widestPaddedImage = (std::max)(widestPaddedImage, item.paddedWidth);
+	}
+
+	return !packableItems.empty();
+}
+
+bool TextureAtlas::TryFindPlacements(const std::vector<PackingItem>& packableItems, int& atlasWidth, int& atlasHeight, std::vector<PackingPlacement>& placements) const
+{
+	if (packableItems.empty())
+	{
+		return false;
+	}
+
+	std::vector<PackingItem> sortedItems = packableItems;
+	std::sort(
+		sortedItems.begin(),
+		sortedItems.end(),
+		[](const PackingItem& left, const PackingItem& right)
+		{
+			if (left.paddedHeight == right.paddedHeight)
+			{
+				return left.paddedWidth > right.paddedWidth;
+			}
+
+			return left.paddedHeight > right.paddedHeight;
+		});
+
+	long long totalArea = 0;
+	int widestPaddedImage = 0;
+	for (const PackingItem& item : sortedItems)
+	{
+		totalArea += static_cast<long long>(item.paddedWidth) * static_cast<long long>(item.paddedHeight);
+		widestPaddedImage = (std::max)(widestPaddedImage, item.paddedWidth);
+	}
+
+	const int estimatedSquareSize = NextPowerOfTwo(static_cast<int>(std::ceil(std::sqrt(static_cast<double>(totalArea)))));
+	int candidateWidth = NextPowerOfTwo((std::max)(widestPaddedImage, estimatedSquareSize));
+	candidateWidth = (std::max)(1, (std::min)(candidateWidth, maxWidth_));
+
+	int packedHeight = 0;
+	while (candidateWidth <= maxWidth_)
+	{
+		placements.clear();
+		packedHeight = 0;
+
+		if (TryPack(sortedItems, candidateWidth, maxHeight_, placements, packedHeight))
+		{
+			atlasWidth = candidateWidth;
+			atlasHeight = NextPowerOfTwo(packedHeight);
+			if (atlasHeight <= maxHeight_)
+			{
+				return true;
+			}
+		}
+
+		if (candidateWidth == maxWidth_)
+		{
+			break;
+		}
+
+		candidateWidth = (std::min)(candidateWidth * 2, maxWidth_);
+	}
+
+	return false;
 }
 
 bool TextureAtlas::TryPack(const std::vector<PackingItem>& items, int atlasWidth, int maxAtlasHeight, std::vector<PackingPlacement>& placements, int& packedHeight) const

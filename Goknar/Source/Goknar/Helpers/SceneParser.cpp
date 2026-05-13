@@ -92,6 +92,13 @@ namespace
 
 	std::vector<std::string> NormalizeMaterialPaths(const std::vector<std::string>& materialPaths);
 
+	TextureAtlasCategory GetTextureAtlasCategory(const Material* material)
+	{
+		return material && material->GetBlendModel() == MaterialBlendModel::Transparent ?
+			TextureAtlasCategory::Transparent :
+			TextureAtlasCategory::Opaque;
+	}
+
 	std::string SerializeVector3(const Vector3& vector)
 	{
 		return std::to_string(vector.x) + " " + std::to_string(vector.y) + " " + std::to_string(vector.z);
@@ -1371,7 +1378,13 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			while (child)
 			{
 				int textureId = std::stoi(child->Attribute("id"));
-				material->GetShader(RenderPassType::Forward)->AddTexture(scene->GetTexture(textureId));
+				Texture* texture = const_cast<Texture*>(scene->GetTexture(textureId));
+				if (texture && (texture->GetWaitsForTextureAtlas() || texture->GetUsesAtlasTexture()))
+				{
+					AssetParser::RegisterTextureToTextureAtlas(texture, false, false, GetTextureAtlasCategory(material));
+				}
+
+				material->GetShader(RenderPassType::Forward)->AddTexture(texture);
 				child = child->NextSiblingElement("Texture");
 			}
 
