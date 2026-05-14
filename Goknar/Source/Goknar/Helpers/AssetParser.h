@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "TinyXML/include/tinyxml2.h"
+#include "Goknar/Renderer/Texture.h"
 #include "Goknar/Renderer/TextureAtlasTypes.h"
 
 struct Vector3;
@@ -21,8 +22,13 @@ public:
 	static std::string GetMeshMaterialPath(const std::string& meshPath, const std::string& assetContainerPath = "AssetContainer");
 	static void SetMeshMaterialPaths(const std::string& meshPath, const std::vector<std::string>& materialPaths, const std::string& assetContainerPath = "AssetContainer");
 	static void SetMeshMaterialPath(const std::string& meshPath, const std::string& materialPath, const std::string& assetContainerPath = "AssetContainer");
+	static TextureUsage GetTextureUsage(const std::string& texturePath, const std::string& assetContainerPath = "AssetContainer");
+	static bool SetTextureUsage(const std::string& texturePath, TextureUsage textureUsage, const std::string& assetContainerPath = "AssetContainer");
 
 	static bool ReadTextureAtlasUsage(const tinyxml2::XMLElement* textureElement, bool defaultValue = true);
+	static TextureUsage ReadTextureUsage(const tinyxml2::XMLElement* textureElement, TextureUsage defaultValue = TextureUsage::Diffuse);
+	static const char* TextureUsageToString(TextureUsage textureUsage);
+	static TextureUsage StringToTextureUsage(const std::string& textureUsage);
 	static bool RegisterTextureToTextureAtlas(
 		Texture* texture,
 		bool useTextureNameForImage = false,

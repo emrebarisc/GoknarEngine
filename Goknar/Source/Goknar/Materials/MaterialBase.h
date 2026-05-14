@@ -81,14 +81,14 @@ public:
 
 	void SetRoughness(float roughness);
 
-	const Vector3& GetEmisiveColor() const
+	const Vector3& GetEmissiveColor() const
 	{
-		return emisiveColor_;
+		return emissiveColor_;
 	}
 
-	void SetEmisiveColor(const Vector3& emmisiveColor)
+	void SetEmissiveColor(const Vector3& emissiveColor)
 	{
-		emisiveColor_ = emmisiveColor;
+		emissiveColor_ = emissiveColor;
 	}
 
 	float GetTranslucency() const
@@ -176,7 +176,7 @@ protected:
 	std::vector<bool> textureImageAtlasUsages_;
 
 	Vector4 baseColor_{ Vector4::ZeroVector };
-	Vector3 emisiveColor_{ Vector3::ZeroVector };
+	Vector3 emissiveColor_{ Vector3::ZeroVector };
 
 	std::string name_{ "" };
 

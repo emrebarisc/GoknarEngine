@@ -74,7 +74,7 @@ public:
 	Texture* worldNormalTexture{ nullptr };
 	Texture* diffuseTexture{ nullptr };
 	Texture* ambientOcclusionMetallicRoughnessTexture{ nullptr };
-	Texture* emisiveColorTexture{ nullptr };
+	Texture* emissiveColorTexture{ nullptr };
 
 	int bufferWidth{ 1920 };
 	int bufferHeight{ 1080 };

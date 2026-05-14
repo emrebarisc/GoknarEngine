@@ -158,7 +158,7 @@ Texture* BloomPostProcessingEffect::Render(const DeferredRenderingData* deferred
 	}
 
 	Texture* emissiveTexture = deferredRenderingData->geometryBufferData ?
-		deferredRenderingData->geometryBufferData->emisiveColorTexture : nullptr;
+		deferredRenderingData->geometryBufferData->emissiveColorTexture : nullptr;
 	if (!emissiveTexture)
 	{
 		return const_cast<Texture*>(inputTexture);

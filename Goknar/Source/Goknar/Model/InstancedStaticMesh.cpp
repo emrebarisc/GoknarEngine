@@ -24,7 +24,7 @@ namespace
 		clonedMaterial->SetAmbientOcclusion(sourceMaterial->GetAmbientOcclusion());
 		clonedMaterial->SetMetallic(sourceMaterial->GetMetallic());
 		clonedMaterial->SetRoughness(sourceMaterial->GetRoughness());
-		clonedMaterial->SetEmisiveColor(sourceMaterial->GetEmisiveColor());
+		clonedMaterial->SetEmissiveColor(sourceMaterial->GetEmissiveColor());
 		clonedMaterial->SetTranslucency(sourceMaterial->GetTranslucency());
 		clonedMaterial->SetBlendModel(sourceMaterial->GetBlendModel());
 		clonedMaterial->SetShadingModel(sourceMaterial->GetShadingModel());
@@ -46,7 +46,7 @@ namespace
 		if (sourceInitializationData && clonedInitializationData)
 		{
 			clonedInitializationData->baseColor = sourceInitializationData->baseColor;
-			clonedInitializationData->emisiveColor = sourceInitializationData->emisiveColor;
+			clonedInitializationData->emissiveColor = sourceInitializationData->emissiveColor;
 			clonedInitializationData->ambientOcclusion = sourceInitializationData->ambientOcclusion;
 			clonedInitializationData->metallic = sourceInitializationData->metallic;
 			clonedInitializationData->roughness = sourceInitializationData->roughness;

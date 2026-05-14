@@ -158,7 +158,7 @@ void MeshComponent<MeshType, MeshInstanceType>::CopyMeshComponentValuesTo(MeshCo
 		clonedMaterialInstance->SetAmbientOcclusion(sourceMaterialInstance->GetAmbientOcclusion());
 		clonedMaterialInstance->SetMetallic(sourceMaterialInstance->GetMetallic());
 		clonedMaterialInstance->SetRoughness(sourceMaterialInstance->GetRoughness());
-		clonedMaterialInstance->SetEmisiveColor(sourceMaterialInstance->GetEmisiveColor());
+		clonedMaterialInstance->SetEmissiveColor(sourceMaterialInstance->GetEmissiveColor());
 		clonedMaterialInstance->SetTranslucency(sourceMaterialInstance->GetTranslucency());
 		clonedMaterialInstance->SetBlendModel(sourceMaterialInstance->GetBlendModel());
 		clonedMaterialInstance->SetShadingModel(sourceMaterialInstance->GetShadingModel());

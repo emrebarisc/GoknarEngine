@@ -30,7 +30,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* BASE_COLOR = "baseColor";
 		const char* METALLIC = "metallic";
 		const char* ROUGHNESS = "roughness";
-		const char* EMISIVE_COLOR = "emisiveColor";
+		const char* EMISIVE_COLOR = "emissiveColor";
 		const char* AMBIENT_OCCLUSION = "ambientOcclusion";
 	}
 
@@ -191,7 +191,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* OUT_NORMAL = "normal_GBuffer";
 		const char* OUT_DIFFUSE = "diffuse_GBuffer";
 		const char* OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS = "aoMetallicRoughness_GBuffer";
-		const char* OUT_EMISIVE_COLOR = "emmisiveColor_GBuffer";
+		const char* OUT_EMISIVE_COLOR = "emissiveColor_GBuffer";
 	}
 
 	inline namespace FRAGMENT_SHADER_OUTS
@@ -202,6 +202,6 @@ inline namespace SHADER_VARIABLE_NAMES
 	inline namespace CALCULATIONS
 	{
 		const char* FINAL_BASE_COLOR = "finalBaseColor";
-		const char* FINAL_EMMISIVE_COLOR = "finalEmmisiveColor";
+		const char* FINAL_EMMISIVE_COLOR = "finalEmissiveColor";
 	}
 }

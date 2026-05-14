@@ -38,7 +38,7 @@ namespace
 
 IMaterialBase::IMaterialBase() :  
 	baseColor_(Vector4{ 1.f }),
-	emisiveColor_(Vector3::ZeroVector),
+	emissiveColor_(Vector3::ZeroVector),
 	ambientOcclusion_(1.f),
 	metallic_(0.f),
 	roughness_(0.5f),
@@ -55,7 +55,7 @@ IMaterialBase::IMaterialBase(const IMaterialBase* other)
 	}
 
 	baseColor_ = other->baseColor_;
-	emisiveColor_ = other->emisiveColor_;
+	emissiveColor_ = other->emissiveColor_;
 	ambientOcclusion_ = other->ambientOcclusion_;
 	metallic_ = other->metallic_;
 	roughness_ = other->roughness_;
@@ -180,7 +180,7 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION, ambientOcclusion_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::METALLIC, metallic_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::ROUGHNESS, roughness_);
-		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR, emisiveColor_);
+		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR, emissiveColor_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY, translucency_);
 	}
 	else if (renderPassType == RenderPassType::Shadow || renderPassType == RenderPassType::PointLightShadow)

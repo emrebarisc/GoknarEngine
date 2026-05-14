@@ -26,7 +26,7 @@ struct GOKNAR_API MaterialInitializationData
 
 	const IMaterialBase* owner;
 	ShaderFunctionAndResult baseColor;
-	ShaderFunctionAndResult emisiveColor;
+	ShaderFunctionAndResult emissiveColor;
 	ShaderFunctionAndResult ambientOcclusion;
 	ShaderFunctionAndResult metallic;
 	ShaderFunctionAndResult roughness;

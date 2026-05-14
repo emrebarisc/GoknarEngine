@@ -205,7 +205,7 @@ void main()
 		shaderData.renderPassType == RenderPassType::CubemapCapture)
 	{
 		fragmentShader += FS_InitializeBaseColor(shaderData.materialInitializationData);
-		fragmentShader += FS_InitializeEmmisiveColor(shaderData.materialInitializationData);
+		fragmentShader += FS_InitializeEmissiveColor(shaderData.materialInitializationData);
 		fragmentShader += FS_InitializeAmbientOcclusion(shaderData.materialInitializationData);
 		fragmentShader += FS_InitializeMetallic(shaderData.materialInitializationData);
 		fragmentShader += FS_InitializeRoughness(shaderData.materialInitializationData);
@@ -428,7 +428,7 @@ void main()
 {
 )";
 		shadowPassFragmentShader += FS_InitializeBaseColor(effectiveInitializationData, true);
-		shadowPassFragmentShader += FS_InitializeEmmisiveColor(effectiveInitializationData);
+		shadowPassFragmentShader += FS_InitializeEmissiveColor(effectiveInitializationData);
 		shadowPassFragmentShader += "\n\tif (1.f < length(" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR) + ")) discard;\n";
 		shadowPassFragmentShader += R"(
 })";
@@ -603,7 +603,7 @@ void main()
 	if (requiresAlphaTest)
 	{
 		shadowPassFragmentShader += FS_InitializeBaseColor(effectiveInitializationData, true);
-		shadowPassFragmentShader += FS_InitializeEmmisiveColor(effectiveInitializationData);
+		shadowPassFragmentShader += FS_InitializeEmissiveColor(effectiveInitializationData);
 		shadowPassFragmentShader += "\n\tif (1.f < length(" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR) + ")) discard;\n";
 	}
 
@@ -750,7 +750,7 @@ void main()
 {
 )";
 	cubemapFragmentShader += FS_InitializeBaseColor(effectiveInitializationData);
-	cubemapFragmentShader += FS_InitializeEmmisiveColor(effectiveInitializationData);
+	cubemapFragmentShader += FS_InitializeEmissiveColor(effectiveInitializationData);
 	cubemapFragmentShader += FS_InitializeAmbientOcclusion(effectiveInitializationData);
 	cubemapFragmentShader += FS_InitializeMetallic(effectiveInitializationData);
 	cubemapFragmentShader += FS_InitializeRoughness(effectiveInitializationData);
@@ -1590,10 +1590,10 @@ void ShaderBuilder::ApplyTextureBackedMaterialDefaults(MaterialInitializationDat
 				initializationData->baseColor.result = General_FS_GetDiffuseTextureSampling(texture);
 			}
 			break;
-		case TextureUsage::Emmisive:
-			if (initializationData->emisiveColor.result.empty())
+		case TextureUsage::Emissive:
+			if (initializationData->emissiveColor.result.empty())
 			{
-				initializationData->emisiveColor.result = General_FS_GetEmmisiveTextureSampling(texture);
+				initializationData->emissiveColor.result = General_FS_GetEmissiveTextureSampling(texture);
 			}
 			break;
 		case TextureUsage::AmbientOcclusion:
@@ -1619,6 +1619,12 @@ void ShaderBuilder::ApplyTextureBackedMaterialDefaults(MaterialInitializationDat
 			{
 				initializationData->fragmentNormal.result = General_FS_GetNormalTextureSampling(texture);
 				initializationData->fragmentNormalIsTangentSpace = true;
+			}
+			break;
+		case TextureUsage::ORM:
+			if (initializationData->ambientOcclusion.result.empty() && initializationData->roughness.result.empty() && initializationData->metallic.result.empty())
+			{
+				General_FS_GetORMTextureSampling(texture, initializationData);
 			}
 			break;
 		default:
@@ -1688,9 +1694,20 @@ std::string ShaderBuilder::General_FS_GetNormalTextureSampling(const Texture* te
 	return texture ? std::string("normalize(texture(" + texture->GetShaderUniformName() + ", " + General_FS_GetTextureUVExpression(texture) + ").xyz * 2.f - vec3(1.f)); ") : "";
 }
 
-std::string ShaderBuilder::General_FS_GetEmmisiveTextureSampling(const Texture* texture) const
+std::string ShaderBuilder::General_FS_GetEmissiveTextureSampling(const Texture* texture) const
 {
 	return texture ? std::string("texture(" + texture->GetShaderUniformName() + ", " + General_FS_GetTextureUVExpression(texture) + ").xyz; ") : "";
+}
+
+void ShaderBuilder::General_FS_GetORMTextureSampling(const Texture* texture, MaterialInitializationData* initializationData) const
+{
+	if (texture)
+	{
+		initializationData->ambientOcclusion.calculation = std::string("vec3 ORMValue = ") + "texture(" + texture->GetShaderUniformName() + ", " + General_FS_GetTextureUVExpression(texture) + ").xyz;";
+		initializationData->ambientOcclusion.result = "ORMValue.x";
+		initializationData->roughness.result = "ORMValue.y";
+		initializationData->metallic.result = "ORMValue.z";
+	}
 }
 
 std::string ShaderBuilder::General_FS_GetDiffuseTextureSampling(const std::string& textureName) const
@@ -1708,7 +1725,7 @@ std::string ShaderBuilder::General_FS_GetNormalTextureSampling(const std::string
 	return std::string("normalize(texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ").xyz * 2.f - vec3(1.f)); ");
 }
 
-std::string ShaderBuilder::General_FS_GetEmmisiveTextureSampling(const std::string& textureName) const
+std::string ShaderBuilder::General_FS_GetEmissiveTextureSampling(const std::string& textureName) const
 {
 	return std::string("texture(" + textureName + ", " + SHADER_VARIABLE_NAMES::TEXTURE::UV + ").xyz; ");
 }
@@ -1881,20 +1898,20 @@ std::string ShaderBuilder::FS_InitializeBaseColor(MaterialInitializationData* in
 	return result;
 }
 
-std::string ShaderBuilder::FS_InitializeEmmisiveColor(MaterialInitializationData* initializationData) const
+std::string ShaderBuilder::FS_InitializeEmissiveColor(MaterialInitializationData* initializationData) const
 {
 	std::string result = "";
 
-	if (initializationData && !initializationData->emisiveColor.calculation.empty())
+	if (initializationData && !initializationData->emissiveColor.calculation.empty())
 	{
-		result += initializationData->emisiveColor.calculation + "\n";
+		result += initializationData->emissiveColor.calculation + "\n";
 	}
 
 	result += std::string("\n\t") + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + " = ";
 
-	if (initializationData && !initializationData->emisiveColor.result.empty())
+	if (initializationData && !initializationData->emissiveColor.result.empty())
 	{
-		result += initializationData->emisiveColor.result;
+		result += initializationData->emissiveColor.result;
 	}
 	else
 	{

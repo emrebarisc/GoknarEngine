@@ -1659,7 +1659,7 @@ GeometryBufferData::~GeometryBufferData()
 	delete worldNormalTexture;
 	delete diffuseTexture;
 	delete ambientOcclusionMetallicRoughnessTexture;
-	delete emisiveColorTexture;
+	delete emissiveColorTexture;
 
 	delete depthRenderbuffer;
 	delete geometryFrameBuffer;
@@ -1751,21 +1751,21 @@ void GeometryBufferData::GenerateBuffers()
 	ambientOcclusionMetallicRoughnessTexture->PostInit();
 	geometryFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT3, ambientOcclusionMetallicRoughnessTexture);
 
-	emisiveColorTexture = new Texture();
-	emisiveColorTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR);
-	emisiveColorTexture->SetTextureDataType(TextureDataType::DYNAMIC);
-	emisiveColorTexture->SetTextureFormat(TextureFormat::RGB);
-	emisiveColorTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
-	emisiveColorTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
-	emisiveColorTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
-	emisiveColorTexture->SetWidth(bufferWidth);
-	emisiveColorTexture->SetHeight(bufferHeight);
-	emisiveColorTexture->SetGenerateMipmap(false);
-	emisiveColorTexture->SetTextureType(TextureType::FLOAT);
-	emisiveColorTexture->PreInit();
-	emisiveColorTexture->Init();
-	emisiveColorTexture->PostInit();
-	geometryFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT4, emisiveColorTexture);
+	emissiveColorTexture = new Texture();
+	emissiveColorTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR);
+	emissiveColorTexture->SetTextureDataType(TextureDataType::DYNAMIC);
+	emissiveColorTexture->SetTextureFormat(TextureFormat::RGB);
+	emissiveColorTexture->SetTextureInternalFormat(TextureInternalFormat::RGB16F);
+	emissiveColorTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
+	emissiveColorTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
+	emissiveColorTexture->SetWidth(bufferWidth);
+	emissiveColorTexture->SetHeight(bufferHeight);
+	emissiveColorTexture->SetGenerateMipmap(false);
+	emissiveColorTexture->SetTextureType(TextureType::FLOAT);
+	emissiveColorTexture->PreInit();
+	emissiveColorTexture->Init();
+	emissiveColorTexture->PostInit();
+	geometryFrameBuffer->AddTextureAttachment(FrameBufferAttachment::COLOR_ATTACHMENT4, emissiveColorTexture);
 
 	geometryFrameBuffer->PreInit();
 	geometryFrameBuffer->Init();
@@ -1799,7 +1799,7 @@ void GeometryBufferData::OnViewportSizeChanged(int width, int height)
 	delete worldNormalTexture;
 	delete diffuseTexture;
 	delete ambientOcclusionMetallicRoughnessTexture;
-	delete emisiveColorTexture;
+	delete emissiveColorTexture;
 
 	delete geometryFrameBuffer;
 
@@ -1904,7 +1904,7 @@ void DeferredRenderingData::SetShaderTextureUniforms()
 	deferredRenderingMeshShader->SetInt(
 		SHADER_VARIABLE_NAMES::GBUFFER::OUT_AMBIENT_OCCLUSION_METALLIC_ROUGHNESS,
 		geometryBufferData->ambientOcclusionMetallicRoughnessTexture->GetRendererTextureId());
-	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR, geometryBufferData->emisiveColorTexture->GetRendererTextureId());
+	deferredRenderingMeshShader->SetInt(SHADER_VARIABLE_NAMES::GBUFFER::OUT_EMISIVE_COLOR, geometryBufferData->emissiveColorTexture->GetRendererTextureId());
 }
 
 void DeferredRenderingData::Render()
@@ -1968,7 +1968,7 @@ void DeferredRenderingData::BindGeometryBufferTextures(Shader* shader)
 	geometryBufferData->worldNormalTexture->Bind(shader);
 	geometryBufferData->diffuseTexture->Bind(shader);
 	geometryBufferData->ambientOcclusionMetallicRoughnessTexture->Bind(shader);
-	geometryBufferData->emisiveColorTexture->Bind(shader);
+	geometryBufferData->emissiveColorTexture->Bind(shader);
 }
 
 void DeferredRenderingData::BindGBufferDepth(FrameBuffer* drawFrameBuffer)

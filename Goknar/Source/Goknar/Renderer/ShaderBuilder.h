@@ -102,7 +102,7 @@ private:
 	std::string FS_GetShadowMapUniforms() const;
 	std::string FS_GetReflectionProbeUniforms() const;
 	std::string FS_InitializeBaseColor(MaterialInitializationData* initializationData, bool discardTransparent = false) const;
-	std::string FS_InitializeEmmisiveColor(MaterialInitializationData* initializationData) const;
+	std::string FS_InitializeEmissiveColor(MaterialInitializationData* initializationData) const;
 	std::string FS_InitializeAmbientOcclusion(MaterialInitializationData* initializationData) const;
 	std::string FS_InitializeMetallic(MaterialInitializationData* initializationData) const;
 	std::string FS_InitializeRoughness(MaterialInitializationData* initializationData) const;
@@ -115,11 +115,12 @@ private:
 	std::string General_FS_GetDiffuseTextureSampling(const Texture* texture) const;
 	std::string General_FS_GetScalarTextureSampling(const Texture* texture) const;
 	std::string General_FS_GetNormalTextureSampling(const Texture* texture) const;
-	std::string General_FS_GetEmmisiveTextureSampling(const Texture* texture) const;
+	std::string General_FS_GetEmissiveTextureSampling(const Texture* texture) const;
+	void General_FS_GetORMTextureSampling(const Texture* texture, MaterialInitializationData* initializationData) const;
 	std::string General_FS_GetDiffuseTextureSampling(const std::string& textureName) const;
 	std::string General_FS_GetScalarTextureSampling(const std::string& textureName) const;
 	std::string General_FS_GetNormalTextureSampling(const std::string& textureName) const;
-	std::string General_FS_GetEmmisiveTextureSampling(const std::string& textureName) const;
+	std::string General_FS_GetEmissiveTextureSampling(const std::string& textureName) const;
 	std::string General_FS_GetTextureUVExpression(const Texture* texture) const;
 
 	std::string FS_GetLightCalculationIterators(bool includeShadowing) const;

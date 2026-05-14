@@ -445,7 +445,7 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 						if (ufbxMaterial->pbr.emission_color.has_value)
 						{
-							material->SetEmisiveColor(Vector3(
+							material->SetEmissiveColor(Vector3(
 								ufbxMaterial->pbr.emission_color.value_vec3.x,
 								ufbxMaterial->pbr.emission_color.value_vec3.y,
 								ufbxMaterial->pbr.emission_color.value_vec3.z));
@@ -504,7 +504,7 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 						LoadMaterialTexture(ufbxMaterial->pbr.base_color.texture, TextureUsage::Diffuse);
 						LoadMaterialTexture(ufbxMaterial->pbr.normal_map.texture, TextureUsage::Normal);
-						LoadMaterialTexture(ufbxMaterial->pbr.emission_color.texture, TextureUsage::Emmisive);
+						LoadMaterialTexture(ufbxMaterial->pbr.emission_color.texture, TextureUsage::Emissive);
 						LoadMaterialTexture(ufbxMaterial->pbr.ambient_occlusion.texture, TextureUsage::AmbientOcclusion);
 						LoadMaterialTexture(ufbxMaterial->pbr.metalness.texture, TextureUsage::Metallic);
 						LoadMaterialTexture(ufbxMaterial->pbr.roughness.texture, TextureUsage::Roughness);

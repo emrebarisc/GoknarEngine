@@ -28,6 +28,10 @@ public:
 	void SetTextureUsage(TextureUsage textureUsage)
 	{
 		textureUsage_ = textureUsage;
+		if (generatedTexture_)
+		{
+			generatedTexture_->SetTextureUsage(textureUsage_);
+		}
 	}
 
 	TextureUsage GetTextureUsage() const

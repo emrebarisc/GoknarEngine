@@ -399,7 +399,7 @@ void ParticleSystemBase::ApplyMaterialStateToShader(Shader* shader, const IMater
 	shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION, material ? material->GetAmbientOcclusion() : 1.f);
 	shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::METALLIC, material ? material->GetMetallic() : 0.f);
 	shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::ROUGHNESS, material ? material->GetRoughness() : 0.5f);
-	shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR, material ? material->GetEmisiveColor() : Vector3::ZeroVector);
+	shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR, material ? material->GetEmissiveColor() : Vector3::ZeroVector);
 	shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY, material ? material->GetTranslucency() : 0.f);
 
 	engine->GetRenderer()->SetLightUniforms(shader);

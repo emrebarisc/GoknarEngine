@@ -164,9 +164,10 @@ enum class TextureUsage : unsigned char
 	AmbientOcclusion,
 	Metallic,
 	Specular,
-	Emmisive,
+	Emissive,
 	Roughness,
-	Height
+	Height,
+	ORM
 };
 
 

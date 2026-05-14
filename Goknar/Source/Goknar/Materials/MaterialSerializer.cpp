@@ -60,7 +60,7 @@ namespace
 		case TextureUsage::AmbientOcclusion: return "AmbientOcclusion";
 		case TextureUsage::Metallic: return "Metallic";
 		case TextureUsage::Specular: return "Specular";
-		case TextureUsage::Emmisive: return "Emmisive";
+		case TextureUsage::Emissive: return "Emissive";
 		case TextureUsage::Roughness: return "Roughness";
 		case TextureUsage::Height: return "Height";
 		case TextureUsage::None:
@@ -76,7 +76,7 @@ namespace
 		if (textureUsage == "AmbientOcclusion") return TextureUsage::AmbientOcclusion;
 		if (textureUsage == "Metallic") return TextureUsage::Metallic;
 		if (textureUsage == "Specular") return TextureUsage::Specular;
-		if (textureUsage == "Emmisive") return TextureUsage::Emmisive;
+		if (textureUsage == "Emissive") return TextureUsage::Emissive;
 		if (textureUsage == "Roughness") return TextureUsage::Roughness;
 		if (textureUsage == "Height") return TextureUsage::Height;
 		return TextureUsage::None;
@@ -193,7 +193,7 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
         };
 
     SerializeVector4("BaseColorValue", material->GetBaseColor());
-    SerializeVector3("EmmisiveColorValue", material->GetEmisiveColor());
+    SerializeVector3("EmissiveColorValue", material->GetEmissiveColor());
     AddPropertyElement("AmbientOcclusionValue", std::to_string(material->GetAmbientOcclusion()));
     AddPropertyElement("MetallicValue", std::to_string(material->GetMetallic()));
     AddPropertyElement("RoughnessValue", std::to_string(material->GetRoughness()));
@@ -201,7 +201,7 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
     AddPropertyElement("Translucency", std::to_string(material->GetTranslucency()));
 
     SerializeShaderFunction(doc, root, "BaseColor", materialInitializationData->baseColor);
-    SerializeShaderFunction(doc, root, "EmissiveColor", materialInitializationData->emisiveColor);
+    SerializeShaderFunction(doc, root, "EmissiveColor", materialInitializationData->emissiveColor);
     SerializeShaderFunction(doc, root, "AmbientOcclusion", materialInitializationData->ambientOcclusion);
     SerializeShaderFunction(doc, root, "Metallic", materialInitializationData->metallic);
     SerializeShaderFunction(doc, root, "Roughness", materialInitializationData->roughness);
@@ -367,13 +367,13 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         owner->SetMetallic(DEFAULT_METALLIC);
     }
 
-    child = root->FirstChildElement("EmisiveColorValue");
+    child = root->FirstChildElement("EmissiveColorValue");
     if (child && child->GetText())
     {
         std::stringstream stream(child->GetText());
-        Vector3 emmisiveColor;
-        stream >> emmisiveColor.x >> emmisiveColor.y >> emmisiveColor.z;
-        owner->SetEmisiveColor(emmisiveColor);
+        Vector3 emissiveColor;
+        stream >> emissiveColor.x >> emissiveColor.y >> emissiveColor.z;
+        owner->SetEmissiveColor(emissiveColor);
     }
 
     child = root->FirstChildElement("RoughnessValue");
@@ -410,7 +410,7 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     }
 
     DeserializeShaderFunction(root, "BaseColor", materialInitializationData->baseColor);
-    DeserializeShaderFunction(root, "EmissiveColor", materialInitializationData->emisiveColor);
+    DeserializeShaderFunction(root, "EmissiveColor", materialInitializationData->emissiveColor);
     DeserializeShaderFunction(root, "AmbientOcclusion", materialInitializationData->ambientOcclusion);
     DeserializeShaderFunction(root, "Metallic", materialInitializationData->metallic);
     DeserializeShaderFunction(root, "Roughness", materialInitializationData->roughness);
