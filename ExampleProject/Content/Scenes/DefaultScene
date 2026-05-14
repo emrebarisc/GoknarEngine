@@ -21,7 +21,7 @@
     <Objects>
         <ReflectionProbeObject>
             <Name>ReflectionProbeObject</Name>
-            <WorldPosition>0.000000 -2.000000 0.625000</WorldPosition>
+            <WorldPosition>0.000000 -2.000000 2.000000</WorldPosition>
             <WorldScaling>4.000000 4.000000 4.000000</WorldScaling>
             <Size>1.000000 1.000000 1.000000</Size>
             <Components/>
@@ -301,8 +301,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box1</Name>
-            <WorldPosition>-14.952557 -2.036200 0.624979</WorldPosition>
-            <EulerWorldRotation>0.005161 0.001106 13.342601</EulerWorldRotation>
+            <WorldPosition>-14.952179 -2.038680 0.624984</WorldPosition>
+            <EulerWorldRotation>0.003970 0.000314 13.327664</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -318,8 +318,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box2</Name>
-            <WorldPosition>-14.853497 -3.275115 0.624995</WorldPosition>
-            <EulerWorldRotation>-0.000460 -0.000567 -21.305035</EulerWorldRotation>
+            <WorldPosition>-14.853694 -3.275643 0.624989</WorldPosition>
+            <EulerWorldRotation>0.001353 -0.000553 -21.348684</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -335,8 +335,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box3</Name>
-            <WorldPosition>-13.688786 -1.977412 0.624972</WorldPosition>
-            <EulerWorldRotation>0.002562 -0.001038 -1.026690</EulerWorldRotation>
+            <WorldPosition>-13.688996 -1.977777 0.624976</WorldPosition>
+            <EulerWorldRotation>0.002342 -0.002138 -1.030699</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -352,8 +352,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box4</Name>
-            <WorldPosition>-13.408510 -3.220323 0.624985</WorldPosition>
-            <EulerWorldRotation>0.002072 -0.000027 8.470979</EulerWorldRotation>
+            <WorldPosition>-13.408363 -3.222790 0.624990</WorldPosition>
+            <EulerWorldRotation>0.001396 0.000260 8.481833</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -369,8 +369,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box5</Name>
-            <WorldPosition>-14.392929 -2.069639 1.624966</WorldPosition>
-            <EulerWorldRotation>0.004498 0.003442 2.359620</EulerWorldRotation>
+            <WorldPosition>-14.391106 -2.073030 1.624973</WorldPosition>
+            <EulerWorldRotation>0.003771 0.001885 2.506985</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -386,8 +386,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box6</Name>
-            <WorldPosition>-14.345928 -3.168389 1.624963</WorldPosition>
-            <EulerWorldRotation>-0.004034 0.005355 15.358018</EulerWorldRotation>
+            <WorldPosition>-14.346247 -3.170656 1.624952</WorldPosition>
+            <EulerWorldRotation>0.004933 0.002418 15.301802</EulerWorldRotation>
             <Mass>5</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -403,8 +403,8 @@
         </RigidBody>
         <RigidBody>
             <Name>Box7</Name>
-            <WorldPosition>-14.099800 -2.552117 2.624847</WorldPosition>
-            <EulerWorldRotation>0.007174 0.014268 -16.004726</EulerWorldRotation>
+            <WorldPosition>-14.096387 -2.555363 2.624887</WorldPosition>
+            <EulerWorldRotation>0.009664 0.011611 -16.070526</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -420,8 +420,8 @@
         </RigidBody>
         <RigidBody>
             <Name>RigidBody</Name>
-            <WorldPosition>-14.775631 -9.196974 0.625000</WorldPosition>
-            <EulerWorldRotation>0.000013 -0.000007 35.224197</EulerWorldRotation>
+            <WorldPosition>-14.773259 -9.198804 0.625000</WorldPosition>
+            <EulerWorldRotation>0.000013 -0.000007 35.279327</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -451,24 +451,6 @@
                     <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/Level/M_EmmisiveCube</MaterialPath>
-                </StaticMeshComponent>
-            </Components>
-        </RigidBody>
-        <RigidBody>
-            <Name>Matilda</Name>
-            <WorldPosition>0.000000 2.000000 1.125000</WorldPosition>
-            <Mass>0</Mass>
-            <CollisionGroup>4</CollisionGroup>
-            <CollisionMask>63</CollisionMask>
-            <Components>
-                <CapsuleCollisionComponent>
-                    <Radius>0.2</Radius>
-                    <Height>2</Height>
-                </CapsuleCollisionComponent>
-                <StaticMeshComponent>
-                    <MeshPath>Meshes/Objects/SM_Matilda.fbx</MeshPath>
-                    <RenderMask>1</RenderMask>
-                    <RelativePosition>0.000000 0.000000 -1.000000</RelativePosition>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>
@@ -505,7 +487,6 @@
                     <MeshPath>Meshes/DefaultScene/SM_UnitSphere.fbx</MeshPath>
                     <RenderMask>1</RenderMask>
                     <MaterialPath>Materials/PBRTests/M_Mirror</MaterialPath>
-                    <RelativePosition>0.000000 0.000000 -1.000000</RelativePosition>
                 </StaticMeshComponent>
             </Components>
         </RigidBody>

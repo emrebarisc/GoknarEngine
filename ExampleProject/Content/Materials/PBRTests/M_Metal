@@ -6,7 +6,7 @@
     <UsesReflectionProbe>0</UsesReflectionProbe>
     <Texture path="Textures/PBR/Metal/T_Metal_Color.jpg" usage="Diffuse" UseTextureAtlas="true"/>
     <Texture path="Textures/PBR/Metal/T_Metal_ORMW.png" usage="Diffuse" UseTextureAtlas="true"/>
-    <Texture path="Textures/PBR/Metal/T_Metal_Normal.jpg" usage="Diffuse" UseTextureAtlas="true"/>
+    <Texture path="Textures/PBR/Metal/T_Metal_Normal.jpg" usage="Normal" UseTextureAtlas="true"/>
     <BaseColorValue>1 1 1 1</BaseColorValue>
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
     <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
