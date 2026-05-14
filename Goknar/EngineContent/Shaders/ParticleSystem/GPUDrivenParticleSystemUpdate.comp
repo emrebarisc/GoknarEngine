@@ -118,6 +118,26 @@ vec3 RandomPointInBox(inout uint state, vec3 extents)
 		mix(-extents.z, extents.z, Random01(state)));
 }
 
+vec3 SafeNormalize(vec3 value)
+{
+	float valueLength = length(value);
+	return valueLength > 0.0001 ? value / valueLength : vec3(0.0);
+}
+
+vec3 TransformLocalVectorByEmitter(mat4 emitterMatrix, vec3 localVector)
+{
+	// Engine local axes: +x forward, +y left, +z up.
+	// Spawn positions use vec4(localPosition, 1.0) * emitterMatrix in this shader,
+	// so use the same convention with w = 0.0 for direction vectors.
+	vec3 emitterForward = SafeNormalize((vec4(1.0, 0.0, 0.0, 0.0) * emitterMatrix).xyz);
+	vec3 emitterLeft = SafeNormalize((vec4(0.0, 1.0, 0.0, 0.0) * emitterMatrix).xyz);
+	vec3 emitterUp = SafeNormalize((vec4(0.0, 0.0, 1.0, 0.0) * emitterMatrix).xyz);
+
+	return emitterForward * localVector.x +
+		emitterLeft * localVector.y +
+		emitterUp * localVector.z;
+}
+
 void ClampVelocity(inout vec4 velocity)
 {
 	if (velocityLimit <= 0.0)
@@ -193,10 +213,14 @@ void main()
 	vec3 currentWorldPosition = (vec4(localSpawnPosition, 1.0) * currentEmitterMatrix).xyz;
 
 	float initialLifetime = RandomRange(randomState, lifetimeRange);
-	vec3 initialVelocity = RandomRange(randomState, initialVelocityMin, initialVelocityMax);
+	vec3 initialVelocity = TransformLocalVectorByEmitter(
+		currentEmitterMatrix,
+		RandomRange(randomState, initialVelocityMin, initialVelocityMax));
 	vec3 initialRotation = RandomRange(randomState, initialRotationMin, initialRotationMax);
 	vec3 angularVelocity = RandomRange(randomState, angularVelocityMin, angularVelocityMax);
-	vec3 acceleration = RandomRange(randomState, accelerationMin, accelerationMax);
+	vec3 acceleration = TransformLocalVectorByEmitter(
+		currentEmitterMatrix,
+		RandomRange(randomState, accelerationMin, accelerationMax));
 
 	vec4 velocity = vec4(initialVelocity, 0.0);
 	ClampVelocity(velocity);
