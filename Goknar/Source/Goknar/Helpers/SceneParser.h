@@ -21,6 +21,7 @@ class Scene;
 struct SceneReference;
 class SphereCollisionComponent;
 class StaticMeshComponent;
+class SkeletalMeshComponent;
 class ObjectBase;
 class Material;
 
@@ -36,11 +37,17 @@ public:
 	static void ApplyStaticMeshComponentMaterialPath(StaticMeshComponent* staticMeshComponent, const std::string& materialPath);
 	static std::string GetStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
 	static void ClearStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
+	static void ApplySkeletalMeshComponentMaterialPaths(SkeletalMeshComponent* skeletalMeshComponent, const std::vector<std::string>& materialPaths);
+	static std::vector<std::string> GetSkeletalMeshComponentMaterialPaths(const SkeletalMeshComponent* skeletalMeshComponent);
+	static void ApplySkeletalMeshComponentMaterialPath(SkeletalMeshComponent* skeletalMeshComponent, const std::string& materialPath);
+	static std::string GetSkeletalMeshComponentMaterialPath(const SkeletalMeshComponent* skeletalMeshComponent);
+	static void ClearSkeletalMeshComponentMaterialPath(const SkeletalMeshComponent* skeletalMeshComponent);
 	static void ClearCaches();
 
 private:
 	static void ParseComponentValues(Component* component, tinyxml2::XMLElement* componentElement);
 	static void ParseStaticMeshComponentValues(StaticMeshComponent* staticMeshComponent, tinyxml2::XMLElement* componentElement);
+	static void ParseSkeletalMeshComponentValues(SkeletalMeshComponent* skeletalMeshComponent, tinyxml2::XMLElement* componentElement);
 	static void ParseInstancedStaticMeshComponentValues(InstancedStaticMeshComponent* instancedStaticMeshComponent, tinyxml2::XMLElement* componentElement);
 	static void ParseParticleSystemComponentValues(ParticleSystemComponent* particleSystemComponent, tinyxml2::XMLElement* componentElement);
 	static void ParseBoxCollisionComponentValues(BoxCollisionComponent* boxCollisionComponent, tinyxml2::XMLElement* componentElement);
@@ -62,6 +69,7 @@ private:
 	static void GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene);
 	static void GetXMLElement_Components(const ObjectBase* const objectBase, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_StaticMeshComponent(const StaticMeshComponent* const staticMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
+	static void GetXMLElement_SkeletalMeshComponent(const SkeletalMeshComponent* const skeletalMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_InstancedStaticMeshComponent(const InstancedStaticMeshComponent* const instancedStaticMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_ParticleSystemComponent(const ParticleSystemComponent* const particleSystemComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_BoxCollisionComponent(const BoxCollisionComponent* const boxCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);

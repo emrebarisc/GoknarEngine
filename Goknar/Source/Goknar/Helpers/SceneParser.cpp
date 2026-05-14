@@ -49,6 +49,7 @@
 #include "Goknar/Model/MeshUnit.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Model/SkeletalMesh.h"
+#include "Goknar/Model/SkeletalMeshInstance.h"
 
 #include "Goknar/Debug/DebugDrawer.h"
 
@@ -68,6 +69,7 @@ namespace
 {
 	std::unordered_map<const InstancedStaticMeshComponent*, std::vector<std::string>> instancedStaticMeshComponentMaterialPathMap;
 	std::unordered_map<const StaticMeshComponent*, std::vector<std::string>> staticMeshComponentMaterialPathMap;
+	std::unordered_map<const SkeletalMeshComponent*, std::vector<std::string>> skeletalMeshComponentMaterialPathMap;
 	std::unordered_map<const InstancedStaticMesh*, std::string> instancedStaticMeshSourcePathMap;
 	std::unordered_map<std::string, Material*> sharedMaterialPathMap;
 	size_t instancedStaticMeshIdentifier = 0;
@@ -714,11 +716,49 @@ void SceneParser::ClearStaticMeshComponentMaterialPath(const StaticMeshComponent
 		staticMeshComponentMaterialPathMap);
 }
 
+void SceneParser::ApplySkeletalMeshComponentMaterialPaths(SkeletalMeshComponent* skeletalMeshComponent, const std::vector<std::string>& materialPaths)
+{
+	ApplyMeshComponentMaterialPaths<SkeletalMeshComponent, SkeletalMeshInstance, SkeletalMesh>(
+		skeletalMeshComponent,
+		materialPaths,
+		skeletalMeshComponentMaterialPathMap);
+}
+
+std::vector<std::string> SceneParser::GetSkeletalMeshComponentMaterialPaths(const SkeletalMeshComponent* skeletalMeshComponent)
+{
+	return GetMeshComponentMaterialPaths(skeletalMeshComponent, skeletalMeshComponentMaterialPathMap);
+}
+
+void SceneParser::ApplySkeletalMeshComponentMaterialPath(SkeletalMeshComponent* skeletalMeshComponent, const std::string& materialPath)
+{
+	if (materialPath.empty())
+	{
+		ApplySkeletalMeshComponentMaterialPaths(skeletalMeshComponent, {});
+		return;
+	}
+
+	ApplySkeletalMeshComponentMaterialPaths(skeletalMeshComponent, { materialPath });
+}
+
+std::string SceneParser::GetSkeletalMeshComponentMaterialPath(const SkeletalMeshComponent* skeletalMeshComponent)
+{
+	const std::vector<std::string> materialPaths = GetSkeletalMeshComponentMaterialPaths(skeletalMeshComponent);
+	return materialPaths.empty() ? "" : materialPaths[0];
+}
+
+void SceneParser::ClearSkeletalMeshComponentMaterialPath(const SkeletalMeshComponent* skeletalMeshComponent)
+{
+	ClearMeshComponentMaterialPath<SkeletalMeshComponent, SkeletalMeshInstance, SkeletalMesh>(
+		skeletalMeshComponent,
+		skeletalMeshComponentMaterialPathMap);
+}
+
 void SceneParser::ClearCaches()
 {
 	instancedStaticMeshComponentMaterialPathMap.clear();
 	instancedStaticMeshSourcePathMap.clear();
 	staticMeshComponentMaterialPathMap.clear();
+	skeletalMeshComponentMaterialPathMap.clear();
 	sharedMaterialPathMap.clear();
 }
 
@@ -784,7 +824,7 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 			throw std::runtime_error("Error: Scene XML file could not be loaded at " + filePath + ".");
 		}
 	}
-	catch (std::exception & exception)
+	catch (std::exception& exception)
 	{
 		std::cerr << exception.what() << std::endl;
 		exit(EXIT_FAILURE);
@@ -1265,10 +1305,10 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream >> textureWrapping;
 
 				texture->SetTextureWrappingS(textureWrapping == "Repeat" ? TextureWrapping::REPEAT :
-											textureWrapping == "MirroredRepeat" ? TextureWrapping::MIRRORED_REPEAT :
-											textureWrapping == "ClampToEdge" ? TextureWrapping::CLAMP_TO_EDGE :
-											textureWrapping == "ClampToBorder" ? TextureWrapping::CLAMP_TO_BORDER :
-											texture->GetTextureWrappingS());
+					textureWrapping == "MirroredRepeat" ? TextureWrapping::MIRRORED_REPEAT :
+					textureWrapping == "ClampToEdge" ? TextureWrapping::CLAMP_TO_EDGE :
+					textureWrapping == "ClampToBorder" ? TextureWrapping::CLAMP_TO_BORDER :
+					texture->GetTextureWrappingS());
 			}
 			stream.clear();
 
@@ -1280,12 +1320,12 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream >> textureMinFilter;
 
 				texture->SetTextureMinFilter(textureMinFilter == "Nearest" ? TextureMinFilter::NEAREST :
-											textureMinFilter == "Linear" ? TextureMinFilter::LINEAR :
-											textureMinFilter == "NearestMipMapNearest" ? TextureMinFilter::NEAREST_MIPMAP_NEAREST :
-											textureMinFilter == "LinearMipMapNearest" ? TextureMinFilter::LINEAR_MIPMAP_NEAREST :
-											textureMinFilter == "NearestMipMapLinear" ? TextureMinFilter::NEAREST_MIPMAP_LINEAR :
-											textureMinFilter == "LinearMipMapLinear" ? TextureMinFilter::LINEAR_MIPMAP_LINEAR :
-											texture->GetTextureMinFilter());
+					textureMinFilter == "Linear" ? TextureMinFilter::LINEAR :
+					textureMinFilter == "NearestMipMapNearest" ? TextureMinFilter::NEAREST_MIPMAP_NEAREST :
+					textureMinFilter == "LinearMipMapNearest" ? TextureMinFilter::LINEAR_MIPMAP_NEAREST :
+					textureMinFilter == "NearestMipMapLinear" ? TextureMinFilter::NEAREST_MIPMAP_LINEAR :
+					textureMinFilter == "LinearMipMapLinear" ? TextureMinFilter::LINEAR_MIPMAP_LINEAR :
+					texture->GetTextureMinFilter());
 			}
 			stream.clear();
 
@@ -1297,8 +1337,8 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				stream >> textureMagFilter;
 
 				texture->SetTextureMagFilter(textureMagFilter == "Nearest" ? TextureMagFilter::NEAREST :
-											 textureMagFilter == "Linear" ? TextureMagFilter::LINEAR :
-											 texture->GetTextureMagFilter());
+					textureMagFilter == "Linear" ? TextureMagFilter::LINEAR :
+					texture->GetTextureMagFilter());
 			}
 			stream.clear();
 
@@ -1309,14 +1349,14 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				std::string usage;
 				stream >> usage;
 
-				texture->SetTextureUsage(	usage == "Diffuse" ? TextureUsage::Diffuse :
-											usage == "Normal" ? TextureUsage::Normal :
-											usage == "AmbientOcclusion" ? TextureUsage::AmbientOcclusion :
-											usage == "Height" ? TextureUsage::Height :
-											usage == "Metallic" ? TextureUsage::Metallic :
-											usage == "Roughness" ? TextureUsage::Roughness :
-											usage == "Specular" ? TextureUsage::Specular :
-											TextureUsage::None);
+				texture->SetTextureUsage(usage == "Diffuse" ? TextureUsage::Diffuse :
+					usage == "Normal" ? TextureUsage::Normal :
+					usage == "AmbientOcclusion" ? TextureUsage::AmbientOcclusion :
+					usage == "Height" ? TextureUsage::Height :
+					usage == "Metallic" ? TextureUsage::Metallic :
+					usage == "Roughness" ? TextureUsage::Roughness :
+					usage == "Specular" ? TextureUsage::Specular :
+					TextureUsage::None);
 			}
 			stream.clear();
 
@@ -1370,8 +1410,8 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 				std::string shadingModel;
 				stream >> shadingModel;
 				material->SetShadingModel(shadingModel == "Default" ? MaterialShadingModel::Default :
-										  shadingModel == "TwoSided" ? MaterialShadingModel::TwoSided :
-										  material->GetShadingModel());
+					shadingModel == "TwoSided" ? MaterialShadingModel::TwoSided :
+					material->GetShadingModel());
 			}
 
 			child = element->FirstChildElement("Texture");
@@ -1608,6 +1648,48 @@ void SceneParser::ParseStaticMeshComponentValues(StaticMeshComponent* staticMesh
 	else
 	{
 		ClearStaticMeshComponentMaterialPath(staticMeshComponent);
+	}
+
+	stream.clear();
+}
+
+void SceneParser::ParseSkeletalMeshComponentValues(SkeletalMeshComponent* skeletalMeshComponent, tinyxml2::XMLElement* componentElement)
+{
+	std::stringstream stream;
+
+	tinyxml2::XMLElement* dataElement = componentElement->FirstChildElement("MeshPath");
+	if (dataElement)
+	{
+		stream << dataElement->GetText() << std::endl;
+		std::string meshPath;
+		stream >> meshPath;
+		SkeletalMesh* skeletalMesh = engine->GetResourceManager()->GetContent<SkeletalMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
+		if (skeletalMesh)
+		{
+			skeletalMeshComponent->SetMesh(skeletalMesh);
+		}
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("RenderMask");
+	if (dataElement && skeletalMeshComponent->GetMeshInstance())
+	{
+		stream << dataElement->GetText() << std::endl;
+		std::string renderMaskString;
+		stream >> renderMaskString;
+		int renderMask = std::stoi(renderMaskString);
+		skeletalMeshComponent->GetMeshInstance()->SetRenderMask(renderMask);
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("MaterialPath");
+	if (componentElement->FirstChildElement("MaterialPaths") || dataElement)
+	{
+		ApplySkeletalMeshComponentMaterialPaths(skeletalMeshComponent, ReadMaterialPaths(componentElement));
+	}
+	else
+	{
+		ClearSkeletalMeshComponentMaterialPath(skeletalMeshComponent);
 	}
 
 	stream.clear();
@@ -1921,6 +2003,46 @@ void SceneParser::ParseParticleSystemComponentValues(ParticleSystemComponent* pa
 	}
 	stream.clear();
 
+	dataElement = componentElement->FirstChildElement("EmissiveColorStart");
+	if (!dataElement)
+	{
+		dataElement = componentElement->FirstChildElement("EmissiveColorByLifetimeStart");
+	}
+	if (!dataElement)
+	{
+		dataElement = componentElement->FirstChildElement("EmmisiveColorStart");
+	}
+	if (!dataElement)
+	{
+		dataElement = componentElement->FirstChildElement("EmmisiveColorByLifetimeStart");
+	}
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.emissiveColorByLifetime.startValue.x >> spawnDesc.emissiveColorByLifetime.startValue.y >> spawnDesc.emissiveColorByLifetime.startValue.z;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("EmissiveColorEnd");
+	if (!dataElement)
+	{
+		dataElement = componentElement->FirstChildElement("EmissiveColorByLifetimeEnd");
+	}
+	if (!dataElement)
+	{
+		dataElement = componentElement->FirstChildElement("EmmisiveColorEnd");
+	}
+	if (!dataElement)
+	{
+		dataElement = componentElement->FirstChildElement("EmmisiveColorByLifetimeEnd");
+	}
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.emissiveColorByLifetime.endValue.x >> spawnDesc.emissiveColorByLifetime.endValue.y >> spawnDesc.emissiveColorByLifetime.endValue.z;
+	}
+	stream.clear();
+
 	dataElement = componentElement->FirstChildElement("StartSpeedRange");
 	if (dataElement && dataElement->GetText())
 	{
@@ -2101,7 +2223,7 @@ void SceneParser::ParseNonMovingTriangleMeshCollisionComponentValues(NonMovingTr
 		stream >> meshPath;
 
 		StaticMesh* relativeMesh = engine->GetResourceManager()->GetContent<StaticMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
-		if(relativeMesh)
+		if (relativeMesh)
 		{
 			nonMovingTriangleMeshCollisionComponent->SetMesh(relativeMesh);
 		}
@@ -2166,6 +2288,17 @@ void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* obje
 			ParseComponentValues(staticMeshComponent, componentElement);
 
 			componentElement = componentElement->NextSiblingElement("StaticMeshComponent");
+		}
+
+		componentElement = child->FirstChildElement("SkeletalMeshComponent");
+		while (componentElement)
+		{
+			SkeletalMeshComponent* skeletalMeshComponent = object->AddSubComponent<SkeletalMeshComponent>();
+			ParseSkeletalMeshComponentValues(skeletalMeshComponent, componentElement);
+
+			ParseComponentValues(skeletalMeshComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("SkeletalMeshComponent");
 		}
 
 		componentElement = child->FirstChildElement("InstancedStaticMeshComponent");
@@ -2566,11 +2699,11 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 			tinyxml2::XMLElement* rigidBodyMassElement = xmlDocument.NewElement("Mass");
 			rigidBodyMassElement->SetText(rigidBody->GetMass());
 			objectElement->InsertEndChild(rigidBodyMassElement);
-			
+
 			tinyxml2::XMLElement* rigidBodyCollisionGroupElement = xmlDocument.NewElement("CollisionGroup");
 			rigidBodyCollisionGroupElement->SetText((int)rigidBody->GetCollisionGroup());
 			objectElement->InsertEndChild(rigidBodyCollisionGroupElement);
-			
+
 			tinyxml2::XMLElement* rigidBodyCollisionMaskElement = xmlDocument.NewElement("CollisionMask");
 			rigidBodyCollisionMaskElement->SetText((int)rigidBody->GetCollisionMask());
 			objectElement->InsertEndChild(rigidBodyCollisionMaskElement);
@@ -2586,7 +2719,7 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 		tinyxml2::XMLElement* componentsElement = xmlDocument.NewElement("Components");
 		GetXMLElement_Components(object, xmlDocument, componentsElement);
 		objectElement->InsertEndChild(componentsElement);
-		
+
 		parentElement->InsertEndChild(objectElement);
 	}
 }
@@ -2607,6 +2740,11 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 		{
 			componentElement = xmlDocument.NewElement("StaticMeshComponent");
 			GetXMLElement_StaticMeshComponent(staticMeshComponent, xmlDocument, componentElement);
+		}
+		else if (SkeletalMeshComponent* skeletalMeshComponent = dynamic_cast<SkeletalMeshComponent*>(component))
+		{
+			componentElement = xmlDocument.NewElement("SkeletalMeshComponent");
+			GetXMLElement_SkeletalMeshComponent(skeletalMeshComponent, xmlDocument, componentElement);
 		}
 		else if (InstancedStaticMeshComponent* instancedStaticMeshComponent = dynamic_cast<InstancedStaticMeshComponent*>(component))
 		{
@@ -2669,7 +2807,7 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 
 void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* const staticMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
 {
-	tinyxml2::XMLElement* staticMeshComponentMeshPathElement = xmlDocument.NewElement("MeshPath"); 
+	tinyxml2::XMLElement* staticMeshComponentMeshPathElement = xmlDocument.NewElement("MeshPath");
 	const std::string meshPath = ContentPathUtils::ToContentRelativePath(staticMeshComponent->GetMeshInstance()->GetMesh()->GetPath());
 	staticMeshComponentMeshPathElement->SetText(meshPath.c_str());
 	parentElement->InsertEndChild(staticMeshComponentMeshPathElement);
@@ -2679,6 +2817,27 @@ void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* c
 	parentElement->InsertEndChild(staticMeshInstanceRenderMaskElement);
 
 	WriteMaterialPaths(xmlDocument, parentElement, GetStaticMeshComponentMaterialPaths(staticMeshComponent));
+}
+
+void SceneParser::GetXMLElement_SkeletalMeshComponent(const SkeletalMeshComponent* const skeletalMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+	const SkeletalMeshInstance* meshInstance = skeletalMeshComponent ? skeletalMeshComponent->GetMeshInstance() : nullptr;
+	const SkeletalMesh* skeletalMesh = meshInstance ? meshInstance->GetMesh() : nullptr;
+	if (!meshInstance || !skeletalMesh)
+	{
+		return;
+	}
+
+	tinyxml2::XMLElement* skeletalMeshComponentMeshPathElement = xmlDocument.NewElement("MeshPath");
+	const std::string meshPath = ContentPathUtils::ToContentRelativePath(skeletalMesh->GetPath());
+	skeletalMeshComponentMeshPathElement->SetText(meshPath.c_str());
+	parentElement->InsertEndChild(skeletalMeshComponentMeshPathElement);
+
+	tinyxml2::XMLElement* skeletalMeshInstanceRenderMaskElement = xmlDocument.NewElement("RenderMask");
+	skeletalMeshInstanceRenderMaskElement->SetText(meshInstance->GetRenderMask());
+	parentElement->InsertEndChild(skeletalMeshInstanceRenderMaskElement);
+
+	WriteMaterialPaths(xmlDocument, parentElement, GetSkeletalMeshComponentMaterialPaths(skeletalMeshComponent));
 }
 
 void SceneParser::GetXMLElement_InstancedStaticMeshComponent(const InstancedStaticMeshComponent* const instancedStaticMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
@@ -2695,8 +2854,8 @@ void SceneParser::GetXMLElement_InstancedStaticMeshComponent(const InstancedStat
 	const std::string meshPath = !instancedStaticMesh->GetSourceMeshPath().empty() ?
 		ContentPathUtils::ToContentRelativePath(instancedStaticMesh->GetSourceMeshPath()) :
 		sourcePathIterator != instancedStaticMeshSourcePathMap.end() ?
-			sourcePathIterator->second :
-			ContentPathUtils::ToContentRelativePath(instancedStaticMesh->GetPath());
+		sourcePathIterator->second :
+		ContentPathUtils::ToContentRelativePath(instancedStaticMesh->GetPath());
 	instancedStaticMeshComponentMeshPathElement->SetText(meshPath.c_str());
 	parentElement->InsertEndChild(instancedStaticMeshComponentMeshPathElement);
 
