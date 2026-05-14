@@ -56,9 +56,9 @@ DefaultCharacter::DefaultCharacter() :
 	thirdPersonCameraComponent_->SetParent(GetRootComponent());
 
 	Camera* thirdPersonCamera = thirdPersonCameraComponent_->GetCamera();
-	thirdPersonCamera->SetNearDistance(0.1f);
+	thirdPersonCamera->SetNearDistance(1.f);
 	thirdPersonCamera->SetFarDistance(1000.f);
-	thirdPersonCamera->SetFOV(180);
+	thirdPersonCamera->SetFOV(90);
 
 	SocketComponent* socketComponent = skeletalMeshComponent_->GetMeshInstance()->AddSocketToBone("mixamorig:RightHand");
 	socketComponent->SetRelativePosition(Vector3{ 0.f, 12.5f, 5.f });
@@ -93,6 +93,7 @@ void DefaultCharacter::BeginGame()
 	Quaternion spawnRotation = Quaternion::FromEulerDegrees(Vector3{ 0.f, 0.f, 180.f });
 	SetWorldRotation(spawnRotation);
 	thirdPersonCameraComponent_->SetRelativeRotation(spawnRotation);
+	thirdPersonCameraComponent_->GetCamera()->SetFOV(45);
 
 	Idle();
 
@@ -106,6 +107,7 @@ void DefaultCharacter::BeginGame()
 	cameraShoulderOffset_.speed = 10.f;
 
 	animationGraph_->Init();
+
 }
 
 void DefaultCharacter::Tick(float deltaTime)
