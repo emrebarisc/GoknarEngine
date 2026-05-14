@@ -406,6 +406,8 @@ Content* ModelLoader::LoadModel(const std::string& path)
 							}
 						}
 					}
+
+					subMesh.skeletalMeshUnit->NormalizeVertexBoneWeights();
 				}
 
 				// Triangulate local face data
@@ -603,6 +605,8 @@ Content* ModelLoader::LoadModel(const std::string& path)
 					skeletalAnimation->animationKeyframeCount = channelIndex;
 					skeletalMeshAsset->AddSkeletalAnimation(skeletalAnimation);
 				}
+
+				skeletalMeshAsset->BuildRuntimeAnimationData();
 			}
 		}
 

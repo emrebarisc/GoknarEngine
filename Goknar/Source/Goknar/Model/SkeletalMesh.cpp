@@ -43,6 +43,7 @@ void SkeletalMesh::Init()
 void SkeletalMesh::PostInit()
 {
 	Mesh::PostInit();
+	BuildRuntimeAnimationData();
 }
 
 void SkeletalMesh::AddMesh(SkeletalMeshUnit* meshUnit)
@@ -97,5 +98,124 @@ void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform, st
 	for (unsigned int childIndex = 0; childIndex < childrenSize; ++childIndex)
 	{
 		SetupTransforms(bone->children[childIndex], globalTransformation, transforms, skeletalAnimation, time, socketMap);
+	}
+}
+
+void SkeletalMesh::BuildRuntimeAnimationData()
+{
+	if (runtimeAnimationDataBuilt_)
+	{
+		return;
+	}
+
+	runtimeSkeleton_ = AnimationSkeleton();
+	runtimeAnimationClips_.clear();
+	nameToRuntimeAnimationClipIndexMap_.clear();
+
+	if (!armature_ || !armature_->root || boneSize_ == 0)
+	{
+		return;
+	}
+
+	runtimeSkeleton_.Resize(boneSize_);
+	AddBoneToRuntimeSkeleton(armature_->root, -1);
+	BuildRuntimeAnimationClips();
+
+	runtimeAnimationDataBuilt_ = true;
+}
+
+void SkeletalMesh::AddBoneToRuntimeSkeleton(Bone* bone, int parentIndex)
+{
+	if (!bone)
+	{
+		return;
+	}
+
+	const int boneIndex = FindBoneId(bone->name);
+	if (boneIndex < 0 || (size_t)boneIndex >= runtimeSkeleton_.boneNames.size())
+	{
+		return;
+	}
+
+	Vector3 translation = Vector3::ZeroVector;
+	Vector3 scale = Vector3(1.f);
+	Quaternion rotation = Quaternion::Identity;
+	bone->transformation.Decompose(translation, scale, rotation);
+
+	runtimeSkeleton_.boneNames[boneIndex] = bone->name;
+	runtimeSkeleton_.boneNameToIndex[bone->name] = boneIndex;
+	runtimeSkeleton_.parentIndices[boneIndex] = parentIndex;
+	runtimeSkeleton_.inverseBindMatrices[boneIndex] = bone->offset;
+	runtimeSkeleton_.bindLocalPose[boneIndex] = AnimationTransform{ translation, rotation, scale };
+	runtimeSkeleton_.evaluationOrder.push_back(boneIndex);
+
+	for (Bone* child : bone->children)
+	{
+		AddBoneToRuntimeSkeleton(child, boneIndex);
+	}
+}
+
+void SkeletalMesh::BuildRuntimeAnimationClips()
+{
+	runtimeAnimationClips_.reserve(skeletalAnimations_.size());
+
+	for (const SkeletalAnimation* skeletalAnimation : skeletalAnimations_)
+	{
+		if (!skeletalAnimation)
+		{
+			continue;
+		}
+
+		AnimationClip clip;
+		clip.name = skeletalAnimation->name;
+		clip.duration = skeletalAnimation->duration;
+		clip.ticksPerSecond = skeletalAnimation->ticksPerSecond;
+		clip.loop = true;
+		clip.tracks.reserve(skeletalAnimation->animationKeyframeCount);
+
+		for (unsigned int keyframeIndex = 0; keyframeIndex < skeletalAnimation->animationKeyframeCount; ++keyframeIndex)
+		{
+			const SkeletalAnimationKeyframe* keyframe = skeletalAnimation->animationKeyframes[keyframeIndex];
+			if (!keyframe)
+			{
+				continue;
+			}
+
+			const int boneIndex = FindBoneId(keyframe->affectedBoneName);
+			if (boneIndex < 0)
+			{
+				continue;
+			}
+
+			AnimationTrack track;
+			track.boneIndex = boneIndex;
+			track.translationKeys.reserve(keyframe->positionKeySize);
+			track.rotationKeys.reserve(keyframe->rotationKeySize);
+			track.scaleKeys.reserve(keyframe->scalingKeySize);
+
+			for (int positionIndex = 0; positionIndex < keyframe->positionKeySize; ++positionIndex)
+			{
+				const AnimationVectorKey& sourceKey = keyframe->positionKeys[positionIndex];
+				track.translationKeys.push_back({ sourceKey.time, sourceKey.value });
+			}
+
+			for (int rotationIndex = 0; rotationIndex < keyframe->rotationKeySize; ++rotationIndex)
+			{
+				const AnimationQuaternionKey& sourceKey = keyframe->rotationKeys[rotationIndex];
+				track.rotationKeys.push_back({ sourceKey.time, sourceKey.value });
+			}
+
+			for (int scaleIndex = 0; scaleIndex < keyframe->scalingKeySize; ++scaleIndex)
+			{
+				const AnimationVectorKey& sourceKey = keyframe->scalingKeys[scaleIndex];
+				track.scaleKeys.push_back({ sourceKey.time, sourceKey.value });
+			}
+
+			clip.tracks.push_back(std::move(track));
+		}
+
+		clip.RebuildTrackLookup();
+		nameToRuntimeAnimationClipIndexMap_[clip.name] = runtimeAnimationClips_.size();
+		runtimeAnimationClips_.push_back(std::move(clip));
 	}
 }

@@ -43,6 +43,7 @@ struct GOKNAR_API AnimationTransition
 	std::weak_ptr<T> target{};
 
 	bool transitWhenAnimationDone{ false };
+	float duration{ 0.15f };
 
 	std::vector<AnimationCondition> conditions;
 };

@@ -3,15 +3,39 @@
 #include "SkeletalMeshInstance.h"
 
 #include <algorithm>
+#include <cmath>
 #include <execution>
 
 #include "Goknar/Engine.h"
+#include "Goknar/Animation/AnimationGraph.h"
+#include "Goknar/Animation/AnimationNode.h"
+#include "Goknar/Animation/AnimationRuntime.h"
 #include "Goknar/Components/SocketComponent.h"
 #include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/ShaderTypes.h"
+
+namespace
+{
+	float SmoothBlendParameter(float current, float target, float smoothingSpeed, float deltaTime)
+	{
+		if (smoothingSpeed <= 0.f || deltaTime <= 0.f)
+		{
+			return target;
+		}
+
+		const float alpha = 1.f - std::exp(-smoothingSpeed * deltaTime);
+		return GoknarMath::Lerp(current, target, GoknarMath::Clamp(alpha, 0.f, 1.f));
+	}
+
+	float SmoothBlendAlpha(float alpha)
+	{
+		alpha = GoknarMath::Clamp(alpha, 0.f, 1.f);
+		return alpha * alpha * (3.f - 2.f * alpha);
+	}
+}
 
 SkeletalMeshInstance::SkeletalMeshInstance(RenderComponent* parentComponent) :
 	IMeshInstance(parentComponent)
@@ -24,7 +48,36 @@ SkeletalMeshInstance::~SkeletalMeshInstance()
 
 void SkeletalMeshInstance::PrepareForTheCurrentFrame()
 {
-	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
+	if (!mesh_)
+	{
+		return;
+	}
+
+	mesh_->BuildRuntimeAnimationData();
+
+	if (!hasGraphPose_)
+	{
+		SampleDirectAnimationToLocalPose();
+	}
+
+	BuildMatricesAndUpdateSockets();
+	graphPoseWasUpdatedThisFrame_ = false;
+}
+
+void SkeletalMeshInstance::BuildMatricesAndUpdateSockets()
+{
+	if (!mesh_)
+	{
+		return;
+	}
+
+	const AnimationSkeleton& skeleton = mesh_->GetAnimationSkeleton();
+	if (localPose_.localTransforms.size() != skeleton.bindLocalPose.size())
+	{
+		localPose_.SetToBindPose(skeleton.bindLocalPose);
+	}
+
+	AnimationRuntime::BuildFinalBoneMatrices(skeleton, localPose_, modelSpaceBoneTransformations_, boneTransformations_);
 
 	std::unordered_map<int, const Matrix*>::iterator boneIdToAttachedMatrixPointerMapIterator = boneIdToAttachedMatrixPointerMap_.begin();
 	while (boneIdToAttachedMatrixPointerMapIterator != boneIdToAttachedMatrixPointerMap_.end())
@@ -38,6 +91,56 @@ void SkeletalMeshInstance::PrepareForTheCurrentFrame()
 
 		++boneIdToAttachedMatrixPointerMapIterator;
 	}
+
+	UpdateSocketsFromModelSpacePose();
+}
+
+void SkeletalMeshInstance::UpdateSocketsFromModelSpacePose()
+{
+	if (!mesh_)
+	{
+		return;
+	}
+
+	for (const auto& socketPair : sockets_)
+	{
+		const int boneIndex = mesh_->FindBoneId(socketPair.first);
+		if (boneIndex < 0 || (size_t)boneIndex >= modelSpaceBoneTransformations_.size())
+		{
+			continue;
+		}
+
+		socketPair.second->SetBoneTransformationMatrix(modelSpaceBoneTransformations_[boneIndex]);
+	}
+}
+
+void SkeletalMeshInstance::SampleDirectAnimationToLocalPose()
+{
+	if (!mesh_)
+	{
+		return;
+	}
+
+	const AnimationSkeleton& skeleton = mesh_->GetAnimationSkeleton();
+	if (!skeleton.IsValid())
+	{
+		return;
+	}
+
+	if (!skeletalMeshAnimation_.skeletalAnimation)
+	{
+		localPose_.SetToBindPose(skeleton.bindLocalPose);
+		return;
+	}
+
+	const AnimationClip* clip = mesh_->GetAnimationClip(skeletalMeshAnimation_.skeletalAnimation->name);
+	if (!clip)
+	{
+		localPose_.SetToBindPose(skeleton.bindLocalPose);
+		return;
+	}
+
+	AnimationRuntime::SampleClip(*clip, skeleton, skeletalMeshAnimation_.animationTime, localPose_, !skeletalMeshAnimation_.playLoopData.playOnce);
 }
 
 void SkeletalMeshInstance::PrepareForTheNextFrame()
@@ -117,9 +220,14 @@ void SkeletalMeshInstance::Render(int subMeshIndex, RenderPassType renderPassTyp
 
 void SkeletalMeshInstance::SetRenderOperations(int subMeshIndex, RenderPassType renderPassType)
 {
-	for (SkeletalMeshUnit* subMesh : mesh_->GetSubMeshes())
+	const std::vector<SkeletalMeshUnit*>& subMeshes = mesh_->GetSubMeshes();
+	if (0 <= subMeshIndex && subMeshIndex < (int)subMeshes.size())
 	{
-		subMesh->GetMaterial()->GetShader(renderPassType)->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
+		SkeletalMeshUnit* subMesh = subMeshes[subMeshIndex];
+		if (subMesh && subMesh->GetMaterial())
+		{
+			subMesh->GetMaterial()->GetShader(renderPassType)->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
+		}
 	}
 	IMeshInstance::Render(subMeshIndex, renderPassType);
 }
@@ -128,7 +236,14 @@ void SkeletalMeshInstance::SetMesh(SkeletalMesh* skeletalMesh)
 {
 	IMeshInstance::SetMesh(skeletalMesh);
 
+	skeletalMesh->BuildRuntimeAnimationData();
 	boneTransformations_.resize(skeletalMesh->GetBoneSize(), Matrix::IdentityMatrix);
+	modelSpaceBoneTransformations_.resize(skeletalMesh->GetBoneSize(), Matrix::IdentityMatrix);
+	localPose_.SetToBindPose(skeletalMesh->GetAnimationSkeleton().bindLocalPose);
+	graphPose_.SetToBindPose(skeletalMesh->GetAnimationSkeleton().bindLocalPose);
+	crossfadePose_.SetToBindPose(skeletalMesh->GetAnimationSkeleton().bindLocalPose);
+	blendPoseA_.SetToBindPose(skeletalMesh->GetAnimationSkeleton().bindLocalPose);
+	blendPoseB_.SetToBindPose(skeletalMesh->GetAnimationSkeleton().bindLocalPose);
 }
 
 void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData/* = { false, {} }*/, const KeyframeData& keyframeData/* = {}*/)
@@ -151,12 +266,363 @@ void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, const
 	{
 		return;
 	}
+	skeletalMeshAnimation_.name = animationName;
 	skeletalMeshAnimation_.animationTime = 0.f;
 	skeletalMeshAnimation_.elapsedTimeInSeconds = 0.f;
 	skeletalMeshAnimation_.initialTimeInSeconds = engine->GetElapsedTime();
 
 	skeletalMeshAnimation_.playLoopData = playLoopData;
 	skeletalMeshAnimation_.keyframeData = keyframeData;
+	hasGraphPose_ = false;
+}
+
+void SkeletalMeshInstance::EvaluateAnimationGraph(AnimationGraph& animationGraph, float deltaTime)
+{
+	if (!mesh_)
+	{
+		return;
+	}
+
+	mesh_->BuildRuntimeAnimationData();
+
+	const std::shared_ptr<AnimationNode>& currentNode = animationGraph.GetCurrentNode();
+	if (!currentNode)
+	{
+		localPose_.SetToBindPose(mesh_->GetAnimationSkeleton().bindLocalPose);
+		hasGraphPose_ = true;
+		graphPoseWasUpdatedThisFrame_ = true;
+		return;
+	}
+
+	EvaluateAnimationNode(animationGraph, currentNode.get(), deltaTime, graphPose_);
+
+	const std::shared_ptr<AnimationNode>& crossfadeSourceNode = animationGraph.GetCrossfadeSourceNode();
+	if (animationGraph.IsCrossfading() && crossfadeSourceNode)
+	{
+		EvaluateAnimationNode(animationGraph, crossfadeSourceNode.get(), deltaTime, crossfadePose_);
+		AnimationRuntime::BlendPoses(crossfadePose_, graphPose_, animationGraph.GetCrossfadeAlpha(), localPose_);
+	}
+	else
+	{
+		localPose_ = graphPose_;
+	}
+
+	hasGraphPose_ = true;
+	graphPoseWasUpdatedThisFrame_ = true;
+}
+
+void SkeletalMeshInstance::EvaluateAnimationNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
+{
+	if (!node)
+	{
+		outPose.SetToBindPose(mesh_->GetAnimationSkeleton().bindLocalPose);
+		return;
+	}
+
+	switch (node->type)
+	{
+	case AnimationNodeType::BlendSpace1D:
+		EvaluateBlendSpace1DNode(animationGraph, node, deltaTime, outPose);
+		break;
+	case AnimationNodeType::BlendSpace2D:
+		EvaluateBlendSpace2DNode(animationGraph, node, deltaTime, outPose);
+		break;
+	case AnimationNodeType::Clip:
+	default:
+		EvaluateClipNode(animationGraph, node, deltaTime, outPose);
+		break;
+	}
+}
+
+void SkeletalMeshInstance::EvaluateClipNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
+{
+	const AnimationSkeleton& skeleton = mesh_->GetAnimationSkeleton();
+	AnimationNodeRuntimeData& runtimeData = animationGraph.GetRuntimeData(node);
+	const AnimationClip* clip = mesh_->GetAnimationClip(node->animationName);
+	if (!clip)
+	{
+		runtimeData.finished = true;
+		outPose.SetToBindPose(skeleton.bindLocalPose);
+		return;
+	}
+
+	runtimeData.time += deltaTime * node->playRate;
+	if (node->loop)
+	{
+		runtimeData.time = AnimationRuntime::WrapClipTime(*clip, runtimeData.time, true);
+		runtimeData.finished = false;
+	}
+	else
+	{
+		if (clip->duration <= runtimeData.time)
+		{
+			runtimeData.time = clip->duration;
+			runtimeData.finished = true;
+		}
+	}
+
+	AnimationRuntime::SampleClip(*clip, skeleton, runtimeData.time, outPose, node->loop);
+}
+
+void SkeletalMeshInstance::EvaluateBlendSpace1DNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
+{
+	const AnimationSkeleton& skeleton = mesh_->GetAnimationSkeleton();
+	AnimationNodeRuntimeData& runtimeData = animationGraph.GetRuntimeData(node);
+	if (node->blendSpace1DPoints.empty())
+	{
+		runtimeData.finished = true;
+		outPose.SetToBindPose(skeleton.bindLocalPose);
+		return;
+	}
+
+	std::vector<BlendSpace1DPoint> sortedPoints = node->blendSpace1DPoints;
+	std::sort(
+		sortedPoints.begin(),
+		sortedPoints.end(),
+		[](const BlendSpace1DPoint& first, const BlendSpace1DPoint& second)
+		{
+			return first.value < second.value;
+		});
+
+	const float rawParameter = animationGraph.GetFloatVariable(node->parameterName, 0.f);
+	if (!runtimeData.hasSmoothedParameters)
+	{
+		runtimeData.smoothedParameter = rawParameter;
+		runtimeData.hasSmoothedParameters = true;
+	}
+	else
+	{
+		runtimeData.smoothedParameter = SmoothBlendParameter(
+			runtimeData.smoothedParameter,
+			rawParameter,
+			node->parameterSmoothingSpeed,
+			deltaTime);
+	}
+
+	const float parameter = runtimeData.smoothedParameter;
+	const BlendSpace1DPoint* firstPoint = &sortedPoints.front();
+	const BlendSpace1DPoint* secondPoint = firstPoint;
+	float blendAlpha = 0.f;
+
+	if (parameter <= sortedPoints.front().value)
+	{
+		firstPoint = &sortedPoints.front();
+		secondPoint = firstPoint;
+	}
+	else if (sortedPoints.back().value <= parameter)
+	{
+		firstPoint = &sortedPoints.back();
+		secondPoint = firstPoint;
+	}
+	else
+	{
+		for (size_t pointIndex = 0; pointIndex + 1 < sortedPoints.size(); ++pointIndex)
+		{
+			if (sortedPoints[pointIndex].value <= parameter && parameter <= sortedPoints[pointIndex + 1].value)
+			{
+				firstPoint = &sortedPoints[pointIndex];
+				secondPoint = &sortedPoints[pointIndex + 1];
+				const float range = secondPoint->value - firstPoint->value;
+				blendAlpha = range > 0.f ? (parameter - firstPoint->value) / range : 0.f;
+				blendAlpha = SmoothBlendAlpha(blendAlpha);
+				break;
+			}
+		}
+	}
+
+	const AnimationClip* firstClip = mesh_->GetAnimationClip(firstPoint->animationName);
+	const AnimationClip* secondClip = mesh_->GetAnimationClip(secondPoint->animationName);
+	if (!firstClip && !secondClip)
+	{
+		runtimeData.finished = true;
+		outPose.SetToBindPose(skeleton.bindLocalPose);
+		return;
+	}
+
+	if (!firstClip)
+	{
+		firstClip = secondClip;
+		firstPoint = secondPoint;
+		blendAlpha = 0.f;
+	}
+	if (!secondClip)
+	{
+		secondClip = firstClip;
+		secondPoint = firstPoint;
+		blendAlpha = 0.f;
+	}
+
+	const float blendedDuration = GoknarMath::Max(
+		GoknarMath::Lerp(firstClip->duration, secondClip->duration, blendAlpha),
+		0.0001f);
+
+	runtimeData.normalizedTime += (deltaTime * node->playRate) / blendedDuration;
+	if (node->loop)
+	{
+		runtimeData.normalizedTime = runtimeData.normalizedTime - std::floor(runtimeData.normalizedTime);
+		runtimeData.finished = false;
+	}
+	else if (1.f <= runtimeData.normalizedTime)
+	{
+		runtimeData.normalizedTime = 1.f;
+		runtimeData.finished = true;
+	}
+
+	const float firstTime = runtimeData.normalizedTime * firstClip->duration;
+	const float secondTime = runtimeData.normalizedTime * secondClip->duration;
+
+	if (firstClip == secondClip || blendAlpha <= 0.f)
+	{
+		AnimationRuntime::SampleClip(*firstClip, skeleton, firstTime, outPose, node->loop);
+		return;
+	}
+
+	AnimationRuntime::SampleClip(*firstClip, skeleton, firstTime, blendPoseA_, node->loop);
+	AnimationRuntime::SampleClip(*secondClip, skeleton, secondTime, blendPoseB_, node->loop);
+	AnimationRuntime::BlendPoses(blendPoseA_, blendPoseB_, blendAlpha, outPose);
+}
+
+void SkeletalMeshInstance::EvaluateBlendSpace2DNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
+{
+	const AnimationSkeleton& skeleton = mesh_->GetAnimationSkeleton();
+	AnimationNodeRuntimeData& runtimeData = animationGraph.GetRuntimeData(node);
+	if (node->blendSpace2DPoints.empty())
+	{
+		runtimeData.finished = true;
+		outPose.SetToBindPose(skeleton.bindLocalPose);
+		return;
+	}
+
+	struct WeightedClip
+	{
+		const AnimationClip* clip{ nullptr };
+		float weight{ 0.f };
+		float distanceSquared{ 0.f };
+	};
+
+	const float rawParameterX = animationGraph.GetFloatVariable(node->parameterXName, 0.f);
+	const float rawParameterY = animationGraph.GetFloatVariable(node->parameterYName, 0.f);
+	if (!runtimeData.hasSmoothedParameters)
+	{
+		runtimeData.smoothedParameterX = rawParameterX;
+		runtimeData.smoothedParameterY = rawParameterY;
+		runtimeData.hasSmoothedParameters = true;
+	}
+	else
+	{
+		runtimeData.smoothedParameterX = SmoothBlendParameter(
+			runtimeData.smoothedParameterX,
+			rawParameterX,
+			node->parameterSmoothingSpeed,
+			deltaTime);
+		runtimeData.smoothedParameterY = SmoothBlendParameter(
+			runtimeData.smoothedParameterY,
+			rawParameterY,
+			node->parameterSmoothingSpeed,
+			deltaTime);
+	}
+
+	const float parameterX = runtimeData.smoothedParameterX;
+	const float parameterY = runtimeData.smoothedParameterY;
+
+	std::vector<WeightedClip> weightedClips;
+	weightedClips.reserve(node->blendSpace2DPoints.size());
+
+	for (const BlendSpace2DPoint& point : node->blendSpace2DPoints)
+	{
+		const AnimationClip* clip = mesh_->GetAnimationClip(point.animationName);
+		if (!clip)
+		{
+			continue;
+		}
+
+		const float dx = parameterX - point.x;
+		const float dy = parameterY - point.y;
+		const float distanceSquared = dx * dx + dy * dy;
+		if (distanceSquared <= 0.000001f)
+		{
+			runtimeData.normalizedTime += clip->duration > 0.f ? (deltaTime * node->playRate) / clip->duration : 0.f;
+			if (node->loop)
+			{
+				runtimeData.normalizedTime = runtimeData.normalizedTime - std::floor(runtimeData.normalizedTime);
+				runtimeData.finished = false;
+			}
+			else if (1.f <= runtimeData.normalizedTime)
+			{
+				runtimeData.normalizedTime = 1.f;
+				runtimeData.finished = true;
+			}
+
+			AnimationRuntime::SampleClip(*clip, skeleton, runtimeData.normalizedTime * clip->duration, outPose, node->loop);
+			return;
+		}
+
+		weightedClips.push_back({ clip, 1.f / distanceSquared, distanceSquared });
+	}
+
+	if (weightedClips.empty())
+	{
+		runtimeData.finished = true;
+		outPose.SetToBindPose(skeleton.bindLocalPose);
+		return;
+	}
+
+	std::sort(
+		weightedClips.begin(),
+		weightedClips.end(),
+		[](const WeightedClip& first, const WeightedClip& second)
+		{
+			return first.distanceSquared < second.distanceSquared;
+		});
+
+	if (weightedClips.size() > 4)
+	{
+		weightedClips.resize(4);
+	}
+
+	float totalWeight = 0.f;
+	float weightedDuration = 0.f;
+	for (const WeightedClip& weightedClip : weightedClips)
+	{
+		totalWeight += weightedClip.weight;
+		weightedDuration += weightedClip.weight * weightedClip.clip->duration;
+	}
+
+	if (totalWeight <= 0.f)
+	{
+		runtimeData.finished = true;
+		outPose.SetToBindPose(skeleton.bindLocalPose);
+		return;
+	}
+
+	const float blendedDuration = GoknarMath::Max(weightedDuration / totalWeight, 0.0001f);
+	runtimeData.normalizedTime += (deltaTime * node->playRate) / blendedDuration;
+	if (node->loop)
+	{
+		runtimeData.normalizedTime = runtimeData.normalizedTime - std::floor(runtimeData.normalizedTime);
+		runtimeData.finished = false;
+	}
+	else if (1.f <= runtimeData.normalizedTime)
+	{
+		runtimeData.normalizedTime = 1.f;
+		runtimeData.finished = true;
+	}
+
+	const AnimationClip* firstClip = weightedClips.front().clip;
+	AnimationRuntime::SampleClip(*firstClip, skeleton, runtimeData.normalizedTime * firstClip->duration, outPose, node->loop);
+
+	float accumulatedWeight = weightedClips.front().weight;
+	for (size_t clipIndex = 1; clipIndex < weightedClips.size(); ++clipIndex)
+	{
+		const WeightedClip& weightedClip = weightedClips[clipIndex];
+		AnimationRuntime::SampleClip(*weightedClip.clip, skeleton, runtimeData.normalizedTime * weightedClip.clip->duration, blendPoseB_, node->loop);
+
+		const float nextAccumulatedWeight = accumulatedWeight + weightedClip.weight;
+		const float alpha = nextAccumulatedWeight > 0.f ? weightedClip.weight / nextAccumulatedWeight : 0.f;
+		AnimationRuntime::BlendPoses(outPose, blendPoseB_, alpha, blendPoseA_);
+		outPose = blendPoseA_;
+		accumulatedWeight = nextAccumulatedWeight;
+	}
 }
 
 void SkeletalMeshInstance::AttachBoneToMatrixPointer(const std::string& boneName, const Matrix* matrix)

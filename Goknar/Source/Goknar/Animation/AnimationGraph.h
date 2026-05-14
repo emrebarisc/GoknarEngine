@@ -6,10 +6,22 @@
 
 #include "Goknar/Core.h"
 
+#include "Goknar/Animation/AnimationNode.h"
 #include "Goknar/Animation/AnimationState.h"
 #include "Goknar/Animation/AnimationTypes.h"
 
 class SkeletalMeshInstance;
+
+struct GOKNAR_API AnimationNodeRuntimeData
+{
+	float time{ 0.f };
+	float normalizedTime{ 0.f };
+	float smoothedParameter{ 0.f };
+	float smoothedParameterX{ 0.f };
+	float smoothedParameterY{ 0.f };
+	bool hasSmoothedParameters{ false };
+	bool finished{ false };
+};
 
 struct GOKNAR_API AnimationGraph
 {
@@ -69,6 +81,46 @@ struct GOKNAR_API AnimationGraph
 		return states_;
 	}
 
+	const std::shared_ptr<AnimationNode>& GetCurrentNode() const
+	{
+		static std::shared_ptr<AnimationNode> nullNode{ nullptr };
+		return currentState_ ? currentState_->currentNode_ : nullNode;
+	}
+
+	const std::shared_ptr<AnimationNode>& GetCrossfadeSourceNode() const
+	{
+		return crossfadeSourceNode_;
+	}
+
+	bool IsCrossfading() const
+	{
+		return crossfadeSourceNode_ && crossfadeDuration_ > 0.f && crossfadeElapsed_ < crossfadeDuration_;
+	}
+
+	float GetCrossfadeAlpha() const
+	{
+		if (crossfadeDuration_ <= 0.f)
+		{
+			return 1.f;
+		}
+
+		return GoknarMath::Clamp(crossfadeElapsed_ / crossfadeDuration_, 0.f, 1.f);
+	}
+
+	AnimationNodeRuntimeData& GetRuntimeData(const AnimationNode* node)
+	{
+		return nodeRuntimeData_[node];
+	}
+
+	const AnimationNodeRuntimeData* GetRuntimeData(const AnimationNode* node) const
+	{
+		const auto iterator = nodeRuntimeData_.find(node);
+		return iterator != nodeRuntimeData_.end() ? &iterator->second : nullptr;
+	}
+
+	float GetFloatVariable(const std::string& name, float fallback = 0.f) const;
+	bool GetBoolVariable(const std::string& name, bool fallback = false) const;
+
 	std::unordered_map<std::string, AnimationVariable> variables;
 
 	SkeletalMeshInstance* relativeSkeletalMeshInstance = nullptr;
@@ -76,7 +128,9 @@ struct GOKNAR_API AnimationGraph
 	bool isCurrentStateAnimationFinished = false;
 
 private:
-	void PlayCurrentStateAnimation();
+	void ResetNodeRuntime(const std::shared_ptr<AnimationNode>& node);
+	void StartNodeTransition(const std::shared_ptr<AnimationNode>& target, float duration);
+	void StartStateTransition(const std::shared_ptr<AnimationState>& target, float duration);
 
 	inline void SetIsCurrentStateAnimationFinishedTrue()
 	{
@@ -85,6 +139,10 @@ private:
 
 	std::shared_ptr<AnimationState> currentState_{ nullptr };
 	std::vector<std::shared_ptr<AnimationState>> states_{};
+	std::unordered_map<const AnimationNode*, AnimationNodeRuntimeData> nodeRuntimeData_{};
+	std::shared_ptr<AnimationNode> crossfadeSourceNode_{ nullptr };
+	float crossfadeDuration_{ 0.f };
+	float crossfadeElapsed_{ 0.f };
 
 	std::vector<std::string> triggersToClear{};
 };

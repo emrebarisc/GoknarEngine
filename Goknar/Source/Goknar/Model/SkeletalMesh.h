@@ -8,6 +8,7 @@
 #include "Mesh.h"
 #include "SkeletalMeshUnit.h"
 
+#include "Goknar/Animation/AnimationPose.h"
 #include "Goknar/Core.h"
 #include "Goknar/GoknarAssert.h"
 #include "Goknar/Math/GoknarMath.h"
@@ -297,6 +298,7 @@ public:
     {
         bones_.push_back(bone);
         ++boneSize_;
+        runtimeAnimationDataBuilt_ = false;
     }
 
     unsigned int GetBoneSize() const
@@ -320,6 +322,12 @@ public:
         }
 
         return boneId;
+    }
+
+    int FindBoneId(const std::string& boneName) const
+    {
+        const auto iterator = boneNameToIdMap_->find(boneName);
+        return iterator != boneNameToIdMap_->end() ? (int)iterator->second : -1;
     }
 
     const BoneNameToIdMap* GetBoneNameToIdMap() const
@@ -346,6 +354,7 @@ public:
         {
             nameToSkeletalAnimationMap_[skeletalAnimation->name] = skeletalAnimation;
         }
+        runtimeAnimationDataBuilt_ = false;
     }
 
     const SkeletalAnimation* GetSkeletalAnimation(const std::string& name)
@@ -363,8 +372,33 @@ public:
         return nameToSkeletalAnimationMap_;
     }
 
+    void BuildRuntimeAnimationData();
+
+    const AnimationSkeleton& GetAnimationSkeleton() const
+    {
+        return runtimeSkeleton_;
+    }
+
+    const AnimationClip* GetAnimationClip(const std::string& name) const
+    {
+        const auto iterator = nameToRuntimeAnimationClipIndexMap_.find(name);
+        if (iterator == nameToRuntimeAnimationClipIndexMap_.end())
+        {
+            return nullptr;
+        }
+
+        return &runtimeAnimationClips_[iterator->second];
+    }
+
+    const std::vector<AnimationClip>& GetRuntimeAnimationClips() const
+    {
+        return runtimeAnimationClips_;
+    }
+
 private:
     void SetupTransforms(Bone* bone, const Matrix& parentTransform, std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap);
+    void AddBoneToRuntimeSkeleton(Bone* bone, int parentIndex);
+    void BuildRuntimeAnimationClips();
 
     BoneNameToIdMap* boneNameToIdMap_{ new BoneNameToIdMap() };
 
@@ -373,6 +407,11 @@ private:
 
     std::vector<Bone*> bones_;
     Armature* armature_{ new Armature() };
+
+    AnimationSkeleton runtimeSkeleton_{};
+    std::vector<AnimationClip> runtimeAnimationClips_{};
+    std::unordered_map<std::string, size_t> nameToRuntimeAnimationClipIndexMap_{};
+    bool runtimeAnimationDataBuilt_{ false };
 
     unsigned int boneNameToIdMapSize_{ 0 };
     unsigned int boneSize_{ 0 };

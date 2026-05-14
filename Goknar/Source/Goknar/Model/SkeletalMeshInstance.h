@@ -6,8 +6,11 @@
 #include <unordered_map>
 
 #include "Delegates/Delegate.h"
+#include "Goknar/Animation/AnimationPose.h"
 #include "Model/SkeletalMesh.h"
 
+struct AnimationGraph;
+struct AnimationNode;
 struct SkeletalAnimation;
 class SocketComponent;
 
@@ -55,6 +58,7 @@ public:
 
 	void PrepareForTheCurrentFrame();
 	void PrepareForTheNextFrame();
+	void EvaluateAnimationGraph(AnimationGraph& animationGraph, float deltaTime);
 
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;
@@ -71,10 +75,25 @@ protected:
 
 private:
 	void SetRenderOperations(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward);
+	void SampleDirectAnimationToLocalPose();
+	void BuildMatricesAndUpdateSockets();
+	void UpdateSocketsFromModelSpacePose();
+	void EvaluateAnimationNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose);
+	void EvaluateClipNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose);
+	void EvaluateBlendSpace1DNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose);
+	void EvaluateBlendSpace2DNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose);
 
 	SkeletalMeshAnimation skeletalMeshAnimation_{};
 
 	std::vector<Matrix> boneTransformations_{};
+	std::vector<Matrix> modelSpaceBoneTransformations_{};
+	AnimationPose localPose_{};
+	AnimationPose graphPose_{};
+	AnimationPose crossfadePose_{};
+	AnimationPose blendPoseA_{};
+	AnimationPose blendPoseB_{};
+	bool hasGraphPose_{ false };
+	bool graphPoseWasUpdatedThisFrame_{ false };
 	std::unordered_map<std::string, SocketComponent*> sockets_{};
 	std::unordered_map<int, const Matrix*> boneIdToAttachedMatrixPointerMap_{};
 };

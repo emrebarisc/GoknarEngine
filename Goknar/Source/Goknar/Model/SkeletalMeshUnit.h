@@ -41,6 +41,33 @@ struct GOKNAR_API VertexBoneData
         }
     }
 
+    void NormalizeWeights()
+    {
+        float totalWeight = 0.f;
+        for (unsigned int i = 0; i < MAX_BONE_SIZE_PER_VERTEX; ++i)
+        {
+            totalWeight += weights[i];
+        }
+
+        if (totalWeight <= 0.f)
+        {
+            boneIDs[0] = 0;
+            weights[0] = 1.f;
+            for (unsigned int i = 1; i < MAX_BONE_SIZE_PER_VERTEX; ++i)
+            {
+                boneIDs[i] = 0;
+                weights[i] = 0.f;
+            }
+            return;
+        }
+
+        const float inverseTotalWeight = 1.f / totalWeight;
+        for (unsigned int i = 0; i < MAX_BONE_SIZE_PER_VERTEX; ++i)
+        {
+            weights[i] *= inverseTotalWeight;
+        }
+    }
+
     unsigned int boneIDs[MAX_BONE_SIZE_PER_VERTEX] = { 0 };
     float weights[MAX_BONE_SIZE_PER_VERTEX] = { 0.f };
 };
@@ -70,6 +97,14 @@ public:
     const VertexBoneDataArray* GetVertexBoneDataArray() const
     {
         return vertexBoneDataArray_;
+    }
+
+    void NormalizeVertexBoneWeights()
+    {
+        for (VertexBoneData& vertexBoneData : *vertexBoneDataArray_)
+        {
+            vertexBoneData.NormalizeWeights();
+        }
     }
 
     void SetOwner(const SkeletalMesh* const owner)

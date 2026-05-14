@@ -6,6 +6,45 @@
 #include "Goknar/Animation/AnimationCondition.h"
 #include "Goknar/Data/DataEncryption.h"
 
+namespace
+{
+	AnimationNodeType StringToAnimationNodeType(const char* type)
+	{
+		if (!type)
+		{
+			return AnimationNodeType::Clip;
+		}
+
+		const std::string typeString = type;
+		if (typeString == "BlendSpace1D" || typeString == "BlendSpace1DNode")
+		{
+			return AnimationNodeType::BlendSpace1D;
+		}
+		if (typeString == "BlendSpace2D" || typeString == "BlendSpace2DNode")
+		{
+			return AnimationNodeType::BlendSpace2D;
+		}
+
+		return AnimationNodeType::Clip;
+	}
+
+	const char* FirstAttribute(tinyxml2::XMLElement* element, const char* first, const char* second)
+	{
+		if (!element)
+		{
+			return nullptr;
+		}
+
+		const char* value = element->Attribute(first);
+		return value ? value : element->Attribute(second);
+	}
+
+	float ReadFloatAttribute(tinyxml2::XMLElement* element, const char* name, float fallback)
+	{
+		return element && element->Attribute(name) ? element->FloatAttribute(name) : fallback;
+	}
+}
+
 CompareOp AnimationDeserializer::StringToCompareOp(const std::string& opStr)
 {
     if (opStr == "Equal") return CompareOp::Equal;
@@ -97,8 +136,65 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
             {
                 int nodeId = nodeEl->IntAttribute("id");
                 auto node = std::make_shared<AnimationNode>();
-                node->animationName = nodeEl->Attribute("animationName");
-                node->loop = nodeEl->BoolAttribute("loop");
+                node->type = StringToAnimationNodeType(nodeEl->Attribute("type"));
+
+                if (const char* animationName = FirstAttribute(nodeEl, "animationName", "clip"))
+                {
+                    node->animationName = animationName;
+                }
+                if (const char* parameterName = FirstAttribute(nodeEl, "parameterName", "parameter"))
+                {
+                    node->parameterName = parameterName;
+                }
+                if (const char* parameterXName = FirstAttribute(nodeEl, "parameterXName", "parameterX"))
+                {
+                    node->parameterXName = parameterXName;
+                }
+                if (const char* parameterYName = FirstAttribute(nodeEl, "parameterYName", "parameterY"))
+                {
+                    node->parameterYName = parameterYName;
+                }
+                if (const char* syncGroup = nodeEl->Attribute("syncGroup"))
+                {
+                    node->syncGroup = syncGroup;
+                }
+
+                node->loop = nodeEl->BoolAttribute("loop", true);
+                node->playRate = ReadFloatAttribute(nodeEl, "playRate", node->playRate);
+                node->parameterSmoothingSpeed = ReadFloatAttribute(nodeEl, "parameterSmoothingSpeed", node->parameterSmoothingSpeed);
+                node->parameterSmoothingSpeed = ReadFloatAttribute(nodeEl, "smoothingSpeed", node->parameterSmoothingSpeed);
+
+                tinyxml2::XMLElement* pointsParentEl = nodeEl->FirstChildElement("Points");
+                if (!pointsParentEl)
+                {
+                    pointsParentEl = nodeEl;
+                }
+
+                for (tinyxml2::XMLElement* pointEl = pointsParentEl->FirstChildElement("Point"); pointEl != nullptr; pointEl = pointEl->NextSiblingElement("Point"))
+                {
+                    if (node->type == AnimationNodeType::BlendSpace1D)
+                    {
+                        BlendSpace1DPoint point;
+                        point.value = pointEl->Attribute("value") ? pointEl->FloatAttribute("value") : pointEl->FloatAttribute("x");
+                        if (const char* clipName = FirstAttribute(pointEl, "animationName", "clip"))
+                        {
+                            point.animationName = clipName;
+                        }
+                        node->blendSpace1DPoints.push_back(point);
+                    }
+                    else if (node->type == AnimationNodeType::BlendSpace2D)
+                    {
+                        BlendSpace2DPoint point;
+                        point.x = pointEl->FloatAttribute("x");
+                        point.y = pointEl->FloatAttribute("y");
+                        if (const char* clipName = FirstAttribute(pointEl, "animationName", "clip"))
+                        {
+                            point.animationName = clipName;
+                        }
+                        node->blendSpace2DPoints.push_back(point);
+                    }
+                }
+
                 idToNodeMap_[nodeId] = node;
                 state->AddNode(node);
             }
@@ -121,6 +217,7 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
 
                 transition->target = idToStateMap_[targetId];
                 transition->transitWhenAnimationDone = transEl->BoolAttribute("transitWhenAnimationDone");
+                transition->duration = ReadFloatAttribute(transEl, "duration", transition->duration);
 
                 tinyxml2::XMLElement* conditionsEl = transEl->FirstChildElement("Conditions");
                 if (conditionsEl)
@@ -156,6 +253,7 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
 
                         transition->target = idToNodeMap_[targetId];
                         transition->transitWhenAnimationDone = transEl->BoolAttribute("transitWhenAnimationDone");
+                        transition->duration = ReadFloatAttribute(transEl, "duration", transition->duration);
 
                         tinyxml2::XMLElement* conditionsEl = transEl->FirstChildElement("Conditions");
                         if (conditionsEl)
@@ -175,15 +273,28 @@ bool AnimationDeserializer::Deserialize(AnimationGraph* graph, const std::string
             }
         }
 
-        tinyxml2::XMLElement* entryEl = stateEl->FirstChildElement("EntryNode");
-        if (entryEl)
+        if (stateEl->Attribute("entryNodeId"))
+        {
+            const int entryId = stateEl->IntAttribute("entryNodeId");
+            state->SetEntryNode(idToNodeMap_[entryId]);
+        }
+        else if (tinyxml2::XMLElement* entryEl = stateEl->FirstChildElement("EntryNode"))
         {
             int entryId = entryEl->IntAttribute("id");
             state->SetEntryNode(idToNodeMap_[entryId]);
         }
     }
 
-    if (!graph->GetStates().empty())
+    if (statesEl->Attribute("entryStateId"))
+    {
+        const int entryStateId = statesEl->IntAttribute("entryStateId");
+        const auto iterator = idToStateMap_.find(entryStateId);
+        if (iterator != idToStateMap_.end())
+        {
+            graph->SetCurrentState(iterator->second);
+        }
+    }
+    else if (!graph->GetStates().empty())
     {
         graph->SetCurrentState(graph->GetStates().front());
     }

@@ -6,6 +6,23 @@
 #include "Goknar/Animation/AnimationNode.h"
 #include "Goknar/Animation/AnimationCondition.h"
 
+namespace
+{
+	const char* AnimationNodeTypeToString(AnimationNodeType type)
+	{
+		switch (type)
+		{
+		case AnimationNodeType::BlendSpace1D:
+			return "BlendSpace1D";
+		case AnimationNodeType::BlendSpace2D:
+			return "BlendSpace2D";
+		case AnimationNodeType::Clip:
+		default:
+			return "Clip";
+		}
+	}
+}
+
 bool AnimationSerializer::Serialize(const AnimationGraph* graph, const std::string& filepath)
 {
     std::string contentPath = ContentDir + filepath;
@@ -18,6 +35,7 @@ bool AnimationSerializer::Serialize(const AnimationGraph* graph, const std::stri
     tinyxml2::XMLDocument doc;
     tinyxml2::XMLElement* root = doc.NewElement("GameAsset");
     root->SetAttribute("FileType", "AnimationGraph");
+    root->SetAttribute("SchemaVersion", "2");
     doc.InsertEndChild(root);
 
     tinyxml2::XMLElement* variablesEl = doc.NewElement("Variables");
@@ -164,6 +182,10 @@ void AnimationSerializer::SerializeState(tinyxml2::XMLDocument* doc, tinyxml2::X
     std::unordered_set<const AnimationNode*> visited;
     std::vector<std::shared_ptr<AnimationNode>> flatNodes;
     CollectNodes(entryNode, visited, flatNodes);
+    for (const std::shared_ptr<AnimationNode>& node : state->GetNodes())
+    {
+        CollectNodes(node, visited, flatNodes);
+    }
 
     tinyxml2::XMLElement* nodesEl = doc->NewElement("Nodes");
     for (const auto& node : flatNodes)
@@ -179,8 +201,59 @@ void AnimationSerializer::SerializeNode(tinyxml2::XMLDocument* doc, tinyxml2::XM
 {
     tinyxml2::XMLElement* nodeEl = doc->NewElement("Node");
     nodeEl->SetAttribute("id", GetNodeId(node.get()));
-    nodeEl->SetAttribute("animationName", node->animationName.c_str());
+    nodeEl->SetAttribute("type", AnimationNodeTypeToString(node->type));
+    if (!node->animationName.empty())
+    {
+        nodeEl->SetAttribute("animationName", node->animationName.c_str());
+    }
+    if (!node->parameterName.empty())
+    {
+        nodeEl->SetAttribute("parameter", node->parameterName.c_str());
+    }
+    if (!node->parameterXName.empty())
+    {
+        nodeEl->SetAttribute("parameterX", node->parameterXName.c_str());
+    }
+    if (!node->parameterYName.empty())
+    {
+        nodeEl->SetAttribute("parameterY", node->parameterYName.c_str());
+    }
+    if (!node->syncGroup.empty())
+    {
+        nodeEl->SetAttribute("syncGroup", node->syncGroup.c_str());
+    }
     nodeEl->SetAttribute("loop", node->loop);
+    nodeEl->SetAttribute("playRate", node->playRate);
+    if (node->parameterSmoothingSpeed > 0.f)
+    {
+        nodeEl->SetAttribute("parameterSmoothingSpeed", node->parameterSmoothingSpeed);
+    }
+
+    if (node->type == AnimationNodeType::BlendSpace1D)
+    {
+        tinyxml2::XMLElement* pointsEl = doc->NewElement("Points");
+        for (const BlendSpace1DPoint& point : node->blendSpace1DPoints)
+        {
+            tinyxml2::XMLElement* pointEl = doc->NewElement("Point");
+            pointEl->SetAttribute("value", point.value);
+            pointEl->SetAttribute("clip", point.animationName.c_str());
+            pointsEl->InsertEndChild(pointEl);
+        }
+        nodeEl->InsertEndChild(pointsEl);
+    }
+    else if (node->type == AnimationNodeType::BlendSpace2D)
+    {
+        tinyxml2::XMLElement* pointsEl = doc->NewElement("Points");
+        for (const BlendSpace2DPoint& point : node->blendSpace2DPoints)
+        {
+            tinyxml2::XMLElement* pointEl = doc->NewElement("Point");
+            pointEl->SetAttribute("x", point.x);
+            pointEl->SetAttribute("y", point.y);
+            pointEl->SetAttribute("clip", point.animationName.c_str());
+            pointsEl->InsertEndChild(pointEl);
+        }
+        nodeEl->InsertEndChild(pointsEl);
+    }
 
     tinyxml2::XMLElement* outboundsEl = doc->NewElement("OutboundConnections");
     for (const auto& transition : node->outboundConnections)
@@ -199,6 +272,7 @@ void AnimationSerializer::SerializeNodeTransition(tinyxml2::XMLDocument* doc, ti
 	tinyxml2::XMLElement* transEl = doc->NewElement("Transition");
 	transEl->SetAttribute("targetId", GetNodeId(target.get()));
 	transEl->SetAttribute("transitWhenAnimationDone", transition->transitWhenAnimationDone);
+    transEl->SetAttribute("duration", transition->duration);
 
     tinyxml2::XMLElement* conditionsEl = doc->NewElement("Conditions");
     for (const auto& condition : transition->conditions)
@@ -221,6 +295,7 @@ void AnimationSerializer::SerializeStateTransition(tinyxml2::XMLDocument* doc, t
 	tinyxml2::XMLElement* transEl = doc->NewElement("Transition");
 	transEl->SetAttribute("targetId", GetStateId(target.get()));
 	transEl->SetAttribute("transitWhenAnimationDone", transition->transitWhenAnimationDone);
+    transEl->SetAttribute("duration", transition->duration);
 
     tinyxml2::XMLElement* conditionsEl = doc->NewElement("Conditions");
     for (const auto& condition : transition->conditions)
