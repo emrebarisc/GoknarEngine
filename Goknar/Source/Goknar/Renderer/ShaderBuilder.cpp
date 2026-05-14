@@ -25,6 +25,8 @@ ShaderBuilder* ShaderBuilder::instance_ = nullptr;
 
 namespace
 {
+	constexpr const char* kParticleEmissiveColorVaryingName = "particleEmissiveColor";
+
 	bool MaterialUsesReflectionProbe(const MaterialInitializationData* initializationData)
 	{
 		return initializationData && initializationData->owner && initializationData->owner->GetUsesReflectionProbe();
@@ -825,6 +827,9 @@ uniform vec2 particleSizeBySpeedValues;
 uniform vec2 particleColorBySpeedRange;
 uniform vec4 particleColorBySpeedStart;
 uniform vec4 particleColorBySpeedEnd;
+uniform vec3 particleEmissiveColorStart;
+uniform vec3 particleEmissiveColorEnd;
+out vec3 )" + std::string(kParticleEmissiveColorVaryingName) + R"(;
 )";
 
 	MaterialInitializationData particleInitializationData(initializationData ? initializationData->owner : nullptr);
@@ -873,6 +878,7 @@ void main()
 	float normalizedColorSpeed = clamp((particleSpeed - particleColorBySpeedRange.x) / max(particleColorBySpeedRange.y - particleColorBySpeedRange.x, 0.0001), 0.0, 1.0);
 	float currentParticleSize = mix(particleSizeRange.x, particleSizeRange.y, normalizedAge) * mix(particleSizeBySpeedValues.x, particleSizeBySpeedValues.y, normalizedSizeSpeed) * )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::PARTICLE_SIZE) + R"(;
 	vec4 currentParticleColor = mix(startParticleColor, endParticleColor, normalizedAge) * mix(particleColorBySpeedStart, particleColorBySpeedEnd, normalizedColorSpeed);
+	)" + std::string(kParticleEmissiveColorVaryingName) + R"( = mix(particleEmissiveColorStart, particleEmissiveColorEnd, normalizedAge);
 
 	vec2 particleCorner = particleQuadCorners[gl_VertexID];
 	float particleRotationSin = sin(particleRotation.z);
@@ -981,6 +987,9 @@ uniform vec2 particleSizeBySpeedValues;
 uniform vec2 particleColorBySpeedRange;
 uniform vec4 particleColorBySpeedStart;
 uniform vec4 particleColorBySpeedEnd;
+uniform vec3 particleEmissiveColorStart;
+uniform vec3 particleEmissiveColorEnd;
+out vec3 )" + std::string(kParticleEmissiveColorVaryingName) + R"(;
 )";
 
 	MaterialInitializationData particleInitializationData(initializationData ? initializationData->owner : nullptr);
@@ -1020,6 +1029,7 @@ void main()
 	float normalizedColorSpeed = clamp((particleSpeed - particleColorBySpeedRange.x) / max(particleColorBySpeedRange.y - particleColorBySpeedRange.x, 0.0001), 0.0, 1.0);
 	float currentParticleSize = mix(particleSizeRange.x, particleSizeRange.y, normalizedAge) * mix(particleSizeBySpeedValues.x, particleSizeBySpeedValues.y, normalizedSizeSpeed) * )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::PARTICLE_SIZE) + R"(;
 	vec4 currentParticleColor = mix(startParticleColor, endParticleColor, normalizedAge) * mix(particleColorBySpeedStart, particleColorBySpeedEnd, normalizedColorSpeed);
+	)" + std::string(kParticleEmissiveColorVaryingName) + R"( = mix(particleEmissiveColorStart, particleEmissiveColorEnd, normalizedAge);
 	vec3 particlePosition = particlePositions[particleIndex].xyz;
 
 	float particleRotationSinX = sin(particleRotation.x);
@@ -1116,6 +1126,26 @@ std::string ShaderBuilder::ParticleRenderPass_GetFragmentShaderScript(MaterialIn
 
 	particleInitializationData.baseColor.result =
 		"(" + particleBaseColorExpression + ") * " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + ";";
+
+	std::string particleEmissiveColorExpression;
+	if (initializationData && !initializationData->emissiveColor.result.empty())
+	{
+		particleEmissiveColorExpression = initializationData->emissiveColor.result;
+	}
+
+	if (particleEmissiveColorExpression.empty())
+	{
+		particleEmissiveColorExpression = SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR;
+	}
+	else
+	{
+		particleEmissiveColorExpression = TrimTrailingStatementTerminators(particleEmissiveColorExpression);
+	}
+
+	particleInitializationData.emissiveColor.result =
+		"(" + particleEmissiveColorExpression + ") + " + std::string(kParticleEmissiveColorVaryingName) + ";";
+	particleInitializationData.fragmentShaderUniforms +=
+		"in vec3 " + std::string(kParticleEmissiveColorVaryingName) + ";\n";
 
 	std::string outputVariables = FS_GetOutputVariables();
 	std::string outputVariableAssignments = FS_GetOutputVariableAssignments();

@@ -74,6 +74,22 @@ namespace
 		return sanitizedCurve;
 	}
 
+	Vector3 SanitizeEmissiveColor(const Vector3& color)
+	{
+		return Vector3(
+			(std::max)(0.f, color.x),
+			(std::max)(0.f, color.y),
+			(std::max)(0.f, color.z));
+	}
+
+	GPUParticleVector3Curve SanitizeEmissiveColorCurve(const GPUParticleVector3Curve& curve)
+	{
+		GPUParticleVector3Curve sanitizedCurve(curve);
+		sanitizedCurve.startValue = SanitizeEmissiveColor(sanitizedCurve.startValue);
+		sanitizedCurve.endValue = SanitizeEmissiveColor(sanitizedCurve.endValue);
+		return sanitizedCurve;
+	}
+
 	GPUParticleSpawnDesc SanitizeSpawnDesc(const GPUParticleSpawnDesc& spawnDesc)
 	{
 		GPUParticleSpawnDesc sanitizedDesc(spawnDesc);
@@ -89,6 +105,7 @@ namespace
 		sanitizedDesc.colorByLifetime = SanitizeColorCurve(sanitizedDesc.colorByLifetime);
 		sanitizedDesc.colorBySpeedRange = SanitizeRangeVector(sanitizedDesc.colorBySpeedRange);
 		sanitizedDesc.colorBySpeed = SanitizeColorCurve(sanitizedDesc.colorBySpeed);
+		sanitizedDesc.emissiveColorByLifetime = SanitizeEmissiveColorCurve(sanitizedDesc.emissiveColorByLifetime);
 		sanitizedDesc.spawnBoxExtents.x = (std::max)(0.f, sanitizedDesc.spawnBoxExtents.x);
 		sanitizedDesc.spawnBoxExtents.y = (std::max)(0.f, sanitizedDesc.spawnBoxExtents.y);
 		sanitizedDesc.spawnBoxExtents.z = (std::max)(0.f, sanitizedDesc.spawnBoxExtents.z);
@@ -386,6 +403,8 @@ void ParticleSystemBase::ApplyParticleStateToShader(Shader* shader) const
 	shader->SetVector2("particleColorBySpeedRange", spawnDesc_.colorBySpeedRange);
 	shader->SetVector4("particleColorBySpeedStart", spawnDesc_.colorBySpeed.startValue);
 	shader->SetVector4("particleColorBySpeedEnd", spawnDesc_.colorBySpeed.endValue);
+	shader->SetVector3("particleEmissiveColorStart", spawnDesc_.emissiveColorByLifetime.startValue);
+	shader->SetVector3("particleEmissiveColorEnd", spawnDesc_.emissiveColorByLifetime.endValue);
 }
 
 void ParticleSystemBase::ApplyMaterialStateToShader(Shader* shader, const IMaterialBase* material) const

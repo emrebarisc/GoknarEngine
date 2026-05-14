@@ -85,6 +85,12 @@ struct GOKNAR_API GPUParticleColorCurve
 	Vector4 endValue{ Vector4(1.f) };
 };
 
+struct GOKNAR_API GPUParticleVector3Curve
+{
+	Vector3 startValue{ Vector3::ZeroVector };
+	Vector3 endValue{ Vector3::ZeroVector };
+};
+
 struct GOKNAR_API GPUParticleSpawnDesc
 {
 	GPUParticleValueRange<float> lifetime{ 5.f, 5.f };
@@ -99,6 +105,7 @@ struct GOKNAR_API GPUParticleSpawnDesc
 	GPUParticleColorCurve colorByLifetime{ Vector4(1.f), Vector4(1.f, 1.f, 1.f, 0.f) };
 	Vector2 colorBySpeedRange{ 0.f, 10.f };
 	GPUParticleColorCurve colorBySpeed{ Vector4(1.f), Vector4(1.f) };
+	GPUParticleVector3Curve emissiveColorByLifetime{ Vector3::ZeroVector, Vector3::ZeroVector };
 	Vector3 spawnBoxExtents{ 0.5f, 0.5f, 0.5f };
 	float spawnInterval{ 0.02f };
 	std::uint32_t spawnCountPerInterval{ 1u };

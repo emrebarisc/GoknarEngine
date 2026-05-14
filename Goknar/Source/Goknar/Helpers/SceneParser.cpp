@@ -2868,6 +2868,14 @@ void SceneParser::GetXMLElement_ParticleSystemComponent(const ParticleSystemComp
 	colorBySpeedEndElement->SetText(serializeVector4(spawnDesc.colorBySpeed.endValue).c_str());
 	parentElement->InsertEndChild(colorBySpeedEndElement);
 
+	tinyxml2::XMLElement* emissiveColorStartElement = xmlDocument.NewElement("EmissiveColorStart");
+	emissiveColorStartElement->SetText(Serialize(spawnDesc.emissiveColorByLifetime.startValue).c_str());
+	parentElement->InsertEndChild(emissiveColorStartElement);
+
+	tinyxml2::XMLElement* emissiveColorEndElement = xmlDocument.NewElement("EmissiveColorEnd");
+	emissiveColorEndElement->SetText(Serialize(spawnDesc.emissiveColorByLifetime.endValue).c_str());
+	parentElement->InsertEndChild(emissiveColorEndElement);
+
 	if (const StaticMeshParticleSystemComponent* staticMeshParticleSystemComponent = dynamic_cast<const StaticMeshParticleSystemComponent*>(particleSystemComponent))
 	{
 		if (!staticMeshParticleSystemComponent->GetStaticMeshPath().empty())

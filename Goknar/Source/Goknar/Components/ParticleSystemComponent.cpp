@@ -68,6 +68,22 @@ namespace
 		return sanitizedCurve;
 	}
 
+	Vector3 SanitizeEmissiveColor(const Vector3& color)
+	{
+		return Vector3(
+			(std::max)(0.f, color.x),
+			(std::max)(0.f, color.y),
+			(std::max)(0.f, color.z));
+	}
+
+	GPUParticleVector3Curve SanitizeEmissiveColorCurve(const GPUParticleVector3Curve& curve)
+	{
+		GPUParticleVector3Curve sanitizedCurve(curve);
+		sanitizedCurve.startValue = SanitizeEmissiveColor(sanitizedCurve.startValue);
+		sanitizedCurve.endValue = SanitizeEmissiveColor(sanitizedCurve.endValue);
+		return sanitizedCurve;
+	}
+
 	GPUParticleSpawnDesc SanitizeSpawnDesc(const GPUParticleSpawnDesc& spawnDesc)
 	{
 		GPUParticleSpawnDesc sanitizedSpawnDesc(spawnDesc);
@@ -83,6 +99,7 @@ namespace
 		sanitizedSpawnDesc.colorByLifetime = SanitizeColorCurve(sanitizedSpawnDesc.colorByLifetime);
 		sanitizedSpawnDesc.colorBySpeedRange = SanitizeRangeVector(sanitizedSpawnDesc.colorBySpeedRange);
 		sanitizedSpawnDesc.colorBySpeed = SanitizeColorCurve(sanitizedSpawnDesc.colorBySpeed);
+		sanitizedSpawnDesc.emissiveColorByLifetime = SanitizeEmissiveColorCurve(sanitizedSpawnDesc.emissiveColorByLifetime);
 		sanitizedSpawnDesc.spawnBoxExtents.x = (std::max)(0.f, sanitizedSpawnDesc.spawnBoxExtents.x);
 		sanitizedSpawnDesc.spawnBoxExtents.y = (std::max)(0.f, sanitizedSpawnDesc.spawnBoxExtents.y);
 		sanitizedSpawnDesc.spawnBoxExtents.z = (std::max)(0.f, sanitizedSpawnDesc.spawnBoxExtents.z);
