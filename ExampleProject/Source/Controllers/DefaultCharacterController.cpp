@@ -133,7 +133,7 @@ void DefaultCharacterController::RemoveInputDelegates()
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::D, INPUT_ACTION::G_RELEASE, stopMovingRightDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_PRESS, startRunningDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::LEFT_SHIFT, INPUT_ACTION::G_RELEASE, stopRunningDelegate_);
-	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_PRESS, jumpDelegate_);
+	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::SPACE, INPUT_ACTION::G_RELEASE, jumpDelegate_);
 	inputManager->RemoveKeyboardInputDelegate(KEY_MAP::C, INPUT_ACTION::G_PRESS, crouchDelegate_);
 	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_PRESS, strafeDelegate_);
 	inputManager->RemoveMouseInputDelegate(MOUSE_MAP::BUTTON_RIGHT, INPUT_ACTION::G_RELEASE, stopStrafeDelegate_);
@@ -274,13 +274,23 @@ void DefaultCharacterController::OnGameResumed()
 	SetupInputDelegates();
 }
 
+Vector2 DefaultCharacterController::ConsumeCursorDeltaMoveLastFrame()
+{
+	Vector2 cursorDeltaMove = cursorDeltaMoveLastFrame_;
+	cursorDeltaMoveLastFrame_ = Vector2{ 0.f, 0.f };
+	return cursorDeltaMove;
+}
+
 void DefaultCharacterController::OnCursorMove(double x, double y)
 {
 	Vector2i windowSize = engine->GetWindowManager()->GetWindowSize();
 	Vector2 windowCenter = windowSize * 0.5f;
 	Vector2 currentCursorPosition{ (float)x, (float)y };
 
-	cursorDeltaMoveLastFrame_ = (windowCenter - currentCursorPosition) / 1000.f;
+	Vector2 frameCursorDelta = (windowCenter - currentCursorPosition) / 1000.f;
+	cursorDeltaMoveLastFrame_.x += frameCursorDelta.x;
+	cursorDeltaMoveLastFrame_.y += frameCursorDelta.y;
+
 	engine->GetInputManager()->SetCursorPosition(windowCenter.x, windowCenter.y);
 }
 

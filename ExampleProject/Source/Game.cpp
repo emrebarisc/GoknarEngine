@@ -31,6 +31,7 @@
 #include "Objects/Terrain.h"
 #include "Objects/TerrainGrassSpawner.h"
 #include "Objects/FloatingObject.h"
+#include "Objects/SkeletalMeshPerformanceTest.h"
 
 Game::Game() : Application()
 {
@@ -82,10 +83,10 @@ Game::Game() : Application()
 	defaultCharacter_ = new DefaultCharacter();
 	gameState_ = new GameState();
 
-	FloatingObject* floatingObject = new FloatingObject();
-	floatingObject->SetWorldPosition(Vector3{2.f, -2.f, 4.f});
-
 	engine->SetHUD(new MainHUD());
+
+	// SkeletalMeshPerformanceTest* skeletalMeshPerformanceTest = new SkeletalMeshPerformanceTest();
+	// skeletalMeshPerformanceTest->objectCount = 12 * 12;
 }
 
 Game::~Game()

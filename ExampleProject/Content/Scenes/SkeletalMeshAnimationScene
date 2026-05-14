@@ -1,0 +1,31 @@
+<Scene>
+    <Lights>
+        <DirectionalLight>
+            <Direction>0.577350 0.577350 -0.577350</Direction>
+            <Color>1.000000 1.000000 1.000000</Color>
+            <Intensity>10</Intensity>
+            <IsCastingShadow>1</IsCastingShadow>
+            <ShadowIntensity>0.1</ShadowIntensity>
+            <ShadowMapResolution>1024 1024</ShadowMapResolution>
+        </DirectionalLight>
+    </Lights>
+    <Objects>
+        <RigidBody>
+            <Name>RigidBody</Name>
+            <WorldPosition>0.000000 0.000000 -0.500000</WorldPosition>
+            <WorldScaling>100.000000 100.000000 1.000000</WorldScaling>
+            <Mass>0</Mass>
+            <CollisionGroup>4</CollisionGroup>
+            <CollisionMask>63</CollisionMask>
+            <Components>
+                <BoxCollisionComponent>
+                    <HalfSize>0.500000 0.500000 0.500000</HalfSize>
+                </BoxCollisionComponent>
+                <StaticMeshComponent>
+                    <MeshPath>Meshes/DefaultScene/SM_UnitCube.fbx</MeshPath>
+                    <RenderMask>1</RenderMask>
+                </StaticMeshComponent>
+            </Components>
+        </RigidBody>
+    </Objects>
+</Scene>

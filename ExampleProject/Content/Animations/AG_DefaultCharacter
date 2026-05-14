@@ -1,615 +1,214 @@
-<GameAsset FileType="AnimationGraph">
+<GameAsset FileType="AnimationGraph" SchemaVersion="2">
     <Variables>
+        <Variable name="Speed" type="float" value="0"/>
+        <Variable name="MoveX" type="float" value="0"/>
         <Variable name="VelocityMagnitude" type="float" value="0"/>
-        <Variable name="IsJumping" type="bool" value="false"/>
-        <Variable name="IsOnGround" type="bool" value="true"/>
+        <Variable name="MoveY" type="float" value="0"/>
         <Variable name="StrafingRotation" type="float" value="0"/>
+        <Variable name="IsOnGround" type="bool" value="true"/>
+        <Variable name="IsJumping" type="bool" value="false"/>
         <Variable name="IsCrouched" type="bool" value="false"/>
         <Variable name="IsStrafing" type="bool" value="false"/>
     </Variables>
     <States>
-        <State id="1" name="Standing State">
+        <State id="1" name="Standing Locomotion">
             <OutboundConnections>
-                <Transition targetId="2" transitWhenAnimationDone="false">
+                <Transition targetId="2" transitWhenAnimationDone="false" duration="0.15000001">
                     <Conditions>
-                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="false"/>
+                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="true"/>
                         <Condition variableName="IsStrafing" operation="Equal" type="bool" value="true"/>
                     </Conditions>
                 </Transition>
-                <Transition targetId="3" transitWhenAnimationDone="false">
+                <Transition targetId="3" transitWhenAnimationDone="false" duration="0.15000001">
                     <Conditions>
                         <Condition variableName="IsCrouched" operation="Equal" type="bool" value="true"/>
                         <Condition variableName="IsStrafing" operation="Equal" type="bool" value="false"/>
                     </Conditions>
                 </Transition>
+                <Transition targetId="4" transitWhenAnimationDone="false" duration="0.12">
+                    <Conditions>
+                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="false"/>
+                        <Condition variableName="IsStrafing" operation="Equal" type="bool" value="true"/>
+                    </Conditions>
+                </Transition>
             </OutboundConnections>
             <EntryNode id="1"/>
             <Nodes>
-                <Node id="1" animationName="Armature|RifleIdle" loop="true">
+                <Node id="1" type="BlendSpace1D" parameter="Speed" syncGroup="StandingLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="8">
+                    <Points>
+                        <Point value="0" clip="Armature|RifleIdle"/>
+                        <Point value="0.050000001" clip="Armature|RifleWalkForward"/>
+                        <Point value="0.1" clip="Armature|RifleSprintForward"/>
+                    </Points>
                     <OutboundConnections>
-                        <Transition targetId="2" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="3" transitWhenAnimationDone="false">
+                        <Transition targetId="2" transitWhenAnimationDone="false" duration="0.079999998">
                             <Conditions>
                                 <Condition variableName="IsJumping" operation="Equal" type="bool" value="true"/>
                             </Conditions>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="2" animationName="Armature|RifleWalkForward" loop="true">
+                <Node id="2" type="Clip" animationName="Armature|RifleJumpStart" loop="false" playRate="1">
                     <OutboundConnections>
-                        <Transition targetId="1" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="4" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.089999996"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="3" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="IsJumping" operation="Equal" type="bool" value="true"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="5" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="IsOnGround" operation="Equal" type="bool" value="false"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="4" animationName="Armature|RifleSprintForward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="2" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.089999996"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="1" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="3" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="IsJumping" operation="Equal" type="bool" value="true"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="5" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="IsOnGround" operation="Equal" type="bool" value="false"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="3" animationName="Armature|RifleJumpStart" loop="false">
-                    <OutboundConnections>
-                        <Transition targetId="5" transitWhenAnimationDone="true">
+                        <Transition targetId="3" transitWhenAnimationDone="true" duration="0.079999998">
                             <Conditions/>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="5" animationName="Armature|RifleOnAir" loop="true">
+                <Node id="3" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
                     <OutboundConnections>
-                        <Transition targetId="6" transitWhenAnimationDone="false">
+                        <Transition targetId="4" transitWhenAnimationDone="false" duration="0.079999998">
                             <Conditions>
                                 <Condition variableName="IsOnGround" operation="Equal" type="bool" value="true"/>
                             </Conditions>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="6" animationName="Armature|RifleJumpFinish" loop="false">
+                <Node id="4" type="Clip" animationName="Armature|RifleJumpFinish" loop="false" playRate="1">
                     <OutboundConnections>
-                        <Transition targetId="1" transitWhenAnimationDone="true">
+                        <Transition targetId="1" transitWhenAnimationDone="true" duration="0.12">
                             <Conditions/>
                         </Transition>
                     </OutboundConnections>
                 </Node>
             </Nodes>
         </State>
-        <State id="2" name="Standing Strafing State">
+        <State id="4" name="Standing Aim Locomotion">
             <OutboundConnections>
-                <Transition targetId="1" transitWhenAnimationDone="false">
-                    <Conditions>
-                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="false"/>
-                        <Condition variableName="IsStrafing" operation="Equal" type="bool" value="false"/>
-                    </Conditions>
-                </Transition>
-                <Transition targetId="4" transitWhenAnimationDone="false">
+                <Transition targetId="2" transitWhenAnimationDone="false" duration="0.15000001">
                     <Conditions>
                         <Condition variableName="IsCrouched" operation="Equal" type="bool" value="true"/>
                         <Condition variableName="IsStrafing" operation="Equal" type="bool" value="true"/>
                     </Conditions>
                 </Transition>
+                <Transition targetId="3" transitWhenAnimationDone="false" duration="0.15000001">
+                    <Conditions>
+                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="true"/>
+                        <Condition variableName="IsStrafing" operation="Equal" type="bool" value="false"/>
+                    </Conditions>
+                </Transition>
+                <Transition targetId="1" transitWhenAnimationDone="false" duration="0.12">
+                    <Conditions>
+                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="false"/>
+                        <Condition variableName="IsStrafing" operation="Equal" type="bool" value="false"/>
+                    </Conditions>
+                </Transition>
             </OutboundConnections>
-            <EntryNode id="7"/>
+            <EntryNode id="5"/>
             <Nodes>
-                <Node id="7" animationName="Armature|RifleIdle" loop="true">
+                <Node id="5" type="BlendSpace2D" parameterX="MoveX" parameterY="MoveY" syncGroup="StandingAimLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="10">
+                    <Points>
+                        <Point x="0" y="0" clip="Armature|RifleIdle"/>
+                        <Point x="0" y="0.050000001" clip="Armature|RifleWalkForward"/>
+                        <Point x="0.035355341" y="0.035355341" clip="Armature|RifleWalkLeftForward"/>
+                        <Point x="0.050000001" y="0" clip="Armature|RifleWalkLeft"/>
+                        <Point x="0.035355341" y="-0.035355341" clip="Armature|RifleWalkLeftBackward"/>
+                        <Point x="0" y="-0.050000001" clip="Armature|RifleWalkBackward"/>
+                        <Point x="-0.035355341" y="-0.035355341" clip="Armature|RifleWalkRightBackward"/>
+                        <Point x="-0.050000001" y="0" clip="Armature|RifleWalkRight"/>
+                        <Point x="-0.035355341" y="0.035355341" clip="Armature|RifleWalkRightForward"/>
+                    </Points>
                     <OutboundConnections>
-                        <Transition targetId="8" transitWhenAnimationDone="false">
+                        <Transition targetId="6" transitWhenAnimationDone="false" duration="0.079999998">
                             <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-0.39269909"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="0.39269909"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="9" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="0.39269909"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="1.1780972"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="10" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="1.1780972"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="1.9634955"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="11" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="1.9634955"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="2.7488937"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="12" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="2.7488937"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="12" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-2.7488937"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="13" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-2.7488937"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-1.9634955"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="14" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-1.9634955"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-1.1780972"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="15" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-1.1780972"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-0.39269909"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
+                                <Condition variableName="IsJumping" operation="Equal" type="bool" value="true"/>
                             </Conditions>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="8" animationName="Armature|RifleWalkForward" loop="true">
+                <Node id="6" type="Clip" animationName="Armature|RifleJumpStart" loop="false" playRate="1">
                     <OutboundConnections>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-0.39269909"/>
-                            </Conditions>
+                        <Transition targetId="7" transitWhenAnimationDone="true" duration="0.079999998">
+                            <Conditions/>
                         </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
+                    </OutboundConnections>
+                </Node>
+                <Node id="7" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
+                    <OutboundConnections>
+                        <Transition targetId="8" transitWhenAnimationDone="false" duration="0.079999998">
                             <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="0.39269909"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
+                                <Condition variableName="IsOnGround" operation="Equal" type="bool" value="true"/>
                             </Conditions>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="9" animationName="Armature|RifleWalkLeftForward" loop="true">
+                <Node id="8" type="Clip" animationName="Armature|RifleJumpFinish" loop="false" playRate="1">
                     <OutboundConnections>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="0.39269909"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="1.1780972"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="10" animationName="Armature|RifleWalkLeft" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="1.1780972"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="1.9634955"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="11" animationName="Armature|RifleWalkLeftBackward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="1.9634955"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="2.7488937"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="12" animationName="Armature|RifleWalkBackward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-2.7488937"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="2.7488937"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="13" animationName="Armature|RifleWalkRightBackward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-2.7488937"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-1.9634955"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="14" animationName="Armature|RifleWalkRight" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-1.9634955"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-1.1780972"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="15" animationName="Armature|RifleWalkRightForward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-1.1780972"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-0.39269909"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="7" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
+                        <Transition targetId="5" transitWhenAnimationDone="true" duration="0.12">
+                            <Conditions/>
                         </Transition>
                     </OutboundConnections>
                 </Node>
             </Nodes>
         </State>
-        <State id="3" name="Crouch State">
+        <State id="3" name="Crouch Locomotion">
             <OutboundConnections>
-                <Transition targetId="4" transitWhenAnimationDone="false">
+                <Transition targetId="4" transitWhenAnimationDone="false" duration="0.15000001">
                     <Conditions>
-                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="true"/>
+                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="false"/>
                         <Condition variableName="IsStrafing" operation="Equal" type="bool" value="true"/>
                     </Conditions>
                 </Transition>
-                <Transition targetId="1" transitWhenAnimationDone="false">
+                <Transition targetId="1" transitWhenAnimationDone="false" duration="0.15000001">
                     <Conditions>
                         <Condition variableName="IsCrouched" operation="Equal" type="bool" value="false"/>
                         <Condition variableName="IsStrafing" operation="Equal" type="bool" value="false"/>
                     </Conditions>
                 </Transition>
+                <Transition targetId="2" transitWhenAnimationDone="false" duration="0.12">
+                    <Conditions>
+                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="true"/>
+                        <Condition variableName="IsStrafing" operation="Equal" type="bool" value="true"/>
+                    </Conditions>
+                </Transition>
             </OutboundConnections>
-            <EntryNode id="16"/>
+            <EntryNode id="9"/>
             <Nodes>
-                <Node id="16" animationName="Armature|RifleCourchIdle" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="17" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="17" animationName="Armature|RifleCrouchWalkForward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="16" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
+                <Node id="9" type="BlendSpace1D" parameter="Speed" syncGroup="CrouchLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="8">
+                    <Points>
+                        <Point value="0" clip="Armature|RifleCourchIdle"/>
+                        <Point value="0.025" clip="Armature|RifleCrouchWalkForward"/>
+                    </Points>
+                    <OutboundConnections/>
                 </Node>
             </Nodes>
         </State>
-        <State id="4" name="Crouch Strafing State">
+        <State id="2" name="Crouch Aim Locomotion">
             <OutboundConnections>
-                <Transition targetId="3" transitWhenAnimationDone="false">
-                    <Conditions>
-                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="true"/>
-                        <Condition variableName="IsStrafing" operation="Equal" type="bool" value="false"/>
-                    </Conditions>
-                </Transition>
-                <Transition targetId="2" transitWhenAnimationDone="false">
+                <Transition targetId="4" transitWhenAnimationDone="false" duration="0.15000001">
                     <Conditions>
                         <Condition variableName="IsCrouched" operation="Equal" type="bool" value="false"/>
                         <Condition variableName="IsStrafing" operation="Equal" type="bool" value="true"/>
                     </Conditions>
                 </Transition>
+                <Transition targetId="1" transitWhenAnimationDone="false" duration="0.15000001">
+                    <Conditions>
+                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="false"/>
+                        <Condition variableName="IsStrafing" operation="Equal" type="bool" value="false"/>
+                    </Conditions>
+                </Transition>
+                <Transition targetId="3" transitWhenAnimationDone="false" duration="0.12">
+                    <Conditions>
+                        <Condition variableName="IsCrouched" operation="Equal" type="bool" value="true"/>
+                        <Condition variableName="IsStrafing" operation="Equal" type="bool" value="false"/>
+                    </Conditions>
+                </Transition>
             </OutboundConnections>
-            <EntryNode id="18"/>
+            <EntryNode id="10"/>
             <Nodes>
-                <Node id="18" animationName="Armature|RifleCourchIdle" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="19" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-0.39269909"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="0.39269909"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="20" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="0.39269909"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="1.1780972"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="21" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="1.1780972"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="1.9634955"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="22" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="1.9634955"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="2.7488937"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="23" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="2.7488937"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="23" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-2.7488937"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="24" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-2.7488937"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-1.9634955"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="25" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-1.9634955"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-1.1780972"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="26" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-1.1780972"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-0.39269909"/>
-                                <Condition variableName="VelocityMagnitude" operation="GreaterOrEqual" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="19" animationName="Armature|RifleCrouchWalkForward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-0.39269909"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="0.39269909"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="20" animationName="Armature|RifleCrouchWalkLeftForward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="0.39269909"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="1.1780972"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="21" animationName="Armature|RifleCrouchWalkLeft" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="1.1780972"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="1.9634955"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="22" animationName="Armature|RifleCrouchWalkLeftBackward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="1.9634955"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="2.7488937"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="23" animationName="Armature|RifleCrouchWalkBackward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-2.7488937"/>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="2.7488937"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="24" animationName="Armature|RifleCrouchWalkRightBackward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-2.7488937"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-1.9634955"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="25" animationName="Armature|RifleCrouchWalkRight" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-1.9634955"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-1.1780972"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
-                </Node>
-                <Node id="26" animationName="Armature|RifleCrouchWalkRightForward" loop="true">
-                    <OutboundConnections>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="Less" type="float" value="-1.1780972"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="StrafingRotation" operation="GreaterOrEqual" type="float" value="-0.39269909"/>
-                            </Conditions>
-                        </Transition>
-                        <Transition targetId="18" transitWhenAnimationDone="false">
-                            <Conditions>
-                                <Condition variableName="VelocityMagnitude" operation="Less" type="float" value="0.0099999998"/>
-                            </Conditions>
-                        </Transition>
-                    </OutboundConnections>
+                <Node id="10" type="BlendSpace2D" parameterX="MoveX" parameterY="MoveY" syncGroup="CrouchAimLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="10">
+                    <Points>
+                        <Point x="0" y="0" clip="Armature|RifleCourchIdle"/>
+                        <Point x="0" y="0.025" clip="Armature|RifleCrouchWalkForward"/>
+                        <Point x="0.01767767" y="0.01767767" clip="Armature|RifleCrouchWalkLeftForward"/>
+                        <Point x="0.025" y="0" clip="Armature|RifleCrouchWalkLeft"/>
+                        <Point x="0.01767767" y="-0.01767767" clip="Armature|RifleCrouchWalkLeftBackward"/>
+                        <Point x="0" y="-0.025" clip="Armature|RifleCrouchWalkBackward"/>
+                        <Point x="-0.01767767" y="-0.01767767" clip="Armature|RifleCrouchWalkRightBackward"/>
+                        <Point x="-0.025" y="0" clip="Armature|RifleCrouchWalkRight"/>
+                        <Point x="-0.01767767" y="0.01767767" clip="Armature|RifleCrouchWalkRightForward"/>
+                    </Points>
+                    <OutboundConnections/>
                 </Node>
             </Nodes>
         </State>

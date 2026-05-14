@@ -30,6 +30,8 @@ public:
 		character_ = character;
 	}
 
+	Vector2 ConsumeCursorDeltaMoveLastFrame();
+
 	const Vector2& GetCursorDeltaMoveLastFrame() const
 	{
 		return cursorDeltaMoveLastFrame_;

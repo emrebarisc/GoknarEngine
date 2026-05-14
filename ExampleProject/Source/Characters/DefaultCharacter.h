@@ -57,6 +57,7 @@ private:
 
 	InterpolatingValue<float> cameraDistance_;
 	InterpolatingValue<Vector3> cameraHeightOffset_;
+	InterpolatingValue<float> cameraShoulderOffset_;
 
 	std::shared_ptr<AnimationState> standingState_;
 	std::shared_ptr<AnimationState> crouchState_;
@@ -66,7 +67,13 @@ private:
 	float cameraYaw_{ 0.f };
 	float cameraPitch_{ 0.f };
 	float defaultCameraDistance_{ 6.f };
-	float strafingCameraDistance_{ 2.f };
+	float strafingCameraDistance_{ 2.25f };
+	float defaultShoulderOffset_{ 0.35f };
+	float strafingShoulderOffset_{ 0.55f };
+	float cameraCollisionPadding_{ 0.2f };
+	float minCameraDistance_{ 0.65f };
+	float minCameraForwardZ_{ -0.45f };
+	float maxCameraForwardZ_{ 0.25f };
 	
 	float mouseSensitivity_{ 1.f };
 	float minPitch_{ -40.f };

@@ -19,6 +19,7 @@
 #include "Components/DefaultCharacterMovementComponent.h"
 #include "Objects/Bullet.h"
 #include "Objects/Weapon.h"
+#include "Objects/VFX/BulletHitVFXObject.h"
 
 #include "Animation/AnimationSerializer.h"
 #include "Animation/AnimationDeserializer.h"
@@ -51,13 +52,13 @@ DefaultCharacter::DefaultCharacter() :
 
 	thirdPersonCameraComponent_ = AddSubComponent<CameraComponent>();
 	thirdPersonCameraComponent_->SetCameraFollowsComponentRotation(false);
-	thirdPersonCameraComponent_->SetRelativePosition(Vector3::UpVector * 2.f - Vector3::LeftVector + thirdPersonCameraComponent_->GetRelativeForwardVector() * -8.f);
+	thirdPersonCameraComponent_->SetRelativePosition(Vector3::UpVector + (-Vector3::LeftVector * defaultShoulderOffset_) + thirdPersonCameraComponent_->GetRelativeForwardVector() * -defaultCameraDistance_);
 	thirdPersonCameraComponent_->SetParent(GetRootComponent());
 
 	Camera* thirdPersonCamera = thirdPersonCameraComponent_->GetCamera();
-	thirdPersonCamera->SetNearDistance(1.f);
+	thirdPersonCamera->SetNearDistance(0.1f);
 	thirdPersonCamera->SetFarDistance(1000.f);
-	thirdPersonCamera->SetFOV(45.f);
+	thirdPersonCamera->SetFOV(180);
 
 	SocketComponent* socketComponent = skeletalMeshComponent_->GetMeshInstance()->AddSocketToBone("mixamorig:RightHand");
 	socketComponent->SetRelativePosition(Vector3{ 0.f, 12.5f, 5.f });
@@ -96,10 +97,13 @@ void DefaultCharacter::BeginGame()
 	Idle();
 
 	cameraDistance_.Reset(defaultCameraDistance_);
-	cameraDistance_.speed = 32.f;
+	cameraDistance_.speed = 10.f;
 
-	cameraHeightOffset_.Reset(Vector3{ 0.f, 0.f, 1.f });
-	cameraHeightOffset_.speed = 8.f;
+	cameraHeightOffset_.Reset(Vector3{ 0.f, 0.f, 1.15f });
+	cameraHeightOffset_.speed = 10.f;
+
+	cameraShoulderOffset_.Reset(defaultShoulderOffset_);
+	cameraShoulderOffset_.speed = 10.f;
 
 	animationGraph_->Init();
 }
@@ -108,23 +112,30 @@ void DefaultCharacter::Tick(float deltaTime)
 {
 	BaseCharacter::Tick(deltaTime);
 
-	const Vector2& cursorMovement = ((DefaultCharacterController*)controller_)->GetCursorDeltaMoveLastFrame();
+	Vector2 cursorMovement = ((DefaultCharacterController*)controller_)->ConsumeCursorDeltaMoveLastFrame();
+	cursorMovement.x *= mouseSensitivity_;
+	cursorMovement.y *= mouseSensitivity_;
 
 	Vector3 forwardVector = thirdPersonCameraComponent_->GetRelativeForwardVector();
 	Vector3 leftVector = thirdPersonCameraComponent_->GetRelativeLeftVector();
 
 	Vector3 newForwardVector = forwardVector.RotateVectorAroundAxis(Vector3::UpVector, cursorMovement.x);
 
-	if ((forwardVector.z < 0.25f && 0.f < cursorMovement.y) ||
-		(-0.9f < forwardVector.z && cursorMovement.y < 0.f))
+	if ((forwardVector.z < maxCameraForwardZ_ && 0.f < cursorMovement.y) ||
+		(minCameraForwardZ_ < forwardVector.z && cursorMovement.y < 0.f))
 	{
 		newForwardVector = newForwardVector.RotateVectorAroundAxis(leftVector, -cursorMovement.y);
 	}
 
 	thirdPersonCameraComponent_->SetRelativeRotation(newForwardVector.GetRotationNormalized());
 
-	float shoulderOffsetAmount = 0.5f;
-	Vector3 rightOffsetVector = -leftVector * shoulderOffsetAmount;
+	leftVector = thirdPersonCameraComponent_->GetRelativeLeftVector();
+
+	cameraHeightOffset_.Interpolate(deltaTime);
+	cameraShoulderOffset_.UpdateDestination(isStrafing_ ? strafingShoulderOffset_ : defaultShoulderOffset_);
+	cameraShoulderOffset_.Interpolate(deltaTime);
+
+	Vector3 rightOffsetVector = -leftVector * cameraShoulderOffset_.current;
 
 	float desiredMaxDistance = isStrafing_ ? strafingCameraDistance_ : defaultCameraDistance_;
 
@@ -146,29 +157,46 @@ void DefaultCharacter::Tick(float deltaTime)
 	{
 		float hitDistance = (raycastResult.hitPosition - pivotWorldPosition).Length();
 
-		float targetDist = GoknarMath::Max(hitDistance - 0.2f, 0.5f);
+		float targetDist = GoknarMath::Max(hitDistance - cameraCollisionPadding_, minCameraDistance_);
+		cameraDistance_.speed = 48.f;
 		cameraDistance_.UpdateDestination(targetDist);
 	}
 	else
 	{
+		cameraDistance_.speed = 10.f;
 		cameraDistance_.UpdateDestination(desiredMaxDistance);
 	}
+
+	cameraDistance_.Interpolate(deltaTime);
 
 	Vector3 newRelativePosition = (cameraHeightOffset_.current + rightOffsetVector) - (newForwardVector * cameraDistance_.current);
 	thirdPersonCameraComponent_->SetRelativePosition(newRelativePosition);
 
-	float animation2DVelocityMagnitude = Vector2(movementComponent_->GetLinearVelocity()).Length();
+	Vector3 linearVelocity = movementComponent_->GetLinearVelocity();
+	Vector3 linearVelocity2D = Vector3(linearVelocity.x, linearVelocity.y, 0.f);
+	float animation2DVelocityMagnitude = linearVelocity2D.Length();
 	animationGraph_->SetVariable<float>("VelocityMagnitude", animation2DVelocityMagnitude);
+	animationGraph_->SetVariable<float>("Speed", animation2DVelocityMagnitude);
 	animationGraph_->SetVariable<bool>("IsOnGround", movementComponent_->OnGround());
 
-	if (0.f < animation2DVelocityMagnitude)
-	{
-		Vector3 movementVector = movementComponent_->GetMovementDirection().GetNormalized();
-		float dotProduct = (forwardVector.x * movementVector.x) + (forwardVector.y * movementVector.y);
-		float determinant = (forwardVector.x * movementVector.y) - (forwardVector.y * movementVector.x);
+	Vector3 cameraForward2D = Vector3(newForwardVector.x, newForwardVector.y, 0.f).GetNormalized();
+	Vector3 cameraLeft2D = Vector3(thirdPersonCameraComponent_->GetRelativeLeftVector().x, thirdPersonCameraComponent_->GetRelativeLeftVector().y, 0.f).GetNormalized();
+	float moveX = 0.f;
+	float moveY = 0.f;
 
+	if (0.0001f < animation2DVelocityMagnitude)
+	{
+		Vector3 movementVector = linearVelocity2D.GetNormalized();
+		moveX = movementVector.Dot(cameraLeft2D) * animation2DVelocityMagnitude;
+		moveY = movementVector.Dot(cameraForward2D) * animation2DVelocityMagnitude;
+
+		float dotProduct = cameraForward2D.Dot(movementVector);
+		float determinant = (cameraForward2D.x * movementVector.y) - (cameraForward2D.y * movementVector.x);
 		animationGraph_->SetVariable<float>("StrafingRotation", GoknarMath::Atan2(determinant, dotProduct));
 	}
+
+	animationGraph_->SetVariable<float>("MoveX", moveX);
+	animationGraph_->SetVariable<float>("MoveY", moveY);
 
 	animationGraph_->Update(deltaTime);
 }
@@ -201,6 +229,10 @@ void DefaultCharacter::Fire()
 	
 	if (physicsWorld->RaycastClosest(raycastData, raycastResult))
 	{
+		BulletHitVFXObject* newBulletHitVFXObject = new BulletHitVFXObject();
+		newBulletHitVFXObject->SetWorldPosition(raycastResult.hitPosition);
+		newBulletHitVFXObject->SetWorldRotation(Quaternion::FromTwoVectors(Vector3::ForwardVector, raycastResult.hitNormal));
+
 		RigidBody* hitRigidBody = dynamic_cast<RigidBody*>(raycastResult.hitObject);
 		if (hitRigidBody)
 		{
@@ -219,12 +251,12 @@ void DefaultCharacter::ToggleCrouch()
 
 	if (isCrouched_)
 	{
-		cameraHeightOffset_ = Vector3{0.f, 0.f, 0.5f};
+		cameraHeightOffset_.UpdateDestination(Vector3{0.f, 0.f, 0.7f});
 		defaultCharacterMovementComponent_->StartCrouching();
 	}
 	else
 	{
-		cameraHeightOffset_ = Vector3{ 0.f, 0.f, 1.f };
+		cameraHeightOffset_.UpdateDestination(Vector3{ 0.f, 0.f, 1.15f });
 
 		if (((DefaultCharacterController*)controller_)->GetIsRunInputPresent())
 		{
