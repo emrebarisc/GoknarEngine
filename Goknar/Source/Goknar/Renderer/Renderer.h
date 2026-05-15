@@ -207,41 +207,11 @@ public:
 		return deferredRenderingData_;
 	}
 
-	void AddPostProcessingEffect(PostProcessingEffect* postProcessingEffect)
-	{
-		postProcessingEffects_.push_back(postProcessingEffect);
-	}
+	void AddPostProcessingEffect(PostProcessingEffect* postProcessingEffect);
+	void RemovePostProcessingEffect(PostProcessingEffect* postProcessingEffect);
 
-	void RemovePostProcessingEffect(PostProcessingEffect* postProcessingEffect)
-	{
-		std::vector<PostProcessingEffect*>::const_iterator postProcessingEffectIterator = postProcessingEffects_.cbegin();
-		while (postProcessingEffectIterator != postProcessingEffects_.cend())
-		{
-			if (postProcessingEffect == *postProcessingEffectIterator)
-			{
-				postProcessingEffects_.erase(postProcessingEffectIterator);
-				break;
-			}
-		}
-	}
-
-	void AddRenderTarget(const RenderTarget* renderTarget)
-	{
-		renderTargets_.push_back(renderTarget);
-	}
-
-	void RemoveRenderTarget(const RenderTarget* renderTarget)
-	{
-		std::vector<const RenderTarget*>::const_iterator renderTargetIterator = renderTargets_.cbegin();
-		while (renderTargetIterator != renderTargets_.cend())
-		{
-			if (renderTarget == *renderTargetIterator)
-			{
-				renderTargets_.erase(renderTargetIterator);
-				break;
-			}
-		}
-	}
+	void AddRenderTarget(const RenderTarget* renderTarget);
+	void RemoveRenderTarget(const RenderTarget* renderTarget);
 
 	void RenderStaticMesh(StaticMesh* staticMesh);
 	void BindStaticMeshBuffers();
@@ -266,28 +236,45 @@ private:
 	{
 		StaticMeshInstance* meshInstance{ nullptr };
 		MeshUnit* meshUnit{ nullptr };
-		int subMeshIndex{ 0 };
+		GEint subMeshIndex{ 0 };
 	};
 
 	struct InstancedStaticMeshRenderData
 	{
 		InstancedStaticMeshInstance* meshInstance{ nullptr };
 		MeshUnit* meshUnit{ nullptr };
-		int subMeshIndex{ 0 };
+		GEint subMeshIndex{ 0 };
 	};
 
 	struct SkeletalMeshRenderData
 	{
 		SkeletalMeshInstance* meshInstance{ nullptr };
 		SkeletalMeshUnit* meshUnit{ nullptr };
-		int subMeshIndex{ 0 };
+		GEint subMeshIndex{ 0 };
 	};
 
 	struct DynamicMeshRenderData
 	{
 		DynamicMeshInstance* meshInstance{ nullptr };
 		DynamicMeshUnit* meshUnit{ nullptr };
-		int subMeshIndex{ 0 };
+		GEint subMeshIndex{ 0 };
+	};
+
+	struct MeshBufferData
+	{
+		GEuint vertexBufferId{ 0 };
+		GEuint indexBufferId{ 0 };
+
+		GEuint vertexSize{ 0 };
+		GEuint faceSize{ 0 };
+
+		GEuint baseVertex{ 0 };
+		GEuint vertexStartingIndex{ 0 };
+
+		GEint vertexOffset{ 0 };
+		GEint faceOffset{ 0 };
+
+		GEint meshCount{ 0 };
 	};
 
 	void BindStaticVBO();
@@ -301,6 +288,8 @@ private:
 
 	void SortOpaqueInstances();
 	void SortTransparentInstances();
+
+	std::unordered_map<const InstancedStaticMesh*, GEuint> instancedStaticMeshTransformationBufferIdMap_;
 
 	std::vector<MeshUnit*> staticMeshUnits_;
 	std::vector<InstancedStaticMesh*> instancedStaticMeshes_;
@@ -319,6 +308,10 @@ private:
 	std::vector<DynamicMeshRenderData> transparentDynamicMeshRenderData_;
 	std::vector<ParticleSystemBase*> particleSystems_;
 
+	MeshBufferData staticMeshBufferData_;
+	MeshBufferData skeletalMeshBufferData_;
+	MeshBufferData dynamicMeshBufferData_;
+
 	LightManager* lightManager_{ nullptr };
 
 	DeferredRenderingData* deferredRenderingData_{ nullptr };
@@ -332,29 +325,6 @@ private:
 
 	const RenderTarget* currentRenderTarget_{ nullptr };
 	const ReflectionProbe* currentReflectionProbeCapture_{ nullptr };
-
-	unsigned int totalStaticMeshVertexSize_;
-	unsigned int totalStaticMeshFaceSize_;
-
-	unsigned int totalSkeletalMeshVertexSize_;
-	unsigned int totalSkeletalMeshFaceSize_;
-
-	unsigned int totalDynamicMeshVertexSize_;
-	unsigned int totalDynamicMeshFaceSize_;
-
-	int totalStaticMeshCount_;
-	int totalSkeletalMeshCount_;
-	int totalDynamicMeshCount_;
-
-	GEuint staticVertexBufferId_;
-	GEuint staticIndexBufferId_;
-	std::unordered_map<const InstancedStaticMesh*, GEuint> instancedStaticMeshTransformationBufferIdMap_;
-
-	GEuint skeletalVertexBufferId_;
-	GEuint skeletalIndexBufferId_;
-
-	GEuint dynamicVertexBufferId_;
-	GEuint dynamicIndexBufferId_;
 
 	RenderPassType mainRenderType_{ RenderPassType::Deferred };
 

@@ -100,21 +100,6 @@ namespace
 }
 
 Renderer::Renderer() :
-	staticVertexBufferId_(0),
-	staticIndexBufferId_(0),
-	skeletalVertexBufferId_(0),
-	skeletalIndexBufferId_(0),
-	dynamicVertexBufferId_(0),
-	dynamicIndexBufferId_(0),
-	totalStaticMeshVertexSize_(0),
-	totalStaticMeshFaceSize_(0),
-	totalSkeletalMeshVertexSize_(0),
-	totalSkeletalMeshFaceSize_(0),
-	totalDynamicMeshVertexSize_(0),
-	totalDynamicMeshFaceSize_(0),
-	totalStaticMeshCount_(0),
-	totalSkeletalMeshCount_(0),
-	totalDynamicMeshCount_(0),
 	lightManager_(nullptr),
 	removeStaticDataFromMemoryAfterTransferingToGPU_(false),
 	drawOnWindow_(true)
@@ -134,9 +119,7 @@ Renderer::~Renderer()
 	delete lightManager_;
 	delete deferredRenderingData_;
 
-	EXIT_ON_GRAPHICS_API_ERROR("Renderer::~Renderer");
-
-	GraphicsAPI()->DeleteBuffer(staticVertexBufferId_);
+	GraphicsAPI()->DeleteBuffer(staticMeshBufferData_.vertexBufferId);
 	for (const auto& [instancedStaticMesh, transformationBufferId] : instancedStaticMeshTransformationBufferIdMap_)
 	{
 		if (transformationBufferId != 0)
@@ -146,11 +129,13 @@ Renderer::~Renderer()
 	}
 	instancedStaticMeshTransformationBufferIdMap_.clear();
 
-	GraphicsAPI()->DeleteBuffer(skeletalVertexBufferId_);
-	GraphicsAPI()->DeleteBuffer(dynamicVertexBufferId_);
-	GraphicsAPI()->DeleteBuffer(staticIndexBufferId_);
-	GraphicsAPI()->DeleteBuffer(skeletalIndexBufferId_);
-	GraphicsAPI()->DeleteBuffer(dynamicIndexBufferId_);
+	GraphicsAPI()->DeleteBuffer(skeletalMeshBufferData_.vertexBufferId);
+	GraphicsAPI()->DeleteBuffer(dynamicMeshBufferData_.vertexBufferId);
+	GraphicsAPI()->DeleteBuffer(staticMeshBufferData_.indexBufferId);
+	GraphicsAPI()->DeleteBuffer(skeletalMeshBufferData_.indexBufferId);
+	GraphicsAPI()->DeleteBuffer(dynamicMeshBufferData_.indexBufferId);
+
+	EXIT_ON_GRAPHICS_API_ERROR("Renderer::~Renderer");
 }
 
 void Renderer::PreInit()
@@ -200,20 +185,20 @@ void Renderer::PreInit()
 
 	for (MeshUnit* subMesh : staticMeshUnits_)
 	{
-		totalStaticMeshVertexSize_ += (unsigned int)subMesh->GetVerticesPointer()->size();
-		totalStaticMeshFaceSize_ += (unsigned int)subMesh->GetFacesPointer()->size();
+		staticMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
+		staticMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
 	}
 
 	for (SkeletalMeshUnit* subMesh : skeletalMeshUnits_)
 	{
-		totalSkeletalMeshVertexSize_ += (unsigned int)subMesh->GetVerticesPointer()->size();
-		totalSkeletalMeshFaceSize_ += (unsigned int)subMesh->GetFacesPointer()->size();
+		skeletalMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
+		skeletalMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
 	}
 
 	for (DynamicMeshUnit* subMesh : dynamicMeshUnits_)
 	{
-		totalDynamicMeshVertexSize_ += (unsigned int)subMesh->GetVerticesPointer()->size();
-		totalDynamicMeshFaceSize_ += (unsigned int)subMesh->GetFacesPointer()->size();
+		dynamicMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
+		dynamicMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
 	}
 
 	SetBufferData();
@@ -236,43 +221,38 @@ void Renderer::SetStaticBufferData()
 	*/
 	unsigned long long sizeOfVertexData = sizeof(VertexData);
 
-	staticVertexBufferId_ = GraphicsAPI()->CreateBuffer();
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, staticVertexBufferId_);
-	GraphicsAPI()->BufferData(GraphicsBufferTarget::ArrayBuffer, totalStaticMeshVertexSize_ * sizeOfVertexData, nullptr, GraphicsBufferUsage::StaticDraw);
+	staticMeshBufferData_.vertexBufferId = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, staticMeshBufferData_.vertexBufferId);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ArrayBuffer, staticMeshBufferData_.vertexSize * sizeOfVertexData, nullptr, GraphicsBufferUsage::StaticDraw);
 
 	/*
 		Index buffer
 	*/
-	staticIndexBufferId_ = GraphicsAPI()->CreateBuffer();
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, staticIndexBufferId_);
-	GraphicsAPI()->BufferData(GraphicsBufferTarget::ElementArrayBuffer, totalStaticMeshFaceSize_ * sizeof(Face), nullptr, GraphicsBufferUsage::StaticDraw);
+	staticMeshBufferData_.indexBufferId = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, staticMeshBufferData_.indexBufferId);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ElementArrayBuffer, staticMeshBufferData_.faceSize * sizeof(Face), nullptr, GraphicsBufferUsage::StaticDraw);
 
 	/*
 		Buffer Sub-Data
 	*/
-	unsigned int baseVertex = 0;
-	unsigned int vertexStartingIndex = 0;
-
-	int vertexOffset = 0;
-	int faceOffset = 0;
 	for (MeshUnit* subMesh : staticMeshUnits_)
 	{
-		subMesh->SetBaseVertex(baseVertex);
-		subMesh->SetVertexStartingIndex(vertexStartingIndex);
+		subMesh->SetBaseVertex(staticMeshBufferData_.baseVertex);
+		subMesh->SetVertexStartingIndex(staticMeshBufferData_.vertexStartingIndex);
 
 		const VertexArray* vertexArrayPtr = subMesh->GetVerticesPointer();
 		int vertexSizeInBytes = (int)vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
-		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
+		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, staticMeshBufferData_.vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
 
 		const FaceArray* faceArrayPtr = subMesh->GetFacesPointer();
 		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ElementArrayBuffer, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
+		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ElementArrayBuffer, staticMeshBufferData_.faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
 
-		vertexOffset += vertexSizeInBytes;
-		faceOffset += faceSizeInBytes;
+		staticMeshBufferData_.vertexOffset += vertexSizeInBytes;
+		staticMeshBufferData_.faceOffset += faceSizeInBytes;
 
-		baseVertex += subMesh->GetVertexCount();
-		vertexStartingIndex += subMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
+		staticMeshBufferData_.baseVertex += subMesh->GetVertexCount();
+		staticMeshBufferData_.vertexStartingIndex += subMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
 
 		if (removeStaticDataFromMemoryAfterTransferingToGPU_)
 		{
@@ -289,29 +269,24 @@ void Renderer::SetSkeletalBufferData()
 	*/
 	unsigned long long int sizeOfSkeletalMeshVertexData = sizeof(VertexData) + sizeof(VertexBoneData);
 
-	skeletalVertexBufferId_ = GraphicsAPI()->CreateBuffer();
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, skeletalVertexBufferId_);
-	GraphicsAPI()->BufferData(GraphicsBufferTarget::ArrayBuffer, totalSkeletalMeshVertexSize_ * sizeOfSkeletalMeshVertexData, nullptr, GraphicsBufferUsage::StaticDraw);
+	skeletalMeshBufferData_.vertexBufferId = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, skeletalMeshBufferData_.vertexBufferId);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ArrayBuffer, skeletalMeshBufferData_.vertexSize * sizeOfSkeletalMeshVertexData, nullptr, GraphicsBufferUsage::StaticDraw);
 
 	/*
 		Index buffer
 	*/
-	skeletalIndexBufferId_ = GraphicsAPI()->CreateBuffer();
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, skeletalIndexBufferId_);
-	GraphicsAPI()->BufferData(GraphicsBufferTarget::ElementArrayBuffer, totalSkeletalMeshFaceSize_ * sizeof(Face), nullptr, GraphicsBufferUsage::StaticDraw);
+	skeletalMeshBufferData_.indexBufferId = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, skeletalMeshBufferData_.indexBufferId);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ElementArrayBuffer, skeletalMeshBufferData_.faceSize * sizeof(Face), nullptr, GraphicsBufferUsage::StaticDraw);
 
 	/*
 		Buffer Sub-Data
 	*/
-	unsigned int baseVertex = 0;
-	unsigned int vertexStartingIndex = 0;
-
-	int vertexOffset = 0;
-	int faceOffset = 0;
 	for (SkeletalMeshUnit* subMesh : skeletalMeshUnits_)
 	{
-		subMesh->SetBaseVertex(baseVertex);
-		subMesh->SetVertexStartingIndex(vertexStartingIndex);
+		subMesh->SetBaseVertex(skeletalMeshBufferData_.baseVertex);
+		subMesh->SetVertexStartingIndex(skeletalMeshBufferData_.vertexStartingIndex);
 
 		const VertexArray* vertexArrayPtr = subMesh->GetVerticesPointer();
 
@@ -327,20 +302,20 @@ void Renderer::SetSkeletalBufferData()
 		int vertexBoneDataArraySizeInBytes = sizeof(vertexBoneDataArray->at(0));
 		for (unsigned int i = 0; i < vertexArrayPtrSize; ++i)
 		{
-			GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(i));
-			vertexOffset += vertexSizeInBytes;
+			GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, skeletalMeshBufferData_.vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(i));
+			skeletalMeshBufferData_.vertexOffset += vertexSizeInBytes;
 
-			GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, vertexOffset, vertexBoneDataArraySizeInBytes, &vertexBoneDataArray->at(i));
-			vertexOffset += vertexBoneDataArraySizeInBytes;
+			GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, skeletalMeshBufferData_.vertexOffset, vertexBoneDataArraySizeInBytes, &vertexBoneDataArray->at(i));
+			skeletalMeshBufferData_.vertexOffset += vertexBoneDataArraySizeInBytes;
 		}
 
 		const FaceArray* faceArrayPtr = subMesh->GetFacesPointer();
 		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ElementArrayBuffer, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
-		faceOffset += faceSizeInBytes;
+		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ElementArrayBuffer, skeletalMeshBufferData_.faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
+		skeletalMeshBufferData_.faceOffset += faceSizeInBytes;
 
-		baseVertex += subMesh->GetVertexCount();
-		vertexStartingIndex += subMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
+		skeletalMeshBufferData_.baseVertex += subMesh->GetVertexCount();
+		skeletalMeshBufferData_.vertexStartingIndex += subMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
 
 		if (removeStaticDataFromMemoryAfterTransferingToGPU_)
 		{
@@ -357,44 +332,39 @@ void Renderer::SetDynamicBufferData()
 	*/
 	unsigned long long sizeOfVertexData = sizeof(VertexData);
 
-	dynamicVertexBufferId_ = GraphicsAPI()->CreateBuffer();
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, dynamicVertexBufferId_);
-	GraphicsAPI()->BufferData(GraphicsBufferTarget::ArrayBuffer, totalDynamicMeshVertexSize_ * sizeOfVertexData, nullptr, GraphicsBufferUsage::DynamicDraw);
+	dynamicMeshBufferData_.vertexBufferId = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, dynamicMeshBufferData_.vertexBufferId);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ArrayBuffer, dynamicMeshBufferData_.vertexSize * sizeOfVertexData, nullptr, GraphicsBufferUsage::DynamicDraw);
 
 	/*
 		Index buffer
 	*/
-	dynamicIndexBufferId_ = GraphicsAPI()->CreateBuffer();
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, dynamicIndexBufferId_);
-	GraphicsAPI()->BufferData(GraphicsBufferTarget::ElementArrayBuffer, totalDynamicMeshFaceSize_ * sizeof(Face), nullptr, GraphicsBufferUsage::DynamicDraw);
+	dynamicMeshBufferData_.indexBufferId = GraphicsAPI()->CreateBuffer();
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, dynamicMeshBufferData_.indexBufferId);
+	GraphicsAPI()->BufferData(GraphicsBufferTarget::ElementArrayBuffer, dynamicMeshBufferData_.faceSize * sizeof(Face), nullptr, GraphicsBufferUsage::DynamicDraw);
 
 	/*
 		Buffer Sub-Data
 	*/
-	unsigned int baseVertex = 0;
-	unsigned int vertexStartingIndex = 0;
-
-	int vertexOffset = 0;
-	int faceOffset = 0;
 	for (DynamicMeshUnit* subMesh : dynamicMeshUnits_)
 	{
-		subMesh->SetBaseVertex(baseVertex);
-		subMesh->SetVertexStartingIndex(vertexStartingIndex);
-		subMesh->SetRendererVertexOffset(vertexOffset);
+		subMesh->SetBaseVertex(dynamicMeshBufferData_.baseVertex);
+		subMesh->SetVertexStartingIndex(dynamicMeshBufferData_.vertexStartingIndex);
+		subMesh->SetRendererVertexOffset(dynamicMeshBufferData_.vertexOffset);
 
 		const VertexArray* vertexArrayPtr = subMesh->GetVerticesPointer();
 		int vertexSizeInBytes = (int)vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
-		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
+		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ArrayBuffer, dynamicMeshBufferData_.vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
 
 		const FaceArray* faceArrayPtr = subMesh->GetFacesPointer();
 		int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ElementArrayBuffer, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
+		GraphicsAPI()->BufferSubData(GraphicsBufferTarget::ElementArrayBuffer, dynamicMeshBufferData_.faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
 
-		vertexOffset += vertexSizeInBytes;
-		faceOffset += faceSizeInBytes;
+		dynamicMeshBufferData_.vertexOffset += vertexSizeInBytes;
+		dynamicMeshBufferData_.faceOffset += faceSizeInBytes;
 
-		baseVertex += subMesh->GetVertexCount();
-		vertexStartingIndex += subMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
+		dynamicMeshBufferData_.baseVertex += subMesh->GetVertexCount();
+		dynamicMeshBufferData_.vertexStartingIndex += subMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
 	}
 
 	SetAttribPointers();
@@ -402,9 +372,9 @@ void Renderer::SetDynamicBufferData()
 
 void Renderer::SetBufferData()
 {
-	if (0 < totalStaticMeshCount_) SetStaticBufferData();
-	if (0 < totalSkeletalMeshCount_) SetSkeletalBufferData();
-	if (0 < totalDynamicMeshCount_) SetDynamicBufferData();
+	if (0 < staticMeshBufferData_.meshCount) SetStaticBufferData();
+	if (0 < skeletalMeshBufferData_.meshCount) SetSkeletalBufferData();
+	if (0 < dynamicMeshBufferData_.meshCount) SetDynamicBufferData();
 }
 
 void Renderer::RenderCurrentFrame()
@@ -712,7 +682,7 @@ void Renderer::Render(RenderPassType renderPassType)
 	{
 		// Static MeshUnit Instances
 		{
-			if (0 < totalStaticMeshCount_)
+			if (0 < staticMeshBufferData_.meshCount)
 			{
 				BindStaticVBO();
 
@@ -740,7 +710,7 @@ void Renderer::Render(RenderPassType renderPassType)
 
 		// Skeletal MeshUnit Instances
 		{
-			if (0 < totalSkeletalMeshCount_)
+			if (0 < skeletalMeshBufferData_.meshCount)
 			{
 				BindSkeletalVBO();
 
@@ -758,7 +728,7 @@ void Renderer::Render(RenderPassType renderPassType)
 
 		// Dynamic MeshUnit Instances
 		{
-			if (0 < totalDynamicMeshCount_)
+			if (0 < dynamicMeshBufferData_.meshCount)
 			{
 				BindDynamicVBO();
 
@@ -871,8 +841,8 @@ void Renderer::AddStaticMeshToRenderer(StaticMesh* staticMesh)
 	for (MeshUnit* subMesh : staticMesh->GetSubMeshes())
 	{
 		staticMeshUnits_.push_back(subMesh);
+		staticMeshBufferData_.meshCount++;
 	}
-	totalStaticMeshCount_++;
 }
 
 void Renderer::AddInstancedStaticMeshToRenderer(InstancedStaticMesh* instancedStaticMesh)
@@ -972,8 +942,8 @@ void Renderer::AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh)
 	for (SkeletalMeshUnit* subMesh : skeletalMesh->GetSubMeshes())
 	{
 		skeletalMeshUnits_.push_back(subMesh);
+		skeletalMeshBufferData_.meshCount++;
 	}
-	totalSkeletalMeshCount_++;
 }
 
 void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
@@ -1025,7 +995,7 @@ void Renderer::AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh)
 	{
 		dynamicMeshUnits_.push_back(subMesh);
 	}
-	totalDynamicMeshCount_++;
+	dynamicMeshBufferData_.meshCount++;
 }
 
 void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
@@ -1096,12 +1066,12 @@ void Renderer::RemoveParticleSystem(ParticleSystemBase* particleSystem)
 void Renderer::UpdateDynamicMeshVertex(const DynamicMeshUnit* object, int vertexIndex, const VertexData& newVertexData)
 {
 	int sizeOfVertexData = sizeof(VertexData);
-	GraphicsAPI()->NamedBufferSubData(dynamicVertexBufferId_, object->GetRendererVertexOffset() + vertexIndex * sizeOfVertexData, sizeOfVertexData, &newVertexData);
+	GraphicsAPI()->NamedBufferSubData(dynamicMeshBufferData_.vertexBufferId, object->GetRendererVertexOffset() + vertexIndex * sizeOfVertexData, sizeOfVertexData, &newVertexData);
 }
 
 void Renderer::RefreshInstancedStaticMeshTransformations(const InstancedStaticMesh* instancedStaticMesh)
 {
-	if (!instancedStaticMesh || staticVertexBufferId_ == 0)
+	if (!instancedStaticMesh || staticMeshBufferData_.vertexBufferId == 0)
 	{
 		return;
 	}
@@ -1127,7 +1097,7 @@ void Renderer::RefreshInstancedStaticMeshTransformations(const InstancedStaticMe
 
 void Renderer::UpdateInstancedStaticMeshTransformation(const InstancedStaticMesh* instancedStaticMesh, int transformationIndex, const Matrix& newTransformationMatrix)
 {
-	if (!instancedStaticMesh || staticVertexBufferId_ == 0 || transformationIndex < 0)
+	if (!instancedStaticMesh || staticMeshBufferData_.vertexBufferId == 0 || transformationIndex < 0)
 	{
 		return;
 	}
@@ -1272,6 +1242,44 @@ void Renderer::CaptureReflectionProbes()
 	}
 }
 
+void Renderer::AddPostProcessingEffect(PostProcessingEffect* postProcessingEffect)
+{
+	postProcessingEffects_.push_back(postProcessingEffect);
+}
+
+void Renderer::RemovePostProcessingEffect(PostProcessingEffect* postProcessingEffect)
+{
+	std::vector<PostProcessingEffect*>::const_iterator postProcessingEffectIterator = postProcessingEffects_.cbegin();
+	while (postProcessingEffectIterator != postProcessingEffects_.cend())
+	{
+		if (postProcessingEffect == *postProcessingEffectIterator)
+		{
+			postProcessingEffects_.erase(postProcessingEffectIterator);
+			break;
+		}
+	}
+}
+void Renderer::AddRenderTarget(const RenderTarget* renderTarget)
+{
+	if (!renderTarget)
+	{
+		return;
+	}
+
+	if (std::find(renderTargets_.begin(), renderTargets_.end(), renderTarget) == renderTargets_.end())
+	{
+		renderTargets_.push_back(renderTarget);
+	}
+}
+
+void Renderer::RemoveRenderTarget(const RenderTarget* renderTarget)
+{
+	renderTargets_.erase(
+		std::remove(renderTargets_.begin(), renderTargets_.end(), renderTarget),
+		renderTargets_.end()
+	);
+}
+
 void Renderer::BindGeometryBufferTextures(Shader* shader)
 {
 	if (deferredRenderingData_)
@@ -1398,8 +1406,8 @@ void Renderer::BindStaticMeshBuffers()
 
 void Renderer::BindStaticVBO()
 {
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, staticVertexBufferId_);
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, staticIndexBufferId_);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, staticMeshBufferData_.vertexBufferId);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, staticMeshBufferData_.indexBufferId);
 	SetAttribPointers();
 }
 
@@ -1425,15 +1433,15 @@ bool Renderer::BindInstancedStaticMesh(InstancedStaticMesh* instancedStaticMesh)
 
 void Renderer::BindSkeletalVBO()
 {
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, skeletalVertexBufferId_);
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, skeletalIndexBufferId_);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, skeletalMeshBufferData_.vertexBufferId);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, skeletalMeshBufferData_.indexBufferId);
 	SetAttribPointersForSkeletalMesh();
 }
 
 void Renderer::BindDynamicVBO()
 {
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, dynamicVertexBufferId_);
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, dynamicIndexBufferId_);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, dynamicMeshBufferData_.vertexBufferId);
+	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, dynamicMeshBufferData_.indexBufferId);
 	SetAttribPointers();
 }
 
