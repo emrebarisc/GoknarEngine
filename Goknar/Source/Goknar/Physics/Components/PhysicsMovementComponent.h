@@ -99,6 +99,7 @@ public:
 	virtual void SetJumpSpeed(float jumpSpeed);
 	virtual float GetJumpSpeed() const;
 	virtual void SetMaxJumpHeight(float maxJumpHeight);
+	virtual float GetMaxJumpHeight() const;
 	virtual bool CanJump() const;
 
 	virtual void Jump(const Vector3& v = Vector3::ZeroVector);
@@ -164,6 +165,7 @@ private:
 
 	ForceMovementData* forceMovementData_{ nullptr };
 
+	float maxJumpHeight_{ 0.f };
 	float movementSpeed_{ 0.05f };
 };
 

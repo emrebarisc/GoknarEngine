@@ -63,6 +63,7 @@ public:
 	}
 
 	void SetRootComponent(Component* rootComponent);
+	Component* AddSubComponent(const std::string& componentClassName);
 	
     virtual void SetIsTickable(bool tickable);
 	inline bool GetIsTickable() const

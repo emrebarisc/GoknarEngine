@@ -39,6 +39,7 @@ Component* PhysicsMovementComponent::Clone() const
 	CopyValuesTo(clonedComponent);
 	clonedComponent->movementDirection_ = movementDirection_;
 	clonedComponent->movementSpeed_ = movementSpeed_;
+	clonedComponent->maxJumpHeight_ = maxJumpHeight_;
 
 	if (!clonedComponent->initializationData_)
 	{
@@ -184,6 +185,7 @@ void PhysicsMovementComponent::Init()
 	bulletKinematicCharacterController_->setFallSpeed(initializationData_->fallSpeed);
 	bulletKinematicCharacterController_->setJumpSpeed(initializationData_->jumpSpeed);
 	bulletKinematicCharacterController_->setMaxJumpHeight(initializationData_->maxJumpHeight);
+	maxJumpHeight_ = initializationData_->maxJumpHeight;
 	bulletKinematicCharacterController_->setMaxSlope(initializationData_->slopeRadians);
 	bulletKinematicCharacterController_->setMaxPenetrationDepth(initializationData_->maxPenetrationDepth);
 	bulletKinematicCharacterController_->setUseGhostSweepTest(initializationData_->useGhostObjectSweepTest);
@@ -453,6 +455,7 @@ float PhysicsMovementComponent::GetJumpSpeed() const
 
 void PhysicsMovementComponent::SetMaxJumpHeight(float maxJumpHeight)
 {
+	maxJumpHeight_ = maxJumpHeight;
 	if (!GetIsInitialized())
 	{
 		initializationData_->maxJumpHeight = maxJumpHeight;
@@ -460,6 +463,16 @@ void PhysicsMovementComponent::SetMaxJumpHeight(float maxJumpHeight)
 	}
 
 	bulletKinematicCharacterController_->setMaxJumpHeight(maxJumpHeight);
+}
+
+float PhysicsMovementComponent::GetMaxJumpHeight() const
+{
+	if (!GetIsInitialized())
+	{
+		return initializationData_->maxJumpHeight;
+	}
+
+	return maxJumpHeight_;
 }
 
 bool PhysicsMovementComponent::CanJump() const

@@ -6,7 +6,7 @@
 
 class ObjectBase;
 
-class SocketComponent : public Component
+class GOKNAR_API SocketComponent : public Component
 {
 public:
 	SocketComponent(const SocketComponent&) = delete;

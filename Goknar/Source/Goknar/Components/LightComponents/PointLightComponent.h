@@ -6,7 +6,7 @@
 
 class PointLight;
 
-class PointLightComponent : public Component
+class GOKNAR_API PointLightComponent : public Component
 {
 public:
 	PointLightComponent(Component* parentComponent);

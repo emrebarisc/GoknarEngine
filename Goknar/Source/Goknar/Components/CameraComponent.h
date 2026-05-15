@@ -6,7 +6,7 @@
 
 class Camera;
 
-class CameraComponent : public Component
+class GOKNAR_API CameraComponent : public Component
 {
 public:
 	CameraComponent(Component* parentComponent);

@@ -52,6 +52,6 @@ GOKNAR_API void GoknarCheckGraphicsAPIError(const char* errorMessage);
 #define EXIT_ON_GRAPHICS_API_ERROR(errorMessage) GoknarCheckGraphicsAPIError(errorMessage)
 
 #define REGISTER_CLASS(className) \
-    DynamicObjectFactory::GetInstance()->RegisterClass(#className, []() -> className* { return new className(); }); \
+    DynamicObjectFactory::GetInstance()->RegisterObjectClass<className>(#className); \
 
 #endif
