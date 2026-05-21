@@ -11,15 +11,10 @@
 class BoxCollisionComponent;
 class Component;
 class CapsuleCollisionComponent;
-class CameraComponent;
-class CollisionComponent;
 class MovingTriangleMeshCollisionComponent;
 class NonMovingTriangleMeshCollisionComponent;
 class InstancedStaticMeshComponent;
 class ParticleSystemComponent;
-class PhysicsMovementComponent;
-class PhysicsObject;
-class PointLightComponent;
 class RigidBody;
 class ReflectionProbeObject;
 class Scene;
@@ -29,8 +24,6 @@ class StaticMeshComponent;
 class SkeletalMeshComponent;
 class ObjectBase;
 class Material;
-class NavAgentComponent;
-class PerceptionComponent;
 
 class GOKNAR_API SceneParser
 {
@@ -57,12 +50,6 @@ private:
 	static void ParseSkeletalMeshComponentValues(SkeletalMeshComponent* skeletalMeshComponent, tinyxml2::XMLElement* componentElement);
 	static void ParseInstancedStaticMeshComponentValues(InstancedStaticMeshComponent* instancedStaticMeshComponent, tinyxml2::XMLElement* componentElement);
 	static void ParseParticleSystemComponentValues(ParticleSystemComponent* particleSystemComponent, tinyxml2::XMLElement* componentElement);
-	static void ParseNavAgentComponentValues(NavAgentComponent* navAgentComponent, tinyxml2::XMLElement* componentElement);
-	static void ParsePerceptionComponentValues(PerceptionComponent* perceptionComponent, tinyxml2::XMLElement* componentElement);
-	static void ParseCameraComponentValues(CameraComponent* cameraComponent, tinyxml2::XMLElement* componentElement);
-	static void ParsePointLightComponentValues(PointLightComponent* pointLightComponent, tinyxml2::XMLElement* componentElement);
-	static void ParseCollisionComponentValues(CollisionComponent* collisionComponent, tinyxml2::XMLElement* componentElement);
-	static void ParsePhysicsMovementComponentValues(PhysicsMovementComponent* physicsMovementComponent, tinyxml2::XMLElement* componentElement);
 	static void ParseBoxCollisionComponentValues(BoxCollisionComponent* boxCollisionComponent, tinyxml2::XMLElement* componentElement);
 	static void ParseCapsuleCollisionComponentValues(CapsuleCollisionComponent* capsuleCollisionComponent, tinyxml2::XMLElement* componentElement);
 	static void ParseSphereCollisionComponentValues(SphereCollisionComponent* sphereCollisionComponent, tinyxml2::XMLElement* componentElement);
@@ -70,7 +57,6 @@ private:
 	static void ParseNonMovingTriangleMeshCollisionComponentValues(NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent, tinyxml2::XMLElement* componentElement);
 
 	static void ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* objectElement);
-	static void ParsePhysicsObject(PhysicsObject* physicsObject, tinyxml2::XMLElement* objectElement);
 	static void ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* objectElement);
 	static void ParseReflectionProbeObject(ReflectionProbeObject* reflectionProbeObject, tinyxml2::XMLElement* objectElement);
 
@@ -86,12 +72,6 @@ private:
 	static void GetXMLElement_SkeletalMeshComponent(const SkeletalMeshComponent* const skeletalMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_InstancedStaticMeshComponent(const InstancedStaticMeshComponent* const instancedStaticMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_ParticleSystemComponent(const ParticleSystemComponent* const particleSystemComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
-	static void GetXMLElement_NavAgentComponent(const NavAgentComponent* const navAgentComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
-	static void GetXMLElement_PerceptionComponent(const PerceptionComponent* const perceptionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
-	static void GetXMLElement_CameraComponent(const CameraComponent* const cameraComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
-	static void GetXMLElement_PointLightComponent(const PointLightComponent* const pointLightComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
-	static void GetXMLElement_CollisionComponent(const CollisionComponent* const collisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
-	static void GetXMLElement_PhysicsMovementComponent(const PhysicsMovementComponent* const physicsMovementComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_BoxCollisionComponent(const BoxCollisionComponent* const boxCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_CapsuleCollisionComponent(const CapsuleCollisionComponent* const capsuleCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_SphereCollisionComponent(const SphereCollisionComponent* const sphereCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);

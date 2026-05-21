@@ -9,7 +9,6 @@
 #include "Goknar/Log.h"
 #include "Goknar/Components/Component.h"
 #include "Goknar/Components/SocketComponent.h"
-#include "Goknar/Factories/DynamicObjectFactory.h"
 #include "Goknar/Managers/ObjectIDManager.h"
 
 ObjectBase::ObjectBase(const ObjectInitializer& objectInitializer) :
@@ -202,18 +201,6 @@ void ObjectBase::SetRootComponent(Component* newRootComponent)
 	}
 
 	rootComponent_ = newRootComponent;
-}
-
-Component* ObjectBase::AddSubComponent(const std::string& componentClassName)
-{
-	Component* subComponent = DynamicObjectFactory::GetInstance()->CreateComponent(componentClassName, rootComponent_);
-	if (!subComponent)
-	{
-		return nullptr;
-	}
-
-	AddComponent(subComponent);
-	return subComponent;
 }
 
 void ObjectBase::SetIsTickable(bool isTickable)

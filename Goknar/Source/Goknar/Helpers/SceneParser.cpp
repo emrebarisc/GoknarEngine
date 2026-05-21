@@ -18,10 +18,8 @@
 #include "Goknar/Objects/ReflectionProbeObject.h"
 
 #include "Goknar/Components/MeshComponent.h"
-#include "Goknar/Components/CameraComponent.h"
 #include "Goknar/Components/DynamicMeshComponent.h"
 #include "Goknar/Components/InstancedStaticMeshComponent.h"
-#include "Goknar/Components/LightComponents/PointLightComponent.h"
 #include "Goknar/Components/ParticleSystemComponent.h"
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Components/SkeletalMeshComponent.h"
@@ -55,22 +53,15 @@
 
 #include "Goknar/Debug/DebugDrawer.h"
 
-#include "Goknar/AI/PerceptionComponent.h"
-#include "Goknar/Navigation/NavAgentComponent.h"
-#include "Goknar/Navigation/NavigationWorld.h"
-
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Texture.h"
 
 #include "Goknar/Physics/RigidBody.h"
-#include "Goknar/Physics/PhysicsObject.h"
-#include "Goknar/Physics/Components/CollisionComponent.h"
 #include "Goknar/Physics/Components/BoxCollisionComponent.h"
 #include "Goknar/Physics/Components/CapsuleCollisionComponent.h"
 #include "Goknar/Physics/Components/SphereCollisionComponent.h"
 #include "Goknar/Physics/Components/MovingTriangleMeshCollisionComponent.h"
 #include "Goknar/Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
-#include "Goknar/Physics/Components/PhysicsMovementComponent.h"
 
 #include "tinyxml2.h"
 
@@ -166,63 +157,6 @@ namespace
 		{
 			WriteVectorElement(xmlDocument, parentElement, scalingElementName, scaling);
 		}
-	}
-
-	bool ReadFloatElement(tinyxml2::XMLElement* parentElement, const char* elementName, float& outValue)
-	{
-		tinyxml2::XMLElement* element = parentElement ? parentElement->FirstChildElement(elementName) : nullptr;
-		return element && element->QueryFloatText(&outValue) == tinyxml2::XML_SUCCESS;
-	}
-
-	bool ReadIntElement(tinyxml2::XMLElement* parentElement, const char* elementName, int& outValue)
-	{
-		tinyxml2::XMLElement* element = parentElement ? parentElement->FirstChildElement(elementName) : nullptr;
-		return element && element->QueryIntText(&outValue) == tinyxml2::XML_SUCCESS;
-	}
-
-	bool ReadBoolElement(tinyxml2::XMLElement* parentElement, const char* elementName, bool& outValue)
-	{
-		int intValue = outValue ? 1 : 0;
-		if (!ReadIntElement(parentElement, elementName, intValue))
-		{
-			return false;
-		}
-
-		outValue = intValue != 0;
-		return true;
-	}
-
-	bool ReadStringElement(tinyxml2::XMLElement* parentElement, const char* elementName, std::string& outValue)
-	{
-		tinyxml2::XMLElement* element = parentElement ? parentElement->FirstChildElement(elementName) : nullptr;
-		if (!element || !element->GetText())
-		{
-			return false;
-		}
-
-		outValue = element->GetText();
-		return true;
-	}
-
-	void WriteFloatElement(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, const char* elementName, float value)
-	{
-		tinyxml2::XMLElement* element = xmlDocument.NewElement(elementName);
-		element->SetText(value);
-		parentElement->InsertEndChild(element);
-	}
-
-	void WriteBoolElement(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, const char* elementName, bool value)
-	{
-		tinyxml2::XMLElement* element = xmlDocument.NewElement(elementName);
-		element->SetText(value ? 1 : 0);
-		parentElement->InsertEndChild(element);
-	}
-
-	void WriteStringElement(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, const char* elementName, const std::string& value)
-	{
-		tinyxml2::XMLElement* element = xmlDocument.NewElement(elementName);
-		element->SetText(value.c_str());
-		parentElement->InsertEndChild(element);
 	}
 
 	template <typename MeshComponentType, typename MeshInstanceType, typename MeshType>
@@ -1556,39 +1490,27 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 
 	ParseReferencedScenes(scene, root->ToElement());
 
-	tinyxml2::XMLElement* navigationElement = root->FirstChildElement("Navigation");
-	if (navigationElement)
-	{
-		std::string navMeshPath;
-		if (ReadStringElement(navigationElement, "NavMeshPath", navMeshPath))
-		{
-			scene->SetNavMeshPath(navMeshPath);
-			if (!currentParseContext.isReferencedScene && engine && engine->GetNavigationWorld())
-			{
-				engine->GetNavigationWorld()->LoadNavMesh(ContentDir + navMeshPath);
-			}
-		}
-	}
-
 	element = root->FirstChildElement("Objects");
 	if (element)
 	{
 		DynamicObjectFactory* dynamicObjectFactory = DynamicObjectFactory::GetInstance();
-		const auto& factoryObjects = dynamicObjectFactory->GetObjectMap();
 
-		for (const auto& factoryObject : factoryObjects)
-		{
-			const std::string& objectFactoryName = factoryObject.first;
-			tinyxml2::XMLElement* objectElement = element->FirstChildElement(objectFactoryName.c_str());
-			while (objectElement)
+		const auto parseObjectElement =
+			[&](auto&& parseObjectElement, tinyxml2::XMLElement* objectElement, ObjectBase* parentObject) -> void
 			{
-				ObjectBase* object = factoryObject.second();
-				object->SetName(objectFactoryName);
-
-				if (PhysicsObject* physicsObject = dynamic_cast<PhysicsObject*>(object))
+				if (!objectElement)
 				{
-					ParsePhysicsObject(physicsObject, objectElement);
+					return;
 				}
+
+				const char* objectTypeName = objectElement->Name();
+				ObjectBase* object = dynamicObjectFactory->Create(objectTypeName ? objectTypeName : "");
+				if (!object)
+				{
+					return;
+				}
+
+				object->SetName(objectTypeName ? objectTypeName : "ObjectBase");
 
 				if (RigidBody* rigidBody = dynamic_cast<RigidBody*>(object))
 				{
@@ -1597,12 +1519,25 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 
 				ParseObjectBase(object, objectElement);
 
-				object->SetWorldPosition(TransformPoint(currentParseContext.transform, object->GetWorldPosition()), false);
-				object->SetWorldRotation(TransformRotation(currentParseContext.transform, object->GetWorldRotation()), false);
-				object->SetWorldScaling(TransformScaling(currentParseContext.transform, object->GetWorldScaling()));
-				if (currentParseContext.sceneRootObject)
+				if (parentObject)
 				{
-					object->SetParent(currentParseContext.sceneRootObject, SnappingRule::KeepWorldAll);
+					const Vector3 relativePosition = object->GetWorldPosition();
+					const Quaternion relativeRotation = object->GetWorldRotation();
+					const Vector3 relativeScaling = object->GetWorldScaling();
+					object->SetParent(parentObject, SnappingRule::KeepWorldAll, false);
+					object->SetWorldPosition(relativePosition, false);
+					object->SetWorldRotation(relativeRotation, false);
+					object->SetWorldScaling(relativeScaling);
+				}
+				else
+				{
+					object->SetWorldPosition(TransformPoint(currentParseContext.transform, object->GetWorldPosition()), false);
+					object->SetWorldRotation(TransformRotation(currentParseContext.transform, object->GetWorldRotation()), false);
+					object->SetWorldScaling(TransformScaling(currentParseContext.transform, object->GetWorldScaling()));
+					if (currentParseContext.sceneRootObject)
+					{
+						object->SetParent(currentParseContext.sceneRootObject, SnappingRule::KeepWorldAll);
+					}
 				}
 
 				if (ReflectionProbeObject* reflectionProbeObject = dynamic_cast<ReflectionProbeObject*>(object))
@@ -1612,9 +1547,23 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 
 				scene->AddObject(object, currentParseContext.isReferencedScene);
 
-				objectElement = objectElement->NextSiblingElement(objectFactoryName.c_str());
-			}
-			stream.clear();
+				tinyxml2::XMLElement* childrenElement = objectElement->FirstChildElement("Children");
+				if (childrenElement)
+				{
+					for (tinyxml2::XMLElement* childObjectElement = childrenElement->FirstChildElement();
+						childObjectElement;
+						childObjectElement = childObjectElement->NextSiblingElement())
+					{
+						parseObjectElement(parseObjectElement, childObjectElement, object);
+					}
+				}
+			};
+
+		for (tinyxml2::XMLElement* objectElement = element->FirstChildElement();
+			objectElement;
+			objectElement = objectElement->NextSiblingElement())
+		{
+			parseObjectElement(parseObjectElement, objectElement, nullptr);
 		}
 	}
 
@@ -1641,15 +1590,6 @@ void SceneParser::SaveScene(Scene* scene, const std::string& filePath)
 	{
 		subElement = sceneXML.NewElement("Scenes");
 		GetXMLElement_SceneReferences(sceneXML, subElement, scene);
-		rootElement->InsertEndChild(subElement);
-	}
-
-	if (!scene->GetNavMeshPath().empty())
-	{
-		subElement = sceneXML.NewElement("Navigation");
-		tinyxml2::XMLElement* navMeshPathElement = sceneXML.NewElement("NavMeshPath");
-		navMeshPathElement->SetText(scene->GetNavMeshPath().c_str());
-		subElement->InsertEndChild(navMeshPathElement);
 		rootElement->InsertEndChild(subElement);
 	}
 
@@ -2230,284 +2170,6 @@ void SceneParser::ParseParticleSystemComponentValues(ParticleSystemComponent* pa
 	}
 }
 
-void SceneParser::ParseNavAgentComponentValues(NavAgentComponent* navAgentComponent, tinyxml2::XMLElement* componentElement)
-{
-	if (!navAgentComponent || !componentElement)
-	{
-		return;
-	}
-
-	NavAgentProfile agentProfile = navAgentComponent->GetAgentProfile();
-	ReadStringElement(componentElement, "AgentProfileName", agentProfile.name);
-	ReadFloatElement(componentElement, "AgentRadius", agentProfile.radius);
-	ReadFloatElement(componentElement, "AgentHeight", agentProfile.height);
-	ReadFloatElement(componentElement, "AgentMaxStepHeight", agentProfile.maxStepHeight);
-
-	float maxSlopeDegrees = RADIAN_TO_DEGREE(agentProfile.maxSlopeRadians);
-	if (ReadFloatElement(componentElement, "AgentMaxSlopeDegrees", maxSlopeDegrees))
-	{
-		agentProfile.maxSlopeRadians = DEGREE_TO_RADIAN(maxSlopeDegrees);
-	}
-	else
-	{
-		ReadFloatElement(componentElement, "AgentMaxSlopeRadians", agentProfile.maxSlopeRadians);
-	}
-
-	navAgentComponent->SetAgentProfile(agentProfile);
-
-	float waypointAcceptanceRadius = navAgentComponent->GetWaypointAcceptanceRadius();
-	if (ReadFloatElement(componentElement, "WaypointAcceptanceRadius", waypointAcceptanceRadius))
-	{
-		navAgentComponent->SetWaypointAcceptanceRadius(waypointAcceptanceRadius);
-	}
-
-	bool useLocalAvoidance = navAgentComponent->GetUseLocalAvoidance();
-	if (ReadBoolElement(componentElement, "UseLocalAvoidance", useLocalAvoidance))
-	{
-		navAgentComponent->SetUseLocalAvoidance(useLocalAvoidance);
-	}
-
-	float localAvoidanceRadius = navAgentComponent->GetLocalAvoidanceRadius();
-	if (ReadFloatElement(componentElement, "LocalAvoidanceRadius", localAvoidanceRadius))
-	{
-		navAgentComponent->SetLocalAvoidanceRadius(localAvoidanceRadius);
-	}
-}
-
-void SceneParser::ParsePerceptionComponentValues(PerceptionComponent* perceptionComponent, tinyxml2::XMLElement* componentElement)
-{
-	if (!perceptionComponent || !componentElement)
-	{
-		return;
-	}
-
-	float sightRadius = perceptionComponent->GetSightRadius();
-	if (ReadFloatElement(componentElement, "SightRadius", sightRadius))
-	{
-		perceptionComponent->SetSightRadius(sightRadius);
-	}
-
-	float fieldOfViewDegrees = perceptionComponent->GetFieldOfViewDegrees();
-	if (ReadFloatElement(componentElement, "FieldOfViewDegrees", fieldOfViewDegrees))
-	{
-		perceptionComponent->SetFieldOfViewDegrees(fieldOfViewDegrees);
-	}
-
-	float updateInterval = perceptionComponent->GetUpdateInterval();
-	if (ReadFloatElement(componentElement, "UpdateInterval", updateInterval))
-	{
-		perceptionComponent->SetUpdateInterval(updateInterval);
-	}
-
-	bool useCandidateObjects = perceptionComponent->GetUseCandidateObjects();
-	if (ReadBoolElement(componentElement, "UseCandidateObjects", useCandidateObjects))
-	{
-		perceptionComponent->SetUseCandidateObjects(useCandidateObjects);
-	}
-}
-
-void SceneParser::ParseCameraComponentValues(CameraComponent* cameraComponent, tinyxml2::XMLElement* componentElement)
-{
-	if (!cameraComponent || !componentElement || !cameraComponent->GetCamera())
-	{
-		return;
-	}
-
-	Camera* camera = cameraComponent->GetCamera();
-	bool followsRotation = cameraComponent->GetCameraFollowsComponentRotation();
-	if (ReadBoolElement(componentElement, "CameraFollowsComponentRotation", followsRotation))
-	{
-		cameraComponent->SetCameraFollowsComponentRotation(followsRotation);
-	}
-
-	float nearDistance = camera->GetNearDistance();
-	if (ReadFloatElement(componentElement, "NearDistance", nearDistance))
-	{
-		camera->SetNearDistance(nearDistance);
-	}
-
-	float farDistance = camera->GetFarDistance();
-	if (ReadFloatElement(componentElement, "FarDistance", farDistance))
-	{
-		camera->SetFarDistance(farDistance);
-	}
-
-	int imageWidth = camera->GetImageWidth();
-	if (ReadIntElement(componentElement, "ImageWidth", imageWidth))
-	{
-		camera->SetImageWidth(imageWidth);
-	}
-
-	int imageHeight = camera->GetImageHeight();
-	if (ReadIntElement(componentElement, "ImageHeight", imageHeight))
-	{
-		camera->SetImageHeight(imageHeight);
-	}
-
-	int renderMask = static_cast<int>(camera->GetRenderMask());
-	if (ReadIntElement(componentElement, "RenderMask", renderMask))
-	{
-		camera->SetRenderMask(static_cast<unsigned int>(renderMask));
-	}
-
-	int projection = static_cast<int>(camera->GetProjection());
-	if (ReadIntElement(componentElement, "Projection", projection))
-	{
-		camera->SetProjection(static_cast<CameraProjection>(projection));
-	}
-
-	int cameraType = static_cast<int>(camera->GetCameraType());
-	if (ReadIntElement(componentElement, "CameraType", cameraType))
-	{
-		camera->SetCameraType(static_cast<CameraType>(cameraType));
-	}
-}
-
-void SceneParser::ParsePointLightComponentValues(PointLightComponent* pointLightComponent, tinyxml2::XMLElement* componentElement)
-{
-	if (!pointLightComponent || !componentElement || !pointLightComponent->GetPointLight())
-	{
-		return;
-	}
-
-	PointLight* pointLight = pointLightComponent->GetPointLight();
-	Vector3 color = pointLight->GetColor();
-	if (ReadVector3Element(componentElement, "Color", color))
-	{
-		pointLight->SetColor(color);
-	}
-
-	float intensity = pointLight->GetIntensity();
-	if (ReadFloatElement(componentElement, "Intensity", intensity))
-	{
-		pointLight->SetIntensity(intensity);
-	}
-
-	float radius = pointLight->GetRadius();
-	if (ReadFloatElement(componentElement, "Radius", radius))
-	{
-		pointLight->SetRadius(radius);
-	}
-
-	bool isShadowEnabled = pointLight->GetIsShadowEnabled();
-	if (ReadBoolElement(componentElement, "IsShadowEnabled", isShadowEnabled))
-	{
-		pointLight->SetIsShadowEnabled(isShadowEnabled);
-	}
-
-	float shadowIntensity = pointLight->GetShadowIntensity();
-	if (ReadFloatElement(componentElement, "ShadowIntensity", shadowIntensity))
-	{
-		pointLight->SetShadowIntensity(shadowIntensity);
-	}
-}
-
-void SceneParser::ParseCollisionComponentValues(CollisionComponent* collisionComponent, tinyxml2::XMLElement* componentElement)
-{
-	if (!collisionComponent || !componentElement)
-	{
-		return;
-	}
-
-	int collisionGroup = static_cast<int>(collisionComponent->GetCollisionGroup());
-	if (ReadIntElement(componentElement, "CollisionGroup", collisionGroup))
-	{
-		collisionComponent->SetCollisionGroup(static_cast<CollisionGroup>(collisionGroup));
-	}
-
-	int collisionMask = static_cast<int>(collisionComponent->GetCollisionMask());
-	if (ReadIntElement(componentElement, "CollisionMask", collisionMask))
-	{
-		collisionComponent->SetCollisionMask(static_cast<CollisionMask>(collisionMask));
-	}
-}
-
-void SceneParser::ParsePhysicsMovementComponentValues(PhysicsMovementComponent* physicsMovementComponent, tinyxml2::XMLElement* componentElement)
-{
-	if (!physicsMovementComponent || !componentElement)
-	{
-		return;
-	}
-
-	float movementSpeed = physicsMovementComponent->GetMovementSpeed();
-	if (ReadFloatElement(componentElement, "MovementSpeed", movementSpeed))
-	{
-		physicsMovementComponent->SetMovementSpeed(movementSpeed);
-	}
-
-	Vector3 vectorValue = physicsMovementComponent->GetMovementDirection();
-	if (ReadVector3Element(componentElement, "MovementDirection", vectorValue))
-	{
-		physicsMovementComponent->SetMovementDirection(vectorValue);
-	}
-
-	vectorValue = physicsMovementComponent->GetLinearVelocity();
-	if (ReadVector3Element(componentElement, "LinearVelocity", vectorValue))
-	{
-		physicsMovementComponent->SetLinearVelocity(vectorValue);
-	}
-
-	vectorValue = physicsMovementComponent->GetAngularVelocity();
-	if (ReadVector3Element(componentElement, "AngularVelocity", vectorValue))
-	{
-		physicsMovementComponent->SetAngularVelocity(vectorValue);
-	}
-
-	vectorValue = physicsMovementComponent->GetGravity();
-	if (ReadVector3Element(componentElement, "Gravity", vectorValue))
-	{
-		physicsMovementComponent->SetGravity(vectorValue);
-	}
-
-	float floatValue = physicsMovementComponent->GetLinearDamping();
-	if (ReadFloatElement(componentElement, "LinearDamping", floatValue))
-	{
-		physicsMovementComponent->SetLinearDamping(floatValue);
-	}
-
-	floatValue = physicsMovementComponent->GetAngularDamping();
-	if (ReadFloatElement(componentElement, "AngularDamping", floatValue))
-	{
-		physicsMovementComponent->SetAngularDamping(floatValue);
-	}
-
-	floatValue = physicsMovementComponent->GetStepHeight();
-	if (ReadFloatElement(componentElement, "StepHeight", floatValue))
-	{
-		physicsMovementComponent->SetStepHeight(floatValue);
-	}
-
-	floatValue = physicsMovementComponent->GetFallSpeed();
-	if (ReadFloatElement(componentElement, "FallSpeed", floatValue))
-	{
-		physicsMovementComponent->SetFallSpeed(floatValue);
-	}
-
-	floatValue = physicsMovementComponent->GetJumpSpeed();
-	if (ReadFloatElement(componentElement, "JumpSpeed", floatValue))
-	{
-		physicsMovementComponent->SetJumpSpeed(floatValue);
-	}
-
-	floatValue = physicsMovementComponent->GetMaxJumpHeight();
-	if (ReadFloatElement(componentElement, "MaxJumpHeight", floatValue))
-	{
-		physicsMovementComponent->SetMaxJumpHeight(floatValue);
-	}
-
-	float maxSlopeDegrees = RADIAN_TO_DEGREE(physicsMovementComponent->GetMaxSlope());
-	if (ReadFloatElement(componentElement, "MaxSlopeDegrees", maxSlopeDegrees))
-	{
-		physicsMovementComponent->SetMaxSlope(DEGREE_TO_RADIAN(maxSlopeDegrees));
-	}
-
-	floatValue = physicsMovementComponent->GetMaxPenetrationDepth();
-	if (ReadFloatElement(componentElement, "MaxPenetrationDepth", floatValue))
-	{
-		physicsMovementComponent->SetMaxPenetrationDepth(floatValue);
-	}
-}
-
 void SceneParser::ParseBoxCollisionComponentValues(BoxCollisionComponent* boxCollisionComponent, tinyxml2::XMLElement* componentElement)
 {
 	std::stringstream stream;
@@ -2618,35 +2280,29 @@ void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* obje
 	}
 	stream.clear();
 
-	child = objectElement->FirstChildElement("WorldPosition");
-	if (child)
+	Vector3 objectPosition = object->GetWorldPosition();
+	if (ReadVector3Element(objectElement, "WorldPosition", objectPosition) ||
+		ReadVector3Element(objectElement, "RelativePosition", objectPosition) ||
+		ReadVector3Element(objectElement, "Position", objectPosition))
 	{
-		stream << child->GetText() << std::endl;
-		Vector3 worldPosition;
-		stream >> worldPosition.x >> worldPosition.y >> worldPosition.z;
-		object->SetWorldPosition(worldPosition);
+		object->SetWorldPosition(objectPosition);
 	}
-	stream.clear();
 
-	child = objectElement->FirstChildElement("EulerWorldRotation");
-	if (child)
+	Vector3 objectRotation = object->GetWorldRotation().ToEulerDegrees();
+	if (ReadVector3Element(objectElement, "EulerWorldRotation", objectRotation) ||
+		ReadVector3Element(objectElement, "EulerRelativeRotation", objectRotation) ||
+		ReadVector3Element(objectElement, "EulerRotation", objectRotation))
 	{
-		stream << child->GetText() << std::endl;
-		Vector3 worldRotation;
-		stream >> worldRotation.x >> worldRotation.y >> worldRotation.z;
-		object->SetWorldRotation(Quaternion::FromEulerDegrees(worldRotation));
+		object->SetWorldRotation(Quaternion::FromEulerDegrees(objectRotation));
 	}
-	stream.clear();
 
-	child = objectElement->FirstChildElement("WorldScaling");
-	if (child)
+	Vector3 objectScaling = object->GetWorldScaling();
+	if (ReadVector3Element(objectElement, "WorldScaling", objectScaling) ||
+		ReadVector3Element(objectElement, "RelativeScaling", objectScaling) ||
+		ReadVector3Element(objectElement, "Scaling", objectScaling))
 	{
-		stream << child->GetText() << std::endl;
-		Vector3 worldScaling;
-		stream >> worldScaling.x >> worldScaling.y >> worldScaling.z;
-		object->SetWorldScaling(worldScaling);
+		object->SetWorldScaling(objectScaling);
 	}
-	stream.clear();
 
 	child = objectElement->FirstChildElement("Components");
 	if (child)
@@ -2663,18 +2319,13 @@ void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* obje
 		}
 
 		componentElement = child->FirstChildElement("SkeletalMeshComponent");
-		int skeletalMeshComponentIndex = 0;
 		while (componentElement)
 		{
-			std::vector<SkeletalMeshComponent*> skeletalMeshComponents = object->GetComponentsOfType<SkeletalMeshComponent>();
-			SkeletalMeshComponent* skeletalMeshComponent = skeletalMeshComponentIndex < static_cast<int>(skeletalMeshComponents.size()) ?
-				skeletalMeshComponents[skeletalMeshComponentIndex] :
-				object->AddSubComponent<SkeletalMeshComponent>();
+			SkeletalMeshComponent* skeletalMeshComponent = object->AddSubComponent<SkeletalMeshComponent>();
 			ParseSkeletalMeshComponentValues(skeletalMeshComponent, componentElement);
 
 			ParseComponentValues(skeletalMeshComponent, componentElement);
 
-			++skeletalMeshComponentIndex;
 			componentElement = componentElement->NextSiblingElement("SkeletalMeshComponent");
 		}
 
@@ -2729,225 +2380,6 @@ void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* obje
 
 			componentElement = componentElement->NextSiblingElement("ParticleSystemComponent");
 		}
-
-		componentElement = child->FirstChildElement("NavAgentComponent");
-		while (componentElement)
-		{
-			NavAgentComponent* navAgentComponent = object->AddSubComponent<NavAgentComponent>();
-			ParseNavAgentComponentValues(navAgentComponent, componentElement);
-
-			ParseComponentValues(navAgentComponent, componentElement);
-
-			componentElement = componentElement->NextSiblingElement("NavAgentComponent");
-		}
-
-		componentElement = child->FirstChildElement("PerceptionComponent");
-		while (componentElement)
-		{
-			PerceptionComponent* perceptionComponent = object->AddSubComponent<PerceptionComponent>();
-			ParsePerceptionComponentValues(perceptionComponent, componentElement);
-
-			ParseComponentValues(perceptionComponent, componentElement);
-
-			componentElement = componentElement->NextSiblingElement("PerceptionComponent");
-		}
-
-		componentElement = child->FirstChildElement("CameraComponent");
-		while (componentElement)
-		{
-			CameraComponent* cameraComponent = dynamic_cast<CameraComponent*>(object->AddSubComponent("CameraComponent"));
-			if (cameraComponent)
-			{
-				ParseCameraComponentValues(cameraComponent, componentElement);
-				ParseComponentValues(cameraComponent, componentElement);
-			}
-
-			componentElement = componentElement->NextSiblingElement("CameraComponent");
-		}
-
-		componentElement = child->FirstChildElement("PointLightComponent");
-		while (componentElement)
-		{
-			PointLightComponent* pointLightComponent = dynamic_cast<PointLightComponent*>(object->AddSubComponent("PointLightComponent"));
-			if (pointLightComponent)
-			{
-				ParsePointLightComponentValues(pointLightComponent, componentElement);
-				ParseComponentValues(pointLightComponent, componentElement);
-			}
-
-			componentElement = componentElement->NextSiblingElement("PointLightComponent");
-		}
-
-		componentElement = child->FirstChildElement("PhysicsMovementComponent");
-		while (componentElement)
-		{
-			PhysicsMovementComponent* physicsMovementComponent = dynamic_cast<PhysicsMovementComponent*>(object->AddSubComponent("PhysicsMovementComponent"));
-			if (physicsMovementComponent)
-			{
-				ParsePhysicsMovementComponentValues(physicsMovementComponent, componentElement);
-				ParseComponentValues(physicsMovementComponent, componentElement);
-			}
-
-			componentElement = componentElement->NextSiblingElement("PhysicsMovementComponent");
-		}
-
-		if (!dynamic_cast<RigidBody*>(object))
-		{
-			componentElement = child->FirstChildElement("BoxCollisionComponent");
-			while (componentElement)
-			{
-				BoxCollisionComponent* boxCollisionComponent = dynamic_cast<BoxCollisionComponent*>(object->AddSubComponent("BoxCollisionComponent"));
-				if (boxCollisionComponent)
-				{
-					ParseCollisionComponentValues(boxCollisionComponent, componentElement);
-					ParseBoxCollisionComponentValues(boxCollisionComponent, componentElement);
-					ParseComponentValues(boxCollisionComponent, componentElement);
-				}
-
-				componentElement = componentElement->NextSiblingElement("BoxCollisionComponent");
-			}
-
-			componentElement = child->FirstChildElement("SphereCollisionComponent");
-			while (componentElement)
-			{
-				SphereCollisionComponent* sphereCollisionComponent = dynamic_cast<SphereCollisionComponent*>(object->AddSubComponent("SphereCollisionComponent"));
-				if (sphereCollisionComponent)
-				{
-					ParseCollisionComponentValues(sphereCollisionComponent, componentElement);
-					ParseSphereCollisionComponentValues(sphereCollisionComponent, componentElement);
-					ParseComponentValues(sphereCollisionComponent, componentElement);
-				}
-
-				componentElement = componentElement->NextSiblingElement("SphereCollisionComponent");
-			}
-
-			componentElement = child->FirstChildElement("CapsuleCollisionComponent");
-			int capsuleCollisionComponentIndex = 0;
-			while (componentElement)
-			{
-				std::vector<CapsuleCollisionComponent*> capsuleCollisionComponents = object->GetComponentsOfType<CapsuleCollisionComponent>();
-				CapsuleCollisionComponent* capsuleCollisionComponent = capsuleCollisionComponentIndex < static_cast<int>(capsuleCollisionComponents.size()) ?
-					capsuleCollisionComponents[capsuleCollisionComponentIndex] :
-					dynamic_cast<CapsuleCollisionComponent*>(object->AddSubComponent("CapsuleCollisionComponent"));
-				if (capsuleCollisionComponent)
-				{
-					ParseCollisionComponentValues(capsuleCollisionComponent, componentElement);
-					ParseCapsuleCollisionComponentValues(capsuleCollisionComponent, componentElement);
-					ParseComponentValues(capsuleCollisionComponent, componentElement);
-				}
-
-				++capsuleCollisionComponentIndex;
-				componentElement = componentElement->NextSiblingElement("CapsuleCollisionComponent");
-			}
-
-			componentElement = child->FirstChildElement("MovingTriangleMeshCollisionComponent");
-			while (componentElement)
-			{
-				MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent = dynamic_cast<MovingTriangleMeshCollisionComponent*>(object->AddSubComponent("MovingTriangleMeshCollisionComponent"));
-				if (movingTriangleMeshCollisionComponent)
-				{
-					ParseCollisionComponentValues(movingTriangleMeshCollisionComponent, componentElement);
-					ParseMovingTriangleMeshCollisionComponentValues(movingTriangleMeshCollisionComponent, componentElement);
-					ParseComponentValues(movingTriangleMeshCollisionComponent, componentElement);
-				}
-
-				componentElement = componentElement->NextSiblingElement("MovingTriangleMeshCollisionComponent");
-			}
-
-			componentElement = child->FirstChildElement("NonMovingTriangleMeshCollisionComponent");
-			while (componentElement)
-			{
-				NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent = dynamic_cast<NonMovingTriangleMeshCollisionComponent*>(object->AddSubComponent("NonMovingTriangleMeshCollisionComponent"));
-				if (nonMovingTriangleMeshCollisionComponent)
-				{
-					ParseCollisionComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
-					ParseNonMovingTriangleMeshCollisionComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
-					ParseComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
-				}
-
-				componentElement = componentElement->NextSiblingElement("NonMovingTriangleMeshCollisionComponent");
-			}
-		}
-
-		const std::vector<std::string> explicitlyHandledComponentNames
-		{
-			"StaticMeshComponent",
-			"SkeletalMeshComponent",
-			"InstancedStaticMeshComponent",
-			"BillboardParticleSystemComponent",
-			"StaticMeshParticleSystemComponent",
-			"ParticleSystemComponent",
-			"NavAgentComponent",
-			"PerceptionComponent",
-			"CameraComponent",
-			"PointLightComponent",
-			"PhysicsMovementComponent",
-			"BoxCollisionComponent",
-			"SphereCollisionComponent",
-			"CapsuleCollisionComponent",
-			"MovingTriangleMeshCollisionComponent",
-			"NonMovingTriangleMeshCollisionComponent"
-		};
-
-		const auto isExplicitlyHandledComponent =
-			[&explicitlyHandledComponentNames](const std::string& componentName) -> bool
-			{
-				return std::find(explicitlyHandledComponentNames.begin(), explicitlyHandledComponentNames.end(), componentName) != explicitlyHandledComponentNames.end();
-			};
-
-		const auto& componentMap = DynamicObjectFactory::GetInstance()->GetComponentMap();
-		for (const auto& componentPair : componentMap)
-		{
-			const std::string& componentName = componentPair.first;
-			const DynamicObjectFactory::ComponentClassInfo& componentInfo = componentPair.second;
-			if (isExplicitlyHandledComponent(componentName))
-			{
-				continue;
-			}
-
-			if (componentInfo.ownerRequirement == DynamicComponentOwnerRequirement::PhysicsObject && !dynamic_cast<PhysicsObject*>(object))
-			{
-				continue;
-			}
-
-			tinyxml2::XMLElement* genericComponentElement = child->FirstChildElement(componentName.c_str());
-			while (genericComponentElement)
-			{
-				Component* genericComponent = object->AddSubComponent(componentName);
-				if (genericComponent)
-				{
-					ParseComponentValues(genericComponent, genericComponentElement);
-				}
-
-				genericComponentElement = genericComponentElement->NextSiblingElement(componentName.c_str());
-			}
-		}
-	}
-}
-
-void SceneParser::ParsePhysicsObject(PhysicsObject* physicsObject, tinyxml2::XMLElement* objectElement)
-{
-	if (!physicsObject || !objectElement)
-	{
-		return;
-	}
-
-	int collisionGroup = static_cast<int>(physicsObject->GetCollisionGroup());
-	if (ReadIntElement(objectElement, "CollisionGroup", collisionGroup))
-	{
-		physicsObject->SetCollisionGroup(static_cast<CollisionGroup>(collisionGroup));
-	}
-
-	int collisionMask = static_cast<int>(physicsObject->GetCollisionMask());
-	if (ReadIntElement(objectElement, "CollisionMask", collisionMask))
-	{
-		physicsObject->SetCollisionMask(static_cast<CollisionMask>(collisionMask));
-	}
-
-	std::string tag;
-	if (ReadStringElement(objectElement, "Tag", tag))
-	{
-		physicsObject->SetTag(tag);
 	}
 }
 
@@ -2993,7 +2425,6 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		while (componentElement)
 		{
 			BoxCollisionComponent* boxCollisionComponent = rigidBody->AddSubComponent<BoxCollisionComponent>();
-			ParseCollisionComponentValues(boxCollisionComponent, componentElement);
 			ParseBoxCollisionComponentValues(boxCollisionComponent, componentElement);
 
 			ParseComponentValues(boxCollisionComponent, componentElement);
@@ -3005,7 +2436,6 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		while (componentElement)
 		{
 			SphereCollisionComponent* sphereCollisionComponent = rigidBody->AddSubComponent<SphereCollisionComponent>();
-			ParseCollisionComponentValues(sphereCollisionComponent, componentElement);
 			ParseSphereCollisionComponentValues(sphereCollisionComponent, componentElement);
 
 			ParseComponentValues(sphereCollisionComponent, componentElement);
@@ -3017,7 +2447,6 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		while (componentElement)
 		{
 			CapsuleCollisionComponent* capsuleCollisionComponent = rigidBody->AddSubComponent<CapsuleCollisionComponent>();
-			ParseCollisionComponentValues(capsuleCollisionComponent, componentElement);
 			ParseCapsuleCollisionComponentValues(capsuleCollisionComponent, componentElement);
 
 			ParseComponentValues(capsuleCollisionComponent, componentElement);
@@ -3029,7 +2458,6 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		while (componentElement)
 		{
 			MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent = rigidBody->AddSubComponent<MovingTriangleMeshCollisionComponent>();
-			ParseCollisionComponentValues(movingTriangleMeshCollisionComponent, componentElement);
 			ParseMovingTriangleMeshCollisionComponentValues(movingTriangleMeshCollisionComponent, componentElement);
 
 			ParseComponentValues(movingTriangleMeshCollisionComponent, componentElement);
@@ -3041,7 +2469,6 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		while (componentElement)
 		{
 			NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent = rigidBody->AddSubComponent<NonMovingTriangleMeshCollisionComponent>();
-			ParseCollisionComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
 			ParseNonMovingTriangleMeshCollisionComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
 
 			ParseComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
@@ -3249,82 +2676,110 @@ void SceneParser::GetXMLElement_SceneReferences(tinyxml2::XMLDocument& xmlDocume
 void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene)
 {
 	const std::vector<ObjectBase*>& sceneObjects = scene ? scene->GetObjects() : engine->GetRegisteredObjects();
+
+	const auto shouldWriteObject =
+		[scene](ObjectBase* object) -> bool
+		{
+			if (!object || (scene && scene->GetIsObjectFromReferencedScene(object)))
+			{
+				return false;
+			}
+
+			if (object->GetName().find("__Editor__") != std::string::npos)
+			{
+				return false;
+			}
+
+			return !dynamic_cast<DebugObject*>(object);
+		};
+
+	const auto writeObjectElement =
+		[&](auto&& writeObjectElement, ObjectBase* object) -> tinyxml2::XMLElement*
+		{
+			RigidBody* rigidBody = dynamic_cast<RigidBody*>(object);
+			ReflectionProbeObject* reflectionProbeObject = dynamic_cast<ReflectionProbeObject*>(object);
+
+			std::string objectTypeString = "ObjectBase";
+			if (rigidBody)
+			{
+				objectTypeString = "RigidBody";
+			}
+			else if (reflectionProbeObject)
+			{
+				objectTypeString = "ReflectionProbeObject";
+			}
+
+			tinyxml2::XMLElement* objectElement = xmlDocument.NewElement(objectTypeString.c_str());
+
+			tinyxml2::XMLElement* objectNameElement = xmlDocument.NewElement("Name");
+			objectNameElement->SetText(object->GetNameWithoutId().c_str());
+			objectElement->InsertEndChild(objectNameElement);
+
+			const bool hasParent = object->GetParent() != nullptr;
+			WriteTransformElementsIfNeeded(
+				xmlDocument,
+				objectElement,
+				object->GetWorldPosition(),
+				object->GetWorldRotation(),
+				object->GetWorldScaling(),
+				hasParent ? "RelativePosition" : "WorldPosition",
+				hasParent ? "EulerRelativeRotation" : "EulerWorldRotation",
+				hasParent ? "RelativeScaling" : "WorldScaling");
+
+			if (rigidBody)
+			{
+				tinyxml2::XMLElement* rigidBodyMassElement = xmlDocument.NewElement("Mass");
+				rigidBodyMassElement->SetText(rigidBody->GetMass());
+				objectElement->InsertEndChild(rigidBodyMassElement);
+
+				tinyxml2::XMLElement* rigidBodyCollisionGroupElement = xmlDocument.NewElement("CollisionGroup");
+				rigidBodyCollisionGroupElement->SetText((int)rigidBody->GetCollisionGroup());
+				objectElement->InsertEndChild(rigidBodyCollisionGroupElement);
+
+				tinyxml2::XMLElement* rigidBodyCollisionMaskElement = xmlDocument.NewElement("CollisionMask");
+				rigidBodyCollisionMaskElement->SetText((int)rigidBody->GetCollisionMask());
+				objectElement->InsertEndChild(rigidBodyCollisionMaskElement);
+			}
+
+			if (reflectionProbeObject)
+			{
+				tinyxml2::XMLElement* reflectionProbeSizeElement = xmlDocument.NewElement("Size");
+				reflectionProbeSizeElement->SetText(Serialize(reflectionProbeObject->GetSize()).c_str());
+				objectElement->InsertEndChild(reflectionProbeSizeElement);
+			}
+
+			tinyxml2::XMLElement* componentsElement = xmlDocument.NewElement("Components");
+			GetXMLElement_Components(object, xmlDocument, componentsElement);
+			objectElement->InsertEndChild(componentsElement);
+
+			tinyxml2::XMLElement* childrenElement = nullptr;
+			for (ObjectBase* childObject : object->GetChildren())
+			{
+				if (!shouldWriteObject(childObject))
+				{
+					continue;
+				}
+
+				if (!childrenElement)
+				{
+					childrenElement = xmlDocument.NewElement("Children");
+					objectElement->InsertEndChild(childrenElement);
+				}
+
+				childrenElement->InsertEndChild(writeObjectElement(writeObjectElement, childObject));
+			}
+
+			return objectElement;
+		};
+
 	for (ObjectBase* object : sceneObjects)
 	{
-		if (!object || (scene && scene->GetIsObjectFromReferencedScene(object)))
+		if (!shouldWriteObject(object) || object->GetParent())
 		{
 			continue;
 		}
 
-		if (object->GetName().find("__Editor__") != std::string::npos)
-		{
-			continue;
-		}
-
-		if (dynamic_cast<DebugObject*>(object))
-		{
-			continue;
-		}
-
-		PhysicsObject* physicsObject = dynamic_cast<PhysicsObject*>(object);
-		RigidBody* rigidBody = dynamic_cast<RigidBody*>(object);
-		ReflectionProbeObject* reflectionProbeObject = dynamic_cast<ReflectionProbeObject*>(object);
-
-		std::string objectTypeString = DynamicObjectFactory::GetInstance()->GetRegisteredObjectClassName(object);
-
-		tinyxml2::XMLElement* objectElement = xmlDocument.NewElement(objectTypeString.c_str());
-
-		tinyxml2::XMLElement* objectNameElement = xmlDocument.NewElement("Name");
-		objectNameElement->SetText(object->GetNameWithoutId().c_str());
-		objectElement->InsertEndChild(objectNameElement);
-
-		WriteTransformElementsIfNeeded(
-			xmlDocument,
-			objectElement,
-			object->GetWorldPosition(),
-			object->GetWorldRotation(),
-			object->GetWorldScaling(),
-			"WorldPosition",
-			"EulerWorldRotation",
-			"WorldScaling");
-
-		if (physicsObject)
-		{
-			tinyxml2::XMLElement* physicsObjectCollisionGroupElement = xmlDocument.NewElement("CollisionGroup");
-			physicsObjectCollisionGroupElement->SetText((int)physicsObject->GetCollisionGroup());
-			objectElement->InsertEndChild(physicsObjectCollisionGroupElement);
-
-			tinyxml2::XMLElement* physicsObjectCollisionMaskElement = xmlDocument.NewElement("CollisionMask");
-			physicsObjectCollisionMaskElement->SetText((int)physicsObject->GetCollisionMask());
-			objectElement->InsertEndChild(physicsObjectCollisionMaskElement);
-
-			if (!physicsObject->GetTag().empty())
-			{
-				tinyxml2::XMLElement* physicsObjectTagElement = xmlDocument.NewElement("Tag");
-				physicsObjectTagElement->SetText(physicsObject->GetTag().c_str());
-				objectElement->InsertEndChild(physicsObjectTagElement);
-			}
-		}
-
-		if (rigidBody)
-		{
-			tinyxml2::XMLElement* rigidBodyMassElement = xmlDocument.NewElement("Mass");
-			rigidBodyMassElement->SetText(rigidBody->GetMass());
-			objectElement->InsertEndChild(rigidBodyMassElement);
-		}
-
-		if (reflectionProbeObject)
-		{
-			tinyxml2::XMLElement* reflectionProbeSizeElement = xmlDocument.NewElement("Size");
-			reflectionProbeSizeElement->SetText(Serialize(reflectionProbeObject->GetSize()).c_str());
-			objectElement->InsertEndChild(reflectionProbeSizeElement);
-		}
-
-		tinyxml2::XMLElement* componentsElement = xmlDocument.NewElement("Components");
-		GetXMLElement_Components(object, xmlDocument, componentsElement);
-		objectElement->InsertEndChild(componentsElement);
-
-		parentElement->InsertEndChild(objectElement);
+		parentElement->InsertEndChild(writeObjectElement(writeObjectElement, object));
 	}
 }
 
@@ -3365,65 +2820,34 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 			componentElement = xmlDocument.NewElement("StaticMeshParticleSystemComponent");
 			GetXMLElement_ParticleSystemComponent(particleSystemComponent, xmlDocument, componentElement);
 		}
-		else if (NavAgentComponent* navAgentComponent = dynamic_cast<NavAgentComponent*>(component))
-		{
-			componentElement = xmlDocument.NewElement("NavAgentComponent");
-			GetXMLElement_NavAgentComponent(navAgentComponent, xmlDocument, componentElement);
-		}
-		else if (PerceptionComponent* perceptionComponent = dynamic_cast<PerceptionComponent*>(component))
-		{
-			componentElement = xmlDocument.NewElement("PerceptionComponent");
-			GetXMLElement_PerceptionComponent(perceptionComponent, xmlDocument, componentElement);
-		}
-		else if (CameraComponent* cameraComponent = dynamic_cast<CameraComponent*>(component))
-		{
-			componentElement = xmlDocument.NewElement("CameraComponent");
-			GetXMLElement_CameraComponent(cameraComponent, xmlDocument, componentElement);
-		}
-		else if (PointLightComponent* pointLightComponent = dynamic_cast<PointLightComponent*>(component))
-		{
-			componentElement = xmlDocument.NewElement("PointLightComponent");
-			GetXMLElement_PointLightComponent(pointLightComponent, xmlDocument, componentElement);
-		}
-		else if (PhysicsMovementComponent* physicsMovementComponent = dynamic_cast<PhysicsMovementComponent*>(component))
-		{
-			componentElement = xmlDocument.NewElement("PhysicsMovementComponent");
-			GetXMLElement_PhysicsMovementComponent(physicsMovementComponent, xmlDocument, componentElement);
-		}
 		else if (BoxCollisionComponent* boxCollisionComponent = dynamic_cast<BoxCollisionComponent*>(component))
 		{
 			componentElement = xmlDocument.NewElement("BoxCollisionComponent");
-			GetXMLElement_CollisionComponent(boxCollisionComponent, xmlDocument, componentElement);
 			GetXMLElement_BoxCollisionComponent(boxCollisionComponent, xmlDocument, componentElement);
 		}
 		else if (CapsuleCollisionComponent* capsuleCollisionComponent = dynamic_cast<CapsuleCollisionComponent*>(component))
 		{
 			componentElement = xmlDocument.NewElement("CapsuleCollisionComponent");
-			GetXMLElement_CollisionComponent(capsuleCollisionComponent, xmlDocument, componentElement);
 			GetXMLElement_CapsuleCollisionComponent(capsuleCollisionComponent, xmlDocument, componentElement);
 		}
 		else if (SphereCollisionComponent* sphereCollisionComponent = dynamic_cast<SphereCollisionComponent*>(component))
 		{
 			componentElement = xmlDocument.NewElement("SphereCollisionComponent");
-			GetXMLElement_CollisionComponent(sphereCollisionComponent, xmlDocument, componentElement);
 			GetXMLElement_SphereCollisionComponent(sphereCollisionComponent, xmlDocument, componentElement);
 		}
 		else if (MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent = dynamic_cast<MovingTriangleMeshCollisionComponent*>(component))
 		{
 			componentElement = xmlDocument.NewElement("MovingTriangleMeshCollisionComponent");
-			GetXMLElement_CollisionComponent(movingTriangleMeshCollisionComponent, xmlDocument, componentElement);
 			GetXMLElement_MovingTriangleMeshCollisionComponent(movingTriangleMeshCollisionComponent, xmlDocument, componentElement);
 		}
 		else if (NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent = dynamic_cast<NonMovingTriangleMeshCollisionComponent*>(component))
 		{
 			componentElement = xmlDocument.NewElement("NonMovingTriangleMeshCollisionComponent");
-			GetXMLElement_CollisionComponent(nonMovingTriangleMeshCollisionComponent, xmlDocument, componentElement);
 			GetXMLElement_NonMovingTriangleMeshCollisionComponent(nonMovingTriangleMeshCollisionComponent, xmlDocument, componentElement);
 		}
 		else
 		{
-			const std::string componentClassName = DynamicObjectFactory::GetInstance()->GetRegisteredComponentClassName(component);
-			componentElement = xmlDocument.NewElement(componentClassName.c_str());
+			componentElement = xmlDocument.NewElement("Component");
 		}
 
 		WriteTransformElementsIfNeeded(
@@ -3696,123 +3120,6 @@ void SceneParser::GetXMLElement_ParticleSystemComponent(const ParticleSystemComp
 			parentElement->InsertEndChild(billboardMaterialPathElement);
 		}
 	}
-}
-
-void SceneParser::GetXMLElement_NavAgentComponent(const NavAgentComponent* const navAgentComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
-{
-	if (!navAgentComponent)
-	{
-		return;
-	}
-
-	const NavAgentProfile& agentProfile = navAgentComponent->GetAgentProfile();
-	WriteStringElement(xmlDocument, parentElement, "AgentProfileName", agentProfile.name);
-	WriteFloatElement(xmlDocument, parentElement, "AgentRadius", agentProfile.radius);
-	WriteFloatElement(xmlDocument, parentElement, "AgentHeight", agentProfile.height);
-	WriteFloatElement(xmlDocument, parentElement, "AgentMaxSlopeDegrees", RADIAN_TO_DEGREE(agentProfile.maxSlopeRadians));
-	WriteFloatElement(xmlDocument, parentElement, "AgentMaxStepHeight", agentProfile.maxStepHeight);
-	WriteFloatElement(xmlDocument, parentElement, "WaypointAcceptanceRadius", navAgentComponent->GetWaypointAcceptanceRadius());
-	WriteBoolElement(xmlDocument, parentElement, "UseLocalAvoidance", navAgentComponent->GetUseLocalAvoidance());
-	WriteFloatElement(xmlDocument, parentElement, "LocalAvoidanceRadius", navAgentComponent->GetLocalAvoidanceRadius());
-}
-
-void SceneParser::GetXMLElement_PerceptionComponent(const PerceptionComponent* const perceptionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
-{
-	if (!perceptionComponent)
-	{
-		return;
-	}
-
-	WriteFloatElement(xmlDocument, parentElement, "SightRadius", perceptionComponent->GetSightRadius());
-	WriteFloatElement(xmlDocument, parentElement, "FieldOfViewDegrees", perceptionComponent->GetFieldOfViewDegrees());
-	WriteFloatElement(xmlDocument, parentElement, "UpdateInterval", perceptionComponent->GetUpdateInterval());
-	WriteBoolElement(xmlDocument, parentElement, "UseCandidateObjects", perceptionComponent->GetUseCandidateObjects());
-}
-
-void SceneParser::GetXMLElement_CameraComponent(const CameraComponent* const cameraComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
-{
-	if (!cameraComponent || !cameraComponent->GetCamera())
-	{
-		return;
-	}
-
-	const Camera* camera = cameraComponent->GetCamera();
-	WriteBoolElement(xmlDocument, parentElement, "CameraFollowsComponentRotation", cameraComponent->GetCameraFollowsComponentRotation());
-	WriteFloatElement(xmlDocument, parentElement, "NearDistance", camera->GetNearDistance());
-	WriteFloatElement(xmlDocument, parentElement, "FarDistance", camera->GetFarDistance());
-
-	tinyxml2::XMLElement* imageWidthElement = xmlDocument.NewElement("ImageWidth");
-	imageWidthElement->SetText(camera->GetImageWidth());
-	parentElement->InsertEndChild(imageWidthElement);
-
-	tinyxml2::XMLElement* imageHeightElement = xmlDocument.NewElement("ImageHeight");
-	imageHeightElement->SetText(camera->GetImageHeight());
-	parentElement->InsertEndChild(imageHeightElement);
-
-	tinyxml2::XMLElement* renderMaskElement = xmlDocument.NewElement("RenderMask");
-	renderMaskElement->SetText(static_cast<int>(camera->GetRenderMask()));
-	parentElement->InsertEndChild(renderMaskElement);
-
-	tinyxml2::XMLElement* projectionElement = xmlDocument.NewElement("Projection");
-	projectionElement->SetText(static_cast<int>(camera->GetProjection()));
-	parentElement->InsertEndChild(projectionElement);
-
-	tinyxml2::XMLElement* cameraTypeElement = xmlDocument.NewElement("CameraType");
-	cameraTypeElement->SetText(static_cast<int>(camera->GetCameraType()));
-	parentElement->InsertEndChild(cameraTypeElement);
-}
-
-void SceneParser::GetXMLElement_PointLightComponent(const PointLightComponent* const pointLightComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
-{
-	if (!pointLightComponent || !pointLightComponent->GetPointLight())
-	{
-		return;
-	}
-
-	const PointLight* pointLight = pointLightComponent->GetPointLight();
-	WriteVectorElement(xmlDocument, parentElement, "Color", pointLight->GetColor());
-	WriteFloatElement(xmlDocument, parentElement, "Intensity", pointLight->GetIntensity());
-	WriteFloatElement(xmlDocument, parentElement, "Radius", pointLight->GetRadius());
-	WriteBoolElement(xmlDocument, parentElement, "IsShadowEnabled", pointLight->GetIsShadowEnabled());
-	WriteFloatElement(xmlDocument, parentElement, "ShadowIntensity", pointLight->GetShadowIntensity());
-}
-
-void SceneParser::GetXMLElement_CollisionComponent(const CollisionComponent* const collisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
-{
-	if (!collisionComponent)
-	{
-		return;
-	}
-
-	tinyxml2::XMLElement* collisionGroupElement = xmlDocument.NewElement("CollisionGroup");
-	collisionGroupElement->SetText(static_cast<int>(collisionComponent->GetCollisionGroup()));
-	parentElement->InsertEndChild(collisionGroupElement);
-
-	tinyxml2::XMLElement* collisionMaskElement = xmlDocument.NewElement("CollisionMask");
-	collisionMaskElement->SetText(static_cast<int>(collisionComponent->GetCollisionMask()));
-	parentElement->InsertEndChild(collisionMaskElement);
-}
-
-void SceneParser::GetXMLElement_PhysicsMovementComponent(const PhysicsMovementComponent* const physicsMovementComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
-{
-	if (!physicsMovementComponent)
-	{
-		return;
-	}
-
-	WriteFloatElement(xmlDocument, parentElement, "MovementSpeed", physicsMovementComponent->GetMovementSpeed());
-	WriteVectorElement(xmlDocument, parentElement, "MovementDirection", physicsMovementComponent->GetMovementDirection());
-	WriteVectorElement(xmlDocument, parentElement, "LinearVelocity", physicsMovementComponent->GetLinearVelocity());
-	WriteVectorElement(xmlDocument, parentElement, "AngularVelocity", physicsMovementComponent->GetAngularVelocity());
-	WriteVectorElement(xmlDocument, parentElement, "Gravity", physicsMovementComponent->GetGravity());
-	WriteFloatElement(xmlDocument, parentElement, "LinearDamping", physicsMovementComponent->GetLinearDamping());
-	WriteFloatElement(xmlDocument, parentElement, "AngularDamping", physicsMovementComponent->GetAngularDamping());
-	WriteFloatElement(xmlDocument, parentElement, "StepHeight", physicsMovementComponent->GetStepHeight());
-	WriteFloatElement(xmlDocument, parentElement, "FallSpeed", physicsMovementComponent->GetFallSpeed());
-	WriteFloatElement(xmlDocument, parentElement, "JumpSpeed", physicsMovementComponent->GetJumpSpeed());
-	WriteFloatElement(xmlDocument, parentElement, "MaxJumpHeight", physicsMovementComponent->GetMaxJumpHeight());
-	WriteFloatElement(xmlDocument, parentElement, "MaxSlopeDegrees", RADIAN_TO_DEGREE(physicsMovementComponent->GetMaxSlope()));
-	WriteFloatElement(xmlDocument, parentElement, "MaxPenetrationDepth", physicsMovementComponent->GetMaxPenetrationDepth());
 }
 
 void SceneParser::GetXMLElement_BoxCollisionComponent(const BoxCollisionComponent* const boxCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
