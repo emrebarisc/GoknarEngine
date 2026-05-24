@@ -152,7 +152,10 @@ ResourceContainer::~ResourceContainer()
 
 void ResourceContainer::PreInit()
 {
-	isPreInitialized_ = true;
+	if (imageTextureAtlasManager_)
+	{
+		imageTextureAtlasManager_->PreInit();
+	}
 
 	for (Image* image : imageArray_)
 	{
@@ -189,8 +192,6 @@ void ResourceContainer::PreInit()
 
 void ResourceContainer::Init()
 {
-	isInitialized_ = true;
-
 	if (imageTextureAtlasManager_)
 	{
 		imageTextureAtlasManager_->Init();
@@ -214,8 +215,6 @@ void ResourceContainer::Init()
 
 void ResourceContainer::PostInit()
 {
-	isPostInitialized_ = true;
-
 	if (imageTextureAtlasManager_)
 	{
 		imageTextureAtlasManager_->PostInit();
@@ -235,6 +234,8 @@ void ResourceContainer::PostInit()
 	{
 		audio->PostInit();
 	}
+
+	isInitialized_ = true;
 }
 
 void ResourceContainer::AddImage(Image* image)
@@ -268,20 +269,15 @@ void ResourceContainer::FlushImageTextureAtlas()
 	// before the renderer has a valid OpenGL context. In that phase we only
 	// collect registrations. The first real GPU upload happens from
 	// ResourceContainer::PreInit(), where the engine's GL entry points are ready.
-	if (!isPreInitialized_ || !imageTextureAtlasManager_ || !imageTextureAtlasManager_->HasImages())
+	if (!imageTextureAtlasManager_ || !imageTextureAtlasManager_->HasImages())
 	{
 		return;
 	}
 
-	imageTextureAtlasManager_->PreInit();
-
 	if (isInitialized_)
 	{
+		imageTextureAtlasManager_->PreInit();
 		imageTextureAtlasManager_->Init();
-	}
-
-	if (isPostInitialized_)
-	{
 		imageTextureAtlasManager_->PostInit();
 	}
 }

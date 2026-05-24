@@ -8,16 +8,27 @@ class GOKNAR_API Rect
 {
 public:
 	Rect();
-	Rect(const Vector2& min, const Vector2& max);
+	Rect(const Vector3& min, const Vector3& max);
 
-	const Vector2& GetMin() const
+	const Vector3& GetMin() const
 	{
 		return min_;
 	}
 
-	inline void SetMin(const Vector2& min)
+	inline void SetMin(const Vector3& min)
 	{
 		min_ = min;
+		CalculateSize();
+	}
+
+	inline const Vector3& GetMax() const
+	{
+		return max_;
+	}
+
+	inline void SetMax(const Vector3& max)
+	{
+		max_ = max;
 		CalculateSize();
 	}
 
@@ -49,15 +60,18 @@ public:
 		}
 	}
 
-	inline const Vector2& GetMax() const
+	inline float GetMinZ() const
 	{
-		return max_;
+		return min_.z;
 	}
 
-	inline void SetMax(const Vector2& max)
+	inline void SetMinZ(float minZ, bool recalculateSize = true)
 	{
-		max_ = max;
-		CalculateSize();
+		min_.z = minZ;
+		if(recalculateSize)
+		{
+			CalculateSize();
+		}
 	}
 
 	inline float GetMaxX() const
@@ -88,21 +102,36 @@ public:
 		}
 	}
 
+	inline float GetMaxZ() const
+	{
+		return max_.z;
+	}
+
+	inline void SetMaxZ(float maxZ, bool recalculateSize = true)
+	{
+		max_.z = maxZ;
+		if(recalculateSize)
+		{
+			CalculateSize();
+		}
+	}
+
 	void CalculateSize()
 	{
-		width_ = max_.x - min_.x;
-		height_ = max_.y - min_.y;
+		depth_ = max_.x - min_.x;
+		width_ = max_.y - min_.y;
+		height_ = max_.z - min_.z;
 	}
 
 protected:
 
 private:
-
-	Vector2 min_;
-	Vector2 max_;
+	Vector3 min_;
+	Vector3 max_;
 
 	float width_;
 	float height_;
+	float depth_;
 };
 
 #endif
