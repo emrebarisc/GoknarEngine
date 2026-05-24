@@ -211,12 +211,17 @@ struct GOKNAR_API Vector2
 
 	inline float Length() const
 	{
-		return sqrtf(std::powf(x, 2) + std::powf(y, 2));
+		return sqrtf(SquareLength());
 	}
 
-	static inline Vector2 Cross(const Vector2& v1, const Vector2& v2)
+	inline float SquareLength() const
 	{
-		return Vector2(v1.x * v2.y - v1.y * v2.x);
+		return std::powf(x, 2) + std::powf(y, 2);
+	}
+
+	static inline float Cross(const Vector2& v1, const Vector2& v2)
+	{
+		return v1.x * v2.y - v1.y * v2.x;
 	}
 
 	static inline float Dot(const Vector2& v1, const Vector2& v2)

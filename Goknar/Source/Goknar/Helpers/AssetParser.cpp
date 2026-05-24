@@ -1107,6 +1107,10 @@ void AssetParser::SaveAssets(const std::string& filePath)
 			{
 				addPathAsset("AnimationGraph", relativeAssetPath);
 			}
+			else if (gameAssetFileType == "NavigationTree")
+			{
+				addPathAsset("NavigationTree", relativeAssetPath);
+			}
 		}
 	}
 

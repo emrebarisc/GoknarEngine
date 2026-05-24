@@ -126,11 +126,6 @@ public:
 		return useTextureAtlasForAllImages_;
 	}
 
-	bool GetIsPreInitialized() const
-	{
-		return isPreInitialized_;
-	}
-
 protected:
 
 private:
@@ -142,9 +137,7 @@ private:
 
 	TextureAtlasManager* imageTextureAtlasManager_;
 	bool useTextureAtlasForAllImages_{ false };
-	bool isPreInitialized_{ false };
 	bool isInitialized_{ false };
-	bool isPostInitialized_{ false };
 };
 
 class GOKNAR_API ResourceManager

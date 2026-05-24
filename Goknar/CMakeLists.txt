@@ -16,10 +16,10 @@ set(GOKNAR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/")
 set(SUBDIRS
 	${SOURCE_DIR_NAME}
 	${SOURCE_DIR_NAME}/Goknar
+	${SOURCE_DIR_NAME}/Goknar/AI
 	${SOURCE_DIR_NAME}/Goknar/Animation
 	${SOURCE_DIR_NAME}/Goknar/Components
 	${SOURCE_DIR_NAME}/Goknar/Components/LightComponents
-	#${SOURCE_DIR_NAME}/Goknar/Components/2D
 	${SOURCE_DIR_NAME}/Goknar/Contents
 	${SOURCE_DIR_NAME}/Goknar/Containers
 	${SOURCE_DIR_NAME}/Goknar/Data
@@ -37,7 +37,7 @@ set(SUBDIRS
 	${SOURCE_DIR_NAME}/Goknar/Materials
 	${SOURCE_DIR_NAME}/Goknar/Math
 	${SOURCE_DIR_NAME}/Goknar/Model
-	#${SOURCE_DIR_NAME}/Goknar/Model/2D
+	${SOURCE_DIR_NAME}/Goknar/Navigation
 	${SOURCE_DIR_NAME}/Goknar/Objects
 	${SOURCE_DIR_NAME}/Goknar/ParticleSystem
 	${SOURCE_DIR_NAME}/Goknar/Physics
