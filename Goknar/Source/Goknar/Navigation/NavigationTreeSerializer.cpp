@@ -1,5 +1,10 @@
 #include "NavigationTreeSerializer.h"
 
+#include <algorithm>
+#include <iomanip>
+#include <limits>
+#include <sstream>
+#include <string>
 #include <unordered_map>
 
 #include "tinyxml2.h"
@@ -12,39 +17,33 @@ namespace
 {
 	constexpr const char* kNavigationTreeFileType = "NavigationTree";
 
-	void WriteVector3(tinyxml2::XMLElement* element, const Vector3& value)
+	void WriteVector3Values(std::ostringstream& stream, const Vector3& value)
 	{
-		element->SetAttribute("X", value.x);
-		element->SetAttribute("Y", value.y);
-		element->SetAttribute("Z", value.z);
-	}
-
-	Vector3 ReadVector3(const tinyxml2::XMLElement* element)
-	{
-		Vector3 value = Vector3::ZeroVector;
-		if (!element)
-		{
-			return value;
-		}
-
-		element->QueryFloatAttribute("X", &value.x);
-		element->QueryFloatAttribute("Y", &value.y);
-		element->QueryFloatAttribute("Z", &value.z);
-		return value;
+		stream << value.x << "," << value.y << "," << value.z;
 	}
 
 	void WriteArea(tinyxml2::XMLDocument& document, tinyxml2::XMLElement* nodeElement, const Area& area)
 	{
 		tinyxml2::XMLElement* areaElement = document.NewElement("Area");
+		tinyxml2::XMLElement* pointsElement = document.NewElement("Points");
+
 		const Vector3 points[4] = { area.point0, area.point1, area.point2, area.point3 };
+		std::ostringstream pointsStream;
+		pointsStream << std::setprecision(std::numeric_limits<float>::max_digits10);
+
 		for (int pointIndex = 0; pointIndex < 4; ++pointIndex)
 		{
-			tinyxml2::XMLElement* pointElement = document.NewElement("Point");
-			pointElement->SetAttribute("Index", pointIndex);
-			WriteVector3(pointElement, points[pointIndex]);
-			areaElement->InsertEndChild(pointElement);
+			if (pointIndex > 0)
+			{
+				pointsStream << " ";
+			}
+
+			WriteVector3Values(pointsStream, points[pointIndex]);
 		}
 
+		const std::string pointsText = pointsStream.str();
+		pointsElement->SetAttribute("V", pointsText.c_str());
+		areaElement->InsertEndChild(pointsElement);
 		nodeElement->InsertEndChild(areaElement);
 	}
 
@@ -52,32 +51,44 @@ namespace
 	{
 		Area area;
 		const tinyxml2::XMLElement* areaElement = nodeElement ? nodeElement->FirstChildElement("Area") : nullptr;
-		for (const tinyxml2::XMLElement* pointElement = areaElement ? areaElement->FirstChildElement("Point") : nullptr;
-			pointElement;
-			pointElement = pointElement->NextSiblingElement("Point"))
+		const tinyxml2::XMLElement* pointsElement = areaElement ? areaElement->FirstChildElement("Points") : nullptr;
+		const char* pointsValue = pointsElement ? pointsElement->Attribute("V") : nullptr;
+		if (!pointsValue)
 		{
-			int pointIndex = 0;
-			pointElement->QueryIntAttribute("Index", &pointIndex);
-			switch (pointIndex)
+			return area;
+		}
+
+		std::string pointsText = pointsValue;
+		std::replace(pointsText.begin(), pointsText.end(), ',', ' ');
+
+		std::stringstream pointsStream(pointsText);
+		Vector3 points[4] = { Vector3::ZeroVector, Vector3::ZeroVector, Vector3::ZeroVector, Vector3::ZeroVector };
+		for (int pointIndex = 0; pointIndex < 4; ++pointIndex)
+		{
+			if (!(pointsStream >> points[pointIndex].x >> points[pointIndex].y >> points[pointIndex].z))
 			{
-			case 0:
-				area.point0 = ReadVector3(pointElement);
-				break;
-			case 1:
-				area.point1 = ReadVector3(pointElement);
-				break;
-			case 2:
-				area.point2 = ReadVector3(pointElement);
-				break;
-			case 3:
-				area.point3 = ReadVector3(pointElement);
-				break;
-			default:
 				break;
 			}
 		}
 
+		area.point0 = points[0];
+		area.point1 = points[1];
+		area.point2 = points[2];
+		area.point3 = points[3];
+
 		return area;
+	}
+
+	void AddNeighbourBySerializedId(
+		NavigationNode* node,
+		const std::unordered_map<int, NavigationNode*>& nodeBySerializedId,
+		int neighbourId)
+	{
+		auto neighbourIterator = nodeBySerializedId.find(neighbourId);
+		if (neighbourIterator != nodeBySerializedId.end())
+		{
+			node->neighbours.push_back(neighbourIterator->second);
+		}
 	}
 }
 
@@ -108,7 +119,7 @@ bool NavigationTreeSerializer::Serialize(const std::string& filepath, const Navi
 		nodeElement->SetAttribute("Id", node->id);
 		WriteArea(document, nodeElement, node->area);
 
-		tinyxml2::XMLElement* neighboursElement = document.NewElement("Neighbours");
+		std::string neighbourIds;
 		for (const NavigationNode* neighbour : node->neighbours)
 		{
 			if (!neighbour)
@@ -116,11 +127,20 @@ bool NavigationTreeSerializer::Serialize(const std::string& filepath, const Navi
 				continue;
 			}
 
-			tinyxml2::XMLElement* neighbourElement = document.NewElement("Neighbour");
-			neighbourElement->SetAttribute("Id", neighbour->id);
-			neighboursElement->InsertEndChild(neighbourElement);
+			if (!neighbourIds.empty())
+			{
+				neighbourIds += ",";
+			}
+
+			neighbourIds += std::to_string(neighbour->id);
 		}
-		nodeElement->InsertEndChild(neighboursElement);
+
+		if (!neighbourIds.empty())
+		{
+			tinyxml2::XMLElement* neighboursElement = document.NewElement("Neighbours");
+			neighboursElement->SetAttribute("Ids", neighbourIds.c_str());
+			nodeElement->InsertEndChild(neighboursElement);
+		}
 
 		nodesElement->InsertEndChild(nodeElement);
 	}
@@ -186,16 +206,22 @@ bool NavigationTreeSerializer::Deserialize(const std::string& filepath, Navigati
 
 		NavigationNode* node = nodeIterator->second;
 		tinyxml2::XMLElement* neighboursElement = nodeElement->FirstChildElement("Neighbours");
-		for (tinyxml2::XMLElement* neighbourElement = neighboursElement ? neighboursElement->FirstChildElement("Neighbour") : nullptr;
-			neighbourElement;
-			neighbourElement = neighbourElement->NextSiblingElement("Neighbour"))
+		const char* neighbourIds = neighboursElement ? neighboursElement->Attribute("Ids") : nullptr;
+
+		if (!neighbourIds)
 		{
+			continue;
+		}
+
+		std::stringstream neighbourIdsStream(neighbourIds);
+		std::string neighbourIdText;
+		while (std::getline(neighbourIdsStream, neighbourIdText, ','))
+		{
+			std::stringstream neighbourIdStream(neighbourIdText);
 			int neighbourId = -1;
-			neighbourElement->QueryIntAttribute("Id", &neighbourId);
-			auto neighbourIterator = nodeBySerializedId.find(neighbourId);
-			if (neighbourIterator != nodeBySerializedId.end())
+			if (neighbourIdStream >> neighbourId)
 			{
-				node->neighbours.push_back(neighbourIterator->second);
+				AddNeighbourBySerializedId(node, nodeBySerializedId, neighbourId);
 			}
 		}
 	}

@@ -2,8 +2,6 @@
 
 #include "DynamicObjectFactory.h"
 
-#include "Goknar/AI/AIController.h"
-#include "Goknar/AI/PerceptionComponent.h"
 #include "Goknar/Components/CameraComponent.h"
 #include "Goknar/Components/DynamicMeshComponent.h"
 #include "Goknar/Components/InstancedStaticMeshComponent.h"
@@ -13,7 +11,6 @@
 #include "Goknar/Components/SocketComponent.h"
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Debug/DebugDrawer.h"
-#include "Goknar/Navigation/NavAgentComponent.h"
 #include "Goknar/ObjectBase.h"
 #include "Goknar/Objects/ReflectionProbeObject.h"
 #include "Goknar/Physics/Character.h"
@@ -46,7 +43,6 @@ void DynamicObjectFactory::RegisterBuiltInClasses()
 	instance_->RegisterObjectClass<OverlappingPhysicsObject>("OverlappingPhysicsObject");
 	instance_->RegisterObjectClass<RigidBody>("RigidBody");
 	instance_->RegisterObjectClass<Character>("Character");
-	instance_->RegisterObjectClass<AIController>("AIController");
 	instance_->RegisterObjectClass<ReflectionProbeObject>("ReflectionProbeObject");
 
 	instance_->RegisterComponentClass<SocketComponent>("SocketComponent", DynamicComponentOwnerRequirement::ObjectBase, false);
@@ -58,8 +54,6 @@ void DynamicObjectFactory::RegisterBuiltInClasses()
 	instance_->RegisterComponentClass<SkeletalMeshComponent>("SkeletalMeshComponent");
 	instance_->RegisterComponentClass<BillboardParticleSystemComponent>("BillboardParticleSystemComponent");
 	instance_->RegisterComponentClass<StaticMeshParticleSystemComponent>("StaticMeshParticleSystemComponent");
-	instance_->RegisterComponentClass<NavAgentComponent>("NavAgentComponent");
-	instance_->RegisterComponentClass<PerceptionComponent>("PerceptionComponent");
 	instance_->RegisterComponentClass<BoxCollisionComponent>("BoxCollisionComponent", DynamicComponentOwnerRequirement::PhysicsObject);
 	instance_->RegisterComponentClass<CapsuleCollisionComponent>("CapsuleCollisionComponent", DynamicComponentOwnerRequirement::PhysicsObject);
 	instance_->RegisterComponentClass<SphereCollisionComponent>("SphereCollisionComponent", DynamicComponentOwnerRequirement::PhysicsObject);
