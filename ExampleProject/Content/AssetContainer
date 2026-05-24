@@ -7,6 +7,9 @@
             <Path>MaterialFunctions/Environment/MF_WindDisplacement</Path>
         </MaterialFunction>
         <Material>
+            <Path>Materials/Characters/M_AICharacter</Path>
+        </Material>
+        <Material>
             <Path>Materials/Characters/M_DefaultCharacter</Path>
         </Material>
         <Material>
@@ -53,6 +56,9 @@
         </Material>
         <Material>
             <Path>Materials/PBRTests/M_WoodenFloor</Path>
+        </Material>
+        <Material>
+            <Path>Materials/VFX/M_BulletHit</Path>
         </Material>
         <Material>
             <Path>Materials/VFX/M_Particle</Path>
