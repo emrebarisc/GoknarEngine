@@ -127,6 +127,12 @@
         <Mesh>
             <Path>Meshes/Objects/SM_Weapon.fbx</Path>
         </Mesh>
+        <NavigationTree>
+            <Path>Navigation/NavigationTree</Path>
+        </NavigationTree>
+        <NavigationTree>
+            <Path>Navigation/NavigationTreeTest</Path>
+        </NavigationTree>
         <Texture Name="T_LeavesBushes" UseTextureAtlas="false" Usage="Diffuse">
             <Path>Textures/Environment/Trees/T_LeavesBushes.PNG</Path>
         </Texture>
