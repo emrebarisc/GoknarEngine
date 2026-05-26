@@ -150,7 +150,7 @@ bool NavigationTreeSerializer::Serialize(const std::string& filepath, const Navi
 
 bool NavigationTreeSerializer::Deserialize(const std::string& filepath, NavigationTree& outNavigationTree)
 {
-	outNavigationTree.GetNodes().clear();
+	outNavigationTree.Clear();
 
 	const std::string relativeFilePath = ContentPathUtils::ToContentRelativePath(filepath);
 	const std::string contentPath = ContentPathUtils::ToAbsoluteContentPath(relativeFilePath);

@@ -53,6 +53,9 @@
 
 #include "Goknar/Debug/DebugDrawer.h"
 
+#include "Goknar/Navigation/NavigationTreeComponent.h"
+#include "Goknar/Navigation/NavigationTypes.h"
+
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Texture.h"
 
@@ -468,6 +471,46 @@ namespace
 		return true;
 	}
 
+	bool ReadStringElement(const tinyxml2::XMLElement* parentElement, const char* elementName, std::string& outValue)
+	{
+		const tinyxml2::XMLElement* stringElement = parentElement ? parentElement->FirstChildElement(elementName) : nullptr;
+		const char* text = GetElementText(stringElement);
+		if (!text)
+		{
+			return false;
+		}
+
+		outValue = TrimString(text);
+		return true;
+	}
+
+	bool ReadNavigationTreePath(const tinyxml2::XMLElement* element, std::string& outNavigationTreePath)
+	{
+		if (!element)
+		{
+			return false;
+		}
+
+		const char* pathAttribute = element->Attribute("NavigationTreePath");
+		if (!pathAttribute)
+		{
+			pathAttribute = element->Attribute("TreePath");
+		}
+		if (!pathAttribute)
+		{
+			pathAttribute = element->Attribute("Path");
+		}
+		if (pathAttribute)
+		{
+			outNavigationTreePath = TrimString(pathAttribute);
+			return !outNavigationTreePath.empty();
+		}
+
+		return ReadStringElement(element, "NavigationTreePath", outNavigationTreePath) ||
+			ReadStringElement(element, "TreePath", outNavigationTreePath) ||
+			ReadStringElement(element, "Path", outNavigationTreePath);
+	}
+
 	SceneTransform ReadSceneReferenceTransform(const tinyxml2::XMLElement* sceneElement)
 	{
 		SceneTransform transform;
@@ -779,6 +822,11 @@ bool SceneParser::InsertSceneReference(Scene* scene, const SceneReference& scene
 
 	const SceneParseContext currentContext = sceneParseContextStack.back();
 	const bool parsedSceneReference = ParseSceneReference(scene, sceneReference, currentContext, true);
+	if (parsedSceneReference)
+	{
+		const NavMeshSettings defaultSettings;
+		scene->RebuildNavigationMesh(defaultSettings);
+	}
 
 	if (pushedDefaultParseContext)
 	{
@@ -2245,6 +2293,20 @@ void SceneParser::ParseMovingTriangleMeshCollisionComponentValues(MovingTriangle
 	stream.clear();
 }
 
+void SceneParser::ParseNavigationTreeComponentValues(NavigationTreeComponent* navigationTreeComponent, tinyxml2::XMLElement* componentElement)
+{
+	if (!navigationTreeComponent)
+	{
+		return;
+	}
+
+	std::string navigationTreePath;
+	if (ReadNavigationTreePath(componentElement, navigationTreePath))
+	{
+		navigationTreeComponent->SetNavigationTreePath(navigationTreePath);
+	}
+}
+
 void SceneParser::ParseNonMovingTriangleMeshCollisionComponentValues(NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent, tinyxml2::XMLElement* componentElement)
 {
 	std::stringstream stream;
@@ -2379,6 +2441,29 @@ void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* obje
 			ParseComponentValues(particleSystemComponent, componentElement);
 
 			componentElement = componentElement->NextSiblingElement("ParticleSystemComponent");
+		}
+
+		componentElement = child->FirstChildElement("NavigationTreeComponent");
+		bool reusedNavigationTreeComponent = false;
+		while (componentElement)
+		{
+			NavigationTreeComponent* navigationTreeComponent = nullptr;
+			if (!reusedNavigationTreeComponent)
+			{
+				navigationTreeComponent = object->GetFirstComponentOfType<NavigationTreeComponent>();
+				reusedNavigationTreeComponent = navigationTreeComponent != nullptr;
+			}
+
+			if (!navigationTreeComponent)
+			{
+				navigationTreeComponent = object->AddSubComponent<NavigationTreeComponent>();
+			}
+
+			ParseNavigationTreeComponentValues(navigationTreeComponent, componentElement);
+
+			ParseComponentValues(navigationTreeComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("NavigationTreeComponent");
 		}
 	}
 }
@@ -2840,6 +2925,11 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 			componentElement = xmlDocument.NewElement("MovingTriangleMeshCollisionComponent");
 			GetXMLElement_MovingTriangleMeshCollisionComponent(movingTriangleMeshCollisionComponent, xmlDocument, componentElement);
 		}
+		else if (NavigationTreeComponent* navigationTreeComponent = dynamic_cast<NavigationTreeComponent*>(component))
+		{
+			componentElement = xmlDocument.NewElement("NavigationTreeComponent");
+			GetXMLElement_NavigationTreeComponent(navigationTreeComponent, xmlDocument, componentElement);
+		}
 		else if (NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent = dynamic_cast<NonMovingTriangleMeshCollisionComponent*>(component))
 		{
 			componentElement = xmlDocument.NewElement("NonMovingTriangleMeshCollisionComponent");
@@ -3153,6 +3243,18 @@ void SceneParser::GetXMLElement_MovingTriangleMeshCollisionComponent(const Movin
 	const std::string meshPath = ContentPathUtils::ToContentRelativePath(movingTriangleMeshCollisionComponent->GetMesh()->GetPath());
 	movingTriangleMeshCollisionComponentElement->SetText(meshPath.c_str());
 	parentElement->InsertEndChild(movingTriangleMeshCollisionComponentElement);
+}
+
+void SceneParser::GetXMLElement_NavigationTreeComponent(const NavigationTreeComponent* const navigationTreeComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+	if (!navigationTreeComponent || navigationTreeComponent->GetNavigationTreePath().empty())
+	{
+		return;
+	}
+
+	tinyxml2::XMLElement* navigationTreePathElement = xmlDocument.NewElement("NavigationTreePath");
+	navigationTreePathElement->SetText(navigationTreeComponent->GetNavigationTreePath().c_str());
+	parentElement->InsertEndChild(navigationTreePathElement);
 }
 
 void SceneParser::GetXMLElement_NonMovingTriangleMeshCollisionComponent(const NonMovingTriangleMeshCollisionComponent* const nonMovingTriangleMeshCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)

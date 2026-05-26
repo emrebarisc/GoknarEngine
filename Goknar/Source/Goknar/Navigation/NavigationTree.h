@@ -61,6 +61,12 @@ public:
     int GetNodeIndex(const NavigationNode* node) const;
     void EnsureNextNodeId(int nextNodeId);
 
+    static void StitchNearbyNodes(
+        NavigationTree& firstTree,
+        NavigationTree& secondTree,
+        float connectionDistance,
+        float maxStepHeight);
+
 private:
     NavigationNode* root{ nullptr };
     std::vector<std::unique_ptr<NavigationNode>> nodes_;

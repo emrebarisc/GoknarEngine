@@ -11,6 +11,7 @@
 #include "Goknar/Components/SocketComponent.h"
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Debug/DebugDrawer.h"
+#include "Goknar/Navigation/NavigationTreeComponent.h"
 #include "Goknar/ObjectBase.h"
 #include "Goknar/Objects/ReflectionProbeObject.h"
 #include "Goknar/Physics/Character.h"
@@ -47,6 +48,7 @@ void DynamicObjectFactory::RegisterBuiltInClasses()
 
 	instance_->RegisterComponentClass<SocketComponent>("SocketComponent", DynamicComponentOwnerRequirement::ObjectBase, false);
 	instance_->RegisterComponentClass<CameraComponent>("CameraComponent");
+	instance_->RegisterComponentClass<NavigationTreeComponent>("NavigationTreeComponent");
 	instance_->RegisterComponentClass<PointLightComponent>("PointLightComponent");
 	instance_->RegisterComponentClass<DynamicMeshComponent>("DynamicMeshComponent", DynamicComponentOwnerRequirement::ObjectBase, false);
 	instance_->RegisterComponentClass<InstancedStaticMeshComponent>("InstancedStaticMeshComponent");

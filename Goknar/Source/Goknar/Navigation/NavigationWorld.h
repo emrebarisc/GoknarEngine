@@ -11,7 +11,7 @@ class Scene;
 
 struct NavMeshSettings;
 
-class NavigationTree;
+class NavigationMesh;
 
 class GOKNAR_API NavigationWorld
 {
@@ -19,14 +19,14 @@ public:
 	NavigationWorld();
 	~NavigationWorld();
 
-	void BuildFromScene(const Scene* scene, const NavMeshSettings& settings);
+	void BuildFromScene(Scene* scene, const NavMeshSettings& settings);
 
 	bool FindPath(const Vector3& start, const Vector3& end, std::vector<NavigationPath>& path);
 
 protected:
 
 private:
-	NavigationTree* navigationTree_{ nullptr };
+	NavigationMesh* navigationMesh_{ nullptr };
 	PathFinder* pathFinder_{ nullptr };
 };
 

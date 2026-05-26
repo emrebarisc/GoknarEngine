@@ -18,12 +18,15 @@
 #include "Goknar/Lights/DirectionalLight.h"
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
+#include "Goknar/Navigation/NavigationMesh.h"
+#include "Goknar/Navigation/NavigationTypes.h"
 #include "Goknar/Renderer/ReflectionProbe.h"
 
 Scene::Scene()
 {
 	backgroundColor_ = Colori(0, 0, 0);
     ambientLight_ = Vector3::ZeroVector;
+	navigationMesh_ = new NavigationMesh();
 }
 
 Scene::~Scene()
@@ -52,6 +55,9 @@ Scene::~Scene()
 	{
 		delete texture;
 	}
+
+	delete navigationMesh_;
+	navigationMesh_ = nullptr;
 }
 
 void Scene::PreInit()
@@ -142,6 +148,22 @@ void Scene::ReadSceneData(const std::string& filePath)
 {
 	path_ = filePath;
     SceneParser::Parse(this, ContentDir + filePath);
+
+	const NavMeshSettings navMeshSettings;
+#ifdef GOKNAR_EDITOR
+	constexpr bool removeNavigationTreeObjects = false;
+#else
+	constexpr bool removeNavigationTreeObjects = true;
+#endif
+	RebuildNavigationMesh(navMeshSettings, removeNavigationTreeObjects);
+}
+
+void Scene::RebuildNavigationMesh(const NavMeshSettings& settings, bool removeNavigationTreeObjects)
+{
+	if (navigationMesh_)
+	{
+		navigationMesh_->BuildFromScene(this, settings, removeNavigationTreeObjects);
+	}
 }
 
 void Scene::AddObject(ObjectBase* object, bool isFromReferencedScene)

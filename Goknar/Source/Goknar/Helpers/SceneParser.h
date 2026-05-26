@@ -12,6 +12,8 @@ class BoxCollisionComponent;
 class Component;
 class CapsuleCollisionComponent;
 class MovingTriangleMeshCollisionComponent;
+class NavigationTreeComponent;
+class NavigationTreeObject;
 class NonMovingTriangleMeshCollisionComponent;
 class InstancedStaticMeshComponent;
 class ParticleSystemComponent;
@@ -54,13 +56,12 @@ private:
 	static void ParseCapsuleCollisionComponentValues(CapsuleCollisionComponent* capsuleCollisionComponent, tinyxml2::XMLElement* componentElement);
 	static void ParseSphereCollisionComponentValues(SphereCollisionComponent* sphereCollisionComponent, tinyxml2::XMLElement* componentElement);
 	static void ParseMovingTriangleMeshCollisionComponentValues(MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, tinyxml2::XMLElement* componentElement);
+	static void ParseNavigationTreeComponentValues(NavigationTreeComponent* navigationTreeComponent, tinyxml2::XMLElement* componentElement);
 	static void ParseNonMovingTriangleMeshCollisionComponentValues(NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent, tinyxml2::XMLElement* componentElement);
 
 	static void ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* objectElement);
 	static void ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* objectElement);
 	static void ParseReflectionProbeObject(ReflectionProbeObject* reflectionProbeObject, tinyxml2::XMLElement* objectElement);
-
-	static void GetXMLElement_Meshes(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 
 	static void GetXMLElement_DirectionalLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene);
 	static void GetXMLElement_SpotLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene);
@@ -76,6 +77,7 @@ private:
 	static void GetXMLElement_CapsuleCollisionComponent(const CapsuleCollisionComponent* const capsuleCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_SphereCollisionComponent(const SphereCollisionComponent* const sphereCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_MovingTriangleMeshCollisionComponent(const MovingTriangleMeshCollisionComponent* const movingTriangleMeshCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
+	static void GetXMLElement_NavigationTreeComponent(const NavigationTreeComponent* const navigationTreeComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 	static void GetXMLElement_NonMovingTriangleMeshCollisionComponent(const NonMovingTriangleMeshCollisionComponent* const nonMovingTriangleMeshCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement);
 
 	static std::string Serialize(const Vector3& vector);

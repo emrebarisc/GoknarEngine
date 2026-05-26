@@ -14,12 +14,15 @@ class PointLight;
 class ReflectionProbe;
 class SpotLight;
 class Material;
+class NavigationMesh;
 class ObjectBase;
 class Texture;
 
 class DynamicMesh;
 class StaticMesh;
 class SkeletalMesh;
+
+struct NavMeshSettings;
 
 struct GOKNAR_API SceneReference
 {
@@ -45,6 +48,7 @@ public:
 
     // Scene data parser
     void ReadSceneData(const std::string& filePath);
+	void RebuildNavigationMesh(const NavMeshSettings& settings, bool removeNavigationTreeObjects = false);
 
 	void AddObject(ObjectBase* object, bool isFromReferencedScene = false);
 	void RemoveObject(ObjectBase* object);
@@ -53,6 +57,11 @@ public:
 	const std::vector<ObjectBase*>& GetObjects() const
 	{
 		return objects_;
+	}
+
+	NavigationMesh* GetNavigationMesh() const
+	{
+		return navigationMesh_;
 	}
 
 	bool GetIsObjectFromReferencedScene(ObjectBase* object) const;
@@ -160,6 +169,7 @@ private:
 	std::vector<SpotLight*> spotLights_;
 	std::unordered_map<SpotLight*, bool> spotLightReferencedSceneState_;
 	std::vector<ReflectionProbe*> reflectionProbes_;
+	NavigationMesh* navigationMesh_{ nullptr };
 
 	Vector3 ambientLight_;
 
