@@ -13,33 +13,6 @@
 #include <cctype>
 #include <cstring>
 
-
-namespace
-{
-	bool IsValidIdentifierCharacter(char character)
-	{
-		return std::isalnum(static_cast<unsigned char>(character)) || character == '_';
-	}
-
-	std::string MakeValidGLSLIdentifier(const std::string& name, const std::string& fallback)
-	{
-		std::string result;
-		result.reserve(name.size() + fallback.size() + 1);
-
-		for (char character : name)
-		{
-			result.push_back(IsValidIdentifierCharacter(character) ? character : '_');
-		}
-
-		if (result.empty() || std::isdigit(static_cast<unsigned char>(result.front())))
-		{
-			result = fallback + (result.empty() ? std::string() : std::string("_") + result);
-		}
-
-		return result;
-	}
-}
-
 Texture::Texture()
 {
 	GUID_ = ObjectIDManager::GetInstance()->GetAndIncreaseTextureGUID();
@@ -345,7 +318,23 @@ void Texture::SetTextureAtlasProxySourceImage(Image* image)
 
 std::string Texture::GetShaderUniformName() const
 {
-	return MakeValidGLSLIdentifier(name_, std::string("texture") + std::to_string(GUID_));
+	std::string fallback = std::string("texture") + std::to_string(GUID_);
+
+	std::string result;
+	result.reserve(name_.size() + fallback.size() + 1);
+
+	for (char character : name_)
+	{
+		bool isValid = std::isalnum(static_cast<unsigned char>(character)) || character == '_';
+		result.push_back(isValid ? character : '_');
+	}
+
+	if (result.empty() || std::isdigit(static_cast<unsigned char>(result.front())))
+	{
+		result = fallback + (result.empty() ? std::string() : std::string("_") + result);
+	}
+
+	return result;
 }
 
 std::string Texture::GetAtlasUVTransformUniformName() const

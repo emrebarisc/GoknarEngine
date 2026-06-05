@@ -176,13 +176,8 @@ private:
 	TextureAtlasBinding* FindMutableTextureAtlasBinding(TextureAtlasCategory category);
 
 	Texture* generatedTexture_;
-	std::vector<TextureAtlasProxy> atlasProxyTextures_;
-	std::vector<TextureAtlasCategory> textureAtlasCategories_;
-	std::vector<TextureAtlasBinding> textureAtlasBindings_;
 	TextureAtlas* textureAtlas_{ nullptr };
 	TextureAtlasRegion atlasRegion_;
-	bool hasAtlasRegion_{ false };
-	bool canUseTextureAtlas_{ false };
 
 	unsigned char* buffer_;
 
@@ -192,10 +187,17 @@ private:
 	int height_;
 	int channels_;
 
+	std::vector<TextureAtlasProxy> atlasProxyTextures_;
+	std::vector<TextureAtlasCategory> textureAtlasCategories_;
+	std::vector<TextureAtlasBinding> textureAtlasBindings_;
+
 	TextureUsage textureUsage_{ TextureUsage::Diffuse };
 	TextureWrapping textureWrappingR_{ TextureWrapping::REPEAT };
 	TextureWrapping textureWrappingT_{ TextureWrapping::REPEAT };
 	TextureWrapping textureWrappingS_{ TextureWrapping::REPEAT };
+
+	bool hasAtlasRegion_{ false };
+	bool canUseTextureAtlas_{ true };
 };
 
 #endif

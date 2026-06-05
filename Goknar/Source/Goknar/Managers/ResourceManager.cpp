@@ -152,11 +152,6 @@ ResourceContainer::~ResourceContainer()
 
 void ResourceContainer::PreInit()
 {
-	if (imageTextureAtlasManager_)
-	{
-		imageTextureAtlasManager_->PreInit();
-	}
-
 	for (Image* image : imageArray_)
 	{
 		if (image->HasTextureAtlasCategories())
@@ -172,7 +167,10 @@ void ResourceContainer::PreInit()
 		}
 	}
 
-	FlushImageTextureAtlas();
+	if (imageTextureAtlasManager_)
+	{
+		imageTextureAtlasManager_->PreInit();
+	}
 
 	for (Image* image : imageArray_)
 	{
@@ -244,7 +242,12 @@ void ResourceContainer::AddImage(Image* image)
 
 	imageArray_.push_back(image);
 	contentPathMap_[image->GetPath()] = image;
-	RegisterImageToTextureAtlas(image);
+
+	if (isInitialized_)
+	{
+		RegisterImageToTextureAtlas(image);
+		FlushImageTextureAtlas();
+	}
 }
 
 bool ResourceContainer::RegisterImageToTextureAtlas(Image* image, TextureAtlasCategory category)
