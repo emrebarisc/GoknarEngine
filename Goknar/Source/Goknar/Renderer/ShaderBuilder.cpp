@@ -2545,10 +2545,19 @@ std::string ShaderBuilder::VS_GetSkeletalMeshWeightCalculation() const
 std::string ShaderBuilder::VS_GetMain(const VertexShaderInitializationData& vertexShaderInitializationData, const std::string& vertexShaderModelMatrixVariable) const
 {
 	std::string vsMain = VS_GetPosition();
+	const bool hasWorldPositionOffset = vertexShaderInitializationData.materialInitializationData &&
+		!vertexShaderInitializationData.materialInitializationData->vertexPositionOffset.result.empty();
 
 	vsMain += "\n\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + vertexShaderModelMatrixVariable + ";\n";
 	vsMain += "\tvec4 materialWorldPosition = vec4(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + ", 1.f) * " + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + ";\n";
 	vsMain += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = materialWorldPosition;\n";
+	if (hasWorldPositionOffset)
+	{
+		vsMain += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + " = materialWorldPosition * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
+		vsMain += VS_GetUV(nullptr);
+		vsMain += VS_GetVertexNormalText(nullptr);
+		vsMain += VS_GetVertexColorText();
+	}
 	vsMain += VS_GetWorldPositionOffsetText(vertexShaderInitializationData.materialInitializationData, "materialWorldPosition");
 	vsMain += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = materialWorldPosition;\n";
 
