@@ -154,6 +154,9 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* HAS_REFLECTION_PROBE;
 		extern const char* CUBEMAP;
 		extern const char* USAGE;
+		extern const char* POSITION;
+		extern const char* BOX_MIN;
+		extern const char* BOX_MAX;
 		extern const char* VIEW_MATRICES_ARRAY;
 	}
 

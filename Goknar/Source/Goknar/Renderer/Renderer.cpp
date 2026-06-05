@@ -1347,13 +1347,22 @@ void Renderer::SetReflectionProbeUniforms(Shader* shader) const
 	{
 		shader->SetBool(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE, false);
 		shader->SetInt(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP, 0);
+		shader->SetVector3(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::POSITION, Vector3::ZeroVector);
+		shader->SetVector3(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::BOX_MIN, Vector3::ZeroVector);
+		shader->SetVector3(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::BOX_MAX, Vector3::ZeroVector);
 		return;
 	}
 
 	Texture* cubemapTexture = reflectionProbe->GetCubemapTexture();
+	const Vector3 probePosition = reflectionProbe->GetPosition();
+	const Vector3 probeHalfSize = reflectionProbe->GetSize() * 0.5f;
+
 	cubemapTexture->BindToTextureUnit(cubemapTexture->GetRendererTextureId());
 	shader->SetBool(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE, true);
 	shader->SetInt(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP, cubemapTexture->GetRendererTextureId());
+	shader->SetVector3(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::POSITION, probePosition);
+	shader->SetVector3(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::BOX_MIN, probePosition - probeHalfSize);
+	shader->SetVector3(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::BOX_MAX, probePosition + probeHalfSize);
 }
 
 void Renderer::SetCubemapRenderPassShaderUniforms(const Shader* shader) const

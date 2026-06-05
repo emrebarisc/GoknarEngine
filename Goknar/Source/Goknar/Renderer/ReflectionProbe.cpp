@@ -84,6 +84,9 @@ void ReflectionProbe::SetRenderPassShaderUniforms(const Shader* shader) const
 	shader->SetMatrixArray(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::VIEW_MATRICES_ARRAY, viewProjectionMatrices_.data(), 6);
 	shader->SetBool(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE, false);
 	shader->SetInt(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP, 0);
+	shader->SetVector3(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::POSITION, position_);
+	shader->SetVector3(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::BOX_MIN, position_ - size_ * 0.5f);
+	shader->SetVector3(SHADER_VARIABLE_NAMES::REFLECTION_PROBE::BOX_MAX, position_ + size_ * 0.5f);
 }
 
 void ReflectionProbe::SetPosition(const Vector3& position)

@@ -83,6 +83,9 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* HAS_REFLECTION_PROBE = "hasReflectionProbe";
 		const char* CUBEMAP = "reflectionProbeCubemap";
 		const char* USAGE = "reflectionProbeUsage";
+		const char* POSITION = "reflectionProbePosition";
+		const char* BOX_MIN = "reflectionProbeBoxMin";
+		const char* BOX_MAX = "reflectionProbeBoxMax";
 		const char* VIEW_MATRICES_ARRAY = "reflectionProbeViewMatrices";
 	}
 
