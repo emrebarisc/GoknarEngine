@@ -31,7 +31,6 @@ struct GOKNAR_API MaterialInitializationData
 	ShaderFunctionAndResult metallic;
 	ShaderFunctionAndResult roughness;
 	ShaderFunctionAndResult fragmentNormal;
-	bool fragmentNormalIsTangentSpace{ false };
 	ShaderFunctionAndResult vertexNormal;
 	ShaderFunctionAndResult uv;
 	ShaderFunctionAndResult vertexPositionOffset;
@@ -39,6 +38,7 @@ struct GOKNAR_API MaterialInitializationData
 	std::string fragmentShaderFunctions{ "" };
 	std::string vertexShaderUniforms{ "" };
 	std::string fragmentShaderUniforms{ "" };
+	bool fragmentNormalIsTangentSpace{ false };
 
 	void AddVertexShaderFunction(const std::string& function)
 	{
