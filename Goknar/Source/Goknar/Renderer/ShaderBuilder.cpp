@@ -2146,65 +2146,76 @@ std::string ShaderBuilder::FS_GetPBRFunctions(bool includeReflectionProbe) const
 {
 	std::string reflectionProbeFunction;
 	std::string reflectionProbeAmbientExpression = "vec3(0.f)";
+
 	if (includeReflectionProbe)
 	{
 		reflectionProbeAmbientExpression = "CalculateReflectionProbeSpecularAmbient()";
-		reflectionProbeFunction += "\nfloat GetSafeReflectionProbeRayComponent(float component)\n";
-		reflectionProbeFunction += "{\n";
-		reflectionProbeFunction += "    if(abs(component) < 0.0001f)\n";
-		reflectionProbeFunction += "    {\n";
-		reflectionProbeFunction += "        return component < 0.f ? -0.0001f : 0.0001f;\n";
-		reflectionProbeFunction += "    }\n\n";
-		reflectionProbeFunction += "    return component;\n";
-		reflectionProbeFunction += "}\n\n";
-		reflectionProbeFunction += "vec3 GetBoxProjectedReflectionProbeDirection(vec3 fragmentPosition, vec3 reflectionDirection)\n";
-		reflectionProbeFunction += "{\n";
-		reflectionProbeFunction += "    vec3 rayDirection = normalize(reflectionDirection);\n";
-		reflectionProbeFunction += "    rayDirection = vec3(\n";
-		reflectionProbeFunction += "        GetSafeReflectionProbeRayComponent(rayDirection.x),\n";
-		reflectionProbeFunction += "        GetSafeReflectionProbeRayComponent(rayDirection.y),\n";
-		reflectionProbeFunction += "        GetSafeReflectionProbeRayComponent(rayDirection.z));\n";
-		reflectionProbeFunction += "    vec3 firstPlaneIntersection = (";
-		reflectionProbeFunction += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::BOX_MIN;
-		reflectionProbeFunction += " - fragmentPosition) / rayDirection;\n";
-		reflectionProbeFunction += "    vec3 secondPlaneIntersection = (";
-		reflectionProbeFunction += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::BOX_MAX;
-		reflectionProbeFunction += " - fragmentPosition) / rayDirection;\n";
-		reflectionProbeFunction += "    vec3 furthestPlaneIntersection = max(firstPlaneIntersection, secondPlaneIntersection);\n";
-		reflectionProbeFunction += "    float intersectionDistance = min(min(furthestPlaneIntersection.x, furthestPlaneIntersection.y), furthestPlaneIntersection.z);\n\n";
-		reflectionProbeFunction += "    if(intersectionDistance <= 0.f)\n";
-		reflectionProbeFunction += "    {\n";
-		reflectionProbeFunction += "        return reflectionDirection;\n";
-		reflectionProbeFunction += "    }\n\n";
-		reflectionProbeFunction += "    vec3 boxIntersection = fragmentPosition + rayDirection * intersectionDistance;\n";
-		reflectionProbeFunction += "    return boxIntersection - ";
-		reflectionProbeFunction += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::POSITION;
-		reflectionProbeFunction += ";\n";
-		reflectionProbeFunction += "}\n";
-		reflectionProbeFunction += "\nvec3 CalculateReflectionProbeSpecularAmbient()\n";
-		reflectionProbeFunction += "{\n";
-		reflectionProbeFunction += "    if(0.f < ";
-		reflectionProbeFunction += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::USAGE;
-		reflectionProbeFunction += " && ";
-		reflectionProbeFunction += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE;
-		reflectionProbeFunction += ")\n";
-		reflectionProbeFunction += "    {\n";
-		reflectionProbeFunction += "        vec3 viewDirection = pbrViewDirection;\n";
-		reflectionProbeFunction += "        vec3 fresnel = FresnelSchlick(max(dot(surfaceNormal, viewDirection), 0.f), pbrF0);\n";
-		reflectionProbeFunction += "        vec3 reflectionDirection = reflect(-viewDirection, surfaceNormal);\n";
-		reflectionProbeFunction += "        reflectionDirection = GetBoxProjectedReflectionProbeDirection(vec3(";
-		reflectionProbeFunction += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE;
-		reflectionProbeFunction += "), reflectionDirection);\n";
-		reflectionProbeFunction += "        float maxMipLevel = max(float(textureQueryLevels(";
-		reflectionProbeFunction += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP;
-		reflectionProbeFunction += ") - 1), 0.f);\n";
-		reflectionProbeFunction += "        float mipLevel = finalRoughness * maxMipLevel;\n";
-		reflectionProbeFunction += "        return textureLod(";
-		reflectionProbeFunction += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP;
-		reflectionProbeFunction += ", reflectionDirection, mipLevel).rgb * fresnel;\n";
-		reflectionProbeFunction += "    }\n\n";
-		reflectionProbeFunction += "    return vec3(0.f);\n";
-		reflectionProbeFunction += "}\n";
+
+		reflectionProbeFunction =
+			std::string(R"(
+float GetSafeReflectionProbeRayComponent(float component)
+{
+    if(abs(component) < 0.0001f)
+    {
+        return component < 0.f ? -0.0001f : 0.0001f;
+    }
+
+    return component;
+}
+
+vec3 GetBoxProjectedReflectionProbeDirection(vec3 fragmentPosition, vec3 reflectionDirection)
+{
+    vec3 rayDirection = normalize(reflectionDirection);
+    rayDirection = vec3(
+        GetSafeReflectionProbeRayComponent(rayDirection.x),
+        GetSafeReflectionProbeRayComponent(rayDirection.y),
+        GetSafeReflectionProbeRayComponent(rayDirection.z));
+    vec3 firstPlaneIntersection = ()") +
+			SHADER_VARIABLE_NAMES::REFLECTION_PROBE::BOX_MIN +
+			R"( - fragmentPosition) / rayDirection;
+    vec3 secondPlaneIntersection = ()" +
+			SHADER_VARIABLE_NAMES::REFLECTION_PROBE::BOX_MAX +
+			R"( - fragmentPosition) / rayDirection;
+    vec3 furthestPlaneIntersection = max(firstPlaneIntersection, secondPlaneIntersection);
+    float intersectionDistance = min(min(furthestPlaneIntersection.x, furthestPlaneIntersection.y), furthestPlaneIntersection.z);
+
+    if(intersectionDistance <= 0.f)
+    {
+        return reflectionDirection;
+    }
+
+    vec3 boxIntersection = fragmentPosition + rayDirection * intersectionDistance;
+    return boxIntersection - )" +
+			SHADER_VARIABLE_NAMES::REFLECTION_PROBE::POSITION +
+			R"(;
+}
+
+vec3 CalculateReflectionProbeSpecularAmbient()
+{
+    if(0.f < )" +
+			SHADER_VARIABLE_NAMES::REFLECTION_PROBE::USAGE +
+			R"( && )" +
+			SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE +
+			R"()
+    {
+        vec3 viewDirection = pbrViewDirection;
+        vec3 fresnel = FresnelSchlick(max(dot(surfaceNormal, viewDirection), 0.f), pbrF0);
+        vec3 reflectionDirection = reflect(-viewDirection, surfaceNormal);
+        reflectionDirection = GetBoxProjectedReflectionProbeDirection(vec3()" +
+			SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE +
+			R"(), reflectionDirection);
+        float maxMipLevel = max(float(textureQueryLevels()" +
+			SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP +
+			R"() - 1), 0.f);
+        float mipLevel = finalRoughness * maxMipLevel;
+        return textureLod()" +
+			SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP +
+			R"(, reflectionDirection, mipLevel).rgb * fresnel;
+    }
+
+    return vec3(0.f);
+}
+)";
 	}
 
 	return R"(
