@@ -1257,6 +1257,8 @@ void Renderer::RemovePostProcessingEffect(PostProcessingEffect* postProcessingEf
 			postProcessingEffects_.erase(postProcessingEffectIterator);
 			break;
 		}
+
+		++postProcessingEffectIterator;
 	}
 }
 void Renderer::AddRenderTarget(const RenderTarget* renderTarget)

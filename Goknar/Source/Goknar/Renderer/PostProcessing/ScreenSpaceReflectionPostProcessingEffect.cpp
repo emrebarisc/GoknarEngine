@@ -14,8 +14,19 @@ ScreenSpaceReflectionPostProcessingEffect::ScreenSpaceReflectionPostProcessingEf
 {
     ComputeShader* ssrComputeShader = new ComputeShader();
     const std::string projectShaderPath = ContentDir + "Shaders/PostProcessing/ScreenSpaceReflection.comp";
-    const std::string engineShaderPath = EngineContentDir + "Shaders/PostProcessing/ScreenSpaceReflection.comp";
-    const std::string shaderPath = DataEncryption::FileExists(projectShaderPath) ? projectShaderPath : engineShaderPath;
+    std::string shaderPath = projectShaderPath;
+
+#if defined(ENGINE_CONTENT_DIR)
+    if (!DataEncryption::FileExists(projectShaderPath))
+    {
+        const std::string engineShaderPath = EngineContentDir + "Shaders/PostProcessing/ScreenSpaceReflection.comp";
+
+        if (DataEncryption::FileExists(engineShaderPath))
+        {
+            shaderPath = engineShaderPath;
+        }
+    }
+#endif
     ssrComputeShader->SetComputeShaderPathAbsolute(shaderPath);
     SetComputeShader(ssrComputeShader);
 }
