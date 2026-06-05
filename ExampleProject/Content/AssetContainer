@@ -34,6 +34,9 @@
             <Path>Materials/Level/M_PhysicsBlocks</Path>
         </Material>
         <Material>
+            <Path>Materials/Level/M_SkySphere</Path>
+        </Material>
+        <Material>
             <Path>Materials/Objects/M_TestTransparent</Path>
         </Material>
         <Material>
@@ -120,6 +123,10 @@
                 <MaterialPath>Materials/Environment/Trees/M_TreeBody</MaterialPath>
                 <MaterialPath>Materials/Environment/Trees/M_TreeBody</MaterialPath>
             </MaterialPaths>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/Level/SM_SkySphere.fbx</Path>
+            <MaterialPath>Materials/Level/M_SkySphere</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/Objects/SM_Bullet.fbx</Path>

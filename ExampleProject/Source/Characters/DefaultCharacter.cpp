@@ -48,7 +48,7 @@ DefaultCharacter::DefaultCharacter() :
 	skeletalMeshComponent_->SetParent(GetRootComponent());
 	skeletalMeshComponent_->SetRelativeRotation(Quaternion::FromEulerDegrees(Vector3{ 90.f, 0.f, 90.f }));
 	skeletalMeshComponent_->SetRelativeScaling(Vector3{ 0.01f });
-	skeletalMeshComponent_->SetRelativePosition(Vector3{ 0.f, 0.f, -0.775f });
+	skeletalMeshComponent_->SetRelativePosition(Vector3{ 0.f, 0.f, -0.8f });
 
 	thirdPersonCameraComponent_ = AddSubComponent<CameraComponent>();
 	thirdPersonCameraComponent_->SetCameraFollowsComponentRotation(false);

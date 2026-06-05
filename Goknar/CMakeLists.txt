@@ -176,6 +176,7 @@ target_compile_definitions(${APP_NAME} PUBLIC
 	"$<$<CONFIG:Debug>:GOKNAR_ENABLE_ASSERTS>"
 	"$<$<CONFIG:Debug>:GOKNAR_ENABLE_LOGGING>"
 	"$<$<CONFIG:Debug>:ENGINE_CONTENT_DIR=\"EngineContent/\">"
+	"$<$<CONFIG:Release>:GOKNAR_ENABLE_LOGGING>"
 	"$<$<OR:$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>,$<CONFIG:MinSizeRel>>:GOKNAR_BUILD_RELEASE>"
 )
 

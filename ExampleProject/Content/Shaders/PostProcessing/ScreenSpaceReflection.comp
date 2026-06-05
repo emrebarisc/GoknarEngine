@@ -62,7 +62,9 @@ bool EvaluateHit(
     forwardError = marchedDistance - projectedDistanceToSample;
     lateralError = length(sampleWorldPosition - closestPointOnRay);
 
-    const float allowedLateralError = max(thickness * 2.0f, currentStepSize * 1.5f);
+    // Clamped lateral error prevents the ray hit-box from expanding infinitely
+    const float allowedLateralError = max(thickness * 2.0f, min(currentStepSize * 0.25f, thickness * 5.0f));
+    
     return
         0.0f <= forwardError &&
         forwardError <= (currentStepSize + thickness) &&
@@ -202,6 +204,7 @@ void main() {
     vec4 sceneColor = texture(inputTexture, uv);
     vec3 worldPos = texture(position_GBuffer, uv).xyz;
     
+    // Ignore skybox / background pixels to prevent breaking the depth math
     if (length(worldPos) < 0.01f) {
         imageStore(outputImage, pixelCoords, sceneColor);
         return;
@@ -214,6 +217,7 @@ void main() {
     float roughness = aoMetallicRoughness.z;
     float reflectionIntensity = clamp(metallic * (1.0f - roughness), 0.0f, 1.0f);
 
+    // Early exit for non-reflective surfaces
     if (reflectionIntensity <= 0.01f || length(normal) < 0.1f) {
         imageStore(outputImage, pixelCoords, sceneColor);
         return;
@@ -227,20 +231,30 @@ void main() {
         return;
     }
 
+    // Bias to prevent immediate self-intersection
     vec3 rayOrigin = worldPos + normal * max(thickness * 0.5f, 0.05f);
     vec3 previousRayPosition = rayOrigin;
-    vec3 rayPosition = rayOrigin;
+    
+    float currentStepSize = rayStepSize;
+
+    // THE FIX: Define a maximum allowed step size. 
+    // This prevents the ray from taking giant leaps and missing the pillar completely.
+    float maxAllowedStepSize = rayStepSize * 3.5f;
+
+    // Interleaved Gradient Noise (IGN) jitter to break horizontal stepping artifacts
+    float dither = fract(52.9829189f * fract(dot(vec2(pixelCoords), vec2(0.06711056f, 0.00583715f))));
+    float initialOffset = currentStepSize * dither;
+    
+    vec3 rayPosition = rayOrigin + reflectionDirection * initialOffset;
     
     vec3 hitColor = vec3(0.0f);
     float visibility = 0.0f;
     vec2 hitUV = vec2(-1.0f);
     float hitLateralError = thickness * 2.0f;
-    float totalRayDistance = 0.0f;
+    float totalRayDistance = initialOffset; 
     bool exitedViewportWithoutHit = false;
     vec2 lastValidUv = uv;
     vec2 invalidHitUv = uv;
-
-    float currentStepSize = rayStepSize;
 
     for (int i = 0; i < maxSteps; ++i) {
         previousRayPosition = rayPosition;
@@ -258,6 +272,7 @@ void main() {
         vec3 ndc = clipSpace.xyz / clipSpace.w;
         vec2 sampleUV = ndc.xy * 0.5f + 0.5f;
 
+        // Break if off-screen
         if (!IsValidUv(sampleUV)) {
             exitedViewportWithoutHit = true;
             invalidHitUv = sampleUV;
@@ -267,8 +282,11 @@ void main() {
         lastValidUv = sampleUV;
 
         vec3 sampleWorldPos = texture(position_GBuffer, sampleUV).xyz;
+        
+        // Skip background pixels in the G-Buffer
         if (IsBackgroundSample(sampleWorldPos)) {
-            currentStepSize *= 1.08f;
+            // Apply capped growth
+            currentStepSize = min(currentStepSize * 1.05f, maxAllowedStepSize);
             continue;
         }
 
@@ -276,11 +294,15 @@ void main() {
         float lateralError = 0.0f;
         if (EvaluateHit(rayOrigin, reflectionDirection, rayPosition, sampleWorldPos, currentStepSize, forwardError, lateralError)) {
             vec3 sampleNormal = normalize(texture(normal_GBuffer, sampleUV).xyz);
+            
+            // Backface Rejection: Prevent the ray from hitting the "inside" or grazing its own geometry
             if (dot(sampleNormal, reflectionDirection) > 0.0f) {
-                currentStepSize *= 1.08f;
+                // Apply capped growth
+                currentStepSize = min(currentStepSize * 1.05f, maxAllowedStepSize);
                 continue;
             }
 
+            // Binary Search Refinement
             vec3 minRayPosition = previousRayPosition;
             vec3 maxRayPosition = rayPosition;
             vec2 refinedHitUv = sampleUV;
@@ -309,6 +331,9 @@ void main() {
                     continue;
                 }
 
+                // Calculate the precise, shrinking step size for this specific iteration
+                float searchStepSize = length(maxRayPosition - minRayPosition) * 0.5f;
+
                 float refinedForwardError = 0.0f;
                 float candidateLateralError = 0.0f;
                 bool midRayHits = EvaluateHit(
@@ -316,7 +341,7 @@ void main() {
                     reflectionDirection,
                     midRayPosition,
                     sampleWorldPos,
-                    max(currentStepSize * 0.5f, rayStepSize),
+                    searchStepSize, 
                     refinedForwardError,
                     candidateLateralError);
                 
@@ -334,7 +359,8 @@ void main() {
             break;
         }
         
-        currentStepSize *= 1.08f; 
+        // Exponential step growth: Capped so it doesn't skip thin geometry
+        currentStepSize = min(currentStepSize * 1.05f, maxAllowedStepSize);
     }
 
     if (hitUV.x >= 0.0f) {

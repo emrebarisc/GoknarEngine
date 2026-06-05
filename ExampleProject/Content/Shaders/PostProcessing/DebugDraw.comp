@@ -1,0 +1,202 @@
+#version 440 core
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+struct DebugLine
+{
+	vec4 startThickness;
+	vec4 endStartTime;
+	vec4 colorDuration;
+};
+
+layout(binding = 0, rgba16f) uniform writeonly image2D postProcessOutput;
+layout(std430, binding = 3) readonly buffer DebugLines
+{
+	DebugLine debugLines[];
+};
+
+uniform sampler2D inputTexture;
+uniform mat4 viewProjectionMatrix;
+uniform int debugLineCount;
+uniform int renderMode;
+uniform float currentTime;
+uniform float frameLifetime;
+
+vec4 ProjectWorldPosition(vec3 worldPosition)
+{
+	return vec4(worldPosition, 1.0) * viewProjectionMatrix;
+}
+
+float DistanceToSegment(vec2 point, vec2 segmentStart, vec2 segmentEnd)
+{
+	vec2 segment = segmentEnd - segmentStart;
+	float lengthSquared = dot(segment, segment);
+	if (lengthSquared <= 0.0001)
+	{
+		return length(point - segmentStart);
+	}
+
+	float t = clamp(dot(point - segmentStart, segment) / lengthSquared, 0.0, 1.0);
+	return length(point - (segmentStart + segment * t));
+}
+
+float GetLifetimeFade(float age, float duration)
+{
+	if (duration <= 0.0)
+	{
+		return duration < 0.0 || age <= frameLifetime ? 1.0 : 0.0;
+	}
+
+	if (age < 0.0 || duration < age)
+	{
+		return 0.0;
+	}
+
+	float fadeWindow = max(duration * 0.2, 0.001);
+	return smoothstep(duration, duration - fadeWindow, age);
+}
+
+bool ClipAgainstPlane(inout vec4 startClip, inout vec4 endClip, float startDistance, float endDistance)
+{
+	if (startDistance < 0.0 && endDistance < 0.0)
+	{
+		return false;
+	}
+
+	if (startDistance >= 0.0 && endDistance >= 0.0)
+	{
+		return true;
+	}
+
+	float denominator = startDistance - endDistance;
+	if (abs(denominator) <= 0.00001)
+	{
+		return false;
+	}
+
+	float t = clamp(startDistance / denominator, 0.0, 1.0);
+	vec4 clippedPoint = mix(startClip, endClip, t);
+	if (startDistance < 0.0)
+	{
+		startClip = clippedPoint;
+	}
+	else
+	{
+		endClip = clippedPoint;
+	}
+
+	return true;
+}
+
+bool ClipLineToClipVolume(inout vec4 startClip, inout vec4 endClip)
+{
+	return
+		ClipAgainstPlane(startClip, endClip, startClip.x + startClip.w, endClip.x + endClip.w) &&
+		ClipAgainstPlane(startClip, endClip, -startClip.x + startClip.w, -endClip.x + endClip.w) &&
+		ClipAgainstPlane(startClip, endClip, startClip.y + startClip.w, endClip.y + endClip.w) &&
+		ClipAgainstPlane(startClip, endClip, -startClip.y + startClip.w, -endClip.y + endClip.w) &&
+		ClipAgainstPlane(startClip, endClip, startClip.z + startClip.w, endClip.z + endClip.w) &&
+		ClipAgainstPlane(startClip, endClip, -startClip.z + startClip.w, -endClip.z + endClip.w);
+}
+
+void CopyScenePixel(ivec2 pixelCoordinates, ivec2 outputSize)
+{
+	if (pixelCoordinates.x >= outputSize.x || pixelCoordinates.y >= outputSize.y)
+	{
+		return;
+	}
+
+	vec2 uv = (vec2(pixelCoordinates) + vec2(0.5)) / vec2(outputSize);
+	imageStore(postProcessOutput, pixelCoordinates, texture(inputTexture, uv));
+}
+
+void StoreDebugLinePixel(ivec2 pixelCoordinates, ivec2 outputSize, vec3 color)
+{
+	if (pixelCoordinates.x < 0 || pixelCoordinates.y < 0 || pixelCoordinates.x >= outputSize.x || pixelCoordinates.y >= outputSize.y)
+	{
+		return;
+	}
+
+	imageStore(postProcessOutput, pixelCoordinates, vec4(color, 1.0));
+}
+
+void RasterizeDebugLine(uint lineStep, uint lineIndex, ivec2 outputSize)
+{
+	if (lineIndex >= uint(debugLineCount))
+	{
+		return;
+	}
+
+	DebugLine line = debugLines[lineIndex];
+	float age = currentTime - line.endStartTime.w;
+	float lifetimeFade = GetLifetimeFade(age, line.colorDuration.w);
+	if (lifetimeFade <= 0.0)
+	{
+		return;
+	}
+
+	vec4 startClip = ProjectWorldPosition(line.startThickness.xyz);
+	vec4 endClip = ProjectWorldPosition(line.endStartTime.xyz);
+	if (abs(startClip.w) <= 0.00001 || abs(endClip.w) <= 0.00001)
+	{
+		return;
+	}
+
+	if (!ClipLineToClipVolume(startClip, endClip))
+	{
+		return;
+	}
+
+	if (abs(startClip.w) <= 0.00001 || abs(endClip.w) <= 0.00001)
+	{
+		return;
+	}
+
+	vec2 imageSize = vec2(outputSize);
+	vec2 startUv = startClip.xy / startClip.w * 0.5 + 0.5;
+	vec2 endUv = endClip.xy / endClip.w * 0.5 + 0.5;
+	vec2 startPixel = startUv * imageSize;
+	vec2 endPixel = endUv * imageSize;
+	float lineLengthPixels = length(endPixel - startPixel);
+	if (lineLengthPixels <= 0.0001 || float(lineStep) > lineLengthPixels)
+	{
+		return;
+	}
+
+	float t = clamp(float(lineStep) / lineLengthPixels, 0.0, 1.0);
+	vec2 centerPixel = mix(startPixel, endPixel, t);
+	float radius = max(line.startThickness.w * 0.5, 0.5);
+	int radiusPixels = int(ceil(radius + 0.5));
+	vec3 color = line.colorDuration.rgb * lifetimeFade;
+
+	ivec2 roundedCenter = ivec2(floor(centerPixel + vec2(0.5)));
+	for (int y = -radiusPixels; y <= radiusPixels; ++y)
+	{
+		for (int x = -radiusPixels; x <= radiusPixels; ++x)
+		{
+			ivec2 targetPixel = roundedCenter + ivec2(x, y);
+			vec2 targetCenter = vec2(targetPixel) + vec2(0.5);
+			if (length(targetCenter - centerPixel) <= radius + 0.75)
+			{
+				StoreDebugLinePixel(targetPixel, outputSize, color);
+			}
+		}
+	}
+}
+
+void main()
+{
+	ivec2 pixelCoordinates = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 outputSize = imageSize(postProcessOutput);
+	if (renderMode == 0)
+	{
+		CopyScenePixel(pixelCoordinates, outputSize);
+		return;
+	}
+
+	if (renderMode == 1)
+	{
+		RasterizeDebugLine(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, outputSize);
+		return;
+	}
+}

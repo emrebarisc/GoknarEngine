@@ -1,0 +1,75 @@
+<GameAsset FileType="Material" UseTextureAtlas="true">
+    <Name></Name>
+    <BoneCount>0</BoneCount>
+    <BlendModel>Opaque</BlendModel>
+    <ShadingModel>Default</ShadingModel>
+    <ShadingType>Unlit</ShadingType>
+    <UsesReflectionProbe>0</UsesReflectionProbe>
+    <BaseColorValue>1 1 1 1</BaseColorValue>
+    <EmissiveColorValue>0 0 0</EmissiveColorValue>
+    <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
+    <MetallicValue>0.000000</MetallicValue>
+    <RoughnessValue>0.500000</RoughnessValue>
+    <Translucency>0.000000</Translucency>
+    <BaseColor>
+        <Calculation>
+	// Optimized shader graph calculations
+	vec3 vector3_ConstantOut = vec3((fragmentPositionWorldSpace).x, (fragmentPositionWorldSpace).y, (fragmentPositionWorldSpace).z);
+	vec3 normalizedValue = normalize((vector3_ConstantOut - viewPosition));
+	float maskedZ = (normalizedValue).z;
+	float clampedValue = clamp(((maskedZ * 0.5) + 0.5), 0.0, 1.0);
+	vec3 mixedValue = mix(vec3(0.65, 0.78, 1.0), vec3(0.05, 0.25, 0.75), pow(clampedValue, 0.75));
+	vec3 product = (normalize(lightDirection) * -1.0);
+	float maxOut = max(dot(normalizedValue, product), 0.0);
+	float clampedValue2 = clamp((product).z, 0.0, 1.0);
+	vec3 mixedValue2 = mix(vec3(1.0, 0.35, 0.08), vec3(1.0, 0.95, 0.75), clampedValue2);
+	vec3 product2 = ((pow(maxOut, 128.0) * mixedValue2) * 1.5);
+	vec3 product3 = ((smoothstep(0.99995, 0.99999, maxOut) * mixedValue2) * 8.0);
+	vec3 product4 = (pow((1.0 - abs(maskedZ)), 3.0) * vec3(0.8, 0.25, 0.05));
+	vec3 product5 = ((product4 * (1.0 - clampedValue2)) * 0.5);
+	vec3 sum = (((mixedValue + product2) + product3) + product5);
+</Calculation>
+        <Result>vec4(vec3(1.0, 1.0, 1.0), 1.0);</Result>
+    </BaseColor>
+    <EmissiveColor>
+        <Calculation></Calculation>
+        <Result>sum;</Result>
+    </EmissiveColor>
+    <AmbientOcclusion>
+        <Calculation></Calculation>
+        <Result></Result>
+    </AmbientOcclusion>
+    <Metallic>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Metallic>
+    <Roughness>
+        <Calculation></Calculation>
+        <Result></Result>
+    </Roughness>
+    <FragmentNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </FragmentNormal>
+    <FragmentNormalIsTangentSpace>0</FragmentNormalIsTangentSpace>
+    <VertexNormal>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexNormal>
+    <UV>
+        <Calculation></Calculation>
+        <Result></Result>
+    </UV>
+    <VertexPositionOffset>
+        <Calculation></Calculation>
+        <Result></Result>
+    </VertexPositionOffset>
+    <VertexShaderFunctions><![CDATA[]]></VertexShaderFunctions>
+    <FragmentShaderFunctions><![CDATA[]]></FragmentShaderFunctions>
+    <VertexShaderUniforms><![CDATA[// GOKNAR_MATERIAL_NODE|kind=Variable|name=lightDirection|type=Vector3|storage=Uniform|count=1|values=0.577000,0.577000,-0.577000
+uniform vec3 lightDirection;
+]]></VertexShaderUniforms>
+    <FragmentShaderUniforms><![CDATA[// GOKNAR_MATERIAL_NODE|kind=Variable|name=lightDirection|type=Vector3|storage=Uniform|count=1|values=0.577000,0.577000,-0.577000
+uniform vec3 lightDirection;
+]]></FragmentShaderUniforms>
+</GameAsset>

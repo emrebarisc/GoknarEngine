@@ -1,7 +1,7 @@
 <GameAsset FileType="MaterialEditorReflection">
     <Canvas Scale="0.8499999" ScrollX="326.20319" ScrollY="22.149933"/>
     <Nodes>
-        <Node Id="1" Name="Material Output" Category="Master" PosX="120" PosY="80" SizeX="220" SizeY="220" IsUniform="1">
+        <Node Id="1" Name="Material Output" Category="Master" PosX="120" PosY="80" SizeX="220" SizeY="245" IsUniform="1">
             <StringData><![CDATA[]]></StringData>
             <Inputs>
                 <Pin Id="2" NodeId="1" Name="Base Color" Type="Vector4" Kind="Input">
@@ -10,7 +10,7 @@
                 <Pin Id="3" NodeId="1" Name="Emissive" Type="Vector3" Kind="Input">
                     <DefaultValue type="Vector3" x="0" y="0" z="0"/>
                 </Pin>
-                <Pin Id="4" NodeId="1" Name="Normal" Type="Vector3" Kind="Input">
+                <Pin Id="4" NodeId="1" Name="Fragment Normal" Type="Vector3" Kind="Input">
                     <DefaultValue type="Vector3" x="0" y="0" z="1"/>
                 </Pin>
                 <Pin Id="5" NodeId="1" Name="Ambient Occlusion" Type="Float" Kind="Input">
@@ -24,6 +24,9 @@
                 </Pin>
                 <Pin Id="8" NodeId="1" Name="World Position Offset" Type="Vector3" Kind="Input">
                     <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+                <Pin Id="92" NodeId="1" Name="Vertex Normal" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="1"/>
                 </Pin>
             </Inputs>
             <Outputs/>
