@@ -55,6 +55,9 @@ Game::Game() : Application()
 		int height = config.GetInt("Graphics", "WindowHeight", 1080);
 		engine->GetWindowManager()->SetWindowSize(width, height);
 
+		bool isFullscreen = config.GetBool("Graphics", "Fullscreen", true);
+		engine->GetWindowManager()->SetIsInFullscreen(isFullscreen);
+
 		std::string mainRenderTypeStr = config.GetString("Graphics", "MainRenderType", "Deferred");
 		RenderPassType mainRenderType = RenderPassType::Deferred;
 		if (mainRenderTypeStr == "Forward")
