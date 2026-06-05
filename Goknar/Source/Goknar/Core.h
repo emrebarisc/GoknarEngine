@@ -8,11 +8,8 @@
 #pragma warning (disable : 4251)
 #endif
 
-#if defined(GOKNAR_BUILD_DEBUG)
-	#if defined(ENGINE_CONTENT_DIR)
-		extern const std::string EngineContentDir;
-#endif
-	
+#if defined(ENGINE_CONTENT_DIR)
+	extern const std::string EngineContentDir;
 #endif
 
 extern std::string ProjectDir;

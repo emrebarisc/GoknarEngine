@@ -32,7 +32,6 @@ DebugDrawer::DebugDrawer()
 
 DebugDrawer::~DebugDrawer()
 {
-
 }
 
 void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Colorf& color, float thickness, float time, ObjectBase* owner)
@@ -94,6 +93,7 @@ void DebugDrawer::DrawArrow(const Vector3& start, const Vector3& end, const Colo
 
 void DebugDrawer::DrawCircle(const Vector3& position, const Quaternion& rotation, float radius, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
+#ifdef GOKNAR_BUILD_DEBUG
 	DebugObject* circle = new DebugObject();
 
 	float angleStep = 0.39269908169f;
@@ -108,10 +108,12 @@ void DebugDrawer::DrawCircle(const Vector3& position, const Quaternion& rotation
 	circle->SetWorldRotation(rotation);
 	circle->SetParent(owner);
 	circle->SetName("DebugObject_Circle");
+#endif
 }
 
 void DebugDrawer::DrawSphere(const Vector3& position, const Quaternion& rotation, float radius, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
+#ifdef GOKNAR_BUILD_DEBUG
 	DebugObject* sphere = new DebugObject();
 
 	Matrix rotationMatrix = rotation.GetMatrix();
@@ -129,10 +131,12 @@ void DebugDrawer::DrawSphere(const Vector3& position, const Quaternion& rotation
 
 	sphere->SetName("DebugObject_DebugSphere");
 	sphere->SetParent(owner);
+#endif
 }
 
 void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, const Vector3& halfSize, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
+#ifdef GOKNAR_BUILD_DEBUG
 	DebugObject* box = new DebugObject();
 
 	Matrix rotationMatrix = rotation.GetMatrix();
@@ -168,6 +172,7 @@ void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, c
 
 	box->SetName("DebugObject_DebugBox");
 	box->SetParent(owner);
+#endif
 }
 
 void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotation,
@@ -175,6 +180,7 @@ void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotatio
 	float thickness/* = 1.f*/, float time/* = -1.f*/,
 	ObjectBase* owner/* = nullptr*/)
 {
+#ifdef GOKNAR_BUILD_DEBUG
 	DebugObject* capsule = new DebugObject();
 
 	int stepDegrees = 30;
@@ -215,6 +221,7 @@ void DebugDrawer::DrawCapsule(const Vector3& position, const Quaternion& rotatio
 
 	capsule->SetName("DebugObject_Capsule");
 	capsule->SetParent(owner);
+#endif
 }
 
 void DebugDrawer::DrawCollisionComponent(const BoxCollisionComponent* boxCollisionComponent, const Colorf& color, float thickness, float time)
@@ -237,6 +244,7 @@ void DebugDrawer::DrawCollisionComponent(const SphereCollisionComponent* sphereC
 
 void DebugDrawer::DrawCollisionComponent(const MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness, float time)
 {
+#ifdef GOKNAR_BUILD_DEBUG
 	DebugObject* collisionObject = new DebugObject();
 	collisionObject->SetName("DebugObject_TriangleMeshCollisionComponent");
 
@@ -248,10 +256,12 @@ void DebugDrawer::DrawCollisionComponent(const MovingTriangleMeshCollisionCompon
 	collisionObject->SetWorldScaling(movingTriangleMeshCollisionComponent->GetWorldScaling());
 
 	collisionObject->SetParent(movingTriangleMeshCollisionComponent->GetOwner());
+#endif
 }
 
 void DebugDrawer::DrawCollisionComponent(const NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent, const Colorf& color, float thickness, float time)
 {
+#ifdef GOKNAR_BUILD_DEBUG
 	DebugObject* collisionObject = new DebugObject();
 	collisionObject->SetName("DebugObject_TriangleMeshCollisionComponent");
 
@@ -263,10 +273,12 @@ void DebugDrawer::DrawCollisionComponent(const NonMovingTriangleMeshCollisionCom
 	collisionObject->SetWorldScaling(nonMovingTriangleMeshCollisionComponent->GetWorldScaling());
 
 	collisionObject->SetParent(nonMovingTriangleMeshCollisionComponent->GetOwner());
+#endif
 }
 
 void DebugDrawer::DrawMeshUnit(const MeshUnit* meshUnit, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
+#ifdef GOKNAR_BUILD_DEBUG
 	const VertexArray* vertexArray = meshUnit->GetVerticesPointer();
 	int vertexCount = vertexArray->size();
 
@@ -282,6 +294,7 @@ void DebugDrawer::DrawMeshUnit(const MeshUnit* meshUnit, const Colorf& color, fl
 			vertexArray->at(face.vertexIndices[2]).position,
 			color, thickness, time, owner);
 	}
+#endif
 }
 
 void DebugDrawer::DrawSpherePatch(const Vector3& center, const Vector3& up, const Vector3& forward, float radius,
@@ -290,6 +303,7 @@ void DebugDrawer::DrawSpherePatch(const Vector3& center, const Vector3& up, cons
 	float thickness/* = 1.f*/, float time/* = -1.f*/,
 	ObjectBase* owner/* = nullptr*/)
 {
+#ifdef GOKNAR_BUILD_DEBUG
 	Vector3 vA[74];
 	Vector3 vB[74];
 	Vector3* pvA = vA, * pvB = vB, * pT;
@@ -393,10 +407,13 @@ void DebugDrawer::DrawSpherePatch(const Vector3& center, const Vector3& up, cons
 		pvA = pvB;
 		pvB = pT;
 	}
+#endif
 }
 
 void DebugDrawer::DrawTriangle(const Vector3& position1, const Vector3& position2, const Vector3& position3, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
+#ifdef GOKNAR_BUILD_DEBUG
 	DrawLine(position1, position2, color, thickness, time, owner);
 	DrawLine(position2, position3, color, thickness, time, owner);
+#endif
 }

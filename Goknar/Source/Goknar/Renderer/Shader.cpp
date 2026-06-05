@@ -220,7 +220,7 @@ void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
 		const std::string logMessage = graphicsAPI->GetShaderInfoLog(shaderId);
 		graphicsAPI->DeleteShader(shaderId);
 
-		GOKNAR_CORE_ASSERT(false, "%s\nWhat went wrong: \n%s", errorMessage, logMessage.c_str());
+		GOKNAR_CHECK(false, "%s\nWhat went wrong: \n%s", errorMessage, logMessage.c_str());
 	}
 }
 
@@ -233,7 +233,7 @@ void ExitOnProgramError(GEuint programId, const char* errorMessage)
 		graphicsAPI->DeleteProgram(programId);
 
 		GOKNAR_CORE_ERROR("%s", logMessage.c_str());
-		GOKNAR_CORE_ASSERT(false, errorMessage);
+		GOKNAR_CHECK(false, errorMessage);
 	}
 }
 
@@ -476,7 +476,7 @@ void Shader::SetMatrix(const char* name, const Matrix& matrix) const
 		storedValuesNeedUpload_ = true;
 		return;
 	}
-
+	
 	Use();
 	UploadMatrix(name, matrix);
 }

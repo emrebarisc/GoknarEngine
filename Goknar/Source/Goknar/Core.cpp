@@ -10,6 +10,8 @@ std::string ContentDir = "Content/";
 
 #if defined(GOKNAR_BUILD_DEBUG)
     #ifdef ENGINE_CONTENT_DIR
-    const std::string EngineContentDir = ENGINE_CONTENT_DIR;
+        const std::string EngineContentDir = ENGINE_CONTENT_DIR;
     #endif
+#else
+    const std::string EngineContentDir = "";
 #endif

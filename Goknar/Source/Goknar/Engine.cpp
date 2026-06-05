@@ -52,7 +52,10 @@ Engine::Engine()
 	physicsWorld_ = new PhysicsWorld();
 	cameraManager_ = new CameraManager();
 
+
+#ifdef GOKNAR_BUILD_DEBUG
 	debugDrawer_ = new DebugDrawer();
+#endif
 
 	// TODO
 	//application_ = CreateApplication();
