@@ -72,12 +72,10 @@ private:
 	float strafingShoulderOffset_{ 0.55f };
 	float cameraCollisionPadding_{ 0.2f };
 	float minCameraDistance_{ 0.65f };
-	float minCameraForwardZ_{ -0.45f };
-	float maxCameraForwardZ_{ 0.25f };
+	float minCameraForwardZ_{ -0.95f };
+	float maxCameraForwardZ_{ 0.75f };
 	
 	float mouseSensitivity_{ 1.f };
-	float minPitch_{ -40.f };
-	float maxPitch_{ 40.f };
 
 	float timeSinceStopped_{ 0.f };
 
