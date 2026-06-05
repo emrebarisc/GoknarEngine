@@ -27,6 +27,11 @@ enum class MaterialShadingModel
 	TwoSided
 };
 
+enum class MaterialShadingType
+{
+	Default = 0,
+	Unlit
+};
 
 class GOKNAR_API IMaterialBase
 {
@@ -121,6 +126,16 @@ public:
 		shadingModel_ = shadingModel;
 	}
 
+	MaterialShadingType GetShadingType() const
+	{
+		return shadingType_;
+	}
+
+	void SetShadingType(MaterialShadingType shadingType)
+	{
+		shadingType_ = shadingType;
+	}
+
 	bool GetUsesReflectionProbe() const
 	{
 		return usesReflectionProbe_;
@@ -187,6 +202,7 @@ protected:
 
 	MaterialBlendModel blendModel_{ MaterialBlendModel::Opaque };
 	MaterialShadingModel shadingModel_{ MaterialShadingModel::Default };
+	MaterialShadingType shadingType_{ MaterialShadingType::Default };
 	bool usesReflectionProbe_{ false };
 	bool useTextureAtlasForTextureImages_{ true };
 

@@ -182,6 +182,7 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::ROUGHNESS, roughness_);
 		shader->SetVector3(SHADER_VARIABLE_NAMES::MATERIAL::EMISIVE_COLOR, emissiveColor_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::TRANSLUCENCY, translucency_);
+		shader->SetInt(SHADER_VARIABLE_NAMES::MATERIAL::SHADING_TYPE_ID, (int)shadingType_);
 	}
 	else if (renderPassType == RenderPassType::Shadow || renderPassType == RenderPassType::PointLightShadow)
 	{

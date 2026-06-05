@@ -31,6 +31,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		extern const char* ROUGHNESS;
 		extern const char* EMISIVE_COLOR;
 		extern const char* AMBIENT_OCCLUSION;
+		extern const char* SHADING_TYPE_ID;
 	}
 
 	inline namespace LIGHT

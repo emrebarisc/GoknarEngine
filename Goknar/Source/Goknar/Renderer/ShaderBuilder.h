@@ -107,6 +107,7 @@ private:
 	std::string FS_InitializeMetallic(MaterialInitializationData* initializationData) const;
 	std::string FS_InitializeRoughness(MaterialInitializationData* initializationData) const;
 	std::string FS_InitializeSurfaceNormal(MaterialInitializationData* initializationData) const;
+	std::string FS_GetUnlitCheck() const;
 	std::string FS_GetPBRFunctions(bool includeReflectionProbe) const;
 
 	std::string General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const;
@@ -127,6 +128,7 @@ private:
 
 	std::string FS_GetOutputVariables() const;
 	std::string FS_GetOutputVariableAssignments() const;
+	std::string FS_GetUnlitOutputVariableAssignments() const;
 
 	std::string GeometryBufferPass_GetOutputVariables() const;
 	std::string GeometryBufferPass_GetOutputVariableAssignments(MaterialInitializationData* initializationData) const;
@@ -134,6 +136,7 @@ private:
 	std::string DeferredRenderPass_GetGBufferTextureUniforms() const;
 	std::string DeferredRenderPass_GetGBufferVariables() const;
 	std::string DeferredRenderPass_GetGBufferVariableAssignments() const;
+	std::string DeferredRenderPass_GetUnlitCheck() const;
 
 	std::string VS_GetMainLayouts() const;
 	std::string VS_GetInstancedStaticMeshLayouts() const;

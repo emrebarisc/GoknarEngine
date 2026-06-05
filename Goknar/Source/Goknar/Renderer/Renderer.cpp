@@ -1730,8 +1730,8 @@ void GeometryBufferData::GenerateBuffers()
 	diffuseTexture = new Texture();
 	diffuseTexture->SetName(SHADER_VARIABLE_NAMES::GBUFFER::OUT_DIFFUSE);
 	diffuseTexture->SetTextureDataType(TextureDataType::DYNAMIC);
-	diffuseTexture->SetTextureFormat(TextureFormat::RGB);
-	diffuseTexture->SetTextureInternalFormat(TextureInternalFormat::RGB);
+	diffuseTexture->SetTextureFormat(TextureFormat::RGBA);
+	diffuseTexture->SetTextureInternalFormat(TextureInternalFormat::RGBA);
 	diffuseTexture->SetTextureMinFilter(TextureMinFilter::NEAREST);
 	diffuseTexture->SetTextureMagFilter(TextureMagFilter::NEAREST);
 	diffuseTexture->SetWidth(bufferWidth);

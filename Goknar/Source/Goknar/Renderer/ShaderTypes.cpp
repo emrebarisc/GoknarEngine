@@ -32,6 +32,7 @@ inline namespace SHADER_VARIABLE_NAMES
 		const char* ROUGHNESS = "roughness";
 		const char* EMISIVE_COLOR = "emissiveColor";
 		const char* AMBIENT_OCCLUSION = "ambientOcclusion";
+		const char* SHADING_TYPE_ID = "shadingTypeId";
 	}
 
 	inline namespace LIGHT

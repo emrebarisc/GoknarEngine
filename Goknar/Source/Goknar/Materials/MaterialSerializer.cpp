@@ -158,6 +158,10 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
 
     MaterialShadingModel shadingModel = material->GetShadingModel();
     AddPropertyElement("ShadingModel", shadingModel == MaterialShadingModel::TwoSided ? "TwoSided" : "Default");
+
+    MaterialShadingType shadingType = material->GetShadingType();
+    AddPropertyElement("ShadingType", shadingType == MaterialShadingType::Unlit ? "Unlit" : "Default");
+
     AddPropertyElement("UsesReflectionProbe", material->GetUsesReflectionProbe() ? "1" : "0");
 
     const std::vector<const Image*>* textureImages = material->GetTextureImages();
@@ -286,6 +290,15 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
         owner->SetShadingModel(shadingModel == "Default" ? MaterialShadingModel::Default :
             shadingModel == "TwoSided" ? MaterialShadingModel::TwoSided :
             owner->GetShadingModel());
+    }
+
+    child = root->FirstChildElement("ShadingType");
+    if (child && child->GetText())
+    {
+        std::string shadingType = child->GetText();
+        owner->SetShadingType(shadingType == "Default" ? MaterialShadingType::Default :
+            shadingType == "Unlit" ? MaterialShadingType::Unlit :
+            owner->GetShadingType());
     }
 
     child = root->FirstChildElement("UsesReflectionProbe");
