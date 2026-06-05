@@ -104,6 +104,9 @@ public:
 private:
 	void UpdateViewProjectionMatrices();
 
+	float SanitizeNearDistance(float nearDistance);
+	float SanitizeCaptureDistance(float captureDistance, float nearDistance);
+
 	CubemapRenderTarget* renderTarget_{ nullptr };
 	std::array<Matrix, 6> viewProjectionMatrices_{};
 
@@ -111,7 +114,7 @@ private:
 	Vector3 size_{ Vector3(10.f) };
 
 	float nearDistance_{ 0.1f };
-	float captureDistance_{ 100.f };
+	float captureDistance_{ 1000.f };
 
 	bool captureEveryFrame_{ true };
 	bool needsCapture_{ true };

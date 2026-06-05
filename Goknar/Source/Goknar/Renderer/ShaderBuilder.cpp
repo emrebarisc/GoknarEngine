@@ -202,9 +202,12 @@ std::string ShaderBuilder::General_FS_GetScript(const FragmentShaderInitializati
 void main()
 {
 )";
-	if ((int)shaderData.renderPassType & (int)RenderPassType::Forward |
-		(int)shaderData.renderPassType & (int)RenderPassType::GeometryBuffer |
-		(int)shaderData.renderPassType & (int)RenderPassType::CubemapCapture)
+	const bool isMaterialSurfacePass =
+		shaderData.renderPassType == RenderPassType::Forward ||
+		shaderData.renderPassType == RenderPassType::GeometryBuffer ||
+		shaderData.renderPassType == RenderPassType::CubemapCapture;
+
+	if (isMaterialSurfacePass)
 	{
 		fragmentShader += FS_InitializeBaseColor(shaderData.materialInitializationData);
 		fragmentShader += FS_InitializeEmissiveColor(shaderData.materialInitializationData);
@@ -212,22 +215,24 @@ void main()
 		fragmentShader += FS_InitializeMetallic(shaderData.materialInitializationData);
 		fragmentShader += FS_InitializeRoughness(shaderData.materialInitializationData);
 		fragmentShader += FS_InitializeSurfaceNormal(shaderData.materialInitializationData);
-
-		if (!((int)shaderData.renderPassType & (int)RenderPassType::GeometryBuffer))
-		{
-			fragmentShader += FS_GetUnlitCheck();
-		}
 	}
-	else if ((int)shaderData.renderPassType & (int)RenderPassType::Deferred)
+	else if (shaderData.renderPassType == RenderPassType::Deferred)
 	{
 		fragmentShader += DeferredRenderPass_GetGBufferVariableAssignments();
-		fragmentShader += DeferredRenderPass_GetUnlitCheck();
 		fragmentShader += VS_GetLightSpaceFragmentPositionCalculations();
 	}
 
 	if (includeLightOperations)
 	{
 		fragmentShader += "\tInitializePBRSharedInputs();\n";
+		if (shaderData.renderPassType == RenderPassType::Deferred)
+		{
+			fragmentShader += DeferredRenderPass_GetUnlitCheck();
+		}
+		else if (shaderData.renderPassType != RenderPassType::GeometryBuffer)
+		{
+			fragmentShader += FS_GetUnlitCheck(includeReflectionProbeOperations);
+		}
 		fragmentShader += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = vec3(0.f);\n";
 		fragmentShader += FS_GetLightCalculationIterators(includeShadowOperations);
 	}
@@ -336,16 +341,7 @@ std::string ShaderBuilder::ForwardRenderPass_GetInstancedStaticMeshVertexShaderS
 std::string ShaderBuilder::ForwardRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const
 {
 	std::string outputVariables = FS_GetOutputVariables();
-	std::string outputVariableAssignments = "";
-
-	if (initializationData->owner->GetShadingType() == MaterialShadingType::Default)
-	{
-		FS_GetOutputVariableAssignments();
-	}
-	else
-	{
-		FS_GetUnlitOutputVariableAssignments();
-	}
+	std::string outputVariableAssignments = FS_GetOutputVariableAssignments();
 
 	FragmentShaderInitializationData fragmentShaderInitializationData(outputVariables, outputVariableAssignments);
 	fragmentShaderInitializationData.materialInitializationData = initializationData;
@@ -774,6 +770,7 @@ void main()
 	cubemapFragmentShader += FS_InitializeRoughness(effectiveInitializationData);
 	cubemapFragmentShader += FS_InitializeSurfaceNormal(effectiveInitializationData);
 	cubemapFragmentShader += "\tInitializePBRSharedInputs();\n";
+	cubemapFragmentShader += FS_GetUnlitCheck(materialUsesReflectionProbe);
 	cubemapFragmentShader += "\tvec3 " + std::string(SHADER_VARIABLE_NAMES::LIGHT::LIGHT_INTENSITY) + " = vec3(0.f);\n";
 	cubemapFragmentShader += FS_GetLightCalculationIterators(false);
 	cubemapFragmentShader += outputVariableAssignments;
@@ -1219,7 +1216,8 @@ std::string ShaderBuilder::FS_GetOutputVariableAssignments() const
 std::string ShaderBuilder::FS_GetUnlitOutputVariableAssignments() const
 {
 	return std::string("\t") + SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR +
-		" = " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR;
+		" = vec4(" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR +
+		", " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + ".a);";
 }
 
 std::string ShaderBuilder::GeometryBufferPass_GetOutputVariables() const
@@ -1349,14 +1347,9 @@ std::string ShaderBuilder::DeferredRenderPass_GetGBufferVariableAssignments() co
 
 std::string ShaderBuilder::DeferredRenderPass_GetUnlitCheck() const
 {
-	return R"(
-	shadingTypeId = )" + std::string(SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR) + R"(.a;
-	if (shadingTypeId == )" + std::to_string((int)MaterialShadingType::Unlit) + R"()
-	{
-		)" + SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR + " = vec4(" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + ", " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.a);
-		return;
-	}
-)";
+	return "\n\t" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::SHADING_TYPE_ID) + " = " +
+		SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + ".a;\n" +
+		FS_GetUnlitCheck(true);
 }
 
 std::string ShaderBuilder::General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const
@@ -2123,12 +2116,24 @@ std::string ShaderBuilder::FS_InitializeSurfaceNormal(MaterialInitializationData
 	return result;
 }
 
-std::string ShaderBuilder::FS_GetUnlitCheck() const
+std::string ShaderBuilder::FS_GetUnlitColorExpression(bool includeReflectionProbe) const
+{
+	std::string colorExpression = SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR;
+	if (includeReflectionProbe)
+	{
+		colorExpression = "(CalculateReflectionProbeSpecularAmbient() * finalAmbientOcclusion) + " +
+			colorExpression;
+	}
+
+	return colorExpression;
+}
+
+std::string ShaderBuilder::FS_GetUnlitCheck(bool includeReflectionProbe) const
 {
 	return R"(
 	if ()" + std::string(SHADER_VARIABLE_NAMES::MATERIAL::SHADING_TYPE_ID) + " == " + std::to_string((int)MaterialShadingType::Unlit) + R"()
 	{
-		)" + SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR + " = vec4(" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_EMMISIVE_COLOR + ", " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.a);
+		)" + SHADER_VARIABLE_NAMES::FRAGMENT_SHADER_OUTS::FRAGMENT_COLOR + " = vec4(" + FS_GetUnlitColorExpression(includeReflectionProbe) + ", " + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.a);
 		return;
 	}
 )";
@@ -2136,24 +2141,32 @@ std::string ShaderBuilder::FS_GetUnlitCheck() const
 
 std::string ShaderBuilder::FS_GetPBRFunctions(bool includeReflectionProbe) const
 {
-	std::string reflectionProbeBlock;
+	std::string reflectionProbeFunction;
+	std::string reflectionProbeAmbientExpression = "vec3(0.f)";
 	if (includeReflectionProbe)
 	{
-		reflectionProbeBlock += "\tif(0.f < ";
-		reflectionProbeBlock += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::USAGE;
-		reflectionProbeBlock += " && ";
-		reflectionProbeBlock += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE;
-		reflectionProbeBlock += ")\n";
-		reflectionProbeBlock += "\t{\n";
-		reflectionProbeBlock += "\t\tvec3 reflectionDirection = reflect(-viewDirection, surfaceNormal);\n";
-		reflectionProbeBlock += "\t\tfloat maxMipLevel = max(float(textureQueryLevels(";
-		reflectionProbeBlock += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP;
-		reflectionProbeBlock += ") - 1), 0.f);\n";
-		reflectionProbeBlock += "\t\tfloat mipLevel = finalRoughness * maxMipLevel;\n";
-		reflectionProbeBlock += "\t\tspecularAmbient = textureLod(";
-		reflectionProbeBlock += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP;
-		reflectionProbeBlock += ", reflectionDirection, mipLevel).rgb * fresnel;\n";
-		reflectionProbeBlock += "\t}\n";
+		reflectionProbeAmbientExpression = "CalculateReflectionProbeSpecularAmbient()";
+		reflectionProbeFunction += "\nvec3 CalculateReflectionProbeSpecularAmbient()\n";
+		reflectionProbeFunction += "{\n";
+		reflectionProbeFunction += "    if(0.f < ";
+		reflectionProbeFunction += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::USAGE;
+		reflectionProbeFunction += " && ";
+		reflectionProbeFunction += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::HAS_REFLECTION_PROBE;
+		reflectionProbeFunction += ")\n";
+		reflectionProbeFunction += "    {\n";
+		reflectionProbeFunction += "        vec3 viewDirection = pbrViewDirection;\n";
+		reflectionProbeFunction += "        vec3 fresnel = FresnelSchlick(max(dot(surfaceNormal, viewDirection), 0.f), pbrF0);\n";
+		reflectionProbeFunction += "        vec3 reflectionDirection = reflect(-viewDirection, surfaceNormal);\n";
+		reflectionProbeFunction += "        float maxMipLevel = max(float(textureQueryLevels(";
+		reflectionProbeFunction += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP;
+		reflectionProbeFunction += ") - 1), 0.f);\n";
+		reflectionProbeFunction += "        float mipLevel = finalRoughness * maxMipLevel;\n";
+		reflectionProbeFunction += "        return textureLod(";
+		reflectionProbeFunction += SHADER_VARIABLE_NAMES::REFLECTION_PROBE::CUBEMAP;
+		reflectionProbeFunction += ", reflectionDirection, mipLevel).rgb * fresnel;\n";
+		reflectionProbeFunction += "    }\n\n";
+		reflectionProbeFunction += "    return vec3(0.f);\n";
+		reflectionProbeFunction += "}\n";
 	}
 
 	return R"(
@@ -2258,15 +2271,14 @@ vec3 CalculatePBRLighting(vec3 lightDirection, vec3 radiance)
 
     return directLighting;
 }
-
+)" + reflectionProbeFunction + R"(
 vec3 CalculatePBRAmbientLight()
 {
     vec3 viewDirection = pbrViewDirection;
     vec3 F0 = pbrF0;
     vec3 fresnel = FresnelSchlick(max(dot(surfaceNormal, viewDirection), 0.f), F0);
     vec3 diffuseAmbient = 0.12f * )" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.rgb * finalAmbientOcclusion;
-    vec3 specularAmbient = vec3(0.f);
-)" + reflectionProbeBlock + R"(
+    vec3 specularAmbient = )" + reflectionProbeAmbientExpression + R"(;
     vec3 diffuseMultiplier = (vec3(1.f) - fresnel) * (1.f - finalMetallic);
     return diffuseAmbient * diffuseMultiplier + specularAmbient * finalAmbientOcclusion;
 }

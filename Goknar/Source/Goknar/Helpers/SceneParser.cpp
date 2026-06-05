@@ -2568,12 +2568,21 @@ void SceneParser::ParseReflectionProbeObject(ReflectionProbeObject* reflectionPr
 	std::stringstream stream;
 
 	tinyxml2::XMLElement* child = objectElement->FirstChildElement("Size");
-	if (child)
+	if (child && child->GetText())
 	{
 		stream << child->GetText() << std::endl;
 		Vector3 size;
 		stream >> size.x >> size.y >> size.z;
 		reflectionProbeObject->SetSize(size);
+	}
+
+	child = objectElement->FirstChildElement("CaptureDistance");
+	if (child && child->GetText())
+	{
+		std::stringstream captureDistanceStream(child->GetText());
+		float captureDistance = 0.f;
+		captureDistanceStream >> captureDistance;
+		reflectionProbeObject->SetCaptureDistance(captureDistance);
 	}
 }
 
@@ -2831,6 +2840,10 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 				tinyxml2::XMLElement* reflectionProbeSizeElement = xmlDocument.NewElement("Size");
 				reflectionProbeSizeElement->SetText(Serialize(reflectionProbeObject->GetSize()).c_str());
 				objectElement->InsertEndChild(reflectionProbeSizeElement);
+
+				tinyxml2::XMLElement* reflectionProbeCaptureDistanceElement = xmlDocument.NewElement("CaptureDistance");
+				reflectionProbeCaptureDistanceElement->SetText(reflectionProbeObject->GetCaptureDistance());
+				objectElement->InsertEndChild(reflectionProbeCaptureDistanceElement);
 			}
 
 			tinyxml2::XMLElement* componentsElement = xmlDocument.NewElement("Components");

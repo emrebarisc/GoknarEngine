@@ -14,6 +14,8 @@
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Scene.h"
 
+#include <cmath>
+
 ReflectionProbe::ReflectionProbe()
 {
 	renderTarget_ = new CubemapRenderTarget();
@@ -120,11 +122,13 @@ bool ReflectionProbe::ContainsWorldPosition(const Vector3& worldPosition) const
 
 void ReflectionProbe::SetNearDistance(float nearDistance)
 {
-	nearDistance_ = nearDistance;
+	nearDistance_ = SanitizeNearDistance(nearDistance);
+	captureDistance_ = SanitizeCaptureDistance(captureDistance_, nearDistance_);
 
 	if (renderTarget_ && renderTarget_->GetCamera())
 	{
 		renderTarget_->GetCamera()->SetNearDistance(nearDistance_);
+		renderTarget_->GetCamera()->SetFarDistance(captureDistance_);
 	}
 
 	UpdateViewProjectionMatrices();
@@ -133,7 +137,7 @@ void ReflectionProbe::SetNearDistance(float nearDistance)
 
 void ReflectionProbe::SetCaptureDistance(float captureDistance)
 {
-	captureDistance_ = captureDistance;
+	captureDistance_ = SanitizeCaptureDistance(captureDistance, nearDistance_);
 
 	if (renderTarget_ && renderTarget_->GetCamera())
 	{
@@ -206,4 +210,15 @@ void ReflectionProbe::UpdateViewProjectionMatrices()
 		Vector3{ -1.f, 0.f, 0.f },
 		Vector3{ 0.f, -1.f, 0.f },
 		true);
+}
+
+float ReflectionProbe::SanitizeNearDistance(float nearDistance)
+{
+	return std::isfinite(nearDistance) ? GoknarMath::Max(nearDistance, SMALLER_EPSILON) : 0.1f;
+}
+
+float ReflectionProbe::SanitizeCaptureDistance(float captureDistance, float nearDistance)
+{
+	const float minimumCaptureDistance = SanitizeNearDistance(nearDistance) + SMALLER_EPSILON;
+	return std::isfinite(captureDistance) ? GoknarMath::Max(captureDistance, minimumCaptureDistance) : 1000.f;
 }

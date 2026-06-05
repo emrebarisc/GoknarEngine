@@ -4,6 +4,8 @@
 
 #include "Goknar/Renderer/ReflectionProbe.h"
 
+#include <cmath>
+
 ReflectionProbeObject::ReflectionProbeObject(const ObjectInitializer& objectInitializer) :
 	ObjectBase(objectInitializer)
 {
@@ -23,6 +25,7 @@ ObjectBase* ReflectionProbeObject::Clone() const
 	ReflectionProbeObject* clonedObject = new ReflectionProbeObject();
 	CopyValuesTo(clonedObject);
 	clonedObject->SetSize(size_);
+	clonedObject->SetCaptureDistance(captureDistance_);
 	clonedObject->SetIsActive(GetIsActive());
 
 	return clonedObject;
@@ -86,6 +89,22 @@ void ReflectionProbeObject::SetSize(const Vector3& size)
 	}
 }
 
+void ReflectionProbeObject::SetCaptureDistance(float captureDistance)
+{
+	const float sanitizedCaptureDistance = std::isfinite(captureDistance) ? GoknarMath::Max(captureDistance, SMALLER_EPSILON) : 1000.f;
+	if (captureDistance_ == sanitizedCaptureDistance)
+	{
+		return;
+	}
+
+	captureDistance_ = sanitizedCaptureDistance;
+
+	if (reflectionProbe_)
+	{
+		reflectionProbe_->SetCaptureDistance(captureDistance_);
+	}
+}
+
 void ReflectionProbeObject::UpdateWorldTransformationMatrix()
 {
 	ObjectBase::UpdateWorldTransformationMatrix();
@@ -101,5 +120,6 @@ void ReflectionProbeObject::SyncReflectionProbeState()
 
 	reflectionProbe_->SetPosition(GetWorldTransformationMatrix().GetTranslation());
 	reflectionProbe_->SetSize(size_);
+	reflectionProbe_->SetCaptureDistance(captureDistance_);
 	reflectionProbe_->SetIsActive(GetIsActive());
 }

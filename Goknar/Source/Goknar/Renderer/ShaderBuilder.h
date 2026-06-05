@@ -107,7 +107,8 @@ private:
 	std::string FS_InitializeMetallic(MaterialInitializationData* initializationData) const;
 	std::string FS_InitializeRoughness(MaterialInitializationData* initializationData) const;
 	std::string FS_InitializeSurfaceNormal(MaterialInitializationData* initializationData) const;
-	std::string FS_GetUnlitCheck() const;
+	std::string FS_GetUnlitColorExpression(bool includeReflectionProbe) const;
+	std::string FS_GetUnlitCheck(bool includeReflectionProbe) const;
 	std::string FS_GetPBRFunctions(bool includeReflectionProbe) const;
 
 	std::string General_FS_GetMaterialVariables(const FragmentShaderInitializationData& fragmentShaderInitializationData) const;

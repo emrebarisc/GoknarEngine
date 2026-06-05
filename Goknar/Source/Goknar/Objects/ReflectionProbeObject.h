@@ -26,6 +26,13 @@ public:
 		return size_;
 	}
 
+	void SetCaptureDistance(float captureDistance);
+
+	float GetCaptureDistance() const
+	{
+		return captureDistance_;
+	}
+
 	ReflectionProbe* GetReflectionProbe() const
 	{
 		return reflectionProbe_;
@@ -39,6 +46,7 @@ private:
 
 	ReflectionProbe* reflectionProbe_{ nullptr };
 	Vector3 size_{ Vector3(10.f) };
+	float captureDistance_{ 1000.f };
 };
 
 #endif
