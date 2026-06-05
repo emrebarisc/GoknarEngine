@@ -1,0 +1,185 @@
+#version 440 core
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout(binding = 0, rgba16f) uniform writeonly image2D postProcessOutput;
+
+uniform sampler2D inputTexture;
+uniform vec2 sunScreenPosition;
+uniform vec3 sunColor;
+uniform float sunVisibility;
+uniform float glareIntensity;
+uniform float haloRadius;
+uniform float coreRadius;
+uniform float streakStrength;
+uniform float sourceThreshold;
+uniform float rayIntensity;
+uniform float ghostIntensity;
+uniform float ghostFade;
+
+float Saturate(float value)
+{
+	return clamp(value, 0.0, 1.0);
+}
+
+float Luminance(vec3 color)
+{
+	return dot(color, vec3(0.2126, 0.7152, 0.0722));
+}
+
+float Bell(float value, float radius)
+{
+	float safeRadius = max(radius, 0.0001);
+	return exp(-(value * value) / (safeRadius * safeRadius));
+}
+
+float Ellipse(vec2 value, vec2 radius)
+{
+	vec2 safeRadius = max(radius, vec2(0.0001));
+	vec2 normalizedValue = value / safeRadius;
+	return exp(-dot(normalizedValue, normalizedValue));
+}
+
+vec2 Rotate(vec2 value, float radians)
+{
+	float c = cos(radians);
+	float s = sin(radians);
+	return vec2(value.x * c - value.y * s, value.x * s + value.y * c);
+}
+
+float Beam(float alongAxis, float acrossAxis, float width, float start, float end)
+{
+	float startsAfterSun = smoothstep(start, start + 0.04, alongAxis);
+	float endsBeforeEdge = 1.0 - smoothstep(end * 0.72, end, alongAxis);
+	return Bell(acrossAxis, width) * startsAfterSun * endsBeforeEdge;
+}
+
+float SoftHexagon(vec2 localPosition, float radius)
+{
+	vec2 p = abs(localPosition);
+	float hexDistance = max(p.x * 0.866025 + p.y * 0.5, p.y);
+	return 1.0 - smoothstep(radius * 0.72, radius, hexDistance);
+}
+
+float GhostRing(vec2 localPosition, float radius, float width)
+{
+	float distanceToCenter = length(localPosition);
+	return Bell(distanceToCenter - radius, width);
+}
+
+float SampleSunSourceVisibility(vec2 texelSize)
+{
+	vec2 clampedSunPosition = clamp(sunScreenPosition, texelSize, vec2(1.0) - texelSize);
+	float brightestSample = 0.0;
+
+	for (int y = -1; y <= 1; ++y)
+	{
+		for (int x = -1; x <= 1; ++x)
+		{
+			vec2 sampleUv = clampedSunPosition + vec2(x, y) * texelSize * 2.0;
+			brightestSample = max(brightestSample, Luminance(textureLod(inputTexture, sampleUv, 0.0).rgb));
+		}
+	}
+
+	return smoothstep(sourceThreshold, sourceThreshold + 1.35, brightestSample);
+}
+
+void main()
+{
+	ivec2 pixelCoordinates = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 outputSize = imageSize(postProcessOutput);
+	if (pixelCoordinates.x >= outputSize.x || pixelCoordinates.y >= outputSize.y)
+	{
+		return;
+	}
+
+	vec2 uv = (vec2(pixelCoordinates) + vec2(0.5)) / vec2(outputSize);
+	vec3 sceneColor = textureLod(inputTexture, uv, 0.0).rgb;
+	vec2 texelSize = 1.0 / vec2(textureSize(inputTexture, 0));
+	float aspectRatio = float(outputSize.x) / max(float(outputSize.y), 1.0);
+
+	float visibility = Saturate(sunVisibility) * max(0.16, SampleSunSourceVisibility(texelSize));
+	if (visibility <= 0.0001)
+	{
+		imageStore(postProcessOutput, pixelCoordinates, vec4(sceneColor, 1.0));
+		return;
+	}
+
+	vec2 screenPoint = vec2(uv.x * aspectRatio, uv.y);
+	vec2 sunPoint = vec2(sunScreenPosition.x * aspectRatio, sunScreenPosition.y);
+	vec2 screenCenter = vec2(0.5 * aspectRatio, 0.5);
+	vec2 centerToSun = sunPoint - screenCenter;
+	vec2 sunToCenter = screenCenter - sunPoint;
+	float sunDistanceFromCenter = length(sunToCenter);
+	vec2 flareAxis = sunDistanceFromCenter > 0.001 ? sunToCenter / sunDistanceFromCenter : normalize(vec2(-0.86, -0.34));
+	vec2 flareNormal = vec2(-flareAxis.y, flareAxis.x);
+
+	vec2 fromSun = screenPoint - sunPoint;
+	float alongAxis = dot(fromSun, flareAxis);
+	float acrossAxis = dot(fromSun, flareNormal);
+	float distanceToSun = length(fromSun);
+	float safeHaloRadius = max(haloRadius, 0.0001);
+	float safeCoreRadius = max(coreRadius, 0.0001);
+	float sourceCore = Bell(distanceToSun, safeCoreRadius);
+	float sourceHalo = Bell(distanceToSun, safeHaloRadius);
+	float sceneBrightness = Luminance(sceneColor);
+	float brightSourceDamping = 1.0 / (1.0 + max(sceneBrightness - 1.0, 0.0) * 1.15);
+
+	float sourceCompression = (1.0 - smoothstep(safeCoreRadius * 1.6, safeHaloRadius * 0.9, distanceToSun)) * visibility;
+	float sourceGlow = (sourceCore * 0.32 + sourceHalo * 0.18) * brightSourceDamping;
+
+	float rayLength = clamp(sunDistanceFromCenter * 1.35, 0.28, 0.52);
+	float wideRayWidth = mix(0.008, 0.055, Saturate(alongAxis / rayLength));
+	float mainRay = Beam(alongAxis, acrossAxis, wideRayWidth, 0.015, rayLength) * 1.25;
+	float upperRay = Beam(dot(fromSun, Rotate(flareAxis, 0.08)), dot(fromSun, Rotate(flareNormal, 0.08)), 0.006, 0.04, rayLength * 0.75);
+	float lowerRay = Beam(dot(fromSun, Rotate(flareAxis, -0.07)), dot(fromSun, Rotate(flareNormal, -0.07)), 0.0045, 0.1, rayLength * 0.58);
+	float lowerThinRay = Beam(dot(fromSun, Rotate(flareAxis, -0.16)), dot(fromSun, Rotate(flareNormal, -0.16)), 0.0035, 0.2, rayLength * 0.48);
+	float brokenRay = 0.62 + 0.38 * pow(Saturate(sin(alongAxis * 48.0 + acrossAxis * 16.0) * 0.5 + 0.5), 4.0);
+	float rayGlow = (mainRay + upperRay * 0.75 + lowerRay * 0.48 + lowerThinRay * 0.35) * brokenRay * rayIntensity;
+
+	float ghostAxisFade = pow(Saturate(sunDistanceFromCenter / ghostFade), 0.65);
+	vec3 ghostColorA = vec3(1.0, 0.86, 0.52);
+	vec3 ghostColorB = vec3(0.9, 0.72, 0.42);
+	vec3 ghostColorC = vec3(0.72, 0.62, 0.42);
+	vec3 ghostColorD = vec3(1.0, 0.95, 0.78);
+
+	vec2 ghost0 = screenCenter + centerToSun * -0.78;
+	vec2 ghost1 = screenCenter + centerToSun * -0.42;
+	vec2 ghost2 = screenCenter + centerToSun * -0.15;
+	vec2 ghost3 = screenCenter + centerToSun * 0.22;
+	vec2 ghost4 = screenCenter + centerToSun * 0.48;
+
+	vec2 ghost0Local = screenPoint - ghost0;
+	vec2 ghost1Local = screenPoint - ghost1;
+	vec2 ghost2Local = Rotate(screenPoint - ghost2, 0.45);
+	vec2 ghost3Local = Rotate(screenPoint - ghost3, -0.35);
+	vec2 ghost4Local = screenPoint - ghost4;
+
+	float ringGhost = GhostRing(ghost0Local, 0.078, 0.019) + Ellipse(ghost0Local, vec2(0.09, 0.056)) * 0.18;
+	float ovalGhost = Ellipse(ghost1Local, vec2(0.055, 0.032)) * 0.8 + GhostRing(ghost1Local, 0.047, 0.012) * 0.3;
+	float hexGhost = SoftHexagon(ghost2Local, 0.115) * Ellipse(ghost2Local, vec2(0.165, 0.125)) * 0.44;
+	float smallGhost = Ellipse(ghost3Local, vec2(0.036, 0.026)) * 0.68 + GhostRing(ghost3Local, 0.034, 0.008) * 0.35;
+	float dotGhost = Ellipse(ghost4Local, vec2(0.012, 0.012)) * 1.25;
+
+	vec3 ghostGlow =
+		ghostColorC * ringGhost * 0.5 +
+		ghostColorA * ovalGhost * 0.65 +
+		ghostColorB * hexGhost * 0.55 +
+		ghostColorD * smallGhost * 0.75 +
+		ghostColorD * dotGhost * 0.85;
+	ghostGlow *= ghostIntensity * ghostAxisFade;
+
+	float sourceStar = Beam(alongAxis, acrossAxis, 0.004, 0.0, rayLength * 0.4);
+	sourceStar += Beam(-alongAxis, acrossAxis, 0.0035, 0.0, 0.18) * 0.35;
+	sourceStar += Beam(dot(fromSun, Rotate(flareNormal, 0.0)), dot(fromSun, flareAxis), 0.003, 0.0, 0.16) * 0.35;
+
+	vec3 finalColor = sceneColor;
+	finalColor += sunColor * (sourceGlow + rayGlow * streakStrength + sourceStar * 0.18) * visibility * glareIntensity;
+	finalColor += ghostGlow * visibility * glareIntensity;
+	finalColor += vec3(0.55, 0.62, 0.95) * sourceHalo * visibility * glareIntensity * 0.025;
+
+	vec3 compressedSunColor = finalColor / (vec3(1.0) + finalColor * 0.18) * 1.16;
+	finalColor = mix(finalColor, compressedSunColor, Saturate(sourceCompression * 0.5));
+
+	imageStore(postProcessOutput, pixelCoordinates, vec4(finalColor, 1.0));
+}

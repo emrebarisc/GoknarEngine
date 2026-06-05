@@ -18,6 +18,7 @@
 #include "Goknar/Renderer/Renderer.h"
 
 #include "GameState.h"
+#include "SunGlarePostProcessingEffect.h"
 #include "Characters/DefaultCharacter.h"
 #include "Objects/FreeCameraObject.h"
 #include "Controllers/FreeCameraController.h"
@@ -91,6 +92,17 @@ Game::Game() : Application()
 
 Game::~Game()
 {
+	if (sunGlarePostProcessingEffect_)
+	{
+		if (engine && engine->GetRenderer())
+		{
+			engine->GetRenderer()->RemovePostProcessingEffect(sunGlarePostProcessingEffect_);
+		}
+
+		delete sunGlarePostProcessingEffect_;
+		sunGlarePostProcessingEffect_ = nullptr;
+	}
+
 	delete gameState_;
 	gameState_ = nullptr;
 }
@@ -110,6 +122,17 @@ void Game::Init()
 void Game::PostInit()
 {
 	Application::PostInit();
+
+	Renderer* renderer = engine->GetRenderer();
+	if (!sunGlarePostProcessingEffect_ && renderer->GetMainRenderType() == RenderPassType::Deferred)
+	{
+		sunGlarePostProcessingEffect_ = new SunGlarePostProcessingEffect();
+		sunGlarePostProcessingEffect_->SetSunDirection(Vector3(0.577350f, 0.577350f, -0.577350f));
+		sunGlarePostProcessingEffect_->PreInit();
+		sunGlarePostProcessingEffect_->Init();
+		sunGlarePostProcessingEffect_->PostInit();
+		renderer->AddPostProcessingEffect(sunGlarePostProcessingEffect_);
+	}
 }
 
 void Game::Run()

@@ -3,6 +3,7 @@
 class DefaultCharacter;
 class FreeCameraObject;
 class GameState;
+class SunGlarePostProcessingEffect;
 
 class GOKNAR_API Game : public Application
 {
@@ -34,4 +35,5 @@ private:
 	DefaultCharacter* defaultCharacter_{ nullptr };
 	FreeCameraObject* freeCameraObject_{ nullptr };
 	GameState* gameState_{ nullptr };
+	SunGlarePostProcessingEffect* sunGlarePostProcessingEffect_{ nullptr };
 };
