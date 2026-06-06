@@ -83,10 +83,7 @@ void ReflectionProbeObject::SetSize(const Vector3& size)
 
 	size_ = sanitizedSize;
 
-	if (reflectionProbe_)
-	{
-		reflectionProbe_->SetSize(size_);
-	}
+	SyncReflectionProbeState();
 }
 
 void ReflectionProbeObject::SetCaptureDistance(float captureDistance)
@@ -111,6 +108,17 @@ void ReflectionProbeObject::UpdateWorldTransformationMatrix()
 	SyncReflectionProbeState();
 }
 
+Vector3 ReflectionProbeObject::GetScaledSize() const
+{
+	const Vector3 worldScale = GetWorldScaling();
+	const Vector3 absoluteWorldScale(
+		GoknarMath::Abs(worldScale.x),
+		GoknarMath::Abs(worldScale.y),
+		GoknarMath::Abs(worldScale.z));
+
+	return Vector3::Max(size_ * absoluteWorldScale, Vector3(SMALLER_EPSILON));
+}
+
 void ReflectionProbeObject::SyncReflectionProbeState()
 {
 	if (!reflectionProbe_)
@@ -119,7 +127,7 @@ void ReflectionProbeObject::SyncReflectionProbeState()
 	}
 
 	reflectionProbe_->SetPosition(GetWorldTransformationMatrix().GetTranslation());
-	reflectionProbe_->SetSize(size_);
+	reflectionProbe_->SetSize(GetScaledSize());
 	reflectionProbe_->SetCaptureDistance(captureDistance_);
 	reflectionProbe_->SetIsActive(GetIsActive());
 }

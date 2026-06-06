@@ -42,6 +42,7 @@ protected:
 	void UpdateWorldTransformationMatrix() override;
 
 private:
+	Vector3 GetScaledSize() const;
 	void SyncReflectionProbeState();
 
 	ReflectionProbe* reflectionProbe_{ nullptr };

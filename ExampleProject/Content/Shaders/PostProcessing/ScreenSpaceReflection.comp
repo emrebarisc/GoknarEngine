@@ -368,10 +368,12 @@ void main() {
         
         vec2 edgeFade = smoothstep(vec2(0.0f), vec2(0.1f), hitUV) * smoothstep(vec2(1.0f), vec2(0.9f), hitUV);
         float fresnel = mix(0.2f, 1.0f, pow(1.0f - max(dot(-viewDirection, normal), 0.0f), 3.0f));
+        float mirrorLikeBlend = smoothstep(0.85f, 1.0f, reflectionIntensity);
+        float ssrBlend = mix(fresnel, 1.0f, mirrorLikeBlend);
         float hitConfidence = 1.0f - clamp(hitLateralError / max(thickness * 2.0f, 0.001f), 0.0f, 1.0f);
         float distanceFade = 1.0f - clamp(totalRayDistance / max(rayStepSize * float(maxSteps) * 2.0f, 0.001f), 0.0f, 0.85f);
         
-        visibility = edgeFade.x * edgeFade.y * reflectionIntensity * fresnel * hitConfidence * distanceFade;
+        visibility = edgeFade.x * edgeFade.y * reflectionIntensity * ssrBlend * hitConfidence * distanceFade;
     }
     else if (exitedViewportWithoutHit) {
         vec3 predictedColor = vec3(0.0f);
