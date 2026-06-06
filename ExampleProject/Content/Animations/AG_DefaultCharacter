@@ -1,12 +1,12 @@
 <GameAsset FileType="AnimationGraph" SchemaVersion="2">
     <Variables>
         <Variable name="Speed" type="float" value="0"/>
-        <Variable name="MoveX" type="float" value="0"/>
         <Variable name="VelocityMagnitude" type="float" value="0"/>
+        <Variable name="MoveX" type="float" value="0"/>
         <Variable name="MoveY" type="float" value="0"/>
-        <Variable name="StrafingRotation" type="float" value="0"/>
-        <Variable name="IsOnGround" type="bool" value="true"/>
         <Variable name="IsJumping" type="bool" value="false"/>
+        <Variable name="IsOnGround" type="bool" value="true"/>
+        <Variable name="StrafingRotation" type="float" value="0"/>
         <Variable name="IsCrouched" type="bool" value="false"/>
         <Variable name="IsStrafing" type="bool" value="false"/>
     </Variables>
@@ -46,28 +46,42 @@
                                 <Condition variableName="IsJumping" operation="Equal" type="bool" value="true"/>
                             </Conditions>
                         </Transition>
+                        <Transition targetId="3" transitWhenAnimationDone="false" duration="0.15000001">
+                            <Conditions>
+                                <Condition variableName="IsOnGround" operation="Equal" type="bool" value="false"/>
+                            </Conditions>
+                        </Transition>
                     </OutboundConnections>
                 </Node>
                 <Node id="2" type="Clip" animationName="Armature|RifleJumpStart" loop="false" playRate="1">
                     <OutboundConnections>
-                        <Transition targetId="3" transitWhenAnimationDone="true" duration="0.079999998">
+                        <Transition targetId="4" transitWhenAnimationDone="true" duration="0.079999998">
                             <Conditions/>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="3" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
+                <Node id="4" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
                     <OutboundConnections>
-                        <Transition targetId="4" transitWhenAnimationDone="false" duration="0.079999998">
+                        <Transition targetId="5" transitWhenAnimationDone="false" duration="0.079999998">
                             <Conditions>
                                 <Condition variableName="IsOnGround" operation="Equal" type="bool" value="true"/>
                             </Conditions>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="4" type="Clip" animationName="Armature|RifleJumpFinish" loop="false" playRate="1">
+                <Node id="5" type="Clip" animationName="Armature|RifleJumpFinish" loop="false" playRate="1">
                     <OutboundConnections>
                         <Transition targetId="1" transitWhenAnimationDone="true" duration="0.12">
                             <Conditions/>
+                        </Transition>
+                    </OutboundConnections>
+                </Node>
+                <Node id="3" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
+                    <OutboundConnections>
+                        <Transition targetId="5" transitWhenAnimationDone="false" duration="0.15000001">
+                            <Conditions>
+                                <Condition variableName="IsOnGround" operation="Equal" type="bool" value="true"/>
+                            </Conditions>
                         </Transition>
                     </OutboundConnections>
                 </Node>
@@ -94,9 +108,9 @@
                     </Conditions>
                 </Transition>
             </OutboundConnections>
-            <EntryNode id="5"/>
+            <EntryNode id="6"/>
             <Nodes>
-                <Node id="5" type="BlendSpace2D" parameterX="MoveX" parameterY="MoveY" syncGroup="StandingAimLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="10">
+                <Node id="6" type="BlendSpace2D" parameterX="MoveX" parameterY="MoveY" syncGroup="StandingAimLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="10">
                     <Points>
                         <Point x="0" y="0" clip="Armature|RifleIdle"/>
                         <Point x="0" y="0.050000001" clip="Armature|RifleWalkForward"/>
@@ -109,33 +123,47 @@
                         <Point x="-0.035355341" y="0.035355341" clip="Armature|RifleWalkRightForward"/>
                     </Points>
                     <OutboundConnections>
-                        <Transition targetId="6" transitWhenAnimationDone="false" duration="0.079999998">
+                        <Transition targetId="7" transitWhenAnimationDone="false" duration="0.079999998">
                             <Conditions>
                                 <Condition variableName="IsJumping" operation="Equal" type="bool" value="true"/>
                             </Conditions>
                         </Transition>
+                        <Transition targetId="8" transitWhenAnimationDone="false" duration="0.15000001">
+                            <Conditions>
+                                <Condition variableName="IsOnGround" operation="Equal" type="bool" value="false"/>
+                            </Conditions>
+                        </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="6" type="Clip" animationName="Armature|RifleJumpStart" loop="false" playRate="1">
+                <Node id="7" type="Clip" animationName="Armature|RifleJumpStart" loop="false" playRate="1">
                     <OutboundConnections>
-                        <Transition targetId="7" transitWhenAnimationDone="true" duration="0.079999998">
+                        <Transition targetId="9" transitWhenAnimationDone="true" duration="0.079999998">
                             <Conditions/>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="7" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
+                <Node id="9" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
                     <OutboundConnections>
-                        <Transition targetId="8" transitWhenAnimationDone="false" duration="0.079999998">
+                        <Transition targetId="10" transitWhenAnimationDone="false" duration="0.079999998">
                             <Conditions>
                                 <Condition variableName="IsOnGround" operation="Equal" type="bool" value="true"/>
                             </Conditions>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="8" type="Clip" animationName="Armature|RifleJumpFinish" loop="false" playRate="1">
+                <Node id="10" type="Clip" animationName="Armature|RifleJumpFinish" loop="false" playRate="1">
                     <OutboundConnections>
-                        <Transition targetId="5" transitWhenAnimationDone="true" duration="0.12">
+                        <Transition targetId="6" transitWhenAnimationDone="true" duration="0.12">
                             <Conditions/>
+                        </Transition>
+                    </OutboundConnections>
+                </Node>
+                <Node id="8" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
+                    <OutboundConnections>
+                        <Transition targetId="10" transitWhenAnimationDone="false" duration="0.15000001">
+                            <Conditions>
+                                <Condition variableName="IsOnGround" operation="Equal" type="bool" value="true"/>
+                            </Conditions>
                         </Transition>
                     </OutboundConnections>
                 </Node>
@@ -162,9 +190,9 @@
                     </Conditions>
                 </Transition>
             </OutboundConnections>
-            <EntryNode id="9"/>
+            <EntryNode id="11"/>
             <Nodes>
-                <Node id="9" type="BlendSpace1D" parameter="Speed" syncGroup="CrouchLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="8">
+                <Node id="11" type="BlendSpace1D" parameter="Speed" syncGroup="CrouchLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="8">
                     <Points>
                         <Point value="0" clip="Armature|RifleCourchIdle"/>
                         <Point value="0.025" clip="Armature|RifleCrouchWalkForward"/>
@@ -194,9 +222,9 @@
                     </Conditions>
                 </Transition>
             </OutboundConnections>
-            <EntryNode id="10"/>
+            <EntryNode id="12"/>
             <Nodes>
-                <Node id="10" type="BlendSpace2D" parameterX="MoveX" parameterY="MoveY" syncGroup="CrouchAimLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="10">
+                <Node id="12" type="BlendSpace2D" parameterX="MoveX" parameterY="MoveY" syncGroup="CrouchAimLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="10">
                     <Points>
                         <Point x="0" y="0" clip="Armature|RifleCourchIdle"/>
                         <Point x="0" y="0.025" clip="Armature|RifleCrouchWalkForward"/>

@@ -1,5 +1,5 @@
 <GameAsset FileType="AnimationGraphEditorReflection">
-    <Canvas Scale="1.05" ScrollX="-160.77939" ScrollY="170.21298"/>
+    <Canvas Scale="1.05" ScrollX="9.2206116" ScrollY="171.21298"/>
     <States>
         <State Index="0" PosX="50" PosY="60">
             <Nodes>
@@ -7,14 +7,16 @@
                 <Node Index="1" PosX="300" PosY="50"/>
                 <Node Index="2" PosX="550" PosY="50"/>
                 <Node Index="3" PosX="800" PosY="50"/>
+                <Node Index="4" PosX="298.8374" PosY="210.27351"/>
             </Nodes>
         </State>
         <State Index="1" PosX="360" PosY="60">
             <Nodes>
-                <Node Index="0" PosX="50" PosY="50"/>
+                <Node Index="0" PosX="60.47612" PosY="213.80948"/>
                 <Node Index="1" PosX="300" PosY="50"/>
                 <Node Index="2" PosX="550" PosY="50"/>
                 <Node Index="3" PosX="800" PosY="50"/>
+                <Node Index="4" PosX="310.26611" PosY="213.13051"/>
             </Nodes>
         </State>
         <State Index="2" PosX="50" PosY="250">
