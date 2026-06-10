@@ -39,7 +39,15 @@ public:
 	void SetMSAA(int MSAAValue);
 	void SetContextVersion(int major, int minor);
 	void SetOpenGLProfile(int profile1, int profile2);
-	void SetVSync(bool isEnable);
+	bool SetVSync(bool isEnable);
+	bool GetIsVSyncChangeSupported() const
+	{
+		return isVSyncChangeSupported_;
+	}
+	bool GetIsVSyncEnabled() const
+	{
+		return isVSyncEnabled_;
+	}
 
 	void SetIsInFullscreen(bool isInFullscreen);
 
@@ -80,7 +88,11 @@ public:
 private:
 	static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 
+	bool QueryVSyncChangeSupport() const;
 	void SetWindowSize_Impl(int w, int h);
+
+	bool IsGLFWExtensionAvailable(const char* extensionName) const;
+	bool IsGLFWProcAddressAvailable(const char* functionName) const;
 
 	GLFWwindow* mainWindow_;
 	GLFWmonitor* mainMonitor_;
@@ -97,6 +109,8 @@ private:
 	int framebufferWidth_, framebufferHeight_;
 
 	bool isInFullscreen_;
+	bool isVSyncChangeSupported_;
+	bool isVSyncEnabled_;
 };
 
 #endif

@@ -21,8 +21,10 @@ WindowManager::WindowManager()
 	framebufferHeight_ = 768;
 	windowTitle_ = "Goknar Engine";
 	mainMonitor_ = nullptr;
-	MSAAValue_ = 4;
+	MSAAValue_ = 0;
 	isInFullscreen_ = false;
+	isVSyncChangeSupported_ = false;
+	isVSyncEnabled_ = false;
 	SetContextVersion(4, 6);
 }
 
@@ -46,7 +48,6 @@ void WindowManager::PreInit()
 
 	// windowWidth_ = activeCamera->GetImageWidth();
 	// windowHeight_ = activeCamera->GetImageHeight();
-
 	mainMonitor_ = glfwGetPrimaryMonitor();
 
 	mainWindow_ = CreateNewWindow(windowWidth_, windowHeight_, windowTitle_, nullptr, isInFullscreen_);
@@ -56,8 +57,9 @@ void WindowManager::PreInit()
 		glfwSetWindowSizeCallback(mainWindow_, WindowSizeCallback);
 
 		glfwSetInputMode(mainWindow_, GLFW_STICKY_KEYS, GLFW_TRUE);
-		SetVSync(true);
 		glfwMakeContextCurrent(mainWindow_);
+		isVSyncChangeSupported_ = QueryVSyncChangeSupport();
+		SetVSync(false);
 
 		const bool graphicsAPIResult = engine->GetGraphicsAPI()->Initialize(reinterpret_cast<GraphicsAPIProcAddressFunction>(glfwGetProcAddress));
 		GOKNAR_CORE_ASSERT(graphicsAPIResult, "Failed to initialize graphics API.");
@@ -74,6 +76,7 @@ void WindowManager::PreInit()
 
 		GOKNAR_CORE_ASSERT(false, "Window could not be created.\n");
 	}
+
 	bool enableDebugContext = false;
 #ifdef GOKNAR_PLATFORM_WINDOWS
 #if defined(GOKNAR_BUILD_DEBUG) 
@@ -182,6 +185,16 @@ void WindowManager::SetWindowSize_Impl(int w, int h)
 	UpdateWindow();
 }
 
+bool WindowManager::IsGLFWExtensionAvailable(const char* extensionName) const
+{
+	return glfwExtensionSupported(extensionName) == GLFW_TRUE;
+}
+
+bool WindowManager::IsGLFWProcAddressAvailable(const char* functionName) const
+{
+	return glfwGetProcAddress(functionName) != nullptr;
+}
+
 void WindowManager::SetWindowTitle(const char *title)
 {
 	windowTitle_ = title;
@@ -201,8 +214,6 @@ void WindowManager::SetMSAA(int MSAAValue)
 
 	MSAAValue_ = MSAAValue;
 	glfwWindowHint(GLFW_SAMPLES, MSAAValue);
-
-	GOKNAR_CORE_INFO("MSAA Value is set to %d", MSAAValue_);
 }
 
 void WindowManager::SetContextVersion(int major, int minor)
@@ -216,9 +227,31 @@ void WindowManager::SetOpenGLProfile(int profile1, int profile2)
 	glfwWindowHint(profile1, profile2);
 }
 
-void WindowManager::SetVSync(bool isEnable)
+bool WindowManager::QueryVSyncChangeSupport() const
 {
+#if defined(GOKNAR_PLATFORM_WINDOWS)
+	return IsGLFWExtensionAvailable("WGL_EXT_swap_control") && IsGLFWProcAddressAvailable("wglSwapIntervalEXT");
+#elif defined(__APPLE__)
+	return true;
+#elif defined(GOKNAR_PLATFORM_UNIX)
+	return (IsGLFWExtensionAvailable("GLX_EXT_swap_control") && IsGLFWProcAddressAvailable("glXSwapIntervalEXT")) ||
+		(IsGLFWExtensionAvailable("GLX_MESA_swap_control") && IsGLFWProcAddressAvailable("glXSwapIntervalMESA"));
+#else
+	return false;
+#endif
+}
+
+bool WindowManager::SetVSync(bool isEnable)
+{
+	if (!isVSyncChangeSupported_)
+	{
+		GOKNAR_CORE_WARN("VSync swap interval change is not supported by the current OpenGL context.");
+		return false;
+	}
+
 	glfwSwapInterval(isEnable ? 1 : 0);
+	isVSyncEnabled_ = isEnable;
+	return true;
 }
 
 void WindowManager::SetIsInFullscreen(bool isInFullscreen)
