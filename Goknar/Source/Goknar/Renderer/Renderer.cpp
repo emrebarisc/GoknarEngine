@@ -99,6 +99,28 @@ namespace
 
 		GraphicsAPI()->BindFrameBuffer(FrameBufferBindTarget::FRAMEBUFFER, 0);
 	}
+
+	const char* GetRenderPassProfileName(RenderPassType renderPassType)
+	{
+		switch (renderPassType)
+		{
+		case RenderPassType::Forward:
+			return "Render Pass: Forward";
+		case RenderPassType::Shadow:
+			return "Render Pass: Shadow";
+		case RenderPassType::PointLightShadow:
+			return "Render Pass: Point Light Shadow";
+		case RenderPassType::CubemapCapture:
+			return "Render Pass: Cubemap Capture";
+		case RenderPassType::GeometryBuffer:
+			return "Render Pass: Geometry Buffer";
+		case RenderPassType::Deferred:
+			return "Render Pass: Deferred";
+		case RenderPassType::None:
+		default:
+			return "Render Pass: Unknown";
+		}
+	}
 }
 
 Renderer::Renderer() :
@@ -519,30 +541,7 @@ void Renderer::ApplyPostProcessing(DeferredRenderingData* deferredRenderingData,
 
 void Renderer::Render(RenderPassType renderPassType)
 {
-#ifdef GOKNAR_DEBUG
-	std::string renderPassTypeString;
-
-	switch (renderPassType)
-	{
-	case RenderPassType::Forward:
-		renderPassTypeString = "Render Pass: Forward";
-	case RenderPassType::Shadow:
-		renderPassTypeString = "Render Pass: Shadow";
-	case RenderPassType::PointLightShadow:
-		renderPassTypeString = "Render Pass: Point Light Shadow";
-	case RenderPassType::CubemapCapture:
-		renderPassTypeString = "Render Pass: Cubemap Capture";
-	case RenderPassType::GeometryBuffer:
-		renderPassTypeString = "Render Pass: Geometry Buffer";
-	case RenderPassType::Deferred:
-		renderPassTypeString = "Render Pass: Deferred";
-	case RenderPassType::None:
-	default:
-		renderPassTypeString = "Render Pass: Unknown";
-	}
-
-	GOKNAR_PROFILE_SCOPE(renderPassTypeString.c_str());
-#endif
+	GOKNAR_PROFILE_SCOPE(GetRenderPassProfileName(renderPassType));
 
 	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 

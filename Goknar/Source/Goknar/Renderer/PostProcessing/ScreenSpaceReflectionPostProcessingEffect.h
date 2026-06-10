@@ -15,13 +15,13 @@ public:
 
     Texture* Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height) override;
 
-    void SetRayStepSize(float rayStepSize) { rayStepSize_ = rayStepSize; }
-    void SetMaxSteps(int maxSteps) { maxSteps_ = maxSteps; }
-    void SetThickness(float thickness) { thickness_ = thickness; }
+    void SetRayStepSize(float rayStepSize) { rayStepSize_ = rayStepSize > 0.001f ? rayStepSize : 0.001f; }
+    void SetMaxSteps(int maxSteps) { maxSteps_ = maxSteps > 0 ? maxSteps : 1; }
+    void SetThickness(float thickness) { thickness_ = thickness > 0.001f ? thickness : 0.001f; }
 
 private:
     float rayStepSize_{ 0.5f };
-    int maxSteps_{ 50 };
+    int maxSteps_{ 1 };
     float thickness_{ 0.5f };
 };
 

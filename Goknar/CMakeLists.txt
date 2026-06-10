@@ -48,12 +48,34 @@ set(SUBDIRS
 	${SOURCE_DIR_NAME}/Goknar/UI
 )
 
+set(DEBUG_ONLY_SUBDIRS
+	${SOURCE_DIR_NAME}/Goknar/Profiling
+)
+
 set(ENGINE_SOURCE)
 foreach(SUBDIR ${SUBDIRS})
 	set(COMBINED_DIR ${GOKNAR_SOURCE_DIR}${SUBDIR})
 	file(GLOB GROUP_FILES CONFIGURE_DEPENDS "${COMBINED_DIR}/*" )
 	source_group(${SUBDIR} FILES ${GROUP_FILES})
 	list(APPEND ENGINE_SOURCE ${GROUP_FILES})
+endforeach()
+
+set(DEBUG_ONLY_SOURCE)
+foreach(SUBDIR ${DEBUG_ONLY_SUBDIRS})
+	set(COMBINED_DIR ${GOKNAR_SOURCE_DIR}${SUBDIR})
+	file(GLOB GROUP_FILES CONFIGURE_DEPENDS "${COMBINED_DIR}/*")
+	source_group(${SUBDIR} FILES ${GROUP_FILES})
+	foreach(GROUP_FILE ${GROUP_FILES})
+		get_filename_component(GROUP_FILE_EXTENSION "${GROUP_FILE}" EXT)
+		if(GROUP_FILE_EXTENSION STREQUAL ".c" OR
+			GROUP_FILE_EXTENSION STREQUAL ".cc" OR
+			GROUP_FILE_EXTENSION STREQUAL ".cpp" OR
+			GROUP_FILE_EXTENSION STREQUAL ".cxx")
+			list(APPEND DEBUG_ONLY_SOURCE ${GROUP_FILE})
+		else()
+			list(APPEND ENGINE_SOURCE ${GROUP_FILE})
+		endif()
+	endforeach()
 endforeach()
 ######################################################################
 
@@ -69,6 +91,10 @@ else()
     add_library(${APP_NAME} SHARED ${ENGINE_SOURCE})
     target_link_libraries(${APP_NAME} -Wl,--whole-archive cpp_android_spec -Wl,--no-whole-archive)
 endif()
+
+foreach(DEBUG_ONLY_SOURCE_FILE ${DEBUG_ONLY_SOURCE})
+	target_sources(${APP_NAME} PRIVATE "$<$<CONFIG:Debug>:${DEBUG_ONLY_SOURCE_FILE}>")
+endforeach()
 
 set_target_properties(${APP_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/Output"
@@ -173,6 +199,7 @@ target_compile_definitions(${APP_NAME} PUBLIC
 	GOKNAR_BUILD_DLL
 	GLFW_INCLUDE_NONE
 	"$<$<CONFIG:Debug>:GOKNAR_BUILD_DEBUG>"
+	"$<$<CONFIG:Debug>:GOKNAR_DEBUG>"
 	"$<$<CONFIG:Debug>:GOKNAR_ENABLE_ASSERTS>"
 	"$<$<CONFIG:Debug>:GOKNAR_ENABLE_LOGGING>"
 	"$<$<CONFIG:Debug>:ENGINE_CONTENT_DIR=\"EngineContent/\">"

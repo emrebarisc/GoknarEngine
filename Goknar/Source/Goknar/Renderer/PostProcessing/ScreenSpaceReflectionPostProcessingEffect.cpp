@@ -78,10 +78,11 @@ Texture* ScreenSpaceReflectionPostProcessingEffect::Render(const DeferredRenderi
         return const_cast<Texture*>(inputTexture);
     }
 
-    const int inputTextureUnit = static_cast<int>(inputTexture->GetRendererTextureId());
-    const int worldPositionTextureUnit = static_cast<int>(worldPositionTexture->GetRendererTextureId());
-    const int worldNormalTextureUnit = static_cast<int>(worldNormalTexture->GetRendererTextureId());
-    const int aoMetallicRoughnessTextureUnit = static_cast<int>(aoMetallicRoughnessTexture->GetRendererTextureId());
+    // Sampler uniforms expect texture-unit indices, not GL/renderer texture object IDs.
+    constexpr int inputTextureUnit = 0;
+    constexpr int worldPositionTextureUnit = 1;
+    constexpr int worldNormalTextureUnit = 2;
+    constexpr int aoMetallicRoughnessTextureUnit = 3;
 
     GetComputeShader()->Use();
 

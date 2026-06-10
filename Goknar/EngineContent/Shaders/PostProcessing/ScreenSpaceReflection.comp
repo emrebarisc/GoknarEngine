@@ -28,14 +28,28 @@ vec2 ClampUvToViewport(vec2 uv, vec2 texelSize)
     return clamp(uv, texelSize * 0.5f, vec2(1.0f) - texelSize * 0.5f);
 }
 
-bool IsBackgroundSample(vec3 worldPos)
+float LengthSquared(vec3 value)
 {
-    return length(worldPos) < 0.01f;
+    return dot(value, value);
+}
+
+bool IsValidNormal(vec3 normal)
+{
+    return LengthSquared(normal) > 0.000001f;
+}
+
+// Background G-buffer pixels usually have both zero position and zero normal.
+// Checking only world position incorrectly rejects valid geometry at the world origin.
+bool IsBackgroundSample(vec3 worldPos, vec3 rawNormal)
+{
+    return LengthSquared(worldPos) < 0.000001f && !IsValidNormal(rawNormal);
 }
 
 vec4 ProjectWorldPosition(vec3 worldPos)
 {
-    return vec4(worldPos, 1.0f) * viewProjectionMatrix;
+    // GLSL uses column vectors. The world basis is +X forward, +Y left, +Z up;
+    // the camera's view-projection matrix is responsible for mapping that basis to clip space.
+    return viewProjectionMatrix * vec4(worldPos, 1.0f);
 }
 
 bool EvaluateHit(
@@ -159,7 +173,8 @@ bool PredictOffScreenReflectionColor(
             float lateralWeight = lateralIndex == 0 ? 1.0f : 0.45f;
             vec2 lateralUv = ClampUvToViewport(baseUv + tangentDirection * texelSize * float(lateralIndex) * 1.5f, texelSize);
             vec3 lateralWorldPosition = texture(position_GBuffer, lateralUv).xyz;
-            if (IsBackgroundSample(lateralWorldPosition))
+            vec3 lateralRawNormal = texture(normal_GBuffer, lateralUv).xyz;
+            if (IsBackgroundSample(lateralWorldPosition, lateralRawNormal))
             {
                 continue;
             }
@@ -203,14 +218,21 @@ void main() {
 
     vec4 sceneColor = texture(inputTexture, uv);
     vec3 worldPos = texture(position_GBuffer, uv).xyz;
-    
-    // Ignore skybox / background pixels to prevent breaking the depth math
-    if (length(worldPos) < 0.01f) {
+    vec3 rawNormal = texture(normal_GBuffer, uv).xyz;
+
+    // Ignore skybox / background pixels to prevent breaking the depth math.
+    // Do not classify by world position alone: valid geometry can be at (0, 0, 0).
+    if (IsBackgroundSample(worldPos, rawNormal)) {
         imageStore(outputImage, pixelCoords, sceneColor);
         return;
     }
 
-    vec3 normal = normalize(texture(normal_GBuffer, uv).xyz);
+    if (!IsValidNormal(rawNormal)) {
+        imageStore(outputImage, pixelCoords, sceneColor);
+        return;
+    }
+
+    vec3 normal = normalize(rawNormal);
     vec3 aoMetallicRoughness = texture(aoMetallicRoughness_GBuffer, uv).xyz;
 
     float metallic = aoMetallicRoughness.y;
@@ -218,10 +240,14 @@ void main() {
     float reflectionIntensity = clamp(metallic * (1.0f - roughness), 0.0f, 1.0f);
 
     // Early exit for non-reflective surfaces
-    if (reflectionIntensity <= 0.01f || length(normal) < 0.1f) {
+    if (reflectionIntensity <= 0.01f) {
         imageStore(outputImage, pixelCoords, sceneColor);
         return;
     }
+
+    float safeRayStepSize = max(rayStepSize, 0.001f);
+    float safeThickness = max(thickness, 0.001f);
+    int safeMaxSteps = max(maxSteps, 1);
 
     vec3 viewDirection = normalize(worldPos - viewPosition);
     vec3 reflectionDirection = normalize(reflect(viewDirection, normal));
@@ -232,14 +258,14 @@ void main() {
     }
 
     // Bias to prevent immediate self-intersection
-    vec3 rayOrigin = worldPos + normal * max(thickness * 0.5f, 0.05f);
+    vec3 rayOrigin = worldPos + normal * max(safeThickness * 0.5f, 0.05f);
     vec3 previousRayPosition = rayOrigin;
     
-    float currentStepSize = rayStepSize;
+    float currentStepSize = safeRayStepSize;
 
     // THE FIX: Define a maximum allowed step size. 
     // This prevents the ray from taking giant leaps and missing the pillar completely.
-    float maxAllowedStepSize = rayStepSize * 3.5f;
+    float maxAllowedStepSize = safeRayStepSize * 3.5f;
 
     // Interleaved Gradient Noise (IGN) jitter to break horizontal stepping artifacts
     float dither = fract(52.9829189f * fract(dot(vec2(pixelCoords), vec2(0.06711056f, 0.00583715f))));
@@ -256,13 +282,13 @@ void main() {
     vec2 lastValidUv = uv;
     vec2 invalidHitUv = uv;
 
-    for (int i = 0; i < maxSteps; ++i) {
+    for (int i = 0; i < safeMaxSteps; ++i) {
         previousRayPosition = rayPosition;
         rayPosition += reflectionDirection * currentStepSize;
         totalRayDistance += currentStepSize;
 
         vec4 clipSpace = ProjectWorldPosition(rayPosition);
-        if (abs(clipSpace.w) <= 0.00001f)
+        if (clipSpace.w <= 0.00001f)
         {
             exitedViewportWithoutHit = true;
             invalidHitUv = lastValidUv + (lastValidUv - uv);
@@ -283,8 +309,10 @@ void main() {
 
         vec3 sampleWorldPos = texture(position_GBuffer, sampleUV).xyz;
         
+        vec3 sampleRawNormal = texture(normal_GBuffer, sampleUV).xyz;
+
         // Skip background pixels in the G-Buffer
-        if (IsBackgroundSample(sampleWorldPos)) {
+        if (IsBackgroundSample(sampleWorldPos, sampleRawNormal)) {
             // Apply capped growth
             currentStepSize = min(currentStepSize * 1.05f, maxAllowedStepSize);
             continue;
@@ -293,7 +321,12 @@ void main() {
         float forwardError = 0.0f;
         float lateralError = 0.0f;
         if (EvaluateHit(rayOrigin, reflectionDirection, rayPosition, sampleWorldPos, currentStepSize, forwardError, lateralError)) {
-            vec3 sampleNormal = normalize(texture(normal_GBuffer, sampleUV).xyz);
+            if (!IsValidNormal(sampleRawNormal)) {
+                currentStepSize = min(currentStepSize * 1.05f, maxAllowedStepSize);
+                continue;
+            }
+
+            vec3 sampleNormal = normalize(sampleRawNormal);
             
             // Backface Rejection: Prevent the ray from hitting the "inside" or grazing its own geometry
             if (dot(sampleNormal, reflectionDirection) > 0.0f) {
@@ -311,7 +344,7 @@ void main() {
             for (int j = 0; j < 6; ++j) {
                 vec3 midRayPosition = mix(minRayPosition, maxRayPosition, 0.5f);
                 clipSpace = ProjectWorldPosition(midRayPosition);
-                if (abs(clipSpace.w) <= 0.00001f)
+                if (clipSpace.w <= 0.00001f)
                 {
                     maxRayPosition = midRayPosition;
                     continue;
@@ -325,7 +358,8 @@ void main() {
                 }
                 
                 sampleWorldPos = texture(position_GBuffer, sampleUV).xyz;
-                if (IsBackgroundSample(sampleWorldPos))
+                vec3 refinedRawNormal = texture(normal_GBuffer, sampleUV).xyz;
+                if (IsBackgroundSample(sampleWorldPos, refinedRawNormal))
                 {
                     minRayPosition = midRayPosition;
                     continue;
@@ -366,12 +400,13 @@ void main() {
     if (hitUV.x >= 0.0f) {
         hitColor = texture(inputTexture, hitUV).rgb;
         
-        vec2 edgeFade = smoothstep(vec2(0.0f), vec2(0.1f), hitUV) * smoothstep(vec2(1.0f), vec2(0.9f), hitUV);
+        vec2 edgeFade = smoothstep(vec2(0.0f), vec2(0.1f), hitUV) *
+                        (vec2(1.0f) - smoothstep(vec2(0.9f), vec2(1.0f), hitUV));
         float fresnel = mix(0.2f, 1.0f, pow(1.0f - max(dot(-viewDirection, normal), 0.0f), 3.0f));
         float mirrorLikeBlend = smoothstep(0.85f, 1.0f, reflectionIntensity);
         float ssrBlend = mix(fresnel, 1.0f, mirrorLikeBlend);
         float hitConfidence = 1.0f - clamp(hitLateralError / max(thickness * 2.0f, 0.001f), 0.0f, 1.0f);
-        float distanceFade = 1.0f - clamp(totalRayDistance / max(rayStepSize * float(maxSteps) * 2.0f, 0.001f), 0.0f, 0.85f);
+        float distanceFade = 1.0f - clamp(totalRayDistance / max(safeRayStepSize * float(safeMaxSteps) * 2.0f, 0.001f), 0.0f, 0.85f);
         
         visibility = edgeFade.x * edgeFade.y * reflectionIntensity * ssrBlend * hitConfidence * distanceFade;
     }
@@ -383,7 +418,7 @@ void main() {
             hitColor = predictedColor;
 
             float fresnel = mix(0.2f, 1.0f, pow(1.0f - max(dot(-viewDirection, normal), 0.0f), 3.0f));
-            float distanceFade = 1.0f - clamp(totalRayDistance / max(rayStepSize * float(maxSteps) * 2.0f, 0.001f), 0.0f, 0.75f);
+            float distanceFade = 1.0f - clamp(totalRayDistance / max(safeRayStepSize * float(safeMaxSteps) * 2.0f, 0.001f), 0.0f, 0.75f);
             float predictionFade = 0.45f * predictionConfidence;
 
             visibility = reflectionIntensity * fresnel * distanceFade * predictionFade;
