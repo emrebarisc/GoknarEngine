@@ -10,6 +10,8 @@
 #include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Managers/CameraManager.h"
 
+#include "Goknar/Profiling/ProfileMacros.h"
+
 ScreenSpaceReflectionPostProcessingEffect::ScreenSpaceReflectionPostProcessingEffect()
 {
     ComputeShader* ssrComputeShader = new ComputeShader();
@@ -52,6 +54,8 @@ void ScreenSpaceReflectionPostProcessingEffect::PostInit()
 
 Texture* ScreenSpaceReflectionPostProcessingEffect::Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height)
 {
+    GOKNAR_PROFILE_FUNCTION();
+
     if (!GetIsEnabled() || !GetComputeShader() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0)
     {
         return const_cast<Texture*>(inputTexture);

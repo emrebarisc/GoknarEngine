@@ -38,6 +38,7 @@
 #include "Goknar/Managers/WindowManager.h"
 
 #include "Goknar/IO/IOManager.h"
+#include "Goknar/Profiling/ProfileMacros.h"
 
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
@@ -51,6 +52,7 @@
 #include <cfloat>
 #include <climits>
 #include <unordered_set>
+#include <typeinfo>
 
 #define VERTEX_COLOR_LOCATION 0
 #define VERTEX_POSITION_LOCATION 1
@@ -379,6 +381,8 @@ void Renderer::SetBufferData()
 
 void Renderer::RenderCurrentFrame()
 {
+	GOKNAR_PROFILE_FUNCTION();
+
 	countDrawCallsInner_ = false;
 
 	PrepareSkeletalMeshInstancesForTheCurrentFrame();
@@ -483,6 +487,8 @@ void Renderer::RenderCurrentFrame()
 
 void Renderer::ApplyPostProcessing(DeferredRenderingData* deferredRenderingData, FrameBuffer* destinationFrameBuffer)
 {
+	GOKNAR_PROFILE_SCOPE("Apply Post Processing");
+
 	if (!deferredRenderingData)
 	{
 		return;
@@ -513,6 +519,31 @@ void Renderer::ApplyPostProcessing(DeferredRenderingData* deferredRenderingData,
 
 void Renderer::Render(RenderPassType renderPassType)
 {
+#ifdef GOKNAR_DEBUG
+	std::string renderPassTypeString;
+
+	switch (renderPassType)
+	{
+	case RenderPassType::Forward:
+		renderPassTypeString = "Render Pass: Forward";
+	case RenderPassType::Shadow:
+		renderPassTypeString = "Render Pass: Shadow";
+	case RenderPassType::PointLightShadow:
+		renderPassTypeString = "Render Pass: Point Light Shadow";
+	case RenderPassType::CubemapCapture:
+		renderPassTypeString = "Render Pass: Cubemap Capture";
+	case RenderPassType::GeometryBuffer:
+		renderPassTypeString = "Render Pass: Geometry Buffer";
+	case RenderPassType::Deferred:
+		renderPassTypeString = "Render Pass: Deferred";
+	case RenderPassType::None:
+	default:
+		renderPassTypeString = "Render Pass: Unknown";
+	}
+
+	GOKNAR_PROFILE_SCOPE(renderPassTypeString.c_str());
+#endif
+
 	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 
 	if (!activeCamera)

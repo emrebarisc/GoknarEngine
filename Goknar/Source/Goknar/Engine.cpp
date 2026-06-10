@@ -20,6 +20,7 @@
 #include "Managers/ResourceManager.h"
 #include "Managers/WindowManager.h"
 #include "Physics/PhysicsWorld.h"
+#include "Profiling/ProfileMacros.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Shader.h"
 #include "Renderer/ShaderBuilder.h"
@@ -40,6 +41,10 @@ Engine::Engine()
 	engine = this;
 
 	Log::Init();
+
+#ifdef GOKNAR_DEBUG
+	Goknar::Debug::Profiler::SetCurrentThreadName("Game Thread");
+#endif
 
 	graphicsAPI_ = new OpenGLGraphicsAPI();
 
@@ -205,6 +210,8 @@ void Engine::Run()
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
+		GOKNAR_PROFILE_FRAME("Engine Frame");
+
 		if (hasUninitializedComponents_)
 		{
 			PreInitComponents();
@@ -270,19 +277,36 @@ void Engine::Run()
 
 		elapsedTime_ += deltaTime_;
 
-		physicsWorld_->PhysicsTick(deltaTime_);
+		{
+			GOKNAR_PROFILE_SCOPE("Physics Tick");
+			physicsWorld_->PhysicsTick(deltaTime_);
+		}
 
-		application_->Run();
-		Tick(deltaTime_);
+		{
+			GOKNAR_PROFILE_SCOPE("Application Run");
+			application_->Run();
+		}
 
-		renderer_->RenderCurrentFrame();
+		{
+			GOKNAR_PROFILE_SCOPE("Engine Tick");
+			Tick(deltaTime_);
+		}
+
+		{
+			GOKNAR_PROFILE_SCOPE("Renderer Frame");
+			renderer_->RenderCurrentFrame();
+		}
 
 		if (HUD_)
 		{
+			GOKNAR_PROFILE_SCOPE("HUD Tick");
 			HUD_->HUDTick(unscaledDeltaTime);
 		}
 
-		windowManager_->Update();
+		{
+			GOKNAR_PROFILE_SCOPE("Window Update");
+			windowManager_->Update();
+		}
 
 		if (0 < timeDependentObjectsToBeRegisteredSize_)
 		{
@@ -450,6 +474,8 @@ void Engine::BeginGameComponents()
 
 void Engine::Tick(float deltaTime)
 {
+	GOKNAR_PROFILE_FUNCTION();
+
 	for (ObjectBase* object : tickableObjects_)
 	{
 		if (object->GetIsInitialized() && object->GetIsActive() && object->GetIsTickEnabled())

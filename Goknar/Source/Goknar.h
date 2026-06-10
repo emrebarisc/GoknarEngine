@@ -10,6 +10,10 @@
 #include "Goknar/Log.h"
 /*	*************	*/
 
+/*	PROFILING		*/
+#include "Goknar/Profiling/ProfileMacros.h"
+/*	*************	*/
+
 /*	MAIN THREAD		*/
 #include "Goknar/mainThread.h"
 /*	*************	*/

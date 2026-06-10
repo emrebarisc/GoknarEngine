@@ -9,6 +9,8 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Graphics/IGraphicsAPI.h"
 
+#include "Goknar/Profiling/ProfileMacros.h"
+
 namespace
 {
 	constexpr int kBloomOutputImageUnit = 0;
@@ -61,6 +63,8 @@ namespace
 
 BloomPostProcessingEffect::BloomPostProcessingEffect()
 {
+	GOKNAR_PROFILE_FUNCTION();
+
 	bloomPrefilterComputeShader_ = new ComputeShader();
 	bloomDownsampleComputeShader_ = new ComputeShader();
 	bloomUpsampleComputeShader_ = new ComputeShader();

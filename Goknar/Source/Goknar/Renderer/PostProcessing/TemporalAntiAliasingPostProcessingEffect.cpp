@@ -12,6 +12,8 @@
 #include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Managers/CameraManager.h"
 
+#include "Profiling/ProfileMacros.h"
+
 namespace
 {
 	float GetHaltonValue(std::uint64_t index, int base)
@@ -156,6 +158,8 @@ void TemporalAntiAliasingPostProcessingEffect::PrepareFrame(const DeferredRender
 
 Texture* TemporalAntiAliasingPostProcessingEffect::Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height)
 {
+	GOKNAR_PROFILE_FUNCTION();
+
 	if (!GetIsEnabled() || !GetComputeShader() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0)
 	{
 		return const_cast<Texture*>(inputTexture);
