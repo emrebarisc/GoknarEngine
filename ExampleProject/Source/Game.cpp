@@ -34,6 +34,8 @@
 #include "Objects/FloatingObject.h"
 #include "Objects/SkeletalMeshPerformanceTest.h"
 
+#include "Goknar/Profiling/Profiler.h"
+
 Game::Game() : Application()
 {
 	REGISTER_CLASS(ObjectBase);
@@ -136,10 +138,23 @@ void Game::PostInit()
 		sunGlarePostProcessingEffect_->PostInit();
 		renderer->AddPostProcessingEffect(sunGlarePostProcessingEffect_);
 	}
+
+#ifdef GOKNAR_DEBUG
+	Goknar::Debug::Profiler::CaptureFrames(2000);
+#endif
+
 }
 
 void Game::Run()
 {
+#ifdef GOKNAR_DEBUG
+	static bool outputExported = false;
+	if (!outputExported && !Goknar::Debug::Profiler::IsCapturingFrames() && !Goknar::Debug::Profiler::IsCaptureFramesPending())
+	{
+		Goknar::Debug::Profiler::ExportChromeTrace("ProfilerOutput.json");
+		outputExported = true;
+	}
+#endif
 }
 
 Application *CreateApplication()
