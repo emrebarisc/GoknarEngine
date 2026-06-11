@@ -14,23 +14,23 @@
 
 ScreenSpaceReflectionPostProcessingEffect::ScreenSpaceReflectionPostProcessingEffect()
 {
-    ComputeShader* ssrComputeShader = new ComputeShader();
-    const std::string projectShaderPath = ContentDir + "Shaders/PostProcessing/ScreenSpaceReflection.comp";
-    std::string shaderPath = projectShaderPath;
+	ComputeShader* ssrComputeShader = new ComputeShader();
+	const std::string projectShaderPath = ContentDir + "Shaders/PostProcessing/ScreenSpaceReflection.comp";
+	std::string shaderPath = projectShaderPath;
 
 #if defined(ENGINE_CONTENT_DIR)
-    if (!DataEncryption::FileExists(projectShaderPath))
-    {
-        const std::string engineShaderPath = EngineContentDir + "Shaders/PostProcessing/ScreenSpaceReflection.comp";
+	if (!DataEncryption::FileExists(projectShaderPath))
+	{
+		const std::string engineShaderPath = EngineContentDir + "Shaders/PostProcessing/ScreenSpaceReflection.comp";
 
-        if (DataEncryption::FileExists(engineShaderPath))
-        {
-            shaderPath = engineShaderPath;
-        }
-    }
+		if (DataEncryption::FileExists(engineShaderPath))
+		{
+			shaderPath = engineShaderPath;
+		}
+	}
 #endif
-    ssrComputeShader->SetComputeShaderPathAbsolute(shaderPath);
-    SetComputeShader(ssrComputeShader);
+	ssrComputeShader->SetComputeShaderPathAbsolute(shaderPath);
+	SetComputeShader(ssrComputeShader);
 }
 
 ScreenSpaceReflectionPostProcessingEffect::~ScreenSpaceReflectionPostProcessingEffect()
@@ -39,79 +39,78 @@ ScreenSpaceReflectionPostProcessingEffect::~ScreenSpaceReflectionPostProcessingE
 
 void ScreenSpaceReflectionPostProcessingEffect::PreInit()
 {
-    PostProcessingEffect::PreInit();
+	PostProcessingEffect::PreInit();
 }
 
 void ScreenSpaceReflectionPostProcessingEffect::Init()
 {
-    PostProcessingEffect::Init();
+	PostProcessingEffect::Init();
 }
 
 void ScreenSpaceReflectionPostProcessingEffect::PostInit()
 {
-    PostProcessingEffect::PostInit();
+	PostProcessingEffect::PostInit();
 }
 
 Texture* ScreenSpaceReflectionPostProcessingEffect::Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height)
 {
-    GOKNAR_PROFILE_FUNCTION();
+	GOKNAR_PROFILE_FUNCTION();
 
-    if (!GetIsEnabled() || !GetComputeShader() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0)
-    {
-        return const_cast<Texture*>(inputTexture);
-    }
+	if (!GetIsEnabled() || !GetComputeShader() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0)
+	{
+		return const_cast<Texture*>(inputTexture);
+	}
 
-    EnsureResources(width, height);
+	{
+		GOKNAR_PROFILE_SCOPE("ScreenSpaceReflectionPostProcessingEffect::EnsureResources");
+		EnsureResources(width, height);
+	}
 
-    const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
-    if (!activeCamera || !deferredRenderingData->geometryBufferData)
-    {
-        return const_cast<Texture*>(inputTexture);
-    }
+	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
+	if (!activeCamera || !deferredRenderingData->geometryBufferData)
+	{
+		return const_cast<Texture*>(inputTexture);
+	}
 
-    Texture* worldPositionTexture = deferredRenderingData->geometryBufferData->worldPositionTexture;
-    Texture* worldNormalTexture = deferredRenderingData->geometryBufferData->worldNormalTexture;
-    Texture* aoMetallicRoughnessTexture = deferredRenderingData->geometryBufferData->ambientOcclusionMetallicRoughnessTexture;
+	Texture* worldPositionTexture = deferredRenderingData->geometryBufferData->worldPositionTexture;
+	Texture* worldNormalTexture = deferredRenderingData->geometryBufferData->worldNormalTexture;
+	Texture* aoMetallicRoughnessTexture = deferredRenderingData->geometryBufferData->ambientOcclusionMetallicRoughnessTexture;
 
-    if (!worldPositionTexture || !worldNormalTexture || !aoMetallicRoughnessTexture)
-    {
-        return const_cast<Texture*>(inputTexture);
-    }
+	if (!worldPositionTexture || !worldNormalTexture || !aoMetallicRoughnessTexture)
+	{
+		return const_cast<Texture*>(inputTexture);
+	}
 
-    // Sampler uniforms expect texture-unit indices, not GL/renderer texture object IDs.
-    constexpr int inputTextureUnit = 0;
-    constexpr int worldPositionTextureUnit = 1;
-    constexpr int worldNormalTextureUnit = 2;
-    constexpr int aoMetallicRoughnessTextureUnit = 3;
+	constexpr int inputTextureUnit = 0;
+	constexpr int worldPositionTextureUnit = 1;
+	constexpr int worldNormalTextureUnit = 2;
+	constexpr int aoMetallicRoughnessTextureUnit = 3;
 
-    GetComputeShader()->Use();
+	GetComputeShader()->Use();
 
-    // Bind Textures
-    inputTexture->BindToTextureUnit(inputTextureUnit);
-    GetComputeShader()->SetInt("inputTexture", inputTextureUnit);
+	inputTexture->BindToTextureUnit(inputTextureUnit);
+	GetComputeShader()->SetInt("inputTexture", inputTextureUnit);
 
-    worldPositionTexture->BindToTextureUnit(worldPositionTextureUnit);
-    GetComputeShader()->SetInt("position_GBuffer", worldPositionTextureUnit);
+	worldPositionTexture->BindToTextureUnit(worldPositionTextureUnit);
+	GetComputeShader()->SetInt("position_GBuffer", worldPositionTextureUnit);
 
-    worldNormalTexture->BindToTextureUnit(worldNormalTextureUnit);
-    GetComputeShader()->SetInt("normal_GBuffer", worldNormalTextureUnit);
+	worldNormalTexture->BindToTextureUnit(worldNormalTextureUnit);
+	GetComputeShader()->SetInt("normal_GBuffer", worldNormalTextureUnit);
 
-    aoMetallicRoughnessTexture->BindToTextureUnit(aoMetallicRoughnessTextureUnit);
-    GetComputeShader()->SetInt("aoMetallicRoughness_GBuffer", aoMetallicRoughnessTextureUnit);
+	aoMetallicRoughnessTexture->BindToTextureUnit(aoMetallicRoughnessTextureUnit);
+	GetComputeShader()->SetInt("aoMetallicRoughness_GBuffer", aoMetallicRoughnessTextureUnit);
 
-    // Bind Uniforms
-    GetComputeShader()->SetMatrix("viewProjectionMatrix", activeCamera->GetViewProjectionMatrix());
-    GetComputeShader()->SetVector3("viewPosition", activeCamera->GetPosition());
-    
-    GetComputeShader()->SetFloat("rayStepSize", rayStepSize_);
-    GetComputeShader()->SetInt("maxSteps", maxSteps_);
-    GetComputeShader()->SetFloat("thickness", thickness_);
+	GetComputeShader()->SetMatrix("viewProjectionMatrix", activeCamera->GetViewProjectionMatrix());
+	GetComputeShader()->SetVector3("viewPosition", activeCamera->GetPosition());
 
-    // Bind Output Image and Dispatch
-    outputTexture_->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
-    GetComputeShader()->Dispatch2D(width, height);
+	GetComputeShader()->SetFloat("rayStepSize", rayStepSize_);
+	GetComputeShader()->SetInt("maxSteps", maxSteps_);
+	GetComputeShader()->SetFloat("thickness", thickness_);
 
-    engine->GetGraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderImageAccess | GraphicsMemoryBarrier::TextureFetch);
+	outputTexture_->BindAsImage(0, TextureImageAccess::WRITE_ONLY);
+	GetComputeShader()->Dispatch2D(width, height);
 
-    return outputTexture_;
+	engine->GetGraphicsAPI()->MemoryBarrier(GraphicsMemoryBarrier::ShaderImageAccess | GraphicsMemoryBarrier::TextureFetch);
+
+	return outputTexture_;
 }

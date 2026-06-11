@@ -56,10 +56,10 @@ namespace Debug
 		struct ProfilerState
 		{
 			std::atomic<bool> isEnabled{ false };
-			std::atomic<bool> captureOneFrameRequested{ false };
-			std::atomic<bool> captureOneFrameActive{ false };
+			std::atomic<std::uint64_t> captureRequestedFrameCount{ 0 };
+			std::atomic<bool> captureFramesActive{ false };
+			std::atomic<std::uint64_t> captureRemainingFrameCount{ 0 };
 			std::atomic<std::uint64_t> frameIndex{ 0 };
-			std::atomic<std::uint64_t> captureOneFrameIndex{ 0 };
 			std::mutex threadBuffersMutex{};
 			std::vector<std::unique_ptr<ProfileThreadBuffer>> threadBuffers{};
 			std::uint32_t nextThreadIndex{ 0 };
@@ -193,9 +193,9 @@ namespace Debug
 	void Profiler::SetEnabled(bool isEnabled)
 	{
 		ProfilerState& state = GetState();
-		state.captureOneFrameRequested.store(false, std::memory_order_release);
-		state.captureOneFrameActive.store(false, std::memory_order_release);
-		state.captureOneFrameIndex.store(0, std::memory_order_release);
+		state.captureRequestedFrameCount.store(0, std::memory_order_release);
+		state.captureFramesActive.store(false, std::memory_order_release);
+		state.captureRemainingFrameCount.store(0, std::memory_order_release);
 		state.isEnabled.store(isEnabled, std::memory_order_release);
 	}
 
@@ -220,31 +220,63 @@ namespace Debug
 		ProfilerState& state = GetState();
 		const bool wasEnabled = state.isEnabled.exchange(false, std::memory_order_acq_rel);
 
-		state.captureOneFrameRequested.store(false, std::memory_order_release);
-		state.captureOneFrameActive.store(false, std::memory_order_release);
-		state.captureOneFrameIndex.store(0, std::memory_order_release);
+		state.captureRequestedFrameCount.store(0, std::memory_order_release);
+		state.captureFramesActive.store(false, std::memory_order_release);
+		state.captureRemainingFrameCount.store(0, std::memory_order_release);
 		ClearRecordedEvents();
 		state.frameIndex.store(0, std::memory_order_release);
 		state.isEnabled.store(wasEnabled, std::memory_order_release);
 	}
 
-	void Profiler::CaptureOneFrame()
+	void Profiler::CaptureFrames(std::uint64_t frameCount)
 	{
+		if (frameCount == 0)
+		{
+			return;
+		}
+
 		ProfilerState& state = GetState();
 		state.isEnabled.store(false, std::memory_order_release);
-		state.captureOneFrameActive.store(false, std::memory_order_release);
-		state.captureOneFrameIndex.store(0, std::memory_order_release);
-		state.captureOneFrameRequested.store(true, std::memory_order_release);
+		state.captureFramesActive.store(false, std::memory_order_release);
+		state.captureRemainingFrameCount.store(0, std::memory_order_release);
+		state.captureRequestedFrameCount.store(frameCount, std::memory_order_release);
+	}
+
+	void Profiler::CaptureOneFrame()
+	{
+		CaptureFrames(1);
+	}
+
+	bool Profiler::IsCaptureFramesPending()
+	{
+		return GetState().captureRequestedFrameCount.load(std::memory_order_acquire) > 0;
+	}
+
+	bool Profiler::IsCapturingFrames()
+	{
+		return GetState().captureFramesActive.load(std::memory_order_acquire);
+	}
+
+	std::uint64_t Profiler::GetRemainingCaptureFrameCount()
+	{
+		const ProfilerState& state = GetState();
+		const std::uint64_t pendingFrameCount = state.captureRequestedFrameCount.load(std::memory_order_acquire);
+		if (pendingFrameCount > 0)
+		{
+			return pendingFrameCount;
+		}
+
+		return state.captureRemainingFrameCount.load(std::memory_order_acquire);
 	}
 
 	bool Profiler::IsCaptureOneFramePending()
 	{
-		return GetState().captureOneFrameRequested.load(std::memory_order_acquire);
+		return IsCaptureFramesPending();
 	}
 
 	bool Profiler::IsCapturingOneFrame()
 	{
-		return GetState().captureOneFrameActive.load(std::memory_order_acquire);
+		return IsCapturingFrames();
 	}
 
 	ProfileSnapshot Profiler::CaptureSnapshot()
@@ -403,18 +435,18 @@ namespace Debug
 	{
 		(void)name;
 		ProfilerState& state = GetState();
-		const bool shouldCaptureOneFrame = state.captureOneFrameRequested.exchange(false, std::memory_order_acq_rel);
-		if (shouldCaptureOneFrame)
+		const std::uint64_t requestedFrameCount = state.captureRequestedFrameCount.exchange(0, std::memory_order_acq_rel);
+		if (requestedFrameCount > 0)
 		{
 			ClearRecordedEvents();
 			state.frameIndex.store(0, std::memory_order_release);
 		}
 
 		const std::uint64_t frameIndex = state.frameIndex.fetch_add(1, std::memory_order_acq_rel) + 1;
-		if (shouldCaptureOneFrame)
+		if (requestedFrameCount > 0)
 		{
-			state.captureOneFrameIndex.store(frameIndex, std::memory_order_release);
-			state.captureOneFrameActive.store(true, std::memory_order_release);
+			state.captureRemainingFrameCount.store(requestedFrameCount, std::memory_order_release);
+			state.captureFramesActive.store(true, std::memory_order_release);
 			state.isEnabled.store(true, std::memory_order_release);
 		}
 
@@ -423,13 +455,31 @@ namespace Debug
 
 	void Profiler::EndFrame(std::uint64_t frameIndex)
 	{
+		(void)frameIndex;
 		ProfilerState& state = GetState();
-		if (state.captureOneFrameActive.load(std::memory_order_acquire) &&
-			state.captureOneFrameIndex.load(std::memory_order_acquire) == frameIndex)
+		if (!state.captureFramesActive.load(std::memory_order_acquire))
+		{
+			return;
+		}
+
+		std::uint64_t remainingFrameCount = state.captureRemainingFrameCount.load(std::memory_order_acquire);
+		while (remainingFrameCount > 0)
+		{
+			if (state.captureRemainingFrameCount.compare_exchange_weak(
+				remainingFrameCount,
+				remainingFrameCount - 1,
+				std::memory_order_acq_rel,
+				std::memory_order_acquire))
+			{
+				break;
+			}
+		}
+
+		if (remainingFrameCount <= 1)
 		{
 			state.isEnabled.store(false, std::memory_order_release);
-			state.captureOneFrameActive.store(false, std::memory_order_release);
-			state.captureOneFrameIndex.store(0, std::memory_order_release);
+			state.captureFramesActive.store(false, std::memory_order_release);
+			state.captureRemainingFrameCount.store(0, std::memory_order_release);
 		}
 	}
 
@@ -447,7 +497,8 @@ namespace Debug
 	{
 		const ProfilerState& state = GetState();
 		return state.isEnabled.load(std::memory_order_relaxed) ||
-			state.captureOneFrameRequested.load(std::memory_order_relaxed);
+			state.captureRequestedFrameCount.load(std::memory_order_relaxed) > 0 ||
+			state.captureFramesActive.load(std::memory_order_relaxed);
 	}
 
 	std::uint64_t Profiler::GetTimestampNs()

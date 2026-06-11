@@ -55,7 +55,11 @@ namespace Debug
 
 		static void SetCurrentThreadName(const char* name);
 		static void Clear();
+		static void CaptureFrames(std::uint64_t frameCount);
 		static void CaptureOneFrame();
+		static bool IsCaptureFramesPending();
+		static bool IsCapturingFrames();
+		static std::uint64_t GetRemainingCaptureFrameCount();
 		static bool IsCaptureOneFramePending();
 		static bool IsCapturingOneFrame();
 

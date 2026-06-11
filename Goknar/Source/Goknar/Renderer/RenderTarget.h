@@ -29,11 +29,23 @@ public:
 		return depthRenderbuffer_;
 	}
 
+	void SetRequirePostProcessingEffects(bool requirePostProcessingEffect)
+	{
+		requirePostProcessingEffects_ = requirePostProcessingEffect;
+	}
+
+	bool GetRequirePostProcessingEffects() const
+	{
+		return requirePostProcessingEffects_;
+	}
+
 protected:
 	virtual void GenerateBuffers();
 
 	DeferredRenderingData* deferredRenderingData_{ nullptr };
 	RenderBuffer* depthRenderbuffer_{ nullptr };
+
+	bool requirePostProcessingEffects_{ false };
 };
 
 #endif

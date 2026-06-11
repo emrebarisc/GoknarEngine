@@ -455,7 +455,19 @@ void Renderer::RenderCurrentFrame()
 				PreparePostProcessingFrame(deferredRenderingData_);
 				Render(RenderPassType::GeometryBuffer);
 				Render(RenderPassType::Deferred);
-				ApplyPostProcessing(deferredRenderingData_, renderTargetFrameBuffer);
+				
+				if (renderTarget->GetRequirePostProcessingEffects())
+				{
+					ApplyPostProcessing(deferredRenderingData_, renderTargetFrameBuffer);
+				}
+				else
+				{
+					const int width = deferredRenderingData_->geometryBufferData->bufferWidth;
+					const int height = deferredRenderingData_->geometryBufferData->bufferHeight;
+					Texture* finalTexture = deferredRenderingData_->GetSceneTexture();
+					FrameBuffer* finalFrameBuffer = deferredRenderingData_->GetSceneFrameBuffer();
+					BlitFrameBufferColor(finalFrameBuffer, renderTargetFrameBuffer, width, height);
+				}
 
 				if (cameraManager->GetActiveCamera())
 				{
@@ -1148,6 +1160,8 @@ void Renderer::UpdateInstancedStaticMeshTransformation(const InstancedStaticMesh
 
 void Renderer::PrepareSkeletalMeshInstancesForTheCurrentFrame()
 {
+	GOKNAR_PROFILE_FUNCTION();
+
 	std::unordered_set<SkeletalMeshInstance*> preparedSkeletalMeshInstances;
 	auto prepareRenderData = [&preparedSkeletalMeshInstances](const SkeletalMeshRenderData& renderData)
 	{
@@ -1172,6 +1186,8 @@ void Renderer::PrepareSkeletalMeshInstancesForTheCurrentFrame()
 
 void Renderer::PrepareSkeletalMeshInstancesForTheNextFrame()
 {
+	GOKNAR_PROFILE_FUNCTION();
+
 	std::unordered_set<SkeletalMeshInstance*> preparedSkeletalMeshInstances;
 	auto prepareRenderData = [&preparedSkeletalMeshInstances](const SkeletalMeshRenderData& renderData)
 	{
