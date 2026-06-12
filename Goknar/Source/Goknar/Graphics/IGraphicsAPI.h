@@ -201,6 +201,7 @@ public:
 	virtual void BindImageTexture(GEuint imageUnit, GEuint textureId, GEint level, bool layered, GEint layer, TextureImageAccess access, TextureInternalFormat format) = 0;
 	virtual void PixelStore(GraphicsPixelStoreParameter parameter, GEint value) = 0;
 	virtual void SetTextureImage2D(TextureImageTarget target, GEint targetOffset, GEint level, TextureInternalFormat internalFormat, GEsizei width, GEsizei height, GEint border, TextureFormat format, TextureType type, const void* data) = 0;
+	virtual void SetTextureImage3D(TextureBindTarget target, GEint level, TextureInternalFormat internalFormat, GEsizei width, GEsizei height, GEsizei depth, GEint border, TextureFormat format, TextureType type, const void* data) = 0;
 	virtual void SetTextureCompareMode(TextureBindTarget target, TextureCompareMode compareMode) = 0;
 	virtual void SetTextureCompareFunc(TextureBindTarget target, TextureCompareFunc compareFunc) = 0;
 	virtual void SetTextureMinFilter(TextureBindTarget target, TextureMinFilter minFilter) = 0;

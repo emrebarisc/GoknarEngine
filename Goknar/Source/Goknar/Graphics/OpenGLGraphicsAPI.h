@@ -75,6 +75,7 @@ public:
 	void BindImageTexture(GEuint imageUnit, GEuint textureId, GEint level, bool layered, GEint layer, TextureImageAccess access, TextureInternalFormat format) override;
 	void PixelStore(GraphicsPixelStoreParameter parameter, GEint value) override;
 	void SetTextureImage2D(TextureImageTarget target, GEint targetOffset, GEint level, TextureInternalFormat internalFormat, GEsizei width, GEsizei height, GEint border, TextureFormat format, TextureType type, const void* data) override;
+	void SetTextureImage3D(TextureBindTarget target, GEint level, TextureInternalFormat internalFormat, GEsizei width, GEsizei height, GEsizei depth, GEint border, TextureFormat format, TextureType type, const void* data) override;
 	void SetTextureCompareMode(TextureBindTarget target, TextureCompareMode compareMode) override;
 	void SetTextureCompareFunc(TextureBindTarget target, TextureCompareFunc compareFunc) override;
 	void SetTextureMinFilter(TextureBindTarget target, TextureMinFilter minFilter) override;

@@ -175,6 +175,7 @@ namespace
 	{
 		switch (target)
 		{
+		case TextureImageTarget::TEXTURE_3D: return GL_TEXTURE_3D;
 		case TextureImageTarget::TEXTURE_2D: return GL_TEXTURE_2D;
 		case TextureImageTarget::PROXY_TEXTURE_2D: return GL_PROXY_TEXTURE_2D;
 		case TextureImageTarget::TEXTURE_1D_ARRAY: return GL_TEXTURE_1D_ARRAY;
@@ -806,6 +807,11 @@ void OpenGLGraphicsAPI::PixelStore(GraphicsPixelStoreParameter parameter, GEint 
 void OpenGLGraphicsAPI::SetTextureImage2D(TextureImageTarget target, GEint targetOffset, GEint level, TextureInternalFormat internalFormat, GEsizei width, GEsizei height, GEint border, TextureFormat format, TextureType type, const void* data)
 {
 	glTexImage2D(ToOpenGLTextureImageTarget(target) + targetOffset, level, ToOpenGLTextureInternalFormat(internalFormat), width, height, border, ToOpenGLTextureFormat(format), ToOpenGLTextureType(type), data);
+}
+
+void OpenGLGraphicsAPI::SetTextureImage3D(TextureBindTarget target, GEint level, TextureInternalFormat internalFormat, GEsizei width, GEsizei height, GEsizei depth, GEint border, TextureFormat format, TextureType type, const void* data)
+{
+	glTexImage3D(ToOpenGLTextureBindTarget(target), level, ToOpenGLTextureInternalFormat(internalFormat), width, height, depth, border, ToOpenGLTextureFormat(format), ToOpenGLTextureType(type), data);
 }
 
 void OpenGLGraphicsAPI::SetTextureCompareMode(TextureBindTarget target, TextureCompareMode compareMode)

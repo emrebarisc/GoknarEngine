@@ -35,6 +35,7 @@ enum class TextureBindTarget
 
 enum class TextureImageTarget
 {
+	TEXTURE_3D,
 	TEXTURE_2D,
 	PROXY_TEXTURE_2D,
 
@@ -247,6 +248,20 @@ public:
 		height_ = height;
 
 		if(isInitialized_)
+		{
+			UpdateSizeOnGPU();
+		}
+	}
+
+	int GetDepth() const
+	{
+		return depth_;
+	}
+
+	void SetDepth(int depth)
+	{
+		depth_ = depth;
+		if (isInitialized_)
 		{
 			UpdateSizeOnGPU();
 		}
@@ -566,6 +581,7 @@ private:
 	int GUID_{ 0 };
 	int width_{ 0 };
 	int height_{ 0 };
+	int depth_{ 1 };
 	int channels_{ 0 };
 
 	bool isInitialized_{ false };

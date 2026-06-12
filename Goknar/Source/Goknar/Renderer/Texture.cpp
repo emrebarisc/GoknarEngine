@@ -163,9 +163,16 @@ void Texture::PreInit()
 
 	engine->GetGraphicsAPI()->PixelStore(GraphicsPixelStoreParameter::UnpackAlignment, 1);
 
-	engine->GetGraphicsAPI()->SetTextureImage2D(textureImageTarget_, 0, 0, textureInternalFormat_, width_, height_, 0, textureFormat_, textureType_, buffer_);
+	if (textureBindTarget_ == TextureBindTarget::TEXTURE_3D)
+	{
+		engine->GetGraphicsAPI()->SetTextureImage3D(textureBindTarget_, 0, textureInternalFormat_, width_, height_, depth_, 0, textureFormat_, textureType_, buffer_);
+	}
+	else
+	{
+		engine->GetGraphicsAPI()->SetTextureImage2D(textureImageTarget_, 0, 0, textureInternalFormat_, width_, height_, 0, textureFormat_, textureType_, buffer_);
+	}
 
-	if (textureImageTarget_ == TextureImageTarget::TEXTURE_CUBE_MAP_POSITIVE_X)
+	if (textureBindTarget_ != TextureBindTarget::TEXTURE_3D && textureImageTarget_ == TextureImageTarget::TEXTURE_CUBE_MAP_POSITIVE_X)
 	{
 		for (int i = 1; i < 6; ++i)
 		{
@@ -264,9 +271,16 @@ void Texture::UpdateSizeOnGPU()
 
 	engine->GetGraphicsAPI()->ActivateTextureUnit(rendererTextureId_);
 	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, rendererTextureId_);
-	engine->GetGraphicsAPI()->SetTextureImage2D(textureImageTarget_, 0, 0, textureInternalFormat_, width_, height_, 0, textureFormat_, textureType_, buffer_);
+	if (textureBindTarget_ == TextureBindTarget::TEXTURE_3D)
+	{
+		engine->GetGraphicsAPI()->SetTextureImage3D(textureBindTarget_, 0, textureInternalFormat_, width_, height_, depth_, 0, textureFormat_, textureType_, buffer_);
+	}
+	else
+	{
+		engine->GetGraphicsAPI()->SetTextureImage2D(textureImageTarget_, 0, 0, textureInternalFormat_, width_, height_, 0, textureFormat_, textureType_, buffer_);
+	}
 
-	if (textureImageTarget_ == TextureImageTarget::TEXTURE_CUBE_MAP_POSITIVE_X)
+	if (textureBindTarget_ != TextureBindTarget::TEXTURE_3D && textureImageTarget_ == TextureImageTarget::TEXTURE_CUBE_MAP_POSITIVE_X)
 	{
 		for (int i = 1; i < 6; ++i)
 		{
