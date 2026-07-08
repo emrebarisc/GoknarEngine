@@ -238,7 +238,7 @@ inline void IMeshInstance<MeshType>::SetMesh(MeshType* mesh)
 
 	materials_.resize(mesh_->GetSubMeshes().size(), nullptr);
 
-	if (isInitialized_)
+	if (!isInitialized_)
 	{
 		PreInit();
 		Init();
