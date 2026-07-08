@@ -193,14 +193,14 @@ void Renderer::PreInit()
 			AddPostProcessingEffect(bloomPostProcessingEffect_);
 		}
 
-		if (!screenSpaceReflectionPostProcessingEffect_)
-		{
-			screenSpaceReflectionPostProcessingEffect_ = new ScreenSpaceReflectionPostProcessingEffect();
-			screenSpaceReflectionPostProcessingEffect_->PreInit();
-			screenSpaceReflectionPostProcessingEffect_->Init();
-			screenSpaceReflectionPostProcessingEffect_->PostInit();
-			AddPostProcessingEffect(screenSpaceReflectionPostProcessingEffect_);
-		}
+		//if (!screenSpaceReflectionPostProcessingEffect_)
+		//{
+		//	screenSpaceReflectionPostProcessingEffect_ = new ScreenSpaceReflectionPostProcessingEffect();
+		//	screenSpaceReflectionPostProcessingEffect_->PreInit();
+		//	screenSpaceReflectionPostProcessingEffect_->Init();
+		//	screenSpaceReflectionPostProcessingEffect_->PostInit();
+		//	AddPostProcessingEffect(screenSpaceReflectionPostProcessingEffect_);
+		//}
 	}
 
 	GraphicsAPI()->SetFrontFace(GraphicsFrontFace::CounterClockwise);
