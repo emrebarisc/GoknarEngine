@@ -16,6 +16,7 @@
 #include "Goknar/Scene.h"
 #include "Goknar/ObjectBase.h"
 #include "Goknar/Objects/ReflectionProbeObject.h"
+#include "Goknar/Objects/PlayerStart.h"
 
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/Components/DynamicMeshComponent.h"
@@ -2792,6 +2793,7 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 		{
 			RigidBody* rigidBody = dynamic_cast<RigidBody*>(object);
 			ReflectionProbeObject* reflectionProbeObject = dynamic_cast<ReflectionProbeObject*>(object);
+			PlayerStart* playerStartObject = dynamic_cast<PlayerStart*>(object);
 
 			std::string objectTypeString = "ObjectBase";
 			if (rigidBody)
@@ -2801,6 +2803,14 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 			else if (reflectionProbeObject)
 			{
 				objectTypeString = "ReflectionProbeObject";
+			}
+			else if (reflectionProbeObject)
+			{
+				objectTypeString = "ReflectionProbeObject";
+			}
+			else if (playerStartObject)
+			{
+				objectTypeString = "PlayerStart";
 			}
 
 			tinyxml2::XMLElement* objectElement = xmlDocument.NewElement(objectTypeString.c_str());
@@ -2969,8 +2979,16 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 
 void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* const staticMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
 {
+	StaticMesh* staticMesh = staticMeshComponent->GetMeshInstance()->GetMesh();
+	GOKNAR_CHECK(staticMesh);
+
+	if(!staticMesh || staticMesh->GetPath().empty())
+	{
+		return;
+	}
+
 	tinyxml2::XMLElement* staticMeshComponentMeshPathElement = xmlDocument.NewElement("MeshPath");
-	const std::string meshPath = ContentPathUtils::ToContentRelativePath(staticMeshComponent->GetMeshInstance()->GetMesh()->GetPath());
+	const std::string meshPath = ContentPathUtils::ToContentRelativePath(staticMesh->GetPath());
 	staticMeshComponentMeshPathElement->SetText(meshPath.c_str());
 	parentElement->InsertEndChild(staticMeshComponentMeshPathElement);
 

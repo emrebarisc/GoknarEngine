@@ -13,6 +13,7 @@
 #include "Goknar/Debug/DebugDrawer.h"
 #include "Goknar/Navigation/NavigationTreeComponent.h"
 #include "Goknar/ObjectBase.h"
+#include "Goknar/Objects/PlayerStart.h"
 #include "Goknar/Objects/ReflectionProbeObject.h"
 #include "Goknar/Physics/Character.h"
 #include "Goknar/Physics/OverlappingPhysicsObject.h"
@@ -45,6 +46,7 @@ void DynamicObjectFactory::RegisterBuiltInClasses()
 	instance_->RegisterObjectClass<RigidBody>("RigidBody");
 	instance_->RegisterObjectClass<Character>("Character");
 	instance_->RegisterObjectClass<ReflectionProbeObject>("ReflectionProbeObject");
+	instance_->RegisterObjectClass<PlayerStart>("PlayerStart");
 
 	instance_->RegisterComponentClass<SocketComponent>("SocketComponent", DynamicComponentOwnerRequirement::ObjectBase, false);
 	instance_->RegisterComponentClass<CameraComponent>("CameraComponent");
