@@ -202,6 +202,11 @@ public:
 		return mainRenderType_;
 	}
 
+	inline int GetMainRenderTypeInt() const
+	{
+		return (int)mainRenderType_;
+	}
+
 	DeferredRenderingData* GetDeferredRenderingData()
 	{
 		return deferredRenderingData_;

@@ -442,13 +442,13 @@ void Renderer::RenderCurrentFrame()
 
 			FrameBuffer* renderTargetFrameBuffer = renderTarget->GetFrameBuffer();
 
-			if (GetMainRenderType() == RenderPassType::Forward)
+			if (GetMainRenderTypeInt() & (int)RenderPassType::Forward)
 			{
 				renderTargetFrameBuffer->Bind();
 				Render(RenderPassType::Forward);
 				renderTargetFrameBuffer->Unbind();
 			}
-			else if (GetMainRenderType() == RenderPassType::Deferred)
+			else if (GetMainRenderTypeInt() & (int)RenderPassType::Deferred)
 			{
 				deferredRenderingData_ = renderTarget->GetDeferredRenderingData();
 
@@ -490,12 +490,12 @@ void Renderer::RenderCurrentFrame()
 		GetLightManager()->RenderShadowMaps();
 
 		drawCallCount = 0;
-		if (GetMainRenderType() == RenderPassType::Forward)
+		if (GetMainRenderTypeInt() & (int)RenderPassType::Forward)
 		{
 			countDrawCallsInner_ = countDrawCalls;
 			Render(RenderPassType::Forward);
 		}
-		else if (GetMainRenderType() == RenderPassType::Deferred)
+		else if (GetMainRenderTypeInt() & (int)RenderPassType::Deferred)
 		{
 			countDrawCallsInner_ = countDrawCalls;
 			PreparePostProcessingFrame(deferredRenderingData_);
