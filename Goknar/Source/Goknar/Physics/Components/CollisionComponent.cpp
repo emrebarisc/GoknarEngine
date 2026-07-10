@@ -38,6 +38,17 @@ void CollisionComponent::UpdateComponentToWorldTransformationMatrix()
 void CollisionComponent::UpdateTransformation()
 {
 	bulletCollisionShape_->setLocalScaling(PhysicsUtils::FromVector3ToBtVector3(worldScaling_));
+
+	RigidBody* ownerRigidBody = reinterpret_cast<RigidBody*>(owner_);
+	btRigidBody* ownerBulletRigidBody = ownerRigidBody->GetBulletRigidBody();
+
+	if (ownerBulletRigidBody && ownerBulletRigidBody->getInvMass() > 0)
+	{
+		btVector3 inertia;
+		bulletCollisionShape_->calculateLocalInertia(ownerBulletRigidBody->getMass(), inertia);
+		ownerBulletRigidBody->setMassProps(ownerBulletRigidBody->getMass(), inertia);
+		ownerBulletRigidBody->updateInertiaTensor();
+	}
 }
 
 void CollisionComponent::PreInit()

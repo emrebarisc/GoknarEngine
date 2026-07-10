@@ -121,6 +121,38 @@ void PhysicsWorld::PhysicsTick(float deltaTime)
 	{
 		physicsMovementComponent->UpdateOwnerTransformation();
 	}
+
+	DebugDraw();
+}
+
+void PhysicsWorld::SetPhysicsDebugMode(int debugMode)
+{
+	if (!physicsDebugger_)
+	{
+		return;
+	}
+
+	physicsDebugger_->setDebugMode(debugMode);
+}
+
+int PhysicsWorld::GetPhysicsDebugMode() const
+{
+	if (!physicsDebugger_)
+	{
+		return btIDebugDraw::DBG_NoDebug;
+	}
+
+	return physicsDebugger_->getDebugMode();
+}
+
+void PhysicsWorld::DebugDraw()
+{
+	if (!dynamicsWorld_ || !physicsDebugger_ || physicsDebugger_->getDebugMode() == btIDebugDraw::DBG_NoDebug)
+	{
+		return;
+	}
+
+	dynamicsWorld_->debugDrawWorld();
 }
 
 void PhysicsWorld::OnOverlappingCollisionBegin(btPersistentManifold* const& monifoldPointPtr)

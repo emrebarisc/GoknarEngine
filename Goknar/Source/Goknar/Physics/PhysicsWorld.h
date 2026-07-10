@@ -95,6 +95,10 @@ public:
     virtual bool RaycastAll(const RaycastData& raycastData, RaycastAllResult& raycastClosest);
     virtual bool SweepClosest(const SweepData& sweepData, RaycastSingleResult& result);
 
+    void SetPhysicsDebugMode(int debugMode);
+    int GetPhysicsDebugMode() const;
+    void DebugDraw();
+
     const Vector3& GetGravity() const
     {
         return gravity_;

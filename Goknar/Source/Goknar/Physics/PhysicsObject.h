@@ -96,6 +96,8 @@ public:
 protected:
 	virtual void AddComponent(Component* component) override;
 	virtual void DestroyInner() override;
+	virtual void UpdateWorldTransformationMatrix() override;
+
 	void CopyPhysicsValuesTo(PhysicsObject* physicsObject) const;
 
 	btCollisionObject* bulletCollisionObject_{ nullptr };
@@ -108,7 +110,7 @@ protected:
 
 	std::string tag_{ "None" };
 
-	bool physicsTickEnabled_{ true };
+	bool physicsTickEnabled_{ false };
 private:
 };
 

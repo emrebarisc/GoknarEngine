@@ -101,6 +101,7 @@ public:
 
 protected:
 	virtual void DestroyInner() override;
+	virtual void UpdateWorldTransformationMatrix() override;
 
 	btRigidBody* bulletRigidBody_{ nullptr };
 	btDefaultMotionState* bulletMotionState_{ nullptr };

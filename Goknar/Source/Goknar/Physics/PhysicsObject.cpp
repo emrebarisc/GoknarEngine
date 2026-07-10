@@ -75,6 +75,11 @@ void PhysicsObject::DestroyInner()
     ObjectBase::DestroyInner();
 }
 
+void PhysicsObject::UpdateWorldTransformationMatrix()
+{
+    ObjectBase::UpdateWorldTransformationMatrix();
+}
+
 void PhysicsObject::CopyPhysicsValuesTo(PhysicsObject* physicsObject) const
 {
 	if (!physicsObject)
