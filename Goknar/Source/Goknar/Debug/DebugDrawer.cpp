@@ -134,44 +134,61 @@ void DebugDrawer::DrawSphere(const Vector3& position, const Quaternion& rotation
 #endif
 }
 
-void DebugDrawer::DrawBox(const Vector3& position, const Quaternion& rotation, const Vector3& halfSize, const Colorf& color, float thickness, float time, ObjectBase* owner)
+void DebugDrawer::DrawBox(
+	const Vector3& position,
+	const Quaternion& rotation,
+	const Vector3& halfSize,
+	const Colorf& color,
+	float thickness,
+	float time,
+	ObjectBase* owner)
 {
 #ifdef GOKNAR_BUILD_DEBUG
 	DebugObject* box = new DebugObject();
 
-	Matrix rotationMatrix = rotation.GetMatrix();
+	const Matrix rotationMatrix = rotation.GetMatrix();
 
-	Vector3 forwardVector = rotationMatrix * Vector4(halfSize.x, 0.f, 0.f, 1.f);
-	Vector3 leftVector = rotationMatrix * Vector4(0.f, halfSize.y, 0.f, 1.f);
-	Vector3 upVector = rotationMatrix * Vector4(0.f, 0.f, halfSize.z, 1.f);
+	const Vector3 forwardVector =
+		rotationMatrix * Vector4(halfSize.x, 0.f, 0.f, 0.f);
 
-	Vector3 corners[8] =
+	const Vector3 leftVector =
+		rotationMatrix * Vector4(0.f, halfSize.y, 0.f, 0.f);
+
+	const Vector3 upVector =
+		rotationMatrix * Vector4(0.f, 0.f, halfSize.z, 0.f);
+
+	const Vector3 corners[8] =
 	{
-		{ position - forwardVector - leftVector - upVector },
-		{ position + forwardVector - leftVector - upVector },
-		{ position - forwardVector + leftVector - upVector },
-		{ position + forwardVector + leftVector - upVector },
-		{ position - forwardVector - leftVector + upVector },
-		{ position + forwardVector - leftVector + upVector },
-		{ position - forwardVector + leftVector + upVector },
-		{ position + forwardVector + leftVector + upVector }
+		position - forwardVector - leftVector - upVector,
+		position + forwardVector - leftVector - upVector,
+		position - forwardVector + leftVector - upVector,
+		position + forwardVector + leftVector - upVector,
+
+		position - forwardVector - leftVector + upVector,
+		position + forwardVector - leftVector + upVector,
+		position - forwardVector + leftVector + upVector,
+		position + forwardVector + leftVector + upVector
 	};
 
+	// Bottom face
 	DrawLine(corners[0], corners[1], color, thickness, time, box);
-	DrawLine(corners[0], corners[2], color, thickness, time, box);
-	DrawLine(corners[3], corners[1], color, thickness, time, box);
+	DrawLine(corners[1], corners[3], color, thickness, time, box);
 	DrawLine(corners[3], corners[2], color, thickness, time, box);
+	DrawLine(corners[2], corners[0], color, thickness, time, box);
+
+	// Top face
 	DrawLine(corners[4], corners[5], color, thickness, time, box);
-	DrawLine(corners[4], corners[6], color, thickness, time, box);
-	DrawLine(corners[7], corners[5], color, thickness, time, box);
+	DrawLine(corners[5], corners[7], color, thickness, time, box);
 	DrawLine(corners[7], corners[6], color, thickness, time, box);
+	DrawLine(corners[6], corners[4], color, thickness, time, box);
+
+	// Vertical edges
 	DrawLine(corners[0], corners[4], color, thickness, time, box);
 	DrawLine(corners[1], corners[5], color, thickness, time, box);
 	DrawLine(corners[2], corners[6], color, thickness, time, box);
 	DrawLine(corners[3], corners[7], color, thickness, time, box);
 
 	box->SetName("DebugObject_DebugBox");
-	box->SetParent(owner);
 #endif
 }
 
