@@ -515,21 +515,15 @@ namespace
 	SceneTransform ReadSceneReferenceTransform(const tinyxml2::XMLElement* sceneElement)
 	{
 		SceneTransform transform;
-		ReadVector3Element(sceneElement, "RelativePosition", transform.position) ||
-			ReadVector3Element(sceneElement, "Position", transform.position) ||
-			ReadVector3Element(sceneElement, "WorldPosition", transform.position);
+		ReadVector3Element(sceneElement, "WorldPosition", transform.position);
 
 		Vector3 eulerRotation = Vector3::ZeroVector;
-		if (ReadVector3Element(sceneElement, "EulerRelativeRotation", eulerRotation) ||
-			ReadVector3Element(sceneElement, "EulerRotation", eulerRotation) ||
-			ReadVector3Element(sceneElement, "EulerWorldRotation", eulerRotation))
+		if (ReadVector3Element(sceneElement, "WorldRotation", eulerRotation))
 		{
 			transform.rotation = Quaternion::FromEulerDegrees(eulerRotation);
 		}
 
-		ReadVector3Element(sceneElement, "RelativeScaling", transform.scaling) ||
-			ReadVector3Element(sceneElement, "Scaling", transform.scaling) ||
-			ReadVector3Element(sceneElement, "WorldScaling", transform.scaling);
+		ReadVector3Element(sceneElement, "WorldScaling", transform.scaling);
 
 		return transform;
 	}
@@ -632,9 +626,9 @@ namespace
 		}
 
 		SceneTransform relativeTransform;
-		relativeTransform.position = sceneReference.relativePosition;
-		relativeTransform.rotation = sceneReference.relativeRotation;
-		relativeTransform.scaling = sceneReference.relativeScaling;
+		relativeTransform.position = sceneReference.position;
+		relativeTransform.rotation = sceneReference.rotation;
+		relativeTransform.scaling = sceneReference.scaling;
 
 		SceneParseContext referencedSceneContext;
 		referencedSceneContext.scenePath = referencedScenePath;
@@ -692,9 +686,9 @@ namespace
 			SceneReference sceneReference;
 			sceneReference.path = ReadSceneReferencePath(sceneElement);
 			const SceneTransform relativeTransform = ReadSceneReferenceTransform(sceneElement);
-			sceneReference.relativePosition = relativeTransform.position;
-			sceneReference.relativeRotation = relativeTransform.rotation;
-			sceneReference.relativeScaling = relativeTransform.scaling;
+			sceneReference.position = relativeTransform.position;
+			sceneReference.rotation = relativeTransform.rotation;
+			sceneReference.scaling = relativeTransform.scaling;
 
 			ParseSceneReference(scene, sceneReference, currentContext, !currentContext.isReferencedScene);
 		}
@@ -1570,13 +1564,13 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 
 				if (parentObject)
 				{
-					const Vector3 relativePosition = object->GetWorldPosition();
-					const Quaternion relativeRotation = object->GetWorldRotation();
-					const Vector3 relativeScaling = object->GetWorldScaling();
-					object->SetParent(parentObject, SnappingRule::KeepWorldAll, false);
-					object->SetWorldPosition(relativePosition, false);
-					object->SetWorldRotation(relativeRotation, false);
-					object->SetWorldScaling(relativeScaling);
+					const Vector3 worldPosition = object->GetWorldPosition();
+					const Quaternion worldRotation = object->GetWorldRotation();
+					const Vector3 worldScaling = object->GetWorldScaling();
+					object->SetWorldPosition(worldPosition, false);
+					object->SetWorldRotation(worldRotation, false);
+					object->SetWorldScaling(worldScaling, false);
+					object->SetParent(parentObject, SnappingRule::KeepWorldAll);
 				}
 				else
 				{
@@ -1667,9 +1661,9 @@ void SceneParser::ParseComponentValues(Component* component, tinyxml2::XMLElemen
 	if (dataElement)
 	{
 		stream << dataElement->GetText() << std::endl;
-		Vector3 relativePosition;
-		stream >> relativePosition.x >> relativePosition.y >> relativePosition.z;
-		component->SetRelativePosition(relativePosition);
+		Vector3 position;
+		stream >> position.x >> position.y >> position.z;
+		component->SetRelativePosition(position);
 	}
 	stream.clear();
 
@@ -1677,9 +1671,9 @@ void SceneParser::ParseComponentValues(Component* component, tinyxml2::XMLElemen
 	if (dataElement)
 	{
 		stream << dataElement->GetText() << std::endl;
-		Vector3 relativeRotation;
-		stream >> relativeRotation.x >> relativeRotation.y >> relativeRotation.z;
-		component->SetRelativeRotation(Quaternion::FromEulerDegrees(relativeRotation));
+		Vector3 rotation;
+		stream >> rotation.x >> rotation.y >> rotation.z;
+		component->SetRelativeRotation(Quaternion::FromEulerDegrees(rotation));
 	}
 	stream.clear();
 
@@ -1687,9 +1681,9 @@ void SceneParser::ParseComponentValues(Component* component, tinyxml2::XMLElemen
 	if (dataElement)
 	{
 		stream << dataElement->GetText() << std::endl;
-		Vector3 relativeScaling;
-		stream >> relativeScaling.x >> relativeScaling.y >> relativeScaling.z;
-		component->SetRelativeScaling(relativeScaling);
+		Vector3 scaling;
+		stream >> scaling.x >> scaling.y >> scaling.z;
+		component->SetRelativeScaling(scaling);
 	}
 	stream.clear();
 }
@@ -2344,25 +2338,19 @@ void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* obje
 	stream.clear();
 
 	Vector3 objectPosition = object->GetWorldPosition();
-	if (ReadVector3Element(objectElement, "WorldPosition", objectPosition) ||
-		ReadVector3Element(objectElement, "RelativePosition", objectPosition) ||
-		ReadVector3Element(objectElement, "Position", objectPosition))
+	if (ReadVector3Element(objectElement, "WorldPosition", objectPosition))
 	{
 		object->SetWorldPosition(objectPosition);
 	}
 
 	Vector3 objectRotation = object->GetWorldRotation().ToEulerDegrees();
-	if (ReadVector3Element(objectElement, "EulerWorldRotation", objectRotation) ||
-		ReadVector3Element(objectElement, "EulerRelativeRotation", objectRotation) ||
-		ReadVector3Element(objectElement, "EulerRotation", objectRotation))
+	if (ReadVector3Element(objectElement, "WorldRotation", objectRotation))
 	{
 		object->SetWorldRotation(Quaternion::FromEulerDegrees(objectRotation));
 	}
 
 	Vector3 objectScaling = object->GetWorldScaling();
-	if (ReadVector3Element(objectElement, "WorldScaling", objectScaling) ||
-		ReadVector3Element(objectElement, "RelativeScaling", objectScaling) ||
-		ReadVector3Element(objectElement, "Scaling", objectScaling))
+	if (ReadVector3Element(objectElement, "WorldScaling", objectScaling))
 	{
 		object->SetWorldScaling(objectScaling);
 	}
@@ -2744,25 +2732,25 @@ void SceneParser::GetXMLElement_SceneReferences(tinyxml2::XMLDocument& xmlDocume
 		tinyxml2::XMLElement* sceneElement = xmlDocument.NewElement("Scene");
 		sceneElement->SetAttribute("Path", sceneReference.path.c_str());
 
-		Vector3 relativePosition = sceneReference.relativePosition;
-		Quaternion relativeRotation = sceneReference.relativeRotation;
-		Vector3 relativeScaling = sceneReference.relativeScaling;
+		Vector3 worldPosition = sceneReference.position;
+		Quaternion worldRotation = sceneReference.rotation;
+		Vector3 worldScaling = sceneReference.scaling;
 		if (sceneReference.sceneRootObject)
 		{
-			relativePosition = sceneReference.sceneRootObject->GetWorldPosition();
-			relativeRotation = sceneReference.sceneRootObject->GetWorldRotation();
-			relativeScaling = sceneReference.sceneRootObject->GetWorldScaling();
+			worldPosition = sceneReference.sceneRootObject->GetWorldPosition();
+			worldRotation = sceneReference.sceneRootObject->GetWorldRotation();
+			worldScaling = sceneReference.sceneRootObject->GetWorldScaling();
 		}
 
 		WriteTransformElementsIfNeeded(
 			xmlDocument,
 			sceneElement,
-			relativePosition,
-			relativeRotation,
-			relativeScaling,
-			"RelativePosition",
-			"EulerRelativeRotation",
-			"RelativeScaling");
+			worldPosition,
+			worldRotation,
+			worldScaling,
+			"WorldPosition",
+			"WorldRotation",
+			"WorldScaling");
 
 		parentElement->InsertEndChild(sceneElement);
 	}
@@ -2826,9 +2814,9 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 				object->GetWorldPosition(),
 				object->GetWorldRotation(),
 				object->GetWorldScaling(),
-				hasParent ? "RelativePosition" : "WorldPosition",
-				hasParent ? "EulerRelativeRotation" : "EulerWorldRotation",
-				hasParent ? "RelativeScaling" : "WorldScaling");
+				"WorldPosition",
+				"WorldRotation",
+				"WorldScaling");
 
 			if (rigidBody)
 			{
@@ -2970,7 +2958,7 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 			component->GetRelativeRotation(),
 			component->GetRelativeScaling(),
 			"RelativePosition",
-			"EulerRelativeRotation",
+			"RelativeRotation",
 			"RelativeScaling");
 
 		parentElement->InsertEndChild(componentElement);
