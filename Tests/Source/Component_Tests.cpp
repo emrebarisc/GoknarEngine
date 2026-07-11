@@ -128,5 +128,21 @@ void Component_Tests::RunHierarchyTests()
     // Child World should now be (25, 0, 0)
     TEST_ASSERT(childComp->GetWorldPosition().Equals(Vector3(25.f, 0.f, 0.f), EPSILON), "Child tracks Parent movement");
 
+    // 4. Component owned by a parented ObjectBase should inherit the owner's already-composed world transform once.
+    ObjectBase* parentObject = new ObjectBase();
+    ObjectBase* childObject = new ObjectBase();
+    parentObject->SetWorldPosition(Vector3(10.f, 0.f, 0.f));
+    childObject->SetWorldPosition(Vector3(15.f, 0.f, 0.f));
+    childObject->SetParent(parentObject, SnappingRule::KeepWorldAll);
+
+    TestComponent* ownerComponent = childObject->AddSubComponent<TestComponent>();
+    ownerComponent->SetRelativePosition(Vector3(2.f, 0.f, 0.f));
+    TEST_ASSERT(ownerComponent->GetWorldPosition().Equals(Vector3(17.f, 0.f, 0.f), EPSILON), "Component owner parent transform applied once");
+
+    parentObject->SetWorldPosition(Vector3(20.f, 0.f, 0.f));
+    TEST_ASSERT(ownerComponent->GetWorldPosition().Equals(Vector3(27.f, 0.f, 0.f), EPSILON), "Component tracks parented owner movement");
+
+    childObject->Destroy();
+    parentObject->Destroy();
     owner->Destroy();
 }
