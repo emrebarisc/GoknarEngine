@@ -73,8 +73,13 @@ void RigidBody::Init()
 
 	btTransform bulletTransform;
 	bulletTransform.setIdentity();
-	bulletTransform.setOrigin(PhysicsUtils::FromVector3ToBtVector3(worldPosition_));
-	bulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(worldRotation_));
+	Vector3 actualWorldPosition;
+	Vector3 actualWorldScaling;
+	Quaternion actualWorldRotation;
+	GetWorldTransformationMatrix().Decompose(actualWorldPosition, actualWorldScaling, actualWorldRotation);
+	actualWorldRotation.Normalize();
+	bulletTransform.setOrigin(PhysicsUtils::FromVector3ToBtVector3(actualWorldPosition));
+	bulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(actualWorldRotation));
 
 	bulletMotionState_ = new btDefaultMotionState(bulletTransform);
 	btRigidBody::btRigidBodyConstructionInfo rigidBodyInfo(mass_, bulletMotionState_, bulletCollisionShape, rigidBodyInitializationData_->localInertia);
@@ -203,10 +208,14 @@ void RigidBody::SetupRigidBodyInitializationData()
 	bulletRigidBody_->setLinearFactor(rigidBodyInitializationData_->linearFactor);
 	bulletRigidBody_->setAngularFactor(rigidBodyInitializationData_->angularFactor);
 
+	btVector3 inertia = bulletRigidBody_->getLocalInertia();
 
-	btVector3 inertia;
-	((CollisionComponent*)GetRootComponent())->GetBulletCollisionShape()->calculateLocalInertia(bulletRigidBody_->getMass(), inertia);
-	bulletRigidBody_->updateInertiaTensor();
+	if (0 < bulletRigidBody_->getInvMass())
+	{
+		((CollisionComponent*)GetRootComponent())->GetBulletCollisionShape()->calculateLocalInertia(bulletRigidBody_->getMass(), inertia);
+		bulletRigidBody_->updateInertiaTensor();
+	}
+
 	bulletRigidBody_->setMassProps(mass_, inertia);
 
 	delete rigidBodyInitializationData_;
@@ -275,7 +284,11 @@ void RigidBody::SetWorldPosition(const Vector3& worldPosition, bool updateWorldT
 
 	bulletRigidBody_->activate();
 	btTransform newBulletTransform = bulletRigidBody_->getCenterOfMassTransform();
-	newBulletTransform.setOrigin(PhysicsUtils::FromVector3ToBtVector3(worldPosition));
+	Vector3 actualWorldPosition;
+	Vector3 actualWorldScaling;
+	Quaternion actualWorldRotation;
+	GetWorldTransformationMatrix().Decompose(actualWorldPosition, actualWorldScaling, actualWorldRotation);
+	newBulletTransform.setOrigin(PhysicsUtils::FromVector3ToBtVector3(actualWorldPosition));
 	bulletRigidBody_->setCenterOfMassTransform(newBulletTransform);
 }
 
@@ -290,7 +303,12 @@ void RigidBody::SetWorldRotation(const Quaternion& worldRotation, bool updateWor
 
 	bulletRigidBody_->activate();
 	btTransform newBulletTransform = bulletRigidBody_->getCenterOfMassTransform();
-	newBulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(worldRotation));
+	Vector3 actualWorldPosition;
+	Vector3 actualWorldScaling;
+	Quaternion actualWorldRotation;
+	GetWorldTransformationMatrix().Decompose(actualWorldPosition, actualWorldScaling, actualWorldRotation);
+	actualWorldRotation.Normalize();
+	newBulletTransform.setRotation(PhysicsUtils::FromQuaternionToBtQuaternion(actualWorldRotation));
 	bulletRigidBody_->setCenterOfMassTransform(newBulletTransform);
 }
 

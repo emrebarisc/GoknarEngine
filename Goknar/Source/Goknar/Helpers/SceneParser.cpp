@@ -1564,13 +1564,13 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 
 				if (parentObject)
 				{
-					const Vector3 worldPosition = object->GetWorldPosition();
-					const Quaternion worldRotation = object->GetWorldRotation();
-					const Vector3 worldScaling = object->GetWorldScaling();
-					object->SetWorldPosition(worldPosition, false);
-					object->SetWorldRotation(worldRotation, false);
-					object->SetWorldScaling(worldScaling, false);
-					object->SetParent(parentObject, SnappingRule::KeepWorldAll);
+					const Vector3 parentRelativePosition = object->GetWorldPosition();
+					const Quaternion parentRelativeRotation = object->GetWorldRotation();
+					const Vector3 parentRelativeScaling = object->GetWorldScaling();
+					object->SetParent(parentObject, SnappingRule::None, false);
+					object->SetWorldPosition(parentRelativePosition, false);
+					object->SetWorldRotation(parentRelativeRotation, false);
+					object->SetWorldScaling(parentRelativeScaling);
 				}
 				else
 				{
@@ -2807,7 +2807,6 @@ void SceneParser::GetXMLElement_Objects(tinyxml2::XMLDocument& xmlDocument, tiny
 			objectNameElement->SetText(object->GetNameWithoutId().c_str());
 			objectElement->InsertEndChild(objectNameElement);
 
-			const bool hasParent = object->GetParent() != nullptr;
 			WriteTransformElementsIfNeeded(
 				xmlDocument,
 				objectElement,

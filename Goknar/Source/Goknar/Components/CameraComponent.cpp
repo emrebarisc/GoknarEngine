@@ -57,7 +57,7 @@ void CameraComponent::UpdateComponentToWorldTransformationMatrix()
 	}
 	else
 	{
-		camera_->SetPosition(owner_->GetWorldPosition() + GetRelativePosition());
+		camera_->SetPosition(owner_->GetWorldTransformationMatrix().GetTranslation() + GetRelativePosition());
 		camera_->SetVectors(GetRelativeForwardVector(), GetRelativeLeftVector(), GetRelativeUpVector());
 	}
 }

@@ -175,17 +175,8 @@ void Component::UpdateComponentToWorldTransformationMatrix()
 	{
 		componentToWorldTransformationMatrix_ = owner_->GetWorldTransformationMatrix();
 
-		worldPosition_ = owner_->GetWorldPosition();
-		worldRotation_ = owner_->GetWorldRotation();
-		worldScaling_ = owner_->GetWorldScaling();
-
-		ObjectBase* parentOfOwner = owner_->GetParent();
-		if (parentOfOwner)
-		{
-			worldPosition_ += parentOfOwner->GetWorldPosition();
-			worldRotation_ = parentOfOwner->GetWorldRotation() * worldRotation_;
-			worldScaling_ *= parentOfOwner->GetWorldScaling();
-		}
+		componentToWorldTransformationMatrix_.Decompose(worldPosition_, worldScaling_, worldRotation_);
+		worldRotation_.Normalize();
 	}
 	else
 	{

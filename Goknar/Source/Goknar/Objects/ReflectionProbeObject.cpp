@@ -110,7 +110,11 @@ void ReflectionProbeObject::UpdateWorldTransformationMatrix()
 
 Vector3 ReflectionProbeObject::GetScaledSize() const
 {
-	const Vector3 worldScale = GetWorldScaling();
+	Vector3 worldPosition;
+	Vector3 worldScale;
+	Quaternion worldRotation;
+	GetWorldTransformationMatrix().Decompose(worldPosition, worldScale, worldRotation);
+
 	const Vector3 absoluteWorldScale(
 		GoknarMath::Abs(worldScale.x),
 		GoknarMath::Abs(worldScale.y),

@@ -227,7 +227,7 @@ void ObjectBase::SetWorldPosition(const Vector3& position, bool updateWorldTrans
 
 void ObjectBase::SetWorldRotation(const Quaternion& rotation, bool updateWorldTransformationMatrix/* = true*/)
 {
-	worldRotation_ = rotation;
+	worldRotation_ = rotation.GetNormalized();
 	if (updateWorldTransformationMatrix)
 	{
 		UpdateWorldTransformationMatrix();
@@ -274,9 +274,106 @@ void ObjectBase::RemoveFromSocket(SocketComponent* socketComponent)
 
 void ObjectBase::SetParent(ObjectBase* newParent, SnappingRule snappingRule/* = SnappingRule::KeepWorldAll*/, bool updateWorldTransformation/* = true*/)
 {
+	if (newParent == this)
+	{
+		GOKNAR_CORE_ASSERT(false, "ObjectBase cannot be parented to itself.");
+		return;
+	}
+
+	for (ObjectBase* ancestor = newParent; ancestor; ancestor = ancestor->parent_)
+	{
+		if (ancestor == this)
+		{
+			GOKNAR_CORE_ASSERT(false, "ObjectBase cannot be parented to one of its descendants.");
+			return;
+		}
+	}
+
+	if (newParent == parent_)
+	{
+		if (updateWorldTransformation)
+		{
+			UpdateWorldTransformationMatrix();
+		}
+		return;
+	}
+
+	const auto hasSnappingRule =
+		[](SnappingRule snappingRule, SnappingRule flag)
+		{
+			return (static_cast<unsigned char>(snappingRule) & static_cast<unsigned char>(flag)) != 0;
+		};
+	const auto hasZeroScaleComponent =
+		[](const Vector3& scaling)
+		{
+			return GoknarMath::Abs(scaling.x) <= SMALLER_EPSILON ||
+				GoknarMath::Abs(scaling.y) <= SMALLER_EPSILON ||
+				GoknarMath::Abs(scaling.z) <= SMALLER_EPSILON;
+		};
+	const auto getActualWorldRotation =
+		[](const ObjectBase* object)
+		{
+			if (!object)
+			{
+				return Quaternion::Identity;
+			}
+
+			Quaternion rotation = object->GetWorldRotation();
+			for (ObjectBase* parent = object->GetParent(); parent; parent = parent->GetParent())
+			{
+				rotation = parent->GetWorldRotation() * rotation;
+			}
+
+			return rotation.GetNormalized();
+		};
+	const auto getActualWorldScaling =
+		[](const ObjectBase* object)
+		{
+			Vector3 scaling(1.f);
+			for (const ObjectBase* current = object; current; current = current->GetParent())
+			{
+				scaling *= current->GetWorldScaling();
+			}
+
+			return scaling;
+		};
+
+	const bool keepWorldPosition = hasSnappingRule(snappingRule, SnappingRule::KeepWorldPosition);
+	const bool keepWorldRotation = hasSnappingRule(snappingRule, SnappingRule::KeepWorldRotation);
+	const bool keepWorldScaling = hasSnappingRule(snappingRule, SnappingRule::KeepWorldScaling);
+
+	Vector3 previousWorldPosition = Vector3::ZeroVector;
+	Quaternion previousWorldRotation = Quaternion::Identity;
+	Vector3 previousWorldScaling(1.f);
+	Vector3 newParentWorldScaling(1.f);
+
+	if (updateWorldTransformation)
+	{
+		previousWorldPosition = GetWorldTransformationMatrix().GetTranslation();
+		previousWorldRotation = getActualWorldRotation(this);
+		previousWorldScaling = getActualWorldScaling(this);
+
+		if (newParent)
+		{
+			newParentWorldScaling = getActualWorldScaling(newParent);
+
+			if ((keepWorldPosition || keepWorldScaling) && hasZeroScaleComponent(newParentWorldScaling))
+			{
+				GOKNAR_CORE_ASSERT(false, "Cannot keep world transform while parent has zero scale.");
+				return;
+			}
+		}
+	}
+
 	if (parent_)
 	{
 		parent_->RemoveChild(this);
+	}
+
+	if (parentSocket_)
+	{
+		parentSocket_->RemoveObject(this);
+		parentSocket_ = nullptr;
 	}
 
 	parent_ = newParent;
@@ -284,49 +381,38 @@ void ObjectBase::SetParent(ObjectBase* newParent, SnappingRule snappingRule/* = 
 	if (newParent)
 	{
 		newParent->AddChild(this);
+	}
 
-		if (updateWorldTransformation)
+	if (!updateWorldTransformation)
+	{
+		return;
+	}
+
+	if (newParent)
+	{
+		worldPosition_ = keepWorldPosition ? newParent->GetWorldPositionInRelativeSpace(previousWorldPosition) : Vector3::ZeroVector;
+		worldRotation_ = keepWorldRotation ? (getActualWorldRotation(newParent).GetInverse() * previousWorldRotation).GetNormalized() : Quaternion::Identity;
+		worldScaling_ = keepWorldScaling ? previousWorldScaling / newParentWorldScaling : Vector3(1.f);
+	}
+	else
+	{
+		if (keepWorldPosition)
 		{
-			// In case of getting another ObjectBase as a parent
-			// World transformations(Position, rotation and scaling)
-			// Act like relative transformations
-			// Just like in Component's relative transformations
-
-			if((unsigned char)snappingRule & (unsigned char)SnappingRule::KeepWorldPosition)
-			{
-				worldPosition_ = ((worldPosition_ - newParent->worldPosition_) / newParent->GetWorldScaling()).RotatePoint(newParent->worldRotation_.GetInverse());
-			}
-			else
-			{
-				worldPosition_ = Vector3::ZeroVector;
-			}
-			
-			if((unsigned char)snappingRule & (unsigned char)SnappingRule::KeepWorldRotation)
-			{
-				//Vector3 eulerThis = worldRotation_.ToEulerRadians();
-				//Vector3 eulerParent = newParent->GetWorldRotation().ToEulerRadians();
-				//worldRotation_ = Quaternion::FromEulerRadians(eulerThis - eulerParent);
-
-				worldRotation_ = newParent->GetWorldRotation().GetInverse() * worldRotation_;
-			}
-			else
-			{
-				worldRotation_ = Quaternion::Identity;
-			}
-			
-			if((unsigned char)snappingRule & (unsigned char)SnappingRule::KeepWorldScaling)
-			{
-				worldScaling_ = worldScaling_ / newParent->GetWorldScaling();
-			}
-			else
-			{
-				worldScaling_ = Vector3{ 1.f };
-			}
-
-			UpdateWorldTransformationMatrix();
+			worldPosition_ = previousWorldPosition;
+		}
+		if (keepWorldRotation)
+		{
+			worldRotation_ = previousWorldRotation;
+		}
+		if (keepWorldScaling)
+		{
+			worldScaling_ = previousWorldScaling;
 		}
 	}
+
+	UpdateWorldTransformationMatrix();
 }
+
 
 void ObjectBase::RemoveChild(ObjectBase* child)
 {
@@ -384,8 +470,38 @@ void ObjectBase::SetWorldTransformationMatrix(const Matrix& worldTransformationM
 		GOKNAR_FATAL("NAN OR INF VALUE ON TRANSFORMATION MATRIX");
 	}
 
-	worldTransformationMatrix_ = worldTransformationMatrix;
-	UpdateChildrenTransformations();
+	const auto hasZeroScaleComponent =
+		[](const Vector3& scaling)
+		{
+			return GoknarMath::Abs(scaling.x) <= SMALLER_EPSILON ||
+				GoknarMath::Abs(scaling.y) <= SMALLER_EPSILON ||
+				GoknarMath::Abs(scaling.z) <= SMALLER_EPSILON;
+		};
+	const auto getActualWorldScaling =
+		[](const ObjectBase* object)
+		{
+			Vector3 scaling(1.f);
+			for (const ObjectBase* current = object; current; current = current->GetParent())
+			{
+				scaling *= current->GetWorldScaling();
+			}
+
+			return scaling;
+		};
+
+	if (parent_ && hasZeroScaleComponent(getActualWorldScaling(parent_)))
+	{
+		GOKNAR_CORE_ASSERT(false, "Cannot set world transformation matrix while parent has zero scale.");
+		return;
+	}
+
+	const Matrix relativeTransformationMatrix = parent_ ?
+		parent_->GetWorldTransformationMatrix().GetInverse() * worldTransformationMatrix :
+		worldTransformationMatrix;
+
+	relativeTransformationMatrix.Decompose(worldPosition_, worldScaling_, worldRotation_);
+	worldRotation_.Normalize();
+	UpdateWorldTransformationMatrix();
 }
 
 void ObjectBase::UpdateWorldTransformationMatrix()

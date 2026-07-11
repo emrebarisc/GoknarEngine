@@ -37,10 +37,15 @@ void OverlappingPhysicsObject::PreInit()
 
     bulletCollisionObject_ = new btPairCachingGhostObject();
     bulletCollisionObject_->setCollisionShape(bulletCollisionShape);
+    Vector3 actualWorldPosition;
+    Vector3 actualWorldScaling;
+    Quaternion actualWorldRotation;
+    GetWorldTransformationMatrix().Decompose(actualWorldPosition, actualWorldScaling, actualWorldRotation);
+    actualWorldRotation.Normalize();
     bulletCollisionObject_->setWorldTransform(
         btTransform(
-            PhysicsUtils::FromQuaternionToBtQuaternion(worldRotation_),
-            PhysicsUtils::FromVector3ToBtVector3(worldPosition_))
+            PhysicsUtils::FromQuaternionToBtQuaternion(actualWorldRotation),
+            PhysicsUtils::FromVector3ToBtVector3(actualWorldPosition))
     );
 
     engine->GetPhysicsWorld()->AddPhysicsObject(this);

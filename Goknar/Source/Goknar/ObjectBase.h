@@ -1,6 +1,7 @@
 #ifndef __ObjectBase_H__
 #define __ObjectBase_H__
 
+#include <algorithm>
 #include <vector>
 
 #include "Core.h"
@@ -176,7 +177,10 @@ public:
 
 	inline void AddChild(ObjectBase* child)
 	{
-		children_.push_back(child);
+		if (child && std::find(children_.begin(), children_.end(), child) == children_.end())
+		{
+			children_.push_back(child);
+		}
 	}
 	void RemoveChild(ObjectBase* child);
 	inline const std::vector<ObjectBase*>& GetChildren() const
