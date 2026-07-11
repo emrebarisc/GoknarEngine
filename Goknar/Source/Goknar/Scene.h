@@ -27,9 +27,9 @@ struct NavMeshSettings;
 struct GOKNAR_API SceneReference
 {
 	std::string path;
-	Vector3 relativePosition{ Vector3::ZeroVector };
-	Quaternion relativeRotation{ Quaternion::Identity };
-	Vector3 relativeScaling{ Vector3(1.f) };
+	Vector3 position{ Vector3::ZeroVector };
+	Quaternion rotation{ Quaternion::Identity };
+	Vector3 scaling{ Vector3(1.f) };
 	ObjectBase* sceneRootObject{ nullptr };
 };
 
