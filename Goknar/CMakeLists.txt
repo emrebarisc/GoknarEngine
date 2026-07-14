@@ -108,6 +108,11 @@ if(MSVC)
     set_target_properties(${APP_NAME} PROPERTIES 
         VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/Output"
     )
+    target_compile_definitions(${APP_NAME} PUBLIC
+        NOMINMAX
+        WIN32_LEAN_AND_MEAN
+        _CRT_SECURE_NO_WARNINGS
+    )
 endif()
 
 add_subdirectory(thirdparty/GLAD/)
