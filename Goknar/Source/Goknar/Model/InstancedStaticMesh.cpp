@@ -9,93 +9,6 @@
 #include "Goknar/Materials/Material.h"
 #include "Goknar/Renderer/Renderer.h"
 
-namespace
-{
-	Material* CloneMaterialForInstancedStaticMesh(const Material* sourceMaterial)
-	{
-		if (!sourceMaterial)
-		{
-			return nullptr;
-		}
-
-		Material* clonedMaterial = new Material();
-		clonedMaterial->SetName(sourceMaterial->GetName());
-		clonedMaterial->SetBaseColor(sourceMaterial->GetBaseColor());
-		clonedMaterial->SetAmbientOcclusion(sourceMaterial->GetAmbientOcclusion());
-		clonedMaterial->SetMetallic(sourceMaterial->GetMetallic());
-		clonedMaterial->SetRoughness(sourceMaterial->GetRoughness());
-		clonedMaterial->SetEmissiveColor(sourceMaterial->GetEmissiveColor());
-		clonedMaterial->SetTranslucency(sourceMaterial->GetTranslucency());
-		clonedMaterial->SetBlendModel(sourceMaterial->GetBlendModel());
-		clonedMaterial->SetShadingModel(sourceMaterial->GetShadingModel());
-
-		const std::vector<const Image*>* textureImages = sourceMaterial->GetTextureImages();
-		if (textureImages)
-		{
-			for (const Image* textureImage : *textureImages)
-			{
-				if (textureImage)
-				{
-					clonedMaterial->AddTextureImage(textureImage);
-				}
-			}
-		}
-
-		const MaterialInitializationData* sourceInitializationData = sourceMaterial->GetInitializationData();
-		MaterialInitializationData* clonedInitializationData = clonedMaterial->GetInitializationData();
-		if (sourceInitializationData && clonedInitializationData)
-		{
-			clonedInitializationData->baseColor = sourceInitializationData->baseColor;
-			clonedInitializationData->emissiveColor = sourceInitializationData->emissiveColor;
-			clonedInitializationData->ambientOcclusion = sourceInitializationData->ambientOcclusion;
-			clonedInitializationData->metallic = sourceInitializationData->metallic;
-			clonedInitializationData->roughness = sourceInitializationData->roughness;
-			clonedInitializationData->fragmentNormal = sourceInitializationData->fragmentNormal;
-			clonedInitializationData->fragmentNormalIsTangentSpace = sourceInitializationData->fragmentNormalIsTangentSpace;
-			clonedInitializationData->vertexNormal = sourceInitializationData->vertexNormal;
-			clonedInitializationData->uv = sourceInitializationData->uv;
-			clonedInitializationData->vertexPositionOffset = sourceInitializationData->vertexPositionOffset;
-			clonedInitializationData->vertexShaderFunctions = sourceInitializationData->vertexShaderFunctions;
-			clonedInitializationData->fragmentShaderFunctions = sourceInitializationData->fragmentShaderFunctions;
-			clonedInitializationData->vertexShaderUniforms = sourceInitializationData->vertexShaderUniforms;
-			clonedInitializationData->fragmentShaderUniforms = sourceInitializationData->fragmentShaderUniforms;
-		}
-
-		return clonedMaterial;
-	}
-
-	MeshUnit* CloneMeshUnitForInstancedStaticMesh(const MeshUnit* sourceMeshUnit)
-	{
-		if (!sourceMeshUnit)
-		{
-			return nullptr;
-		}
-
-		const VertexArray* sourceVertices = sourceMeshUnit->GetVerticesPointer();
-		const FaceArray* sourceFaces = sourceMeshUnit->GetFacesPointer();
-		if (!sourceVertices || !sourceFaces)
-		{
-			return nullptr;
-		}
-
-		MeshUnit* clonedMeshUnit = new MeshUnit();
-		clonedMeshUnit->SetName(sourceMeshUnit->GetName());
-		clonedMeshUnit->SetMaterial(CloneMaterialForInstancedStaticMesh(sourceMeshUnit->GetMaterial()));
-
-		for (const VertexData& vertexData : *sourceVertices)
-		{
-			clonedMeshUnit->AddVertexData(vertexData);
-		}
-
-		for (const Face& face : *sourceFaces)
-		{
-			clonedMeshUnit->AddFace(face);
-		}
-
-		return clonedMeshUnit;
-	}
-}
-
 InstancedStaticMesh::InstancedStaticMesh() :
 	StaticMesh()
 {
@@ -200,4 +113,90 @@ void InstancedStaticMesh::UpdateAllTransforms()
 	{
 		engine->GetRenderer()->RefreshInstancedStaticMeshTransformations(this);
 	}
+}
+
+Material* InstancedStaticMesh::CloneMaterialForInstancedStaticMesh(const Material* sourceMaterial)
+{
+	if (!sourceMaterial)
+	{
+		return nullptr;
+	}
+
+	Material* clonedMaterial = new Material();
+	clonedMaterial->SetName(sourceMaterial->GetName());
+	clonedMaterial->SetBaseColor(sourceMaterial->GetBaseColor());
+	clonedMaterial->SetAmbientOcclusion(sourceMaterial->GetAmbientOcclusion());
+	clonedMaterial->SetMetallic(sourceMaterial->GetMetallic());
+	clonedMaterial->SetRoughness(sourceMaterial->GetRoughness());
+	clonedMaterial->SetEmissiveColor(sourceMaterial->GetEmissiveColor());
+	clonedMaterial->SetTranslucency(sourceMaterial->GetTranslucency());
+	clonedMaterial->SetBlendModel(sourceMaterial->GetBlendModel());
+	clonedMaterial->SetShadingModel(sourceMaterial->GetShadingModel());
+
+	const std::vector<const Image*>* textureImages = sourceMaterial->GetTextureImages();
+	if (textureImages)
+	{
+		for (const Image* textureImage : *textureImages)
+		{
+			if (textureImage)
+			{
+				clonedMaterial->AddTextureImage(textureImage);
+			}
+		}
+	}
+
+	const MaterialInitializationData* sourceInitializationData = sourceMaterial->GetInitializationData();
+	MaterialInitializationData* clonedInitializationData = clonedMaterial->GetInitializationData();
+	if (sourceInitializationData && clonedInitializationData)
+	{
+		clonedInitializationData->baseColor = sourceInitializationData->baseColor;
+		clonedInitializationData->emissiveColor = sourceInitializationData->emissiveColor;
+		clonedInitializationData->ambientOcclusion = sourceInitializationData->ambientOcclusion;
+		clonedInitializationData->metallic = sourceInitializationData->metallic;
+		clonedInitializationData->roughness = sourceInitializationData->roughness;
+		clonedInitializationData->fragmentNormal = sourceInitializationData->fragmentNormal;
+		clonedInitializationData->fragmentNormalIsTangentSpace = sourceInitializationData->fragmentNormalIsTangentSpace;
+		clonedInitializationData->vertexNormal = sourceInitializationData->vertexNormal;
+		clonedInitializationData->uv = sourceInitializationData->uv;
+		clonedInitializationData->vertexPositionOffset = sourceInitializationData->vertexPositionOffset;
+		clonedInitializationData->vertexShaderFunctions = sourceInitializationData->vertexShaderFunctions;
+		clonedInitializationData->fragmentShaderFunctions = sourceInitializationData->fragmentShaderFunctions;
+		clonedInitializationData->vertexShaderUniforms = sourceInitializationData->vertexShaderUniforms;
+		clonedInitializationData->fragmentShaderUniforms = sourceInitializationData->fragmentShaderUniforms;
+	}
+
+	return clonedMaterial;
+}
+
+MeshUnit* InstancedStaticMesh::CloneMeshUnitForInstancedStaticMesh(const MeshUnit* sourceMeshUnit)
+{
+	if (!sourceMeshUnit)
+	{
+		return nullptr;
+	}
+
+	const VertexArray* sourceVertices = sourceMeshUnit->GetVerticesPointer();
+	const FaceArray* sourceFaces = sourceMeshUnit->GetFacesPointer();
+	if (!sourceVertices || !sourceFaces)
+	{
+		return nullptr;
+	}
+
+	MeshUnit* clonedMeshUnit = new MeshUnit();
+	clonedMeshUnit->SetName(sourceMeshUnit->GetName());
+	clonedMeshUnit->SetMaterial(CloneMaterialForInstancedStaticMesh(sourceMeshUnit->GetMaterial()));
+	clonedMeshUnit->SetBaseVertex(sourceMeshUnit->GetBaseVertex());
+	clonedMeshUnit->SetVertexStartingIndex(sourceMeshUnit->GetVertexStartingIndex());
+
+	for (const VertexData& vertexData : *sourceVertices)
+	{
+		clonedMeshUnit->AddVertexData(vertexData);
+	}
+
+	for (const Face& face : *sourceFaces)
+	{
+		clonedMeshUnit->AddFace(face);
+	}
+
+	return clonedMeshUnit;
 }

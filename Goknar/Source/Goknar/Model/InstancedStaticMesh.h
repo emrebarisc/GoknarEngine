@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+class Material;
+
 class GOKNAR_API InstancedStaticMesh : public StaticMesh
 {
 public:
@@ -63,6 +65,9 @@ public:
 	}
 
 private:
+	static Material* CloneMaterialForInstancedStaticMesh(const Material* sourceMaterial);
+	static MeshUnit* CloneMeshUnitForInstancedStaticMesh(const MeshUnit* sourceMeshUnit);
+
 	std::vector<Matrix> instanceTransformationMatrices_;
 	bool hasPendingFullTransformUpload_{ false };
 	std::string sourceMeshPath_{};
