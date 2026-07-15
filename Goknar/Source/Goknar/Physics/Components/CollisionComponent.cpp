@@ -65,8 +65,6 @@ void CollisionComponent::UpdateTransformation()
 void CollisionComponent::PreInit()
 {
 	Component::PreInit();
-
-	UpdateTransformation();
 }
 
 void CollisionComponent::Init()
@@ -77,6 +75,8 @@ void CollisionComponent::Init()
 void CollisionComponent::PostInit()
 {
 	Component::PostInit();
+
+	UpdateComponentToWorldTransformationMatrix();
 }
 	
 void CollisionComponent::BeginGame()
