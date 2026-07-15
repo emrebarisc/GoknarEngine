@@ -37,16 +37,27 @@ void CollisionComponent::UpdateComponentToWorldTransformationMatrix()
 
 void CollisionComponent::UpdateTransformation()
 {
+	if (!bulletCollisionShape_)
+	{
+		return;
+	}
+
 	bulletCollisionShape_->setLocalScaling(PhysicsUtils::FromVector3ToBtVector3(worldScaling_));
 
-	RigidBody* ownerRigidBody = reinterpret_cast<RigidBody*>(owner_);
-	btRigidBody* ownerBulletRigidBody = ownerRigidBody->GetBulletRigidBody();
+	RigidBody* ownerRigidBody = dynamic_cast<RigidBody*>(owner_);
+	if (!ownerRigidBody)
+	{
+		return;
+	}
 
-	if (ownerBulletRigidBody && ownerBulletRigidBody->getInvMass() > 0)
+	btRigidBody* ownerBulletRigidBody = ownerRigidBody->GetBulletRigidBody();
+	const float ownerMass = ownerRigidBody->GetMass();
+
+	if (ownerBulletRigidBody && ownerMass > 0.f && ownerBulletRigidBody->getInvMass() > 0.f)
 	{
 		btVector3 inertia;
-		bulletCollisionShape_->calculateLocalInertia(ownerBulletRigidBody->getMass(), inertia);
-		ownerBulletRigidBody->setMassProps(ownerBulletRigidBody->getMass(), inertia);
+		bulletCollisionShape_->calculateLocalInertia(ownerMass, inertia);
+		ownerBulletRigidBody->setMassProps(ownerMass, inertia);
 		ownerBulletRigidBody->updateInertiaTensor();
 	}
 }
