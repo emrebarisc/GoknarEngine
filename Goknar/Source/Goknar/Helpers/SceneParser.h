@@ -17,7 +17,7 @@ class NavigationTreeObject;
 class NonMovingTriangleMeshCollisionComponent;
 class InstancedStaticMeshComponent;
 class ParticleSystemComponent;
-class RigidBody;
+class PhysicsObject;
 class ReflectionProbeObject;
 class Scene;
 struct SceneReference;
@@ -60,7 +60,7 @@ private:
 	static void ParseNonMovingTriangleMeshCollisionComponentValues(NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent, tinyxml2::XMLElement* componentElement);
 
 	static void ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* objectElement);
-	static void ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* objectElement);
+	static void ParsePhysicsObject(PhysicsObject* rigidBody, tinyxml2::XMLElement* objectElement);
 	static void ParseReflectionProbeObject(ReflectionProbeObject* reflectionProbeObject, tinyxml2::XMLElement* objectElement);
 
 	static void GetXMLElement_DirectionalLights(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement, Scene* scene);

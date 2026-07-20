@@ -67,7 +67,7 @@ protected:
 	virtual void UpdateChildrenComponentToWorldTransformations();
 
 private:
-	std::vector<ObjectBase*> attachedObjects_;
+	std::vector<ObjectBase*> attachedObjects_{};
 
 	Matrix boneTransformationMatrix_{ Matrix::IdentityMatrix };
 	Matrix boneAndRelativeTransformationMatrix_{ Matrix::IdentityMatrix };

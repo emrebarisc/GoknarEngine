@@ -1061,7 +1061,7 @@ void AssetParser::SaveAssets(const std::string& filePath)
 				continue;
 			}
 
-			if (extension == ".png" || extension == ".jpg")
+			if (extension == ".png" || extension == ".jpg" || extension == ".jpeg")
 			{
 				const auto existingTextureNameIterator = existingTextureNames.find(relativeAssetPath);
 				const std::string preferredTextureName =

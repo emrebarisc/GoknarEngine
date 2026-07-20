@@ -61,6 +61,7 @@
 #include "Goknar/Renderer/Texture.h"
 
 #include "Goknar/Physics/RigidBody.h"
+#include "Goknar/Physics/OverlappingPhysicsObject.h"
 #include "Goknar/Physics/Components/BoxCollisionComponent.h"
 #include "Goknar/Physics/Components/CapsuleCollisionComponent.h"
 #include "Goknar/Physics/Components/SphereCollisionComponent.h"
@@ -1555,9 +1556,15 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 
 				object->SetName(objectTypeName ? objectTypeName : "ObjectBase");
 
-				if (RigidBody* rigidBody = dynamic_cast<RigidBody*>(object))
+				PhysicsObject* physicsObject = dynamic_cast<RigidBody*>(object);
+				if (!physicsObject)
 				{
-					ParseRigidBody(rigidBody, objectElement);
+					physicsObject = dynamic_cast<OverlappingPhysicsObject*>(object);
+				}
+
+				if (physicsObject)
+				{
+					ParsePhysicsObject(physicsObject, objectElement);
 				}
 
 				ParseObjectBase(object, objectElement);
@@ -2314,6 +2321,9 @@ void SceneParser::ParseNonMovingTriangleMeshCollisionComponentValues(NonMovingTr
 		stream >> meshPath;
 
 		StaticMesh* relativeMesh = engine->GetResourceManager()->GetContent<StaticMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
+		
+		GOKNAR_CORE_CHECK(relativeMesh);
+
 		if (relativeMesh)
 		{
 			nonMovingTriangleMeshCollisionComponent->SetMesh(relativeMesh);
@@ -2457,20 +2467,25 @@ void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* obje
 	}
 }
 
-void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* objectElement)
+void SceneParser::ParsePhysicsObject(PhysicsObject* physicsObject, tinyxml2::XMLElement* objectElement)
 {
 	std::stringstream stream;
 
-	tinyxml2::XMLElement* child = objectElement->FirstChildElement("Mass");
+	tinyxml2::XMLElement* child;
 
-	if (child)
+	if (RigidBody* rigidBody = dynamic_cast<RigidBody*>(physicsObject))
 	{
-		stream << child->GetText() << std::endl;
-		float mass;
-		stream >> mass;
-		rigidBody->SetMass(mass);
+		child = objectElement->FirstChildElement("Mass");
+
+		if (child)
+		{
+			stream << child->GetText() << std::endl;
+			float mass;
+			stream >> mass;
+			rigidBody->SetMass(mass);
+		}
+		stream.clear();
 	}
-	stream.clear();
 
 	child = objectElement->FirstChildElement("CollisionGroup");
 	if (child)
@@ -2478,7 +2493,7 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		stream << child->GetText() << std::endl;
 		int collisionGroupInt;
 		stream >> collisionGroupInt;
-		rigidBody->SetCollisionGroup((CollisionGroup)collisionGroupInt);
+		physicsObject->SetCollisionGroup((CollisionGroup)collisionGroupInt);
 	}
 	stream.clear();
 
@@ -2488,7 +2503,7 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		stream << child->GetText() << std::endl;
 		int collisionMaskInt;
 		stream >> collisionMaskInt;
-		rigidBody->SetCollisionMask((CollisionMask)collisionMaskInt);
+		physicsObject->SetCollisionMask((CollisionMask)collisionMaskInt);
 	}
 	stream.clear();
 
@@ -2498,7 +2513,7 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		tinyxml2::XMLElement* componentElement = child->FirstChildElement("BoxCollisionComponent");
 		while (componentElement)
 		{
-			BoxCollisionComponent* boxCollisionComponent = rigidBody->AddSubComponent<BoxCollisionComponent>();
+			BoxCollisionComponent* boxCollisionComponent = physicsObject->AddSubComponent<BoxCollisionComponent>();
 			ParseBoxCollisionComponentValues(boxCollisionComponent, componentElement);
 
 			ParseComponentValues(boxCollisionComponent, componentElement);
@@ -2509,7 +2524,7 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		componentElement = child->FirstChildElement("SphereCollisionComponent");
 		while (componentElement)
 		{
-			SphereCollisionComponent* sphereCollisionComponent = rigidBody->AddSubComponent<SphereCollisionComponent>();
+			SphereCollisionComponent* sphereCollisionComponent = physicsObject->AddSubComponent<SphereCollisionComponent>();
 			ParseSphereCollisionComponentValues(sphereCollisionComponent, componentElement);
 
 			ParseComponentValues(sphereCollisionComponent, componentElement);
@@ -2520,7 +2535,7 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		componentElement = child->FirstChildElement("CapsuleCollisionComponent");
 		while (componentElement)
 		{
-			CapsuleCollisionComponent* capsuleCollisionComponent = rigidBody->AddSubComponent<CapsuleCollisionComponent>();
+			CapsuleCollisionComponent* capsuleCollisionComponent = physicsObject->AddSubComponent<CapsuleCollisionComponent>();
 			ParseCapsuleCollisionComponentValues(capsuleCollisionComponent, componentElement);
 
 			ParseComponentValues(capsuleCollisionComponent, componentElement);
@@ -2531,7 +2546,7 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		componentElement = child->FirstChildElement("MovingTriangleMeshCollisionComponent");
 		while (componentElement)
 		{
-			MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent = rigidBody->AddSubComponent<MovingTriangleMeshCollisionComponent>();
+			MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent = physicsObject->AddSubComponent<MovingTriangleMeshCollisionComponent>();
 			ParseMovingTriangleMeshCollisionComponentValues(movingTriangleMeshCollisionComponent, componentElement);
 
 			ParseComponentValues(movingTriangleMeshCollisionComponent, componentElement);
@@ -2542,7 +2557,7 @@ void SceneParser::ParseRigidBody(RigidBody* rigidBody, tinyxml2::XMLElement* obj
 		componentElement = child->FirstChildElement("NonMovingTriangleMeshCollisionComponent");
 		while (componentElement)
 		{
-			NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent = rigidBody->AddSubComponent<NonMovingTriangleMeshCollisionComponent>();
+			NonMovingTriangleMeshCollisionComponent* nonMovingTriangleMeshCollisionComponent = physicsObject->AddSubComponent<NonMovingTriangleMeshCollisionComponent>();
 			ParseNonMovingTriangleMeshCollisionComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
 
 			ParseComponentValues(nonMovingTriangleMeshCollisionComponent, componentElement);
@@ -2644,11 +2659,11 @@ void SceneParser::GetXMLElement_SpotLights(tinyxml2::XMLDocument& xmlDocument, t
 		spotLightElement->InsertEndChild(spotLightIntensityElement);
 
 		tinyxml2::XMLElement* spotLightCoverageAngleElement = xmlDocument.NewElement("CoverageAngle");
-		spotLightCoverageAngleElement->SetText(spotLight->GetCoverageAngle());
+		spotLightCoverageAngleElement->SetText(RADIAN_TO_DEGREE(spotLight->GetCoverageAngle()));
 		spotLightElement->InsertEndChild(spotLightCoverageAngleElement);
 
 		tinyxml2::XMLElement* spotLightFalloffAngleElement = xmlDocument.NewElement("FalloffAngle");
-		spotLightFalloffAngleElement->SetText(spotLight->GetFalloffAngle());
+		spotLightFalloffAngleElement->SetText(RADIAN_TO_DEGREE(spotLight->GetFalloffAngle()));
 		spotLightElement->InsertEndChild(spotLightFalloffAngleElement);
 
 		tinyxml2::XMLElement* spotLightRadiusElement = xmlDocument.NewElement("Radius");
