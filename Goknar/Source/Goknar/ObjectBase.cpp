@@ -59,6 +59,11 @@ void ObjectBase::PostInit()
 	isInitialized_ = true;
 }
 
+void ObjectBase::BeginGame()
+{
+	UpdateWorldTransformationMatrix();
+}
+
 void ObjectBase::Destroy()
 {
 	if(isPendingDestroy_)

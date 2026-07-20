@@ -44,10 +44,7 @@ public:
 	virtual void Init();
 	virtual void PostInit();
 
-	virtual void BeginGame()
-	{
-
-	}
+	virtual void BeginGame();
 
     virtual void Tick(float)
     {
