@@ -65,7 +65,7 @@ void SpotLight::PreInit()
 		{
 			0.5f, 0.f, 0.f, 0.5f,
 			0.f, 0.5f, 0.f, 0.5f,
-			0.f, 0.f, 0.5f, 0.5f - 0.000005f,
+			0.f, 0.f, 0.5f, 0.5f - 0.0000075f,
 			0.f, 0.f, 0.f, 1.f
 		};
 		UpdateBiasedShadowMatrix();
