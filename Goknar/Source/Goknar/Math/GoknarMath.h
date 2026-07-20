@@ -414,6 +414,48 @@ struct GOKNAR_API Vector2i
 		return x >= other.x && y >= other.y;
 	}
 
+	inline void operator+=(const Vector2i& rhs)
+	{
+		x = x + rhs.x;
+		y = y + rhs.y;
+	}
+
+	inline void operator-=(const Vector2i& rhs)
+	{
+		x = x - rhs.x;
+		y = y - rhs.y;
+	}
+
+	inline void operator*=(const Vector2i& rhs)
+	{
+		x = x * rhs.x;
+		y = y * rhs.y;
+	}
+
+	inline void operator*=(int value)
+	{
+		x = (int)(x * value);
+		y = (int)(y * value);
+	}
+
+	inline void operator*=(float value)
+	{
+		x = (int)(x * value);
+		y = (int)(y * value);
+	}
+
+	inline void operator/=(const Vector2i& rhs)
+	{
+		x = x / rhs.x;
+		y = y / rhs.y;
+	}
+
+	inline void operator/=(int value)
+	{
+		x = (int)(x / value);
+		y = (int)(y / value);
+	}
+
 	inline std::string ToString() const
 	{
 		return std::string("[") + std::to_string(x) + ", " + std::to_string(y) + "]";
