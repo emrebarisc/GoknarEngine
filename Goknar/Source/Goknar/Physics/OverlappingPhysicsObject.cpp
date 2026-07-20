@@ -13,6 +13,8 @@
 
 OverlappingPhysicsObject::OverlappingPhysicsObject() : PhysicsObject()
 {
+    SetCollisionGroup(CollisionGroup::WorldDynamicOverlap);
+    SetCollisionFlag(CollisionFlag::NoContactResponse);
 }
 
 OverlappingPhysicsObject::~OverlappingPhysicsObject()

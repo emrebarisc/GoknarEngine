@@ -156,8 +156,6 @@ void RigidBody::PhysicsTick(float deltaTime)
 
 	PhysicsObject::SetWorldPosition(PhysicsUtils::FromBtVector3ToVector3(bulletWorldPosition), false);
 	PhysicsObject::SetWorldRotation(PhysicsUtils::FromBtQuaternionToQuaternion(bulletWorldRotation));
-
-	GOKNAR_WARN("m = %d", bulletRigidBody_->getMass());
 }
 
 void RigidBody::SetupRigidBodyInitializationData()
