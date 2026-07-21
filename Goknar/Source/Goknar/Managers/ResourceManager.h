@@ -78,6 +78,11 @@ public:
 		return audioArray_[index];
 	}
 
+	inline bool HasContent(const std::string& path)
+	{
+		return contentPathMap_.find(path) != contentPathMap_.end();
+	}
+
 	template<class T>
 	inline T* GetContent(const std::string& path)
 	{
@@ -163,9 +168,9 @@ public:
 	{
 		std::string fullPath = ContentDir + path;
 
-		T* content = resourceContainer_->GetContent<T>(fullPath);
-		if (content)
+		if (resourceContainer_->HasContent(fullPath))
 		{
+			T* content = resourceContainer_->GetContent<T>(fullPath);
 			return content;
 		}
 
