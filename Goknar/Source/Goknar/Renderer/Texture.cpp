@@ -140,6 +140,11 @@ void Texture::PreInit()
 		return;
 	}
 
+	if (!uploadToGPU_)
+	{
+		return;
+	}
+
 	if (channels_ == 4)
 	{
 		if(textureFormat_ != TextureFormat::RGBA)

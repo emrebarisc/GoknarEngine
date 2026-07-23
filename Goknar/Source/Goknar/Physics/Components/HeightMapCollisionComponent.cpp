@@ -29,6 +29,8 @@ HeightMapCollisionComponent::~HeightMapCollisionComponent()
 void HeightMapCollisionComponent::PreInit()
 {
 	CollisionComponent::PreInit();
+
+	bulletCollisionShape_ = new btHeightfieldTerrainShape(heightStickWidth_, heightStickLength_, heightMapImage_->GetBuffer(), maxHeight_, 2, true, false);
 }
 
 void HeightMapCollisionComponent::Init()
@@ -38,8 +40,6 @@ void HeightMapCollisionComponent::Init()
 
 void HeightMapCollisionComponent::PostInit()
 {
-	bulletCollisionShape_ = new btHeightfieldTerrainShape(heightStickWidth_, heightStickLength_, heightMapImage_->GetBuffer(), maxHeight_, 2, true, false);
-
 	CollisionComponent::PostInit();
 }
 	

@@ -165,8 +165,8 @@ private:
 
 	int width_{ 0 };
 	int height_{ 0 };
-	int maxWidth_{ 8192 };
-	int maxHeight_{ 8192 };
+	int maxWidth_{ 16384 };
+	int maxHeight_{ 16384 };
 	int padding_{ 2 };
 
 	bool isBuilt_{ false };

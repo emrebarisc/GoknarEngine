@@ -137,6 +137,21 @@ namespace
 		return value;
 	}
 
+	bool ReadTextureUploadToGPUInternal(const tinyxml2::XMLElement* textureElement, bool defaultValue = true)
+	{
+		if (!textureElement)
+		{
+			return defaultValue;
+		}
+
+		bool value = defaultValue;
+		value = ReadBoolAttributeOrElement(textureElement, "UploadToGPU", value);
+		value = ReadBoolAttributeOrElement(textureElement, "UploadToGpu", value);
+		value = ReadBoolAttributeOrElement(textureElement, "uploadToGPU", value);
+		value = ReadBoolAttributeOrElement(textureElement, "UploadTextureToGPU", value);
+		return value;
+	}
+
 	std::string NormalizeTextureUsageToken(std::string value)
 	{
 		value = TrimString(value);
@@ -486,6 +501,36 @@ namespace
 		return textureUsageByTexturePath;
 	}
 
+	std::map<std::string, bool> LoadExistingTextureUploadToGPU(const std::string& assetContainerPath)
+	{
+		std::map<std::string, bool> textureUploadToGPUByTexturePath;
+
+		tinyxml2::XMLDocument existingDocument;
+		std::string fileContents;
+		if (!DataEncryption::ReadTextFile(assetContainerPath, fileContents) ||
+			existingDocument.Parse(fileContents.c_str(), fileContents.size()) != tinyxml2::XML_SUCCESS)
+		{
+			return textureUploadToGPUByTexturePath;
+		}
+
+		tinyxml2::XMLElement* rootElement = existingDocument.FirstChildElement("AssetContainer");
+		tinyxml2::XMLElement* assetsElement = rootElement ? rootElement->FirstChildElement("Assets") : nullptr;
+		for (tinyxml2::XMLElement* textureElement = assetsElement ? assetsElement->FirstChildElement("Texture") : nullptr;
+			textureElement != nullptr;
+			textureElement = textureElement->NextSiblingElement("Texture"))
+		{
+			const std::string texturePath = ContentPathUtils::ToContentRelativePath(GetElementText(textureElement->FirstChildElement("Path")));
+			if (texturePath.empty())
+			{
+				continue;
+			}
+
+			textureUploadToGPUByTexturePath[texturePath] = ReadTextureUploadToGPUInternal(textureElement, true);
+		}
+
+		return textureUploadToGPUByTexturePath;
+	}
+
 	std::string TryGetGameAssetFileType(const std::filesystem::path& absolutePath)
 	{
 		tinyxml2::XMLDocument document;
@@ -514,6 +559,11 @@ namespace
 bool AssetParser::ReadTextureAtlasUsage(const tinyxml2::XMLElement* textureElement, bool defaultValue)
 {
 	return ReadTextureAtlasUsageInternal(textureElement, defaultValue);
+}
+
+bool AssetParser::ReadTextureUploadToGPU(const tinyxml2::XMLElement* textureElement, bool defaultValue)
+{
+	return ReadTextureUploadToGPUInternal(textureElement, defaultValue);
 }
 
 bool AssetParser::RegisterTextureToTextureAtlas(Texture* texture, bool useTextureNameForImage, bool flushAtlas, TextureAtlasCategory category)
@@ -821,6 +871,90 @@ bool AssetParser::SetTextureUsage(const std::string& texturePath, TextureUsage t
 	return assetContainerDocument.SaveFile(fullAssetContainerPath.c_str()) == tinyxml2::XML_SUCCESS;
 }
 
+bool AssetParser::GetTextureUploadToGPU(const std::string& texturePath, const std::string& assetContainerPath)
+{
+	const std::string relativeAssetContainerPath = ContentPathUtils::ToContentRelativePath(assetContainerPath);
+	const std::string fullAssetContainerPath = ContentPathUtils::ToAbsoluteContentPath(relativeAssetContainerPath);
+	const std::string relativeTexturePath = ContentPathUtils::ToContentRelativePath(texturePath);
+
+	if (relativeTexturePath.empty())
+	{
+		return true;
+	}
+
+	const std::map<std::string, bool> textureUploadToGPU = LoadExistingTextureUploadToGPU(fullAssetContainerPath);
+	const auto textureUploadToGPUIterator = textureUploadToGPU.find(relativeTexturePath);
+	return textureUploadToGPUIterator != textureUploadToGPU.end() ? textureUploadToGPUIterator->second : true;
+}
+
+bool AssetParser::SetTextureUploadToGPU(const std::string& texturePath, bool uploadToGPU, const std::string& assetContainerPath)
+{
+	const std::string relativeAssetContainerPath = ContentPathUtils::ToContentRelativePath(assetContainerPath);
+	const std::string fullAssetContainerPath = ContentPathUtils::ToAbsoluteContentPath(relativeAssetContainerPath);
+	const std::string relativeTexturePath = ContentPathUtils::ToContentRelativePath(texturePath);
+
+	if (relativeTexturePath.empty())
+	{
+		return false;
+	}
+
+	tinyxml2::XMLDocument assetContainerDocument;
+	tinyxml2::XMLError loadResult = tinyxml2::XML_ERROR_FILE_NOT_FOUND;
+	std::string fileContents;
+	if (DataEncryption::ReadTextFile(fullAssetContainerPath, fileContents))
+	{
+		loadResult = assetContainerDocument.Parse(fileContents.c_str(), fileContents.size());
+	}
+	if (loadResult != tinyxml2::XML_SUCCESS)
+	{
+		assetContainerDocument.Clear();
+		tinyxml2::XMLElement* rootElement = assetContainerDocument.NewElement("AssetContainer");
+		assetContainerDocument.InsertFirstChild(rootElement);
+		rootElement->InsertEndChild(assetContainerDocument.NewElement("Assets"));
+	}
+
+	tinyxml2::XMLElement* rootElement = assetContainerDocument.FirstChildElement("AssetContainer");
+	if (!rootElement)
+	{
+		rootElement = assetContainerDocument.NewElement("AssetContainer");
+		assetContainerDocument.InsertFirstChild(rootElement);
+	}
+
+	tinyxml2::XMLElement* assetsElement = rootElement->FirstChildElement("Assets");
+	if (!assetsElement)
+	{
+		assetsElement = assetContainerDocument.NewElement("Assets");
+		rootElement->InsertEndChild(assetsElement);
+	}
+
+	tinyxml2::XMLElement* textureElement = assetsElement->FirstChildElement("Texture");
+	for (; textureElement != nullptr; textureElement = textureElement->NextSiblingElement("Texture"))
+	{
+		tinyxml2::XMLElement* pathElement = textureElement->FirstChildElement("Path");
+		if (ContentPathUtils::ToContentRelativePath(GetElementText(pathElement)) == relativeTexturePath)
+		{
+			break;
+		}
+	}
+
+	if (!textureElement)
+	{
+		textureElement = assetContainerDocument.NewElement("Texture");
+		tinyxml2::XMLElement* pathElement = assetContainerDocument.NewElement("Path");
+		pathElement->SetText(relativeTexturePath.c_str());
+		textureElement->InsertEndChild(pathElement);
+		assetsElement->InsertEndChild(textureElement);
+	}
+
+	textureElement->SetAttribute("UploadToGPU", uploadToGPU ? "true" : "false");
+	if (!uploadToGPU)
+	{
+		textureElement->SetAttribute("UseTextureAtlas", "false");
+	}
+
+	return assetContainerDocument.SaveFile(fullAssetContainerPath.c_str()) == tinyxml2::XML_SUCCESS;
+}
+
 TextureUsage AssetParser::ReadTextureUsage(const tinyxml2::XMLElement* textureElement, TextureUsage defaultValue)
 {
 	return ReadTextureUsageInternal(textureElement, defaultValue);
@@ -917,9 +1051,16 @@ void AssetParser::ParseTextures(tinyxml2::XMLElement* assetsElement)
 				// Asset container textures are material-facing by default, so they are
 				// eligible for the atlas unless the asset XML opts out with
 				// UseTextureAtlas/CanUseTextureAtlas/TextureAtlas = false.
-				const bool useTextureAtlas = ReadTextureAtlasUsageInternal(element, true);
+				const bool uploadToGPU = ReadTextureUploadToGPUInternal(element, image->GetUploadToGPU());
+				const bool useTextureAtlas = uploadToGPU && ReadTextureAtlasUsageInternal(element, true);
 				image->SetTextureUsage(ReadTextureUsageInternal(element, image->GetTextureUsage()));
+				image->SetUploadToGPU(uploadToGPU);
 				image->SetCanUseTextureAtlas(useTextureAtlas);
+				if (!uploadToGPU || image->GetGeneratedTexture())
+				{
+					image->GetOrCreateGeneratedTexture()->SetUploadToGPU(uploadToGPU);
+				}
+
 				if (useTextureAtlas)
 				{
 					resourceManager->GetResourceContainer()->RegisterImageToTextureAtlas(image);
@@ -1005,10 +1146,11 @@ void AssetParser::SaveAssets(const std::string& filePath)
 	const std::map<std::string, std::string> existingTextureNames = LoadExistingTextureNames(fullPath);
 	const std::map<std::string, bool> existingTextureAtlasUsage = LoadExistingTextureAtlasUsage(fullPath);
 	const std::map<std::string, TextureUsage> existingTextureUsages = LoadExistingTextureUsages(fullPath);
+	const std::map<std::string, bool> existingTextureUploadToGPU = LoadExistingTextureUploadToGPU(fullPath);
 	const std::filesystem::path contentRoot = std::filesystem::path(ContentDir);
 	std::set<std::string> usedTextureNames;
 
-	auto addPathAsset = [&](const char* elementName, const std::string& assetPath, const std::vector<std::string>* materialPaths = nullptr, const std::string* assetName = nullptr, bool useTextureAtlas = true, TextureUsage textureUsage = TextureUsage::Diffuse)
+	auto addPathAsset = [&](const char* elementName, const std::string& assetPath, const std::vector<std::string>* materialPaths = nullptr, const std::string* assetName = nullptr, bool useTextureAtlas = true, TextureUsage textureUsage = TextureUsage::Diffuse, bool uploadToGPU = true)
 	{
 		tinyxml2::XMLElement* assetElement = assetXML.NewElement(elementName);
 		tinyxml2::XMLElement* pathElement = assetXML.NewElement("Path");
@@ -1023,6 +1165,7 @@ void AssetParser::SaveAssets(const std::string& filePath)
 		{
 			assetElement->SetAttribute("UseTextureAtlas", useTextureAtlas ? "true" : "false");
 			assetElement->SetAttribute("Usage", TextureUsageToStringInternal(textureUsage));
+			assetElement->SetAttribute("UploadToGPU", uploadToGPU ? "true" : "false");
 		}
 
 		assetElement->InsertEndChild(pathElement);
@@ -1073,18 +1216,33 @@ void AssetParser::SaveAssets(const std::string& filePath)
 				const bool useTextureAtlas = existingTextureAtlasUsageIterator == existingTextureAtlasUsage.end() ? true : existingTextureAtlasUsageIterator->second;
 				const auto existingTextureUsageIterator = existingTextureUsages.find(relativeAssetPath);
 				TextureUsage textureUsage = existingTextureUsageIterator == existingTextureUsages.end() ? TextureUsage::Diffuse : existingTextureUsageIterator->second;
-				if (existingTextureUsageIterator == existingTextureUsages.end() && engine && engine->GetResourceManager() && engine->GetResourceManager()->GetResourceContainer())
+				const auto existingTextureUploadToGPUIterator = existingTextureUploadToGPU.find(relativeAssetPath);
+				bool uploadToGPU = existingTextureUploadToGPUIterator == existingTextureUploadToGPU.end() ? true : existingTextureUploadToGPUIterator->second;
+				if ((existingTextureUsageIterator == existingTextureUsages.end() || existingTextureUploadToGPUIterator == existingTextureUploadToGPU.end()) &&
+					engine && engine->GetResourceManager() && engine->GetResourceManager()->GetResourceContainer())
 				{
 					for (Image* image : engine->GetResourceManager()->GetResourceContainer()->GetImageArray())
 					{
 						if (image && ContentPathUtils::ToContentRelativePath(image->GetPath()) == relativeAssetPath)
 						{
-							textureUsage = image->GetTextureUsage();
+							if (existingTextureUsageIterator == existingTextureUsages.end())
+							{
+								textureUsage = image->GetTextureUsage();
+							}
+
+							if (existingTextureUploadToGPUIterator == existingTextureUploadToGPU.end())
+							{
+								uploadToGPU = image->GetUploadToGPU();
+								if (image->GetGeneratedTexture())
+								{
+									uploadToGPU = image->GetGeneratedTexture()->GetUploadToGPU();
+								}
+							}
 							break;
 						}
 					}
 				}
-				addPathAsset("Texture", relativeAssetPath, nullptr, &resolvedTextureName, useTextureAtlas, textureUsage);
+				addPathAsset("Texture", relativeAssetPath, nullptr, &resolvedTextureName, useTextureAtlas && uploadToGPU, textureUsage, uploadToGPU);
 				continue;
 			}
 
@@ -1177,8 +1335,14 @@ void AssetParser::SaveTextures(tinyxml2::XMLDocument& xmlDocument, tinyxml2::XML
 		}
 
 		textureElement->SetAttribute("Usage", TextureUsageToStringInternal(image->GetTextureUsage()));
+		bool uploadToGPU = image->GetUploadToGPU();
+		if (image->GetGeneratedTexture())
+		{
+			uploadToGPU = image->GetGeneratedTexture()->GetUploadToGPU();
+		}
+		textureElement->SetAttribute("UploadToGPU", uploadToGPU ? "true" : "false");
 
-		if (image->GetCanUseTextureAtlas())
+		if (image->GetCanUseTextureAtlas() && uploadToGPU)
 		{
 			textureElement->SetAttribute("UseTextureAtlas", "true");
 		}

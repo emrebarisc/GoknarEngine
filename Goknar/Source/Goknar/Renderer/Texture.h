@@ -542,6 +542,16 @@ public:
 		return generateMipmap_;
 	}
 
+	void SetUploadToGPU(bool uploadToGPU)
+	{
+		uploadToGPU_ = uploadToGPU;
+	}
+
+	bool GetUploadToGPU() const
+	{
+		return uploadToGPU_;
+	}
+
 protected:
 
 private:
@@ -587,6 +597,7 @@ private:
 	bool isInitialized_{ false };
 	bool generateMipmap_{ true };
 	bool waitsForTextureAtlas_{ false };
+	bool uploadToGPU_{ true };
 };
 
 #endif

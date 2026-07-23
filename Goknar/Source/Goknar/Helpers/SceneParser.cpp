@@ -64,6 +64,7 @@
 #include "Goknar/Physics/OverlappingPhysicsObject.h"
 #include "Goknar/Physics/Components/BoxCollisionComponent.h"
 #include "Goknar/Physics/Components/CapsuleCollisionComponent.h"
+#include "Goknar/Physics/Components/HeightMapCollisionComponent.h"
 #include "Goknar/Physics/Components/SphereCollisionComponent.h"
 #include "Goknar/Physics/Components/MovingTriangleMeshCollisionComponent.h"
 #include "Goknar/Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
@@ -2275,6 +2276,109 @@ void SceneParser::ParseSphereCollisionComponentValues(SphereCollisionComponent* 
 	stream.clear();
 }
 
+void SceneParser::ParseHeightMapCollisionComponentValues(HeightMapCollisionComponent* heightMapCollisionComponent, tinyxml2::XMLElement* componentElement)
+{
+	if (!heightMapCollisionComponent || !componentElement)
+	{
+		return;
+	}
+
+	std::string heightMapImagePath;
+	if (ReadStringElement(componentElement, "HeightMapImage", heightMapImagePath) ||
+		ReadStringElement(componentElement, "HeightMapImagePath", heightMapImagePath))
+	{
+		const std::string relativeHeightMapImagePath = ContentPathUtils::ToContentRelativePath(heightMapImagePath);
+		if (!relativeHeightMapImagePath.empty())
+		{
+			Image* heightMapImage = engine->GetResourceManager()->GetContent<Image>(relativeHeightMapImagePath);
+			if (heightMapImage)
+			{
+				heightMapCollisionComponent->SetHeightMapImage(heightMapImage);
+			}
+			else
+			{
+				GOKNAR_CORE_WARN("Height map image could not be loaded from %s.", relativeHeightMapImagePath.c_str());
+			}
+		}
+	}
+
+	std::stringstream stream;
+	tinyxml2::XMLElement* dataElement = componentElement->FirstChildElement("HeightStickWidth");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		int heightStickWidth;
+		stream >> heightStickWidth;
+		heightMapCollisionComponent->SetHeightStickWidth(heightStickWidth);
+	}
+	stream.clear();
+	stream.str("");
+
+	dataElement = componentElement->FirstChildElement("HeightStickLength");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		int heightStickLength;
+		stream >> heightStickLength;
+		heightMapCollisionComponent->SetHeightStickLength(heightStickLength);
+	}
+	stream.clear();
+	stream.str("");
+
+	dataElement = componentElement->FirstChildElement("MinHeight");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		float minHeight;
+		stream >> minHeight;
+		heightMapCollisionComponent->SetMinHeight(minHeight);
+	}
+	stream.clear();
+	stream.str("");
+
+	dataElement = componentElement->FirstChildElement("MaxHeight");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		float maxHeight;
+		stream >> maxHeight;
+		heightMapCollisionComponent->SetMaxHeight(maxHeight);
+	}
+	stream.clear();
+	stream.str("");
+
+	dataElement = componentElement->FirstChildElement("Width");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		float width;
+		stream >> width;
+		heightMapCollisionComponent->SetWidth(width);
+	}
+	stream.clear();
+	stream.str("");
+
+	dataElement = componentElement->FirstChildElement("Length");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		float length;
+		stream >> length;
+		heightMapCollisionComponent->SetLength(length);
+	}
+	stream.clear();
+	stream.str("");
+
+	dataElement = componentElement->FirstChildElement("HeightScale");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		float heightScale;
+		stream >> heightScale;
+		heightMapCollisionComponent->SetHeightScale(heightScale);
+	}
+}
+
 void SceneParser::ParseMovingTriangleMeshCollisionComponentValues(MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, tinyxml2::XMLElement* componentElement)
 {
 	std::stringstream stream;
@@ -2321,7 +2425,7 @@ void SceneParser::ParseNonMovingTriangleMeshCollisionComponentValues(NonMovingTr
 		stream >> meshPath;
 
 		StaticMesh* relativeMesh = engine->GetResourceManager()->GetContent<StaticMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
-		
+
 		GOKNAR_CORE_CHECK(relativeMesh);
 
 		if (relativeMesh)
@@ -2541,6 +2645,17 @@ void SceneParser::ParsePhysicsObject(PhysicsObject* physicsObject, tinyxml2::XML
 			ParseComponentValues(capsuleCollisionComponent, componentElement);
 
 			componentElement = componentElement->NextSiblingElement("CapsuleCollisionComponent");
+		}
+
+		componentElement = child->FirstChildElement("HeightMapCollisionComponent");
+		while (componentElement)
+		{
+			HeightMapCollisionComponent* heightMapCollisionComponent = physicsObject->AddSubComponent<HeightMapCollisionComponent>();
+			ParseHeightMapCollisionComponentValues(heightMapCollisionComponent, componentElement);
+
+			ParseComponentValues(heightMapCollisionComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("HeightMapCollisionComponent");
 		}
 
 		componentElement = child->FirstChildElement("MovingTriangleMeshCollisionComponent");
@@ -2945,6 +3060,11 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 			componentElement = xmlDocument.NewElement("SphereCollisionComponent");
 			GetXMLElement_SphereCollisionComponent(sphereCollisionComponent, xmlDocument, componentElement);
 		}
+		else if (HeightMapCollisionComponent* heightMapCollisionComponent = dynamic_cast<HeightMapCollisionComponent*>(component))
+		{
+			componentElement = xmlDocument.NewElement("HeightMapCollisionComponent");
+			GetXMLElement_HeightMapCollisionComponent(heightMapCollisionComponent, xmlDocument, componentElement);
+		}
 		else if (MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent = dynamic_cast<MovingTriangleMeshCollisionComponent*>(component))
 		{
 			componentElement = xmlDocument.NewElement("MovingTriangleMeshCollisionComponent");
@@ -2984,7 +3104,7 @@ void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* c
 	StaticMesh* staticMesh = staticMeshComponent->GetMeshInstance()->GetMesh();
 	GOKNAR_CHECK(staticMesh);
 
-	if(!staticMesh || staticMesh->GetPath().empty())
+	if (!staticMesh || staticMesh->GetPath().empty())
 	{
 		return;
 	}
@@ -3268,6 +3388,54 @@ void SceneParser::GetXMLElement_SphereCollisionComponent(const SphereCollisionCo
 	tinyxml2::XMLElement* sphereCollisionComponentRadiusElement = xmlDocument.NewElement("Radius");
 	sphereCollisionComponentRadiusElement->SetText(sphereCollisionComponent->GetRadius());
 	parentElement->InsertEndChild(sphereCollisionComponentRadiusElement);
+}
+
+void SceneParser::GetXMLElement_HeightMapCollisionComponent(const HeightMapCollisionComponent* const heightMapCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+	if (!heightMapCollisionComponent || !parentElement)
+	{
+		return;
+	}
+
+	const Image* heightMapImage = heightMapCollisionComponent->GetHeightMapImage();
+	if (heightMapImage)
+	{
+		const std::string heightMapImagePath = ContentPathUtils::ToContentRelativePath(heightMapImage->GetPath());
+		if (!heightMapImagePath.empty())
+		{
+			tinyxml2::XMLElement* heightMapImageElement = xmlDocument.NewElement("HeightMapImage");
+			heightMapImageElement->SetText(heightMapImagePath.c_str());
+			parentElement->InsertEndChild(heightMapImageElement);
+		}
+	}
+
+	tinyxml2::XMLElement* heightStickWidthElement = xmlDocument.NewElement("HeightStickWidth");
+	heightStickWidthElement->SetText(heightMapCollisionComponent->GetHeightStickWidth());
+	parentElement->InsertEndChild(heightStickWidthElement);
+
+	tinyxml2::XMLElement* heightStickLengthElement = xmlDocument.NewElement("HeightStickLength");
+	heightStickLengthElement->SetText(heightMapCollisionComponent->GetHeightStickLength());
+	parentElement->InsertEndChild(heightStickLengthElement);
+
+	tinyxml2::XMLElement* minHeightElement = xmlDocument.NewElement("MinHeight");
+	minHeightElement->SetText(heightMapCollisionComponent->GetMinHeight());
+	parentElement->InsertEndChild(minHeightElement);
+
+	tinyxml2::XMLElement* maxHeightElement = xmlDocument.NewElement("MaxHeight");
+	maxHeightElement->SetText(heightMapCollisionComponent->GetMaxHeight());
+	parentElement->InsertEndChild(maxHeightElement);
+
+	tinyxml2::XMLElement* widthElement = xmlDocument.NewElement("Width");
+	widthElement->SetText(heightMapCollisionComponent->GetWidth());
+	parentElement->InsertEndChild(widthElement);
+
+	tinyxml2::XMLElement* lengthElement = xmlDocument.NewElement("Length");
+	lengthElement->SetText(heightMapCollisionComponent->GetLength());
+	parentElement->InsertEndChild(lengthElement);
+
+	tinyxml2::XMLElement* heightScaleElement = xmlDocument.NewElement("HeightScale");
+	heightScaleElement->SetText(heightMapCollisionComponent->GetHeightScale());
+	parentElement->InsertEndChild(heightScaleElement);
 }
 
 void SceneParser::GetXMLElement_MovingTriangleMeshCollisionComponent(const MovingTriangleMeshCollisionComponent* const movingTriangleMeshCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)

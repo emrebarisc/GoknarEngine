@@ -154,6 +154,16 @@ public:
 		name_ = name;
 	}
 
+	void SetUploadToGPU(bool uploadToGPU)
+	{
+		uploadToGPU_ = uploadToGPU;
+	}
+
+	bool GetUploadToGPU() const
+	{
+		return uploadToGPU_;
+	}
+
 private:
 	void ApplyTextureAtlasRegionToTexture(Texture* texture, Texture* atlasTexture, const TextureAtlasRegion& atlasRegion, bool applyImageTextureProperties);
 
@@ -198,6 +208,7 @@ private:
 
 	bool hasAtlasRegion_{ false };
 	bool canUseTextureAtlas_{ true };
+	bool uploadToGPU_{ true };
 };
 
 #endif

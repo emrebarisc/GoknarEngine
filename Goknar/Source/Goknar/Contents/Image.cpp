@@ -106,6 +106,7 @@ void Image::RegisterTextureAtlasProxy(Texture* texture, TextureAtlasCategory cat
 
 	texture->SetTextureAtlasProxySourceImage(this);
 	texture->SetTextureAtlasCategory(category);
+	texture->SetUploadToGPU(uploadToGPU_);
 
 	if (!FindTextureAtlasBinding(category) && canUseTextureAtlas_)
 	{

@@ -24,8 +24,11 @@ public:
 	static void SetMeshMaterialPath(const std::string& meshPath, const std::string& materialPath, const std::string& assetContainerPath = "AssetContainer");
 	static TextureUsage GetTextureUsage(const std::string& texturePath, const std::string& assetContainerPath = "AssetContainer");
 	static bool SetTextureUsage(const std::string& texturePath, TextureUsage textureUsage, const std::string& assetContainerPath = "AssetContainer");
+	static bool GetTextureUploadToGPU(const std::string& texturePath, const std::string& assetContainerPath = "AssetContainer");
+	static bool SetTextureUploadToGPU(const std::string& texturePath, bool uploadToGPU, const std::string& assetContainerPath = "AssetContainer");
 
 	static bool ReadTextureAtlasUsage(const tinyxml2::XMLElement* textureElement, bool defaultValue = true);
+	static bool ReadTextureUploadToGPU(const tinyxml2::XMLElement* textureElement, bool defaultValue = true);
 	static TextureUsage ReadTextureUsage(const tinyxml2::XMLElement* textureElement, TextureUsage defaultValue = TextureUsage::Diffuse);
 	static const char* TextureUsageToString(TextureUsage textureUsage);
 	static TextureUsage StringToTextureUsage(const std::string& textureUsage);
