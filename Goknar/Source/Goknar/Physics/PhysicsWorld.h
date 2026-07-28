@@ -5,6 +5,8 @@
 #include "Math/GoknarMath.h"
 #include "Physics/PhysicsTypes.h"
 
+#include <unordered_map>
+
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4127)
@@ -109,9 +111,9 @@ public:
         gravity_ = gravity;
     }
 
-    void OnOverlappingCollisionBegin(btPersistentManifold* const& manifold);
-    void OnOverlappingCollisionContinue(btManifoldPoint& monifoldPoint, const btCollisionObject* ghostObject1, const btCollisionObject* ghostObject2);
-    void OnOverlappingCollisionEnd(btPersistentManifold* const& manifold);
+    void RecordOverlappingCollisionBegin(btPersistentManifold* const& manifold);
+    void RecordOverlappingCollisionContinue(btManifoldPoint& monifoldPoint, const btCollisionObject* ghostObject1, const btCollisionObject* ghostObject2);
+    void RecordOverlappingCollisionEnd(btPersistentManifold* const& manifold);
 
     btDiscreteDynamicsWorld* GetBulletPhysicsWorld() const
     {
@@ -131,7 +133,52 @@ protected:
     PhysicsMovementComponentVector physicsMovementComponents_;
 
 private:
+    struct OverlapPairKey
+    {
+        const btCollisionObject* object1{ nullptr };
+        const btCollisionObject* object2{ nullptr };
+
+        bool operator==(const OverlapPairKey& other) const
+        {
+            return object1 == other.object1 && object2 == other.object2;
+        }
+    };
+
+    struct OverlapPairKeyHasher
+    {
+        size_t operator()(const OverlapPairKey& pairKey) const;
+    };
+
+    struct OverlapState
+    {
+        const btCollisionObject* object1{ nullptr };
+        const btCollisionObject* object2{ nullptr };
+        Vector3 worldPositionOnObject1{ Vector3::ZeroVector };
+        Vector3 worldPositionOnObject2{ Vector3::ZeroVector };
+        Vector3 hitNormal{ Vector3::ZeroVector };
+        float contactDistance{ 0.f };
+    };
+
+    typedef std::unordered_map<OverlapPairKey, OverlapState, OverlapPairKeyHasher> OverlapStateMap;
+
+    OverlapPairKey CreateOverlapPairKey(const btCollisionObject* object1, const btCollisionObject* object2) const;
+    void RecordOverlap(const btPersistentManifold* manifold);
+    void RecordOverlap(const btCollisionObject* object1, const btCollisionObject* object2, const btManifoldPoint& manifoldPoint);
+    void RecordOverlap(const btCollisionObject* object1, const btCollisionObject* object2, const Vector3& worldPositionOnObject1, const Vector3& worldPositionOnObject2, const Vector3& hitNormal, float contactDistance);
+    void GatherCurrentOverlaps();
+    void FlushOverlapEvents();
+    void RemoveOverlapStateForObject(const btCollisionObject* collisionObject);
+
+    PhysicsObject* GetPhysicsObjectFromCollisionObject(const btCollisionObject* collisionObject) const;
+    bool ShouldEmitOverlap(const OverlapState& overlapState) const;
+    void EmitOverlapBegin(const OverlapState& overlapState);
+    void EmitOverlapContinue(const OverlapState& overlapState);
+    void EmitOverlapEnd(const OverlapState& overlapState);
+
     Vector3 gravity_{ Vector3{0.f, 0.f, -20.f} };
+
+    OverlapStateMap activeOverlaps_;
+    OverlapStateMap observedOverlaps_;
 
     PhysicsDebugger* physicsDebugger_{ nullptr };
 
