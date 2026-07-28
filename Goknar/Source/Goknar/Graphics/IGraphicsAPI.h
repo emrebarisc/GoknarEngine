@@ -127,6 +127,15 @@ enum class GraphicsPixelStoreParameter
 	UnpackAlignment
 };
 
+enum class GraphicsParameterName
+{
+	MaxCombinedTextureImageUnits
+};
+
+enum class GraphicsParameterTarget
+{
+};
+
 class GOKNAR_API IGraphicsAPI
 {
 public:
@@ -193,6 +202,17 @@ public:
 	virtual void SetUniformMatrix4fv(GEint location, GEsizei count, bool transpose, const GEfloat* values) = 0;
 	virtual void DispatchCompute(GEuint groupCountX, GEuint groupCountY, GEuint groupCountZ) = 0;
 	virtual void MemoryBarrier(GraphicsMemoryBarrierFlags barrierFlags) = 0;
+
+	virtual void GetBooleanv(GraphicsParameterName pname, GEboolean* data) = 0;
+	virtual void GetDoublev(GraphicsParameterName pname, GEdouble* data) = 0;
+	virtual void GetFloatv(GraphicsParameterName pname, GEfloat* data) = 0;
+	virtual void GetIntegerv(GraphicsParameterName pname, GEint* data) = 0;
+	virtual void GetInteger64v(GraphicsParameterName pname, GEint64* data) = 0;
+	virtual void GetBooleani_v(GraphicsParameterTarget target, GEuint index, GEboolean* data) = 0;
+	virtual void GetIntegeri_v(GraphicsParameterTarget target, GEuint index, GEint* data) = 0;
+	virtual void GetFloati_v(GraphicsParameterTarget target, GEuint index, GEfloat* data) = 0;
+	virtual void GetDoublei_v(GraphicsParameterTarget target, GEuint index, GEdouble* data) = 0;
+	virtual void GetInteger64i_v(GraphicsParameterTarget target, GEuint index, GEint64* data) = 0;
 
 	virtual GEuint CreateTexture() = 0;
 	virtual void DeleteTexture(GEuint textureId) = 0;

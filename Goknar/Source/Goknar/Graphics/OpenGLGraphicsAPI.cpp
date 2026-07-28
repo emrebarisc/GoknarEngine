@@ -772,6 +772,56 @@ void OpenGLGraphicsAPI::MemoryBarrier(GraphicsMemoryBarrierFlags barrierFlags)
 	glMemoryBarrier(ToOpenGLMemoryBarrierFlags(barrierFlags));
 }
 
+void OpenGLGraphicsAPI::GetBooleanv(GraphicsParameterName pname, GEboolean* data)
+{
+	glGetBooleanv(ToOpenGLParameterName(pname), data);
+}
+
+void OpenGLGraphicsAPI::GetDoublev(GraphicsParameterName pname, GEdouble* data)
+{
+	glGetDoublev(ToOpenGLParameterName(pname), data);
+}
+
+void OpenGLGraphicsAPI::GetFloatv(GraphicsParameterName pname, GEfloat* data)
+{
+	glGetFloatv(ToOpenGLParameterName(pname), data);
+}
+
+void OpenGLGraphicsAPI::GetIntegerv(GraphicsParameterName pname, GEint* data)
+{
+	glGetIntegerv(ToOpenGLParameterName(pname), data);
+}
+
+void OpenGLGraphicsAPI::GetInteger64v(GraphicsParameterName pname, GEint64* data)
+{
+	glGetInteger64v(ToOpenGLParameterName(pname), data);
+}
+
+void OpenGLGraphicsAPI::GetBooleani_v(GraphicsParameterTarget target, GEuint index, GEboolean* data)
+{
+	glGetBooleani_v(ToOpenGLParameterTarget(target), index, data);
+}
+
+void OpenGLGraphicsAPI::GetIntegeri_v(GraphicsParameterTarget target, GEuint index, GEint* data)
+{
+	glGetIntegeri_v(ToOpenGLParameterTarget(target), index, data);
+}
+
+void OpenGLGraphicsAPI::GetFloati_v(GraphicsParameterTarget target, GEuint index, GEfloat* data)
+{
+	glGetFloati_v(ToOpenGLParameterTarget(target), index, data);
+}
+
+void OpenGLGraphicsAPI::GetDoublei_v(GraphicsParameterTarget target, GEuint index, GEdouble* data)
+{
+	glGetDoublei_v(ToOpenGLParameterTarget(target), index, data);
+}
+
+void OpenGLGraphicsAPI::GetInteger64i_v(GraphicsParameterTarget target, GEuint index, GEint64* data)
+{
+	glGetInteger64i_v(ToOpenGLParameterTarget(target), index, data);
+}
+
 GEuint OpenGLGraphicsAPI::CreateTexture()
 {
 	GLuint textureId = 0;
@@ -969,4 +1019,25 @@ void OpenGLGraphicsAPI::RenderBufferStorage(RenderBufferBindTarget target, Rende
 void OpenGLGraphicsAPI::AttachRenderBufferToFrameBuffer(FrameBufferBindTarget frameBufferTarget, RenderBufferAttachment attachment, RenderBufferBindTarget renderBufferTarget, GEuint renderBufferId)
 {
 	glFramebufferRenderbuffer(ToOpenGLFrameBufferBindTarget(frameBufferTarget), ToOpenGLRenderBufferAttachment(attachment), ToOpenGLRenderBufferBindTarget(renderBufferTarget), renderBufferId);
+}
+
+GLenum OpenGLGraphicsAPI::ToOpenGLParameterName(GraphicsParameterName parameter)
+{
+	switch (parameter)
+	{
+	case GraphicsParameterName::MaxCombinedTextureImageUnits:
+		return GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS;
+	}
+
+	return GL_NONE;
+}
+
+GLenum OpenGLGraphicsAPI::ToOpenGLParameterTarget(GraphicsParameterTarget parameter)
+{
+	switch (parameter)
+	{
+
+	}
+
+	return GL_NONE;
 }

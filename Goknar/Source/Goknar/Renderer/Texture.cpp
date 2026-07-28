@@ -2,11 +2,12 @@
 
 #include "Texture.h"
 
-#include "Goknar/Contents/Image.h"
+#include "Goknar/GoknarAssert.h"
 #include "Goknar/Engine.h"
+#include "Goknar/Log.h"
+#include "Goknar/Contents/Image.h"
 #include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/IO/IOManager.h"
-#include "Goknar/Log.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Framebuffer.h"
 
@@ -163,6 +164,14 @@ void Texture::PreInit()
 	}
 
 	rendererTextureId_ = engine->GetGraphicsAPI()->CreateTexture();
+	
+	int maxCombinedUnits;
+	engine->GetGraphicsAPI()->GetIntegerv(GraphicsParameterName::MaxCombinedTextureImageUnits, &maxCombinedUnits);
+
+	// TODO: Texture id and texture units are seperate concepts
+	// Convert 
+	GOKNAR_CORE_ASSERT(rendererTextureId_ < maxCombinedUnits);
+
 	engine->GetGraphicsAPI()->ActivateTextureUnit(rendererTextureId_);
 	engine->GetGraphicsAPI()->BindTexture(textureBindTarget_, rendererTextureId_);
 

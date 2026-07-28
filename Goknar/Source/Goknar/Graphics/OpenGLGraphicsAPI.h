@@ -68,6 +68,17 @@ public:
 	void DispatchCompute(GEuint groupCountX, GEuint groupCountY, GEuint groupCountZ) override;
 	void MemoryBarrier(GraphicsMemoryBarrierFlags barrierFlags) override;
 
+	void GetBooleanv(GraphicsParameterName pname, GEboolean* data) override;
+	void GetDoublev(GraphicsParameterName pname, GEdouble* data) override;
+	void GetFloatv(GraphicsParameterName pname, GEfloat* data) override;
+	void GetIntegerv(GraphicsParameterName pname, GEint* data) override;
+	void GetInteger64v(GraphicsParameterName pname, GEint64* data) override;
+	void GetBooleani_v(GraphicsParameterTarget target, GEuint index, GEboolean* data) override;
+	void GetIntegeri_v(GraphicsParameterTarget target, GEuint index, GEint* data) override;
+	void GetFloati_v(GraphicsParameterTarget target, GEuint index, GEfloat* data) override;
+	void GetDoublei_v(GraphicsParameterTarget target, GEuint index, GEdouble* data) override;
+	void GetInteger64i_v(GraphicsParameterTarget target, GEuint index, GEint64* data) override;
+
 	GEuint CreateTexture() override;
 	void DeleteTexture(GEuint textureId) override;
 	void ActivateTextureUnit(GEuint textureUnit) override;
@@ -103,6 +114,9 @@ public:
 	void BindRenderBuffer(RenderBufferBindTarget target, GEuint renderBufferId) override;
 	void RenderBufferStorage(RenderBufferBindTarget target, RenderBufferInternalType internalType, GEsizei width, GEsizei height) override;
 	void AttachRenderBufferToFrameBuffer(FrameBufferBindTarget frameBufferTarget, RenderBufferAttachment attachment, RenderBufferBindTarget renderBufferTarget, GEuint renderBufferId) override;
+
+	GEenum ToOpenGLParameterName(GraphicsParameterName parameter);
+	GEenum ToOpenGLParameterTarget(GraphicsParameterTarget parameter);
 };
 
 #endif
