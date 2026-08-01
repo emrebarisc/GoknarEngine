@@ -54,6 +54,6 @@ void SpotLightComponent::UpdateComponentToWorldTransformationMatrix()
 {
 	Component::UpdateComponentToWorldTransformationMatrix();
 
-	spotLight_->SetPosition(worldPosition_);
+	spotLight_->SetPosition(GetWorldPosition());
 	spotLight_->SetDirection(GetWorldForwardVector());
 }
