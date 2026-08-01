@@ -137,28 +137,32 @@ void WindowManager::CloseWindow(GLFWwindow* window/* = nullptr*/)
 	glfwSetWindowShouldClose(window, true);
 }
 
-void WindowManager::SetWindowWidth(int w)
+void WindowManager::SetWindowWidth(int w, bool updateViewport/* = true*/)
 {
 	windowWidth_ = w;
-	HandleWindowSizeChange();
+	HandleWindowSizeChange(updateViewport);
 }
 
-void WindowManager::SetWindowHeight(int h)
+void WindowManager::SetWindowHeight(int h, bool updateViewport/* = true*/)
 {
 	windowHeight_ = h;
-	HandleWindowSizeChange();
+	HandleWindowSizeChange(updateViewport);
 }
 
-void WindowManager::SetWindowSize(int w, int h)
+void WindowManager::SetWindowSize(int w, int h, bool updateViewport/* = true*/)
 {
 	windowWidth_ = w;
 	windowHeight_ = h;
-	HandleWindowSizeChange();
+	HandleWindowSizeChange(updateViewport);
 }
 
-void WindowManager::HandleWindowSizeChange()
+void WindowManager::HandleWindowSizeChange(bool updateViewport/* = true*/)
 {
-	UpdateViewport();
+	if (updateViewport)
+	{
+		UpdateViewport();
+	}
+	
 	UpdateWindow();
 	
 	glfwSetWindowSize(mainWindow_, windowWidth_, windowHeight_);

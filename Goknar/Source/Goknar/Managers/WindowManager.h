@@ -33,8 +33,8 @@ public:
 	void UpdateWindow();
 	void UpdateViewport();
 
-	void SetWindowWidth(int w);
-	void SetWindowHeight(int h);
+	void SetWindowWidth(int w, bool updateViewport = true);
+	void SetWindowHeight(int h, bool updateViewport = true);
 	void SetWindowTitle(const char *title);
 	void SetMSAA(int MSAAValue);
 	void SetContextVersion(int major, int minor);
@@ -63,7 +63,7 @@ public:
 	bool GetWindowShouldBeClosed(GLFWwindow* window = nullptr);
 	void CloseWindow(GLFWwindow* window = nullptr);
 
-	void SetWindowSize(int w, int h);
+	void SetWindowSize(int w, int h, bool updateViewport = true);
 	Vector2i GetWindowSize() const
 	{
 		return Vector2i(windowWidth_, windowHeight_);
@@ -73,7 +73,7 @@ public:
 		return Vector2i(framebufferWidth_, framebufferHeight_);
 	}
 
-	void HandleWindowSizeChange();
+	void HandleWindowSizeChange(bool updateViewport = true);
 
 	void AddWindowSizeCallback(const Delegate<void(int, int)>& callback)
 	{
