@@ -35,6 +35,12 @@ namespace
 		alpha = GoknarMath::Clamp(alpha, 0.f, 1.f);
 		return alpha * alpha * (3.f - 2.f * alpha);
 	}
+
+	Matrix ApplyModifierAroundBonePosition(const Matrix& modelSpaceMatrix, const Matrix& modifier)
+	{
+		const Vector3 bonePosition = modelSpaceMatrix.GetTranslation();
+		return Matrix::GetPositionMatrix(bonePosition) * modifier * Matrix::GetPositionMatrix(-bonePosition) * modelSpaceMatrix;
+	}
 }
 
 SkeletalMeshInstance::SkeletalMeshInstance(RenderComponent* parentComponent) :
@@ -77,19 +83,50 @@ void SkeletalMeshInstance::BuildMatricesAndUpdateSockets()
 		localPose_.SetToBindPose(skeleton.bindLocalPose);
 	}
 
-	AnimationRuntime::BuildFinalBoneMatrices(skeleton, localPose_, modelSpaceBoneTransformations_, boneTransformations_);
+	const size_t boneCount = skeleton.boneNames.size();
+	modelSpaceBoneTransformations_.assign(boneCount, Matrix::IdentityMatrix);
+	boneTransformations_.assign(boneCount, Matrix::IdentityMatrix);
 
-	std::unordered_map<int, const Matrix*>::iterator boneIdToAttachedMatrixPointerMapIterator = boneIdToAttachedMatrixPointerMap_.begin();
-	while (boneIdToAttachedMatrixPointerMapIterator != boneIdToAttachedMatrixPointerMap_.end())
+	if (!skeleton.IsValid() || localPose_.localTransforms.size() < boneCount)
 	{
-		const Matrix* matrix = boneIdToAttachedMatrixPointerMapIterator->second;
+		return;
+	}
 
-		if (matrix)
+	const Matrix componentToWorldInverse = parentComponent_->GetComponentToWorldTransformationMatrix().GetInverse();
+
+	for (int boneIndex : skeleton.evaluationOrder)
+	{
+		if (boneIndex < 0 || boneCount <= (size_t)boneIndex)
 		{
-			boneTransformations_[boneIdToAttachedMatrixPointerMapIterator->first] = parentComponent_->GetComponentToWorldTransformationMatrix().GetInverse() * *matrix;
+			continue;
 		}
 
-		++boneIdToAttachedMatrixPointerMapIterator;
+		Matrix localMatrix = localPose_.localTransforms[boneIndex].ToMatrix();
+		const int parentIndex = skeleton.parentIndices[boneIndex];
+		const Matrix parentMatrix = 0 <= parentIndex ? modelSpaceBoneTransformations_[parentIndex] : Matrix::IdentityMatrix;
+		Matrix modelSpaceMatrix = parentMatrix * localMatrix;
+
+		const auto binderIterator = boneIdToMatrixBinderMap_.find(boneIndex);
+		if (binderIterator != boneIdToMatrixBinderMap_.end())
+		{
+			const BoneToMatrixBinder& binder = binderIterator->second;
+			if (binder.matrix)
+			{
+				if (binder.type == BoneToMatrixBineType::Relative)
+				{
+					modelSpaceMatrix = ApplyModifierAroundBonePosition(modelSpaceMatrix, *binder.matrix);
+				}
+				else if (binder.type == BoneToMatrixBineType::World)
+				{
+					modelSpaceMatrix = ApplyModifierAroundBonePosition(
+						modelSpaceMatrix,
+						componentToWorldInverse * *binder.matrix * parentComponent_->GetComponentToWorldTransformationMatrix());
+				}
+			}
+		}
+
+		modelSpaceBoneTransformations_[boneIndex] = modelSpaceMatrix;
+		boneTransformations_[boneIndex] = modelSpaceMatrix * skeleton.inverseBindMatrices[boneIndex];
 	}
 
 	UpdateSocketsFromModelSpacePose();
@@ -625,35 +662,55 @@ void SkeletalMeshInstance::EvaluateBlendSpace2DNode(AnimationGraph& animationGra
 	}
 }
 
-void SkeletalMeshInstance::AttachBoneToMatrixPointer(const std::string& boneName, const Matrix* matrix)
+void SkeletalMeshInstance::AttachBoneToMatrixPointer(const BoneToMatrixBinder& binder)
 {
-	const int boneId = GetMesh()->GetBoneId(boneName);
-
-	if (matrix)
+	if (!GetMesh())
 	{
-		boneIdToAttachedMatrixPointerMap_[boneId] = matrix;
+		return;
+	}
+
+	const int boneId = GetMesh()->FindBoneId(binder.boneName);
+	if (boneId < 0)
+	{
+		return;
+	}
+
+	if (binder.matrix && binder.type != BoneToMatrixBineType::None)
+	{
+		boneIdToMatrixBinderMap_[boneId] = binder;
 	}
 	else
 	{
-		decltype(boneIdToAttachedMatrixPointerMap_)::iterator iterator = boneIdToAttachedMatrixPointerMap_.find(boneId);
-
-		if (iterator == boneIdToAttachedMatrixPointerMap_.end())
-		{
-			return;
-		}
-
-		boneIdToAttachedMatrixPointerMap_.erase(iterator);
+		RemoveBoneToMatrixPointer(binder.boneName);
 	}
+}
+
+void SkeletalMeshInstance::AttachBoneToMatrixPointer(const std::string& boneName, Matrix* matrix, BoneToMatrixBineType type)
+{
+	AttachBoneToMatrixPointer({ boneName, type, matrix });
 }
 
 void SkeletalMeshInstance::RemoveBoneToMatrixPointer(const std::string& boneName)
 {
-	const int boneId = GetMesh()->GetBoneId(boneName);
-	decltype(boneIdToAttachedMatrixPointerMap_)::iterator iterator = boneIdToAttachedMatrixPointerMap_.find(boneId);
-	if (iterator != boneIdToAttachedMatrixPointerMap_.end())
+	if (!GetMesh())
 	{
-		boneIdToAttachedMatrixPointerMap_.erase(iterator);
+		return;
 	}
+
+	const int boneId = GetMesh()->FindBoneId(boneName);
+	if (boneId < 0)
+	{
+		return;
+	}
+
+	decltype(boneIdToMatrixBinderMap_)::iterator iterator = boneIdToMatrixBinderMap_.find(boneId);
+
+	if (iterator == boneIdToMatrixBinderMap_.end())
+	{
+		return;
+	}
+
+	boneIdToMatrixBinderMap_.erase(iterator);
 }
 
 void SkeletalMeshInstance::AddMeshInstanceToRenderer()

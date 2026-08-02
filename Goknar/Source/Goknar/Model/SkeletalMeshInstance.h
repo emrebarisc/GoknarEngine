@@ -42,6 +42,20 @@ struct GOKNAR_API SkeletalMeshAnimation
 	int currentKeyframe{ 0 };
 };
 
+enum class BoneToMatrixBineType : unsigned char
+{
+	None = 0,
+	Relative,
+	World
+};
+
+struct GOKNAR_API BoneToMatrixBinder
+{
+	std::string boneName;
+	BoneToMatrixBineType type{ BoneToMatrixBineType::None };
+	Matrix* matrix{ nullptr };
+};
+
 class GOKNAR_API SkeletalMeshInstance : public IMeshInstance<SkeletalMesh>
 {
 public:
@@ -53,7 +67,8 @@ public:
 
 	void PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData = { false, {} }, const KeyframeData& keyframeData = {});
 
-	void AttachBoneToMatrixPointer(const std::string& boneName, const Matrix* matrix);
+	void AttachBoneToMatrixPointer(const BoneToMatrixBinder& binder);
+	void AttachBoneToMatrixPointer(const std::string& boneName, Matrix* matrix, BoneToMatrixBineType type = BoneToMatrixBineType::Relative);
 	void RemoveBoneToMatrixPointer(const std::string& boneName);
 
 	void PrepareForTheCurrentFrame();
@@ -95,7 +110,7 @@ private:
 	bool hasGraphPose_{ false };
 	bool graphPoseWasUpdatedThisFrame_{ false };
 	std::unordered_map<std::string, SocketComponent*> sockets_{};
-	std::unordered_map<int, const Matrix*> boneIdToAttachedMatrixPointerMap_{};
+	std::unordered_map<int, BoneToMatrixBinder> boneIdToMatrixBinderMap_{};
 };
 
 #endif
