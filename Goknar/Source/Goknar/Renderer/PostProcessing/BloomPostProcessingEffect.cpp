@@ -156,7 +156,7 @@ void BloomPostProcessingEffect::PostInit()
 
 Texture* BloomPostProcessingEffect::Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height)
 {
-	if (!GetIsEnabled() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0 || bloomIntensity_ <= 0.f)
+	if (!GetIsActive() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0 || bloomIntensity_ <= 0.f)
 	{
 		return const_cast<Texture*>(inputTexture);
 	}

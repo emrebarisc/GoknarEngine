@@ -126,7 +126,7 @@ void TemporalAntiAliasingPostProcessingEffect::PrepareFrame(const DeferredRender
 		return;
 	}
 
-	if (!deferredRenderingData || !GetIsEnabled())
+	if (!deferredRenderingData || !GetIsActive())
 	{
 		camera->SetTemporalJitter(Vector2::ZeroVector);
 
@@ -160,7 +160,7 @@ Texture* TemporalAntiAliasingPostProcessingEffect::Render(const DeferredRenderin
 {
 	GOKNAR_PROFILE_FUNCTION();
 
-	if (!GetIsEnabled() || !GetComputeShader() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0)
+	if (!GetIsActive() || !GetComputeShader() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0)
 	{
 		return const_cast<Texture*>(inputTexture);
 	}

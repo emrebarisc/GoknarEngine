@@ -535,7 +535,7 @@ void Renderer::ApplyPostProcessing(DeferredRenderingData* deferredRenderingData,
 
 	for (PostProcessingEffect* postProcessingEffect : postProcessingEffects_)
 	{
-		if (!postProcessingEffect || !postProcessingEffect->GetIsEnabled())
+		if (!postProcessingEffect || !postProcessingEffect->GetIsActive())
 		{
 			continue;
 		}

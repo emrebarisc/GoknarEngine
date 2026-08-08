@@ -52,7 +52,7 @@ void PostProcessingEffect::PrepareFrame(const DeferredRenderingData* deferredRen
 
 Texture* PostProcessingEffect::Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height)
 {
-	if (!isEnabled_ || !computeShader_ || !inputTexture || width <= 0 || height <= 0)
+	if (!isActive_ || !computeShader_ || !inputTexture || width <= 0 || height <= 0)
 	{
 		return const_cast<Texture*>(inputTexture);
 	}

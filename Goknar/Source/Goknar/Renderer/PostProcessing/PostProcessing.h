@@ -42,14 +42,14 @@ public:
 		return outputTexture_;
 	}
 
-	void SetIsEnabled(bool isEnabled)
+	void SetIsActive(bool isEnabled)
 	{
-		isEnabled_ = isEnabled;
+		isActive_ = isEnabled;
 	}
 
-	bool GetIsEnabled() const
+	bool GetIsActive() const
 	{
-		return isEnabled_;
+		return isActive_;
 	}
 
 	virtual Texture* Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height);
@@ -68,7 +68,7 @@ protected:
 	int height_{ 0 };
 
 private:
-	bool isEnabled_{ true };
+	bool isActive_{ true };
 };
 
 #endif

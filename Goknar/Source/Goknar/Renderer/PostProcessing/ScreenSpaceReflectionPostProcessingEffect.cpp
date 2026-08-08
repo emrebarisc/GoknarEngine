@@ -56,7 +56,7 @@ Texture* ScreenSpaceReflectionPostProcessingEffect::Render(const DeferredRenderi
 {
 	GOKNAR_PROFILE_FUNCTION();
 
-	if (!GetIsEnabled() || !GetComputeShader() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0)
+	if (!GetIsActive() || !GetComputeShader() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0)
 	{
 		return const_cast<Texture*>(inputTexture);
 	}
