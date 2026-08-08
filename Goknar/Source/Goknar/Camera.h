@@ -174,7 +174,7 @@ public:
 	void SetImageWidth(int width)
 	{
 		imageWidth_ = width;
-		UpdateNearPlane();
+		SetFOV(fov_);
 	}
 
 	int GetImageWidth() const
@@ -185,7 +185,7 @@ public:
 	void SetImageHeight(int height)
 	{
 		imageHeight_ = height;
-		UpdateNearPlane();
+		SetFOV(fov_);
 	}
 
 	int GetImageHeight() const
@@ -229,6 +229,8 @@ public:
 
 	void SetFOV(float fovInDegrees)
 	{
+		fov_ = fovInDegrees;
+
 		float resolutionProportion = (float)imageWidth_ / imageHeight_;
 
 		float halfOfFovY = fovInDegrees * 0.5f;
@@ -344,6 +346,7 @@ private:
 
 	float nearDistance_{ 1.f };
 	float farDistance_{ 1000.f };
+	float fov_{ 60.f };
 	int imageWidth_{ 1600 };
 	int imageHeight_{ 900 };
 	unsigned int renderMask_{ 0xFF };
