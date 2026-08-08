@@ -189,6 +189,7 @@ void DebugDrawer::DrawBox(
 	DrawLine(corners[3], corners[7], color, thickness, time, box);
 
 	box->SetName("DebugObject_DebugBox");
+	box->SetParent(owner);
 #endif
 }
 
