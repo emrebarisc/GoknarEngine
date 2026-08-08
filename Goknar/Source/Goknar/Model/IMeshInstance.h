@@ -102,8 +102,10 @@ public:
 		return materials_;
 	}
 
-	const IMaterialBase* GetMaterial(int index) const
+	IMaterialBase* GetMaterial(int index) const
 	{
+		GOKNAR_CORE_ASSERT(index < materials_.size(), "Requested material index is greater than material size");
+
 		IMaterialBase* material = materials_[index];
 
 		if (!material)
