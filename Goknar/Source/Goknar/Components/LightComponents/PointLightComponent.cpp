@@ -5,8 +5,7 @@
 #include "Goknar/Lights/PointLight.h"
 
 PointLightComponent::PointLightComponent(Component* parentComponent) :
-	Component(parentComponent),
-	pointLight_(new PointLight())
+	LightComponent<PointLight>(parentComponent)
 {
 }
 
@@ -14,42 +13,36 @@ PointLightComponent::~PointLightComponent()
 {
 }
 
-void PointLightComponent::Destroy()
-{
-	Component::Destroy();
-}
-
 Component* PointLightComponent::Clone() const
 {
 	PointLightComponent* clonedComponent = new PointLightComponent((Component*)nullptr);
 	CopyValuesTo(clonedComponent);
 
-	if (pointLight_ && clonedComponent->pointLight_)
+	if (light_ && clonedComponent->light_)
 	{
-		clonedComponent->pointLight_->SetPosition(pointLight_->GetPosition());
-		clonedComponent->pointLight_->SetColor(pointLight_->GetColor());
-		clonedComponent->pointLight_->SetIntensity(pointLight_->GetIntensity());
-		clonedComponent->pointLight_->SetShadowIntensity(pointLight_->GetShadowIntensity());
-		clonedComponent->pointLight_->SetLightMobility(pointLight_->GetLightMobility());
-		clonedComponent->pointLight_->SetName(pointLight_->GetName());
-		clonedComponent->pointLight_->SetIsShadowEnabled(pointLight_->GetIsShadowEnabled());
-		clonedComponent->pointLight_->SetShadowWidth(pointLight_->GetShadowWidth());
-		clonedComponent->pointLight_->SetShadowHeight(pointLight_->GetShadowHeight());
-		clonedComponent->pointLight_->SetRadius(pointLight_->GetRadius());
+		clonedComponent->light_->SetPosition(light_->GetPosition());
+		clonedComponent->light_->SetColor(light_->GetColor());
+		clonedComponent->light_->SetIntensity(light_->GetIntensity());
+		clonedComponent->light_->SetShadowIntensity(light_->GetShadowIntensity());
+		clonedComponent->light_->SetLightMobility(light_->GetLightMobility());
+		clonedComponent->light_->SetName(light_->GetName());
+		clonedComponent->light_->SetIsShadowEnabled(light_->GetIsShadowEnabled());
+		clonedComponent->light_->SetShadowWidth(light_->GetShadowWidth());
+		clonedComponent->light_->SetShadowHeight(light_->GetShadowHeight());
+		clonedComponent->light_->SetRadius(light_->GetRadius());
 	}
 
 	return clonedComponent;
 }
 
-void PointLightComponent::DestroyInner()
-{
-	Component::DestroyInner();
-	delete pointLight_;
-}
-
 void PointLightComponent::UpdateComponentToWorldTransformationMatrix()
 {
-	Component::UpdateComponentToWorldTransformationMatrix();
+	LightComponent<PointLight>::UpdateComponentToWorldTransformationMatrix();
 
-	pointLight_->SetPosition(worldPosition_);
+	if (!isInitialized_)
+	{
+		return;
+	}
+
+	light_->SetPosition(worldPosition_);
 }

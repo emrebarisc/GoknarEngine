@@ -2,31 +2,22 @@
 #define __SPOTLIGHTCOMPONENT_H__
 
 #include "Core.h"
-#include "Goknar/Components/Component.h"
+#include "LightComponent.h"
 
-class SpotLight;
+#include "Goknar/Lights/SpotLight.h"
 
-class GOKNAR_API SpotLightComponent : public Component
+class GOKNAR_API SpotLightComponent : public LightComponent<SpotLight>
 {
 public:
 	SpotLightComponent(Component* parentComponent);
 	virtual ~SpotLightComponent();
 
-	virtual void Destroy() override;
 	Component* Clone() const override;
 
-	SpotLight* GetSpotLight() const
-	{
-		return spotLight_;
-	}
-
 protected:
-	virtual void UpdateComponentToWorldTransformationMatrix();
+	virtual void UpdateComponentToWorldTransformationMatrix() override;
 
 private:
-	virtual void DestroyInner() override;
-
-	SpotLight* spotLight_{ nullptr };
 };
 
 #endif

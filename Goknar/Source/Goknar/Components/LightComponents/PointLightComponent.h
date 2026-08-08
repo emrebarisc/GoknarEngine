@@ -2,31 +2,22 @@
 #define __POINTLIGHTCOMPONENT_H__
 
 #include "Core.h"
-#include "Goknar/Components/Component.h"
+#include "LightComponent.h"
 
-class PointLight;
+#include "Goknar/Lights/PointLight.h"
 
-class GOKNAR_API PointLightComponent : public Component
+class GOKNAR_API PointLightComponent : public LightComponent<PointLight>
 {
 public:
 	PointLightComponent(Component* parentComponent);
 	virtual ~PointLightComponent();
 
-	virtual void Destroy() override;
 	Component* Clone() const override;
 
-	PointLight* GetPointLight() const
-	{
-		return pointLight_;
-	}
-
 protected:
-	virtual void UpdateComponentToWorldTransformationMatrix();
+	virtual void UpdateComponentToWorldTransformationMatrix() override;
 
 private:
-	virtual void DestroyInner() override;
-
-	PointLight* pointLight_{ nullptr };
 };
 
 #endif

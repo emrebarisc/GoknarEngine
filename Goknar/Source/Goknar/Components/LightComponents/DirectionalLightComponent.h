@@ -2,31 +2,22 @@
 #define __DIRECTIONALLIGHTCOMPONENT_H__
 
 #include "Core.h"
-#include "Goknar/Components/Component.h"
+#include "LightComponent.h"
 
-class DirectionalLight;
+#include "Goknar/Lights/DirectionalLight.h"
 
-class GOKNAR_API DirectionalLightComponent : public Component
+class GOKNAR_API DirectionalLightComponent : public LightComponent<DirectionalLight>
 {
 public:
 	DirectionalLightComponent(Component* parentComponent);
 	virtual ~DirectionalLightComponent();
 
-	virtual void Destroy() override;
 	Component* Clone() const override;
 
-	DirectionalLight* GetDirectionalLight() const
-	{
-		return directionalLight_;
-	}
-
 protected:
-	virtual void UpdateComponentToWorldTransformationMatrix();
+	virtual void UpdateComponentToWorldTransformationMatrix() override;
 
 private:
-	virtual void DestroyInner() override;
-
-	DirectionalLight* directionalLight_{ nullptr };
 };
 
 #endif

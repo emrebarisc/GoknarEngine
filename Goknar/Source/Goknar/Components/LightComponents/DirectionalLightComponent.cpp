@@ -5,8 +5,7 @@
 #include "Goknar/Lights/DirectionalLight.h"
 
 DirectionalLightComponent::DirectionalLightComponent(Component* parentComponent) :
-	Component(parentComponent),
-	directionalLight_(new DirectionalLight())
+	LightComponent<DirectionalLight>(parentComponent)
 {
 }
 
@@ -14,43 +13,37 @@ DirectionalLightComponent::~DirectionalLightComponent()
 {
 }
 
-void DirectionalLightComponent::Destroy()
-{
-	Component::Destroy();
-}
-
 Component* DirectionalLightComponent::Clone() const
 {
 	DirectionalLightComponent* clonedComponent = new DirectionalLightComponent((Component*)nullptr);
 	CopyValuesTo(clonedComponent);
 
-	if (directionalLight_ && clonedComponent->directionalLight_)
+	if (light_ && clonedComponent->light_)
 	{
-		clonedComponent->directionalLight_->SetPosition(directionalLight_->GetPosition());
-		clonedComponent->directionalLight_->SetDirection(directionalLight_->GetDirection());
-		clonedComponent->directionalLight_->SetColor(directionalLight_->GetColor());
-		clonedComponent->directionalLight_->SetIntensity(directionalLight_->GetIntensity());
-		clonedComponent->directionalLight_->SetShadowIntensity(directionalLight_->GetShadowIntensity());
-		clonedComponent->directionalLight_->SetLightMobility(directionalLight_->GetLightMobility());
-		clonedComponent->directionalLight_->SetName(directionalLight_->GetName());
-		clonedComponent->directionalLight_->SetIsShadowEnabled(directionalLight_->GetIsShadowEnabled());
-		clonedComponent->directionalLight_->SetShadowWidth(directionalLight_->GetShadowWidth());
-		clonedComponent->directionalLight_->SetShadowHeight(directionalLight_->GetShadowHeight());
+		clonedComponent->light_->SetPosition(light_->GetPosition());
+		clonedComponent->light_->SetDirection(light_->GetDirection());
+		clonedComponent->light_->SetColor(light_->GetColor());
+		clonedComponent->light_->SetIntensity(light_->GetIntensity());
+		clonedComponent->light_->SetShadowIntensity(light_->GetShadowIntensity());
+		clonedComponent->light_->SetLightMobility(light_->GetLightMobility());
+		clonedComponent->light_->SetName(light_->GetName());
+		clonedComponent->light_->SetIsShadowEnabled(light_->GetIsShadowEnabled());
+		clonedComponent->light_->SetShadowWidth(light_->GetShadowWidth());
+		clonedComponent->light_->SetShadowHeight(light_->GetShadowHeight());
 	}
 
 	return clonedComponent;
 }
 
-void DirectionalLightComponent::DestroyInner()
-{
-	Component::DestroyInner();
-	delete directionalLight_;
-}
-
 void DirectionalLightComponent::UpdateComponentToWorldTransformationMatrix()
 {
-	Component::UpdateComponentToWorldTransformationMatrix();
+	LightComponent<DirectionalLight>::UpdateComponentToWorldTransformationMatrix();
 
-	directionalLight_->SetPosition(worldPosition_);
-	directionalLight_->SetDirection(GetWorldForwardVector());
+	if (!isInitialized_)
+	{
+		return;
+	}
+
+	light_->SetPosition(worldPosition_);
+	light_->SetDirection(GetWorldForwardVector());
 }

@@ -5,8 +5,7 @@
 #include "Goknar/Lights/SpotLight.h"
 
 SpotLightComponent::SpotLightComponent(Component* parentComponent) :
-	Component(parentComponent),
-	spotLight_(new SpotLight())
+	LightComponent<SpotLight>(parentComponent)
 {
 }
 
@@ -14,46 +13,40 @@ SpotLightComponent::~SpotLightComponent()
 {
 }
 
-void SpotLightComponent::Destroy()
-{
-	Component::Destroy();
-}
-
 Component* SpotLightComponent::Clone() const
 {
 	SpotLightComponent* clonedComponent = new SpotLightComponent((Component*)nullptr);
 	CopyValuesTo(clonedComponent);
 
-	if (spotLight_ && clonedComponent->spotLight_)
+	if (light_ && clonedComponent->light_)
 	{
-		clonedComponent->spotLight_->SetPosition(spotLight_->GetPosition());
-		clonedComponent->spotLight_->SetDirection(spotLight_->GetDirection());
-		clonedComponent->spotLight_->SetFalloffAngle(spotLight_->GetFalloffAngle());
-		clonedComponent->spotLight_->SetCoverageAngle(spotLight_->GetCoverageAngle());
-		clonedComponent->spotLight_->SetColor(spotLight_->GetColor());
-		clonedComponent->spotLight_->SetIntensity(spotLight_->GetIntensity());
-		clonedComponent->spotLight_->SetShadowIntensity(spotLight_->GetShadowIntensity());
-		clonedComponent->spotLight_->SetLightMobility(spotLight_->GetLightMobility());
-		clonedComponent->spotLight_->SetName(spotLight_->GetName());
-		clonedComponent->spotLight_->SetIsShadowEnabled(spotLight_->GetIsShadowEnabled());
-		clonedComponent->spotLight_->SetShadowWidth(spotLight_->GetShadowWidth());
-		clonedComponent->spotLight_->SetShadowHeight(spotLight_->GetShadowHeight());
-		clonedComponent->spotLight_->SetRadius(spotLight_->GetRadius());
+		clonedComponent->light_->SetPosition(light_->GetPosition());
+		clonedComponent->light_->SetDirection(light_->GetDirection());
+		clonedComponent->light_->SetFalloffAngle(light_->GetFalloffAngle());
+		clonedComponent->light_->SetCoverageAngle(light_->GetCoverageAngle());
+		clonedComponent->light_->SetColor(light_->GetColor());
+		clonedComponent->light_->SetIntensity(light_->GetIntensity());
+		clonedComponent->light_->SetShadowIntensity(light_->GetShadowIntensity());
+		clonedComponent->light_->SetLightMobility(light_->GetLightMobility());
+		clonedComponent->light_->SetName(light_->GetName());
+		clonedComponent->light_->SetIsShadowEnabled(light_->GetIsShadowEnabled());
+		clonedComponent->light_->SetShadowWidth(light_->GetShadowWidth());
+		clonedComponent->light_->SetShadowHeight(light_->GetShadowHeight());
+		clonedComponent->light_->SetRadius(light_->GetRadius());
 	}
 
 	return clonedComponent;
 }
 
-void SpotLightComponent::DestroyInner()
-{
-	Component::DestroyInner();
-	delete spotLight_;
-}
-
 void SpotLightComponent::UpdateComponentToWorldTransformationMatrix()
 {
-	Component::UpdateComponentToWorldTransformationMatrix();
+	LightComponent<SpotLight>::UpdateComponentToWorldTransformationMatrix();
 
-	spotLight_->SetPosition(GetWorldPosition());
-	spotLight_->SetDirection(GetWorldForwardVector());
+	if (!isInitialized_)
+	{
+		return;
+	}
+
+	light_->SetPosition(GetWorldPosition());
+	light_->SetDirection(GetWorldForwardVector());
 }
