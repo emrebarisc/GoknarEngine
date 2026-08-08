@@ -346,7 +346,7 @@ private:
 	float farDistance_{ 1000.f };
 	int imageWidth_{ 1600 };
 	int imageHeight_{ 900 };
-	unsigned int renderMask_{ 0b1 };
+	unsigned int renderMask_{ 0xFF };
 
 	CameraProjection projection_{ CameraProjection::Perspective };
 	CameraType cameraType_{ CameraType::Scene };
