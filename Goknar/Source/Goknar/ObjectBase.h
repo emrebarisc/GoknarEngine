@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <memory>
 
 #include "Core.h"
 
@@ -152,10 +153,10 @@ public:
 	T* AddSubComponent();
 
 	template<class T>
-	T* GetFirstComponentOfType();
+	inline T* GetFirstComponentOfType();
 	
 	template<class T>
-	std::vector<T*> GetComponentsOfType();
+	inline const std::shared_ptr<std::vector<T*>> GetComponentsOfType();
 
 	inline const std::vector<Component*>& GetComponents() const
 	{
@@ -184,6 +185,12 @@ public:
 	{
 		return children_;
 	}
+
+	template<class T>
+	inline T* GetFirstChildOfType() const;
+
+	template<class T>
+	inline const std::shared_ptr<std::vector<T*>> GetChildrenOfType() const;
 
 	Vector3 GetRelativePositionInWorldSpace(const Vector3& relativePosition);
 	Vector3 GetWorldPositionInRelativeSpace(const Vector3& positionInWorldSpace);
@@ -245,7 +252,7 @@ T* ObjectBase::AddSubComponent()
 }
 
 template<class T>
-T* ObjectBase::GetFirstComponentOfType()
+inline T* ObjectBase::GetFirstComponentOfType()
 {
 	std::vector<Component *>::iterator componentIterator = components_.begin();
 	for (; componentIterator != components_.end(); ++componentIterator)
@@ -261,9 +268,9 @@ T* ObjectBase::GetFirstComponentOfType()
 }
 
 template<class T>
-std::vector<T*> ObjectBase::GetComponentsOfType()
+inline const std::shared_ptr<std::vector<T*>> ObjectBase::GetComponentsOfType()
 {
-	std::vector<T*> components;
+	const std::shared_ptr<std::vector<T*>> components = std::make_shared<std::vector<T*>>();
 
 	std::vector<Component *>::iterator componentIterator = components_.begin();
 	for (; componentIterator != components_.end(); ++componentIterator)
@@ -271,11 +278,48 @@ std::vector<T*> ObjectBase::GetComponentsOfType()
 		T* component = dynamic_cast<T*>(*componentIterator);
 		if(component != nullptr)
 		{
-			components.push_back(component);
+			components->push_back(component);
 		}
 	}
 	
 	return components;
 }
 
+template<class T>
+inline T* ObjectBase::GetFirstChildOfType() const
+{
+	std::vector<ObjectBase*>::const_iterator childIterator = children_.cbegin();
+
+	while (childIterator != children_.cend())
+	{
+		if (T* child = dynamic_cast<T*>(*childIterator))
+		{
+			return child;
+		}
+
+		++childIterator;
+	}
+
+	return nullptr;
+}
+
+template<class T>
+inline const std::shared_ptr<std::vector<T*>> ObjectBase::GetChildrenOfType() const
+{
+	std::shared_ptr<std::vector<T*>> childrenOfType = std::make_shared<std::vector<T*>>();
+
+	std::vector<ObjectBase*>::const_iterator childIterator = children_.cbegin();
+
+	while (childIterator != children_.cend())
+	{
+		if (T* child = dynamic_cast<T*>(*childIterator))
+		{
+			childrenOfType->push_back(child);
+		}
+
+		++childIterator;
+	}
+
+	return childrenOfType;
+}
 #endif
