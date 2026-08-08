@@ -96,6 +96,13 @@ public:
 		return GUID_;
 	}
 
+	bool GetIsActive() const
+	{
+		return isActive_;
+	}
+
+	virtual void SetIsActive(bool isActive);
+
 	bool GetIsShadowEnabled() const
 	{
 		return isShadowEnabled_;
@@ -175,6 +182,7 @@ protected:
 	float intensity_{ 1.f };
 	float shadowIntensity_{ 0.1f };
 
+	bool isActive_{ true };
 	bool isShadowEnabled_{ false };
 
 	LightMobility mobility_{ LightMobility::Static };

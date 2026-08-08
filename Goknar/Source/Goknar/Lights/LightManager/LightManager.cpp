@@ -127,14 +127,19 @@ void LightManager::UpdateAllDirectionalLightDataOnGPU()
 	std::vector<DirectionalLight*>::const_iterator directionalLightIterator = directionalLights.cbegin();
 	while (directionalLightIndex < MAX_DIRECTIONAL_LIGHT_COUNT && directionalLightIterator != directionalLights.cend())
 	{
-		directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].direction = directionalLights[directionalLightIndex]->GetDirection();
-		directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].intensity = directionalLights[directionalLightIndex]->GetIntensity() * directionalLights[directionalLightIndex]->GetColor();
-		directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].isCastingShadow = directionalLights[directionalLightIndex]->GetIsShadowEnabled();
-		directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].shadowIntensity = directionalLights[directionalLightIndex]->GetShadowIntensity();
+		DirectionalLight* directionalLight = directionalLights[directionalLightIndex];
 
-		directionalLights[directionalLightIndex]->SetUniformBufferIndex(directionalLightIndex);
+		if (directionalLight->GetIsActive())
+		{
+			directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].direction = directionalLight->GetDirection();
+			directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].intensity = directionalLight->GetIntensity() * directionalLight->GetColor();
+			directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].isCastingShadow = directionalLight->GetIsShadowEnabled();
+			directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].shadowIntensity = directionalLight->GetShadowIntensity();
 
-		++directionalLightIndex;
+			directionalLight->SetUniformBufferIndex(directionalLightIndex);
+			++directionalLightIndex;
+		}
+
 		++directionalLightIterator;
 	}
 	directionalLightBufferInfo.directionalLightCount = directionalLightIndex;
@@ -159,15 +164,20 @@ void LightManager::UpdateAllPointLightDataOnGPU()
 	std::vector<PointLight*>::const_iterator pointLightIterator = pointLights.cbegin();
 	while (pointLightIndex < MAX_POINT_LIGHT_COUNT && pointLightIterator != pointLights.cend())
 	{
-		pointLightBufferInfo.pointLightInfo[pointLightIndex].position = pointLights[pointLightIndex]->GetPosition();
-		pointLightBufferInfo.pointLightInfo[pointLightIndex].radius = pointLights[pointLightIndex]->GetRadius();
-		pointLightBufferInfo.pointLightInfo[pointLightIndex].intensity = pointLights[pointLightIndex]->GetIntensity() * pointLights[pointLightIndex]->GetColor();
-		pointLightBufferInfo.pointLightInfo[pointLightIndex].isCastingShadow = pointLights[pointLightIndex]->GetIsShadowEnabled();
-		pointLightBufferInfo.pointLightInfo[pointLightIndex].shadowIntensity = pointLights[pointLightIndex]->GetShadowIntensity();
+		PointLight* pointLight = pointLights[pointLightIndex];
 
-		pointLights[pointLightIndex]->SetUniformBufferIndex(pointLightIndex);
+		if (pointLight->GetIsActive())
+		{
+			pointLightBufferInfo.pointLightInfo[pointLightIndex].position = pointLight->GetPosition();
+			pointLightBufferInfo.pointLightInfo[pointLightIndex].radius = pointLight->GetRadius();
+			pointLightBufferInfo.pointLightInfo[pointLightIndex].intensity = pointLight->GetIntensity() * pointLight->GetColor();
+			pointLightBufferInfo.pointLightInfo[pointLightIndex].isCastingShadow = pointLight->GetIsShadowEnabled();
+			pointLightBufferInfo.pointLightInfo[pointLightIndex].shadowIntensity = pointLight->GetShadowIntensity();
 
-		++pointLightIndex;
+			pointLight->SetUniformBufferIndex(pointLightIndex);
+			++pointLightIndex;
+		}
+
 		++pointLightIterator;
 	}
 	pointLightBufferInfo.pointLightCount = pointLightIndex;
@@ -192,17 +202,23 @@ void LightManager::UpdateAllSpotLightDataOnGPU()
 	std::vector<SpotLight*>::const_iterator spotLightIterator = spotLights.cbegin();
 	while (spotLightIndex < MAX_SPOT_LIGHT_COUNT && spotLightIterator != spotLights.cend())
 	{
-		spotLightBufferInfo.spotLightInfo[spotLightIndex].position = spotLights[spotLightIndex]->GetPosition();
-		spotLightBufferInfo.spotLightInfo[spotLightIndex].coverageAngle = spotLights[spotLightIndex]->GetCoverageAngle();
-		spotLightBufferInfo.spotLightInfo[spotLightIndex].direction = spotLights[spotLightIndex]->GetDirection();
-		spotLightBufferInfo.spotLightInfo[spotLightIndex].falloffAngle = spotLights[spotLightIndex]->GetFalloffAngle();
-		spotLightBufferInfo.spotLightInfo[spotLightIndex].intensity = spotLights[spotLightIndex]->GetIntensity() * spotLights[spotLightIndex]->GetColor();
-		spotLightBufferInfo.spotLightInfo[spotLightIndex].isCastingShadow = spotLights[spotLightIndex]->GetIsShadowEnabled();
-		spotLightBufferInfo.spotLightInfo[spotLightIndex].shadowIntensity = spotLights[spotLightIndex]->GetShadowIntensity();
+		SpotLight* spotLight = spotLights[spotLightIndex];
 
-		spotLights[spotLightIndex]->SetUniformBufferIndex(spotLightIndex);
+		if (spotLight->GetIsActive())
+		{
 
-		++spotLightIndex;
+			spotLightBufferInfo.spotLightInfo[spotLightIndex].position = spotLight->GetPosition();
+			spotLightBufferInfo.spotLightInfo[spotLightIndex].coverageAngle = spotLight->GetCoverageAngle();
+			spotLightBufferInfo.spotLightInfo[spotLightIndex].direction = spotLight->GetDirection();
+			spotLightBufferInfo.spotLightInfo[spotLightIndex].falloffAngle = spotLight->GetFalloffAngle();
+			spotLightBufferInfo.spotLightInfo[spotLightIndex].intensity = spotLight->GetIntensity() * spotLight->GetColor();
+			spotLightBufferInfo.spotLightInfo[spotLightIndex].isCastingShadow = spotLight->GetIsShadowEnabled();
+			spotLightBufferInfo.spotLightInfo[spotLightIndex].shadowIntensity = spotLight->GetShadowIntensity();
+
+			spotLight->SetUniformBufferIndex(spotLightIndex);
+			++spotLightIndex;
+		}
+
 		++spotLightIterator;
 	}
 	spotLightBufferInfo.spotLightCount = spotLightIndex;
@@ -232,6 +248,12 @@ void LightManager::RenderShadowMaps()
 	for (size_t i = 0; i < pointLightCount; i++)
 	{
 		PointLight* pointLight = pointLights[i];
+
+		if (!pointLight->GetIsActive())
+		{
+			continue;
+		}
+
 		if (!pointLight->GetIsShadowEnabled())
 		{
 			continue;
@@ -247,9 +269,14 @@ void LightManager::RenderShadowMaps()
 		size_t directionalLightCount = directionalLights.size();
 		for (size_t i = 0; i < directionalLightCount; i++)
 		{
+			DirectionalLight* directionalLight = directionalLights[i];
+			if (!directionalLight->GetIsActive())
+			{
+				continue;
+			}
+
 			cameraManager->SetActiveCamera(mainCamera);
 
-			DirectionalLight* directionalLight = directionalLights[i];
 			if (!directionalLight->GetIsShadowEnabled())
 			{
 				continue;
@@ -265,6 +292,12 @@ void LightManager::RenderShadowMaps()
 	for (size_t i = 0; i < spotLightCount; i++)
 	{
 		SpotLight* spotLight = spotLights[i];
+
+		if (!spotLight->GetIsActive())
+		{
+			continue;
+		}
+
 		if (!spotLight->GetIsShadowEnabled())
 		{
 			continue;
@@ -387,5 +420,17 @@ void LightManager::OnSpotLightRemoved(SpotLight* spotLight)
 	}
 
 	//TODO: Temporarily update all corresponding light data
+	UpdateAllSpotLightDataOnGPU();
+}
+
+void LightManager::UpdateLights()
+{
+	if(!isInitialized_)
+	{
+		return;
+	}
+
+	UpdateAllDirectionalLightDataOnGPU();
+	UpdateAllPointLightDataOnGPU();
 	UpdateAllSpotLightDataOnGPU();
 }

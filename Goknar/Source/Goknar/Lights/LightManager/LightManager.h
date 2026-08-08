@@ -47,6 +47,8 @@ public:
 	void OnSpotLightAdded(SpotLight* spotLight);
 	void OnSpotLightRemoved(SpotLight* spotLight);
 
+	void UpdateLights();
+
 protected:
 
 private:

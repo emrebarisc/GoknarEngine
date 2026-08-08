@@ -7,8 +7,10 @@
 #include "Goknar/Engine.h"
 #include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Renderer/Framebuffer.h"
+#include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/Texture.h"
+#include "Goknar/Lights/LightManager/LightManager.h"
 
 Light::~Light()
 {
@@ -80,4 +82,23 @@ void Light::PostInit()
 		shadowMapTexture_->PostInit();
 		EXIT_ON_GRAPHICS_API_ERROR("Light::PostInit");
 	}
+}
+
+void Light::SetIsActive(bool isActive)
+{
+	isActive_ = isActive;
+
+	Renderer* renderer = engine->GetRenderer();
+	if (!renderer)
+	{
+		return;
+	}
+	
+	LightManager* lightManager = renderer->GetLightManager();
+	if (!lightManager)
+	{
+		return;
+	}
+		
+	lightManager->UpdateLights();
 }
