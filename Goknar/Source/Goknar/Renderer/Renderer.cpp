@@ -46,6 +46,7 @@
 #include "Goknar/Renderer/RenderTarget.h"
 #include "Goknar/Renderer/PostProcessing/PostProcessing.h"
 #include "Goknar/Renderer/PostProcessing/BloomPostProcessingEffect.h"
+#include "Goknar/Renderer/PostProcessing/GammaCorrectionPostProcessingEffect.h"
 #include "Goknar/Renderer/PostProcessing/ScreenSpaceReflectionPostProcessingEffect.h"
 #include "Goknar/Renderer/PostProcessing/TemporalAntiAliasingPostProcessingEffect.h"
 
@@ -139,6 +140,7 @@ Renderer::~Renderer()
 
 	delete temporalAntiAliasingPostProcessingEffect_;
 	delete bloomPostProcessingEffect_;
+	delete gammaCorrectionPostProcessingEffect_;
 	delete screenSpaceReflectionPostProcessingEffect_;
 	delete lightManager_;
 	delete deferredRenderingData_;
@@ -201,6 +203,15 @@ void Renderer::PreInit()
 		//	screenSpaceReflectionPostProcessingEffect_->PostInit();
 		//	AddPostProcessingEffect(screenSpaceReflectionPostProcessingEffect_);
 		//}
+
+		if (!gammaCorrectionPostProcessingEffect_)
+		{
+			gammaCorrectionPostProcessingEffect_ = new GammaCorrectionPostProcessingEffect();
+			gammaCorrectionPostProcessingEffect_->PreInit();
+			gammaCorrectionPostProcessingEffect_->Init();
+			gammaCorrectionPostProcessingEffect_->PostInit();
+			AddPostProcessingEffect(gammaCorrectionPostProcessingEffect_);
+		}
 	}
 
 	GraphicsAPI()->SetFrontFace(GraphicsFrontFace::CounterClockwise);

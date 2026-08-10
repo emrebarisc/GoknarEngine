@@ -23,6 +23,7 @@ class RenderBuffer;
 class ReflectionProbe;
 class Shader;
 class BloomPostProcessingEffect;
+class GammaCorrectionPostProcessingEffect;
 class TemporalAntiAliasingPostProcessingEffect;
 class ScreenSpaceReflectionPostProcessingEffect;
 
@@ -233,6 +234,11 @@ public:
 
 	const ReflectionProbe* GetClosestReflectionProbe(const Vector3& worldPosition) const;
 
+	GammaCorrectionPostProcessingEffect* GetGammaCorrectionPostProcessingEffect() const
+	{
+		return gammaCorrectionPostProcessingEffect_;
+	}
+
 	int drawCallCount{ 0 };
 	bool countDrawCalls{ false };
 
@@ -325,6 +331,7 @@ private:
 	std::vector<const RenderTarget*> renderTargets_;
 	TemporalAntiAliasingPostProcessingEffect* temporalAntiAliasingPostProcessingEffect_{ nullptr };
 	BloomPostProcessingEffect* bloomPostProcessingEffect_{ nullptr };
+	GammaCorrectionPostProcessingEffect* gammaCorrectionPostProcessingEffect_{ nullptr };
 	ScreenSpaceReflectionPostProcessingEffect* screenSpaceReflectionPostProcessingEffect_{ nullptr };
 	Delegate<void(int, int)> deferredWindowSizeChangedDelegate_{};
 
