@@ -23,11 +23,27 @@ public:
 
 	static InstancedStaticMesh* CreateFromStaticMesh(const StaticMesh* sourceMesh, const std::string& path);
 
-	void AddInstanceTransformation(const Matrix& instanceTransformationMatrix);
-	void SetInstanceTransformations(const std::vector<Matrix>& instanceTransformationMatrices);
-	void SetInstanceTransformationAt(size_t index, const Matrix& instanceTransformationMatrix);
-	void UpdateInstanceTransformationAt(size_t index, const Matrix& instanceTransformationMatrix);
+	void AddInstanceTransformation(const Matrix& instanceTransformationMatrix, bool recalculateAABB = true);
+	void SetInstanceTransformations(const std::vector<Matrix>& instanceTransformationMatrices, bool recalculateAABB = true);
+	void SetInstanceTransformationAt(size_t index, const Matrix& instanceTransformationMatrix, bool recalculateAABB = true);
+	void UpdateInstanceTransformationAt(size_t index, const Matrix& instanceTransformationMatrix, bool recalculateAABB = true);
 	void UpdateAllTransforms();
+	void RecalculateAABB();
+
+	const Box& GetAABB() const
+	{
+		return instancedAABB_;
+	}
+
+	const Box& GetSubMeshInstanceAABB(size_t subMeshIndex) const
+	{
+		if (subMeshIndex < subMeshInstanceAABBs_.size())
+		{
+			return subMeshInstanceAABBs_[subMeshIndex];
+		}
+
+		return GetSubMeshes()[subMeshIndex]->GetAABB();
+	}
 
 	bool HasPendingFullTransformUpload() const
 	{
@@ -65,10 +81,19 @@ public:
 	}
 
 private:
+	static bool IsValidAABB(const Box& aabb);
+	static void ExtendBoundsWithPoint(Box& bounds, bool& hasBounds, const Vector3& point);
+	static void AddTransformedAABBToBounds(
+		const Box& localAABB,
+		const Matrix& transformationMatrix,
+		Box& bounds,
+		bool& hasBounds);
 	static Material* CloneMaterialForInstancedStaticMesh(const Material* sourceMaterial);
 	static MeshUnit* CloneMeshUnitForInstancedStaticMesh(const MeshUnit* sourceMeshUnit);
 
 	std::vector<Matrix> instanceTransformationMatrices_;
+	std::vector<Box> subMeshInstanceAABBs_;
+	Box instancedAABB_{};
 	bool hasPendingFullTransformUpload_{ false };
 	std::string sourceMeshPath_{};
 };

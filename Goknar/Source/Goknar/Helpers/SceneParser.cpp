@@ -1862,7 +1862,8 @@ void SceneParser::ParseInstancedStaticMeshComponentValues(InstancedStaticMeshCom
 			instanceTransformations.push_back(Matrix::GetTransformationMatrix(rotation, translation, scaling));
 		}
 
-		instancedStaticMesh->SetInstanceTransformations(instanceTransformations);
+		instancedStaticMesh->SetInstanceTransformations(instanceTransformations, false);
+		instancedStaticMesh->RecalculateAABB();
 		instancedStaticMesh->UpdateAllTransforms();
 	}
 }

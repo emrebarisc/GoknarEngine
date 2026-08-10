@@ -672,13 +672,16 @@ void Renderer::Render(RenderPassType renderPassType)
 				return;
 			}
 
+			MeshUnit* subMesh = renderData.meshUnit;
+			const int subMeshIndex = renderData.subMeshIndex;
+
+			if (!skipFrustumCulling &&
+				!activeCamera->IsAABBVisible(instancedStaticMesh->GetSubMeshInstanceAABB((size_t)subMeshIndex), instancedStaticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
+
 			if (!BindInstancedStaticMesh(instancedStaticMesh))
 			{
 				return;
 			}
-
-			MeshUnit* subMesh = renderData.meshUnit;
-			const int subMeshIndex = renderData.subMeshIndex;
 
 			if (countDrawCallsInner_) ++drawCallCount;
 
