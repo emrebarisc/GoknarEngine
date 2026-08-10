@@ -2585,7 +2585,7 @@ std::string ShaderBuilder::VS_GetMain(const VertexShaderInitializationData& vert
 		vsMain += VS_GetVertexTangentText();
 		vsMain += VS_GetVertexColorText();
 
-		if (isCubemapRenderPass)
+		if (isPointLightShadowPass || isCubemapRenderPass)
 		{
 			vsMain += R"(
 	gl_Position = )" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + R"(;
