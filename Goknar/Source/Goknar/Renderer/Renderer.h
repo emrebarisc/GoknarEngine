@@ -276,6 +276,7 @@ private:
 
 	struct MeshBufferData
 	{
+		GEuint vertexArrayId{ 0 };
 		GEuint vertexBufferId{ 0 };
 		GEuint indexBufferId{ 0 };
 
@@ -291,10 +292,10 @@ private:
 		GEint meshCount{ 0 };
 	};
 
-	void BindStaticVBO();
+	void BindStaticVAO();
 	bool BindInstancedStaticMesh(InstancedStaticMesh* instancedStaticMesh);
-	void BindSkeletalVBO();
-	void BindDynamicVBO();
+	void BindSkeletalVAO();
+	void BindDynamicVAO();
 	void SetAttribPointers();
 	void SetAttribPointersForInstancedStaticMesh();
 	void SetAttribPointersForSkeletalMesh();
@@ -304,6 +305,7 @@ private:
 	void SortTransparentInstances();
 
 	std::unordered_map<const InstancedStaticMesh*, GEuint> instancedStaticMeshTransformationBufferIdMap_;
+	std::unordered_map<const InstancedStaticMesh*, GEuint> instancedStaticMeshVertexArrayIdMap_;
 
 	std::vector<MeshUnit*> staticMeshUnits_;
 	std::vector<InstancedStaticMesh*> instancedStaticMeshes_;

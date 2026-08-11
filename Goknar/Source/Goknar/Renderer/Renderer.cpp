@@ -146,6 +146,18 @@ Renderer::~Renderer()
 	delete lightManager_;
 	delete deferredRenderingData_;
 
+	GraphicsAPI()->DeleteVertexArray(staticMeshBufferData_.vertexArrayId);
+	for (const auto& [instancedStaticMesh, vertexArrayId] : instancedStaticMeshVertexArrayIdMap_)
+	{
+		if (vertexArrayId != 0)
+		{
+			GraphicsAPI()->DeleteVertexArray(vertexArrayId);
+		}
+	}
+	instancedStaticMeshVertexArrayIdMap_.clear();
+	GraphicsAPI()->DeleteVertexArray(skeletalMeshBufferData_.vertexArrayId);
+	GraphicsAPI()->DeleteVertexArray(dynamicMeshBufferData_.vertexArrayId);
+
 	GraphicsAPI()->DeleteBuffer(staticMeshBufferData_.vertexBufferId);
 	for (const auto& [instancedStaticMesh, transformationBufferId] : instancedStaticMeshTransformationBufferIdMap_)
 	{
@@ -252,6 +264,9 @@ void Renderer::PostInit()
 
 void Renderer::SetStaticBufferData()
 {
+	staticMeshBufferData_.vertexArrayId = GraphicsAPI()->CreateVertexArray();
+	GraphicsAPI()->BindVertexArray(staticMeshBufferData_.vertexArrayId);
+
 	/*
 		Vertex buffer
 	*/
@@ -296,10 +311,14 @@ void Renderer::SetStaticBufferData()
 		}
 	}
 	SetAttribPointers();
+	GraphicsAPI()->BindVertexArray(0);
 }
 
 void Renderer::SetSkeletalBufferData()
 {
+	skeletalMeshBufferData_.vertexArrayId = GraphicsAPI()->CreateVertexArray();
+	GraphicsAPI()->BindVertexArray(skeletalMeshBufferData_.vertexArrayId);
+
 	/*
 		Vertex buffer
 	*/
@@ -359,10 +378,14 @@ void Renderer::SetSkeletalBufferData()
 		}
 	}
 	SetAttribPointersForSkeletalMesh();
+	GraphicsAPI()->BindVertexArray(0);
 }
 
 void Renderer::SetDynamicBufferData()
 {
+	dynamicMeshBufferData_.vertexArrayId = GraphicsAPI()->CreateVertexArray();
+	GraphicsAPI()->BindVertexArray(dynamicMeshBufferData_.vertexArrayId);
+
 	/*
 		Vertex buffer
 	*/
@@ -404,6 +427,7 @@ void Renderer::SetDynamicBufferData()
 	}
 
 	SetAttribPointers();
+	GraphicsAPI()->BindVertexArray(0);
 }
 
 void Renderer::SetBufferData()
@@ -741,7 +765,7 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			if (0 < staticMeshBufferData_.meshCount)
 			{
-				BindStaticVBO();
+				BindStaticVAO();
 
 				for (const StaticMeshRenderData& opaqueStaticMeshRenderData : opaqueStaticMeshRenderData_)
 				{
@@ -769,7 +793,7 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			if (0 < skeletalMeshBufferData_.meshCount)
 			{
-				BindSkeletalVBO();
+				BindSkeletalVAO();
 
 				for (const SkeletalMeshRenderData& opaqueSkeletalMeshRenderData : opaqueSkeletalMeshRenderData_)
 				{
@@ -787,7 +811,7 @@ void Renderer::Render(RenderPassType renderPassType)
 		{
 			if (0 < dynamicMeshBufferData_.meshCount)
 			{
-				BindDynamicVBO();
+				BindDynamicVAO();
 
 				for (const DynamicMeshRenderData& opaqueDynamicMeshRenderData : opaqueDynamicMeshRenderData_)
 				{
@@ -829,7 +853,7 @@ void Renderer::Render(RenderPassType renderPassType)
 		GraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::Blend, true);
 		GraphicsAPI()->SetDepthMask(false);
 
-		BindStaticVBO();
+		BindStaticVAO();
 
 		for (const StaticMeshRenderData& transparentStaticMeshRenderData : transparentStaticMeshRenderData_)
 		{
@@ -849,7 +873,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			RenderInstancedStaticMesh(transparentInstancedStaticMeshRenderData);
 		}
 
-		BindSkeletalVBO();
+		BindSkeletalVAO();
 		for (const SkeletalMeshRenderData& transparentSkeletalMeshRenderData : transparentSkeletalMeshRenderData_)
 		{
 			SkeletalMeshInstance* transparentSkeletalMeshInstance = transparentSkeletalMeshRenderData.meshInstance;
@@ -859,7 +883,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			RenderSkeletalMesh(transparentSkeletalMeshRenderData);
 		}
 
-		BindDynamicVBO();
+		BindDynamicVAO();
 		for (const DynamicMeshRenderData& transparentDynamicMeshRenderData : transparentDynamicMeshRenderData_)
 		{
 			DynamicMeshInstance* transparentDynamicMeshInstance = transparentDynamicMeshRenderData.meshInstance;
@@ -1498,7 +1522,7 @@ void Renderer::SetLightUniforms(Shader* shader)
 
 void Renderer::RenderStaticMesh(StaticMesh* staticMesh)
 {
-	BindStaticVBO();
+	BindStaticVAO();
 
 	for (MeshUnit* subMesh : staticMesh->GetSubMeshes())
 	{
@@ -1509,21 +1533,22 @@ void Renderer::RenderStaticMesh(StaticMesh* staticMesh)
 
 void Renderer::BindStaticMeshBuffers()
 {
-	BindStaticVBO();
+	BindStaticVAO();
 }
 
-void Renderer::BindStaticVBO()
+void Renderer::BindStaticVAO()
 {
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, staticMeshBufferData_.vertexBufferId);
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, staticMeshBufferData_.indexBufferId);
-	SetAttribPointers();
+	GraphicsAPI()->BindVertexArray(staticMeshBufferData_.vertexArrayId);
 }
 
 bool Renderer::BindInstancedStaticMesh(InstancedStaticMesh* instancedStaticMesh)
 {
-	BindStaticVBO();
+	if (!instancedStaticMesh || staticMeshBufferData_.vertexArrayId == 0)
+	{
+		return false;
+	}
 
-	if (instancedStaticMesh && instancedStaticMesh->HasPendingFullTransformUpload())
+	if (instancedStaticMesh->HasPendingFullTransformUpload())
 	{
 		RefreshInstancedStaticMeshTransformations(instancedStaticMesh);
 	}
@@ -1534,23 +1559,40 @@ bool Renderer::BindInstancedStaticMesh(InstancedStaticMesh* instancedStaticMesh)
 		return false;
 	}
 
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, bufferIterator->second);
-	SetAttribPointersForInstancedStaticMesh();
+	const GEuint transformationBufferId = bufferIterator->second;
+	if (transformationBufferId == 0)
+	{
+		return false;
+	}
+
+	GEuint& vertexArrayId = instancedStaticMeshVertexArrayIdMap_[instancedStaticMesh];
+	if (vertexArrayId == 0)
+	{
+		vertexArrayId = GraphicsAPI()->CreateVertexArray();
+		GraphicsAPI()->BindVertexArray(vertexArrayId);
+
+		GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, staticMeshBufferData_.vertexBufferId);
+		GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, staticMeshBufferData_.indexBufferId);
+		SetAttribPointers();
+
+		GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, transformationBufferId);
+		SetAttribPointersForInstancedStaticMesh();
+
+		GraphicsAPI()->BindVertexArray(0);
+	}
+
+	GraphicsAPI()->BindVertexArray(vertexArrayId);
 	return true;
 }
 
-void Renderer::BindSkeletalVBO()
+void Renderer::BindSkeletalVAO()
 {
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, skeletalMeshBufferData_.vertexBufferId);
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, skeletalMeshBufferData_.indexBufferId);
-	SetAttribPointersForSkeletalMesh();
+	GraphicsAPI()->BindVertexArray(skeletalMeshBufferData_.vertexArrayId);
 }
 
-void Renderer::BindDynamicVBO()
+void Renderer::BindDynamicVAO()
 {
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ArrayBuffer, dynamicMeshBufferData_.vertexBufferId);
-	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::ElementArrayBuffer, dynamicMeshBufferData_.indexBufferId);
-	SetAttribPointers();
+	GraphicsAPI()->BindVertexArray(dynamicMeshBufferData_.vertexArrayId);
 }
 
 void Renderer::SetAttribPointers()
@@ -2025,7 +2067,7 @@ void DeferredRenderingData::SetShaderTextureUniforms()
 
 void DeferredRenderingData::Render()
 {
-	engine->GetRenderer()->BindStaticVBO();
+	engine->GetRenderer()->BindStaticMeshBuffers();
 	engine->GetRenderer()->BindShadowTextures(deferredRenderingMeshShader);
 	BindGeometryBufferTextures(deferredRenderingMeshShader);
 	SetShaderTextureUniforms();
