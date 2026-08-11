@@ -42,6 +42,7 @@
 
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
+#include "Goknar/Renderer/GPUFoliageSystem.h"
 #include "Goknar/Renderer/ReflectionProbe.h"
 #include "Goknar/Renderer/RenderTarget.h"
 #include "Goknar/Renderer/PostProcessing/PostProcessing.h"
@@ -799,6 +800,20 @@ void Renderer::Render(RenderPassType renderPassType)
 				}
 			}
 		}
+
+		for (GPUFoliageSystem* gpuFoliageSystem : gpuFoliageSystems_)
+		{
+			if (!gpuFoliageSystem)
+			{
+				continue;
+			}
+
+			const int foliageDrawCount = gpuFoliageSystem->Render(activeCamera, renderPassType, skipFrustumCulling);
+			if (countDrawCallsInner_)
+			{
+				drawCallCount += foliageDrawCount;
+			}
+		}
 	}
 	else
 	{
@@ -1095,6 +1110,28 @@ void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstanc
 
 	removeRenderData(opaqueDynamicMeshRenderData_);
 	removeRenderData(transparentDynamicMeshRenderData_);
+}
+
+void Renderer::AddGPUFoliageSystem(GPUFoliageSystem* foliageSystem)
+{
+	if (!foliageSystem)
+	{
+		return;
+	}
+
+	if (std::find(gpuFoliageSystems_.begin(), gpuFoliageSystems_.end(), foliageSystem) != gpuFoliageSystems_.end())
+	{
+		return;
+	}
+
+	gpuFoliageSystems_.push_back(foliageSystem);
+}
+
+void Renderer::RemoveGPUFoliageSystem(GPUFoliageSystem* foliageSystem)
+{
+	gpuFoliageSystems_.erase(
+		std::remove(gpuFoliageSystems_.begin(), gpuFoliageSystems_.end(), foliageSystem),
+		gpuFoliageSystems_.end());
 }
 
 void Renderer::AddParticleSystem(ParticleSystemBase* particleSystem)

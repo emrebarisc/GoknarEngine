@@ -1,0 +1,24 @@
+#version 440 core
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+layout(binding = 0, rgba16f) uniform writeonly image2D postProcessOutput;
+
+uniform sampler2D inputTexture;
+uniform float inverseGamma;
+
+void main()
+{
+	ivec2 pixelCoordinates = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 outputSize = imageSize(postProcessOutput);
+	if (pixelCoordinates.x >= outputSize.x || pixelCoordinates.y >= outputSize.y)
+	{
+		return;
+	}
+
+	vec2 uv = (vec2(pixelCoordinates) + vec2(0.5)) / vec2(outputSize);
+	vec4 inputColor = textureLod(inputTexture, uv, 0.0);
+	vec3 correctedColor = pow(max(inputColor.rgb, vec3(0.0)), vec3(inverseGamma));
+
+	imageStore(postProcessOutput, pixelCoordinates, vec4(correctedColor, inputColor.a));
+}

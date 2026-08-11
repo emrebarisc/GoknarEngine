@@ -53,6 +53,9 @@ public:
 	std::string ParticleRenderPass_GetStaticMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 	std::string ParticleRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader) const;
 
+	std::string GPUFoliageRenderPass_GetMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader, RenderPassType renderPassType) const;
+	std::string GPUFoliageRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader, RenderPassType renderPassType) const;
+
 	std::string DeferredRenderPass_GetVertexShaderScript();
 	std::string DeferredRenderPass_GetFragmentShaderScript();
 protected:
@@ -81,6 +84,8 @@ private:
 		const Shader* shader{ nullptr };
 		RenderPassType renderPassType{ RenderPassType::Forward };
 		MeshType meshType{ MeshType::None };
+		bool usesGPUFoliageInstanceBuffer{ false };
+		std::string vertexColorExpression;
 	};
 
 	static ShaderBuilder* instance_;
@@ -145,6 +150,7 @@ private:
 	std::string VS_GetSkeletalMeshVariables() const;
 	std::string VS_GetSkeletalMeshUniforms(int boneCount) const;
 	std::string VS_GetInstancedStaticMeshTransformationMatrixCalculation() const;
+	std::string VS_GetGPUFoliageInstanceBuffer() const;
 	std::string VS_GetUniforms() const;
 	std::string VS_GetLightShadowViewMatrixUniforms() const;
 	std::string VS_GetLightOutputs() const;
@@ -156,7 +162,7 @@ private:
 	std::string VS_GetLightSpaceFragmentPositionCalculations() const;
 	std::string VS_GetVertexNormalText(MaterialInitializationData* initializationData) const;
 	std::string VS_GetVertexTangentText(const std::string& tangentExpression = "", const std::string& tangentSignExpression = "") const;
-	std::string VS_GetVertexColorText() const;
+	std::string VS_GetVertexColorText(const std::string& colorExpression = "") const;
 
 	std::string shaderVersion_{ DEFAULT_SHADER_VERSION };
 };

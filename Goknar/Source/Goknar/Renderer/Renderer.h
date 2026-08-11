@@ -16,6 +16,7 @@ class StaticMesh;
 class SkeletalMesh;
 class LightManager;
 class ParticleSystemBase;
+class GPUFoliageSystem;
 
 class Texture;
 class FrameBuffer;
@@ -162,6 +163,8 @@ public:
 	void AddDynamicMeshToRenderer(DynamicMesh* object);
 	void AddDynamicMeshInstance(DynamicMeshInstance* object);
 	void RemoveDynamicMeshInstance(DynamicMeshInstance* object);
+	void AddGPUFoliageSystem(GPUFoliageSystem* foliageSystem);
+	void RemoveGPUFoliageSystem(GPUFoliageSystem* foliageSystem);
 	void AddParticleSystem(ParticleSystemBase* particleSystem);
 	void RemoveParticleSystem(ParticleSystemBase* particleSystem);
 
@@ -317,6 +320,7 @@ private:
 
 	std::vector<DynamicMeshRenderData> opaqueDynamicMeshRenderData_;
 	std::vector<DynamicMeshRenderData> transparentDynamicMeshRenderData_;
+	std::vector<GPUFoliageSystem*> gpuFoliageSystems_;
 	std::vector<ParticleSystemBase*> particleSystems_;
 
 	MeshBufferData staticMeshBufferData_;

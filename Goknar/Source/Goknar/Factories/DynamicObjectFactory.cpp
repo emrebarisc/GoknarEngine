@@ -4,6 +4,7 @@
 
 #include "Goknar/Components/CameraComponent.h"
 #include "Goknar/Components/DynamicMeshComponent.h"
+#include "Goknar/Components/GPUFoliageComponent.h"
 #include "Goknar/Components/InstancedStaticMeshComponent.h"
 #include "Goknar/Components/LightComponents/PointLightComponent.h"
 #include "Goknar/Components/ParticleSystemComponent.h"
@@ -53,6 +54,7 @@ void DynamicObjectFactory::RegisterBuiltInClasses()
 	instance_->RegisterComponentClass<NavigationTreeComponent>("NavigationTreeComponent");
 	instance_->RegisterComponentClass<PointLightComponent>("PointLightComponent");
 	instance_->RegisterComponentClass<DynamicMeshComponent>("DynamicMeshComponent", DynamicComponentOwnerRequirement::ObjectBase, false);
+	instance_->RegisterComponentClass<GPUFoliageComponent>("GPUFoliageComponent");
 	instance_->RegisterComponentClass<InstancedStaticMeshComponent>("InstancedStaticMeshComponent");
 	instance_->RegisterComponentClass<StaticMeshComponent>("StaticMeshComponent");
 	instance_->RegisterComponentClass<SkeletalMeshComponent>("SkeletalMeshComponent");

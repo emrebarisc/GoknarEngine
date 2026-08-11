@@ -26,6 +26,7 @@ ShaderBuilder* ShaderBuilder::instance_ = nullptr;
 namespace
 {
 	constexpr const char* kParticleEmissiveColorVaryingName = "particleEmissiveColor";
+	constexpr GEuint kGPUFoliageInstanceBufferBindingIndex = 12u;
 
 	bool MaterialUsesReflectionProbe(const MaterialInitializationData* initializationData)
 	{
@@ -258,11 +259,17 @@ std::string ShaderBuilder::General_VS_GetScript(const VertexShaderInitialization
 
 	std::string vertexShaderModelMatrixVariable = std::string(SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX);
 	const bool isInstancedStaticMesh = shaderData.meshType == MeshType::InstancedStatic;
+	const bool usesGPUFoliageInstanceBuffer = shaderData.usesGPUFoliageInstanceBuffer;
 
 	if (isInstancedStaticMesh)
 	{
 		vertexShader += VS_GetInstancedStaticMeshLayouts();
 		vertexShaderModelMatrixVariable = std::string(SHADER_VARIABLE_NAMES::POSITIONING::INSTANCE_TRANSFORMATION_MATRIX) + " * " + vertexShaderModelMatrixVariable;
+	}
+	else if (usesGPUFoliageInstanceBuffer)
+	{
+		vertexShader += VS_GetGPUFoliageInstanceBuffer();
+		vertexShaderModelMatrixVariable = "foliageInstance.transform * " + vertexShaderModelMatrixVariable;
 	}
 
 	if (0 < shaderData.materialInitializationData->boneCount)
@@ -303,6 +310,10 @@ std::string ShaderBuilder::General_VS_GetScript(const VertexShaderInitialization
 void main()
 {
 )";
+	if (usesGPUFoliageInstanceBuffer)
+	{
+		vertexShader += "\tGPUFoliageInstanceData foliageInstance = foliageInstances[gl_InstanceID];\n";
+	}
 	if (0 < shaderData.materialInitializationData->boneCount)
 	{
 		vertexShader += VS_GetSkeletalMeshWeightCalculation();
@@ -1168,6 +1179,46 @@ std::string ShaderBuilder::ParticleRenderPass_GetFragmentShaderScript(MaterialIn
 	fragmentShaderInitializationData.shader = shader;
 	fragmentShaderInitializationData.renderPassType = RenderPassType::Forward;
 	return General_FS_GetScript(fragmentShaderInitializationData);
+}
+
+std::string ShaderBuilder::GPUFoliageRenderPass_GetMeshVertexShaderScript(MaterialInitializationData* initializationData, const Shader* shader, RenderPassType renderPassType) const
+{
+	MaterialInitializationData foliageInitializationData(initializationData ? initializationData->owner : nullptr);
+	MaterialInitializationData* effectiveInitializationData = initializationData;
+	if (initializationData)
+	{
+		foliageInitializationData = *initializationData;
+		foliageInitializationData.boneCount = 0;
+		foliageInitializationData.meshType = MeshType::Static;
+		effectiveInitializationData = &foliageInitializationData;
+	}
+
+	VertexShaderInitializationData vertexShaderInitializationData;
+	vertexShaderInitializationData.materialInitializationData = effectiveInitializationData;
+	vertexShaderInitializationData.shader = shader;
+	vertexShaderInitializationData.renderPassType = renderPassType;
+	vertexShaderInitializationData.usesGPUFoliageInstanceBuffer = true;
+	vertexShaderInitializationData.vertexColorExpression =
+		std::string(SHADER_VARIABLE_NAMES::VERTEX::COLOR) + " * foliageInstance.color";
+	return General_VS_GetScript(vertexShaderInitializationData);
+}
+
+std::string ShaderBuilder::GPUFoliageRenderPass_GetFragmentShaderScript(MaterialInitializationData* initializationData, const Shader* shader, RenderPassType renderPassType) const
+{
+	switch (renderPassType)
+	{
+	case RenderPassType::GeometryBuffer:
+		return GeometryBufferPass_GetFragmentShaderScript(initializationData, shader);
+	case RenderPassType::Shadow:
+		return ShadowPass_GetFragmentShaderScript(initializationData, shader);
+	case RenderPassType::PointLightShadow:
+		return PointShadowPass_GetFragmentShaderScript(initializationData, shader);
+	case RenderPassType::CubemapCapture:
+		return CubemapRenderPass_GetFragmentShaderScript(initializationData, shader);
+	case RenderPassType::Forward:
+	default:
+		return ForwardRenderPass_GetFragmentShaderScript(initializationData, shader);
+	}
 }
 
 std::string ShaderBuilder::DeferredRenderPass_GetVertexShaderScript()
@@ -2436,6 +2487,22 @@ std::string ShaderBuilder::VS_GetInstancedStaticMeshTransformationMatrixCalculat
 		SHADER_VARIABLE_NAMES::VERTEX::INSTANCE_TRANSFORMATION_ROW_3 + ");\n";
 }
 
+std::string ShaderBuilder::VS_GetGPUFoliageInstanceBuffer() const
+{
+	return R"(
+struct GPUFoliageInstanceData
+{
+	mat4 transform;
+	vec4 color;
+};
+
+layout(std430, binding = )" + std::to_string(kGPUFoliageInstanceBufferBindingIndex) + R"() readonly buffer GPUFoliageInstanceBuffer
+{
+	GPUFoliageInstanceData foliageInstances[];
+};
+)";
+}
+
 std::string ShaderBuilder::VS_GetUniforms() const
 {
 	std::string uniforms = "\n\n";
@@ -2556,7 +2623,7 @@ std::string ShaderBuilder::VS_GetMain(const VertexShaderInitializationData& vert
 		vsMain += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + " = materialWorldPosition * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
 		vsMain += VS_GetUV(nullptr);
 		vsMain += VS_GetVertexNormalText(nullptr);
-		vsMain += VS_GetVertexColorText();
+		vsMain += VS_GetVertexColorText(vertexShaderInitializationData.vertexColorExpression);
 	}
 	vsMain += VS_GetWorldPositionOffsetText(vertexShaderInitializationData.materialInitializationData, "materialWorldPosition");
 	vsMain += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = materialWorldPosition;\n";
@@ -2583,7 +2650,7 @@ std::string ShaderBuilder::VS_GetMain(const VertexShaderInitializationData& vert
 		vsMain += VS_GetUV(vertexShaderInitializationData.materialInitializationData);
 		vsMain += VS_GetVertexNormalText(vertexShaderInitializationData.materialInitializationData);
 		vsMain += VS_GetVertexTangentText();
-		vsMain += VS_GetVertexColorText();
+		vsMain += VS_GetVertexColorText(vertexShaderInitializationData.vertexColorExpression);
 
 		if (isPointLightShadowPass || isCubemapRenderPass)
 		{
@@ -2748,14 +2815,15 @@ std::string ShaderBuilder::VS_GetVertexTangentText(const std::string& tangentExp
 	return vertexTangentText;
 }
 
-std::string ShaderBuilder::VS_GetVertexColorText() const
+std::string ShaderBuilder::VS_GetVertexColorText(const std::string& colorExpression) const
 {
 	std::string vertexColorText = "";
+	const std::string resolvedColorExpression = colorExpression.empty() ? SHADER_VARIABLE_NAMES::VERTEX::COLOR : colorExpression;
 
 	vertexColorText += "\n\t";
 	vertexColorText += SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR;
 	vertexColorText += " = ";
-	vertexColorText += SHADER_VARIABLE_NAMES::VERTEX::COLOR;
+	vertexColorText += resolvedColorExpression;
 	vertexColorText += ";\n";
 
 	return vertexColorText;

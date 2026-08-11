@@ -20,6 +20,7 @@
 
 #include "Goknar/Components/MeshComponent.h"
 #include "Goknar/Components/DynamicMeshComponent.h"
+#include "Goknar/Components/GPUFoliageComponent.h"
 #include "Goknar/Components/InstancedStaticMeshComponent.h"
 #include "Goknar/Components/ParticleSystemComponent.h"
 #include "Goknar/Components/StaticMeshComponent.h"
@@ -110,6 +111,11 @@ namespace
 	std::string SerializeVector3(const Vector3& vector)
 	{
 		return std::to_string(vector.x) + " " + std::to_string(vector.y) + " " + std::to_string(vector.z);
+	}
+
+	std::string SerializeVector4(const Vector4& vector)
+	{
+		return std::to_string(vector.x) + " " + std::to_string(vector.y) + " " + std::to_string(vector.z) + " " + std::to_string(vector.w);
 	}
 
 	bool IsIdentityTranslation(const Vector3& translation)
@@ -302,7 +308,7 @@ namespace
 		}
 	}
 
-	InstancedStaticMesh* CreateInstancedStaticMeshFromPath(const std::string& meshPath)
+	StaticMesh* ResolveStaticMeshFromPath(const std::string& meshPath)
 	{
 		const std::string relativeMeshPath = ContentPathUtils::ToContentRelativePath(meshPath);
 		if (relativeMeshPath.empty())
@@ -310,7 +316,13 @@ namespace
 			return nullptr;
 		}
 
-		StaticMesh* sourceMesh = engine->GetResourceManager()->GetContent<StaticMesh>(relativeMeshPath);
+		return engine->GetResourceManager()->GetContent<StaticMesh>(relativeMeshPath);
+	}
+
+	InstancedStaticMesh* CreateInstancedStaticMeshFromPath(const std::string& meshPath)
+	{
+		const std::string relativeMeshPath = ContentPathUtils::ToContentRelativePath(meshPath);
+		StaticMesh* sourceMesh = ResolveStaticMeshFromPath(meshPath);
 		if (!sourceMesh)
 		{
 			return nullptr;
@@ -1868,6 +1880,76 @@ void SceneParser::ParseInstancedStaticMeshComponentValues(InstancedStaticMeshCom
 	}
 }
 
+void SceneParser::ParseGPUFoliageComponentValues(GPUFoliageComponent* gpuFoliageComponent, tinyxml2::XMLElement* componentElement)
+{
+	if (!gpuFoliageComponent || !componentElement)
+	{
+		return;
+	}
+
+	tinyxml2::XMLElement* dataElement = componentElement->FirstChildElement("MeshPath");
+	if (dataElement && dataElement->GetText())
+	{
+		std::stringstream stream(dataElement->GetText());
+		std::string meshPath;
+		stream >> meshPath;
+		if (StaticMesh* staticMesh = ResolveStaticMeshFromPath(meshPath))
+		{
+			gpuFoliageComponent->SetStaticMesh(staticMesh);
+		}
+	}
+
+	dataElement = componentElement->FirstChildElement("CastsShadow");
+	if (dataElement)
+	{
+		bool castsShadow = true;
+		if (dataElement->QueryBoolText(&castsShadow) == tinyxml2::XML_SUCCESS)
+		{
+			gpuFoliageComponent->SetCastsShadow(castsShadow);
+		}
+	}
+
+	tinyxml2::XMLElement* instanceTransformationsElement = componentElement->FirstChildElement("InstanceTransformations");
+	if (!instanceTransformationsElement)
+	{
+		return;
+	}
+
+	std::vector<GPUFoliageInstance> instances;
+	for (tinyxml2::XMLElement* instanceTransformationElement = instanceTransformationsElement->FirstChildElement("InstanceTransformation");
+		instanceTransformationElement != nullptr;
+		instanceTransformationElement = instanceTransformationElement->NextSiblingElement("InstanceTransformation"))
+	{
+		Vector3 translation = Vector3::ZeroVector;
+		Quaternion rotation = Quaternion::Identity;
+		Vector3 scaling = Vector3(1.f);
+
+		ReadVector3Element(instanceTransformationElement, "Translation", translation);
+
+		Vector3 eulerRotation = Vector3::ZeroVector;
+		if (ReadVector3Element(instanceTransformationElement, "EulerRotation", eulerRotation))
+		{
+			rotation = Quaternion::FromEulerDegrees(eulerRotation);
+		}
+
+		ReadVector3Element(instanceTransformationElement, "Scaling", scaling);
+
+		GPUFoliageInstance instance;
+		instance.transform = Matrix::GetTransformationMatrix(rotation, translation, scaling);
+
+		tinyxml2::XMLElement* colorElement = instanceTransformationElement->FirstChildElement("Color");
+		if (colorElement && colorElement->GetText())
+		{
+			std::stringstream stream(colorElement->GetText());
+			stream >> instance.color.x >> instance.color.y >> instance.color.z >> instance.color.w;
+		}
+
+		instances.push_back(instance);
+	}
+
+	gpuFoliageComponent->SetInstances(instances);
+}
+
 void SceneParser::ParseParticleSystemComponentValues(ParticleSystemComponent* particleSystemComponent, tinyxml2::XMLElement* componentElement)
 {
 	std::stringstream stream;
@@ -2506,6 +2588,17 @@ void SceneParser::ParseObjectBase(ObjectBase* object, tinyxml2::XMLElement* obje
 			componentElement = componentElement->NextSiblingElement("InstancedStaticMeshComponent");
 		}
 
+		componentElement = child->FirstChildElement("GPUFoliageComponent");
+		while (componentElement)
+		{
+			GPUFoliageComponent* gpuFoliageComponent = object->AddSubComponent<GPUFoliageComponent>();
+			ParseGPUFoliageComponentValues(gpuFoliageComponent, componentElement);
+
+			ParseComponentValues(gpuFoliageComponent, componentElement);
+
+			componentElement = componentElement->NextSiblingElement("GPUFoliageComponent");
+		}
+
 		componentElement = child->FirstChildElement("BillboardParticleSystemComponent");
 		while (componentElement)
 		{
@@ -3031,6 +3124,11 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 			componentElement = xmlDocument.NewElement("SkeletalMeshComponent");
 			GetXMLElement_SkeletalMeshComponent(skeletalMeshComponent, xmlDocument, componentElement);
 		}
+		else if (GPUFoliageComponent* gpuFoliageComponent = dynamic_cast<GPUFoliageComponent*>(component))
+		{
+			componentElement = xmlDocument.NewElement("GPUFoliageComponent");
+			GetXMLElement_GPUFoliageComponent(gpuFoliageComponent, xmlDocument, componentElement);
+		}
 		else if (InstancedStaticMeshComponent* instancedStaticMeshComponent = dynamic_cast<InstancedStaticMeshComponent*>(component))
 		{
 			componentElement = xmlDocument.NewElement("InstancedStaticMeshComponent");
@@ -3192,6 +3290,61 @@ void SceneParser::GetXMLElement_InstancedStaticMeshComponent(const InstancedStat
 			"Translation",
 			"EulerRotation",
 			"Scaling");
+		instanceTransformationsElement->InsertEndChild(instanceTransformationElement);
+	}
+
+	parentElement->InsertEndChild(instanceTransformationsElement);
+}
+
+void SceneParser::GetXMLElement_GPUFoliageComponent(const GPUFoliageComponent* const gpuFoliageComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
+{
+	const StaticMesh* staticMesh = gpuFoliageComponent ? gpuFoliageComponent->GetStaticMesh() : nullptr;
+	if (!staticMesh || staticMesh->GetPath().empty())
+	{
+		return;
+	}
+
+	tinyxml2::XMLElement* meshPathElement = xmlDocument.NewElement("MeshPath");
+	const std::string meshPath = ContentPathUtils::ToContentRelativePath(staticMesh->GetPath());
+	meshPathElement->SetText(meshPath.c_str());
+	parentElement->InsertEndChild(meshPathElement);
+
+	tinyxml2::XMLElement* castsShadowElement = xmlDocument.NewElement("CastsShadow");
+	castsShadowElement->SetText(gpuFoliageComponent->GetCastsShadow());
+	parentElement->InsertEndChild(castsShadowElement);
+
+	const std::vector<GPUFoliageInstance>& instances = gpuFoliageComponent->GetInstances();
+	if (instances.empty())
+	{
+		return;
+	}
+
+	tinyxml2::XMLElement* instanceTransformationsElement = xmlDocument.NewElement("InstanceTransformations");
+	for (const GPUFoliageInstance& instance : instances)
+	{
+		Vector3 translation = Vector3::ZeroVector;
+		Vector3 scaling = Vector3(1.f);
+		Quaternion rotation = Quaternion::Identity;
+		instance.transform.Decompose(translation, scaling, rotation);
+
+		tinyxml2::XMLElement* instanceTransformationElement = xmlDocument.NewElement("InstanceTransformation");
+		WriteTransformElementsIfNeeded(
+			xmlDocument,
+			instanceTransformationElement,
+			translation,
+			rotation,
+			scaling,
+			"Translation",
+			"EulerRotation",
+			"Scaling");
+
+		if (instance.color != Vector4(1.f))
+		{
+			tinyxml2::XMLElement* colorElement = xmlDocument.NewElement("Color");
+			colorElement->SetText(SerializeVector4(instance.color).c_str());
+			instanceTransformationElement->InsertEndChild(colorElement);
+		}
+
 		instanceTransformationsElement->InsertEndChild(instanceTransformationElement);
 	}
 
