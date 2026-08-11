@@ -4,6 +4,7 @@
 #include "Goknar/Core.h"
 #include "Goknar/Math/GoknarMath.h"
 #include "Goknar/Math/Matrix.h"
+#include "Goknar/Renderer/ShaderBindingPoints.h"
 #include "Goknar/Renderer/Types.h"
 #include "Goknar/TimeDependentObject.h"
 
@@ -186,21 +187,21 @@ public:
 	}
 
 protected:
-	static constexpr GEuint kPositionBufferBindingIndex = 0;
-	static constexpr GEuint kVelocityBufferBindingIndex = 1;
-	static constexpr GEuint kColorBufferBindingIndex = 2;
-	static constexpr GEuint kLifetimeBufferBindingIndex = 3;
-	static constexpr GEuint kAliveIndexBufferBindingIndex = 4;
-	static constexpr GEuint kCounterBufferBindingIndex = 5;
-	static constexpr GEuint kDrawIndirectBufferBindingIndex = 6;
-	static constexpr GEuint kEndColorBufferBindingIndex = 7;
-	static constexpr GEuint kSizeBufferBindingIndex = 8;
-	static constexpr GEuint kRotationBufferBindingIndex = 9;
-	static constexpr GEuint kAccelerationBufferBindingIndex = 10;
-	static constexpr GEuint kAngularVelocityBufferBindingIndex = 11;
+	inline static constexpr GEuint POSITION_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::POSITION;
+	inline static constexpr GEuint VELOCITY_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::VELOCITY;
+	inline static constexpr GEuint COLOR_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::COLOR;
+	inline static constexpr GEuint LIFETIME_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::LIFETIME;
+	inline static constexpr GEuint ALIVE_INDEX_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::ALIVE_INDEX;
+	inline static constexpr GEuint COUNTER_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::COUNTER;
+	inline static constexpr GEuint DRAW_INDIRECT_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::DRAW_INDIRECT;
+	inline static constexpr GEuint END_COLOR_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::END_COLOR;
+	inline static constexpr GEuint SIZE_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::SIZE;
+	inline static constexpr GEuint ROTATION_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::ROTATION;
+	inline static constexpr GEuint ACCELERATION_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::ACCELERATION;
+	inline static constexpr GEuint ANGULAR_VELOCITY_BUFFER_BINDING_INDEX = ShaderBindingPoints::ShaderStorage::Particle::ANGULAR_VELOCITY;
 
-	static constexpr GEuint kComputeLocalSizeX = 256;
-	static constexpr GEuint kFinalizeDrawLocalSizeX = 64;
+	inline static constexpr GEuint COMPUTE_LOCAL_SIZE_X = 256;
+	inline static constexpr GEuint FINALIZE_DRAW_LOCAL_SIZE_X = 64;
 
 	void BindSimulationBuffers() const;
 	void BindRenderBuffers() const;

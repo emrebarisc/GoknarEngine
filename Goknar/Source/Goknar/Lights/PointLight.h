@@ -24,6 +24,7 @@ public:
     void SetRadius(float radius)
     {
         radius_ = radius;
+        MarkLightDataDirty();
     }
 
     float GetRadius() const

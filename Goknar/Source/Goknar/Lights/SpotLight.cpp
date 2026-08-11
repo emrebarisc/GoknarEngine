@@ -98,6 +98,7 @@ void SpotLight::SetPosition(const Vector3& position)
 void SpotLight::SetDirection(const Vector3& direction)
 {
 	direction_ = direction.GetNormalized();
+	MarkLightDataDirty();
 
 	if (isShadowEnabled_ && shadowMapRenderCamera_)
 	{
@@ -109,6 +110,7 @@ void SpotLight::SetDirection(const Vector3& direction)
 void SpotLight::SetCoverageAngle(float coverageAngleInDegrees)
 {
 	coverageAngle_ = DEGREE_TO_RADIAN(coverageAngleInDegrees);
+	MarkLightDataDirty();
 
 	if (isShadowEnabled_ && shadowMapRenderCamera_)
 	{

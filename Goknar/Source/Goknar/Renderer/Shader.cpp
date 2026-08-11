@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstring>
 #include <sstream>
 #include <string>
 
@@ -117,15 +118,15 @@ namespace
 
 	std::uint64_t AppendToFNV1aHash(std::uint64_t hash, const std::string& value)
 	{
-		constexpr std::uint64_t fnvPrime = 1099511628211ull;
+		constexpr std::uint64_t FNV_PRIME = 1099511628211ull;
 		for (unsigned char character : value)
 		{
 			hash ^= static_cast<std::uint64_t>(character);
-			hash *= fnvPrime;
+			hash *= FNV_PRIME;
 		}
 
 		hash ^= 0xffu;
-		hash *= fnvPrime;
+		hash *= FNV_PRIME;
 		return hash;
 	}
 
@@ -134,8 +135,8 @@ namespace
 		const std::string& fragmentShaderScript,
 		const std::string& geometryShaderScript)
 	{
-		constexpr std::uint64_t fnvOffsetBasis = 14695981039346656037ull;
-		std::uint64_t hash = fnvOffsetBasis;
+		constexpr std::uint64_t FNV_OFFSET_BASIS = 14695981039346656037ull;
+		std::uint64_t hash = FNV_OFFSET_BASIS;
 		hash = AppendToFNV1aHash(hash, vertexShaderScript);
 		hash = AppendToFNV1aHash(hash, fragmentShaderScript);
 		hash = AppendToFNV1aHash(hash, geometryShaderScript);
@@ -148,10 +149,32 @@ namespace
 		unsigned int referenceCount{ 0 };
 	};
 
+	struct ProgramUniformCache
+	{
+		std::unordered_map<std::string, GEint> locations;
+		std::unordered_map<std::string, std::vector<std::uint8_t>> values;
+	};
+
 	std::unordered_map<std::uint64_t, CachedShaderProgram>& GetShaderProgramCache()
 	{
 		static std::unordered_map<std::uint64_t, CachedShaderProgram> shaderProgramCache;
 		return shaderProgramCache;
+	}
+
+	std::unordered_map<GEuint, ProgramUniformCache>& GetProgramUniformCaches()
+	{
+		static std::unordered_map<GEuint, ProgramUniformCache> programUniformCaches;
+		return programUniformCaches;
+	}
+
+	void InvalidateUniformCacheForProgram(GEuint programId)
+	{
+		if (programId == 0)
+		{
+			return;
+		}
+
+		GetProgramUniformCaches().erase(programId);
 	}
 
 	bool TryAcquireCachedShaderProgram(std::uint64_t sourceHash, GEuint& outProgramId)
@@ -176,6 +199,8 @@ namespace
 			return;
 		}
 
+		InvalidateUniformCacheForProgram(programId);
+
 		auto& shaderProgramCache = GetShaderProgramCache();
 		CachedShaderProgram& cachedProgram = shaderProgramCache[sourceHash];
 		cachedProgram.programId = programId;
@@ -194,6 +219,7 @@ namespace
 		if (cachedProgramIterator == shaderProgramCache.end() ||
 			cachedProgramIterator->second.programId != programId)
 		{
+			InvalidateUniformCacheForProgram(programId);
 			engine->GetGraphicsAPI()->DeleteProgram(programId);
 			return;
 		}
@@ -206,34 +232,35 @@ namespace
 
 		if (cachedProgram.referenceCount == 0)
 		{
+			InvalidateUniformCacheForProgram(cachedProgram.programId);
 			engine->GetGraphicsAPI()->DeleteProgram(cachedProgram.programId);
 			shaderProgramCache.erase(cachedProgramIterator);
 		}
 	}
-}
 
-void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
-{
-	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	if (!graphicsAPI->GetShaderCompileStatus(shaderId))
+	void ExitOnShaderIsNotCompiled(GEuint shaderId, const char* errorMessage)
 	{
-		const std::string logMessage = graphicsAPI->GetShaderInfoLog(shaderId);
-		graphicsAPI->DeleteShader(shaderId);
+		IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+		if (!graphicsAPI->GetShaderCompileStatus(shaderId))
+		{
+			const std::string logMessage = graphicsAPI->GetShaderInfoLog(shaderId);
+			graphicsAPI->DeleteShader(shaderId);
 
-		GOKNAR_CHECK(false, "%s\nWhat went wrong: \n%s", errorMessage, logMessage.c_str());
+			GOKNAR_CHECK(false, "%s\nWhat went wrong: \n%s", errorMessage, logMessage.c_str());
+		}
 	}
-}
 
-void ExitOnProgramError(GEuint programId, const char* errorMessage)
-{
-	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	if (!graphicsAPI->GetProgramLinkStatus(programId))
+	void ExitOnProgramError(GEuint programId, const char* errorMessage)
 	{
-		const std::string logMessage = graphicsAPI->GetProgramInfoLog(programId);
-		graphicsAPI->DeleteProgram(programId);
+		IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+		if (!graphicsAPI->GetProgramLinkStatus(programId))
+		{
+			const std::string logMessage = graphicsAPI->GetProgramInfoLog(programId);
+			graphicsAPI->DeleteProgram(programId);
 
-		GOKNAR_CORE_ERROR("%s", logMessage.c_str());
-		GOKNAR_CHECK(false, errorMessage);
+			GOKNAR_CORE_ERROR("%s", logMessage.c_str());
+			GOKNAR_CHECK(false, errorMessage);
+		}
 	}
 }
 
@@ -996,23 +1023,73 @@ bool Shader::TryGetNamedValue(const char* name, NamedShaderValue& outValue) cons
 	return true;
 }
 
+GEint Shader::GetCachedUniformLocation(const char* name) const
+{
+	if (!programId_ || !name || !name[0])
+	{
+		return -1;
+	}
+
+	ProgramUniformCache& programUniformCache = GetProgramUniformCaches()[programId_];
+	const auto cachedLocationIterator = programUniformCache.locations.find(name);
+	if (cachedLocationIterator != programUniformCache.locations.end())
+	{
+		return cachedLocationIterator->second;
+	}
+
+	const GEint uniformLocation = engine->GetGraphicsAPI()->GetUniformLocation(programId_, name);
+	programUniformCache.locations.emplace(name, uniformLocation);
+	return uniformLocation;
+}
+
+bool Shader::ShouldUploadUniformValue(const char* name, const void* valueData, std::size_t valueSize) const
+{
+	if (!programId_ || !name || !name[0] || !valueData || valueSize == 0)
+	{
+		return false;
+	}
+
+	ProgramUniformCache& programUniformCache = GetProgramUniformCaches()[programId_];
+	std::vector<std::uint8_t>& cachedValue = programUniformCache.values[name];
+	const std::uint8_t* valueBytes = static_cast<const std::uint8_t*>(valueData);
+	if (cachedValue.size() == valueSize &&
+		std::memcmp(cachedValue.data(), valueBytes, valueSize) == 0)
+	{
+		return false;
+	}
+
+	cachedValue.assign(valueBytes, valueBytes + valueSize);
+	return true;
+}
+
 void Shader::UploadBool(const char* name, bool value) const
 {
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
 	{
 		return;
 	}
 
-	graphicsAPI->SetUniform1i(uniformLocation, (int)value);
+	const GEint uniformValue = value ? 1 : 0;
+	if (!ShouldUploadUniformValue(name, &uniformValue, sizeof(uniformValue)))
+	{
+		return;
+	}
+
+	graphicsAPI->SetUniform1i(uniformLocation, uniformValue);
 }
 
 void Shader::UploadInt(const char* name, int value) const
 {
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	if (!ShouldUploadUniformValue(name, &value, sizeof(value)))
 	{
 		return;
 	}
@@ -1028,7 +1105,7 @@ void Shader::UploadIntVector(const char* name, const std::vector<int>& values) c
 	}
 
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
 	{
 		return;
@@ -1040,8 +1117,13 @@ void Shader::UploadIntVector(const char* name, const std::vector<int>& values) c
 void Shader::UploadFloat(const char* name, float value) const
 {
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	if (!ShouldUploadUniformValue(name, &value, sizeof(value)))
 	{
 		return;
 	}
@@ -1052,8 +1134,13 @@ void Shader::UploadFloat(const char* name, float value) const
 void Shader::UploadVector2(const char* name, const Vector2& vector) const
 {
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	if (!ShouldUploadUniformValue(name, &vector, sizeof(vector)))
 	{
 		return;
 	}
@@ -1064,8 +1151,13 @@ void Shader::UploadVector2(const char* name, const Vector2& vector) const
 void Shader::UploadMatrix(const char* name, const Matrix& matrix) const
 {
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	if (!ShouldUploadUniformValue(name, &matrix, sizeof(matrix)))
 	{
 		return;
 	}
@@ -1081,7 +1173,7 @@ void Shader::UploadMatrixVector(const char* name, const std::vector<Matrix>& mat
 	}
 
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
 	{
 		return;
@@ -1093,8 +1185,13 @@ void Shader::UploadMatrixVector(const char* name, const std::vector<Matrix>& mat
 void Shader::UploadVector3(const char* name, const Vector3& vector) const
 {
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	if (!ShouldUploadUniformValue(name, &vector, sizeof(vector)))
 	{
 		return;
 	}
@@ -1105,8 +1202,13 @@ void Shader::UploadVector3(const char* name, const Vector3& vector) const
 void Shader::UploadVector4(const char* name, const Vector4& vector) const
 {
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
+	{
+		return;
+	}
+
+	if (!ShouldUploadUniformValue(name, &vector, sizeof(vector)))
 	{
 		return;
 	}
@@ -1122,7 +1224,7 @@ void Shader::UploadArrayOfFloat(const char* name, const std::vector<float>& valu
 	}
 
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
 	{
 		return;
@@ -1139,7 +1241,7 @@ void Shader::UploadArrayOfVector2(const char* name, const std::vector<Vector2>& 
 	}
 
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
 	{
 		return;
@@ -1156,7 +1258,7 @@ void Shader::UploadArrayOfVector3(const char* name, const std::vector<Vector3>& 
 	}
 
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
 	{
 		return;
@@ -1173,7 +1275,7 @@ void Shader::UploadArrayOfVector4(const char* name, const std::vector<Vector4>& 
 	}
 
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	const GEint uniformLocation = graphicsAPI->GetUniformLocation(programId_, name);
+	const GEint uniformLocation = GetCachedUniformLocation(name);
 	if (uniformLocation < 0)
 	{
 		return;

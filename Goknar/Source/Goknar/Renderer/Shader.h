@@ -10,6 +10,7 @@
 #include "Goknar/Math/Matrix.h"
 
 #include <cstdint>
+#include <cstddef>
 #include <unordered_map>
 #include <variant>
 
@@ -198,6 +199,9 @@ private:
 	void UploadArrayOfVector2(const char* name, const std::vector<Vector2>& values) const;
 	void UploadArrayOfVector3(const char* name, const std::vector<Vector3>& values) const;
 	void UploadArrayOfVector4(const char* name, const std::vector<Vector4>& values) const;
+
+	GEint GetCachedUniformLocation(const char* name) const;
+	bool ShouldUploadUniformValue(const char* name, const void* valueData, std::size_t valueSize) const;
 
 	std::vector<const Texture*> textures_;
 	mutable std::unordered_map<std::string, NamedShaderValue> namedValues_{};

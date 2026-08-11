@@ -34,6 +34,7 @@ public:
 	virtual void SetPosition(const Vector3& position)
 	{
 		position_ = position;
+		MarkLightDataDirty();
 	}
 
 	const Vector3& GetPosition() const
@@ -44,6 +45,7 @@ public:
 	void SetColor(const Vector3& color)
 	{
 		color_ = color;
+		MarkLightDataDirty();
 	}
 
 	const Vector3& GetColor() const
@@ -54,6 +56,7 @@ public:
 	void SetIntensity(float intensity)
 	{
 		intensity_ = intensity;
+		MarkLightDataDirty();
 	}
 
 	float GetIntensity() const
@@ -64,6 +67,7 @@ public:
 	void SetShadowIntensity(float shadowIntensity)
 	{
 		shadowIntensity_ = shadowIntensity;
+		MarkLightDataDirty();
 	}
 
 	float GetShadowIntensity() const
@@ -111,6 +115,7 @@ public:
 	virtual void SetIsShadowEnabled(bool isShadowEnabled)
 	{
 		isShadowEnabled_ = isShadowEnabled;
+		MarkLightDataDirty();
 	}
 
 	int GetShadowWidth()
@@ -164,6 +169,8 @@ public:
 	virtual void SetShadowRenderPassShaderUniforms(const Shader* shader) = 0;
 
 protected:
+	void MarkLightDataDirty() const;
+
 	Vector3 position_{ Vector3::ZeroVector };
 	Vector3 color_{ Vector3{ 1.f } };
 

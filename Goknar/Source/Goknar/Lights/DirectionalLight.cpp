@@ -91,6 +91,7 @@ void DirectionalLight::SetShadowRenderPassShaderUniforms(const Shader* shader)
 void DirectionalLight::SetDirection(const Vector3& direction)
 {
 	direction_ = direction.GetNormalized();
+	MarkLightDataDirty();
 
 	if (isShadowEnabled_)
 	{

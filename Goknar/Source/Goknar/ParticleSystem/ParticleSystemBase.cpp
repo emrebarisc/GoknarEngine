@@ -17,8 +17,8 @@
 
 namespace
 {
-	constexpr float kMinimumLifetime = 0.0001f;
-	constexpr float kMinimumSpawnInterval = 0.0001f;
+	constexpr float MINIMUM_LIFETIME = 0.0001f;
+	constexpr float MINIMUM_SPAWN_INTERVAL = 0.0001f;
 
 	IGraphicsAPI* GraphicsAPI()
 	{
@@ -93,7 +93,7 @@ namespace
 	GPUParticleSpawnDesc SanitizeSpawnDesc(const GPUParticleSpawnDesc& spawnDesc)
 	{
 		GPUParticleSpawnDesc sanitizedDesc(spawnDesc);
-		sanitizedDesc.lifetime = SanitizeFloatRange(sanitizedDesc.lifetime, kMinimumLifetime);
+		sanitizedDesc.lifetime = SanitizeFloatRange(sanitizedDesc.lifetime, MINIMUM_LIFETIME);
 		sanitizedDesc.initialVelocity = SanitizeVector3Range(sanitizedDesc.initialVelocity);
 		sanitizedDesc.initialRotation = SanitizeVector3Range(sanitizedDesc.initialRotation);
 		sanitizedDesc.angularVelocity = SanitizeVector3Range(sanitizedDesc.angularVelocity);
@@ -109,7 +109,7 @@ namespace
 		sanitizedDesc.spawnBoxExtents.x = (std::max)(0.f, sanitizedDesc.spawnBoxExtents.x);
 		sanitizedDesc.spawnBoxExtents.y = (std::max)(0.f, sanitizedDesc.spawnBoxExtents.y);
 		sanitizedDesc.spawnBoxExtents.z = (std::max)(0.f, sanitizedDesc.spawnBoxExtents.z);
-		sanitizedDesc.spawnInterval = (std::max)(kMinimumSpawnInterval, sanitizedDesc.spawnInterval);
+		sanitizedDesc.spawnInterval = (std::max)(MINIMUM_SPAWN_INTERVAL, sanitizedDesc.spawnInterval);
 		sanitizedDesc.spawnCountPerInterval = (std::max)(1u, sanitizedDesc.spawnCountPerInterval);
 		return sanitizedDesc;
 	}
@@ -233,7 +233,7 @@ void ParticleSystemBase::Tick(float deltaTime)
 	updateComputeShader_->SetMatrix("previousEmitterMatrix", previousEmitterTransformMatrix_);
 	updateComputeShader_->SetMatrix("currentEmitterMatrix", renderTransformMatrix_);
 
-	const GEuint groupCountX = (dispatchParticleCount + kComputeLocalSizeX - 1u) / kComputeLocalSizeX;
+	const GEuint groupCountX = (dispatchParticleCount + COMPUTE_LOCAL_SIZE_X - 1u) / COMPUTE_LOCAL_SIZE_X;
 	updateComputeShader_->Dispatch(groupCountX, 1u, 1u);
 
 	GraphicsAPI()->MemoryBarrier(static_cast<GraphicsMemoryBarrierFlags>(GraphicsMemoryBarrier::ShaderStorage));
@@ -345,35 +345,35 @@ std::string ParticleSystemBase::ResolveShaderPath(const std::string& relativeSha
 
 void ParticleSystemBase::BindSimulationBuffers() const
 {
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kPositionBufferBindingIndex, particlePositionBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kVelocityBufferBindingIndex, particleVelocityBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kColorBufferBindingIndex, particleColorBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kLifetimeBufferBindingIndex, particleLifetimeBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kAliveIndexBufferBindingIndex, aliveIndexBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kCounterBufferBindingIndex, particleCounterBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kEndColorBufferBindingIndex, particleEndColorBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kSizeBufferBindingIndex, particleSizeBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kRotationBufferBindingIndex, particleRotationBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kAccelerationBufferBindingIndex, particleAccelerationBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kAngularVelocityBufferBindingIndex, particleAngularVelocityBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, POSITION_BUFFER_BINDING_INDEX, particlePositionBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, VELOCITY_BUFFER_BINDING_INDEX, particleVelocityBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, COLOR_BUFFER_BINDING_INDEX, particleColorBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, LIFETIME_BUFFER_BINDING_INDEX, particleLifetimeBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, ALIVE_INDEX_BUFFER_BINDING_INDEX, aliveIndexBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, COUNTER_BUFFER_BINDING_INDEX, particleCounterBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, END_COLOR_BUFFER_BINDING_INDEX, particleEndColorBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, SIZE_BUFFER_BINDING_INDEX, particleSizeBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, ROTATION_BUFFER_BINDING_INDEX, particleRotationBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, ACCELERATION_BUFFER_BINDING_INDEX, particleAccelerationBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, ANGULAR_VELOCITY_BUFFER_BINDING_INDEX, particleAngularVelocityBufferId_);
 }
 
 void ParticleSystemBase::BindRenderBuffers() const
 {
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kPositionBufferBindingIndex, particlePositionBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kVelocityBufferBindingIndex, particleVelocityBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kColorBufferBindingIndex, particleColorBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kLifetimeBufferBindingIndex, particleLifetimeBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kAliveIndexBufferBindingIndex, aliveIndexBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kEndColorBufferBindingIndex, particleEndColorBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kSizeBufferBindingIndex, particleSizeBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kRotationBufferBindingIndex, particleRotationBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, POSITION_BUFFER_BINDING_INDEX, particlePositionBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, VELOCITY_BUFFER_BINDING_INDEX, particleVelocityBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, COLOR_BUFFER_BINDING_INDEX, particleColorBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, LIFETIME_BUFFER_BINDING_INDEX, particleLifetimeBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, ALIVE_INDEX_BUFFER_BINDING_INDEX, aliveIndexBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, END_COLOR_BUFFER_BINDING_INDEX, particleEndColorBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, SIZE_BUFFER_BINDING_INDEX, particleSizeBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, ROTATION_BUFFER_BINDING_INDEX, particleRotationBufferId_);
 }
 
 void ParticleSystemBase::BindFinalizeBuffers() const
 {
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kCounterBufferBindingIndex, particleCounterBufferId_);
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kDrawIndirectBufferBindingIndex, drawIndirectBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, COUNTER_BUFFER_BINDING_INDEX, particleCounterBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, DRAW_INDIRECT_BUFFER_BINDING_INDEX, drawIndirectBufferId_);
 }
 
 void ParticleSystemBase::ResetSimulationState() const

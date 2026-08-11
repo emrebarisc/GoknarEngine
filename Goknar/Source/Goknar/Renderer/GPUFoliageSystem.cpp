@@ -14,6 +14,7 @@
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
+#include "Goknar/Renderer/ShaderBindingPoints.h"
 #include "Goknar/Renderer/ShaderTypes.h"
 #include "Goknar/Renderer/Texture.h"
 
@@ -23,8 +24,6 @@
 
 namespace
 {
-	constexpr GEuint kFoliageInstanceBufferBindingIndex = 12u;
-
 	bool IsValidAABB(const Box& aabb)
 	{
 		const Vector3& min = aabb.GetMin();
@@ -502,7 +501,7 @@ void GPUFoliageSystem::RenderMeshBatches(RenderPassType renderPassType, int& dra
 		return;
 	}
 
-	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, kFoliageInstanceBufferBindingIndex, instanceBufferId_);
+	GraphicsAPI()->BindBufferBase(GraphicsBufferTarget::ShaderStorageBuffer, ShaderBindingPoints::ShaderStorage::INSTANCE_DATA, instanceBufferId_);
 	engine->GetRenderer()->BindStaticMeshBuffers();
 	GraphicsAPI()->BindBuffer(GraphicsBufferTarget::DrawIndirectBuffer, drawIndirectBufferId_);
 

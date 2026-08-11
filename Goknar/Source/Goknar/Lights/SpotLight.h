@@ -46,11 +46,13 @@ public:
 	void SetFalloffAngle(float falloffAngleInDegrees)
 	{
 		falloffAngle_ = DEGREE_TO_RADIAN(falloffAngleInDegrees);
+		MarkLightDataDirty();
 	}
 
 	void SetRadius(float radius)
 	{
 		radius_ = radius;
+		MarkLightDataDirty();
 	}
 
 	float GetRadius() const

@@ -26,24 +26,11 @@ LightManager::LightManager()
 
 LightManager::~LightManager()
 {
-	if (directionalLightUniformBufferId_)
-	{
-		engine->GetGraphicsAPI()->DeleteBuffer(directionalLightUniformBufferId_);
-	}
+	lightStorageBuffer_.Destroy();
 
 	if (directionalLightViewMatrixUniformBufferId_)
 	{
 		engine->GetGraphicsAPI()->DeleteBuffer(directionalLightViewMatrixUniformBufferId_);
-	}
-
-	if (pointLightUniformBufferId_)
-	{
-		engine->GetGraphicsAPI()->DeleteBuffer(pointLightUniformBufferId_);
-	}
-
-	if (spotLightUniformBufferId_)
-	{
-		engine->GetGraphicsAPI()->DeleteBuffer(spotLightUniformBufferId_);
 	}
 
 	if (spotLightViewMatrixUniformBufferId_)
@@ -55,15 +42,10 @@ LightManager::~LightManager()
 void LightManager::PreInit()
 {
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
+	lightStorageBuffer_.Create(sizeof(LightBufferInfo), &lightBufferInfo, GraphicsBufferUsage::DynamicDraw);
+	lightStorageBuffer_.BindToBindingPoint(ShaderBindingPoints::ShaderStorage::LIGHT_DATA);
+
 	{
-		directionalLightUniformBufferId_ = graphicsAPI->CreateBuffer();
-		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, directionalLightUniformBufferId_);
-		graphicsAPI->BufferData(GraphicsBufferTarget::UniformBuffer, sizeof(DirectionalLightBufferInfo), NULL, GraphicsBufferUsage::DynamicDraw);
-
-		graphicsAPI->BindBufferBase(GraphicsBufferTarget::UniformBuffer, DIRECTIONAL_LIGHT_UNIFORM_BIND_INDEX, directionalLightUniformBufferId_);
-
-		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
-
 		directionalLightViewMatrixUniformBufferId_ = graphicsAPI->CreateBuffer();
 		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, directionalLightViewMatrixUniformBufferId_);
 		graphicsAPI->BufferData(GraphicsBufferTarget::UniformBuffer, sizeof(Matrix) * MAX_DIRECTIONAL_LIGHT_COUNT, NULL, GraphicsBufferUsage::DynamicDraw);
@@ -74,24 +56,6 @@ void LightManager::PreInit()
 	}
 
 	{
-		pointLightUniformBufferId_ = graphicsAPI->CreateBuffer();
-		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, pointLightUniformBufferId_);
-		graphicsAPI->BufferData(GraphicsBufferTarget::UniformBuffer, sizeof(PointLightBufferInfo), NULL, GraphicsBufferUsage::DynamicDraw);
-
-		graphicsAPI->BindBufferBase(GraphicsBufferTarget::UniformBuffer, POINT_LIGHT_UNIFORM_BIND_INDEX, pointLightUniformBufferId_);
-
-		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
-	}
-
-	{
-		spotLightUniformBufferId_ = graphicsAPI->CreateBuffer();
-		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, spotLightUniformBufferId_);
-		graphicsAPI->BufferData(GraphicsBufferTarget::UniformBuffer, sizeof(SpotLightBufferInfo), NULL, GraphicsBufferUsage::DynamicDraw);
-
-		graphicsAPI->BindBufferBase(GraphicsBufferTarget::UniformBuffer, SPOT_LIGHT_UNIFORM_BIND_INDEX, spotLightUniformBufferId_);
-
-		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
-
 		spotLightViewMatrixUniformBufferId_ = graphicsAPI->CreateBuffer();
 		graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, spotLightViewMatrixUniformBufferId_);
 		graphicsAPI->BufferData(GraphicsBufferTarget::UniformBuffer, sizeof(Matrix) * MAX_SPOT_LIGHT_COUNT, NULL, GraphicsBufferUsage::DynamicDraw);
@@ -110,14 +74,15 @@ void LightManager::Init()
 
 void LightManager::PostInit()
 {
-	UpdateAllDirectionalLightDataOnGPU();
-	UpdateAllPointLightDataOnGPU();
-	UpdateAllSpotLightDataOnGPU();
+	CollectDirectionalLightData();
+	CollectPointLightData();
+	CollectSpotLightData();
+	UploadLightDataToGPU();
 
 	isInitialized_ = true;
 }
 
-void LightManager::UpdateAllDirectionalLightDataOnGPU()
+void LightManager::CollectDirectionalLightData()
 {
 	Scene* mainScene = engine->GetApplication()->GetMainScene();
 
@@ -125,16 +90,16 @@ void LightManager::UpdateAllDirectionalLightDataOnGPU()
 
 	int directionalLightIndex = 0;
 	std::vector<DirectionalLight*>::const_iterator directionalLightIterator = directionalLights.cbegin();
-	while (directionalLightIndex < MAX_DIRECTIONAL_LIGHT_COUNT && directionalLightIterator != directionalLights.cend())
+	while (directionalLightIndex < static_cast<int>(MAX_DIRECTIONAL_LIGHT_COUNT) && directionalLightIterator != directionalLights.cend())
 	{
-		DirectionalLight* directionalLight = directionalLights[directionalLightIndex];
+		DirectionalLight* directionalLight = *directionalLightIterator;
 
-		if (directionalLight->GetIsActive())
+		if (directionalLight && directionalLight->GetIsActive())
 		{
-			directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].direction = directionalLight->GetDirection();
-			directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].intensity = directionalLight->GetIntensity() * directionalLight->GetColor();
-			directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].isCastingShadow = directionalLight->GetIsShadowEnabled();
-			directionalLightBufferInfo.directionalLightInfo[directionalLightIndex].shadowIntensity = directionalLight->GetShadowIntensity();
+			lightBufferInfo.directionalLightInfo[directionalLightIndex].direction = directionalLight->GetDirection();
+			lightBufferInfo.directionalLightInfo[directionalLightIndex].intensity = directionalLight->GetIntensity() * directionalLight->GetColor();
+			lightBufferInfo.directionalLightInfo[directionalLightIndex].isCastingShadow = directionalLight->GetIsShadowEnabled();
+			lightBufferInfo.directionalLightInfo[directionalLightIndex].shadowIntensity = directionalLight->GetShadowIntensity();
 
 			directionalLight->SetUniformBufferIndex(directionalLightIndex);
 			++directionalLightIndex;
@@ -142,19 +107,11 @@ void LightManager::UpdateAllDirectionalLightDataOnGPU()
 
 		++directionalLightIterator;
 	}
-	directionalLightBufferInfo.directionalLightCount = directionalLightIndex;
-
-	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, directionalLightUniformBufferId_);
-	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, 0, sizeof(directionalLightBufferInfo.directionalLightInfo), &directionalLightBufferInfo);
-
-	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(directionalLightBufferInfo.directionalLightInfo), sizeof(int), &directionalLightBufferInfo.directionalLightCount);
-	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
-
-	EXIT_ON_GRAPHICS_API_ERROR("LightManager::InitializeDirectionalLights");
+	directionalLightCount_ = directionalLightIndex;
+	lightDataDirty_ = true;
 }
 
-void LightManager::UpdateAllPointLightDataOnGPU()
+void LightManager::CollectPointLightData()
 {
 	Scene* mainScene = engine->GetApplication()->GetMainScene();
 
@@ -162,17 +119,17 @@ void LightManager::UpdateAllPointLightDataOnGPU()
 
 	int pointLightIndex = 0;
 	std::vector<PointLight*>::const_iterator pointLightIterator = pointLights.cbegin();
-	while (pointLightIndex < MAX_POINT_LIGHT_COUNT && pointLightIterator != pointLights.cend())
+	while (pointLightIndex < static_cast<int>(MAX_POINT_LIGHT_COUNT) && pointLightIterator != pointLights.cend())
 	{
-		PointLight* pointLight = pointLights[pointLightIndex];
+		PointLight* pointLight = *pointLightIterator;
 
-		if (pointLight->GetIsActive())
+		if (pointLight && pointLight->GetIsActive())
 		{
-			pointLightBufferInfo.pointLightInfo[pointLightIndex].position = pointLight->GetPosition();
-			pointLightBufferInfo.pointLightInfo[pointLightIndex].radius = pointLight->GetRadius();
-			pointLightBufferInfo.pointLightInfo[pointLightIndex].intensity = pointLight->GetIntensity() * pointLight->GetColor();
-			pointLightBufferInfo.pointLightInfo[pointLightIndex].isCastingShadow = pointLight->GetIsShadowEnabled();
-			pointLightBufferInfo.pointLightInfo[pointLightIndex].shadowIntensity = pointLight->GetShadowIntensity();
+			lightBufferInfo.pointLightInfo[pointLightIndex].position = pointLight->GetPosition();
+			lightBufferInfo.pointLightInfo[pointLightIndex].radius = pointLight->GetRadius();
+			lightBufferInfo.pointLightInfo[pointLightIndex].intensity = pointLight->GetIntensity() * pointLight->GetColor();
+			lightBufferInfo.pointLightInfo[pointLightIndex].isCastingShadow = pointLight->GetIsShadowEnabled();
+			lightBufferInfo.pointLightInfo[pointLightIndex].shadowIntensity = pointLight->GetShadowIntensity();
 
 			pointLight->SetUniformBufferIndex(pointLightIndex);
 			++pointLightIndex;
@@ -180,19 +137,11 @@ void LightManager::UpdateAllPointLightDataOnGPU()
 
 		++pointLightIterator;
 	}
-	pointLightBufferInfo.pointLightCount = pointLightIndex;
-
-	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, pointLightUniformBufferId_);
-	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, 0, sizeof(pointLightBufferInfo.pointLightInfo), &pointLightBufferInfo);
-
-	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(pointLightBufferInfo.pointLightInfo), sizeof(int), &pointLightBufferInfo.pointLightCount);
-	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
-
-	EXIT_ON_GRAPHICS_API_ERROR("LightManager::InitializePointLights");
+	pointLightCount_ = pointLightIndex;
+	lightDataDirty_ = true;
 }
 
-void LightManager::UpdateAllSpotLightDataOnGPU()
+void LightManager::CollectSpotLightData()
 {
 	Scene* mainScene = engine->GetApplication()->GetMainScene();
 
@@ -200,20 +149,20 @@ void LightManager::UpdateAllSpotLightDataOnGPU()
 
 	int spotLightIndex = 0;
 	std::vector<SpotLight*>::const_iterator spotLightIterator = spotLights.cbegin();
-	while (spotLightIndex < MAX_SPOT_LIGHT_COUNT && spotLightIterator != spotLights.cend())
+	while (spotLightIndex < static_cast<int>(MAX_SPOT_LIGHT_COUNT) && spotLightIterator != spotLights.cend())
 	{
-		SpotLight* spotLight = spotLights[spotLightIndex];
+		SpotLight* spotLight = *spotLightIterator;
 
-		if (spotLight->GetIsActive())
+		if (spotLight && spotLight->GetIsActive())
 		{
 
-			spotLightBufferInfo.spotLightInfo[spotLightIndex].position = spotLight->GetPosition();
-			spotLightBufferInfo.spotLightInfo[spotLightIndex].coverageAngle = spotLight->GetCoverageAngle();
-			spotLightBufferInfo.spotLightInfo[spotLightIndex].direction = spotLight->GetDirection();
-			spotLightBufferInfo.spotLightInfo[spotLightIndex].falloffAngle = spotLight->GetFalloffAngle();
-			spotLightBufferInfo.spotLightInfo[spotLightIndex].intensity = spotLight->GetIntensity() * spotLight->GetColor();
-			spotLightBufferInfo.spotLightInfo[spotLightIndex].isCastingShadow = spotLight->GetIsShadowEnabled();
-			spotLightBufferInfo.spotLightInfo[spotLightIndex].shadowIntensity = spotLight->GetShadowIntensity();
+			lightBufferInfo.spotLightInfo[spotLightIndex].position = spotLight->GetPosition();
+			lightBufferInfo.spotLightInfo[spotLightIndex].coverageAngle = spotLight->GetCoverageAngle();
+			lightBufferInfo.spotLightInfo[spotLightIndex].direction = spotLight->GetDirection();
+			lightBufferInfo.spotLightInfo[spotLightIndex].falloffAngle = spotLight->GetFalloffAngle();
+			lightBufferInfo.spotLightInfo[spotLightIndex].intensity = spotLight->GetIntensity() * spotLight->GetColor();
+			lightBufferInfo.spotLightInfo[spotLightIndex].isCastingShadow = spotLight->GetIsShadowEnabled();
+			lightBufferInfo.spotLightInfo[spotLightIndex].shadowIntensity = spotLight->GetShadowIntensity();
 
 			spotLight->SetUniformBufferIndex(spotLightIndex);
 			++spotLightIndex;
@@ -221,16 +170,30 @@ void LightManager::UpdateAllSpotLightDataOnGPU()
 
 		++spotLightIterator;
 	}
-	spotLightBufferInfo.spotLightCount = spotLightIndex;
+	spotLightCount_ = spotLightIndex;
+	lightDataDirty_ = true;
+}
 
-	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
-	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, spotLightUniformBufferId_);
-	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, 0, sizeof(spotLightBufferInfo.spotLightInfo), &spotLightBufferInfo);
+void LightManager::UploadLightDataToGPU()
+{
+	lightStorageBuffer_.Upload(&lightBufferInfo, sizeof(lightBufferInfo), GraphicsBufferUsage::DynamicDraw, true);
+	lightStorageBuffer_.BindToBindingPoint(ShaderBindingPoints::ShaderStorage::LIGHT_DATA);
+	lightDataDirty_ = false;
 
-	graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(spotLightBufferInfo.spotLightInfo), sizeof(int), &spotLightBufferInfo.spotLightCount);
-	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
+	EXIT_ON_GRAPHICS_API_ERROR("LightManager::UploadLightDataToGPU");
+}
 
-	EXIT_ON_GRAPHICS_API_ERROR("LightManager::InitializeSpotLights");
+void LightManager::UploadLightDataIfDirty()
+{
+	if (!lightDataDirty_)
+	{
+		return;
+	}
+
+	CollectDirectionalLightData();
+	CollectPointLightData();
+	CollectSpotLightData();
+	UploadLightDataToGPU();
 }
 
 void LightManager::RenderShadowMaps()
@@ -312,9 +275,7 @@ void LightManager::RenderShadowMaps()
 
 	BindShadowViewProjectionMatrices();
 
-	UpdateAllDirectionalLightDataOnGPU();
-	UpdateAllPointLightDataOnGPU();
-	UpdateAllSpotLightDataOnGPU();
+	UpdateLights();
 
 	EXIT_ON_GRAPHICS_API_ERROR("LightManager::RenderShadowMaps");
 }
@@ -331,6 +292,18 @@ void LightManager::SetShadowRenderPassShaderUniforms(const Shader* shader) const
 
 void LightManager::BindLightUniforms(Shader* shader)
 {
+	if (!shader)
+	{
+		return;
+	}
+
+	UploadLightDataIfDirty();
+	lightStorageBuffer_.BindToBindingPoint(ShaderBindingPoints::ShaderStorage::LIGHT_DATA);
+
+	shader->Use();
+	shader->SetInt(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_COUNT_IN_USE_VARIABLE, directionalLightCount_);
+	shader->SetInt(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_COUNT_IN_USE_VARIABLE, pointLightCount_);
+	shader->SetInt(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_COUNT_IN_USE_VARIABLE, spotLightCount_);
 }
 
 void LightManager::BindShadowViewProjectionMatrices()
@@ -340,17 +313,41 @@ void LightManager::BindShadowViewProjectionMatrices()
 	const std::vector<DirectionalLight*> directionalLights = mainScene->GetDirectionalLights();
 	IGraphicsAPI* graphicsAPI = engine->GetGraphicsAPI();
 	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, directionalLightViewMatrixUniformBufferId_);
-	for (int directionalLightIndex = 0; directionalLightIndex < directionalLights.size(); ++directionalLightIndex)
+	int directionalLightIndex = 0;
+	for (DirectionalLight* directionalLight : directionalLights)
 	{
-		graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(Matrix) * directionalLightIndex, sizeof(Matrix), &directionalLights[directionalLightIndex]->GetBiasedShadowViewProjectionMatrix());
+		if (!(directionalLightIndex < static_cast<int>(MAX_DIRECTIONAL_LIGHT_COUNT)))
+		{
+			break;
+		}
+
+		if (!directionalLight || !directionalLight->GetIsActive())
+		{
+			continue;
+		}
+
+		graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(Matrix) * directionalLightIndex, sizeof(Matrix), &directionalLight->GetBiasedShadowViewProjectionMatrix());
+		++directionalLightIndex;
 	}
 	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 
 	const std::vector<SpotLight*> spotLights = mainScene->GetSpotLights();
 	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, spotLightViewMatrixUniformBufferId_);
-	for (int spotLightIndex = 0; spotLightIndex < spotLights.size(); ++spotLightIndex)
+	int spotLightIndex = 0;
+	for (SpotLight* spotLight : spotLights)
 	{
-		graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(Matrix) * spotLightIndex, sizeof(Matrix), &spotLights[spotLightIndex]->GetBiasedShadowViewProjectionMatrix());
+		if (!(spotLightIndex < static_cast<int>(MAX_SPOT_LIGHT_COUNT)))
+		{
+			break;
+		}
+
+		if (!spotLight || !spotLight->GetIsActive())
+		{
+			continue;
+		}
+
+		graphicsAPI->BufferSubData(GraphicsBufferTarget::UniformBuffer, sizeof(Matrix) * spotLightIndex, sizeof(Matrix), &spotLight->GetBiasedShadowViewProjectionMatrix());
+		++spotLightIndex;
 	}
 	graphicsAPI->BindBuffer(GraphicsBufferTarget::UniformBuffer, 0);
 
@@ -359,78 +356,102 @@ void LightManager::BindShadowViewProjectionMatrices()
 
 void LightManager::OnDirectionalLightAdded(DirectionalLight* directionalLight)
 {
+	(void)directionalLight;
+
 	if (!isInitialized_)
 	{
+		lightDataDirty_ = true;
 		return;
 	}
 
-	//TODO: Temporarily update all corresponding light data
-	UpdateAllDirectionalLightDataOnGPU();
+	CollectDirectionalLightData();
+	UploadLightDataToGPU();
 }
 
 void LightManager::OnDirectionalLightRemoved(DirectionalLight* directionalLight)
 {
+	(void)directionalLight;
+
 	if (!isInitialized_)
 	{
+		lightDataDirty_ = true;
 		return;
 	}
 
-	//TODO: Temporarily update all corresponding light data
-	UpdateAllDirectionalLightDataOnGPU();
+	CollectDirectionalLightData();
+	UploadLightDataToGPU();
 }
 
 void LightManager::OnPointLightAdded(PointLight* pointLight)
 {
+	(void)pointLight;
+
 	if (!isInitialized_)
 	{
+		lightDataDirty_ = true;
 		return;
 	}
 
-	//TODO: Temporarily update all corresponding light data
-	UpdateAllPointLightDataOnGPU();
+	CollectPointLightData();
+	UploadLightDataToGPU();
 }
 
 void LightManager::OnPointLightRemoved(PointLight* pointLight)
 {
+	(void)pointLight;
+
 	if (!isInitialized_)
 	{
+		lightDataDirty_ = true;
 		return;
 	}
 
-	//TODO: Temporarily update all corresponding light data
-	UpdateAllPointLightDataOnGPU();
+	CollectPointLightData();
+	UploadLightDataToGPU();
 }
 
 void LightManager::OnSpotLightAdded(SpotLight* spotLight)
 {
+	(void)spotLight;
+
 	if (!isInitialized_)
 	{
+		lightDataDirty_ = true;
 		return;
 	}
 
-	//TODO: Temporarily update all corresponding light data
-	UpdateAllSpotLightDataOnGPU();
+	CollectSpotLightData();
+	UploadLightDataToGPU();
 }
 
 void LightManager::OnSpotLightRemoved(SpotLight* spotLight)
 {
+	(void)spotLight;
+
 	if (!isInitialized_)
 	{
+		lightDataDirty_ = true;
 		return;
 	}
 
-	//TODO: Temporarily update all corresponding light data
-	UpdateAllSpotLightDataOnGPU();
+	CollectSpotLightData();
+	UploadLightDataToGPU();
 }
 
 void LightManager::UpdateLights()
 {
-	if(!isInitialized_)
+	if (!lightStorageBuffer_.IsCreated())
 	{
 		return;
 	}
 
-	UpdateAllDirectionalLightDataOnGPU();
-	UpdateAllPointLightDataOnGPU();
-	UpdateAllSpotLightDataOnGPU();
+	CollectDirectionalLightData();
+	CollectPointLightData();
+	CollectSpotLightData();
+	UploadLightDataToGPU();
+}
+
+void LightManager::MarkLightsDirty()
+{
+	lightDataDirty_ = true;
 }

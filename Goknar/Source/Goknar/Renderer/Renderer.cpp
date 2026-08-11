@@ -51,6 +51,7 @@
 #include "Goknar/Renderer/PostProcessing/ScreenSpaceReflectionPostProcessingEffect.h"
 #include "Goknar/Renderer/PostProcessing/TemporalAntiAliasingPostProcessingEffect.h"
 
+#include <algorithm>
 #include <cfloat>
 #include <climits>
 #include <unordered_set>
@@ -1292,49 +1293,91 @@ void Renderer::BindShadowTextures(Shader* shader)
 
 	std::vector<int> directionalLightTextureIndices;
 	const std::vector<DirectionalLight*>& directionalLights = scene->GetDirectionalLights();
-	size_t directionalLightCount = directionalLights.size();
-	directionalLightTextureIndices.resize(directionalLightCount, 0);
-	for (size_t i = 0; i < directionalLightCount; i++)
+	directionalLightTextureIndices.reserve((std::min)(directionalLights.size(), static_cast<size_t>(MAX_DIRECTIONAL_LIGHT_COUNT)));
+	for (DirectionalLight* directionalLight : directionalLights)
 	{
-		DirectionalLight* directionalLight = directionalLights[i];
+		if (!(directionalLightTextureIndices.size() < MAX_DIRECTIONAL_LIGHT_COUNT))
+		{
+			break;
+		}
+
+		if (!directionalLight || !directionalLight->GetIsActive())
+		{
+			continue;
+		}
+
+		int textureIndex = 0;
 		if (directionalLight->GetIsShadowEnabled())
 		{
 			Texture* shadowTexture = directionalLight->GetShadowMapTexture();
-			directionalLightTextureIndices[i] = shadowTexture->GetRendererTextureId();
-			shadowTexture->Bind(shader);
+			if (shadowTexture)
+			{
+				textureIndex = shadowTexture->GetRendererTextureId();
+				shadowTexture->Bind(shader);
+			}
 		}
+
+		directionalLightTextureIndices.push_back(textureIndex);
 	}
 	shader->SetIntVector(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_SHADOW_MAP_ARRAY_NAME, directionalLightTextureIndices);
 
 	std::vector<int> pointLightTextureIndices;
 	const std::vector<PointLight*>& pointLights = scene->GetPointLights();
-	size_t pointLightCount = pointLights.size();
-	pointLightTextureIndices.resize(pointLightCount, 0);
-	for (size_t i = 0; i < pointLightCount; i++)
+	pointLightTextureIndices.reserve((std::min)(pointLights.size(), static_cast<size_t>(MAX_POINT_LIGHT_COUNT)));
+	for (PointLight* pointLight : pointLights)
 	{
-		PointLight* pointLight = pointLights[i];
+		if (!(pointLightTextureIndices.size() < MAX_POINT_LIGHT_COUNT))
+		{
+			break;
+		}
+
+		if (!pointLight || !pointLight->GetIsActive())
+		{
+			continue;
+		}
+
+		int textureIndex = 0;
 		if (pointLight->GetIsShadowEnabled())
 		{
 			Texture* shadowTexture = pointLight->GetShadowMapTexture();
-			pointLightTextureIndices[i] = shadowTexture->GetRendererTextureId();
-			shadowTexture->Bind(shader);
+			if (shadowTexture)
+			{
+				textureIndex = shadowTexture->GetRendererTextureId();
+				shadowTexture->Bind(shader);
+			}
 		}
+
+		pointLightTextureIndices.push_back(textureIndex);
 	}
 	shader->SetIntVector(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_SHADOW_MAP_ARRAY_NAME, pointLightTextureIndices);
 
 	std::vector<int> spotLightTextureIndices;
 	const std::vector<SpotLight*>& spotLights = scene->GetSpotLights();
-	size_t spotLightCount = spotLights.size();
-	spotLightTextureIndices.resize(spotLightCount, 0);
-	for (size_t i = 0; i < spotLightCount; i++)
+	spotLightTextureIndices.reserve((std::min)(spotLights.size(), static_cast<size_t>(MAX_SPOT_LIGHT_COUNT)));
+	for (SpotLight* spotLight : spotLights)
 	{
-		SpotLight* spotLight = spotLights[i];
+		if (!(spotLightTextureIndices.size() < MAX_SPOT_LIGHT_COUNT))
+		{
+			break;
+		}
+
+		if (!spotLight || !spotLight->GetIsActive())
+		{
+			continue;
+		}
+
+		int textureIndex = 0;
 		if (spotLight->GetIsShadowEnabled())
 		{
 			Texture* shadowTexture = spotLight->GetShadowMapTexture();
-			spotLightTextureIndices[i] = shadowTexture->GetRendererTextureId();
-			shadowTexture->Bind(shader);
+			if (shadowTexture)
+			{
+				textureIndex = shadowTexture->GetRendererTextureId();
+				shadowTexture->Bind(shader);
+			}
 		}
+
+		spotLightTextureIndices.push_back(textureIndex);
 	}
 	shader->SetIntVector(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_SHADOW_MAP_ARRAY_NAME, spotLightTextureIndices);
 }
@@ -1496,27 +1539,9 @@ void Renderer::SetCubemapRenderPassShaderUniforms(const Shader* shader) const
 
 void Renderer::SetLightUniforms(Shader* shader)
 {
-	Scene* scene = engine->GetApplication()->GetMainScene();
-
-	const std::vector<DirectionalLight*>& directionalLights = scene->GetDirectionalLights();
-	size_t directionalLightCount = directionalLights.size();
-	for (size_t i = 0; i < directionalLightCount; i++)
+	if (lightManager_)
 	{
-		directionalLights[i]->SetShaderUniforms(shader);
-	}
-
-	const std::vector<PointLight*>& pointLights = scene->GetPointLights();
-	size_t pointLightCount = pointLights.size();
-	for (size_t i = 0; i < pointLightCount; i++)
-	{
-		pointLights[i]->SetShaderUniforms(shader);
-	}
-
-	const std::vector<SpotLight*>& spotLights = scene->GetSpotLights();
-	size_t spotLightCount = spotLights.size();
-	for (size_t i = 0; i < spotLightCount; i++)
-	{
-		spotLights[i]->SetShaderUniforms(shader);
+		lightManager_->BindLightUniforms(shader);
 	}
 }
 

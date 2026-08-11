@@ -224,7 +224,7 @@ void StaticMeshParticleSystem::DispatchFinalizePass() const
 	finalizeComputeShader->Use();
 	finalizeComputeShader->SetInt("commandCount", static_cast<int>(commandCount));
 
-	const GEuint groupCountX = (commandCount + kFinalizeDrawLocalSizeX - 1u) / kFinalizeDrawLocalSizeX;
+	const GEuint groupCountX = (commandCount + FINALIZE_DRAW_LOCAL_SIZE_X - 1u) / FINALIZE_DRAW_LOCAL_SIZE_X;
 	finalizeComputeShader->Dispatch(groupCountX, 1u, 1u);
 }
 

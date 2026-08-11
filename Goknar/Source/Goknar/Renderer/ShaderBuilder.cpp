@@ -13,6 +13,7 @@
 #include "Goknar/Model/MeshUnit.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Renderer/Shader.h"
+#include "Goknar/Renderer/ShaderBindingPoints.h"
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Lights/LightManager/LightManager.h"
@@ -25,8 +26,7 @@ ShaderBuilder* ShaderBuilder::instance_ = nullptr;
 
 namespace
 {
-	constexpr const char* kParticleEmissiveColorVaryingName = "particleEmissiveColor";
-	constexpr GEuint kGPUFoliageInstanceBufferBindingIndex = 12u;
+	constexpr const char* PARTICLE_EMISSIVE_COLOR_VARYING_NAME = "particleEmissiveColor";
 
 	bool MaterialUsesReflectionProbe(const MaterialInitializationData* initializationData)
 	{
@@ -803,42 +803,42 @@ std::string ShaderBuilder::ParticleRenderPass_GetBillboardVertexShaderScript(Mat
 	vertexShader += VS_GetLightOutputs();
 
 	vertexShader += R"(
-layout(std430, binding = 0) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::POSITION_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::POSITION) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::POSITION_BUFFER_NAME) + R"(
 {
 	vec4 particlePositions[];
 };
 
-layout(std430, binding = 1) readonly buffer ParticleVelocityBuffer
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::VELOCITY) + R"() readonly buffer ParticleVelocityBuffer
 {
 	vec4 particleVelocities[];
 };
 
-layout(std430, binding = 2) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::COLOR_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::COLOR) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::COLOR_BUFFER_NAME) + R"(
 {
 	vec4 particleColors[];
 };
 
-layout(std430, binding = 3) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::LIFETIME_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::LIFETIME) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::LIFETIME_BUFFER_NAME) + R"(
 {
 	vec2 particleLifetimes[];
 };
 
-layout(std430, binding = 4) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ALIVE_INDEX_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::ALIVE_INDEX) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ALIVE_INDEX_BUFFER_NAME) + R"(
 {
 	uint aliveParticleIndices[];
 };
 
-layout(std430, binding = 7) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::END_COLOR_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::END_COLOR) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::END_COLOR_BUFFER_NAME) + R"(
 {
 	vec4 particleEndColors[];
 };
 
-layout(std430, binding = 8) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::SIZE_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::SIZE) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::SIZE_BUFFER_NAME) + R"(
 {
 	vec2 particleSizes[];
 };
 
-layout(std430, binding = 9) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ROTATION_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::ROTATION) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ROTATION_BUFFER_NAME) + R"(
 {
 	vec4 particleRotations[];
 };
@@ -853,7 +853,7 @@ uniform vec4 particleColorBySpeedStart;
 uniform vec4 particleColorBySpeedEnd;
 uniform vec3 particleEmissiveColorStart;
 uniform vec3 particleEmissiveColorEnd;
-out vec3 )" + std::string(kParticleEmissiveColorVaryingName) + R"(;
+out vec3 )" + std::string(PARTICLE_EMISSIVE_COLOR_VARYING_NAME) + R"(;
 )";
 
 	MaterialInitializationData particleInitializationData(initializationData ? initializationData->owner : nullptr);
@@ -902,7 +902,7 @@ void main()
 	float normalizedColorSpeed = clamp((particleSpeed - particleColorBySpeedRange.x) / max(particleColorBySpeedRange.y - particleColorBySpeedRange.x, 0.0001), 0.0, 1.0);
 	float currentParticleSize = mix(particleSizeRange.x, particleSizeRange.y, normalizedAge) * mix(particleSizeBySpeedValues.x, particleSizeBySpeedValues.y, normalizedSizeSpeed) * )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::PARTICLE_SIZE) + R"(;
 	vec4 currentParticleColor = mix(startParticleColor, endParticleColor, normalizedAge) * mix(particleColorBySpeedStart, particleColorBySpeedEnd, normalizedColorSpeed);
-	)" + std::string(kParticleEmissiveColorVaryingName) + R"( = mix(particleEmissiveColorStart, particleEmissiveColorEnd, normalizedAge);
+	)" + std::string(PARTICLE_EMISSIVE_COLOR_VARYING_NAME) + R"( = mix(particleEmissiveColorStart, particleEmissiveColorEnd, normalizedAge);
 
 	vec2 particleCorner = particleQuadCorners[gl_VertexID];
 	float particleRotationSin = sin(particleRotation.z);
@@ -965,42 +965,42 @@ std::string ShaderBuilder::ParticleRenderPass_GetStaticMeshVertexShaderScript(Ma
 	vertexShader += VS_GetLightOutputs();
 
 	vertexShader += R"(
-layout(std430, binding = 0) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::POSITION_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::POSITION) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::POSITION_BUFFER_NAME) + R"(
 {
 	vec4 particlePositions[];
 };
 
-layout(std430, binding = 1) readonly buffer ParticleVelocityBuffer
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::VELOCITY) + R"() readonly buffer ParticleVelocityBuffer
 {
 	vec4 particleVelocities[];
 };
 
-layout(std430, binding = 2) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::COLOR_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::COLOR) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::COLOR_BUFFER_NAME) + R"(
 {
 	vec4 particleColors[];
 };
 
-layout(std430, binding = 3) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::LIFETIME_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::LIFETIME) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::LIFETIME_BUFFER_NAME) + R"(
 {
 	vec2 particleLifetimes[];
 };
 
-layout(std430, binding = 4) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ALIVE_INDEX_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::ALIVE_INDEX) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ALIVE_INDEX_BUFFER_NAME) + R"(
 {
 	uint aliveParticleIndices[];
 };
 
-layout(std430, binding = 7) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::END_COLOR_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::END_COLOR) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::END_COLOR_BUFFER_NAME) + R"(
 {
 	vec4 particleEndColors[];
 };
 
-layout(std430, binding = 8) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::SIZE_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::SIZE) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::SIZE_BUFFER_NAME) + R"(
 {
 	vec2 particleSizes[];
 };
 
-layout(std430, binding = 9) readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ROTATION_BUFFER_NAME) + R"(
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::Particle::ROTATION) + R"() readonly buffer )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::ROTATION_BUFFER_NAME) + R"(
 {
 	vec4 particleRotations[];
 };
@@ -1013,7 +1013,7 @@ uniform vec4 particleColorBySpeedStart;
 uniform vec4 particleColorBySpeedEnd;
 uniform vec3 particleEmissiveColorStart;
 uniform vec3 particleEmissiveColorEnd;
-out vec3 )" + std::string(kParticleEmissiveColorVaryingName) + R"(;
+out vec3 )" + std::string(PARTICLE_EMISSIVE_COLOR_VARYING_NAME) + R"(;
 )";
 
 	MaterialInitializationData particleInitializationData(initializationData ? initializationData->owner : nullptr);
@@ -1053,7 +1053,7 @@ void main()
 	float normalizedColorSpeed = clamp((particleSpeed - particleColorBySpeedRange.x) / max(particleColorBySpeedRange.y - particleColorBySpeedRange.x, 0.0001), 0.0, 1.0);
 	float currentParticleSize = mix(particleSizeRange.x, particleSizeRange.y, normalizedAge) * mix(particleSizeBySpeedValues.x, particleSizeBySpeedValues.y, normalizedSizeSpeed) * )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::PARTICLE_SIZE) + R"(;
 	vec4 currentParticleColor = mix(startParticleColor, endParticleColor, normalizedAge) * mix(particleColorBySpeedStart, particleColorBySpeedEnd, normalizedColorSpeed);
-	)" + std::string(kParticleEmissiveColorVaryingName) + R"( = mix(particleEmissiveColorStart, particleEmissiveColorEnd, normalizedAge);
+	)" + std::string(PARTICLE_EMISSIVE_COLOR_VARYING_NAME) + R"( = mix(particleEmissiveColorStart, particleEmissiveColorEnd, normalizedAge);
 	vec3 particlePosition = particlePositions[particleIndex].xyz;
 
 	float particleRotationSinX = sin(particleRotation.x);
@@ -1167,9 +1167,9 @@ std::string ShaderBuilder::ParticleRenderPass_GetFragmentShaderScript(MaterialIn
 	}
 
 	particleInitializationData.emissiveColor.result =
-		"(" + particleEmissiveColorExpression + ") + " + std::string(kParticleEmissiveColorVaryingName) + ";";
+		"(" + particleEmissiveColorExpression + ") + " + std::string(PARTICLE_EMISSIVE_COLOR_VARYING_NAME) + ";";
 	particleInitializationData.fragmentShaderUniforms +=
-		"in vec3 " + std::string(kParticleEmissiveColorVaryingName) + ";\n";
+		"in vec3 " + std::string(PARTICLE_EMISSIVE_COLOR_VARYING_NAME) + ";\n";
 
 	std::string outputVariables = FS_GetOutputVariables();
 	std::string outputVariableAssignments = FS_GetOutputVariableAssignments();
@@ -1610,7 +1610,7 @@ struct )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_STRUCT_N
 	vec3 )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::DIRECTION + R"(;
 	float )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_INTENSITY + R"(;
 	vec3 )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"(;
-	bool )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"(;
+	int )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"(;
 };
 )";
 
@@ -1626,8 +1626,11 @@ struct )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_STRUCT_NAME) +
 	vec3 )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + R"(;
 	float )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + R"( ;
 	vec3 )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"(;
-	bool )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"(;
+	int )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"(;
 	float )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_INTENSITY + R"(;
+	float padding0;
+	float padding1;
+	float padding2;
 };
 
 )";
@@ -1646,7 +1649,10 @@ struct )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_STRUCT_NAME) + 
 	float )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::FALLOFF_ANGLE + R"(;
 	vec3 )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"(;
 	float )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::SHADOW_INTENSITY + R"(;
-	bool )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"(;
+	int )" + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"(;
+	float padding0;
+	float padding1;
+	float padding2;
 };
 )";
 	return spotLightStruct;
@@ -1655,23 +1661,16 @@ struct )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_STRUCT_NAME) + 
 std::string ShaderBuilder::FS_GetLightArrayUniforms() const
 {
 	return R"(
-layout (std140, binding = )" + std::to_string(DIRECTIONAL_LIGHT_UNIFORM_BIND_INDEX) + R"() uniform )" + SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_UNIFORM_NAME + R"(
+layout (std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::LIGHT_DATA) + R"() readonly buffer LightDataBuffer
 {
 	)" + SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_STRUCT_NAME + " " + SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_ARRAY_NAME + "[" + std::to_string(MAX_DIRECTIONAL_LIGHT_COUNT) + "]" + R"(;
-	int )" + SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_COUNT_IN_USE_VARIABLE + R"(;
-};
-
-layout (std140, binding = )" + std::to_string(POINT_LIGHT_UNIFORM_BIND_INDEX) + R"() uniform )" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_UNIFORM_NAME + R"(
-{
 	)" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_STRUCT_NAME + " " + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[" + std::to_string(MAX_POINT_LIGHT_COUNT) + "]" + R"(;
-	int )" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_COUNT_IN_USE_VARIABLE + R"(;
+	)" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_STRUCT_NAME + " " + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_ARRAY_NAME + "[" + std::to_string(MAX_SPOT_LIGHT_COUNT) + "]" + R"(;
 };
 
-layout (std140, binding = )" + std::to_string(SPOT_LIGHT_UNIFORM_BIND_INDEX) + R"() uniform )" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_UNIFORM_NAME + R"(
-{
-	)" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_STRUCT_NAME + " " + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_ARRAY_NAME + "[" + std::to_string(MAX_SPOT_LIGHT_COUNT) + "]" + R"(;
-	int )" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_COUNT_IN_USE_VARIABLE + R"(;
-};
+uniform int )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_COUNT_IN_USE_VARIABLE) + R"(;
+uniform int )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_COUNT_IN_USE_VARIABLE) + R"(;
+uniform int )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_COUNT_IN_USE_VARIABLE) + R"(;
 )";
 }
 
@@ -1887,7 +1886,7 @@ std::string ShaderBuilder::FS_GetLightCalculationIterators(bool includeShadowing
 	return R"(
 	for(int directionalLightIndex = 0; directionalLightIndex < )" + std::string(SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_COUNT_IN_USE_VARIABLE) + R"(; ++directionalLightIndex)
 	{
-		if()" + SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_ARRAY_NAME + "[directionalLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"()
+		if()" + SHADER_VARIABLE_NAMES::LIGHT::DIRECTIONAL_LIGHT_ARRAY_NAME + "[directionalLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"( != 0)
 		{
 			vec3 lightSpaceScreenCoordinate = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::DIRECTIONAL_LIGHT_SPACE_FRAGMENT_POSITIONS + "[directionalLightIndex].xyz / " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::DIRECTIONAL_LIGHT_SPACE_FRAGMENT_POSITIONS + R"([directionalLightIndex].w;
 
@@ -1928,7 +1927,7 @@ std::string ShaderBuilder::FS_GetLightCalculationIterators(bool includeShadowing
 			)" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::INTENSITY + R"(,
 			)" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + R"();
 
-		if()" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"()
+		if()" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"( != 0)
 		{
 			vec3 )" + SHADER_VARIABLE_NAMES::SHADOW::FRAGMENT_TO_LIGHT_VECTOR + R"( = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE + R"(.xyz + geometryNormal * 0.025f - )" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::POSITION + R"(;
 			float pointLightRadius = max()" + SHADER_VARIABLE_NAMES::LIGHT::POINT_LIGHT_ARRAY_NAME + "[pointLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::RADIUS + R"(, 0.0001f);
@@ -1945,7 +1944,7 @@ std::string ShaderBuilder::FS_GetLightCalculationIterators(bool includeShadowing
 
 	for(int spotLightIndex = 0; spotLightIndex < )" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_COUNT_IN_USE_VARIABLE + R"(; ++spotLightIndex)
 	{
-		if()" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_ARRAY_NAME + "[spotLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"()
+		if()" + SHADER_VARIABLE_NAMES::LIGHT::SPOT_LIGHT_ARRAY_NAME + "[spotLightIndex]." + SHADER_VARIABLE_NAMES::LIGHT_KEYWORDS::IS_CASTING_SHADOW + R"( != 0)
 		{
 			vec3 lightSpaceScreenCoordinate = )" + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::SPOT_LIGHT_SPACE_FRAGMENT_POSITIONS + "[spotLightIndex].xyz / " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::SPOT_LIGHT_SPACE_FRAGMENT_POSITIONS + R"([spotLightIndex].w;
 
@@ -2343,26 +2342,26 @@ vec3 CalculatePBRLighting(vec3 lightDirection, vec3 radiance)
 
     vec3 F0 = pbrF0;
     vec3 specular = vec3(0.f);
-    vec3 kS = vec3(0.f);
+    vec3 specularEnergy = vec3(0.f);
 
     // Only calculate specular reflections for front-facing light
     if(!isBackface)
     {
         vec3 halfVector = normalize(viewDirection + lightDirection);
-        kS = FresnelSchlick(max(dot(halfVector, viewDirection), 0.f), F0);
+        specularEnergy = FresnelSchlick(max(dot(halfVector, viewDirection), 0.f), F0);
 
         float NDF = DistributionGGX(normal, halfVector, finalRoughness);
         float G = GeometrySmith(normal, viewDirection, lightDirection, finalRoughness);
 
-        vec3 numerator = NDF * G * kS;
+        vec3 numerator = NDF * G * specularEnergy;
         float denominator = max(4.f * normalDotView * clampedNormalDotLight, 0.0001f);
         specular = numerator / denominator;
     }
 
-    vec3 kD = (vec3(1.f) - kS) * (1.f - finalMetallic);
+    vec3 diffuseEnergy = (vec3(1.f) - specularEnergy) * (1.f - finalMetallic);
 
     // FIX: Divided base color by PI for energy conservation
-    vec3 directLighting = ((kD * )" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.rgb / PI) + specular) * radiance * clampedNormalDotLight;
+    vec3 directLighting = ((diffuseEnergy * )" + SHADER_VARIABLE_NAMES::CALCULATIONS::FINAL_BASE_COLOR + R"(.rgb / PI) + specular) * radiance * clampedNormalDotLight;
 
     if(isBackface)
     {
@@ -2496,7 +2495,7 @@ struct GPUFoliageInstanceData
 	vec4 color;
 };
 
-layout(std430, binding = )" + std::to_string(kGPUFoliageInstanceBufferBindingIndex) + R"() readonly buffer GPUFoliageInstanceBuffer
+layout(std430, binding = )" + std::to_string(ShaderBindingPoints::ShaderStorage::INSTANCE_DATA) + R"() readonly buffer GPUFoliageInstanceBuffer
 {
 	GPUFoliageInstanceData foliageInstances[];
 };

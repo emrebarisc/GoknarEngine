@@ -27,6 +27,21 @@ void Light::SetShaderUniforms(const Shader* shader)
 {
 }
 
+void Light::MarkLightDataDirty() const
+{
+	Renderer* renderer = engine ? engine->GetRenderer() : nullptr;
+	if (!renderer)
+	{
+		return;
+	}
+
+	LightManager* lightManager = renderer->GetLightManager();
+	if (lightManager)
+	{
+		lightManager->MarkLightsDirty();
+	}
+}
+
 void Light::PreInit()
 {
 	if (isShadowEnabled_)
