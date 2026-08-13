@@ -67,11 +67,19 @@ BillboardParticleSystem::~BillboardParticleSystem()
 	DestroyRenderResources();
 }
 
-void BillboardParticleSystem::Render(const Camera* activeCamera) const
+std::uint32_t BillboardParticleSystem::Render(const Camera* activeCamera, ParticleRenderStage renderStage) const
 {
 	if (!GetIsInitialized() || !activeCamera || GetDrawIndirectBufferId() == 0 || !renderShader_)
 	{
-		return;
+		return 0u;
+	}
+
+	const bool isTransparent =
+		!particleMaterial_ || particleMaterial_->GetBlendModel() == MaterialBlendModel::Transparent;
+	if ((renderStage == ParticleRenderStage::Opaque && isTransparent) ||
+		(renderStage == ParticleRenderStage::Transparent && !isTransparent))
+	{
+		return 0u;
 	}
 
 	BindRenderBuffers();
@@ -91,6 +99,8 @@ void BillboardParticleSystem::Render(const Camera* activeCamera) const
 	engine->GetGraphicsAPI()->BindBuffer(GraphicsBufferTarget::DrawIndirectBuffer, 0);
 	engine->GetGraphicsAPI()->BindVertexArray(0);
 	engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::CullFace, true);
+
+	return 1u;
 }
 
 void BillboardParticleSystem::SetParticleTexture(const Image* particleTexture)

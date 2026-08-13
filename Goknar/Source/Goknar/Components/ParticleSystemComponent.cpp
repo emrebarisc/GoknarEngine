@@ -14,101 +14,6 @@
 #include "Goknar/ParticleSystem/BillboardParticleSystem.h"
 #include "Goknar/ParticleSystem/StaticMeshParticleSystem.h"
 
-namespace
-{
-	constexpr float kMinimumParticleSize = 0.001f;
-	constexpr float kMinimumLifetime = 0.0001f;
-	constexpr float kMinimumSpawnInterval = 0.0001f;
-
-	GPUParticleValueRange<float> SanitizeFloatRange(const GPUParticleValueRange<float>& range, float minimumValue)
-	{
-		GPUParticleValueRange<float> sanitizedRange(range);
-		sanitizedRange.minValue = (std::max)(minimumValue, sanitizedRange.minValue);
-		sanitizedRange.maxValue = (std::max)(minimumValue, sanitizedRange.maxValue);
-		if (sanitizedRange.maxValue < sanitizedRange.minValue)
-		{
-			std::swap(sanitizedRange.minValue, sanitizedRange.maxValue);
-		}
-
-		return sanitizedRange;
-	}
-
-	GPUParticleValueRange<Vector3> SanitizeVector3Range(const GPUParticleValueRange<Vector3>& range)
-	{
-		return GPUParticleValueRange<Vector3>(
-			Vector3::Min(range.minValue, range.maxValue),
-			Vector3::Max(range.minValue, range.maxValue));
-	}
-
-	Vector2 SanitizeRangeVector(const Vector2& range)
-	{
-		return Vector2((std::min)(range.x, range.y), (std::max)(range.x, range.y));
-	}
-
-	GPUParticleFloatCurve SanitizeFloatCurve(const GPUParticleFloatCurve& curve, float minimumValue)
-	{
-		GPUParticleFloatCurve sanitizedCurve(curve);
-		sanitizedCurve.startValue = (std::max)(minimumValue, sanitizedCurve.startValue);
-		sanitizedCurve.endValue = (std::max)(minimumValue, sanitizedCurve.endValue);
-		return sanitizedCurve;
-	}
-
-	Vector4 SanitizeParticleColor(const Vector4& color)
-	{
-		Vector4 sanitizedColor(color);
-		sanitizedColor.w = GoknarMath::Clamp(sanitizedColor.w, 0.f, 1.f);
-		return sanitizedColor;
-	}
-
-	GPUParticleColorCurve SanitizeColorCurve(const GPUParticleColorCurve& curve)
-	{
-		GPUParticleColorCurve sanitizedCurve(curve);
-		sanitizedCurve.startValue = SanitizeParticleColor(sanitizedCurve.startValue);
-		sanitizedCurve.endValue = SanitizeParticleColor(sanitizedCurve.endValue);
-		return sanitizedCurve;
-	}
-
-	Vector3 SanitizeEmissiveColor(const Vector3& color)
-	{
-		return Vector3(
-			(std::max)(0.f, color.x),
-			(std::max)(0.f, color.y),
-			(std::max)(0.f, color.z));
-	}
-
-	GPUParticleVector3Curve SanitizeEmissiveColorCurve(const GPUParticleVector3Curve& curve)
-	{
-		GPUParticleVector3Curve sanitizedCurve(curve);
-		sanitizedCurve.startValue = SanitizeEmissiveColor(sanitizedCurve.startValue);
-		sanitizedCurve.endValue = SanitizeEmissiveColor(sanitizedCurve.endValue);
-		return sanitizedCurve;
-	}
-
-	GPUParticleSpawnDesc SanitizeSpawnDesc(const GPUParticleSpawnDesc& spawnDesc)
-	{
-		GPUParticleSpawnDesc sanitizedSpawnDesc(spawnDesc);
-		sanitizedSpawnDesc.lifetime = SanitizeFloatRange(sanitizedSpawnDesc.lifetime, kMinimumLifetime);
-		sanitizedSpawnDesc.initialVelocity = SanitizeVector3Range(sanitizedSpawnDesc.initialVelocity);
-		sanitizedSpawnDesc.initialRotation = SanitizeVector3Range(sanitizedSpawnDesc.initialRotation);
-		sanitizedSpawnDesc.angularVelocity = SanitizeVector3Range(sanitizedSpawnDesc.angularVelocity);
-		sanitizedSpawnDesc.acceleration = SanitizeVector3Range(sanitizedSpawnDesc.acceleration);
-		sanitizedSpawnDesc.velocityLimit = (std::max)(0.f, sanitizedSpawnDesc.velocityLimit);
-		sanitizedSpawnDesc.sizeByLifetime = SanitizeFloatCurve(sanitizedSpawnDesc.sizeByLifetime, 0.f);
-		sanitizedSpawnDesc.sizeBySpeedRange = SanitizeRangeVector(sanitizedSpawnDesc.sizeBySpeedRange);
-		sanitizedSpawnDesc.sizeBySpeed = SanitizeFloatCurve(sanitizedSpawnDesc.sizeBySpeed, 0.f);
-		sanitizedSpawnDesc.colorByLifetime = SanitizeColorCurve(sanitizedSpawnDesc.colorByLifetime);
-		sanitizedSpawnDesc.colorBySpeedRange = SanitizeRangeVector(sanitizedSpawnDesc.colorBySpeedRange);
-		sanitizedSpawnDesc.colorBySpeed = SanitizeColorCurve(sanitizedSpawnDesc.colorBySpeed);
-		sanitizedSpawnDesc.emissiveColorByLifetime = SanitizeEmissiveColorCurve(sanitizedSpawnDesc.emissiveColorByLifetime);
-		sanitizedSpawnDesc.spawnBoxExtents.x = (std::max)(0.f, sanitizedSpawnDesc.spawnBoxExtents.x);
-		sanitizedSpawnDesc.spawnBoxExtents.y = (std::max)(0.f, sanitizedSpawnDesc.spawnBoxExtents.y);
-		sanitizedSpawnDesc.spawnBoxExtents.z = (std::max)(0.f, sanitizedSpawnDesc.spawnBoxExtents.z);
-		sanitizedSpawnDesc.spawnInterval = (std::max)(kMinimumSpawnInterval, sanitizedSpawnDesc.spawnInterval);
-		sanitizedSpawnDesc.spawnCountPerInterval = (std::max)(1u, sanitizedSpawnDesc.spawnCountPerInterval);
-		return sanitizedSpawnDesc;
-	}
-}
-
 ParticleSystemComponent::ParticleSystemComponent(Component* parent) :
 	Component(parent)
 {
@@ -209,7 +114,7 @@ void ParticleSystemComponent::SetGravity(const Vector3& gravity)
 
 void ParticleSystemComponent::SetParticleSize(float particleSize)
 {
-	const float sanitizedParticleSize = (std::max)(kMinimumParticleSize, particleSize);
+	const float sanitizedParticleSize = (std::max)(MINIMUN_PARTICLE_SIZE, particleSize);
 	if (particleSize_ == sanitizedParticleSize)
 	{
 		return;
@@ -531,4 +436,101 @@ void StaticMeshParticleSystemComponent::LoadStaticMeshFromPath()
 StaticMeshParticleSystem* StaticMeshParticleSystemComponent::GetStaticMeshParticleSystem() const
 {
 	return dynamic_cast<StaticMeshParticleSystem*>(GetParticleSystem());
+}
+
+GPUParticleValueRange<float> ParticleSystemComponent::SanitizeFloatRange(const GPUParticleValueRange<float>& range, float minimumValue)
+{
+	GPUParticleValueRange<float> sanitizedRange(range);
+	sanitizedRange.minValue = (std::max)(minimumValue, sanitizedRange.minValue);
+	sanitizedRange.maxValue = (std::max)(minimumValue, sanitizedRange.maxValue);
+	if (sanitizedRange.maxValue < sanitizedRange.minValue)
+	{
+		std::swap(sanitizedRange.minValue, sanitizedRange.maxValue);
+	}
+
+	return sanitizedRange;
+}
+
+GPUParticleValueRange<Vector3> ParticleSystemComponent::SanitizeVector3Range(const GPUParticleValueRange<Vector3>& range)
+{
+	return GPUParticleValueRange<Vector3>(
+		Vector3::Min(range.minValue, range.maxValue),
+		Vector3::Max(range.minValue, range.maxValue));
+}
+
+Vector2 ParticleSystemComponent::SanitizeRangeVector(const Vector2& range)
+{
+	return Vector2((std::min)(range.x, range.y), (std::max)(range.x, range.y));
+}
+
+GPUParticleFloatCurve ParticleSystemComponent::SanitizeFloatCurve(const GPUParticleFloatCurve& curve, float minimumValue)
+{
+	GPUParticleFloatCurve sanitizedCurve(curve);
+	sanitizedCurve.startValue = (std::max)(minimumValue, sanitizedCurve.startValue);
+	sanitizedCurve.endValue = (std::max)(minimumValue, sanitizedCurve.endValue);
+	return sanitizedCurve;
+}
+
+Vector4 ParticleSystemComponent::SanitizeParticleColor(const Vector4& color)
+{
+	Vector4 sanitizedColor(color);
+	sanitizedColor.w = GoknarMath::Clamp(sanitizedColor.w, 0.f, 1.f);
+	return sanitizedColor;
+}
+
+GPUParticleColorCurve ParticleSystemComponent::SanitizeColorCurve(const GPUParticleColorCurve& curve)
+{
+	GPUParticleColorCurve sanitizedCurve(curve);
+	sanitizedCurve.startValue = SanitizeParticleColor(sanitizedCurve.startValue);
+	sanitizedCurve.endValue = SanitizeParticleColor(sanitizedCurve.endValue);
+	return sanitizedCurve;
+}
+
+Vector3 ParticleSystemComponent::SanitizeEmissiveColor(const Vector3& color)
+{
+	return Vector3(
+		(std::max)(0.f, color.x),
+		(std::max)(0.f, color.y),
+		(std::max)(0.f, color.z));
+}
+
+GPUParticleVector3Curve ParticleSystemComponent::SanitizeEmissiveColorCurve(const GPUParticleVector3Curve& curve)
+{
+	GPUParticleVector3Curve sanitizedCurve(curve);
+	sanitizedCurve.startValue = SanitizeEmissiveColor(sanitizedCurve.startValue);
+	sanitizedCurve.endValue = SanitizeEmissiveColor(sanitizedCurve.endValue);
+	return sanitizedCurve;
+}
+
+GPUParticleSpawnDesc ParticleSystemComponent::SanitizeSpawnDesc(const GPUParticleSpawnDesc& spawnDesc)
+{
+	GPUParticleSpawnDesc sanitizedSpawnDesc(spawnDesc);
+	sanitizedSpawnDesc.lifetime = SanitizeFloatRange(sanitizedSpawnDesc.lifetime, MINIMUM_LIFETIME);
+	sanitizedSpawnDesc.initialVelocity = SanitizeVector3Range(sanitizedSpawnDesc.initialVelocity);
+	sanitizedSpawnDesc.initialRotation = SanitizeVector3Range(sanitizedSpawnDesc.initialRotation);
+	sanitizedSpawnDesc.angularVelocity = SanitizeVector3Range(sanitizedSpawnDesc.angularVelocity);
+	sanitizedSpawnDesc.acceleration = SanitizeVector3Range(sanitizedSpawnDesc.acceleration);
+	sanitizedSpawnDesc.velocityLimit = (std::max)(0.f, sanitizedSpawnDesc.velocityLimit);
+	sanitizedSpawnDesc.initialSize = SanitizeFloatRange(sanitizedSpawnDesc.initialSize, 0.f);
+	sanitizedSpawnDesc.sizeByLifetime = SanitizeFloatCurve(sanitizedSpawnDesc.sizeByLifetime, 0.f);
+	sanitizedSpawnDesc.sizeBySpeedRange = SanitizeRangeVector(sanitizedSpawnDesc.sizeBySpeedRange);
+	sanitizedSpawnDesc.sizeBySpeed = SanitizeFloatCurve(sanitizedSpawnDesc.sizeBySpeed, 0.f);
+	sanitizedSpawnDesc.colorByLifetime = SanitizeColorCurve(sanitizedSpawnDesc.colorByLifetime);
+	sanitizedSpawnDesc.colorBySpeedRange = SanitizeRangeVector(sanitizedSpawnDesc.colorBySpeedRange);
+	sanitizedSpawnDesc.colorBySpeed = SanitizeColorCurve(sanitizedSpawnDesc.colorBySpeed);
+	sanitizedSpawnDesc.emissiveColorByLifetime = SanitizeEmissiveColorCurve(sanitizedSpawnDesc.emissiveColorByLifetime);
+	sanitizedSpawnDesc.spawnBoxExtents.x = (std::max)(0.f, sanitizedSpawnDesc.spawnBoxExtents.x);
+	sanitizedSpawnDesc.spawnBoxExtents.y = (std::max)(0.f, sanitizedSpawnDesc.spawnBoxExtents.y);
+	sanitizedSpawnDesc.spawnBoxExtents.z = (std::max)(0.f, sanitizedSpawnDesc.spawnBoxExtents.z);
+	sanitizedSpawnDesc.spawnCountPerInterval = (std::max)(1u, sanitizedSpawnDesc.spawnCountPerInterval);
+	if (sanitizedSpawnDesc.infiniteLifetime)
+	{
+		sanitizedSpawnDesc.spawnInterval = 0.f;
+		sanitizedSpawnDesc.looping = false;
+	}
+	else
+	{
+		sanitizedSpawnDesc.spawnInterval = (std::max)(MINIMUM_SPAWN_INTERVAL, sanitizedSpawnDesc.spawnInterval);
+	}
+	return sanitizedSpawnDesc;
 }

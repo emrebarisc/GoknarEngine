@@ -13,7 +13,9 @@ public:
 	explicit BillboardParticleSystem(const GPUParticleSystemDesc& desc = GPUParticleSystemDesc());
 	~BillboardParticleSystem() override;
 
-	void Render(const Camera* activeCamera) const override;
+	std::uint32_t Render(
+		const Camera* activeCamera,
+		ParticleRenderStage renderStage = ParticleRenderStage::All) const override;
 
 	void SetParticleTexture(const Image* particleTexture);
 	const Image* GetParticleTexture() const

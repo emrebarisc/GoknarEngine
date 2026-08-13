@@ -2003,6 +2003,12 @@ void SceneParser::ParseParticleSystemComponentValues(ParticleSystemComponent* pa
 		spawnDesc.looping = std::string(dataElement->GetText()) == "1" || std::string(dataElement->GetText()) == "true";
 	}
 
+	dataElement = componentElement->FirstChildElement("InfiniteLifetime");
+	if (dataElement && dataElement->GetText())
+	{
+		spawnDesc.infiniteLifetime = std::string(dataElement->GetText()) == "1" || std::string(dataElement->GetText()) == "true";
+	}
+
 	dataElement = componentElement->FirstChildElement("SpawnInterval");
 	if (dataElement && dataElement->GetText())
 	{
@@ -2032,6 +2038,14 @@ void SceneParser::ParseParticleSystemComponentValues(ParticleSystemComponent* pa
 	{
 		stream << dataElement->GetText() << std::endl;
 		stream >> spawnDesc.lifetime.minValue >> spawnDesc.lifetime.maxValue;
+	}
+	stream.clear();
+
+	dataElement = componentElement->FirstChildElement("InitialSizeRange");
+	if (dataElement && dataElement->GetText())
+	{
+		stream << dataElement->GetText() << std::endl;
+		stream >> spawnDesc.initialSize.minValue >> spawnDesc.initialSize.maxValue;
 	}
 	stream.clear();
 
@@ -3399,6 +3413,10 @@ void SceneParser::GetXMLElement_ParticleSystemComponent(const ParticleSystemComp
 	loopingElement->SetText(spawnDesc.looping ? 1 : 0);
 	parentElement->InsertEndChild(loopingElement);
 
+	tinyxml2::XMLElement* infiniteLifetimeElement = xmlDocument.NewElement("InfiniteLifetime");
+	infiniteLifetimeElement->SetText(spawnDesc.infiniteLifetime ? 1 : 0);
+	parentElement->InsertEndChild(infiniteLifetimeElement);
+
 	tinyxml2::XMLElement* spawnIntervalElement = xmlDocument.NewElement("SpawnInterval");
 	spawnIntervalElement->SetText(spawnDesc.spawnInterval);
 	parentElement->InsertEndChild(spawnIntervalElement);
@@ -3414,6 +3432,10 @@ void SceneParser::GetXMLElement_ParticleSystemComponent(const ParticleSystemComp
 	tinyxml2::XMLElement* lifetimeRangeElement = xmlDocument.NewElement("LifetimeRange");
 	lifetimeRangeElement->SetText(serializeFloatRange(spawnDesc.lifetime).c_str());
 	parentElement->InsertEndChild(lifetimeRangeElement);
+
+	tinyxml2::XMLElement* initialSizeRangeElement = xmlDocument.NewElement("InitialSizeRange");
+	initialSizeRangeElement->SetText(serializeFloatRange(spawnDesc.initialSize).c_str());
+	parentElement->InsertEndChild(initialSizeRangeElement);
 
 	tinyxml2::XMLElement* initialVelocityMinElement = xmlDocument.NewElement("InitialVelocityMin");
 	initialVelocityMinElement->SetText(Serialize(spawnDesc.initialVelocity.minValue).c_str());

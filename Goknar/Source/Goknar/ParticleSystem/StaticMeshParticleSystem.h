@@ -16,7 +16,9 @@ public:
 	explicit StaticMeshParticleSystem(const GPUParticleSystemDesc& desc = GPUParticleSystemDesc());
 	~StaticMeshParticleSystem() override;
 
-	void Render(const Camera* activeCamera) const override;
+	std::uint32_t Render(
+		const Camera* activeCamera,
+		ParticleRenderStage renderStage = ParticleRenderStage::All) const override;
 
 	void SetStaticMesh(const StaticMesh* staticMesh);
 	const StaticMesh* GetStaticMesh() const

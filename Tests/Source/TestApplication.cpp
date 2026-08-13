@@ -12,6 +12,7 @@
 #include "Math/Matrix_Tests.h"
 #include "Math/Quaternion_Tests.h"
 #include "Delegates/Delegates_Tests.h"
+#include "Renderer/ShaderBuilder_Tests.h"
 
 TestApplication::TestApplication() :
 	Application()
@@ -35,6 +36,7 @@ TestApplication::TestApplication() :
 	tests.AddTest(std::make_shared<InterpolatingValue_Tests>());
 	tests.AddTest(std::make_shared<Matrix_Tests>());
 	tests.AddTest(std::make_shared<Quaternion_Tests>());
+	tests.AddTest(std::make_shared<ShaderBuilder_Tests>());
 
 	tests.Run();
 

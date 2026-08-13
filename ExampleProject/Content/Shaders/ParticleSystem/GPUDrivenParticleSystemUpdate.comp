@@ -74,12 +74,16 @@ uniform vec3 angularVelocityMax;
 uniform vec3 accelerationMin;
 uniform vec3 accelerationMax;
 uniform float velocityLimit;
+uniform bool infiniteLifetime;
+uniform vec2 initialSizeRange;
 uniform vec2 sizeByLifetime;
 uniform vec3 spawnBoxExtents;
 uniform vec4 colorByLifetimeStart;
 uniform vec4 colorByLifetimeEnd;
 uniform mat4 previousEmitterMatrix;
 uniform mat4 currentEmitterMatrix;
+
+const float INFINITE_LIFETIME_SENTINEL = -1.0;
 
 uint Hash(uint value)
 {
@@ -158,6 +162,16 @@ void PackAliveParticle(uint particleIndex)
 	aliveParticleIndices[aliveSlot] = particleIndex;
 }
 
+bool IsInfiniteLifetime(vec2 lifetime)
+{
+	return lifetime.y < 0.0;
+}
+
+bool IsAliveLifetime(vec2 lifetime)
+{
+	return lifetime.x > 0.0 || IsInfiniteLifetime(lifetime);
+}
+
 void main()
 {
 	uint particleIndex = gl_GlobalInvocationID.x;
@@ -167,7 +181,7 @@ void main()
 	}
 
 	vec2 lifetime = particleLifetimes[particleIndex];
-	if (lifetime.x > 0.0)
+	if (IsAliveLifetime(lifetime))
 	{
 		vec4 velocity = particleVelocities[particleIndex];
 		vec4 position = particlePositions[particleIndex];
@@ -179,14 +193,17 @@ void main()
 		ClampVelocity(velocity);
 		position.xyz += velocity.xyz * deltaTime;
 		rotation.xyz += angularVelocity * deltaTime;
-		lifetime.x = max(lifetime.x - deltaTime, 0.0);
+		if (!IsInfiniteLifetime(lifetime))
+		{
+			lifetime.x = max(lifetime.x - deltaTime, 0.0);
+		}
 
 		particleVelocities[particleIndex] = velocity;
 		particlePositions[particleIndex] = position;
 		particleRotations[particleIndex] = rotation;
 		particleLifetimes[particleIndex] = lifetime;
 
-		if (lifetime.x > 0.0)
+		if (IsAliveLifetime(lifetime))
 		{
 			PackAliveParticle(particleIndex);
 		}
@@ -212,7 +229,8 @@ void main()
 	vec3 previousWorldPosition = (vec4(localSpawnPosition, 1.0) * previousEmitterMatrix).xyz;
 	vec3 currentWorldPosition = (vec4(localSpawnPosition, 1.0) * currentEmitterMatrix).xyz;
 
-	float initialLifetime = RandomRange(randomState, lifetimeRange);
+	float initialLifetime = infiniteLifetime ? INFINITE_LIFETIME_SENTINEL : RandomRange(randomState, lifetimeRange);
+	float initialSize = RandomRange(randomState, initialSizeRange);
 	vec3 initialVelocity = TransformLocalVectorByEmitter(
 		currentEmitterMatrix,
 		RandomRange(randomState, initialVelocityMin, initialVelocityMax));
@@ -230,7 +248,7 @@ void main()
 	particleColors[particleIndex] = colorByLifetimeStart;
 	particleEndColors[particleIndex] = colorByLifetimeEnd;
 	particleLifetimes[particleIndex] = vec2(initialLifetime, initialLifetime);
-	particleSizes[particleIndex] = sizeByLifetime;
+	particleSizes[particleIndex] = sizeByLifetime * initialSize;
 	particleRotations[particleIndex] = vec4(initialRotation, 0.0);
 	particleAccelerations[particleIndex] = vec4(acceleration, 0.0);
 	particleAngularVelocities[particleIndex] = vec4(angularVelocity, 0.0);

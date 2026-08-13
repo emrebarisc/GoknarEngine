@@ -849,6 +849,22 @@ void Renderer::Render(RenderPassType renderPassType)
 		renderPassType == RenderPassType::Deferred ||
 		renderPassType == RenderPassType::CubemapCapture)
 	{
+		GraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::Blend, false);
+		GraphicsAPI()->SetDepthMask(true);
+		for (ParticleSystemBase* particleSystem : particleSystems_)
+		{
+			if (!particleSystem || !particleSystem->GetIsActive())
+			{
+				continue;
+			}
+
+			const std::uint32_t particleDrawCount = particleSystem->Render(activeCamera, ParticleRenderStage::Opaque);
+			if (countDrawCallsInner_)
+			{
+				drawCallCount += particleDrawCount;
+			}
+		}
+
 		SortTransparentInstances();
 
 		GraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::Blend, true);
@@ -901,10 +917,10 @@ void Renderer::Render(RenderPassType renderPassType)
 				continue;
 			}
 
-			particleSystem->Render(activeCamera);
+			const std::uint32_t particleDrawCount = particleSystem->Render(activeCamera, ParticleRenderStage::Transparent);
 			if (countDrawCallsInner_)
 			{
-				++drawCallCount;
+				drawCallCount += particleDrawCount;
 			}
 		}
 		GraphicsAPI()->SetDepthMask(true);

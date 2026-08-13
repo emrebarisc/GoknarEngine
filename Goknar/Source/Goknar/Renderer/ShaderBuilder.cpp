@@ -868,6 +868,8 @@ out vec3 )" + std::string(PARTICLE_EMISSIVE_COLOR_VARYING_NAME) + R"(;
 
 		effectiveInitializationData = &particleInitializationData;
 	}
+	const bool hasWorldPositionOffset = effectiveInitializationData &&
+		!effectiveInitializationData->vertexPositionOffset.result.empty();
 
 	if (effectiveInitializationData && !effectiveInitializationData->vertexShaderFunctions.empty())
 	{
@@ -897,7 +899,7 @@ void main()
 	vec2 particleSizeRange = particleSizes[particleIndex];
 	vec3 particleRotation = particleRotations[particleIndex].xyz;
 	float particleSpeed = length(particleVelocities[particleIndex].xyz);
-	float normalizedAge = 1.0 - clamp(particleLifetime.x / max(particleLifetime.y, 0.0001), 0.0, 1.0);
+	float normalizedAge = particleLifetime.y < 0.0 ? 0.0 : 1.0 - clamp(particleLifetime.x / max(particleLifetime.y, 0.0001), 0.0, 1.0);
 	float normalizedSizeSpeed = clamp((particleSpeed - particleSizeBySpeedRange.x) / max(particleSizeBySpeedRange.y - particleSizeBySpeedRange.x, 0.0001), 0.0, 1.0);
 	float normalizedColorSpeed = clamp((particleSpeed - particleColorBySpeedRange.x) / max(particleColorBySpeedRange.y - particleColorBySpeedRange.x, 0.0001), 0.0, 1.0);
 	float currentParticleSize = mix(particleSizeRange.x, particleSizeRange.y, normalizedAge) * mix(particleSizeBySpeedValues.x, particleSizeBySpeedValues.y, normalizedSizeSpeed) * )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::PARTICLE_SIZE) + R"(;
@@ -931,6 +933,14 @@ void main()
 	vertexShader += "\tvec3 billboardWorldOffset = " + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_RIGHT) + " * (" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + ".x * currentParticleSize) + " + std::string(SHADER_VARIABLE_NAMES::PARTICLE::CAMERA_UP) + " * (" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + ".y * currentParticleSize);\n";
 	vertexShader += "\tvec4 particleWorldPosition = vec4(particleCenterWorldSpace.xyz + billboardWorldOffset, 1.0);\n";
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = particleWorldPosition;\n";
+	if (hasWorldPositionOffset)
+	{
+		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + " = particleWorldPosition * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
+		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + " = cameraForward;\n";
+		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT) + " = billboardWorldTangent;\n";
+		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_TANGENT_SIGN) + " = 1.f;\n";
+		vertexShader += VS_GetVertexColorText("currentParticleColor");
+	}
 	if (effectiveInitializationData)
 	{
 		vertexShader += VS_GetWorldPositionOffsetText(effectiveInitializationData, "particleWorldPosition");
@@ -1021,12 +1031,10 @@ out vec3 )" + std::string(PARTICLE_EMISSIVE_COLOR_VARYING_NAME) + R"(;
 	if (initializationData)
 	{
 		particleInitializationData = *initializationData;
-		if (particleInitializationData.vertexNormal.result.empty())
-		{
-			particleInitializationData.vertexNormal.result = "particleNormal";
-		}
 		effectiveInitializationData = &particleInitializationData;
 	}
+	const bool hasWorldPositionOffset = effectiveInitializationData &&
+		!effectiveInitializationData->vertexPositionOffset.result.empty();
 
 	if (initializationData && !initializationData->vertexShaderFunctions.empty())
 	{
@@ -1048,7 +1056,7 @@ void main()
 	vec2 particleSizeRange = particleSizes[particleIndex];
 	vec3 particleRotation = particleRotations[particleIndex].xyz;
 	float particleSpeed = length(particleVelocities[particleIndex].xyz);
-	float normalizedAge = 1.0 - clamp(particleLifetime.x / max(particleLifetime.y, 0.0001), 0.0, 1.0);
+	float normalizedAge = particleLifetime.y < 0.0 ? 0.0 : 1.0 - clamp(particleLifetime.x / max(particleLifetime.y, 0.0001), 0.0, 1.0);
 	float normalizedSizeSpeed = clamp((particleSpeed - particleSizeBySpeedRange.x) / max(particleSizeBySpeedRange.y - particleSizeBySpeedRange.x, 0.0001), 0.0, 1.0);
 	float normalizedColorSpeed = clamp((particleSpeed - particleColorBySpeedRange.x) / max(particleColorBySpeedRange.y - particleColorBySpeedRange.x, 0.0001), 0.0, 1.0);
 	float currentParticleSize = mix(particleSizeRange.x, particleSizeRange.y, normalizedAge) * mix(particleSizeBySpeedValues.x, particleSizeBySpeedValues.y, normalizedSizeSpeed) * )" + std::string(SHADER_VARIABLE_NAMES::PARTICLE::PARTICLE_SIZE) + R"(;
@@ -1079,13 +1087,30 @@ void main()
 )";
 
 	vertexShader += VS_GetPosition();
-	vertexShader += "\tvec3 particleNormal = particleRotationMatrix * " + std::string(SHADER_VARIABLE_NAMES::VERTEX::NORMAL) + ";\n";
-	vertexShader += "\tvec3 particleTangent = particleRotationMatrix * " + std::string(SHADER_VARIABLE_NAMES::VERTEX::TANGENT) + ".xyz;\n";
+	vertexShader += R"(
+	vec3 particleNormal = particleRotationMatrix * normal;
+	vec3 particleTangent = particleRotationMatrix * tangent.xyz;
+	mat3 particleLocalToWorldMatrix = transpose(particleRotationMatrix) * currentParticleSize;
+	mat4 particleTransformMatrix = mat4(
+		vec4(particleLocalToWorldMatrix[0], particlePosition.x),
+		vec4(particleLocalToWorldMatrix[1], particlePosition.y),
+		vec4(particleLocalToWorldMatrix[2], particlePosition.z),
+		vec4(0.0, 0.0, 0.0, 1.0));
+)";
+	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = particleTransformMatrix * " + SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX + ";\n";
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " = particleRotationMatrix * (" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " * currentParticleSize);\n";
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + " += particlePosition;\n";
-	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + " = " + SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX + ";\n";
-	vertexShader += "\tvec4 particleWorldPosition = vec4(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + ", 1.f) * " + SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX + ";\n";
+	vertexShader += "\tvec4 particleWorldPosition = vec4(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::MODIFIED_POSITION) + ", 1.f) * " + SHADER_VARIABLE_NAMES::POSITIONING::MODEL_MATRIX + ";\n";
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_WORLD_SPACE) + " = particleWorldPosition;\n";
+	if (hasWorldPositionOffset)
+	{
+		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FRAGMENT_POSITION_SCREEN_SPACE) + " = particleWorldPosition * " + SHADER_VARIABLE_NAMES::POSITIONING::VIEW_PROJECTION_MATRIX + ";\n";
+		vertexShader += VS_GetUV(nullptr);
+		vertexShader += VS_GetVertexNormalText(nullptr);
+		vertexShader += VS_GetVertexColorText(
+			"vec4(" + std::string(SHADER_VARIABLE_NAMES::VERTEX::COLOR) + ".rgb * currentParticleColor.rgb, " +
+			std::string(SHADER_VARIABLE_NAMES::VERTEX::COLOR) + ".a * currentParticleColor.a)");
+	}
 	if (effectiveInitializationData)
 	{
 		vertexShader += VS_GetWorldPositionOffsetText(effectiveInitializationData, "particleWorldPosition");
@@ -1098,13 +1123,13 @@ void main()
 	{
 		vertexShader += VS_GetUV(effectiveInitializationData);
 		vertexShader += VS_GetVertexNormalText(effectiveInitializationData);
-		vertexShader += VS_GetVertexTangentText("particleTangent", std::string(SHADER_VARIABLE_NAMES::VERTEX::TANGENT) + ".w");
+		vertexShader += VS_GetVertexTangentText();
 	}
 	else
 	{
 		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::TEXTURE::UV) + " = vec2(" + SHADER_VARIABLE_NAMES::VERTEX::UV + ".x, 1.f - " + SHADER_VARIABLE_NAMES::VERTEX::UV + ".y);\n";
-		vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_NORMAL) + " = normalize(particleNormal * transpose(inverse(mat3(" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::FINAL_MODEL_MATRIX) + "))));\n";
-		vertexShader += VS_GetVertexTangentText("particleTangent", std::string(SHADER_VARIABLE_NAMES::VERTEX::TANGENT) + ".w");
+		vertexShader += VS_GetVertexNormalText(nullptr);
+		vertexShader += VS_GetVertexTangentText();
 	}
 
 	vertexShader += "\t" + std::string(SHADER_VARIABLE_NAMES::VERTEX_SHADER_OUTS::VERTEX_COLOR) + " = vec4(" + SHADER_VARIABLE_NAMES::VERTEX::COLOR + ".rgb * currentParticleColor.rgb, " + SHADER_VARIABLE_NAMES::VERTEX::COLOR + ".a * currentParticleColor.a);\n";

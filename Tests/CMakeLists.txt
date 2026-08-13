@@ -17,6 +17,7 @@ set(SUBDIRS
     ${SOURCE_DIR_NAME}
     ${SOURCE_DIR_NAME}/Delegates
     ${SOURCE_DIR_NAME}/Math
+    ${SOURCE_DIR_NAME}/Renderer
 )
 set(TEST_SOURCE)
 

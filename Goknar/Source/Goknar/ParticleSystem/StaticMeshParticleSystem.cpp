@@ -58,6 +58,17 @@ namespace
 			shader->AddTexture(textureImage->GetGeneratedTexture());
 		}
 	}
+
+	bool ShouldRenderMaterial(const IMaterialBase* material, ParticleRenderStage renderStage)
+	{
+		if (renderStage == ParticleRenderStage::All)
+		{
+			return true;
+		}
+
+		const bool isTransparent = material && material->GetBlendModel() == MaterialBlendModel::Transparent;
+		return renderStage == ParticleRenderStage::Transparent ? isTransparent : !isTransparent;
+	}
 }
 
 StaticMeshParticleSystem::StaticMeshParticleSystem(const GPUParticleSystemDesc& desc) :
@@ -70,11 +81,11 @@ StaticMeshParticleSystem::~StaticMeshParticleSystem()
 	DestroyRenderResources();
 }
 
-void StaticMeshParticleSystem::Render(const Camera*) const
+std::uint32_t StaticMeshParticleSystem::Render(const Camera*, ParticleRenderStage renderStage) const
 {
 	if (!GetIsInitialized() || GetDrawIndirectBufferId() == 0 || staticMeshSubmeshRenderData_.empty() || !engine || !engine->GetRenderer())
 	{
-		return;
+		return 0u;
 	}
 
 	BindRenderBuffers();
@@ -82,11 +93,12 @@ void StaticMeshParticleSystem::Render(const Camera*) const
 	engine->GetGraphicsAPI()->BindVertexArray(GetDummyVertexArrayObjectId());
 	engine->GetRenderer()->BindStaticMeshBuffers();
 	engine->GetGraphicsAPI()->BindBuffer(GraphicsBufferTarget::DrawIndirectBuffer, GetDrawIndirectBufferId());
+	std::uint32_t drawCount = 0u;
 
 	for (std::uint32_t commandIndex = 0u; commandIndex < static_cast<std::uint32_t>(staticMeshSubmeshRenderData_.size()); ++commandIndex)
 	{
 		const StaticMeshSubmeshRenderData& renderData = staticMeshSubmeshRenderData_[commandIndex];
-		if (!renderData.renderShader)
+		if (!renderData.renderShader || !ShouldRenderMaterial(renderData.material, renderStage))
 		{
 			continue;
 		}
@@ -109,11 +121,14 @@ void StaticMeshParticleSystem::Render(const Camera*) const
 		const void* indirectCommandOffset = reinterpret_cast<const void*>(
 			static_cast<std::uintptr_t>(commandIndex * sizeof(GPUParticleDrawElementsIndirectCommand)));
 		engine->GetGraphicsAPI()->DrawElementsIndirect(GraphicsPrimitive::Triangles, GraphicsDataType::UnsignedInt, indirectCommandOffset);
+		++drawCount;
 	}
 
 	engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::CullFace, true);
 	engine->GetGraphicsAPI()->BindBuffer(GraphicsBufferTarget::DrawIndirectBuffer, 0);
 	engine->GetGraphicsAPI()->BindVertexArray(0);
+
+	return drawCount;
 }
 
 void StaticMeshParticleSystem::SetStaticMesh(const StaticMesh* staticMesh)

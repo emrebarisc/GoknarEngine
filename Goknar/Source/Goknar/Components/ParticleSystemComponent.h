@@ -70,13 +70,28 @@ public:
 	void ClearParticles();
 
 protected:
+	inline static constexpr float MINIMUN_PARTICLE_SIZE = 0.001f;
+	inline static constexpr float MINIMUM_LIFETIME = 0.0001f;
+	inline static constexpr float MINIMUM_SPAWN_INTERVAL = 0.0001f;
+
 	void DestroyInner() override;
 	void CopyParticleSystemValuesTo(ParticleSystemComponent* particleSystemComponent) const;
 
 	virtual ParticleSystemBase* CreateParticleSystemInstance(const GPUParticleSystemDesc& particleSystemDesc) const = 0;
 	virtual void SyncParticleSystemRenderSettings() const {}
 
+	GPUParticleValueRange<float> SanitizeFloatRange(const GPUParticleValueRange<float>& range, float minimumValue);
+	GPUParticleValueRange<Vector3> SanitizeVector3Range(const GPUParticleValueRange<Vector3>& range);
+	Vector2 SanitizeRangeVector(const Vector2& range);
+	GPUParticleFloatCurve SanitizeFloatCurve(const GPUParticleFloatCurve& curve, float minimumValue);
+	Vector4 SanitizeParticleColor(const Vector4& color);
+	GPUParticleColorCurve SanitizeColorCurve(const GPUParticleColorCurve& curve);
+	Vector3 SanitizeEmissiveColor(const Vector3& color);
+	GPUParticleVector3Curve SanitizeEmissiveColorCurve(const GPUParticleVector3Curve& curve);
+	GPUParticleSpawnDesc SanitizeSpawnDesc(const GPUParticleSpawnDesc& spawnDesc);
+
 private:
+
 	void CreateParticleSystem();
 	void DestroyParticleSystem();
 	void RecreateParticleSystem();

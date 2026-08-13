@@ -95,11 +95,13 @@ struct GOKNAR_API GPUParticleVector3Curve
 struct GOKNAR_API GPUParticleSpawnDesc
 {
 	GPUParticleValueRange<float> lifetime{ 5.f, 5.f };
+	bool infiniteLifetime{ false };
 	GPUParticleValueRange<Vector3> initialVelocity{ Vector3(0.f, 0.f, 2.f), Vector3(0.f, 0.f, 2.f) };
 	GPUParticleValueRange<Vector3> initialRotation{ Vector3::ZeroVector, Vector3::ZeroVector };
 	GPUParticleValueRange<Vector3> angularVelocity{ Vector3::ZeroVector, Vector3::ZeroVector };
 	GPUParticleValueRange<Vector3> acceleration{ Vector3::ZeroVector, Vector3::ZeroVector };
 	float velocityLimit{ 0.f };
+	GPUParticleValueRange<float> initialSize{ 1.f, 1.f };
 	GPUParticleFloatCurve sizeByLifetime{ 1.f, 0.f };
 	Vector2 sizeBySpeedRange{ 0.f, 10.f };
 	GPUParticleFloatCurve sizeBySpeed{ 1.f, 1.f };
@@ -121,6 +123,13 @@ struct GOKNAR_API GPUParticleSystemDesc
 	GPUParticleSpawnDesc spawnDesc{};
 };
 
+enum class ParticleRenderStage
+{
+	All,
+	Opaque,
+	Transparent
+};
+
 class GOKNAR_API ParticleSystemBase : public TimeDependentObject
 {
 public:
@@ -132,7 +141,9 @@ public:
 	void PostInit();
 
 	void Tick(float deltaTime) override;
-	virtual void Render(const Camera* activeCamera) const = 0;
+	virtual std::uint32_t Render(
+		const Camera* activeCamera,
+		ParticleRenderStage renderStage = ParticleRenderStage::All) const = 0;
 
 	void SetInitialParticleData(
 		const std::vector<Vector4>& positions,
@@ -276,6 +287,7 @@ private:
 	float spawnTimerAccumulator_{ 0.f };
 	std::uint32_t queuedBurstSpawnCount_{ 0u };
 	std::uint32_t activeParticleSlotCount_{ 0u };
+	bool hasSpawnedInfiniteLifetimeInitialBatch_{ false };
 	bool hasEmitterTransformHistory_{ false };
 	bool isInitialized_{ false };
 };

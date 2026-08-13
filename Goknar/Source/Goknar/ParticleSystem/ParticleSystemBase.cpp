@@ -90,6 +90,56 @@ namespace
 		return sanitizedCurve;
 	}
 
+	template <typename T>
+	bool AreRangesEqual(const GPUParticleValueRange<T>& firstRange, const GPUParticleValueRange<T>& secondRange)
+	{
+		return firstRange.minValue == secondRange.minValue && firstRange.maxValue == secondRange.maxValue;
+	}
+
+	bool AreFloatCurvesEqual(const GPUParticleFloatCurve& firstCurve, const GPUParticleFloatCurve& secondCurve)
+	{
+		return firstCurve.startValue == secondCurve.startValue && firstCurve.endValue == secondCurve.endValue;
+	}
+
+	bool AreColorCurvesEqual(const GPUParticleColorCurve& firstCurve, const GPUParticleColorCurve& secondCurve)
+	{
+		return firstCurve.startValue == secondCurve.startValue && firstCurve.endValue == secondCurve.endValue;
+	}
+
+	bool AreVector3CurvesEqual(const GPUParticleVector3Curve& firstCurve, const GPUParticleVector3Curve& secondCurve)
+	{
+		return firstCurve.startValue == secondCurve.startValue && firstCurve.endValue == secondCurve.endValue;
+	}
+
+	bool AreSpawnDescsEqual(const GPUParticleSpawnDesc& firstDesc, const GPUParticleSpawnDesc& secondDesc)
+	{
+		return
+			AreRangesEqual(firstDesc.lifetime, secondDesc.lifetime) &&
+			firstDesc.infiniteLifetime == secondDesc.infiniteLifetime &&
+			AreRangesEqual(firstDesc.initialVelocity, secondDesc.initialVelocity) &&
+			AreRangesEqual(firstDesc.initialRotation, secondDesc.initialRotation) &&
+			AreRangesEqual(firstDesc.angularVelocity, secondDesc.angularVelocity) &&
+			AreRangesEqual(firstDesc.acceleration, secondDesc.acceleration) &&
+			firstDesc.velocityLimit == secondDesc.velocityLimit &&
+			AreRangesEqual(firstDesc.initialSize, secondDesc.initialSize) &&
+			AreFloatCurvesEqual(firstDesc.sizeByLifetime, secondDesc.sizeByLifetime) &&
+			firstDesc.sizeBySpeedRange == secondDesc.sizeBySpeedRange &&
+			AreFloatCurvesEqual(firstDesc.sizeBySpeed, secondDesc.sizeBySpeed) &&
+			AreColorCurvesEqual(firstDesc.colorByLifetime, secondDesc.colorByLifetime) &&
+			firstDesc.colorBySpeedRange == secondDesc.colorBySpeedRange &&
+			AreColorCurvesEqual(firstDesc.colorBySpeed, secondDesc.colorBySpeed) &&
+			AreVector3CurvesEqual(firstDesc.emissiveColorByLifetime, secondDesc.emissiveColorByLifetime) &&
+			firstDesc.spawnBoxExtents == secondDesc.spawnBoxExtents &&
+			firstDesc.spawnInterval == secondDesc.spawnInterval &&
+			firstDesc.spawnCountPerInterval == secondDesc.spawnCountPerInterval &&
+			firstDesc.looping == secondDesc.looping;
+	}
+
+	bool IsAliveLifetime(const GPUParticleLifetimeState& lifetime)
+	{
+		return 0.f < lifetime.remainingLifetime || lifetime.initialLifetime < 0.f;
+	}
+
 	GPUParticleSpawnDesc SanitizeSpawnDesc(const GPUParticleSpawnDesc& spawnDesc)
 	{
 		GPUParticleSpawnDesc sanitizedDesc(spawnDesc);
@@ -99,6 +149,7 @@ namespace
 		sanitizedDesc.angularVelocity = SanitizeVector3Range(sanitizedDesc.angularVelocity);
 		sanitizedDesc.acceleration = SanitizeVector3Range(sanitizedDesc.acceleration);
 		sanitizedDesc.velocityLimit = (std::max)(0.f, sanitizedDesc.velocityLimit);
+		sanitizedDesc.initialSize = SanitizeFloatRange(sanitizedDesc.initialSize, 0.f);
 		sanitizedDesc.sizeByLifetime = SanitizeFloatCurve(sanitizedDesc.sizeByLifetime, 0.f);
 		sanitizedDesc.sizeBySpeedRange = SanitizeRangeVector(sanitizedDesc.sizeBySpeedRange);
 		sanitizedDesc.sizeBySpeed = SanitizeFloatCurve(sanitizedDesc.sizeBySpeed, 0.f);
@@ -109,8 +160,16 @@ namespace
 		sanitizedDesc.spawnBoxExtents.x = (std::max)(0.f, sanitizedDesc.spawnBoxExtents.x);
 		sanitizedDesc.spawnBoxExtents.y = (std::max)(0.f, sanitizedDesc.spawnBoxExtents.y);
 		sanitizedDesc.spawnBoxExtents.z = (std::max)(0.f, sanitizedDesc.spawnBoxExtents.z);
-		sanitizedDesc.spawnInterval = (std::max)(MINIMUM_SPAWN_INTERVAL, sanitizedDesc.spawnInterval);
 		sanitizedDesc.spawnCountPerInterval = (std::max)(1u, sanitizedDesc.spawnCountPerInterval);
+		if (sanitizedDesc.infiniteLifetime)
+		{
+			sanitizedDesc.spawnInterval = 0.f;
+			sanitizedDesc.looping = false;
+		}
+		else
+		{
+			sanitizedDesc.spawnInterval = (std::max)(MINIMUM_SPAWN_INTERVAL, sanitizedDesc.spawnInterval);
+		}
 		return sanitizedDesc;
 	}
 }
@@ -226,6 +285,8 @@ void ParticleSystemBase::Tick(float deltaTime)
 	updateComputeShader_->SetVector3("accelerationMin", spawnDesc_.acceleration.minValue);
 	updateComputeShader_->SetVector3("accelerationMax", spawnDesc_.acceleration.maxValue);
 	updateComputeShader_->SetFloat("velocityLimit", spawnDesc_.velocityLimit);
+	updateComputeShader_->SetBool("infiniteLifetime", spawnDesc_.infiniteLifetime);
+	updateComputeShader_->SetVector2("initialSizeRange", Vector2(spawnDesc_.initialSize.minValue, spawnDesc_.initialSize.maxValue));
 	updateComputeShader_->SetVector2("sizeByLifetime", Vector2(spawnDesc_.sizeByLifetime.startValue, spawnDesc_.sizeByLifetime.endValue));
 	updateComputeShader_->SetVector3("spawnBoxExtents", spawnDesc_.spawnBoxExtents);
 	updateComputeShader_->SetVector4("colorByLifetimeStart", spawnDesc_.colorByLifetime.startValue);
@@ -279,12 +340,13 @@ void ParticleSystemBase::SetInitialParticleData(
 	activeParticleSlotCount_ = 0u;
 	for (std::uint32_t particleIndex = 0u; particleIndex < maxParticleCount_; ++particleIndex)
 	{
-		if (0.f < lifetimes[particleIndex].remainingLifetime)
+		if (IsAliveLifetime(lifetimes[particleIndex]))
 		{
 			activeParticleSlotCount_ = particleIndex + 1u;
 		}
 	}
 
+	hasSpawnedInfiniteLifetimeInitialBatch_ = true;
 	Tick(0.f);
 }
 
@@ -308,6 +370,9 @@ void ParticleSystemBase::ClearAllParticles(bool resetSpawnSequence)
 	activeParticleSlotCount_ = 0u;
 	hasEmitterTransformHistory_ = false;
 	previousEmitterTransformMatrix_ = renderTransformMatrix_;
+	// Clearing particles should allow persistent emitters to seed again;
+	// resetSpawnSequence only controls the random sequence counter.
+	hasSpawnedInfiniteLifetimeInitialBatch_ = false;
 
 	ClearParticleDataBuffers(resetSpawnSequence);
 	ResetSimulationState();
@@ -315,7 +380,20 @@ void ParticleSystemBase::ClearAllParticles(bool resetSpawnSequence)
 
 void ParticleSystemBase::SetSpawnDesc(const GPUParticleSpawnDesc& spawnDesc)
 {
-	spawnDesc_ = SanitizeSpawnDesc(spawnDesc);
+	const GPUParticleSpawnDesc sanitizedSpawnDesc = SanitizeSpawnDesc(spawnDesc);
+	const bool wasInfiniteLifetime = spawnDesc_.infiniteLifetime;
+	if (AreSpawnDescsEqual(spawnDesc_, sanitizedSpawnDesc))
+	{
+		return;
+	}
+
+	spawnDesc_ = sanitizedSpawnDesc;
+	spawnTimerAccumulator_ = 0.f;
+	hasSpawnedInfiniteLifetimeInitialBatch_ = false;
+	if ((wasInfiniteLifetime || spawnDesc_.infiniteLifetime) && isInitialized_)
+	{
+		ClearAllParticles(false);
+	}
 }
 
 void ParticleSystemBase::SetRenderTransformMatrix(const Matrix& renderTransformMatrix)
@@ -438,7 +516,15 @@ std::uint32_t ParticleSystemBase::ConsumeRequestedSpawnCount(float deltaTime)
 	std::uint64_t requestedSpawnCount = queuedBurstSpawnCount_;
 	queuedBurstSpawnCount_ = 0u;
 
-	if (spawnDesc_.looping && 0u < spawnDesc_.spawnCountPerInterval)
+	if (spawnDesc_.infiniteLifetime)
+	{
+		if (!hasSpawnedInfiniteLifetimeInitialBatch_ && 0u < spawnDesc_.spawnCountPerInterval)
+		{
+			requestedSpawnCount += spawnDesc_.spawnCountPerInterval;
+			hasSpawnedInfiniteLifetimeInitialBatch_ = true;
+		}
+	}
+	else if (spawnDesc_.looping && 0u < spawnDesc_.spawnCountPerInterval)
 	{
 		spawnTimerAccumulator_ += (std::max)(0.f, deltaTime);
 		if (spawnDesc_.spawnInterval <= 0.f)
