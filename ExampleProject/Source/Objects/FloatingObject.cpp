@@ -24,7 +24,7 @@ void FloatingObject::BeginGame()
 	initialPosition_ = GetWorldPosition();
 }
 
-void FloatingObject::Tick(float deltaTime)
+void FloatingObject::Tick(float)
 {
 	SetWorldPosition(initialPosition_ + Vector3{0.f, 2.f, 0.f} * GoknarMath::Cos(0.5f * engine->GetElapsedTime()));
 }

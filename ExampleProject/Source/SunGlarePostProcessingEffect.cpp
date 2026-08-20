@@ -125,7 +125,7 @@ void SunGlarePostProcessingEffect::PrepareFrame(const DeferredRenderingData* def
 
 Texture* SunGlarePostProcessingEffect::Render(const DeferredRenderingData* deferredRenderingData, const Texture* inputTexture, int width, int height)
 {
-	if (!GetIsEnabled() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0 || sunVisibility_ <= SMALLER_EPSILON || glareIntensity_ <= 0.f)
+	if (!GetIsActive() || !deferredRenderingData || !inputTexture || width <= 0 || height <= 0 || sunVisibility_ <= SMALLER_EPSILON || glareIntensity_ <= 0.f)
 	{
 		return const_cast<Texture*>(inputTexture);
 	}

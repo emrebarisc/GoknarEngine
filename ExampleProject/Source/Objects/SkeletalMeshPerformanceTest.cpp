@@ -24,9 +24,8 @@ void SkeletalMeshPerformanceTest::BeginGame()
 		skeletalMeshComponent->SetMesh(engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/Characters/SK_DefaultCharacter.fbx"));
 		skeletalMeshComponent->GetMeshInstance()->PlayAnimation("Armature|RifleIdle");
 
-
-		int row = objectIndex / gridSize;
-		int col = objectIndex % gridSize;
+		size_t row = objectIndex / gridSize;
+		size_t col = objectIndex % gridSize;
 
 		float posX = (col * marginBetween) - centerOffset;
 		float posY = (row * marginBetween) - centerOffset;
