@@ -1,4 +1,4 @@
-<Scene>
+<Scene EditorReflectedComponentsOmitted="true">
     <Lights>
         <DirectionalLight>
             <Direction>0.577350 0.577350 -0.577350</Direction>
@@ -215,7 +215,7 @@
         <RigidBody>
             <Name>Corner1</Name>
             <WorldPosition>6.000000 1.000000 0.125000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 -89.999992</EulerWorldRotation>
+            <WorldRotation>0.000000 0.000000 -90.000008</WorldRotation>
             <WorldScaling>3.000000 3.000000 3.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -233,7 +233,7 @@
         <RigidBody>
             <Name>Corner2</Name>
             <WorldPosition>3.000000 -8.000000 0.125000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 -179.999985</EulerWorldRotation>
+            <WorldRotation>0.000000 0.000000 -179.999985</WorldRotation>
             <WorldScaling>3.000000 3.000000 3.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -285,7 +285,7 @@
         <RigidBody>
             <Name>RadialStaircase2</Name>
             <WorldPosition>-3.000000 -8.000000 0.125001</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 -179.999985</EulerWorldRotation>
+            <WorldRotation>0.000000 0.000000 -179.999985</WorldRotation>
             <WorldScaling>3.000000 3.000000 3.000000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -302,8 +302,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box1</Name>
-            <WorldPosition>-14.947101 -2.073500 0.624987</WorldPosition>
-            <EulerWorldRotation>0.002786 0.001557 12.907498</EulerWorldRotation>
+            <WorldPosition>-14.948059 -2.074154 0.624920</WorldPosition>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -319,8 +318,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box2</Name>
-            <WorldPosition>-14.861602 -3.291665 0.624996</WorldPosition>
-            <EulerWorldRotation>-0.000062 -0.000287 -21.524111</EulerWorldRotation>
+            <WorldPosition>-14.861166 -3.291835 0.624920</WorldPosition>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -336,8 +334,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box3</Name>
-            <WorldPosition>-13.695375 -1.995380 0.624973</WorldPosition>
-            <EulerWorldRotation>0.003057 -0.001933 -0.550589</EulerWorldRotation>
+            <WorldPosition>-13.695763 -1.995224 0.624919</WorldPosition>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -353,8 +350,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box4</Name>
-            <WorldPosition>-13.404031 -3.263212 0.624991</WorldPosition>
-            <EulerWorldRotation>-0.002195 0.000806 8.762052</EulerWorldRotation>
+            <WorldPosition>-13.403319 -3.263237 0.624996</WorldPosition>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -370,8 +366,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box5</Name>
-            <WorldPosition>-14.378813 -2.152381 1.624976</WorldPosition>
-            <EulerWorldRotation>0.003236 0.002117 3.168029</EulerWorldRotation>
+            <WorldPosition>-14.379472 -2.153774 1.624893</WorldPosition>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -387,8 +382,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box6</Name>
-            <WorldPosition>-14.351130 -3.239296 1.624929</WorldPosition>
-            <EulerWorldRotation>-0.000129 0.009009 14.239453</EulerWorldRotation>
+            <WorldPosition>-14.348734 -3.238892 1.624823</WorldPosition>
             <Mass>5</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -404,8 +398,7 @@
         </RigidBody>
         <RigidBody>
             <Name>Box7</Name>
-            <WorldPosition>-14.048314 -2.639004 2.624878</WorldPosition>
-            <EulerWorldRotation>0.002264 0.010641 -16.446001</EulerWorldRotation>
+            <WorldPosition>-14.044209 -2.638029 2.624843</WorldPosition>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -422,7 +415,6 @@
         <RigidBody>
             <Name>RigidBody</Name>
             <WorldPosition>-14.716024 -9.242070 0.625000</WorldPosition>
-            <EulerWorldRotation>0.000011 -0.000007 36.630650</EulerWorldRotation>
             <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -440,7 +432,6 @@
         <RigidBody>
             <Name>EmmisiveBox</Name>
             <WorldPosition>-15.000000 -12.000000 0.625000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 -15.000003</EulerWorldRotation>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -458,7 +449,6 @@
         <RigidBody>
             <Name>Tree</Name>
             <WorldPosition>-15.000000 16.500000 2.125000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 2.000000</EulerWorldRotation>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
@@ -512,7 +502,6 @@
         <RigidBody>
             <Name>Tree</Name>
             <WorldPosition>-11.000000 14.250000 2.650000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 68.000000</EulerWorldRotation>
             <WorldScaling>1.250000 1.250000 1.250000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -532,7 +521,6 @@
         <RigidBody>
             <Name>Tree</Name>
             <WorldPosition>-14.000000 13.000000 3.175000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 45.000004</EulerWorldRotation>
             <WorldScaling>1.500000 1.500000 1.500000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -552,7 +540,6 @@
         <RigidBody>
             <Name>Tree</Name>
             <WorldPosition>-18.000000 18.000000 2.400000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 153.000000</EulerWorldRotation>
             <WorldScaling>1.125000 1.125000 1.125000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
@@ -572,7 +559,6 @@
         <RigidBody>
             <Name>Tree</Name>
             <WorldPosition>-17.250000 13.250000 1.650000</WorldPosition>
-            <EulerWorldRotation>0.000000 0.000000 96.000015</EulerWorldRotation>
             <WorldScaling>0.750000 0.750000 0.750000</WorldScaling>
             <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
