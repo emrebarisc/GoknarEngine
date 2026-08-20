@@ -51,9 +51,9 @@ void DirectionalLight::PreInit()
 		shadowMapRenderCamera_->SetCameraType(CameraType::Shadow);
 		shadowMapRenderCamera_->SetImageWidth(shadowWidth_);
 		shadowMapRenderCamera_->SetImageHeight(shadowHeight_);
-		shadowMapRenderCamera_->SetNearPlane(Vector4{ -20.f, 20.f, -20.f, 20.f });
-		shadowMapRenderCamera_->SetNearDistance(-50.f);
-		shadowMapRenderCamera_->SetFarDistance(50.f);
+		shadowMapRenderCamera_->SetNearPlane(Vector4{ -30.f, 30.f, -30.f, 30.f });
+		shadowMapRenderCamera_->SetNearDistance(-200.f);
+		shadowMapRenderCamera_->SetFarDistance(200.f);
 
 		shadowBiasMatrix_ =
 			Matrix

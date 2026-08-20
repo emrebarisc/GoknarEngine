@@ -183,8 +183,8 @@ protected:
 	int GUID_{ 0 };
 	int uniformBufferIndex_{ -1 };
 
-	int shadowWidth_{ 1024 };
-	int shadowHeight_{ 1024 };
+	int shadowWidth_{ 8196 };
+	int shadowHeight_{ 8196 };
 
 	float intensity_{ 1.f };
 	float shadowIntensity_{ 0.1f };
