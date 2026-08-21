@@ -22,8 +22,8 @@ Component* SpotLightComponent::Clone() const
 	{
 		clonedComponent->light_->SetPosition(light_->GetPosition());
 		clonedComponent->light_->SetDirection(light_->GetDirection());
-		clonedComponent->light_->SetFalloffAngle(light_->GetFalloffAngle());
-		clonedComponent->light_->SetCoverageAngle(light_->GetCoverageAngle());
+		clonedComponent->light_->SetFalloffAngle(RADIAN_TO_DEGREE(light_->GetFalloffAngle()));
+		clonedComponent->light_->SetCoverageAngle(RADIAN_TO_DEGREE(light_->GetCoverageAngle()));
 		clonedComponent->light_->SetColor(light_->GetColor());
 		clonedComponent->light_->SetIntensity(light_->GetIntensity());
 		clonedComponent->light_->SetShadowIntensity(light_->GetShadowIntensity());
