@@ -3,9 +3,10 @@
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>TwoSided</ShadingModel>
+    <ShadingType>Default</ShadingType>
     <UsesReflectionProbe>0</UsesReflectionProbe>
     <BaseColorValue>0.1 0.115 0.1 1</BaseColorValue>
-    <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
+    <EmissiveColorValue>0 0 0</EmissiveColorValue>
     <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
     <MetallicValue>0.000000</MetallicValue>
     <RoughnessValue>0.816497</RoughnessValue>
@@ -42,6 +43,7 @@
         <Calculation></Calculation>
         <Result></Result>
     </FragmentNormal>
+    <FragmentNormalIsTangentSpace>0</FragmentNormalIsTangentSpace>
     <VertexNormal>
         <Calculation></Calculation>
         <Result></Result>

@@ -1,0 +1,215 @@
+<GameAsset FileType="Material" UseTextureAtlas="true">
+    <Name>M_Water</Name>
+    <BoneCount>0</BoneCount>
+    <BlendModel>Opaque</BlendModel>
+    <ShadingModel>Default</ShadingModel>
+    <ShadingType>Unlit</ShadingType>
+    <UsesReflectionProbe>0</UsesReflectionProbe>
+    <BaseColorValue>1 1 1 1</BaseColorValue>
+    <EmissiveColorValue>0 0 0</EmissiveColorValue>
+    <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
+    <MetallicValue>0.000000</MetallicValue>
+    <RoughnessValue>0.080000</RoughnessValue>
+    <Translucency>0.000000</Translucency>
+    <BaseColor>
+        <Calculation>
+	// Seamless world-anchored XY water plane, Z-up Gerstner shading.
+	vec3 waterObjectWorldPosition = vec3(finalModelMatrix[0][3], finalModelMatrix[1][3], finalModelMatrix[2][3]);
+	vec2 waterFragmentPositionXY = (fragmentPositionWorldSpace).xy;
+	float waterHeight = (fragmentPositionWorldSpace).z - waterObjectWorldPosition.z;
+	vec3 waterTangentX = vec3(1.0, 0.0, 0.0);
+	vec3 waterTangentY = vec3(0.0, 1.0, 0.0);
+	const float waterPi = 3.14159265;
+	vec2 waterDirectionFragment0 = normalize(vec2(1.0, 0.11));
+	float waterAmplitudeFragment0 = 0.22;
+	float waterKFragment0 = (2.0 * waterPi) / 23.0;
+	float waterPhaseFragment0 = waterKFragment0 * dot(waterDirectionFragment0, waterFragmentPositionXY) + elapsedTime * 0.55 + 1.3;
+	float waterSinFragment0 = sin(waterPhaseFragment0);
+	float waterCosFragment0 = cos(waterPhaseFragment0);
+	float waterQAKFragment0 = 0.35 * waterAmplitudeFragment0 * waterKFragment0;
+	float waterAKFragment0 = waterAmplitudeFragment0 * waterKFragment0;
+	waterTangentX += vec3(-waterDirectionFragment0.x * waterDirectionFragment0.x * waterQAKFragment0 * waterSinFragment0, -waterDirectionFragment0.x * waterDirectionFragment0.y * waterQAKFragment0 * waterSinFragment0, waterDirectionFragment0.x * waterAKFragment0 * waterCosFragment0);
+	waterTangentY += vec3(-waterDirectionFragment0.x * waterDirectionFragment0.y * waterQAKFragment0 * waterSinFragment0, -waterDirectionFragment0.y * waterDirectionFragment0.y * waterQAKFragment0 * waterSinFragment0, waterDirectionFragment0.y * waterAKFragment0 * waterCosFragment0);
+	vec2 waterDirectionFragment1 = normalize(vec2(-0.27, 0.96));
+	float waterAmplitudeFragment1 = 0.18;
+	float waterKFragment1 = (2.0 * waterPi) / 15.5;
+	float waterPhaseFragment1 = waterKFragment1 * dot(waterDirectionFragment1, waterFragmentPositionXY) + elapsedTime * 0.83 + 2.1;
+	float waterSinFragment1 = sin(waterPhaseFragment1);
+	float waterCosFragment1 = cos(waterPhaseFragment1);
+	float waterQAKFragment1 = 0.42 * waterAmplitudeFragment1 * waterKFragment1;
+	float waterAKFragment1 = waterAmplitudeFragment1 * waterKFragment1;
+	waterTangentX += vec3(-waterDirectionFragment1.x * waterDirectionFragment1.x * waterQAKFragment1 * waterSinFragment1, -waterDirectionFragment1.x * waterDirectionFragment1.y * waterQAKFragment1 * waterSinFragment1, waterDirectionFragment1.x * waterAKFragment1 * waterCosFragment1);
+	waterTangentY += vec3(-waterDirectionFragment1.x * waterDirectionFragment1.y * waterQAKFragment1 * waterSinFragment1, -waterDirectionFragment1.y * waterDirectionFragment1.y * waterQAKFragment1 * waterSinFragment1, waterDirectionFragment1.y * waterAKFragment1 * waterCosFragment1);
+	vec2 waterDirectionFragment2 = normalize(vec2(0.68, -0.74));
+	float waterAmplitudeFragment2 = 0.14;
+	float waterKFragment2 = (2.0 * waterPi) / 9.25;
+	float waterPhaseFragment2 = waterKFragment2 * dot(waterDirectionFragment2, waterFragmentPositionXY) + elapsedTime * 1.1 + 2.8;
+	float waterSinFragment2 = sin(waterPhaseFragment2);
+	float waterCosFragment2 = cos(waterPhaseFragment2);
+	float waterQAKFragment2 = 0.4 * waterAmplitudeFragment2 * waterKFragment2;
+	float waterAKFragment2 = waterAmplitudeFragment2 * waterKFragment2;
+	waterTangentX += vec3(-waterDirectionFragment2.x * waterDirectionFragment2.x * waterQAKFragment2 * waterSinFragment2, -waterDirectionFragment2.x * waterDirectionFragment2.y * waterQAKFragment2 * waterSinFragment2, waterDirectionFragment2.x * waterAKFragment2 * waterCosFragment2);
+	waterTangentY += vec3(-waterDirectionFragment2.x * waterDirectionFragment2.y * waterQAKFragment2 * waterSinFragment2, -waterDirectionFragment2.y * waterDirectionFragment2.y * waterQAKFragment2 * waterSinFragment2, waterDirectionFragment2.y * waterAKFragment2 * waterCosFragment2);
+	vec2 waterDirectionFragment3 = normalize(vec2(-0.91, -0.39));
+	float waterAmplitudeFragment3 = 0.1;
+	float waterKFragment3 = (2.0 * waterPi) / 6.1;
+	float waterPhaseFragment3 = waterKFragment3 * dot(waterDirectionFragment3, waterFragmentPositionXY) + elapsedTime * 1.55 + 3.3;
+	float waterSinFragment3 = sin(waterPhaseFragment3);
+	float waterCosFragment3 = cos(waterPhaseFragment3);
+	float waterQAKFragment3 = 0.32 * waterAmplitudeFragment3 * waterKFragment3;
+	float waterAKFragment3 = waterAmplitudeFragment3 * waterKFragment3;
+	waterTangentX += vec3(-waterDirectionFragment3.x * waterDirectionFragment3.x * waterQAKFragment3 * waterSinFragment3, -waterDirectionFragment3.x * waterDirectionFragment3.y * waterQAKFragment3 * waterSinFragment3, waterDirectionFragment3.x * waterAKFragment3 * waterCosFragment3);
+	waterTangentY += vec3(-waterDirectionFragment3.x * waterDirectionFragment3.y * waterQAKFragment3 * waterSinFragment3, -waterDirectionFragment3.y * waterDirectionFragment3.y * waterQAKFragment3 * waterSinFragment3, waterDirectionFragment3.y * waterAKFragment3 * waterCosFragment3);
+	vec2 waterDirectionFragment4 = normalize(vec2(0.2, 0.98));
+	float waterAmplitudeFragment4 = 0.065;
+	float waterKFragment4 = (2.0 * waterPi) / 3.7;
+	float waterPhaseFragment4 = waterKFragment4 * dot(waterDirectionFragment4, waterFragmentPositionXY) + elapsedTime * 2.2 + 4.0;
+	float waterSinFragment4 = sin(waterPhaseFragment4);
+	float waterCosFragment4 = cos(waterPhaseFragment4);
+	float waterQAKFragment4 = 0.26 * waterAmplitudeFragment4 * waterKFragment4;
+	float waterAKFragment4 = waterAmplitudeFragment4 * waterKFragment4;
+	waterTangentX += vec3(-waterDirectionFragment4.x * waterDirectionFragment4.x * waterQAKFragment4 * waterSinFragment4, -waterDirectionFragment4.x * waterDirectionFragment4.y * waterQAKFragment4 * waterSinFragment4, waterDirectionFragment4.x * waterAKFragment4 * waterCosFragment4);
+	waterTangentY += vec3(-waterDirectionFragment4.x * waterDirectionFragment4.y * waterQAKFragment4 * waterSinFragment4, -waterDirectionFragment4.y * waterDirectionFragment4.y * waterQAKFragment4 * waterSinFragment4, waterDirectionFragment4.y * waterAKFragment4 * waterCosFragment4);
+	vec2 waterDirectionFragment5 = normalize(vec2(-0.63, 0.78));
+	float waterAmplitudeFragment5 = 0.045;
+	float waterKFragment5 = (2.0 * waterPi) / 2.45;
+	float waterPhaseFragment5 = waterKFragment5 * dot(waterDirectionFragment5, waterFragmentPositionXY) + elapsedTime * 3.0 + 4.7;
+	float waterSinFragment5 = sin(waterPhaseFragment5);
+	float waterCosFragment5 = cos(waterPhaseFragment5);
+	float waterQAKFragment5 = 0.22 * waterAmplitudeFragment5 * waterKFragment5;
+	float waterAKFragment5 = waterAmplitudeFragment5 * waterKFragment5;
+	waterTangentX += vec3(-waterDirectionFragment5.x * waterDirectionFragment5.x * waterQAKFragment5 * waterSinFragment5, -waterDirectionFragment5.x * waterDirectionFragment5.y * waterQAKFragment5 * waterSinFragment5, waterDirectionFragment5.x * waterAKFragment5 * waterCosFragment5);
+	waterTangentY += vec3(-waterDirectionFragment5.x * waterDirectionFragment5.y * waterQAKFragment5 * waterSinFragment5, -waterDirectionFragment5.y * waterDirectionFragment5.y * waterQAKFragment5 * waterSinFragment5, waterDirectionFragment5.y * waterAKFragment5 * waterCosFragment5);
+	vec2 waterDirectionFragment6 = normalize(vec2(0.89, 0.45));
+	float waterAmplitudeFragment6 = 0.028;
+	float waterKFragment6 = (2.0 * waterPi) / 1.55;
+	float waterPhaseFragment6 = waterKFragment6 * dot(waterDirectionFragment6, waterFragmentPositionXY) + elapsedTime * 4.1 + 5.6;
+	float waterSinFragment6 = sin(waterPhaseFragment6);
+	float waterCosFragment6 = cos(waterPhaseFragment6);
+	float waterQAKFragment6 = 0.18 * waterAmplitudeFragment6 * waterKFragment6;
+	float waterAKFragment6 = waterAmplitudeFragment6 * waterKFragment6;
+	waterTangentX += vec3(-waterDirectionFragment6.x * waterDirectionFragment6.x * waterQAKFragment6 * waterSinFragment6, -waterDirectionFragment6.x * waterDirectionFragment6.y * waterQAKFragment6 * waterSinFragment6, waterDirectionFragment6.x * waterAKFragment6 * waterCosFragment6);
+	waterTangentY += vec3(-waterDirectionFragment6.x * waterDirectionFragment6.y * waterQAKFragment6 * waterSinFragment6, -waterDirectionFragment6.y * waterDirectionFragment6.y * waterQAKFragment6 * waterSinFragment6, waterDirectionFragment6.y * waterAKFragment6 * waterCosFragment6);
+	vec2 waterDirectionFragment7 = normalize(vec2(-0.18, -0.98));
+	float waterAmplitudeFragment7 = 0.016;
+	float waterKFragment7 = (2.0 * waterPi) / 0.92;
+	float waterPhaseFragment7 = waterKFragment7 * dot(waterDirectionFragment7, waterFragmentPositionXY) + elapsedTime * 5.4 + 6.2;
+	float waterSinFragment7 = sin(waterPhaseFragment7);
+	float waterCosFragment7 = cos(waterPhaseFragment7);
+	float waterQAKFragment7 = 0.14 * waterAmplitudeFragment7 * waterKFragment7;
+	float waterAKFragment7 = waterAmplitudeFragment7 * waterKFragment7;
+	waterTangentX += vec3(-waterDirectionFragment7.x * waterDirectionFragment7.x * waterQAKFragment7 * waterSinFragment7, -waterDirectionFragment7.x * waterDirectionFragment7.y * waterQAKFragment7 * waterSinFragment7, waterDirectionFragment7.x * waterAKFragment7 * waterCosFragment7);
+	waterTangentY += vec3(-waterDirectionFragment7.x * waterDirectionFragment7.y * waterQAKFragment7 * waterSinFragment7, -waterDirectionFragment7.y * waterDirectionFragment7.y * waterQAKFragment7 * waterSinFragment7, waterDirectionFragment7.y * waterAKFragment7 * waterCosFragment7);
+	vec3 waterNormal = normalize(cross(waterTangentX, waterTangentY));
+	float waterHeightMask = smoothstep(-0.5, 0.5, waterHeight);
+	vec3 waterDeepColor = vec3(0.005, 0.025, 0.06);
+	vec3 waterShallowColor = vec3(0.01, 0.15, 0.22);
+	vec3 waterFoamColor = vec3(0.15, 0.65, 0.75);
+	vec3 waterDepthColor = mix(waterDeepColor, waterShallowColor, vec3(waterHeightMask));
+	vec3 waterSurfaceColor = mix(waterDepthColor, waterFoamColor, vec3(smoothstep(0.65, 1.0, waterHeightMask)));
+	vec3 waterSunDirection = normalize(sunDirection);
+	float waterDiffuse = max(dot(waterNormal, waterSunDirection), 0.0) * 0.45;
+	vec3 waterViewDirection = normalize(viewPosition - vec3((fragmentPositionWorldSpace).x, (fragmentPositionWorldSpace).y, (fragmentPositionWorldSpace).z));
+	float waterFresnelBase = 1.0 - max(dot(waterNormal, waterViewDirection), 0.0);
+	vec3 waterLitColor = mix(waterSurfaceColor * vec3(0.55 + waterDiffuse), vec3(0.3, 0.55, 0.75), vec3(pow(waterFresnelBase, 5.0) * 0.55));
+	float waterSpecular = pow(max(dot(waterNormal, normalize(waterSunDirection + waterViewDirection)), 0.0), 128.0);
+	vec3 waterSpecularColor = vec3(1.0, 0.95, 0.8) * vec3(waterSpecular);
+	float waterFoamMask = smoothstep(0.82, 1.0, waterHeightMask) * 0.12;
+	vec3 waterFoamHighlightColor = vec3(0.92, 0.98, 1.0);
+	vec3 waterEmissiveColor = mix(waterLitColor + waterSpecularColor * vec3(1.5), waterFoamHighlightColor, vec3(waterFoamMask));
+</Calculation>
+        <Result>vec4(1.0, 1.0, 1.0, 1.0);</Result>
+    </BaseColor>
+    <EmissiveColor>
+        <Calculation></Calculation>
+        <Result>waterEmissiveColor;</Result>
+    </EmissiveColor>
+    <AmbientOcclusion><Calculation></Calculation><Result></Result></AmbientOcclusion>
+    <Metallic><Calculation></Calculation><Result></Result></Metallic>
+    <Roughness><Calculation></Calculation><Result></Result></Roughness>
+    <FragmentNormal><Calculation></Calculation><Result></Result></FragmentNormal>
+    <FragmentNormalIsTangentSpace>0</FragmentNormalIsTangentSpace>
+    <VertexNormal><Calculation></Calculation><Result></Result></VertexNormal>
+    <UV><Calculation></Calculation><Result></Result></UV>
+    <VertexPositionOffset>
+        <Calculation>
+	// Seamless world-anchored XY water plane, Z-up Gerstner displacement.
+	vec2 waterPositionXY = (vec4(position, 1.0) * finalModelMatrix).xy;
+	vec3 waterGerstnerOffset = vec3(0.0);
+	const float waterPi = 3.14159265;
+	vec2 waterDirectionVertex0 = normalize(vec2(1.0, 0.11));
+	float waterAmplitudeVertex0 = 0.22;
+	float waterKVertex0 = (2.0 * waterPi) / 23.0;
+	float waterPhaseVertex0 = waterKVertex0 * dot(waterDirectionVertex0, waterPositionXY) + elapsedTime * 0.55 + 1.3;
+	float waterSinVertex0 = sin(waterPhaseVertex0);
+	float waterCosVertex0 = cos(waterPhaseVertex0);
+	waterGerstnerOffset.xy += waterDirectionVertex0 * (0.35 * waterAmplitudeVertex0 * waterCosVertex0);
+	waterGerstnerOffset.z += waterAmplitudeVertex0 * waterSinVertex0;
+	vec2 waterDirectionVertex1 = normalize(vec2(-0.27, 0.96));
+	float waterAmplitudeVertex1 = 0.18;
+	float waterKVertex1 = (2.0 * waterPi) / 15.5;
+	float waterPhaseVertex1 = waterKVertex1 * dot(waterDirectionVertex1, waterPositionXY) + elapsedTime * 0.83 + 2.1;
+	float waterSinVertex1 = sin(waterPhaseVertex1);
+	float waterCosVertex1 = cos(waterPhaseVertex1);
+	waterGerstnerOffset.xy += waterDirectionVertex1 * (0.42 * waterAmplitudeVertex1 * waterCosVertex1);
+	waterGerstnerOffset.z += waterAmplitudeVertex1 * waterSinVertex1;
+	vec2 waterDirectionVertex2 = normalize(vec2(0.68, -0.74));
+	float waterAmplitudeVertex2 = 0.14;
+	float waterKVertex2 = (2.0 * waterPi) / 9.25;
+	float waterPhaseVertex2 = waterKVertex2 * dot(waterDirectionVertex2, waterPositionXY) + elapsedTime * 1.1 + 2.8;
+	float waterSinVertex2 = sin(waterPhaseVertex2);
+	float waterCosVertex2 = cos(waterPhaseVertex2);
+	waterGerstnerOffset.xy += waterDirectionVertex2 * (0.4 * waterAmplitudeVertex2 * waterCosVertex2);
+	waterGerstnerOffset.z += waterAmplitudeVertex2 * waterSinVertex2;
+	vec2 waterDirectionVertex3 = normalize(vec2(-0.91, -0.39));
+	float waterAmplitudeVertex3 = 0.1;
+	float waterKVertex3 = (2.0 * waterPi) / 6.1;
+	float waterPhaseVertex3 = waterKVertex3 * dot(waterDirectionVertex3, waterPositionXY) + elapsedTime * 1.55 + 3.3;
+	float waterSinVertex3 = sin(waterPhaseVertex3);
+	float waterCosVertex3 = cos(waterPhaseVertex3);
+	waterGerstnerOffset.xy += waterDirectionVertex3 * (0.32 * waterAmplitudeVertex3 * waterCosVertex3);
+	waterGerstnerOffset.z += waterAmplitudeVertex3 * waterSinVertex3;
+	vec2 waterDirectionVertex4 = normalize(vec2(0.2, 0.98));
+	float waterAmplitudeVertex4 = 0.065;
+	float waterKVertex4 = (2.0 * waterPi) / 3.7;
+	float waterPhaseVertex4 = waterKVertex4 * dot(waterDirectionVertex4, waterPositionXY) + elapsedTime * 2.2 + 4.0;
+	float waterSinVertex4 = sin(waterPhaseVertex4);
+	float waterCosVertex4 = cos(waterPhaseVertex4);
+	waterGerstnerOffset.xy += waterDirectionVertex4 * (0.26 * waterAmplitudeVertex4 * waterCosVertex4);
+	waterGerstnerOffset.z += waterAmplitudeVertex4 * waterSinVertex4;
+	vec2 waterDirectionVertex5 = normalize(vec2(-0.63, 0.78));
+	float waterAmplitudeVertex5 = 0.045;
+	float waterKVertex5 = (2.0 * waterPi) / 2.45;
+	float waterPhaseVertex5 = waterKVertex5 * dot(waterDirectionVertex5, waterPositionXY) + elapsedTime * 3.0 + 4.7;
+	float waterSinVertex5 = sin(waterPhaseVertex5);
+	float waterCosVertex5 = cos(waterPhaseVertex5);
+	waterGerstnerOffset.xy += waterDirectionVertex5 * (0.22 * waterAmplitudeVertex5 * waterCosVertex5);
+	waterGerstnerOffset.z += waterAmplitudeVertex5 * waterSinVertex5;
+	vec2 waterDirectionVertex6 = normalize(vec2(0.89, 0.45));
+	float waterAmplitudeVertex6 = 0.028;
+	float waterKVertex6 = (2.0 * waterPi) / 1.55;
+	float waterPhaseVertex6 = waterKVertex6 * dot(waterDirectionVertex6, waterPositionXY) + elapsedTime * 4.1 + 5.6;
+	float waterSinVertex6 = sin(waterPhaseVertex6);
+	float waterCosVertex6 = cos(waterPhaseVertex6);
+	waterGerstnerOffset.xy += waterDirectionVertex6 * (0.18 * waterAmplitudeVertex6 * waterCosVertex6);
+	waterGerstnerOffset.z += waterAmplitudeVertex6 * waterSinVertex6;
+	vec2 waterDirectionVertex7 = normalize(vec2(-0.18, -0.98));
+	float waterAmplitudeVertex7 = 0.016;
+	float waterKVertex7 = (2.0 * waterPi) / 0.92;
+	float waterPhaseVertex7 = waterKVertex7 * dot(waterDirectionVertex7, waterPositionXY) + elapsedTime * 5.4 + 6.2;
+	float waterSinVertex7 = sin(waterPhaseVertex7);
+	float waterCosVertex7 = cos(waterPhaseVertex7);
+	waterGerstnerOffset.xy += waterDirectionVertex7 * (0.14 * waterAmplitudeVertex7 * waterCosVertex7);
+	waterGerstnerOffset.z += waterAmplitudeVertex7 * waterSinVertex7;
+</Calculation>
+        <Result>waterGerstnerOffset;</Result>
+    </VertexPositionOffset>
+    <VertexShaderFunctions><![CDATA[]]></VertexShaderFunctions>
+    <FragmentShaderFunctions><![CDATA[]]></FragmentShaderFunctions>
+    <VertexShaderUniforms><![CDATA[// GOKNAR_MATERIAL_NODE|kind=Variable|name=sunDirection|type=Vector3|storage=Uniform|count=1|values=0.350000,-0.450000,0.820000
+uniform vec3 sunDirection;
+]]></VertexShaderUniforms>
+    <FragmentShaderUniforms><![CDATA[// GOKNAR_MATERIAL_NODE|kind=Variable|name=sunDirection|type=Vector3|storage=Uniform|count=1|values=0.350000,-0.450000,0.820000
+uniform vec3 sunDirection;
+]]></FragmentShaderUniforms>
+</GameAsset>

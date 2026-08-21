@@ -16,6 +16,9 @@
             <Path>Materials/Environment/M_Grass</Path>
         </Material>
         <Material>
+            <Path>Materials/Environment/M_Water</Path>
+        </Material>
+        <Material>
             <Path>Materials/Environment/Trees/M_TreeBody</Path>
         </Material>
         <Material>
@@ -32,6 +35,9 @@
         </Material>
         <Material>
             <Path>Materials/Level/M_PhysicsBlocks</Path>
+        </Material>
+        <Material>
+            <Path>Materials/Level/M_Sample</Path>
         </Material>
         <Material>
             <Path>Materials/Level/M_SkySphere</Path>
@@ -71,7 +77,10 @@
         </Material>
         <Mesh>
             <Path>Meshes/Characters/SK_DefaultCharacter.fbx</Path>
-            <MaterialPath>Materials/Characters/M_DefaultCharacter</MaterialPath>
+            <MaterialPaths>
+                <MaterialPath>Materials/Characters/M_DefaultCharacter</MaterialPath>
+                <MaterialPath>Materials/Characters/M_AICharacter</MaterialPath>
+            </MaterialPaths>
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_Arch.fbx</Path>
@@ -111,6 +120,10 @@
         </Mesh>
         <Mesh>
             <Path>Meshes/DefaultScene/SM_UnitSphere.fbx</Path>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/Environment/Ocean/SM_Ocean.fbx</Path>
+            <MaterialPath>Materials/Environment/M_Water</MaterialPath>
         </Mesh>
         <Mesh>
             <Path>Meshes/Environment/Plants/SM_Grass.fbx</Path>
