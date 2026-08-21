@@ -260,10 +260,11 @@ void SkeletalMeshInstance::SetRenderOperations(int subMeshIndex, RenderPassType 
 	const std::vector<SkeletalMeshUnit*>& subMeshes = mesh_->GetSubMeshes();
 	if (0 <= subMeshIndex && subMeshIndex < (int)subMeshes.size())
 	{
-		SkeletalMeshUnit* subMesh = subMeshes[subMeshIndex];
-		if (subMesh && subMesh->GetMaterial())
+		IMaterialBase* material = GetMaterial(subMeshIndex);
+		Shader* shader = material ? material->GetShader(renderPassType) : nullptr;
+		if (shader)
 		{
-			subMesh->GetMaterial()->GetShader(renderPassType)->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
+			shader->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
 		}
 	}
 	IMeshInstance::Render(subMeshIndex, renderPassType);
