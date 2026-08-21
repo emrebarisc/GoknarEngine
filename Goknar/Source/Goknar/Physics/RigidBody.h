@@ -107,6 +107,8 @@ protected:
 	btDefaultMotionState* bulletMotionState_{ nullptr };
 
 private:
+	btVector3 CalculateLocalInertia(float mass) const;
+
 	RigidBodyInitializationData* rigidBodyInitializationData_{ nullptr };
 	float mass_{ 0.f };
 };

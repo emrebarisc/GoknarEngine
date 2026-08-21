@@ -99,6 +99,9 @@ protected:
 	btCollisionShape* bulletCollisionShape_{ nullptr };
 
 private:
+	static float GetSafeBulletCollisionScale(float scale);
+	static Vector3 GetSafeBulletCollisionScaling(const Vector3& scaling);
+
 	CollisionGroup collisionGroup_{ CollisionGroup::All };
 	CollisionMask collisionMask_{ CollisionMask::BlockAndOverlapAll };
 };

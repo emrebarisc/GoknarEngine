@@ -68,7 +68,7 @@ void RigidBody::Init()
 	bool isDynamic = (mass_ != 0.f);
 	if (isDynamic)
 	{
-		bulletCollisionShape->calculateLocalInertia(mass_, rigidBodyInitializationData_->localInertia);
+		rigidBodyInitializationData_->localInertia = CalculateLocalInertia(mass_);
 	}
 
 	btTransform bulletTransform;
@@ -206,15 +206,9 @@ void RigidBody::SetupRigidBodyInitializationData()
 	bulletRigidBody_->setLinearFactor(rigidBodyInitializationData_->linearFactor);
 	bulletRigidBody_->setAngularFactor(rigidBodyInitializationData_->angularFactor);
 
-	btVector3 inertia = bulletRigidBody_->getLocalInertia();
-
-	if (0 < bulletRigidBody_->getInvMass())
-	{
-		((CollisionComponent*)GetRootComponent())->GetBulletCollisionShape()->calculateLocalInertia(bulletRigidBody_->getMass(), inertia);
-		bulletRigidBody_->updateInertiaTensor();
-	}
-
+	btVector3 inertia = CalculateLocalInertia(mass_);
 	bulletRigidBody_->setMassProps(mass_, inertia);
+	bulletRigidBody_->updateInertiaTensor();
 
 	delete rigidBodyInitializationData_;
 	rigidBodyInitializationData_ = nullptr;
@@ -236,13 +230,35 @@ void RigidBody::SetMass(float mass)
 		return;
 	}
 
-	btVector3 inertia = bulletRigidBody_->getLocalInertia();
-	if (bulletRigidBody_->getInvMass() > 0)
-	{
-		((CollisionComponent*)GetRootComponent())->GetBulletCollisionShape()->calculateLocalInertia(bulletRigidBody_->getMass(), inertia);
-		bulletRigidBody_->updateInertiaTensor();
-	}
+	btVector3 inertia = CalculateLocalInertia(mass_);
 	bulletRigidBody_->setMassProps(mass_, inertia);
+	bulletRigidBody_->updateInertiaTensor();
+}
+
+btVector3 RigidBody::CalculateLocalInertia(float mass) const
+{
+	btVector3 inertia(0.f, 0.f, 0.f);
+
+	if (mass == 0.f)
+	{
+		return inertia;
+	}
+
+	if (!collisionComponent_)
+	{
+		GOKNAR_CORE_WARN("Cannot calculate rigidbody inertia without a collision component.");
+		return inertia;
+	}
+
+	btCollisionShape* bulletCollisionShape = collisionComponent_->GetBulletCollisionShape();
+	if (!bulletCollisionShape)
+	{
+		GOKNAR_CORE_WARN("Cannot calculate rigidbody inertia before the collision shape is initialized.");
+		return inertia;
+	}
+
+	bulletCollisionShape->calculateLocalInertia(mass, inertia);
+	return inertia;
 }
 
 void RigidBody::SetLinearFactor(const Vector3& linearFactor)

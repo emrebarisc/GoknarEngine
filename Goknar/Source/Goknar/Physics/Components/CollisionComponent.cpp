@@ -2,11 +2,36 @@
 
 #include "CollisionComponent.h"
 #include "Engine.h"
+#include "Physics/PhysicsObject.h"
 #include "Physics/PhysicsUtils.h"
 #include "Physics/PhysicsWorld.h"
 #include "Physics/RigidBody.h"
 
 #include "BulletCollision/CollisionShapes/btCollisionShape.h"
+
+float CollisionComponent::GetSafeBulletCollisionScale(float scale)
+{
+	if (GoknarMath::IsNanOrInf(scale))
+	{
+		return SMALLER_EPSILON;
+	}
+
+	if (GoknarMath::Abs(scale) < SMALLER_EPSILON)
+	{
+		return scale < 0.f ? -SMALLER_EPSILON : SMALLER_EPSILON;
+	}
+
+	return scale;
+}
+
+Vector3 CollisionComponent::GetSafeBulletCollisionScaling(const Vector3& scaling)
+{
+	return Vector3(
+		GetSafeBulletCollisionScale(scaling.x),
+		GetSafeBulletCollisionScale(scaling.y),
+		GetSafeBulletCollisionScale(scaling.z)
+	);
+}
 
 CollisionComponent::CollisionComponent(Component* parent) :
 	Component(parent)
@@ -42,23 +67,36 @@ void CollisionComponent::UpdateTransformation()
 		return;
 	}
 
-	bulletCollisionShape_->setLocalScaling(PhysicsUtils::FromVector3ToBtVector3(worldScaling_));
+	const Vector3 safeWorldScaling = GetSafeBulletCollisionScaling(worldScaling_);
+	bulletCollisionShape_->setLocalScaling(PhysicsUtils::FromVector3ToBtVector3(safeWorldScaling));
+
+	PhysicsObject* ownerPhysicsObject = dynamic_cast<PhysicsObject*>(owner_);
+	btCollisionObject* ownerBulletCollisionObject = ownerPhysicsObject ? ownerPhysicsObject->GetBulletCollisionObject() : nullptr;
 
 	RigidBody* ownerRigidBody = dynamic_cast<RigidBody*>(owner_);
-	if (!ownerRigidBody)
+	if (ownerRigidBody)
 	{
-		return;
+		btRigidBody* ownerBulletRigidBody = ownerRigidBody->GetBulletRigidBody();
+		const float ownerMass = ownerRigidBody->GetMass();
+
+		if (ownerBulletRigidBody && ownerMass > 0.f && ownerBulletRigidBody->getInvMass() > 0.f)
+		{
+			btVector3 inertia;
+			bulletCollisionShape_->calculateLocalInertia(ownerMass, inertia);
+			ownerBulletRigidBody->setMassProps(ownerMass, inertia);
+			ownerBulletRigidBody->updateInertiaTensor();
+		}
 	}
 
-	btRigidBody* ownerBulletRigidBody = ownerRigidBody->GetBulletRigidBody();
-	const float ownerMass = ownerRigidBody->GetMass();
-
-	if (ownerBulletRigidBody && ownerMass > 0.f && ownerBulletRigidBody->getInvMass() > 0.f)
+	if (ownerBulletCollisionObject)
 	{
-		btVector3 inertia;
-		bulletCollisionShape_->calculateLocalInertia(ownerMass, inertia);
-		ownerBulletRigidBody->setMassProps(ownerMass, inertia);
-		ownerBulletRigidBody->updateInertiaTensor();
+		ownerBulletCollisionObject->activate(true);
+
+		PhysicsWorld* physicsWorld = engine ? engine->GetPhysicsWorld() : nullptr;
+		if (physicsWorld && physicsWorld->GetBulletPhysicsWorld())
+		{
+			physicsWorld->GetBulletPhysicsWorld()->updateSingleAabb(ownerBulletCollisionObject);
+		}
 	}
 }
 
