@@ -90,9 +90,44 @@ Matrix ConvertMatrix(const ufbx_matrix& m)
 	);
 }
 
+bool IsImportedBoneNode(const BoneNameToIdMap* boneNameToIdMap, const ufbx_node* node)
+{
+	return node &&
+		boneNameToIdMap &&
+		boneNameToIdMap->find(node->name.data) != boneNameToIdMap->end();
+}
+
+Matrix GetNodeLocalTransform(const ufbx_anim* anim, const ufbx_node* node, double time)
+{
+	ufbx_transform transform = anim ? ufbx_evaluate_transform(anim, node, time) : node->local_transform;
+	ufbx_matrix matrix = ufbx_transform_to_matrix(&transform);
+	return ConvertMatrix(matrix);
+}
+
+Matrix GetNodeTransformToNearestBoneParent(const ufbx_anim* anim, const BoneNameToIdMap* boneNameToIdMap, const ufbx_node* node, double time)
+{
+	std::vector<const ufbx_node*> nodeChain;
+	for (const ufbx_node* current = node; current; current = current->parent)
+	{
+		nodeChain.push_back(current);
+		if (!current->parent || IsImportedBoneNode(boneNameToIdMap, current->parent))
+		{
+			break;
+		}
+	}
+
+	Matrix transform = Matrix::IdentityMatrix;
+	for (auto iterator = nodeChain.rbegin(); iterator != nodeChain.rend(); ++iterator)
+	{
+		transform = transform * GetNodeLocalTransform(anim, *iterator, time);
+	}
+
+	return transform;
+}
+
 ufbx_node* GetRootBone(const BoneNameToIdMap* boneNameToIdMap, ufbx_node* node)
 {
-	if (boneNameToIdMap->find(node->name.data) != boneNameToIdMap->end())
+	if (IsImportedBoneNode(boneNameToIdMap, node))
 	{
 		return node;
 	}
@@ -109,9 +144,9 @@ ufbx_node* GetRootBone(const BoneNameToIdMap* boneNameToIdMap, ufbx_node* node)
 	return nullptr;
 }
 
-void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node)
+void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node, const Matrix& transformFromBone)
 {
-	if (node->children.count == 0)
+	if (!bone || !node || node->children.count == 0)
 	{
 		return;
 	}
@@ -122,17 +157,28 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node)
 		ufbx_node* childNode = node->children.data[childrenIndex];
 		std::string childNodeName = childNode->name.data;
 
+		ufbx_matrix childLocalMat = ufbx_transform_to_matrix(&childNode->local_transform);
+		Matrix childTransformFromBone = transformFromBone * ConvertMatrix(childLocalMat);
+
 		if (boneNameToIdMap->find(childNodeName) != boneNameToIdMap->end())
 		{
 			Bone* childBone = skeletalMesh->GetBone(skeletalMesh->GetBoneId(childNodeName));
 
-			ufbx_matrix localMat = ufbx_transform_to_matrix(&childNode->local_transform);
-			childBone->transformation = ConvertMatrix(localMat);
+			childBone->transformation = childTransformFromBone;
 
 			bone->children.push_back(childBone);
-			SetupArmature(skeletalMesh, childBone, childNode);
+			SetupArmature(skeletalMesh, childBone, childNode, Matrix::IdentityMatrix);
+		}
+		else
+		{
+			SetupArmature(skeletalMesh, bone, childNode, childTransformFromBone);
 		}
 	}
+}
+
+void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node)
+{
+	SetupArmature(skeletalMesh, bone, node, Matrix::IdentityMatrix);
 }
 
 Content* ModelLoader::LoadModel(const std::string& path)
@@ -178,6 +224,8 @@ Content* ModelLoader::LoadModel(const std::string& path)
 			staticMeshAsset = new StaticMesh();
 		}
 
+		std::vector<SkeletalMeshUnit*> pendingSkeletalSubMeshes;
+
 		for (size_t meshIndex = 0; meshIndex < scene->meshes.count; ++meshIndex)
 		{
 			ufbx_mesh* ufbxMesh = scene->meshes.data[meshIndex];
@@ -194,14 +242,14 @@ Content* ModelLoader::LoadModel(const std::string& path)
 				uint32_t currentVertexId = 0;
 				std::vector<size_t> originalFaceIndices;
 				std::vector<uint32_t> unifiedIndices;
-				std::vector<std::vector<uint32_t>> posToVertexIndices;
+				std::vector<std::vector<uint32_t>> meshVertexToLocalVertexIndices;
 			};
 
 			std::vector<SubMeshData> subMeshes(numMaterials);
 
 			for (size_t i = 0; i < numMaterials; ++i)
 			{
-				if (hasBones)
+				if (sceneHasBones)
 				{
 					subMeshes[i].skeletalMeshUnit = new SkeletalMeshUnit();
 					subMeshes[i].meshUnit = subMeshes[i].skeletalMeshUnit;
@@ -219,9 +267,9 @@ Content* ModelLoader::LoadModel(const std::string& path)
 				subMeshes[i].meshUnit->SetName(subMeshName);
 				subMeshes[i].unifiedIndices.resize(ufbxMesh->num_indices, 0xFFFFFFFF);
 
-				if (hasBones)
+				if (sceneHasBones)
 				{
-					subMeshes[i].posToVertexIndices.resize(ufbxMesh->num_vertices);
+					subMeshes[i].meshVertexToLocalVertexIndices.resize(ufbxMesh->num_vertices);
 				}
 			}
 
@@ -268,6 +316,7 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 						UnifiedVertex key;
 						key.posIndex = ufbxMesh->vertex_position.indices.data[index_in_mesh];
+						const uint32_t meshVertexIndex = ufbxMesh->vertex_indices.data[index_in_mesh];
 
 						if (ufbxMesh->vertex_normal.exists)
 							key.normIndex = ufbxMesh->vertex_normal.indices.data[index_in_mesh];
@@ -340,9 +389,9 @@ Content* ModelLoader::LoadModel(const std::string& path)
 								tangent
 							));
 
-							if (hasBones)
+							if (sceneHasBones && meshVertexIndex < subMesh.meshVertexToLocalVertexIndices.size())
 							{
-								subMesh.posToVertexIndices[key.posIndex].push_back(subMesh.currentVertexId);
+								subMesh.meshVertexToLocalVertexIndices[meshVertexIndex].push_back(subMesh.currentVertexId);
 							}
 
 							subMesh.currentVertexId++;
@@ -365,43 +414,78 @@ Content* ModelLoader::LoadModel(const std::string& path)
 				}
 
 				// Distribute Skin/Bone weights
-				if (hasBones && skeletalMeshAsset && subMesh.skeletalMeshUnit)
+				if (sceneHasBones && skeletalMeshAsset && subMesh.skeletalMeshUnit)
 				{
 					subMesh.skeletalMeshUnit->ResizeVertexToBonesArray(subMesh.currentVertexId);
 
-					ufbx_skin_deformer* skin = ufbxMesh->skin_deformers.data[0];
-
-					for (auto& vec : subMesh.posToVertexIndices)
+					if (hasBones)
 					{
-						if (!vec.empty()) {
-							std::sort(vec.begin(), vec.end());
-							vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
-						}
-					}
+						ufbx_skin_deformer* skin = ufbxMesh->skin_deformers.data[0];
 
-					for (size_t boneIndex = 0; boneIndex < skin->clusters.count; ++boneIndex)
-					{
-						ufbx_skin_cluster* cluster = skin->clusters.data[boneIndex];
-						const std::string boneName = cluster->bone_node->name.data;
-						const BoneNameToIdMap* boneNameToIdMap = skeletalMeshAsset->GetBoneNameToIdMap();
-						if (boneNameToIdMap->find(boneName) == boneNameToIdMap->end())
+						for (auto& vec : subMesh.meshVertexToLocalVertexIndices)
 						{
-							skeletalMeshAsset->GetBoneId(boneName);
-							skeletalMeshAsset->AddBone(new Bone(boneName, ConvertMatrix(cluster->geometry_to_bone)));
+							if (!vec.empty()) {
+								std::sort(vec.begin(), vec.end());
+								vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
+							}
 						}
 
-						const unsigned int boneId = skeletalMeshAsset->GetBoneId(boneName);
-
-						for (size_t weightIndex = 0; weightIndex < cluster->vertices.count; ++weightIndex)
+						for (size_t clusterIndex = 0; clusterIndex < skin->clusters.count; ++clusterIndex)
 						{
-							uint32_t posIndex = cluster->vertices.data[weightIndex];
-							float weight = cluster->weights.data[weightIndex];
-
-							if (posIndex < subMesh.posToVertexIndices.size())
+							ufbx_skin_cluster* cluster = skin->clusters.data[clusterIndex];
+							if (!cluster || !cluster->bone_node)
 							{
-								for (uint32_t vertexId : subMesh.posToVertexIndices[posIndex])
+								continue;
+							}
+
+							const std::string boneName = cluster->bone_node->name.data;
+							const BoneNameToIdMap* boneNameToIdMap = skeletalMeshAsset->GetBoneNameToIdMap();
+							if (boneNameToIdMap->find(boneName) == boneNameToIdMap->end())
+							{
+								skeletalMeshAsset->GetBoneId(boneName);
+								skeletalMeshAsset->AddBone(new Bone(boneName, ConvertMatrix(cluster->geometry_to_bone)));
+							}
+						}
+
+						const size_t skinnedVertexCount = std::min(skin->vertices.count, subMesh.meshVertexToLocalVertexIndices.size());
+						for (size_t meshVertexIndex = 0; meshVertexIndex < skinnedVertexCount; ++meshVertexIndex)
+						{
+							const std::vector<uint32_t>& localVertexIndices = subMesh.meshVertexToLocalVertexIndices[meshVertexIndex];
+							if (localVertexIndices.empty())
+							{
+								continue;
+							}
+
+							const ufbx_skin_vertex skinVertex = skin->vertices.data[meshVertexIndex];
+							for (uint32_t weightOffset = 0; weightOffset < skinVertex.num_weights; ++weightOffset)
+							{
+								const uint32_t skinWeightIndex = skinVertex.weight_begin + weightOffset;
+								if (skinWeightIndex >= skin->weights.count)
 								{
-									subMesh.skeletalMeshUnit->AddVertexBoneData(vertexId, boneId, weight);
+									continue;
+								}
+
+								const ufbx_skin_weight skinWeight = skin->weights.data[skinWeightIndex];
+								if (skinWeight.cluster_index >= skin->clusters.count)
+								{
+									continue;
+								}
+
+								ufbx_skin_cluster* cluster = skin->clusters.data[skinWeight.cluster_index];
+								if (!cluster || !cluster->bone_node)
+								{
+									continue;
+								}
+
+								const int boneId = skeletalMeshAsset->FindBoneId(cluster->bone_node->name.data);
+								if (boneId < 0)
+								{
+									continue;
+								}
+
+								for (uint32_t vertexId : localVertexIndices)
+								{
+									subMesh.skeletalMeshUnit->AddVertexBoneData(vertexId, (unsigned int)boneId, (float)skinWeight.weight);
 								}
 							}
 						}
@@ -515,9 +599,9 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 				subMesh.meshUnit->SetMaterial(material);
 
-				if (sceneHasBones && skeletalMeshAsset)
+				if (sceneHasBones && skeletalMeshAsset && subMesh.skeletalMeshUnit)
 				{
-					skeletalMeshAsset->AddMesh(subMesh.skeletalMeshUnit);
+					pendingSkeletalSubMeshes.push_back(subMesh.skeletalMeshUnit);
 				}
 				else if (staticMeshAsset)
 				{
@@ -531,8 +615,7 @@ Content* ModelLoader::LoadModel(const std::string& path)
 			ufbx_node* rootBoneNode = GetRootBone(skeletalMeshAsset->GetBoneNameToIdMap(), scene->root_node);
 			if (rootBoneNode)
 			{
-				ufbx_matrix rootLocalMat = ufbx_transform_to_matrix(&rootBoneNode->local_transform);
-				Matrix rootTransformation = ConvertMatrix(rootLocalMat);
+				Matrix rootTransformation = GetNodeTransformToNearestBoneParent(nullptr, skeletalMeshAsset->GetBoneNameToIdMap(), rootBoneNode, 0.0);
 
 				skeletalMeshAsset->GetArmature()->globalInverseTransform = rootTransformation.GetInverse();
 
@@ -586,16 +669,20 @@ Content* ModelLoader::LoadModel(const std::string& path)
 						for (int keyframeIndex = 0; keyframeIndex < keyframeCount; ++keyframeIndex)
 						{
 							double timeInSeconds = (double)keyframeIndex / fps;
-							ufbx_transform transform = ufbx_evaluate_transform(animStack->anim, animNode, animStack->time_begin + timeInSeconds);
+							Matrix transform = GetNodeTransformToNearestBoneParent(animStack->anim, skeletalMeshAsset->GetBoneNameToIdMap(), animNode, animStack->time_begin + timeInSeconds);
+							Vector3 translation = Vector3::ZeroVector;
+							Vector3 scaling = Vector3(1.f);
+							Quaternion rotation = Quaternion::Identity;
+							transform.Decompose(translation, scaling, rotation);
 
 							keyframe->positionKeys[keyframeIndex].time = timeInSeconds;
-							keyframe->positionKeys[keyframeIndex].value = Vector3(transform.translation.x, transform.translation.y, transform.translation.z);
+							keyframe->positionKeys[keyframeIndex].value = translation;
 
 							keyframe->rotationKeys[keyframeIndex].time = timeInSeconds;
-							keyframe->rotationKeys[keyframeIndex].value = Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+							keyframe->rotationKeys[keyframeIndex].value = rotation;
 
 							keyframe->scalingKeys[keyframeIndex].time = timeInSeconds;
-							keyframe->scalingKeys[keyframeIndex].value = Vector3(transform.scale.x, transform.scale.y, transform.scale.z);
+							keyframe->scalingKeys[keyframeIndex].value = scaling;
 						}
 
 						skeletalAnimation->AddSkeletalAnimationKeyframe(channelIndex, keyframe);
@@ -607,6 +694,14 @@ Content* ModelLoader::LoadModel(const std::string& path)
 				}
 
 				skeletalMeshAsset->BuildRuntimeAnimationData();
+			}
+		}
+
+		if (skeletalMeshAsset)
+		{
+			for (SkeletalMeshUnit* skeletalSubMesh : pendingSkeletalSubMeshes)
+			{
+				skeletalMeshAsset->AddMesh(skeletalSubMesh);
 			}
 		}
 
