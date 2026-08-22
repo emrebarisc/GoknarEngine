@@ -13,6 +13,9 @@
             <Path>Materials/Characters/M_DefaultCharacter</Path>
         </Material>
         <Material>
+            <Path>Materials/Characters/M_DefaultCharacterJoints</Path>
+        </Material>
+        <Material>
             <Path>Materials/Environment/M_Grass</Path>
         </Material>
         <Material>
@@ -79,7 +82,7 @@
             <Path>Meshes/Characters/SK_DefaultCharacter.fbx</Path>
             <MaterialPaths>
                 <MaterialPath>Materials/Characters/M_DefaultCharacter</MaterialPath>
-                <MaterialPath>Materials/Characters/M_AICharacter</MaterialPath>
+                <MaterialPath>Materials/Characters/M_DefaultCharacterJoints</MaterialPath>
             </MaterialPaths>
         </Mesh>
         <Mesh>

@@ -53,8 +53,38 @@
                 </Pin>
             </Outputs>
         </Node>
+        <Node Id="41" Name="Float Constant" Category="Constants" PosX="37" PosY="169" SizeX="150" SizeY="60" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="42" NodeId="41" Name="Value" Type="Float" Kind="Output">
+                    <DefaultValue type="Float" x="1"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="43" Name="Float Constant" Category="Constants" PosX="37" PosY="237" SizeX="150" SizeY="60" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="44" NodeId="43" Name="Value" Type="Float" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="45" Name="Float Constant" Category="Constants" PosX="37" PosY="305" SizeX="150" SizeY="60" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs/>
+            <Outputs>
+                <Pin Id="46" NodeId="45" Name="Value" Type="Float" Kind="Output">
+                    <DefaultValue type="Float" x="0.75"/>
+                </Pin>
+            </Outputs>
+        </Node>
     </Nodes>
     <Links>
         <Link Id="27" StartPinId="26" EndPinId="2"/>
+        <Link Id="47" StartPinId="42" EndPinId="5"/>
+        <Link Id="48" StartPinId="44" EndPinId="6"/>
+        <Link Id="49" StartPinId="46" EndPinId="7"/>
     </Links>
 </GameAsset>

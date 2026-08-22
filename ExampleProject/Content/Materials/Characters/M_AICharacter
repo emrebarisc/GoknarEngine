@@ -3,6 +3,7 @@
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
+    <ShadingType>Default</ShadingType>
     <UsesReflectionProbe>0</UsesReflectionProbe>
     <BaseColorValue>1 1 1 1</BaseColorValue>
     <EmissiveColorValue>0 0 0</EmissiveColorValue>
@@ -32,9 +33,9 @@
     </Roughness>
     <FragmentNormal>
         <Calculation></Calculation>
-        <Result>vertexNormal;</Result>
+        <Result></Result>
     </FragmentNormal>
-    <FragmentNormalIsTangentSpace>1</FragmentNormalIsTangentSpace>
+    <FragmentNormalIsTangentSpace>0</FragmentNormalIsTangentSpace>
     <VertexNormal>
         <Calculation></Calculation>
         <Result></Result>

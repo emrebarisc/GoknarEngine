@@ -36,9 +36,9 @@
             <Nodes>
                 <Node id="1" type="BlendSpace1D" parameter="Speed" syncGroup="StandingLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="8">
                     <Points>
-                        <Point value="0" clip="Armature|RifleIdle"/>
-                        <Point value="0.050000001" clip="Armature|RifleWalkForward"/>
-                        <Point value="0.1" clip="Armature|RifleSprintForward"/>
+                        <Point value="0" clip="RifleIdle"/>
+                        <Point value="0.050000001" clip="RifleWalkForward"/>
+                        <Point value="0.1" clip="RifleSprintForward"/>
                     </Points>
                     <OutboundConnections>
                         <Transition targetId="2" transitWhenAnimationDone="false" duration="0.079999998">
@@ -53,14 +53,14 @@
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="2" type="Clip" animationName="Armature|RifleJumpStart" loop="false" playRate="1">
+                <Node id="2" type="Clip" animationName="RifleJumpStart" loop="false" playRate="1">
                     <OutboundConnections>
                         <Transition targetId="4" transitWhenAnimationDone="true" duration="0.079999998">
                             <Conditions/>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="4" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
+                <Node id="4" type="Clip" animationName="RifleOnAir" loop="true" playRate="1">
                     <OutboundConnections>
                         <Transition targetId="5" transitWhenAnimationDone="false" duration="0.079999998">
                             <Conditions>
@@ -69,14 +69,14 @@
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="5" type="Clip" animationName="Armature|RifleJumpFinish" loop="false" playRate="1">
+                <Node id="5" type="Clip" animationName="RifleJumpFinish" loop="false" playRate="1">
                     <OutboundConnections>
                         <Transition targetId="1" transitWhenAnimationDone="true" duration="0.12">
                             <Conditions/>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="3" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
+                <Node id="3" type="Clip" animationName="RifleOnAir" loop="true" playRate="1">
                     <OutboundConnections>
                         <Transition targetId="5" transitWhenAnimationDone="false" duration="0.15000001">
                             <Conditions>
@@ -112,15 +112,15 @@
             <Nodes>
                 <Node id="6" type="BlendSpace2D" parameterX="MoveX" parameterY="MoveY" syncGroup="StandingAimLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="10">
                     <Points>
-                        <Point x="0" y="0" clip="Armature|RifleIdle"/>
-                        <Point x="0" y="0.050000001" clip="Armature|RifleWalkForward"/>
-                        <Point x="0.035355341" y="0.035355341" clip="Armature|RifleWalkLeftForward"/>
-                        <Point x="0.050000001" y="0" clip="Armature|RifleWalkLeft"/>
-                        <Point x="0.035355341" y="-0.035355341" clip="Armature|RifleWalkLeftBackward"/>
-                        <Point x="0" y="-0.050000001" clip="Armature|RifleWalkBackward"/>
-                        <Point x="-0.035355341" y="-0.035355341" clip="Armature|RifleWalkRightBackward"/>
-                        <Point x="-0.050000001" y="0" clip="Armature|RifleWalkRight"/>
-                        <Point x="-0.035355341" y="0.035355341" clip="Armature|RifleWalkRightForward"/>
+                        <Point x="0" y="0" clip="RifleIdle"/>
+                        <Point x="0" y="0.050000001" clip="RifleWalkForward"/>
+                        <Point x="0.035355341" y="0.035355341" clip="RifleWalkLeftForward"/>
+                        <Point x="0.050000001" y="0" clip="RifleWalkLeft"/>
+                        <Point x="0.035355341" y="-0.035355341" clip="RifleWalkLeftBackward"/>
+                        <Point x="0" y="-0.050000001" clip="RifleWalkBackward"/>
+                        <Point x="-0.035355341" y="-0.035355341" clip="RifleWalkRightBackward"/>
+                        <Point x="-0.050000001" y="0" clip="RifleWalkRight"/>
+                        <Point x="-0.035355341" y="0.035355341" clip="RifleWalkRightForward"/>
                     </Points>
                     <OutboundConnections>
                         <Transition targetId="7" transitWhenAnimationDone="false" duration="0.079999998">
@@ -135,14 +135,14 @@
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="7" type="Clip" animationName="Armature|RifleJumpStart" loop="false" playRate="1">
+                <Node id="7" type="Clip" animationName="RifleJumpStart" loop="false" playRate="1">
                     <OutboundConnections>
                         <Transition targetId="9" transitWhenAnimationDone="true" duration="0.079999998">
                             <Conditions/>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="9" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
+                <Node id="9" type="Clip" animationName="RifleOnAir" loop="true" playRate="1">
                     <OutboundConnections>
                         <Transition targetId="10" transitWhenAnimationDone="false" duration="0.079999998">
                             <Conditions>
@@ -151,14 +151,14 @@
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="10" type="Clip" animationName="Armature|RifleJumpFinish" loop="false" playRate="1">
+                <Node id="10" type="Clip" animationName="RifleJumpFinish" loop="false" playRate="1">
                     <OutboundConnections>
                         <Transition targetId="6" transitWhenAnimationDone="true" duration="0.12">
                             <Conditions/>
                         </Transition>
                     </OutboundConnections>
                 </Node>
-                <Node id="8" type="Clip" animationName="Armature|RifleOnAir" loop="true" playRate="1">
+                <Node id="8" type="Clip" animationName="RifleOnAir" loop="true" playRate="1">
                     <OutboundConnections>
                         <Transition targetId="10" transitWhenAnimationDone="false" duration="0.15000001">
                             <Conditions>
@@ -194,8 +194,8 @@
             <Nodes>
                 <Node id="11" type="BlendSpace1D" parameter="Speed" syncGroup="CrouchLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="8">
                     <Points>
-                        <Point value="0" clip="Armature|RifleCourchIdle"/>
-                        <Point value="0.025" clip="Armature|RifleCrouchWalkForward"/>
+                        <Point value="0" clip="RifleCourchIdle"/>
+                        <Point value="0.025" clip="RifleCrouchWalkForward"/>
                     </Points>
                     <OutboundConnections/>
                 </Node>
@@ -226,15 +226,15 @@
             <Nodes>
                 <Node id="12" type="BlendSpace2D" parameterX="MoveX" parameterY="MoveY" syncGroup="CrouchAimLocomotion" loop="true" playRate="1" parameterSmoothingSpeed="10">
                     <Points>
-                        <Point x="0" y="0" clip="Armature|RifleCourchIdle"/>
-                        <Point x="0" y="0.025" clip="Armature|RifleCrouchWalkForward"/>
-                        <Point x="0.01767767" y="0.01767767" clip="Armature|RifleCrouchWalkLeftForward"/>
-                        <Point x="0.025" y="0" clip="Armature|RifleCrouchWalkLeft"/>
-                        <Point x="0.01767767" y="-0.01767767" clip="Armature|RifleCrouchWalkLeftBackward"/>
-                        <Point x="0" y="-0.025" clip="Armature|RifleCrouchWalkBackward"/>
-                        <Point x="-0.01767767" y="-0.01767767" clip="Armature|RifleCrouchWalkRightBackward"/>
-                        <Point x="-0.025" y="0" clip="Armature|RifleCrouchWalkRight"/>
-                        <Point x="-0.01767767" y="0.01767767" clip="Armature|RifleCrouchWalkRightForward"/>
+                        <Point x="0" y="0" clip="RifleCourchIdle"/>
+                        <Point x="0" y="0.025" clip="RifleCrouchWalkForward"/>
+                        <Point x="0.01767767" y="0.01767767" clip="RifleCrouchWalkLeftForward"/>
+                        <Point x="0.025" y="0" clip="RifleCrouchWalkLeft"/>
+                        <Point x="0.01767767" y="-0.01767767" clip="RifleCrouchWalkLeftBackward"/>
+                        <Point x="0" y="-0.025" clip="RifleCrouchWalkBackward"/>
+                        <Point x="-0.01767767" y="-0.01767767" clip="RifleCrouchWalkRightBackward"/>
+                        <Point x="-0.025" y="0" clip="RifleCrouchWalkRight"/>
+                        <Point x="-0.01767767" y="0.01767767" clip="RifleCrouchWalkRightForward"/>
                     </Points>
                     <OutboundConnections/>
                 </Node>

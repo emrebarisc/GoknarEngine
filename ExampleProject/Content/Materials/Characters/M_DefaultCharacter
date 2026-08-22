@@ -21,15 +21,15 @@
     </EmissiveColor>
     <AmbientOcclusion>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>1.0;</Result>
     </AmbientOcclusion>
     <Metallic>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>0.0;</Result>
     </Metallic>
     <Roughness>
         <Calculation></Calculation>
-        <Result></Result>
+        <Result>0.75;</Result>
     </Roughness>
     <FragmentNormal>
         <Calculation></Calculation>
