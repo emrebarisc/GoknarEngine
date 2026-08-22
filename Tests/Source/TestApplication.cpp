@@ -7,6 +7,7 @@
 #include "Camera_Tests.h"
 #include "Component_Tests.h"
 #include "ObjectBase_Tests.h"
+#include "Physics_Tests.h"
 #include "Math/GoknarMath_Tests.h"
 #include "Math/InterpolatingValue_Tests.h"
 #include "Math/Matrix_Tests.h"
@@ -29,6 +30,7 @@ TestApplication::TestApplication() :
 	tests.AddTest(std::make_shared<Camera_Tests>());
 	tests.AddTest(std::make_shared<Component_Tests>());
 	tests.AddTest(std::make_shared<ObjectBase_Tests>());
+	tests.AddTest(std::make_shared<Physics_Tests>());
 
 	//tests.AddTest(std::make_shared<Delegates_Tests>());
 
