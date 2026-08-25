@@ -31,6 +31,8 @@
 #include "Goknar/Model/InstancedStaticMeshInstance.h"
 #include "Goknar/Model/StaticMeshInstance.h"
 #include "Goknar/Model/SkeletalMeshInstance.h"
+#include "Goknar/Model/MeshContainer.h"
+
 #include "Goknar/ParticleSystem/ParticleSystemBase.h"
 
 #include "Goknar/Managers/CameraManager.h"
@@ -668,16 +670,26 @@ void Renderer::Render(RenderPassType renderPassType)
 	auto RenderStaticMesh = [&](const StaticMeshRenderData& renderData)
 		{
 			StaticMeshInstance* staticMeshInstance = renderData.meshInstance;
-			MeshUnit* subMesh = renderData.meshUnit;
-			const int subMeshIndex = renderData.subMeshIndex;
+			MeshContainer<StaticMesh>* meshContainer = renderData.meshUnit;
+
+			const Box& meshContainerAABB = meshContainer->GetAABB();
+
+			float meshContainerWindowCoverage = activeCamera->GetAABBFrameCoverage(meshContainerAABB);
+
+			int LODIndex = meshContainer->GetLODIndex(meshContainerWindowCoverage);
+			const StaticMesh* LODMesh = meshContainer->GetLOD(LODIndex);
+
+			int subMeshIndex = renderData.subMeshIndex;
+
+			const MeshUnit* subMesh = LODMesh->GetMesh(subMeshIndex);
 
 			if (!skipFrustumCulling &&
-				!activeCamera->IsAABBVisible(subMesh->GetAABB(), staticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
+				!activeCamera->IsAABBVisible(meshContainerAABB, staticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
 
 			if (countDrawCallsInner_) ++drawCallCount;
 
-			staticMeshInstance->PreRender(subMeshIndex, meshUnitRenderPassType);
-			staticMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
+			staticMeshInstance->PreRender(LODIndex, subMeshIndex, meshUnitRenderPassType);
+			staticMeshInstance->Render(LODIndex, subMeshIndex, meshUnitRenderPassType);
 
 			int facePointCount = subMesh->GetFaceCount() * 3;
 			GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
@@ -685,79 +697,79 @@ void Renderer::Render(RenderPassType renderPassType)
 
 	auto RenderInstancedStaticMesh = [&](const InstancedStaticMeshRenderData& renderData)
 		{
-			InstancedStaticMeshInstance* instancedStaticMeshInstance = renderData.meshInstance;
-			InstancedStaticMesh* instancedStaticMesh = instancedStaticMeshInstance->GetMesh();
-			if (!instancedStaticMesh)
-			{
-				return;
-			}
+			//InstancedStaticMeshInstance* instancedStaticMeshInstance = renderData.meshInstance;
+			//InstancedStaticMesh* instancedStaticMesh = instancedStaticMeshInstance->GetMesh();
+			//if (!instancedStaticMesh)
+			//{
+			//	return;
+			//}
 
-			const int instanceCount = (int)instancedStaticMesh->GetInstanceCount();
-			if (instanceCount <= 0)
-			{
-				return;
-			}
+			//const int instanceCount = (int)instancedStaticMesh->GetInstanceCount();
+			//if (instanceCount <= 0)
+			//{
+			//	return;
+			//}
 
-			MeshUnit* subMesh = renderData.meshUnit;
-			const int subMeshIndex = renderData.subMeshIndex;
+			//MeshUnit* subMesh = renderData.meshUnit;
+			//const int subMeshIndex = renderData.subMeshIndex;
 
-			if (!skipFrustumCulling &&
-				!activeCamera->IsAABBVisible(instancedStaticMesh->GetSubMeshInstanceAABB((size_t)subMeshIndex), instancedStaticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
+			//if (!skipFrustumCulling &&
+			//	!activeCamera->IsAABBVisible(instancedStaticMesh->GetSubMeshInstanceAABB((size_t)subMeshIndex), instancedStaticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
 
-			if (!BindInstancedStaticMesh(instancedStaticMesh))
-			{
-				return;
-			}
+			//if (!BindInstancedStaticMesh(instancedStaticMesh))
+			//{
+			//	return;
+			//}
 
-			if (countDrawCallsInner_) ++drawCallCount;
+			//if (countDrawCallsInner_) ++drawCallCount;
 
-			instancedStaticMeshInstance->PreRender(subMeshIndex, meshUnitRenderPassType);
-			instancedStaticMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
+			//instancedStaticMeshInstance->PreRender(subMeshIndex, meshUnitRenderPassType);
+			//instancedStaticMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
 
-			int facePointCount = subMesh->GetFaceCount() * 3;
-			GraphicsAPI()->DrawElementsInstancedBaseVertex(
-				GraphicsPrimitive::Triangles,
-				facePointCount,
-				GraphicsDataType::UnsignedInt,
-				(void*)(unsigned long long)subMesh->GetVertexStartingIndex(),
-				instanceCount,
-				subMesh->GetBaseVertex());
+			//int facePointCount = subMesh->GetFaceCount() * 3;
+			//GraphicsAPI()->DrawElementsInstancedBaseVertex(
+			//	GraphicsPrimitive::Triangles,
+			//	facePointCount,
+			//	GraphicsDataType::UnsignedInt,
+			//	(void*)(unsigned long long)subMesh->GetVertexStartingIndex(),
+			//	instanceCount,
+			//	subMesh->GetBaseVertex());
 		};
 
 	auto RenderSkeletalMesh = [&](const SkeletalMeshRenderData& renderData)
 		{
-			SkeletalMeshInstance* skeletalMeshInstance = renderData.meshInstance;
-			SkeletalMeshUnit* subMesh = renderData.meshUnit;
-			const int subMeshIndex = renderData.subMeshIndex;
+			//SkeletalMeshInstance* skeletalMeshInstance = renderData.meshInstance;
+			//SkeletalMeshUnit* subMesh = renderData.meshUnit;
+			//const int subMeshIndex = renderData.subMeshIndex;
 
-			if (!skipFrustumCulling &&
-				!activeCamera->IsAABBVisible(subMesh->GetAABB(), skeletalMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
+			//if (!skipFrustumCulling &&
+			//	!activeCamera->IsAABBVisible(subMesh->GetAABB(), skeletalMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
 
-			if (countDrawCallsInner_) ++drawCallCount;
+			//if (countDrawCallsInner_) ++drawCallCount;
 
-			skeletalMeshInstance->PreRender(subMeshIndex, meshUnitRenderPassType);
-			skeletalMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
+			//skeletalMeshInstance->PreRender(subMeshIndex, meshUnitRenderPassType);
+			//skeletalMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
 
-			int facePointCount = subMesh->GetFaceCount() * 3;
-			GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
+			//int facePointCount = subMesh->GetFaceCount() * 3;
+			//GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
 		};
 
 	auto RenderDynamicMesh = [&](const DynamicMeshRenderData& renderData)
 		{
-			DynamicMeshInstance* dynamicMeshInstance = renderData.meshInstance;
-			DynamicMeshUnit* subMesh = renderData.meshUnit;
-			const int subMeshIndex = renderData.subMeshIndex;
+			//DynamicMeshInstance* dynamicMeshInstance = renderData.meshInstance;
+			//DynamicMeshUnit* subMesh = renderData.meshUnit;
+			//const int subMeshIndex = renderData.subMeshIndex;
 
-			if (!skipFrustumCulling &&
-				!activeCamera->IsAABBVisible(subMesh->GetAABB(), dynamicMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
+			//if (!skipFrustumCulling &&
+			//	!activeCamera->IsAABBVisible(subMesh->GetAABB(), dynamicMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) return;
 
-			if (countDrawCallsInner_) ++drawCallCount;
+			//if (countDrawCallsInner_) ++drawCallCount;
 
-			dynamicMeshInstance->PreRender(subMeshIndex, meshUnitRenderPassType);
-			dynamicMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
+			//dynamicMeshInstance->PreRender(subMeshIndex, meshUnitRenderPassType);
+			//dynamicMeshInstance->Render(subMeshIndex, meshUnitRenderPassType);
 
-			int facePointCount = subMesh->GetFaceCount() * 3;
-			GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
+			//int facePointCount = subMesh->GetFaceCount() * 3;
+			//GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
 		};
 
 	if (renderPassType != RenderPassType::Deferred)
@@ -965,24 +977,32 @@ void Renderer::AddInstancedStaticMeshToRenderer(InstancedStaticMesh* instancedSt
 
 void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 {
-	const std::vector<MeshUnit*>& subMeshes = meshInstance->GetMesh()->GetSubMeshes();
-	for (int subMeshIndex = 0; subMeshIndex < (int)subMeshes.size(); ++subMeshIndex)
+	MeshContainer<StaticMesh>* staticMeshContainer = meshInstance->GetMesh();
+	size_t LODCount = staticMeshContainer->GetLODCount();
+	for (size_t lodIndex = 0; lodIndex < LODCount; ++lodIndex)
 	{
-		StaticMeshRenderData renderData{ meshInstance, subMeshes[subMeshIndex], subMeshIndex };
-		const IMaterialBase* material = meshInstance->GetMaterial(subMeshIndex);
-		const MaterialBlendModel materialBlendModel = material ? material->GetBlendModel() : MaterialBlendModel::Opaque;
+		const StaticMesh* LODMesh = staticMeshContainer->GetLOD((int)lodIndex);
 
-		switch (materialBlendModel)
+		const std::vector<MeshUnit*>& subMeshes = LODMesh->GetSubMeshes();
+		size_t subMeshCount = subMeshes.size();
+		for (int subMeshIndex = 0; subMeshIndex < subMeshCount; ++subMeshIndex)
 		{
-		case MaterialBlendModel::Opaque:
-		case MaterialBlendModel::Masked:
-			opaqueStaticMeshRenderData_.push_back(renderData);
-			break;
-		case MaterialBlendModel::Transparent:
-			transparentStaticMeshRenderData_.push_back(renderData);
-			break;
-		default:
-			break;
+			StaticMeshRenderData renderData{ meshInstance, staticMeshContainer, subMeshIndex };
+			const IMaterialBase* material = meshInstance->GetMaterial(subMeshIndex);
+			const MaterialBlendModel materialBlendModel = material ? material->GetBlendModel() : MaterialBlendModel::Opaque;
+
+			switch (materialBlendModel)
+			{
+			case MaterialBlendModel::Opaque:
+			case MaterialBlendModel::Masked:
+				opaqueStaticMeshRenderData_.push_back(renderData);
+				break;
+			case MaterialBlendModel::Transparent:
+				transparentStaticMeshRenderData_.push_back(renderData);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
@@ -1008,26 +1028,26 @@ void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 
 void Renderer::AddInstancedStaticMeshInstance(InstancedStaticMeshInstance* instancedStaticMeshInstance)
 {
-	const std::vector<MeshUnit*>& subMeshes = instancedStaticMeshInstance->GetMesh()->GetSubMeshes();
-	for (int subMeshIndex = 0; subMeshIndex < (int)subMeshes.size(); ++subMeshIndex)
-	{
-		InstancedStaticMeshRenderData renderData{ instancedStaticMeshInstance, subMeshes[subMeshIndex], subMeshIndex };
-		const IMaterialBase* material = instancedStaticMeshInstance->GetMaterial(subMeshIndex);
-		const MaterialBlendModel materialBlendModel = material ? material->GetBlendModel() : MaterialBlendModel::Opaque;
+	//const std::vector<MeshUnit*>& subMeshes = instancedStaticMeshInstance->GetMesh()->GetSubMeshes();
+	//for (int subMeshIndex = 0; subMeshIndex < (int)subMeshes.size(); ++subMeshIndex)
+	//{
+	//	InstancedStaticMeshRenderData renderData{ instancedStaticMeshInstance, subMeshes[subMeshIndex], subMeshIndex };
+	//	const IMaterialBase* material = instancedStaticMeshInstance->GetMaterial(subMeshIndex);
+	//	const MaterialBlendModel materialBlendModel = material ? material->GetBlendModel() : MaterialBlendModel::Opaque;
 
-		switch (materialBlendModel)
-		{
-		case MaterialBlendModel::Opaque:
-		case MaterialBlendModel::Masked:
-			opaqueInstancedStaticMeshRenderData_.push_back(renderData);
-			break;
-		case MaterialBlendModel::Transparent:
-			transparentInstancedStaticMeshRenderData_.push_back(renderData);
-			break;
-		default:
-			break;
-		}
-	}
+	//	switch (materialBlendModel)
+	//	{
+	//	case MaterialBlendModel::Opaque:
+	//	case MaterialBlendModel::Masked:
+	//		opaqueInstancedStaticMeshRenderData_.push_back(renderData);
+	//		break;
+	//	case MaterialBlendModel::Transparent:
+	//		transparentInstancedStaticMeshRenderData_.push_back(renderData);
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//}
 }
 
 void Renderer::RemoveInstancedStaticMeshInstance(InstancedStaticMeshInstance* instancedStaticMeshInstance)
@@ -1060,26 +1080,26 @@ void Renderer::AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh)
 
 void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
 {
-	const std::vector<SkeletalMeshUnit*>& subMeshes = skeletalMeshInstance->GetMesh()->GetSubMeshes();
-	for (int subMeshIndex = 0; subMeshIndex < (int)subMeshes.size(); ++subMeshIndex)
-	{
-		SkeletalMeshRenderData renderData{ skeletalMeshInstance, subMeshes[subMeshIndex], subMeshIndex };
-		const IMaterialBase* material = skeletalMeshInstance->GetMaterial(subMeshIndex);
-		const MaterialBlendModel materialBlendModel = material ? material->GetBlendModel() : MaterialBlendModel::Opaque;
+	//const std::vector<SkeletalMeshUnit*>& subMeshes = skeletalMeshInstance->GetMesh()->GetSubMeshes();
+	//for (int subMeshIndex = 0; subMeshIndex < (int)subMeshes.size(); ++subMeshIndex)
+	//{
+	//	SkeletalMeshRenderData renderData{ skeletalMeshInstance, subMeshes[subMeshIndex], subMeshIndex };
+	//	const IMaterialBase* material = skeletalMeshInstance->GetMaterial(subMeshIndex);
+	//	const MaterialBlendModel materialBlendModel = material ? material->GetBlendModel() : MaterialBlendModel::Opaque;
 
-		switch (materialBlendModel)
-		{
-		case MaterialBlendModel::Opaque:
-		case MaterialBlendModel::Masked:
-			opaqueSkeletalMeshRenderData_.push_back(renderData);
-			break;
-		case MaterialBlendModel::Transparent:
-			transparentSkeletalMeshRenderData_.push_back(renderData);
-			break;
-		default:
-			break;
-		}
-	}
+	//	switch (materialBlendModel)
+	//	{
+	//	case MaterialBlendModel::Opaque:
+	//	case MaterialBlendModel::Masked:
+	//		opaqueSkeletalMeshRenderData_.push_back(renderData);
+	//		break;
+	//	case MaterialBlendModel::Transparent:
+	//		transparentSkeletalMeshRenderData_.push_back(renderData);
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//}
 }
 
 void Renderer::RemoveSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
@@ -1112,26 +1132,26 @@ void Renderer::AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh)
 
 void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
-	const std::vector<DynamicMeshUnit*>& subMeshes = dynamicMeshInstance->GetMesh()->GetSubMeshes();
-	for (int subMeshIndex = 0; subMeshIndex < (int)subMeshes.size(); ++subMeshIndex)
-	{
-		DynamicMeshRenderData renderData{ dynamicMeshInstance, subMeshes[subMeshIndex], subMeshIndex };
-		const IMaterialBase* material = dynamicMeshInstance->GetMaterial(subMeshIndex);
-		const MaterialBlendModel materialBlendModel = material ? material->GetBlendModel() : MaterialBlendModel::Opaque;
+	//const std::vector<DynamicMeshUnit*>& subMeshes = dynamicMeshInstance->GetMesh()->GetSubMeshes();
+	//for (int subMeshIndex = 0; subMeshIndex < (int)subMeshes.size(); ++subMeshIndex)
+	//{
+	//	DynamicMeshRenderData renderData{ dynamicMeshInstance, subMeshes[subMeshIndex], subMeshIndex };
+	//	const IMaterialBase* material = dynamicMeshInstance->GetMaterial(subMeshIndex);
+	//	const MaterialBlendModel materialBlendModel = material ? material->GetBlendModel() : MaterialBlendModel::Opaque;
 
-		switch (materialBlendModel)
-		{
-		case MaterialBlendModel::Masked:
-		case MaterialBlendModel::Opaque:
-			opaqueDynamicMeshRenderData_.push_back(renderData);
-			break;
-		case MaterialBlendModel::Transparent:
-			transparentDynamicMeshRenderData_.push_back(renderData);
-			break;
-		default:
-			break;
-		}
-	}
+	//	switch (materialBlendModel)
+	//	{
+	//	case MaterialBlendModel::Masked:
+	//	case MaterialBlendModel::Opaque:
+	//		opaqueDynamicMeshRenderData_.push_back(renderData);
+	//		break;
+	//	case MaterialBlendModel::Transparent:
+	//		transparentDynamicMeshRenderData_.push_back(renderData);
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//}
 }
 
 void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)

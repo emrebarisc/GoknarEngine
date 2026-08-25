@@ -265,6 +265,104 @@ bool Camera::IsAABBVisible(const Box& aabb, const Matrix& worldTransformationMat
 	return true;
 }
 
+float Camera::GetAABBFrameCoverage(const Box& aabb) const
+{
+	if (imageWidth_ <= 0 || imageHeight_ <= 0)
+	{
+		return 0.f;
+	}
+
+	const Vector3& min = aabb.GetMin();
+	const Vector3& max = aabb.GetMax();
+
+	if (min.x <= position_.x && position_.x <= max.x &&
+		min.y <= position_.y && position_.y <= max.y &&
+		min.z <= position_.z && position_.z <= max.z)
+	{
+		return 1.f;
+	}
+
+	const Vector4 corners[8] =
+	{
+		viewProjectionMatrix_ * Vector4(min.x, min.y, min.z, 1.f),
+		viewProjectionMatrix_ * Vector4(max.x, min.y, min.z, 1.f),
+		viewProjectionMatrix_ * Vector4(min.x, max.y, min.z, 1.f),
+		viewProjectionMatrix_ * Vector4(max.x, max.y, min.z, 1.f),
+		viewProjectionMatrix_ * Vector4(min.x, min.y, max.z, 1.f),
+		viewProjectionMatrix_ * Vector4(max.x, min.y, max.z, 1.f),
+		viewProjectionMatrix_ * Vector4(min.x, max.y, max.z, 1.f),
+		viewProjectionMatrix_ * Vector4(max.x, max.y, max.z, 1.f)
+	};
+
+	float minX = MAX_FLOAT;
+	float maxX = MIN_FLOAT;
+	float minY = MAX_FLOAT;
+	float maxY = MIN_FLOAT;
+	bool hasProjectedPoint = false;
+
+	auto includeProjectedPoint = [&](const Vector4& clipPosition)
+	{
+		if (clipPosition.w <= SMALLER_EPSILON)
+		{
+			return;
+		}
+
+		const float inverseW = 1.f / clipPosition.w;
+		const float x = clipPosition.x * inverseW;
+		const float y = clipPosition.y * inverseW;
+
+		minX = GoknarMath::Min(minX, x);
+		maxX = GoknarMath::Max(maxX, x);
+		minY = GoknarMath::Min(minY, y);
+		maxY = GoknarMath::Max(maxY, y);
+		hasProjectedPoint = true;
+	};
+
+	for (int i = 0; i < 8; ++i)
+	{
+		includeProjectedPoint(corners[i]);
+	}
+
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int axis = 0; axis < 3; ++axis)
+		{
+			const int axisBit = 1 << axis;
+			if ((i & axisBit) != 0)
+			{
+				continue;
+			}
+
+			const Vector4& start = corners[i];
+			const Vector4& end = corners[i | axisBit];
+			if ((start.w <= SMALLER_EPSILON) == (end.w <= SMALLER_EPSILON))
+			{
+				continue;
+			}
+
+			const float t = (SMALLER_EPSILON - start.w) / (end.w - start.w);
+			includeProjectedPoint(start + (end - start) * t);
+		}
+	}
+
+	if (!hasProjectedPoint ||
+		maxX <= -1.f || 1.f <= minX ||
+		maxY <= -1.f || 1.f <= minY)
+	{
+		return 0.f;
+	}
+
+	minX = GoknarMath::Clamp(minX, -1.f, 1.f);
+	maxX = GoknarMath::Clamp(maxX, -1.f, 1.f);
+	minY = GoknarMath::Clamp(minY, -1.f, 1.f);
+	maxY = GoknarMath::Clamp(maxY, -1.f, 1.f);
+
+	const float widthCoverage = (maxX - minX) * 0.5f;
+	const float heightCoverage = (maxY - minY) * 0.5f;
+
+	return GoknarMath::Clamp(widthCoverage * heightCoverage, 0.f, 1.f);
+}
+
 Vector2i Camera::GetScreenPositionOfWorldPosition(const Vector3& worldPosition)
 {
 	Vector4 screenPosition = viewProjectionMatrix_ * Vector4{ worldPosition, 1.f };

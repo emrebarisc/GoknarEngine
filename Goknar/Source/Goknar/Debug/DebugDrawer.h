@@ -15,7 +15,7 @@ class NonMovingTriangleMeshCollisionComponent;
 
 class MeshUnit;
 class ObjectBase;
-class StaticMesh;
+class StaticMeshContainer;
 
 class GOKNAR_API DebugObject : public ObjectBase
 {
@@ -56,7 +56,7 @@ public:
 protected:
 
 private:
-	static StaticMesh* lineMesh_;
-	static StaticMesh* arrowHeadMesh_;
+	static StaticMeshContainer* lineMesh_;
+	static StaticMeshContainer* arrowHeadMesh_;
 };
 #endif

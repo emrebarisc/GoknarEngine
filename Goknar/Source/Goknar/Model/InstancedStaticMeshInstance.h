@@ -2,9 +2,9 @@
 #define __INSTANCEDSTATICMESHINSTANCE_H__
 
 #include "IMeshInstance.h"
-#include "Model/InstancedStaticMesh.h"
+#include "Model/MeshContainer.h"
 
-class GOKNAR_API InstancedStaticMeshInstance : public IMeshInstance<InstancedStaticMesh>
+class GOKNAR_API InstancedStaticMeshInstance : public IMeshInstance<InstancedStaticMeshContainer>
 {
 public:
 	InstancedStaticMeshInstance() = delete;
@@ -12,7 +12,7 @@ public:
 
 	virtual ~InstancedStaticMeshInstance() {}
 
-	virtual void Render(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward) override;
+	virtual void Render(RenderPassType renderPassType, int subMeshIndex = 0, int LODIndex = 0) override;
 
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;

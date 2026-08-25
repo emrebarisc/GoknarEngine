@@ -1,10 +1,10 @@
 #ifndef __DYNAMICMESHINSTANCE_H__
 #define __DYNAMICMESHINSTANCE_H__
 
-#include "Model/DynamicMesh.h"
+#include "Model/MeshContainer.h"
 #include "IMeshInstance.h"
 
-class GOKNAR_API DynamicMeshInstance : public IMeshInstance<DynamicMesh>
+class GOKNAR_API DynamicMeshInstance : public IMeshInstance<DynamicMeshContainer>
 {
 public:
 	DynamicMeshInstance() = delete;
@@ -12,7 +12,7 @@ public:
 
 	virtual ~DynamicMeshInstance() {}
 
-	virtual void Render(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward) override;
+	virtual void Render(RenderPassType renderPassType, int subMeshIndex = 0, int LODIndex = 0) override;
 
 	void UpdateVertexDataAt(int meshIndex, int vertexIndex, const VertexData& newVertexData);
 

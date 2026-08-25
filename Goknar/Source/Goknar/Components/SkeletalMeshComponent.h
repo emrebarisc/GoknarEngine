@@ -6,7 +6,9 @@
 class SkeletalMesh;
 class SkeletalMeshInstance;
 
-class GOKNAR_API SkeletalMeshComponent : public MeshComponent<SkeletalMesh, SkeletalMeshInstance>
+using SkeletalMeshContainer = MeshContainer<SkeletalMesh>;
+
+class GOKNAR_API SkeletalMeshComponent : public MeshComponent<SkeletalMeshContainer, SkeletalMeshInstance>
 {
 public:
 	SkeletalMeshComponent() = delete;
@@ -15,7 +17,7 @@ public:
 	virtual ~SkeletalMeshComponent();
 	
 	Component* Clone() const override;
-	void SetMesh(SkeletalMesh* mesh) override;
+	void SetMesh(SkeletalMeshContainer* mesh) override;
 protected:
 private:
 };

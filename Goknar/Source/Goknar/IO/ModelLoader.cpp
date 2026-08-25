@@ -13,6 +13,7 @@
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Model/SkeletalMeshUnit.h"
 #include "Goknar/Model/StaticMesh.h"
+#include "Goknar/Model/MeshContainer.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Log.h"
@@ -183,6 +184,8 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node)
 
 Content* ModelLoader::LoadModel(const std::string& path)
 {
+	MeshContainer<StaticMesh>* meshContainer = new MeshContainer<StaticMesh>();
+
 	StaticMesh* staticMeshAsset = nullptr;
 	SkeletalMesh* skeletalMeshAsset = nullptr;
 
@@ -605,6 +608,11 @@ Content* ModelLoader::LoadModel(const std::string& path)
 				}
 				else if (staticMeshAsset)
 				{
+					if (subMesh.meshUnit->GetName().find("_LOD") != std::string::npos)
+					{
+						GOKNAR_INFO("%s", subMesh.meshUnit->GetName());
+					}
+
 					staticMeshAsset->AddMesh(subMesh.meshUnit);
 				}
 			}

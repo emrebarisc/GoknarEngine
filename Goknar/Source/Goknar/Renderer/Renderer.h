@@ -40,6 +40,9 @@ class RenderTarget;
 class DynamicMeshUnit;
 class SkeletalMeshUnit;
 
+template<class T>
+class MeshContainer;
+
 enum class GOKNAR_API RenderPassType : unsigned int
 {
 	None = 0b00000000,
@@ -249,28 +252,28 @@ private:
 	struct StaticMeshRenderData
 	{
 		StaticMeshInstance* meshInstance{ nullptr };
-		MeshUnit* meshUnit{ nullptr };
-		GEint subMeshIndex{ 0 };
+		MeshContainer<StaticMesh>* meshUnit{ nullptr };
+		int subMeshIndex{ 0 };
 	};
 
 	struct InstancedStaticMeshRenderData
 	{
 		InstancedStaticMeshInstance* meshInstance{ nullptr };
-		MeshUnit* meshUnit{ nullptr };
-		GEint subMeshIndex{ 0 };
+		MeshContainer<StaticMesh>* meshUnit{ nullptr };
+		int subMeshIndex{ 0 };
 	};
 
 	struct SkeletalMeshRenderData
 	{
 		SkeletalMeshInstance* meshInstance{ nullptr };
-		SkeletalMeshUnit* meshUnit{ nullptr };
-		GEint subMeshIndex{ 0 };
+		MeshContainer<SkeletalMesh>* meshUnit{ nullptr };
+		int subMeshIndex{ 0 };
 	};
 
 	struct DynamicMeshRenderData
 	{
 		DynamicMeshInstance* meshInstance{ nullptr };
-		DynamicMeshUnit* meshUnit{ nullptr };
+		MeshContainer<DynamicMesh>* meshUnit{ nullptr };
 		GEint subMeshIndex{ 0 };
 	};
 

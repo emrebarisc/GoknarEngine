@@ -104,6 +104,7 @@ public:
 
 	Vector2i GetScreenPositionOfWorldPosition(const Vector3& worldPosition);
 	Vector3 GetWorldDirectionAtPixel(const Vector2i& pixelCoordinate);
+	float GetAABBFrameCoverage(const Box& aabb) const;
 
 	Vector3 GetPosition() const
 	{

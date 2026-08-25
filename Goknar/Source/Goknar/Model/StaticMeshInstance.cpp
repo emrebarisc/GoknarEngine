@@ -11,9 +11,9 @@ StaticMeshInstance::StaticMeshInstance(RenderComponent* parentComponent) :
 
 }
 
-void StaticMeshInstance::Render(int subMeshIndex, RenderPassType renderPassType)
+void StaticMeshInstance::Render(RenderPassType renderPassType, int subMeshIndex, int LODIndex)
 {
-	IMeshInstance::Render(subMeshIndex, renderPassType);
+	IMeshInstance::Render(renderPassType, subMeshIndex, LODIndex);
 }
 
 void StaticMeshInstance::AddMeshInstanceToRenderer()

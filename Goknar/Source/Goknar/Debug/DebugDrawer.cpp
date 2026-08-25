@@ -11,6 +11,7 @@
 #include "Materials/MaterialInstance.h"
 #include "Math/GoknarMath.h"
 #include "Model/StaticMeshInstance.h"
+#include "Model/MeshContainer.h"
 #include "Physics/PhysicsUtils.h"
 
 #include "Physics/Components/BoxCollisionComponent.h"
@@ -19,14 +20,14 @@
 #include "Physics/Components/MovingTriangleMeshCollisionComponent.h"
 #include "Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 
-StaticMesh* DebugDrawer::lineMesh_ = nullptr;
-StaticMesh* DebugDrawer::arrowHeadMesh_ = nullptr;
+StaticMeshContainer* DebugDrawer::lineMesh_ = nullptr;
+StaticMeshContainer* DebugDrawer::arrowHeadMesh_ = nullptr;
 
 DebugDrawer::DebugDrawer()
 {
 #ifdef GOKNAR_BUILD_DEBUG
-	lineMesh_ = engine->GetResourceManager()->GetEngineContent<StaticMesh>("Debug/Meshes/SM_Line.fbx");
-	arrowHeadMesh_ = engine->GetResourceManager()->GetEngineContent<StaticMesh>("Debug/Meshes/SM_ArrowHead.fbx");
+	lineMesh_ = engine->GetResourceManager()->GetEngineContent<StaticMeshContainer>("Debug/Meshes/SM_Line.fbx");
+	arrowHeadMesh_ = engine->GetResourceManager()->GetEngineContent<StaticMeshContainer>("Debug/Meshes/SM_ArrowHead.fbx");
 #endif
 }
 
@@ -42,7 +43,7 @@ void DebugDrawer::DrawLine(const Vector3& start, const Vector3& end, const Color
 	lineStaticMeshComponent->SetMesh(lineMesh_);
 
 	StaticMeshInstance* lineMeshInstance = lineStaticMeshComponent->GetMeshInstance();
-	MaterialInstance* materialInstance = MaterialInstance::Create(lineMesh_->GetSubMeshes()[0]->GetMaterial());
+	MaterialInstance* materialInstance = MaterialInstance::Create(lineMesh_->GetLOD(0)->GetSubMeshes()[0]->GetMaterial());
 	materialInstance->SetBaseColor(color.ToVector4());
 	lineMeshInstance->SetMaterial(0, materialInstance);
 	lineMeshInstance->SetIsCastingShadow(false);
@@ -72,7 +73,7 @@ void DebugDrawer::DrawArrow(const Vector3& start, const Vector3& end, const Colo
 	arrowHeadStaticMeshComponent->SetMesh(arrowHeadMesh_);
 
 	StaticMeshInstance* arrowHeadMeshInstance = arrowHeadStaticMeshComponent->GetMeshInstance();
-	MaterialInstance* materialInstance = MaterialInstance::Create(arrowHeadMesh_->GetSubMeshes()[0]->GetMaterial());
+	MaterialInstance* materialInstance = MaterialInstance::Create(arrowHeadMesh_->GetLOD(0)->GetSubMeshes()[0]->GetMaterial());
 	materialInstance->SetBaseColor(color.ToVector4());
 	arrowHeadMeshInstance->SetMaterial(0, materialInstance);
 	arrowHeadMeshInstance->SetIsCastingShadow(false);

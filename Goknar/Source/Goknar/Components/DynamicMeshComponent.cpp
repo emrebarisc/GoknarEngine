@@ -2,7 +2,7 @@
 
 #include "DynamicMeshComponent.h"
 
-#include "Goknar/Model/DynamicMesh.h"
+#include "Goknar/Model/MeshContainer.h"
 #include "Goknar/Model/DynamicMeshInstance.h"
 #include "Goknar/Log.h"
 #include "Goknar/Model/IMeshInstance.h"
@@ -23,7 +23,7 @@ Component* DynamicMeshComponent::Clone() const
 	return clonedComponent;
 }
 
-void DynamicMeshComponent::SetMesh(DynamicMesh* mesh)
+void DynamicMeshComponent::SetMesh(DynamicMeshContainer* mesh)
 {
 	meshInstance_->SetMesh(mesh);
 }

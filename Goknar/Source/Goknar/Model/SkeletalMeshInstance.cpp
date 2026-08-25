@@ -59,7 +59,14 @@ void SkeletalMeshInstance::PrepareForTheCurrentFrame()
 		return;
 	}
 
-	mesh_->BuildRuntimeAnimationData();
+	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+
+	if (!LOD0)
+	{
+		return;
+	}
+
+	LOD0->BuildRuntimeAnimationData();
 
 	if (!hasGraphPose_)
 	{
@@ -77,7 +84,14 @@ void SkeletalMeshInstance::BuildMatricesAndUpdateSockets()
 		return;
 	}
 
-	const AnimationSkeleton& skeleton = mesh_->GetAnimationSkeleton();
+	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+
+	if (!LOD0)
+	{
+		return;
+	}
+
+	const AnimationSkeleton& skeleton = LOD0->GetAnimationSkeleton();
 	if (localPose_.localTransforms.size() != skeleton.bindLocalPose.size())
 	{
 		localPose_.SetToBindPose(skeleton.bindLocalPose);
@@ -139,9 +153,16 @@ void SkeletalMeshInstance::UpdateSocketsFromModelSpacePose()
 		return;
 	}
 
+	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+
+	if (!LOD0)
+	{
+		return;
+	}
+
 	for (const auto& socketPair : sockets_)
 	{
-		const int boneIndex = mesh_->FindBoneId(socketPair.first);
+		const int boneIndex = LOD0->FindBoneId(socketPair.first);
 		if (boneIndex < 0 || (size_t)boneIndex >= modelSpaceBoneTransformations_.size())
 		{
 			continue;
@@ -158,7 +179,14 @@ void SkeletalMeshInstance::SampleDirectAnimationToLocalPose()
 		return;
 	}
 
-	const AnimationSkeleton& skeleton = mesh_->GetAnimationSkeleton();
+	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+
+	if (!LOD0)
+	{
+		return;
+	}
+
+	const AnimationSkeleton& skeleton = LOD0->GetAnimationSkeleton();
 	if (!skeleton.IsValid())
 	{
 		return;
@@ -170,7 +198,7 @@ void SkeletalMeshInstance::SampleDirectAnimationToLocalPose()
 		return;
 	}
 
-	const AnimationClip* clip = mesh_->GetAnimationClip(skeletalMeshAnimation_.skeletalAnimation->name);
+	const AnimationClip* clip = LOD0->GetAnimationClip(skeletalMeshAnimation_.skeletalAnimation->name);
 	if (!clip)
 	{
 		localPose_.SetToBindPose(skeleton.bindLocalPose);
@@ -250,14 +278,14 @@ void SkeletalMeshInstance::PrepareForTheNextFrame()
 	}
 }
 
-void SkeletalMeshInstance::Render(int subMeshIndex, RenderPassType renderPassType)
+void SkeletalMeshInstance::Render(RenderPassType renderPassType, int subMeshIndex, int LODIndex/* = 0*/)
 {
-	SetRenderOperations(subMeshIndex, renderPassType);
+	SetRenderOperations(renderPassType, LODIndex, subMeshIndex);
 }
 
-void SkeletalMeshInstance::SetRenderOperations(int subMeshIndex, RenderPassType renderPassType)
+void SkeletalMeshInstance::SetRenderOperations(RenderPassType renderPassType, int subMeshIndex, int LODIndex/* = 0*/)
 {
-	const std::vector<SkeletalMeshUnit*>& subMeshes = mesh_->GetSubMeshes();
+	const std::vector<SkeletalMeshUnit*>& subMeshes = mesh_->GetLOD(LODIndex)->GetSubMeshes();
 	if (0 <= subMeshIndex && subMeshIndex < (int)subMeshes.size())
 	{
 		IMaterialBase* material = GetMaterial(subMeshIndex);
@@ -267,21 +295,23 @@ void SkeletalMeshInstance::SetRenderOperations(int subMeshIndex, RenderPassType 
 			shader->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
 		}
 	}
-	IMeshInstance::Render(subMeshIndex, renderPassType);
+	IMeshInstance::Render(renderPassType, subMeshIndex, LODIndex);
 }
 
-void SkeletalMeshInstance::SetMesh(SkeletalMesh* skeletalMesh)
+void SkeletalMeshInstance::SetMesh(SkeletalMeshContainer* skeletalMesh)
 {
 	IMeshInstance::SetMesh(skeletalMesh);
 
-	skeletalMesh->BuildRuntimeAnimationData();
-	boneTransformations_.resize(skeletalMesh->GetBoneSize(), Matrix::IdentityMatrix);
-	modelSpaceBoneTransformations_.resize(skeletalMesh->GetBoneSize(), Matrix::IdentityMatrix);
-	localPose_.SetToBindPose(skeletalMesh->GetAnimationSkeleton().bindLocalPose);
-	graphPose_.SetToBindPose(skeletalMesh->GetAnimationSkeleton().bindLocalPose);
-	crossfadePose_.SetToBindPose(skeletalMesh->GetAnimationSkeleton().bindLocalPose);
-	blendPoseA_.SetToBindPose(skeletalMesh->GetAnimationSkeleton().bindLocalPose);
-	blendPoseB_.SetToBindPose(skeletalMesh->GetAnimationSkeleton().bindLocalPose);
+	SkeletalMesh* LOD0 = skeletalMesh->GetLOD(0);
+
+	LOD0->BuildRuntimeAnimationData();
+	boneTransformations_.resize(LOD0->GetBoneSize(), Matrix::IdentityMatrix);
+	modelSpaceBoneTransformations_.resize(LOD0->GetBoneSize(), Matrix::IdentityMatrix);
+	localPose_.SetToBindPose(LOD0->GetAnimationSkeleton().bindLocalPose);
+	graphPose_.SetToBindPose(LOD0->GetAnimationSkeleton().bindLocalPose);
+	crossfadePose_.SetToBindPose(LOD0->GetAnimationSkeleton().bindLocalPose);
+	blendPoseA_.SetToBindPose(LOD0->GetAnimationSkeleton().bindLocalPose);
+	blendPoseB_.SetToBindPose(LOD0->GetAnimationSkeleton().bindLocalPose);
 }
 
 void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData/* = { false, {} }*/, const KeyframeData& keyframeData/* = {}*/)
@@ -293,7 +323,7 @@ void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, const
 		return;
 	}
 
-	SkeletalMesh* skeletalMesh = GetMesh();
+	SkeletalMesh* skeletalMesh = mesh_->GetLOD(0);
 	if (!skeletalMesh)
 	{
 		return;
@@ -321,12 +351,19 @@ void SkeletalMeshInstance::EvaluateAnimationGraph(AnimationGraph& animationGraph
 		return;
 	}
 
-	mesh_->BuildRuntimeAnimationData();
+	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+
+	if (!LOD0)
+	{
+		return;
+	}
+
+	LOD0->BuildRuntimeAnimationData();
 
 	const std::shared_ptr<AnimationNode>& currentNode = animationGraph.GetCurrentNode();
 	if (!currentNode)
 	{
-		localPose_.SetToBindPose(mesh_->GetAnimationSkeleton().bindLocalPose);
+		localPose_.SetToBindPose(LOD0->GetAnimationSkeleton().bindLocalPose);
 		hasGraphPose_ = true;
 		graphPoseWasUpdatedThisFrame_ = true;
 		return;
@@ -351,9 +388,16 @@ void SkeletalMeshInstance::EvaluateAnimationGraph(AnimationGraph& animationGraph
 
 void SkeletalMeshInstance::EvaluateAnimationNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
 {
+	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+
+	if (!LOD0)
+	{
+		return;
+	}
+
 	if (!node)
 	{
-		outPose.SetToBindPose(mesh_->GetAnimationSkeleton().bindLocalPose);
+		outPose.SetToBindPose(LOD0->GetAnimationSkeleton().bindLocalPose);
 		return;
 	}
 
@@ -374,9 +418,16 @@ void SkeletalMeshInstance::EvaluateAnimationNode(AnimationGraph& animationGraph,
 
 void SkeletalMeshInstance::EvaluateClipNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
 {
-	const AnimationSkeleton& skeleton = mesh_->GetAnimationSkeleton();
+	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+
+	if (!LOD0)
+	{
+		return;
+	}
+
+	const AnimationSkeleton& skeleton = LOD0->GetAnimationSkeleton();
 	AnimationNodeRuntimeData& runtimeData = animationGraph.GetRuntimeData(node);
-	const AnimationClip* clip = mesh_->GetAnimationClip(node->animationName);
+	const AnimationClip* clip = LOD0->GetAnimationClip(node->animationName);
 	if (!clip)
 	{
 		runtimeData.finished = true;
@@ -404,7 +455,14 @@ void SkeletalMeshInstance::EvaluateClipNode(AnimationGraph& animationGraph, Anim
 
 void SkeletalMeshInstance::EvaluateBlendSpace1DNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
 {
-	const AnimationSkeleton& skeleton = mesh_->GetAnimationSkeleton();
+	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+
+	if (!LOD0)
+	{
+		return;
+	}
+
+	const AnimationSkeleton& skeleton = LOD0->GetAnimationSkeleton();
 	AnimationNodeRuntimeData& runtimeData = animationGraph.GetRuntimeData(node);
 	if (node->blendSpace1DPoints.empty())
 	{
@@ -468,8 +526,8 @@ void SkeletalMeshInstance::EvaluateBlendSpace1DNode(AnimationGraph& animationGra
 		}
 	}
 
-	const AnimationClip* firstClip = mesh_->GetAnimationClip(firstPoint->animationName);
-	const AnimationClip* secondClip = mesh_->GetAnimationClip(secondPoint->animationName);
+	const AnimationClip* firstClip = LOD0->GetAnimationClip(firstPoint->animationName);
+	const AnimationClip* secondClip = LOD0->GetAnimationClip(secondPoint->animationName);
 	if (!firstClip && !secondClip)
 	{
 		runtimeData.finished = true;
@@ -522,7 +580,14 @@ void SkeletalMeshInstance::EvaluateBlendSpace1DNode(AnimationGraph& animationGra
 
 void SkeletalMeshInstance::EvaluateBlendSpace2DNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
 {
-	const AnimationSkeleton& skeleton = mesh_->GetAnimationSkeleton();
+	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+
+	if (!LOD0)
+	{
+		return;
+	}
+
+	const AnimationSkeleton& skeleton = LOD0->GetAnimationSkeleton();
 	AnimationNodeRuntimeData& runtimeData = animationGraph.GetRuntimeData(node);
 	if (node->blendSpace2DPoints.empty())
 	{
@@ -568,7 +633,7 @@ void SkeletalMeshInstance::EvaluateBlendSpace2DNode(AnimationGraph& animationGra
 
 	for (const BlendSpace2DPoint& point : node->blendSpace2DPoints)
 	{
-		const AnimationClip* clip = mesh_->GetAnimationClip(point.animationName);
+		const AnimationClip* clip = LOD0->GetAnimationClip(point.animationName);
 		if (!clip)
 		{
 			continue;
@@ -670,7 +735,14 @@ void SkeletalMeshInstance::AttachBoneToMatrixPointer(const BoneToMatrixBinder& b
 		return;
 	}
 
-	const int boneId = GetMesh()->FindBoneId(binder.boneName);
+	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+
+	if (!LOD0)
+	{
+		return;
+	}
+
+	const int boneId = LOD0->FindBoneId(binder.boneName);
 	if (boneId < 0)
 	{
 		return;
@@ -698,7 +770,14 @@ void SkeletalMeshInstance::RemoveBoneToMatrixPointer(const std::string& boneName
 		return;
 	}
 
-	const int boneId = GetMesh()->FindBoneId(boneName);
+	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+
+	if (!LOD0)
+	{
+		return;
+	}
+
+	const int boneId = LOD0->FindBoneId(boneName);
 	if (boneId < 0)
 	{
 		return;

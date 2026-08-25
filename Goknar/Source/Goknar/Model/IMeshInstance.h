@@ -12,6 +12,7 @@
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Model/SkeletalMesh.h"
+#include "Goknar/Model/MeshContainer.h"
 
 #include "Goknar/Renderer/Renderer.h"
 
@@ -64,8 +65,8 @@ public:
 
 	inline void SetMaterial(int index, MaterialInstance* material);
 
-	inline virtual void PreRender(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward);
-	inline virtual void Render(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward);
+	inline virtual void PreRender(RenderPassType renderPassType, int subMeshIndex = 0, int LODIndex = 0);
+	inline virtual void Render(RenderPassType renderPassType, int subMeshIndex = 0, int LODIndex = 0);
 
 	inline void SetIsRendered(bool isRendered)
 	{
@@ -110,7 +111,7 @@ public:
 
 		if (!material)
 		{
-			material = mesh_->GetMesh(index)->GetMaterial();
+			material = mesh_->GetLOD(0)->GetMesh(index)->GetMaterial();
 		}
 
 		return material;
@@ -170,8 +171,8 @@ inline void IMeshInstance<MeshType>::SetMaterial(int index, MaterialInstance* ma
 		return;
 	}
 
-	const IMaterialBase* previousMaterial = materials_[index] ? static_cast<IMaterialBase*>(materials_[index]) : static_cast<IMaterialBase*>(mesh_->GetMesh(index)->GetMaterial());
-	const IMaterialBase* nextMaterial = material ? static_cast<IMaterialBase*>(material) : static_cast<IMaterialBase*>(mesh_->GetMesh(index)->GetMaterial());
+	const IMaterialBase* previousMaterial = materials_[index] ? static_cast<IMaterialBase*>(materials_[index]) : static_cast<IMaterialBase*>(mesh_->GetLOD(0)->GetMesh(index)->GetMaterial());
+	const IMaterialBase* nextMaterial = material ? static_cast<IMaterialBase*>(material) : static_cast<IMaterialBase*>(mesh_->GetLOD(0)->GetMesh(index)->GetMaterial());
 	const bool refreshInstanceOnRenderer =
 		previousMaterial != nullptr &&
 		nextMaterial != nullptr &&
@@ -193,9 +194,10 @@ inline void IMeshInstance<MeshType>::SetMaterial(int index, MaterialInstance* ma
 }
 
 template<class MeshType>
-inline void IMeshInstance<MeshType>::PreRender(int subMeshIndex, RenderPassType renderPassType)
+inline void IMeshInstance<MeshType>::PreRender(RenderPassType renderPassType, int subMeshIndex, int LODIndex/* = 0*/)
 {
-	const auto& subMeshes = mesh_->GetSubMeshes();
+	auto LOD = mesh_->GetLOD(LODIndex);
+	auto& subMeshes = LOD->GetSubMeshes();
 
 	IMaterialBase* material = materials_[subMeshIndex];
 
@@ -211,9 +213,9 @@ inline void IMeshInstance<MeshType>::PreRender(int subMeshIndex, RenderPassType 
 }
 
 template<class MeshType>
-inline void IMeshInstance<MeshType>::Render(int subMeshIndex, RenderPassType renderPassType)
+inline void IMeshInstance<MeshType>::Render(RenderPassType renderPassType, int subMeshIndex, int LODIndex/* = 0*/)
 {
-	const auto& subMeshes = mesh_->GetSubMeshes();
+	const auto& subMeshes = mesh_->GetLOD(LODIndex)->GetSubMeshes();
 
 	IMaterialBase* material = materials_[subMeshIndex];
 
@@ -238,7 +240,7 @@ inline void IMeshInstance<MeshType>::SetMesh(MeshType* mesh)
 
 	mesh_ = mesh;
 
-	materials_.resize(mesh_->GetSubMeshes().size(), nullptr);
+	materials_.resize(mesh_->GetLOD(0)->GetSubMeshes().size(), nullptr);
 
 	if (!isInitialized_)
 	{
