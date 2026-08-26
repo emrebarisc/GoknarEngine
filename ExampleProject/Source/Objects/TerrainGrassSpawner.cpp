@@ -16,6 +16,7 @@
 #include "Goknar/Math/Matrix.h"
 #include "Goknar/Model/InstancedStaticMesh.h"
 #include "Goknar/Model/InstancedStaticMeshInstance.h"
+#include "Goknar/Model/MeshContainer.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 #include "Goknar/Physics/PhysicsWorld.h"
@@ -94,6 +95,26 @@ namespace
 		}
 	}
 
+	InstancedStaticMeshContainer* CreateInstancedStaticMeshContainer(const StaticMesh* sourceMesh, const std::string& path)
+	{
+		InstancedStaticMesh* instancedStaticMesh = InstancedStaticMesh::CreateFromStaticMesh(sourceMesh, path);
+		if (!instancedStaticMesh)
+		{
+			return nullptr;
+		}
+
+		InstancedStaticMeshContainer* instancedStaticMeshContainer = new InstancedStaticMeshContainer();
+		instancedStaticMeshContainer->SetPath(instancedStaticMesh->GetPath());
+		instancedStaticMeshContainer->AddLOD(LODSetting<InstancedStaticMesh>{ instancedStaticMesh, MAX_FLOAT });
+
+		if (engine && engine->GetResourceManager())
+		{
+			engine->GetResourceManager()->GetResourceContainer()->AddMesh(instancedStaticMeshContainer);
+		}
+
+		return instancedStaticMeshContainer;
+	}
+
 	int Hash(int x, int y, int seed) {
 		unsigned int n = (x * 374761393U) ^ (y * 668265263U) ^ (seed * 1274126177U);
 		n = (n ^ (n >> 13)) * 1274126177U;
@@ -155,31 +176,35 @@ TerrainGrassSpawner::TerrainGrassSpawner() : ObjectBase()
 {
 	grassInstancedStaticMeshComponent_ = AddSubComponent<InstancedStaticMeshComponent>();
 
-	StaticMesh* grassStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/Plants/SM_Grass.fbx");
+	StaticMeshContainer* grassStaticMeshContainer = engine->GetResourceManager()->GetContent<StaticMeshContainer>("Meshes/Plants/SM_Grass.fbx");
+	StaticMesh* grassStaticMesh = grassStaticMeshContainer ? grassStaticMeshContainer->GetLOD(0) : nullptr;
 	if (grassInstancedStaticMeshComponent_ && grassStaticMesh)
 	{
-		InstancedStaticMesh* instancedGrassMesh = InstancedStaticMesh::CreateFromStaticMesh(
+		InstancedStaticMeshContainer* instancedGrassMeshContainer = CreateInstancedStaticMeshContainer(
 			grassStaticMesh,
 			grassStaticMesh->GetPath() + "::TerrainGrassSpawner_" + std::to_string(terrainGrassMeshIdentifier++));
-		if (instancedGrassMesh)
+		if (instancedGrassMeshContainer)
 		{
+			InstancedStaticMesh* instancedGrassMesh = instancedGrassMeshContainer->GetLOD(0);
 			ApplyMaterialPathsToInstancedStaticMesh(instancedGrassMesh, AssetParser::GetMeshMaterialPaths("Meshes/Plants/SM_Grass.fbx"));
-			grassInstancedStaticMeshComponent_->SetMesh(instancedGrassMesh);
+			grassInstancedStaticMeshComponent_->SetMesh(instancedGrassMeshContainer);
 		}
 	}
 
 	treeInstancedStaticMeshComponent_ = AddSubComponent<InstancedStaticMeshComponent>();
 
-	StaticMesh* treeStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_TreeBirch_01_Red.FBX");
+	StaticMeshContainer* treeStaticMeshContainer = engine->GetResourceManager()->GetContent<StaticMeshContainer>("Meshes/SM_TreeBirch_01_Red.FBX");
+	StaticMesh* treeStaticMesh = treeStaticMeshContainer ? treeStaticMeshContainer->GetLOD(0) : nullptr;
 	if (treeInstancedStaticMeshComponent_ && treeStaticMesh)
 	{
-		InstancedStaticMesh* instancedTreeMesh = InstancedStaticMesh::CreateFromStaticMesh(
+		InstancedStaticMeshContainer* instancedTreeMeshContainer = CreateInstancedStaticMeshContainer(
 			treeStaticMesh,
 			treeStaticMesh->GetPath() + "::TerrainTreeSpawner_" + std::to_string(terrainGrassMeshIdentifier++));
-		if (instancedTreeMesh)
+		if (instancedTreeMeshContainer)
 		{
+			InstancedStaticMesh* instancedTreeMesh = instancedTreeMeshContainer->GetLOD(0);
 			ApplyMaterialPathsToInstancedStaticMesh(instancedTreeMesh, AssetParser::GetMeshMaterialPaths("Meshes/SM_TreeBirch_01_Red.FBX"));
-			treeInstancedStaticMeshComponent_->SetMesh(instancedTreeMesh);
+			treeInstancedStaticMeshComponent_->SetMesh(instancedTreeMeshContainer);
 		}
 	}
 
@@ -196,10 +221,12 @@ void TerrainGrassSpawner::BeginGame()
 	}
 
 	InstancedStaticMeshInstance* grassMeshInstance = grassInstancedStaticMeshComponent_->GetMeshInstance();
-	InstancedStaticMesh* instancedGrassMesh = grassMeshInstance ? grassMeshInstance->GetMesh() : nullptr;
+	InstancedStaticMeshContainer* instancedGrassMeshContainer = grassMeshInstance ? grassMeshInstance->GetMesh() : nullptr;
+	InstancedStaticMesh* instancedGrassMesh = instancedGrassMeshContainer ? instancedGrassMeshContainer->GetLOD(0) : nullptr;
 
 	InstancedStaticMeshInstance* treeMeshInstance = treeInstancedStaticMeshComponent_->GetMeshInstance();
-	InstancedStaticMesh* instancedTreeMesh = treeMeshInstance ? treeMeshInstance->GetMesh() : nullptr;
+	InstancedStaticMeshContainer* instancedTreeMeshContainer = treeMeshInstance ? treeMeshInstance->GetMesh() : nullptr;
+	InstancedStaticMesh* instancedTreeMesh = instancedTreeMeshContainer ? instancedTreeMeshContainer->GetLOD(0) : nullptr;
 
 	if (!instancedGrassMesh || !instancedTreeMesh || instancedGrassMesh->GetInstanceCount() > 0 || instancedTreeMesh->GetInstanceCount() > 0)
 	{

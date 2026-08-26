@@ -133,6 +133,15 @@
             <MaterialPath>Materials/Environment/M_Grass</MaterialPath>
         </Mesh>
         <Mesh>
+            <Path>Meshes/Environment/Plants/SM_GrassPatch.fbx</Path>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/Environment/Rocks/SM_Boulder_01.fbx</Path>
+            <LODs>
+                <LOD Index="1" FrameCoverage="0.25"/>
+            </LODs>
+        </Mesh>
+        <Mesh>
             <Path>Meshes/Environment/Trees/SM_TreeBirch_01_Red.FBX</Path>
             <MaterialPaths>
                 <MaterialPath>Materials/Environment/Trees/M_TreeLeaves</MaterialPath>

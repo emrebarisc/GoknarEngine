@@ -16,6 +16,7 @@
 
 #include "Goknar/Animation/AnimationGraph.h"
 #include "Goknar/Animation/AnimationDeserializer.h"
+#include "Goknar/Model/MeshContainer.h"
 
 #include "Goknar/Debug/DebugDrawer.h"
 
@@ -85,7 +86,7 @@ AICharacter::AICharacter() :
 	capsuleCollisionComponent_->SetHeight(0.9f);
 	capsuleCollisionComponent_->SetCollisionGroup(GetCollisionGroup());
 
-	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/Characters/SK_DefaultCharacter.fbx");
+	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMeshContainer>("Meshes/Characters/SK_DefaultCharacter.fbx");
 
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
 	skeletalMeshComponent_->SetParent(GetRootComponent());

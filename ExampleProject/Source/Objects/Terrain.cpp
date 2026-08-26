@@ -3,12 +3,14 @@
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Managers/ResourceManager.h"
+#include "Goknar/Model/MeshContainer.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 
 Terrain::Terrain() : RigidBody()
 {
-	StaticMesh* terrainStaticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Terrain.fbx");
+	StaticMeshContainer* terrainStaticMeshContainer = engine->GetResourceManager()->GetContent<StaticMeshContainer>("Meshes/SM_Terrain.fbx");
+	StaticMesh* terrainStaticMesh = terrainStaticMeshContainer ? terrainStaticMeshContainer->GetLOD(0) : nullptr;
 
 	if (terrainStaticMesh)
 	{
@@ -22,7 +24,7 @@ Terrain::Terrain() : RigidBody()
 		staticMeshComponent_ = AddSubComponent<StaticMeshComponent>();
 		if (staticMeshComponent_)
 		{
-			staticMeshComponent_->SetMesh(terrainStaticMesh);
+			staticMeshComponent_->SetMesh(terrainStaticMeshContainer);
 		}
 	}
 

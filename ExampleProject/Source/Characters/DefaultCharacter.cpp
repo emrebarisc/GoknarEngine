@@ -11,6 +11,7 @@
 #include "Goknar/Components/SkeletalMeshComponent.h"
 #include "Goknar/Components/SocketComponent.h"
 #include "Goknar/Managers/ResourceManager.h"
+#include "Goknar/Model/MeshContainer.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Objects/PlayerStart.h"
 #include "Goknar/Physics/PhysicsWorld.h"
@@ -43,7 +44,7 @@ DefaultCharacter::DefaultCharacter() :
 
 	controller_ = new DefaultCharacterController(this);
 
-	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/Characters/SK_DefaultCharacter.fbx");
+	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMeshContainer>("Meshes/Characters/SK_DefaultCharacter.fbx");
 
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
 	skeletalMeshComponent_->SetParent(GetRootComponent());

@@ -2,6 +2,7 @@
 
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Managers/ResourceManager.h"
+#include "Goknar/Model/MeshContainer.h"
 #include "Goknar/Physics/Components/SphereCollisionComponent.h"
 
 Bullet::Bullet()
@@ -9,7 +10,7 @@ Bullet::Bullet()
 	SphereCollisionComponent* sphereCollisionComponent = AddSubComponent<SphereCollisionComponent>();
 	sphereCollisionComponent->SetRadius(0.05f);
 
-	StaticMesh* staticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Bullet.fbx");
+	StaticMeshContainer* staticMesh = engine->GetResourceManager()->GetContent<StaticMeshContainer>("Meshes/SM_Bullet.fbx");
 
 	StaticMeshComponent* staticMeshComponent = AddSubComponent<StaticMeshComponent>();
 	staticMeshComponent->SetMesh(staticMesh);

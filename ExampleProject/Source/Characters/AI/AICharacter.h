@@ -2,10 +2,11 @@
 
 #include "Characters/BaseCharacter.h"
 
+#include "Goknar/Model/MeshContainer.h"
+
 struct AnimationState;
 struct AnimationGraph;
 class CameraComponent;
-class SkeletalMesh;
 
 class SocketComponent;
 class Weapon;
@@ -33,7 +34,7 @@ protected:
 private:
 	Weapon* weapon_{ nullptr };
 
-	SkeletalMesh* skeletalMesh_{ nullptr };
+	SkeletalMeshContainer* skeletalMesh_{ nullptr };
 
 	AnimationGraph* animationGraph_{ nullptr };
 

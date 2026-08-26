@@ -301,9 +301,9 @@
         </PlayerStart>
         <RigidBody>
             <Name>DynamicBody</Name>
-            <WorldPosition>-0.683006 0.726632 0.624999</WorldPosition>
-            <WorldRotation>17.216074 90.000000 12.718249</WorldRotation>
-            <Mass>5</Mass>
+            <WorldPosition>-0.682287 -0.236004 1.625000</WorldPosition>
+            <WorldRotation>89.999939 0.000000 -20.192553</WorldRotation>
+            <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
@@ -319,9 +319,9 @@
         </RigidBody>
         <RigidBody>
             <Name>DynamicBody</Name>
-            <WorldPosition>0.732296 0.967830 0.625000</WorldPosition>
-            <WorldRotation>-89.999939 -0.000007 -3.175164</WorldRotation>
-            <Mass>5</Mass>
+            <WorldPosition>0.596021 -0.118811 1.625000</WorldPosition>
+            <WorldRotation>-89.999962 -0.000007 7.656304</WorldRotation>
+            <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
@@ -337,9 +337,9 @@
         </RigidBody>
         <RigidBody>
             <Name>DynamicBody</Name>
-            <WorldPosition>-2.164346 0.706986 0.625000</WorldPosition>
-            <WorldRotation>-89.999916 -0.000007 0.604696</WorldRotation>
-            <Mass>5</Mass>
+            <WorldPosition>-0.036007 0.084117 2.625000</WorldPosition>
+            <WorldRotation>-89.999977 -0.000007 34.441250</WorldRotation>
+            <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
@@ -355,9 +355,9 @@
         </RigidBody>
         <RigidBody>
             <Name>DynamicBody</Name>
-            <WorldPosition>1.486715 -0.097160 0.625000</WorldPosition>
-            <WorldRotation>-0.000044 0.000000 3.872066</WorldRotation>
-            <Mass>5</Mass>
+            <WorldPosition>1.109206 -0.092034 0.625000</WorldPosition>
+            <WorldRotation>0.000000 0.000000 -11.192528</WorldRotation>
+            <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
@@ -373,9 +373,9 @@
         </RigidBody>
         <RigidBody>
             <Name>DynamicBody</Name>
-            <WorldPosition>0.280239 -0.299633 0.625000</WorldPosition>
-            <WorldRotation>-0.000027 0.000000 0.467326</WorldRotation>
-            <Mass>5</Mass>
+            <WorldPosition>-0.117206 -0.294722 0.625000</WorldPosition>
+            <WorldRotation>0.000000 0.000000 11.766459</WorldRotation>
+            <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
@@ -391,9 +391,9 @@
         </RigidBody>
         <RigidBody>
             <Name>DynamicBody</Name>
-            <WorldPosition>-1.279885 -0.363538 0.625000</WorldPosition>
-            <WorldRotation>0.000044 -0.000007 5.104458</WorldRotation>
-            <Mass>5</Mass>
+            <WorldPosition>-1.272394 -0.368650 0.625000</WorldPosition>
+            <WorldRotation>0.000044 -0.000007 -1.709554</WorldRotation>
+            <Mass>0</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
@@ -427,7 +427,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>81.948120 99.650352 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -18.327599</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -18.327597</EulerRotation>
                             <Scaling>1.084963 1.084963 1.084963</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -442,17 +442,17 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>85.253815 98.950798 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 62.551884</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 62.551861</EulerRotation>
                             <Scaling>1.278940 1.278940 1.278940</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>81.277069 98.921036 0.125214</Translation>
-                            <EulerRotation>0.000000 0.000000 -97.039093</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -97.039101</EulerRotation>
                             <Scaling>0.876024 0.876024 0.876024</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>85.988220 99.137459 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 88.909767</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 88.909744</EulerRotation>
                             <Scaling>0.811835 0.811835 0.811836</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -487,7 +487,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>81.025002 99.723061 0.125214</Translation>
-                            <EulerRotation>0.000000 0.000000 98.003258</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 98.003273</EulerRotation>
                             <Scaling>1.441397 1.441397 1.441397</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -517,7 +517,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>81.966797 98.155907 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 20.291601</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 20.291595</EulerRotation>
                             <Scaling>0.838568 0.838568 0.838568</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -552,7 +552,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>86.624008 99.083176 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -99.542999</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -99.543015</EulerRotation>
                             <Scaling>0.993688 0.993688 0.993688</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -577,7 +577,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>87.171646 99.423676 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -65.910736</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -65.910751</EulerRotation>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>89.569443 97.357239 0.125000</Translation>
@@ -646,7 +646,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>82.404984 96.842735 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 95.848053</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 95.848038</EulerRotation>
                             <Scaling>1.413438 1.413438 1.413438</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -672,7 +672,7 @@
                     <InstanceTransformations>
                         <InstanceTransformation>
                             <Translation>82.243912 95.208908 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 111.271774</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 111.271759</EulerRotation>
                             <Scaling>0.852769 0.852769 0.852769</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -739,7 +739,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>84.334770 17.061966 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -51.481071</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -51.481075</EulerRotation>
                             <Scaling>1.426739 1.426739 1.426739</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -749,7 +749,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>83.573082 13.564757 0.125244</Translation>
-                            <EulerRotation>0.000000 0.000000 -14.322485</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -14.322482</EulerRotation>
                             <Scaling>1.304347 1.304347 1.304347</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -774,7 +774,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>81.676208 14.864328 0.125275</Translation>
-                            <EulerRotation>0.000000 0.000000 72.240814</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 72.240837</EulerRotation>
                             <Scaling>1.379710 1.379710 1.379710</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -904,7 +904,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>83.572479 12.077761 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 107.395798</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 107.395790</EulerRotation>
                             <Scaling>1.142593 1.142593 1.142593</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -944,7 +944,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>82.924995 13.108622 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -146.842758</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -146.842728</EulerRotation>
                             <Scaling>1.374212 1.374212 1.374212</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -959,7 +959,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>80.917618 10.075465 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 60.176258</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 60.176254</EulerRotation>
                             <Scaling>0.977815 0.977815 0.977815</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -969,7 +969,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>83.949356 10.561314 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 83.751831</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 83.751839</EulerRotation>
                             <Scaling>1.128945 1.128945 1.128945</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -983,7 +983,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>82.997719 8.842642 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -54.851357</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -54.851360</EulerRotation>
                             <Scaling>1.411454 1.411454 1.411454</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1023,7 +1023,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>82.233276 10.150446 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 25.862310</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 25.862312</EulerRotation>
                             <Scaling>1.259753 1.259753 1.259753</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1058,7 +1058,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>81.898346 6.162183 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -20.036676</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -20.036680</EulerRotation>
                             <Scaling>0.904860 0.904860 0.904860</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1078,7 +1078,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>86.250031 8.249336 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 20.100517</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 20.100519</EulerRotation>
                             <Scaling>0.782300 0.782300 0.782300</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1122,7 +1122,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>85.650436 3.716502 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -34.630821</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -34.630814</EulerRotation>
                             <Scaling>1.242986 1.242986 1.242986</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1157,7 +1157,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>88.146561 6.445542 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -67.989807</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -67.989830</EulerRotation>
                             <Scaling>1.087780 1.087780 1.087780</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1192,7 +1192,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>85.977974 3.392410 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 99.989395</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 99.989380</EulerRotation>
                             <Scaling>1.055516 1.055516 1.055516</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1267,7 +1267,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>88.269501 5.527670 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -19.838959</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -19.838957</EulerRotation>
                             <Scaling>1.493457 1.493457 1.493457</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1297,7 +1297,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>90.868423 7.952370 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -117.025612</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -117.025635</EulerRotation>
                             <Scaling>0.899192 0.899192 0.899192</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1377,7 +1377,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>89.822960 7.698682 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -35.992188</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -35.992176</EulerRotation>
                             <Scaling>1.477143 1.477143 1.477143</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1427,7 +1427,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>88.015877 12.620077 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 13.781557</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 13.781560</EulerRotation>
                             <Scaling>1.300440 1.300440 1.300440</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1452,7 +1452,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>87.695282 11.951200 0.125214</Translation>
-                            <EulerRotation>0.000000 0.000000 25.993935</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 25.993937</EulerRotation>
                             <Scaling>0.837148 0.837148 0.837148</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1462,7 +1462,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>88.987930 13.584641 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -112.511040</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -112.511032</EulerRotation>
                             <Scaling>0.779279 0.779279 0.779279</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1472,12 +1472,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>86.885101 11.958818 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -76.991272</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -76.991264</EulerRotation>
                             <Scaling>1.029156 1.029156 1.029156</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>87.082611 14.871769 0.125214</Translation>
-                            <EulerRotation>0.000000 0.000000 136.679794</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 136.679779</EulerRotation>
                             <Scaling>1.018382 1.018382 1.018382</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1497,7 +1497,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>87.962074 11.160715 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 118.631927</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 118.631912</EulerRotation>
                             <Scaling>0.860646 0.860646 0.860646</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1507,7 +1507,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>90.642822 13.170055 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -32.926285</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -32.926289</EulerRotation>
                             <Scaling>0.883245 0.883245 0.883245</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1532,7 +1532,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>88.064354 17.148058 0.125244</Translation>
-                            <EulerRotation>0.000000 0.000000 32.958157</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 32.958160</EulerRotation>
                             <Scaling>1.472715 1.472715 1.472715</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1572,7 +1572,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>89.825134 18.023674 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -25.307096</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -25.307095</EulerRotation>
                             <Scaling>1.201087 1.201087 1.201087</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1632,7 +1632,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>91.766479 14.311642 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -48.786034</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -48.786030</EulerRotation>
                             <Scaling>1.170609 1.170609 1.170609</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1657,7 +1657,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>90.466339 13.672005 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -115.413200</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -115.413193</EulerRotation>
                             <Scaling>1.384707 1.384707 1.384707</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1667,7 +1667,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>91.672699 19.239305 0.125214</Translation>
-                            <EulerRotation>0.000000 0.000000 86.459320</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 86.459328</EulerRotation>
                             <Scaling>1.201664 1.201664 1.201664</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1707,7 +1707,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>93.784836 18.998268 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 15.826642</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 15.826646</EulerRotation>
                             <Scaling>1.162948 1.162948 1.162948</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1717,7 +1717,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>91.531624 14.788718 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -78.288391</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -78.288368</EulerRotation>
                             <Scaling>1.380917 1.380917 1.380917</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1727,7 +1727,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>90.485802 17.739380 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -31.200539</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -31.200546</EulerRotation>
                             <Scaling>1.083474 1.083474 1.083474</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1757,7 +1757,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>96.417641 16.558472 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -116.047752</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -116.047775</EulerRotation>
                             <Scaling>1.289467 1.289467 1.289467</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1787,12 +1787,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>93.520866 17.019772 0.125244</Translation>
-                            <EulerRotation>0.000000 0.000000 -61.975761</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -61.975769</EulerRotation>
                             <Scaling>1.458836 1.458836 1.458836</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>93.087013 15.312149 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -8.619308</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -8.619306</EulerRotation>
                             <Scaling>1.122575 1.122575 1.122575</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1807,7 +1807,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>96.173615 17.859827 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 116.971069</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 116.971100</EulerRotation>
                             <Scaling>0.877458 0.877458 0.877458</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1822,12 +1822,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>96.864990 15.663000 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 128.299713</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 128.299728</EulerRotation>
                             <Scaling>1.220169 1.220169 1.220169</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>94.162170 17.756554 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -134.897171</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -134.897156</EulerRotation>
                             <Scaling>1.323506 1.323506 1.323506</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1862,7 +1862,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>94.747795 14.298820 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -79.738380</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -79.738388</EulerRotation>
                             <Scaling>1.001530 1.001530 1.001530</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1897,12 +1897,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>98.680016 14.132538 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 105.248993</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 105.248985</EulerRotation>
                             <Scaling>0.899537 0.899537 0.899537</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>94.478935 12.356695 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 90.495895</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 90.495903</EulerRotation>
                             <Scaling>1.342341 1.342341 1.342341</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1922,7 +1922,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>97.000999 9.923220 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 118.299446</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 118.299416</EulerRotation>
                             <Scaling>0.933183 0.933183 0.933183</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -1947,7 +1947,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>96.186707 8.320381 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 61.542332</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 61.542328</EulerRotation>
                             <Scaling>1.369510 1.369510 1.369510</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2047,7 +2047,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>90.392868 10.671764 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -7.258133</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -7.258131</EulerRotation>
                             <Scaling>1.243982 1.243982 1.243982</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2057,7 +2057,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>93.394012 9.121669 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -106.964279</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -106.964264</EulerRotation>
                             <Scaling>1.067159 1.067159 1.067158</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2092,7 +2092,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>91.700867 11.311232 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -129.728424</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -129.728394</EulerRotation>
                             <Scaling>1.018866 1.018866 1.018866</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2162,7 +2162,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>95.485687 12.084949 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 14.949776</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 14.949783</EulerRotation>
                             <Scaling>0.784716 0.784716 0.784716</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2172,17 +2172,17 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>96.658028 14.564762 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 24.516291</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 24.516289</EulerRotation>
                             <Scaling>1.466128 1.466128 1.466128</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>96.792488 16.035213 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -119.451927</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -119.451920</EulerRotation>
                             <Scaling>0.794466 0.794466 0.794466</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>93.990448 13.705387 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -12.231383</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -12.231384</EulerRotation>
                             <Scaling>1.423024 1.423024 1.423024</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2202,7 +2202,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>97.127541 11.281015 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -36.678837</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -36.678833</EulerRotation>
                             <Scaling>0.947046 0.947046 0.947046</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2227,7 +2227,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>99.264343 14.448406 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 87.024452</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 87.024467</EulerRotation>
                             <Scaling>1.205928 1.205928 1.205928</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2302,12 +2302,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>98.839333 16.539932 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -96.002525</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -96.002510</EulerRotation>
                             <Scaling>0.953635 0.953635 0.953635</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>99.911064 14.114920 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 51.504009</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 51.504017</EulerRotation>
                             <Scaling>1.335919 1.335919 1.335919</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2337,7 +2337,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>94.680031 4.568138 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -122.850960</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -122.850945</EulerRotation>
                             <Scaling>1.011570 1.011570 1.011570</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2352,7 +2352,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>90.726196 6.049304 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 71.506706</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 71.506729</EulerRotation>
                             <Scaling>1.340706 1.340706 1.340706</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2377,7 +2377,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>94.289131 8.493163 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -43.116756</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -43.116760</EulerRotation>
                             <Scaling>1.484612 1.484612 1.484612</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2402,7 +2402,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>98.272278 5.331665 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -77.710167</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -77.710159</EulerRotation>
                             <Scaling>1.159182 1.159182 1.159182</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2412,7 +2412,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>95.752884 6.321441 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -68.375412</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -68.375427</EulerRotation>
                             <Scaling>0.867760 0.867760 0.867759</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2517,7 +2517,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>98.185310 5.767509 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 96.003746</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 96.003754</EulerRotation>
                             <Scaling>0.780460 0.780460 0.780460</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2542,17 +2542,17 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>86.912827 1.431548 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 34.569275</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 34.569279</EulerRotation>
                             <Scaling>0.755324 0.755324 0.755324</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>84.105553 0.865167 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 138.674408</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 138.674423</EulerRotation>
                             <Scaling>1.421386 1.421386 1.421385</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>85.746887 1.703944 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -18.371534</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -18.371532</EulerRotation>
                             <Scaling>0.806295 0.806295 0.806295</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2577,7 +2577,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>82.367561 1.263173 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -38.549301</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -38.549294</EulerRotation>
                             <Scaling>1.433035 1.433035 1.433035</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2592,17 +2592,17 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>83.819633 1.659413 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -3.245067</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -3.245066</EulerRotation>
                             <Scaling>0.970618 0.970618 0.970618</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>83.147202 0.049521 0.125214</Translation>
-                            <EulerRotation>0.000000 0.000000 23.044254</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 23.044250</EulerRotation>
                             <Scaling>1.314276 1.314276 1.314276</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>85.128174 0.005576 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -38.748909</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -38.748901</EulerRotation>
                             <Scaling>1.342916 1.342916 1.342916</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2667,7 +2667,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>86.062935 0.546754 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 72.627129</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 72.627121</EulerRotation>
                             <Scaling>1.050162 1.050162 1.050162</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2745,12 +2745,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>12.172814 97.350517 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 128.575806</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 128.575821</EulerRotation>
                             <Scaling>1.241200 1.241200 1.241200</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>11.145100 98.290558 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -115.894035</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -115.894043</EulerRotation>
                             <Scaling>1.314465 1.314465 1.314465</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2765,7 +2765,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>11.823162 96.567215 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -94.593124</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -94.593132</EulerRotation>
                             <Scaling>1.480378 1.480378 1.480378</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2831,12 +2831,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>2.335710 14.180773 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 137.777328</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 137.777313</EulerRotation>
                             <Scaling>0.788088 0.788088 0.788088</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>1.898174 9.581408 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 14.057589</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 14.057591</EulerRotation>
                             <Scaling>0.929112 0.929112 0.929112</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -2991,7 +2991,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>7.415041 12.536121 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -132.318558</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -132.318588</EulerRotation>
                             <Scaling>1.427752 1.427752 1.427752</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3011,7 +3011,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>6.000678 13.233659 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -105.384827</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -105.384819</EulerRotation>
                             <Scaling>0.902705 0.902705 0.902705</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3021,7 +3021,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>5.566067 14.025699 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 55.504135</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 55.504139</EulerRotation>
                             <Scaling>0.882001 0.882001 0.882001</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3031,7 +3031,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>5.979495 12.863782 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -95.019348</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -95.019318</EulerRotation>
                             <Scaling>1.496452 1.496452 1.496452</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3051,7 +3051,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>4.177446 15.477367 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -24.659513</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -24.659510</EulerRotation>
                             <Scaling>1.184457 1.184457 1.184457</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3061,7 +3061,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>5.718900 16.796831 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -55.257988</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -55.257999</EulerRotation>
                             <Scaling>1.397111 1.397111 1.397111</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3081,7 +3081,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>6.198508 17.278355 0.125214</Translation>
-                            <EulerRotation>0.000000 0.000000 -160.941727</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -160.941742</EulerRotation>
                             <Scaling>1.293879 1.293879 1.293879</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3101,7 +3101,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>8.481397 17.172844 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 15.017711</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 15.017715</EulerRotation>
                             <Scaling>1.204507 1.204507 1.204507</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3131,7 +3131,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>0.256932 19.220364 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -90.063309</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -90.063324</EulerRotation>
                             <Scaling>0.892177 0.892177 0.892177</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3141,7 +3141,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>1.425840 17.004440 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -120.600822</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -120.600853</EulerRotation>
                             <Scaling>1.115013 1.115013 1.115013</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3161,12 +3161,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>1.841831 15.966267 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -39.121712</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -39.121716</EulerRotation>
                             <Scaling>0.779795 0.779795 0.779795</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>0.069059 17.610771 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 17.735022</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 17.735018</EulerRotation>
                             <Scaling>1.069392 1.069392 1.069392</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3176,17 +3176,17 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>0.785623 14.276890 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -127.427979</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -127.427971</EulerRotation>
                             <Scaling>1.491870 1.491870 1.491870</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>1.789701 18.626421 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -135.256042</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -135.256073</EulerRotation>
                             <Scaling>1.027886 1.027886 1.027886</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>1.640110 13.922215 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 23.553253</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 23.553255</EulerRotation>
                             <Scaling>1.277231 1.277231 1.277231</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3241,7 +3241,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>1.732968 17.804535 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -86.088448</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -86.088432</EulerRotation>
                             <Scaling>1.041430 1.041430 1.041430</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3251,7 +3251,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>0.597325 5.795177 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 19.845301</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 19.845299</EulerRotation>
                             <Scaling>1.462105 1.462105 1.462105</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3371,7 +3371,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>1.374358 7.238311 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 92.846985</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 92.846977</EulerRotation>
                             <Scaling>1.178767 1.178767 1.178767</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3496,7 +3496,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>8.540727 6.335548 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -26.620487</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -26.620485</EulerRotation>
                             <Scaling>1.373739 1.373739 1.373739</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3511,7 +3511,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>10.254841 6.537292 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 34.081547</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 34.081543</EulerRotation>
                             <Scaling>0.878876 0.878876 0.878876</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3581,7 +3581,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>10.342781 5.549129 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -50.313900</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -50.313908</EulerRotation>
                             <Scaling>1.228054 1.228054 1.228054</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3591,7 +3591,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>12.549257 11.128201 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -18.822380</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -18.822384</EulerRotation>
                             <Scaling>0.820367 0.820367 0.820367</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3601,7 +3601,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>11.173360 6.864716 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 115.474594</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 115.474571</EulerRotation>
                             <Scaling>0.844886 0.844886 0.844886</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3611,17 +3611,17 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>11.852484 11.196991 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -134.217957</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -134.217972</EulerRotation>
                             <Scaling>1.355115 1.355115 1.355115</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>9.605040 9.632118 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -51.783916</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -51.783920</EulerRotation>
                             <Scaling>1.394925 1.394925 1.394925</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>11.297173 6.107099 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -117.145653</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -117.145683</EulerRotation>
                             <Scaling>1.093153 1.093153 1.093153</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3636,7 +3636,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>9.293641 10.776077 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -118.076820</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -118.076836</EulerRotation>
                             <Scaling>1.487373 1.487373 1.487373</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3681,7 +3681,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>10.352325 11.993633 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 116.674080</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 116.674065</EulerRotation>
                             <Scaling>0.968961 0.968961 0.968961</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3711,7 +3711,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>12.938512 12.583002 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 74.847969</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 74.847946</EulerRotation>
                             <Scaling>1.378127 1.378127 1.378127</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3796,7 +3796,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>15.256684 15.660062 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -138.509552</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -138.509567</EulerRotation>
                             <Scaling>1.090586 1.090586 1.090586</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3846,7 +3846,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>11.363786 14.864222 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 49.759422</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 49.759430</EulerRotation>
                             <Scaling>0.835452 0.835452 0.835452</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3876,7 +3876,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>15.463852 14.574928 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -28.333448</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -28.333450</EulerRotation>
                             <Scaling>0.819406 0.819406 0.819406</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3896,7 +3896,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>16.098392 13.665173 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 67.379440</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 67.379433</EulerRotation>
                             <Scaling>0.841292 0.841292 0.841292</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3911,7 +3911,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>15.124130 16.158091 0.125214</Translation>
-                            <EulerRotation>0.000000 0.000000 -31.700373</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -31.700375</EulerRotation>
                             <Scaling>1.072854 1.072854 1.072854</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -3926,7 +3926,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>13.146688 16.279575 0.125275</Translation>
-                            <EulerRotation>0.000000 0.000000 -123.734856</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -123.734871</EulerRotation>
                             <Scaling>1.324328 1.324328 1.324327</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4011,7 +4011,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>12.935922 18.999559 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 149.755417</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 149.755402</EulerRotation>
                             <Scaling>1.165467 1.165467 1.165467</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4021,7 +4021,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>13.373785 19.201973 0.125275</Translation>
-                            <EulerRotation>0.000000 0.000000 -157.935501</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -157.935516</EulerRotation>
                             <Scaling>1.159017 1.159017 1.159017</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4071,12 +4071,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>9.329136 16.704313 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 126.114601</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 126.114616</EulerRotation>
                             <Scaling>0.839170 0.839170 0.839170</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>9.001341 16.578350 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -98.491104</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -98.491119</EulerRotation>
                             <Scaling>0.789391 0.789391 0.789391</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4146,7 +4146,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>15.888250 14.671194 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 14.275550</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 14.275549</EulerRotation>
                             <Scaling>1.419177 1.419177 1.419177</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4171,7 +4171,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>16.200695 18.262001 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -131.518463</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -131.518478</EulerRotation>
                             <Scaling>1.346891 1.346891 1.346891</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4216,7 +4216,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>16.784309 16.076450 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 27.682787</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 27.682791</EulerRotation>
                             <Scaling>0.758809 0.758809 0.758809</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4231,12 +4231,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>13.122290 14.811893 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -60.994946</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -60.994961</EulerRotation>
                             <Scaling>0.802912 0.802912 0.802912</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>14.189837 14.947145 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -97.948853</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -97.948868</EulerRotation>
                             <Scaling>1.263663 1.263663 1.263663</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4271,7 +4271,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>14.107492 15.679277 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -78.111870</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -78.111855</EulerRotation>
                             <Scaling>0.867991 0.867991 0.867991</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4286,7 +4286,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>14.692880 16.482950 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -115.469719</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -115.469727</EulerRotation>
                             <Scaling>1.453329 1.453329 1.453329</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4361,7 +4361,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>16.533293 10.805331 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -53.268200</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -53.268204</EulerRotation>
                             <Scaling>0.832638 0.832638 0.832638</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4381,12 +4381,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>16.656141 10.119286 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 28.884668</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 28.884665</EulerRotation>
                             <Scaling>1.446708 1.446708 1.446708</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>17.270739 10.214899 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -85.625443</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -85.625435</EulerRotation>
                             <Scaling>0.881075 0.881075 0.881075</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4421,7 +4421,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>12.877676 3.238519 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -143.412781</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -143.412766</EulerRotation>
                             <Scaling>1.405036 1.405036 1.405036</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4496,7 +4496,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>13.934532 2.009419 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 7.941034</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 7.941033</EulerRotation>
                             <Scaling>1.235038 1.235038 1.235038</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4511,7 +4511,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>11.660069 3.799452 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -105.017914</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -105.017929</EulerRotation>
                             <Scaling>0.794261 0.794261 0.794261</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4521,7 +4521,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>17.783916 2.491711 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 116.591461</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 116.591438</EulerRotation>
                             <Scaling>0.780712 0.780712 0.780712</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4541,7 +4541,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>15.131363 0.705526 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -13.302768</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -13.302765</EulerRotation>
                             <Scaling>1.028257 1.028257 1.028257</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4551,7 +4551,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>15.402451 4.932010 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 14.790772</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 14.790769</EulerRotation>
                             <Scaling>1.225138 1.225138 1.225138</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4596,17 +4596,17 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>18.906143 3.157917 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 -107.989265</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -107.989281</EulerRotation>
                             <Scaling>1.434435 1.434435 1.434435</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>16.370834 5.789950 0.125214</Translation>
-                            <EulerRotation>0.000000 0.000000 89.796227</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 89.796249</EulerRotation>
                             <Scaling>1.196891 1.196891 1.196890</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>18.532665 3.298840 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 36.049210</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 36.049213</EulerRotation>
                             <Scaling>0.816576 0.816576 0.816575</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4626,7 +4626,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>18.606792 2.155860 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -51.937244</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -51.937252</EulerRotation>
                             <Scaling>1.370423 1.370423 1.370423</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4636,7 +4636,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>16.858723 3.767747 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -5.196261</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -5.196260</EulerRotation>
                             <Scaling>0.807345 0.807345 0.807345</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4671,7 +4671,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>19.073772 5.733541 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -23.910732</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -23.910736</EulerRotation>
                             <Scaling>0.844258 0.844258 0.844258</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4691,7 +4691,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>16.315615 2.988155 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -104.593712</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -104.593735</EulerRotation>
                             <Scaling>1.169485 1.169485 1.169485</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4716,7 +4716,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>18.545433 5.591408 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 30.039820</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 30.039812</EulerRotation>
                             <Scaling>1.462529 1.462529 1.462529</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4756,7 +4756,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>16.640196 4.807581 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 82.174881</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 82.174896</EulerRotation>
                             <Scaling>1.046177 1.046177 1.046177</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4771,7 +4771,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>13.371155 7.914019 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 4.950951</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 4.950953</EulerRotation>
                             <Scaling>1.053720 1.053720 1.053720</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4781,12 +4781,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>14.646717 9.218194 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 57.091618</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 57.091610</EulerRotation>
                             <Scaling>0.767958 0.767958 0.767958</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>14.135577 5.891440 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -119.354012</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -119.354034</EulerRotation>
                             <Scaling>1.005199 1.005199 1.005199</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4805,12 +4805,12 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>17.652260 9.445563 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 51.299835</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 51.299831</EulerRotation>
                             <Scaling>0.819048 0.819048 0.819048</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>15.843038 9.832753 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -95.664124</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -95.664131</EulerRotation>
                             <Scaling>1.060451 1.060451 1.060451</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4825,7 +4825,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>16.262981 9.640169 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 88.765228</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 88.765251</EulerRotation>
                             <Scaling>1.377574 1.377574 1.377574</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4899,7 +4899,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>13.313137 0.931860 0.125000</Translation>
-                            <EulerRotation>0.000000 0.000000 114.644089</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 114.644081</EulerRotation>
                             <Scaling>0.870527 0.870527 0.870527</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
@@ -4914,7 +4914,7 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>13.077142 1.738943 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -117.985443</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -117.985451</EulerRotation>
                             <Scaling>0.793682 0.793682 0.793682</Scaling>
                         </InstanceTransformation>
                     </InstanceTransformations>
@@ -4935,17 +4935,17 @@
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>7.865002 14.996614 0.125244</Translation>
-                            <EulerRotation>0.000000 0.000000 29.388391</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 29.388393</EulerRotation>
                             <Scaling>0.873027 0.873027 0.873027</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>4.735778 17.309233 0.125122</Translation>
-                            <EulerRotation>0.000000 0.000000 -113.927330</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -113.927322</EulerRotation>
                             <Scaling>1.146665 1.146665 1.146664</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
                             <Translation>5.975466 5.122414 0.125031</Translation>
-                            <EulerRotation>0.000000 0.000000 -155.428345</EulerRotation>
+                            <EulerRotation>0.000000 0.000000 -155.428360</EulerRotation>
                             <Scaling>0.813804 0.813804 0.813804</Scaling>
                         </InstanceTransformation>
                         <InstanceTransformation>
