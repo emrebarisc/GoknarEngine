@@ -481,6 +481,8 @@ struct GOKNAR_API Vector3
 
 	Vector3(const Vector4& rhs);
 
+	Vector3 TransformPosition(const Matrix& transformationMatrix) const;
+
 	inline bool ContainsNanOrInf() const
 	{
 		return	GoknarMath::IsNanOrInf(x) ||

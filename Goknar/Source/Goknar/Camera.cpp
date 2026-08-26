@@ -363,6 +363,11 @@ float Camera::GetAABBFrameCoverage(const Box& aabb) const
 	return GoknarMath::Clamp(widthCoverage * heightCoverage, 0.f, 1.f);
 }
 
+float Camera::GetAABBFrameCoverage(const Box& aabb, const Matrix& transformationMatrix) const
+{
+	return GetAABBFrameCoverage(aabb.Transform(transformationMatrix));
+}
+
 Vector2i Camera::GetScreenPositionOfWorldPosition(const Vector3& worldPosition)
 {
 	Vector4 screenPosition = viewProjectionMatrix_ * Vector4{ worldPosition, 1.f };

@@ -9,6 +9,7 @@ class GOKNAR_API Box
 public:
 	Box();
 	Box(const Vector3& min, const Vector3& max);
+	Box Transform(const Matrix& transformationMatrix) const;
 
 	inline void ExtendWRTPoint(const Vector3& point, bool recalculateSize = true)
 	{

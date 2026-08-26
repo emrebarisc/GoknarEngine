@@ -10,6 +10,7 @@
 #include "Goknar/Helpers/SceneParser.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Materials/Material.h"
+#include "Goknar/Model/MeshContainer.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/ParticleSystem/BillboardParticleSystem.h"
 #include "Goknar/ParticleSystem/StaticMeshParticleSystem.h"
@@ -430,7 +431,8 @@ void StaticMeshParticleSystemComponent::SyncParticleSystemRenderSettings() const
 
 void StaticMeshParticleSystemComponent::LoadStaticMeshFromPath()
 {
-	staticMesh_ = staticMeshPath_.empty() ? nullptr : engine->GetResourceManager()->GetContent<StaticMesh>(staticMeshPath_);
+	StaticMeshContainer* staticMeshContainer = staticMeshPath_.empty() ? nullptr : engine->GetResourceManager()->GetContent<StaticMeshContainer>(staticMeshPath_);
+	staticMesh_ = staticMeshContainer ? staticMeshContainer->GetLOD(0) : nullptr;
 }
 
 StaticMeshParticleSystem* StaticMeshParticleSystemComponent::GetStaticMeshParticleSystem() const

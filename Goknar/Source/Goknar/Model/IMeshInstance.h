@@ -98,6 +98,16 @@ public:
 		renderMask_ = renderMask;
 	}
 
+	int GetForcedLODIndex() const
+	{
+		return forcedLODIndex_;
+	}
+
+	void SetForcedLODIndex(int forcedLODIndex)
+	{
+		forcedLODIndex_ = forcedLODIndex;
+	}
+
 	const std::vector<MaterialInstance*>& GetMaterials() const
 	{
 		return materials_;
@@ -132,6 +142,7 @@ private:
 	unsigned int renderMask_{ 0b1 };
 
 	int instanceID_{ lastComponentId_++ };
+	int forcedLODIndex_{ -1 };
 
 	static int lastComponentId_;
 
@@ -239,6 +250,11 @@ inline void IMeshInstance<MeshType>::SetMesh(MeshType* mesh)
 	}
 
 	mesh_ = mesh;
+
+	if (mesh_->GetLODCount() == 1)
+	{
+		SetForcedLODIndex(0);
+	}
 
 	materials_.resize(mesh_->GetLOD(0)->GetSubMeshes().size(), nullptr);
 

@@ -72,11 +72,6 @@ InstancedStaticMesh* InstancedStaticMesh::CreateFromStaticMesh(const StaticMesh*
 		}
 	}
 
-	if (engine && engine->GetResourceManager())
-	{
-		engine->GetResourceManager()->GetResourceContainer()->AddMesh(instancedStaticMesh);
-	}
-
 	return instancedStaticMesh;
 }
 

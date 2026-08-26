@@ -259,7 +259,7 @@ private:
 	struct InstancedStaticMeshRenderData
 	{
 		InstancedStaticMeshInstance* meshInstance{ nullptr };
-		MeshContainer<StaticMesh>* meshUnit{ nullptr };
+		MeshContainer<InstancedStaticMesh>* meshUnit{ nullptr };
 		int subMeshIndex{ 0 };
 	};
 

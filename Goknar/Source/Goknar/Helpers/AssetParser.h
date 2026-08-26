@@ -19,9 +19,13 @@ public:
 	static void ParseAssets(const std::string& filePath);
 	static void SaveAssets(const std::string& filePath);
 	static std::vector<std::string> GetMeshMaterialPaths(const std::string& meshPath, const std::string& assetContainerPath = "AssetContainer");
+	static std::vector<std::string> GetMeshLODMaterialPaths(const std::string& meshPath, size_t LODIndex, const std::string& assetContainerPath = "AssetContainer");
 	static std::string GetMeshMaterialPath(const std::string& meshPath, const std::string& assetContainerPath = "AssetContainer");
 	static void SetMeshMaterialPaths(const std::string& meshPath, const std::vector<std::string>& materialPaths, const std::string& assetContainerPath = "AssetContainer");
+	static void SetMeshLODMaterialPaths(const std::string& meshPath, size_t LODIndex, const std::vector<std::string>& materialPaths, const std::string& assetContainerPath = "AssetContainer");
 	static void SetMeshMaterialPath(const std::string& meshPath, const std::string& materialPath, const std::string& assetContainerPath = "AssetContainer");
+	static float GetMeshLODFrameCoverage(const std::string& meshPath, size_t LODIndex, float defaultFrameCoverage, const std::string& assetContainerPath = "AssetContainer");
+	static void SetMeshLODFrameCoverage(const std::string& meshPath, size_t LODIndex, float frameCoverage, const std::string& assetContainerPath = "AssetContainer");
 	static TextureUsage GetTextureUsage(const std::string& texturePath, const std::string& assetContainerPath = "AssetContainer");
 	static bool SetTextureUsage(const std::string& texturePath, TextureUsage textureUsage, const std::string& assetContainerPath = "AssetContainer");
 	static bool GetTextureUploadToGPU(const std::string& texturePath, const std::string& assetContainerPath = "AssetContainer");

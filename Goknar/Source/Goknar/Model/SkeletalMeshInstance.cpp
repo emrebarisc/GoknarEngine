@@ -280,7 +280,7 @@ void SkeletalMeshInstance::PrepareForTheNextFrame()
 
 void SkeletalMeshInstance::Render(RenderPassType renderPassType, int subMeshIndex, int LODIndex/* = 0*/)
 {
-	SetRenderOperations(renderPassType, LODIndex, subMeshIndex);
+	SetRenderOperations(renderPassType, subMeshIndex, LODIndex);
 }
 
 void SkeletalMeshInstance::SetRenderOperations(RenderPassType renderPassType, int subMeshIndex, int LODIndex/* = 0*/)

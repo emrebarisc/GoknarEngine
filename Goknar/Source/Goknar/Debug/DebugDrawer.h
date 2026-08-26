@@ -15,7 +15,10 @@ class NonMovingTriangleMeshCollisionComponent;
 
 class MeshUnit;
 class ObjectBase;
-class StaticMeshContainer;
+class StaticMesh;
+template<typename T>
+class MeshContainer;
+using StaticMeshContainer = MeshContainer<StaticMesh>;
 
 class GOKNAR_API DebugObject : public ObjectBase
 {

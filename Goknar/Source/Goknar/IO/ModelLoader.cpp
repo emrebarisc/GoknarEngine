@@ -24,6 +24,7 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include <cctype>
 #include <string>
 
 #ifdef GOKNAR_PLATFORM_UNIX
@@ -48,6 +49,46 @@ std::string ConvertToLinuxPath(const std::string& input)
 namespace
 {
 	bool READ_FBX_MATERIALS = false;
+
+	int GetLODIndexFromMeshName(const std::string& meshName)
+	{
+		const size_t LODPrefixIndex = meshName.find("_LOD");
+		if (LODPrefixIndex == std::string::npos)
+		{
+			return 0;
+		}
+
+		size_t digitIndex = LODPrefixIndex + 4;
+		if (meshName.size() <= digitIndex || !std::isdigit((unsigned char)meshName[digitIndex]))
+		{
+			return 0;
+		}
+
+		int LODIndex = 0;
+		while (digitIndex < meshName.size() && std::isdigit((unsigned char)meshName[digitIndex]))
+		{
+			LODIndex = LODIndex * 10 + (meshName[digitIndex] - '0');
+			++digitIndex;
+		}
+
+		return LODIndex;
+	}
+
+	float GetLODFrameCoverage(int LODIndex)
+	{
+		if (LODIndex <= 0)
+		{
+			return MAX_FLOAT;
+		}
+
+		float frameCoverage = 0.25f;
+		for (int index = 1; index < LODIndex; ++index)
+		{
+			frameCoverage *= 0.25f;
+		}
+
+		return frameCoverage;
+	}
 }
 
 struct UnifiedVertex
@@ -184,10 +225,8 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node)
 
 Content* ModelLoader::LoadModel(const std::string& path)
 {
-	MeshContainer<StaticMesh>* meshContainer = new MeshContainer<StaticMesh>();
-
-	StaticMesh* staticMeshAsset = nullptr;
 	SkeletalMesh* skeletalMeshAsset = nullptr;
+	std::vector<StaticMesh*> staticMeshLODs;
 
 	ufbx_load_opts opts = {};
 	opts.generate_missing_normals = true;
@@ -221,13 +260,31 @@ Content* ModelLoader::LoadModel(const std::string& path)
 		if (sceneHasBones)
 		{
 			skeletalMeshAsset = new SkeletalMesh();
-		}
-		else
-		{
-			staticMeshAsset = new StaticMesh();
+			skeletalMeshAsset->SetPath(path);
 		}
 
 		std::vector<SkeletalMeshUnit*> pendingSkeletalSubMeshes;
+
+		auto getOrCreateStaticMeshLOD = [&staticMeshLODs, &path](int LODIndex) -> StaticMesh*
+		{
+			if (LODIndex < 0)
+			{
+				LODIndex = 0;
+			}
+
+			if (staticMeshLODs.size() <= (size_t)LODIndex)
+			{
+				staticMeshLODs.resize((size_t)LODIndex + 1, nullptr);
+			}
+
+			if (!staticMeshLODs[LODIndex])
+			{
+				staticMeshLODs[LODIndex] = new StaticMesh();
+				staticMeshLODs[LODIndex]->SetPath(path);
+			}
+
+			return staticMeshLODs[LODIndex];
+		};
 
 		for (size_t meshIndex = 0; meshIndex < scene->meshes.count; ++meshIndex)
 		{
@@ -606,14 +663,10 @@ Content* ModelLoader::LoadModel(const std::string& path)
 				{
 					pendingSkeletalSubMeshes.push_back(subMesh.skeletalMeshUnit);
 				}
-				else if (staticMeshAsset)
+				else if (!sceneHasBones)
 				{
-					if (subMesh.meshUnit->GetName().find("_LOD") != std::string::npos)
-					{
-						GOKNAR_INFO("%s", subMesh.meshUnit->GetName());
-					}
-
-					staticMeshAsset->AddMesh(subMesh.meshUnit);
+					const int LODIndex = GetLODIndexFromMeshName(subMesh.meshUnit->GetName());
+					getOrCreateStaticMeshLOD(LODIndex)->AddMesh(subMesh.meshUnit);
 				}
 			}
 		}
@@ -722,11 +775,31 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 	if (skeletalMeshAsset)
 	{
-		return skeletalMeshAsset;
+		MeshContainer<SkeletalMesh>* meshContainer = new MeshContainer<SkeletalMesh>();
+		meshContainer->AddLOD(LODSetting<SkeletalMesh>{ skeletalMeshAsset, MAX_FLOAT });
+		return meshContainer;
 	}
-	if (staticMeshAsset)
+
+	if (!staticMeshLODs.empty())
 	{
-		return staticMeshAsset;
+		MeshContainer<StaticMesh>* meshContainer = new MeshContainer<StaticMesh>();
+		for (size_t LODIndex = 0; LODIndex < staticMeshLODs.size(); ++LODIndex)
+		{
+			StaticMesh* staticMeshLOD = staticMeshLODs[LODIndex];
+			if (!staticMeshLOD)
+			{
+				continue;
+			}
+
+			meshContainer->AddLOD(LODSetting<StaticMesh>{ staticMeshLOD, GetLODFrameCoverage((int)LODIndex) });
+		}
+
+		if (0 < meshContainer->GetLODCount())
+		{
+			return meshContainer;
+		}
+
+		delete meshContainer;
 	}
 
 	return nullptr;

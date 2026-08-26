@@ -48,6 +48,7 @@
 
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/InstancedStaticMesh.h"
+#include "Goknar/Model/MeshContainer.h"
 #include "Goknar/Model/MeshUnit.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Model/SkeletalMesh.h"
@@ -189,7 +190,8 @@ namespace
 		}
 
 		MeshInstanceType* meshInstance = meshComponent->GetMeshInstance();
-		MeshType* mesh = meshInstance ? meshInstance->GetMesh() : nullptr;
+		MeshContainer<MeshType>* meshContainer = meshInstance ? meshInstance->GetMesh() : nullptr;
+		MeshType* mesh = meshContainer ? meshContainer->GetLOD(0) : nullptr;
 		if (!meshInstance || !mesh)
 		{
 			if (!normalizedMaterialPaths.empty())
@@ -250,7 +252,8 @@ namespace
 		}
 
 		MeshInstanceType* meshInstance = meshComponent->GetMeshInstance();
-		MeshType* mesh = meshInstance ? meshInstance->GetMesh() : nullptr;
+		MeshContainer<MeshType>* meshContainer = meshInstance ? meshInstance->GetMesh() : nullptr;
+		MeshType* mesh = meshContainer ? meshContainer->GetLOD(0) : nullptr;
 		if (!meshInstance || !mesh)
 		{
 			return;
@@ -316,10 +319,11 @@ namespace
 			return nullptr;
 		}
 
-		return engine->GetResourceManager()->GetContent<StaticMesh>(relativeMeshPath);
+		StaticMeshContainer* staticMeshContainer = engine->GetResourceManager()->GetContent<StaticMeshContainer>(relativeMeshPath);
+		return staticMeshContainer ? staticMeshContainer->GetLOD(0) : nullptr;
 	}
 
-	InstancedStaticMesh* CreateInstancedStaticMeshFromPath(const std::string& meshPath)
+	InstancedStaticMeshContainer* CreateInstancedStaticMeshFromPath(const std::string& meshPath)
 	{
 		const std::string relativeMeshPath = ContentPathUtils::ToContentRelativePath(meshPath);
 		StaticMesh* sourceMesh = ResolveStaticMeshFromPath(meshPath);
@@ -338,7 +342,12 @@ namespace
 
 		ApplyMaterialPathsToInstancedStaticMesh(instancedStaticMesh, AssetParser::GetMeshMaterialPaths(relativeMeshPath));
 		instancedStaticMeshSourcePathMap[instancedStaticMesh] = relativeMeshPath;
-		return instancedStaticMesh;
+
+		InstancedStaticMeshContainer* instancedStaticMeshContainer = new InstancedStaticMeshContainer();
+		instancedStaticMeshContainer->SetPath(instancedStaticMesh->GetPath());
+		instancedStaticMeshContainer->AddLOD(LODSetting<InstancedStaticMesh>{ instancedStaticMesh, MAX_FLOAT });
+		engine->GetResourceManager()->GetResourceContainer()->AddMesh(instancedStaticMeshContainer);
+		return instancedStaticMeshContainer;
 	}
 
 	void TrimTrailingEmptyMaterialPaths(std::vector<std::string>& materialPaths)
@@ -1718,10 +1727,10 @@ void SceneParser::ParseStaticMeshComponentValues(StaticMeshComponent* staticMesh
 		stream << dataElement->GetText() << std::endl;
 		std::string meshPath;
 		stream >> meshPath;
-		StaticMesh* staticMesh = engine->GetResourceManager()->GetContent<StaticMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
-		if (staticMesh)
+		StaticMeshContainer* staticMeshContainer = engine->GetResourceManager()->GetContent<StaticMeshContainer>(ContentPathUtils::ToContentRelativePath(meshPath));
+		if (staticMeshContainer)
 		{
-			staticMeshComponent->SetMesh(staticMesh);
+			staticMeshComponent->SetMesh(staticMeshContainer);
 		}
 	}
 	stream.clear();
@@ -1760,10 +1769,10 @@ void SceneParser::ParseSkeletalMeshComponentValues(SkeletalMeshComponent* skelet
 		stream << dataElement->GetText() << std::endl;
 		std::string meshPath;
 		stream >> meshPath;
-		SkeletalMesh* skeletalMesh = engine->GetResourceManager()->GetContent<SkeletalMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
-		if (skeletalMesh)
+		SkeletalMeshContainer* skeletalMeshContainer = engine->GetResourceManager()->GetContent<SkeletalMeshContainer>(ContentPathUtils::ToContentRelativePath(meshPath));
+		if (skeletalMeshContainer)
 		{
-			skeletalMeshComponent->SetMesh(skeletalMesh);
+			skeletalMeshComponent->SetMesh(skeletalMeshContainer);
 		}
 	}
 	stream.clear();
@@ -1802,10 +1811,10 @@ void SceneParser::ParseInstancedStaticMeshComponentValues(InstancedStaticMeshCom
 		stream << dataElement->GetText() << std::endl;
 		std::string meshPath;
 		stream >> meshPath;
-		InstancedStaticMesh* instancedStaticMesh = CreateInstancedStaticMeshFromPath(meshPath);
-		if (instancedStaticMesh)
+		InstancedStaticMeshContainer* instancedStaticMeshContainer = CreateInstancedStaticMeshFromPath(meshPath);
+		if (instancedStaticMeshContainer)
 		{
-			instancedStaticMeshComponent->SetMesh(instancedStaticMesh);
+			instancedStaticMeshComponent->SetMesh(instancedStaticMeshContainer);
 		}
 	}
 	stream.clear();
@@ -1832,7 +1841,8 @@ void SceneParser::ParseInstancedStaticMeshComponentValues(InstancedStaticMeshCom
 	}
 
 	InstancedStaticMeshInstance* meshInstance = instancedStaticMeshComponent->GetMeshInstance();
-	InstancedStaticMesh* instancedStaticMesh = meshInstance ? meshInstance->GetMesh() : nullptr;
+	InstancedStaticMeshContainer* instancedStaticMeshContainer = meshInstance ? meshInstance->GetMesh() : nullptr;
+	InstancedStaticMesh* instancedStaticMesh = instancedStaticMeshContainer ? instancedStaticMeshContainer->GetLOD(0) : nullptr;
 	tinyxml2::XMLElement* instanceTransformationsElement = componentElement->FirstChildElement("InstanceTransformations");
 	if (instancedStaticMesh && instanceTransformationsElement)
 	{
@@ -2487,7 +2497,7 @@ void SceneParser::ParseMovingTriangleMeshCollisionComponentValues(MovingTriangle
 		std::string meshPath;
 		stream >> meshPath;
 
-		StaticMesh* relativeMesh = engine->GetResourceManager()->GetContent<StaticMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
+		StaticMesh* relativeMesh = ResolveStaticMeshFromPath(meshPath);
 		if (relativeMesh)
 		{
 			movingTriangleMeshCollisionComponent->SetMesh(relativeMesh);
@@ -2521,7 +2531,7 @@ void SceneParser::ParseNonMovingTriangleMeshCollisionComponentValues(NonMovingTr
 		std::string meshPath;
 		stream >> meshPath;
 
-		StaticMesh* relativeMesh = engine->GetResourceManager()->GetContent<StaticMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
+		StaticMesh* relativeMesh = ResolveStaticMeshFromPath(meshPath);
 
 		GOKNAR_CORE_CHECK(relativeMesh);
 
@@ -3214,16 +3224,16 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 
 void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* const staticMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
 {
-	StaticMesh* staticMesh = staticMeshComponent->GetMeshInstance()->GetMesh();
-	GOKNAR_CHECK(staticMesh);
+	StaticMeshContainer* staticMeshContainer = staticMeshComponent->GetMeshInstance()->GetMesh();
+	GOKNAR_CHECK(staticMeshContainer);
 
-	if (!staticMesh || staticMesh->GetPath().empty())
+	if (!staticMeshContainer || staticMeshContainer->GetPath().empty())
 	{
 		return;
 	}
 
 	tinyxml2::XMLElement* staticMeshComponentMeshPathElement = xmlDocument.NewElement("MeshPath");
-	const std::string meshPath = ContentPathUtils::ToContentRelativePath(staticMesh->GetPath());
+	const std::string meshPath = ContentPathUtils::ToContentRelativePath(staticMeshContainer->GetPath());
 	staticMeshComponentMeshPathElement->SetText(meshPath.c_str());
 	parentElement->InsertEndChild(staticMeshComponentMeshPathElement);
 
@@ -3237,14 +3247,14 @@ void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* c
 void SceneParser::GetXMLElement_SkeletalMeshComponent(const SkeletalMeshComponent* const skeletalMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
 {
 	const SkeletalMeshInstance* meshInstance = skeletalMeshComponent ? skeletalMeshComponent->GetMeshInstance() : nullptr;
-	const SkeletalMesh* skeletalMesh = meshInstance ? meshInstance->GetMesh() : nullptr;
-	if (!meshInstance || !skeletalMesh)
+	const SkeletalMeshContainer* skeletalMeshContainer = meshInstance ? meshInstance->GetMesh() : nullptr;
+	if (!meshInstance || !skeletalMeshContainer)
 	{
 		return;
 	}
 
 	tinyxml2::XMLElement* skeletalMeshComponentMeshPathElement = xmlDocument.NewElement("MeshPath");
-	const std::string meshPath = ContentPathUtils::ToContentRelativePath(skeletalMesh->GetPath());
+	const std::string meshPath = ContentPathUtils::ToContentRelativePath(skeletalMeshContainer->GetPath());
 	skeletalMeshComponentMeshPathElement->SetText(meshPath.c_str());
 	parentElement->InsertEndChild(skeletalMeshComponentMeshPathElement);
 
@@ -3258,7 +3268,8 @@ void SceneParser::GetXMLElement_SkeletalMeshComponent(const SkeletalMeshComponen
 void SceneParser::GetXMLElement_InstancedStaticMeshComponent(const InstancedStaticMeshComponent* const instancedStaticMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
 {
 	const InstancedStaticMeshInstance* meshInstance = instancedStaticMeshComponent->GetMeshInstance();
-	const InstancedStaticMesh* instancedStaticMesh = meshInstance ? meshInstance->GetMesh() : nullptr;
+	const InstancedStaticMeshContainer* instancedStaticMeshContainer = meshInstance ? meshInstance->GetMesh() : nullptr;
+	const InstancedStaticMesh* instancedStaticMesh = instancedStaticMeshContainer ? instancedStaticMeshContainer->GetLOD(0) : nullptr;
 	if (!meshInstance || !instancedStaticMesh)
 	{
 		return;

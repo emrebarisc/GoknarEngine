@@ -32,7 +32,7 @@ struct GOKNAR_API LODSetting
 };
 
 template<typename T>
-class GOKNAR_API MeshContainer : Content
+class GOKNAR_API MeshContainer : public Content
 {
 public:
 	MeshContainer();
@@ -46,6 +46,8 @@ public:
 
 	T* GetLOD(int index) const;
 	size_t GetLODIndex(float coverage) const;
+	float GetLODFrameCoverage(int index) const;
+	void SetLODFrameCoverage(int index, float frameCoverage);
 
 	const Box& GetAABB() const
 	{
@@ -78,33 +80,66 @@ MeshContainer<T>::MeshContainer()
 template<typename T>
 MeshContainer<T>::~MeshContainer()
 {
+	auto LODIterator = LODs_.begin();
+	for (; LODIterator != LODs_.end(); ++LODIterator)
+	{
+		delete LODIterator->mesh;
+	}
+
 	LODs_.clear();
 }
 
 template<typename T>
 void MeshContainer<T>::AddLOD(const LODSetting<T>& LOD)
 {
-	size_t lodCount = LODs_.size();
+	GOKNAR_CORE_ASSERT(LOD.mesh);
 
-	auto LODIterator = LODs_.cbegin();
-	for (; LODIterator != LODs_.cend(); ++LODIterator)
+	if (!LOD.mesh)
 	{
-		if (LOD.frameCoverage < LODIterator->frameCoverage)
-		{
-			break;
-		}
+		return;
 	}
 
-	LODs_.insert(LODIterator, std::move(LOD));
+	LODs_.push_back(LOD);
 	aabb_.Combine(LOD.mesh->GetAABB(), true);
 }
 
 template<typename T>
 inline T* MeshContainer<T>::GetLOD(int index) const
 {
-	GOKNAR_CORE_ASSERT(index < LODs_.size());
+	GOKNAR_CORE_ASSERT(0 <= index && index < (int)LODs_.size());
+
+	if (index < 0 || (int)LODs_.size() <= index)
+	{
+		return nullptr;
+	}
 
 	return LODs_[index].mesh;
+}
+
+template<typename T>
+inline float MeshContainer<T>::GetLODFrameCoverage(int index) const
+{
+	GOKNAR_CORE_ASSERT(0 <= index && index < (int)LODs_.size());
+
+	if (index < 0 || (int)LODs_.size() <= index)
+	{
+		return 0.f;
+	}
+
+	return LODs_[index].frameCoverage;
+}
+
+template<typename T>
+inline void MeshContainer<T>::SetLODFrameCoverage(int index, float frameCoverage)
+{
+	GOKNAR_CORE_ASSERT(0 <= index && index < (int)LODs_.size());
+
+	if (index < 0 || (int)LODs_.size() <= index)
+	{
+		return;
+	}
+
+	LODs_[index].frameCoverage = frameCoverage;
 }
 
 template<typename T>
@@ -112,10 +147,19 @@ inline size_t MeshContainer<T>::GetLODIndex(float coverage) const
 {
 	size_t LODCount = LODs_.size();
 
-	size_t result = 0;
-	for (; result < LODCount; ++result)
+	if (LODCount == 0)
 	{
-		if (coverage < LODIterator->distance)
+		return 0;
+	}
+
+	size_t result = 0;
+	for (size_t lodIndex = 1; lodIndex < LODCount; ++lodIndex)
+	{
+		if (coverage < LODs_[lodIndex].frameCoverage)
+		{
+			result = lodIndex;
+		}
+		else
 		{
 			break;
 		}
