@@ -22,9 +22,13 @@ class Shader;
 class WindowManager;
 
 class DynamicMesh;
+class DynamicMeshLOD;
 class InstancedStaticMesh;
+class InstancedStaticMeshLOD;
 class StaticMesh;
+class StaticMeshLOD;
 class SkeletalMesh;
+class SkeletalMeshLOD;
 
 class PhysicsWorld;
 
@@ -79,10 +83,10 @@ public:
 		return graphicsAPI_;
 	}
 
-	void AddInstancedStaticMeshToRenderer(InstancedStaticMesh* instancedStaticMesh);
-	void AddStaticMeshToRenderer(StaticMesh* staticMesh);
-	void AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh);
-	void AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh);
+	void AddInstancedStaticMeshToRenderer(InstancedStaticMeshLOD* instancedStaticMesh);
+	void AddStaticMeshToRenderer(StaticMeshLOD* staticMesh);
+	void AddSkeletalMeshToRenderer(SkeletalMeshLOD* skeletalMesh);
+	void AddDynamicMeshToRenderer(DynamicMeshLOD* dynamicMesh);
 
 	inline CameraManager* GetCameraManager() const
 	{

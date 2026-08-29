@@ -22,7 +22,7 @@ void SkeletalMeshPerformanceTest::BeginGame()
 		SkeletalMeshComponent* skeletalMeshComponent = newObject->AddSubComponent<SkeletalMeshComponent>();
 		skeletalMeshComponent->SetRelativeScaling(Vector3{ 0.01f });
 		skeletalMeshComponent->SetRelativeRotation(Quaternion::FromEulerDegrees(90.f, 0.f, -90.f));
-		skeletalMeshComponent->SetMesh(engine->GetResourceManager()->GetContent<SkeletalMeshContainer>("Meshes/Characters/SK_DefaultCharacter.fbx"));
+		skeletalMeshComponent->SetMesh(engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/Characters/SK_DefaultCharacter.fbx"));
 		skeletalMeshComponent->GetMeshInstance()->PlayAnimation("Armature|RifleIdle");
 
 		size_t row = objectIndex / gridSize;

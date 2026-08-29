@@ -4,7 +4,7 @@
 #include "MeshComponent.h"
 #include "Goknar/Model/InstancedStaticMeshInstance.h"
 
-class GOKNAR_API InstancedStaticMeshComponent : public MeshComponent<InstancedStaticMeshContainer, InstancedStaticMeshInstance>
+class GOKNAR_API InstancedStaticMeshComponent : public MeshComponent<InstancedStaticMesh, InstancedStaticMeshInstance>
 {
 public:
 	InstancedStaticMeshComponent() = delete;
@@ -13,7 +13,7 @@ public:
 	virtual ~InstancedStaticMeshComponent();
 
 	Component* Clone() const override;
-	void SetMesh(InstancedStaticMeshContainer* mesh) override;
+	void SetMesh(InstancedStaticMesh* mesh) override;
 };
 
 #endif

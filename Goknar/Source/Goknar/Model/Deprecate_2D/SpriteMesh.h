@@ -1,7 +1,7 @@
 #ifndef __SPRITEMESH_H__
 #define __SPRITEMESH_H__
 
-#include "Goknar/Model/DynamicMesh.h"
+#include "Goknar/Model/DynamicMeshLOD.h"
 
 #include "Goknar/Geometry/Rect.h"
 
@@ -20,7 +20,7 @@ enum class GOKNAR_API SPRITE_PIVOT_POINT
 	BOTTOM_RIGHT
 };
 
-class GOKNAR_API SpriteMesh : public DynamicMesh
+class GOKNAR_API SpriteMesh : public DynamicMeshLOD
 {
 public:
 	SpriteMesh();

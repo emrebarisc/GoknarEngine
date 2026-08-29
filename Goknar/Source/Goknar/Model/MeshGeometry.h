@@ -1,5 +1,5 @@
-#ifndef __MESHUNIT_H__
-#define __MESHUNIT_H__
+#ifndef __MESHGEOMETRY_H__
+#define __MESHGEOMETRY_H__
 
 #include "Goknar/Core.h"
 #include "Goknar/Contents/Content.h"
@@ -64,12 +64,12 @@ public:
 typedef std::vector<VertexData> VertexArray;
 typedef std::vector<Face> FaceArray;
 
-class GOKNAR_API MeshUnit
+class GOKNAR_API MeshGeometry
 {
 public:
-	MeshUnit();
+	MeshGeometry();
 
-	virtual ~MeshUnit();
+	virtual ~MeshGeometry();
 
 	virtual void PreInit();
 	virtual void Init();

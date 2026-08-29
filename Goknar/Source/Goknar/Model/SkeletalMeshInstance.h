@@ -56,14 +56,14 @@ struct GOKNAR_API BoneToMatrixBinder
 	Matrix* matrix{ nullptr };
 };
 
-class GOKNAR_API SkeletalMeshInstance : public IMeshInstance<SkeletalMeshContainer>
+class GOKNAR_API SkeletalMeshInstance : public IMeshInstance<SkeletalMesh>
 {
 public:
 	SkeletalMeshInstance() = delete;
 	SkeletalMeshInstance(RenderComponent* parentComponent);
 	virtual ~SkeletalMeshInstance();
 	virtual void Render(RenderPassType renderPassType, int subMeshIndex = 0, int LODIndex = 0) override;
-	virtual void SetMesh(SkeletalMeshContainer* skeletalMesh) override;
+	virtual void SetMesh(SkeletalMesh* skeletalMesh) override;
 
 	void PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData = { false, {} }, const KeyframeData& keyframeData = {});
 

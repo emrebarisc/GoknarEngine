@@ -81,7 +81,9 @@ Texture* Material::GetTextureForShader(const Image* constImage, bool useTextureA
 
 	if (!shouldUseTextureAtlas)
 	{
-		return image->GetOrCreateGeneratedTexture();
+		Texture* standaloneTexture = image->GetOrCreateGeneratedTexture();
+		standaloneTexture->SetWaitsForTextureAtlas(false);
+		return standaloneTexture;
 	}
 
 	image->SetCanUseTextureAtlas(true);
@@ -124,14 +126,14 @@ Texture* Material::GetTextureForShader(const Image* constImage, bool useTextureA
 	return texture;
 }
 
-void Material::Build(MeshUnit* meshUnit)
+void Material::Build(MeshGeometry* meshUnit)
 {
 	ClearMaterialTextureProxies();
 
 	int ownerMeshBoneCount = 0;
-	if (SkeletalMeshUnit* skeletalMeshUnit = dynamic_cast<SkeletalMeshUnit*>(meshUnit))
+	if (SkeletalMeshGeometry* skeletalMeshGeometry = dynamic_cast<SkeletalMeshGeometry*>(meshUnit))
 	{
-		ownerMeshBoneCount = skeletalMeshUnit->GetOwner()->GetBoneSize();
+		ownerMeshBoneCount = skeletalMeshGeometry->GetOwner()->GetBoneSize();
 	}
 
 	initializationData_->boneCount = ownerMeshBoneCount;

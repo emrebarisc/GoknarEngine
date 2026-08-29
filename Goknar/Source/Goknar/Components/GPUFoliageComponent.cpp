@@ -2,8 +2,6 @@
 
 #include "GPUFoliageComponent.h"
 
-#include "Goknar/Model/StaticMesh.h"
-
 GPUFoliageComponent::GPUFoliageComponent(Component* parent) :
 	Component(parent)
 {

@@ -1,10 +1,10 @@
 #ifndef __DYNAMICMESHINSTANCE_H__
 #define __DYNAMICMESHINSTANCE_H__
 
-#include "Model/MeshContainer.h"
+#include "Model/Mesh.h"
 #include "IMeshInstance.h"
 
-class GOKNAR_API DynamicMeshInstance : public IMeshInstance<DynamicMeshContainer>
+class GOKNAR_API DynamicMeshInstance : public IMeshInstance<DynamicMesh>
 {
 public:
 	DynamicMeshInstance() = delete;

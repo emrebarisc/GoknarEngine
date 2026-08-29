@@ -3,7 +3,7 @@
 
 #include "CollisionComponent.h"
 
-class StaticMesh;
+class StaticMeshLOD;
 
 class btTriangleMesh;
 
@@ -23,19 +23,19 @@ public:
 	virtual void TickComponent(float deltaTime) override;
 	Component* Clone() const override;
 
-	const StaticMesh* GetMesh() const
+	const StaticMeshLOD* GetMesh() const
 	{
 		return relativeMesh_;
 	}
 
-	void SetMesh(const StaticMesh* relativeMesh)
+	void SetMesh(const StaticMeshLOD* relativeMesh)
 	{
 		relativeMesh_ = relativeMesh;
 	}
 
 protected:
 private:
-	const StaticMesh* relativeMesh_{ nullptr };
+	const StaticMeshLOD* relativeMesh_{ nullptr };
 };
 
 #endif

@@ -10,7 +10,7 @@
 #include "Goknar/Helpers/SceneParser.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Materials/Material.h"
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/ParticleSystem/BillboardParticleSystem.h"
 #include "Goknar/ParticleSystem/StaticMeshParticleSystem.h"
@@ -377,25 +377,25 @@ Component* StaticMeshParticleSystemComponent::Clone() const
 	}
 	else
 	{
-		clonedComponent->SetStaticMesh(staticMesh_);
+		clonedComponent->SetStaticMesh(staticMeshLOD_);
 	}
 
 	return clonedComponent;
 }
 
-void StaticMeshParticleSystemComponent::SetStaticMesh(StaticMesh* staticMesh)
+void StaticMeshParticleSystemComponent::SetStaticMesh(StaticMeshLOD* staticMesh)
 {
-	if (staticMesh_ == staticMesh)
+	if (staticMeshLOD_ == staticMesh)
 	{
 		return;
 	}
 
-	staticMesh_ = staticMesh;
-	staticMeshPath_ = staticMesh_ ? ContentPathUtils::ToContentRelativePath(staticMesh_->GetPath()) : "";
+	staticMeshLOD_ = staticMesh;
+	staticMeshPath_ = staticMeshLOD_ ? ContentPathUtils::ToContentRelativePath(staticMeshLOD_->GetPath()) : "";
 
 	if (StaticMeshParticleSystem* staticMeshParticleSystem = GetStaticMeshParticleSystem())
 	{
-		staticMeshParticleSystem->SetStaticMesh(staticMesh_);
+		staticMeshParticleSystem->SetStaticMesh(staticMeshLOD_);
 	}
 }
 
@@ -412,7 +412,7 @@ void StaticMeshParticleSystemComponent::SetStaticMeshPath(const std::string& sta
 
 	if (StaticMeshParticleSystem* staticMeshParticleSystem = GetStaticMeshParticleSystem())
 	{
-		staticMeshParticleSystem->SetStaticMesh(staticMesh_);
+		staticMeshParticleSystem->SetStaticMesh(staticMeshLOD_);
 	}
 }
 
@@ -425,14 +425,14 @@ void StaticMeshParticleSystemComponent::SyncParticleSystemRenderSettings() const
 {
 	if (StaticMeshParticleSystem* staticMeshParticleSystem = GetStaticMeshParticleSystem())
 	{
-		staticMeshParticleSystem->SetStaticMesh(staticMesh_);
+		staticMeshParticleSystem->SetStaticMesh(staticMeshLOD_);
 	}
 }
 
 void StaticMeshParticleSystemComponent::LoadStaticMeshFromPath()
 {
-	StaticMeshContainer* staticMeshContainer = staticMeshPath_.empty() ? nullptr : engine->GetResourceManager()->GetContent<StaticMeshContainer>(staticMeshPath_);
-	staticMesh_ = staticMeshContainer ? staticMeshContainer->GetLOD(0) : nullptr;
+	StaticMesh* staticMeshContainer = staticMeshPath_.empty() ? nullptr : engine->GetResourceManager()->GetContent<StaticMesh>(staticMeshPath_);
+	staticMeshLOD_ = staticMeshContainer ? staticMeshContainer->GetLOD(0) : nullptr;
 }
 
 StaticMeshParticleSystem* StaticMeshParticleSystemComponent::GetStaticMeshParticleSystem() const

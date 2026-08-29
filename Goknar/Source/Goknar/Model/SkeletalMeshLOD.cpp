@@ -1,16 +1,16 @@
 #include "pch.h"
 
-#include "SkeletalMesh.h"
+#include "SkeletalMeshLOD.h"
 
 #include "Goknar/Engine.h"
 #include "Goknar/Components/SocketComponent.h"
 
-SkeletalMesh::SkeletalMesh() :
-	Mesh<SkeletalMeshUnit>()
+SkeletalMeshLOD::SkeletalMeshLOD() :
+	MeshSection<SkeletalMeshGeometry>()
 {
 }
 
-SkeletalMesh::~SkeletalMesh()
+SkeletalMeshLOD::~SkeletalMeshLOD()
 {
 	int skeletalAnimationSize = skeletalAnimations_.size();
 	for (unsigned int skeletalAnimationIndex = 0; skeletalAnimationIndex < skeletalAnimationSize; ++skeletalAnimationIndex)
@@ -28,37 +28,37 @@ SkeletalMesh::~SkeletalMesh()
 	delete armature_;
 }
 
-void SkeletalMesh::PreInit()
+void SkeletalMeshLOD::PreInit()
 {
-	Mesh::PreInit();
+	MeshSection::PreInit();
 
 	engine->AddSkeletalMeshToRenderer(this);
 }
 
-void SkeletalMesh::Init()
+void SkeletalMeshLOD::Init()
 {
-	Mesh::Init();
+	MeshSection::Init();
 }
 
-void SkeletalMesh::PostInit()
+void SkeletalMeshLOD::PostInit()
 {
-	Mesh::PostInit();
+	MeshSection::PostInit();
 	BuildRuntimeAnimationData();
 }
 
-void SkeletalMesh::AddMesh(SkeletalMeshUnit* meshUnit)
+void SkeletalMeshLOD::AddMesh(SkeletalMeshGeometry* meshUnit)
 {
 	meshUnit->SetOwner(this);
 
-	Mesh::AddMesh(meshUnit);
+	MeshSection::AddMesh(meshUnit);
 }
 
-void SkeletalMesh::GetBoneTransforms(std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap)
+void SkeletalMeshLOD::GetBoneTransforms(std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap)
 {
 	SetupTransforms(armature_->root, Matrix::IdentityMatrix, transforms, skeletalAnimation, time, socketMap);
 }
 
-void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform, std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap)
+void SkeletalMeshLOD::SetupTransforms(Bone* bone, const Matrix& parentTransform, std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap)
 {
 	if (!bone)
 	{
@@ -101,7 +101,7 @@ void SkeletalMesh::SetupTransforms(Bone* bone, const Matrix& parentTransform, st
 	}
 }
 
-void SkeletalMesh::BuildRuntimeAnimationData()
+void SkeletalMeshLOD::BuildRuntimeAnimationData()
 {
 	if (runtimeAnimationDataBuilt_)
 	{
@@ -124,7 +124,7 @@ void SkeletalMesh::BuildRuntimeAnimationData()
 	runtimeAnimationDataBuilt_ = true;
 }
 
-void SkeletalMesh::AddBoneToRuntimeSkeleton(Bone* bone, int parentIndex)
+void SkeletalMeshLOD::AddBoneToRuntimeSkeleton(Bone* bone, int parentIndex)
 {
 	if (!bone)
 	{
@@ -155,7 +155,7 @@ void SkeletalMesh::AddBoneToRuntimeSkeleton(Bone* bone, int parentIndex)
 	}
 }
 
-void SkeletalMesh::BuildRuntimeAnimationClips()
+void SkeletalMeshLOD::BuildRuntimeAnimationClips()
 {
 	runtimeAnimationClips_.reserve(skeletalAnimations_.size());
 

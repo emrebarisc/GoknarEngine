@@ -6,8 +6,6 @@
 
 #include <vector>
 
-class StaticMesh;
-
 class GOKNAR_API GPUFoliageComponent : public Component
 {
 public:

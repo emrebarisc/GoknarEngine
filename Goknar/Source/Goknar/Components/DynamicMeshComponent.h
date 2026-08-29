@@ -6,9 +6,7 @@
 class DynamicMesh;
 class DynamicMeshInstance;
 
-using DynamicMeshContainer = MeshContainer<DynamicMesh>;
-
-class GOKNAR_API DynamicMeshComponent : public MeshComponent<DynamicMeshContainer, DynamicMeshInstance>
+class GOKNAR_API DynamicMeshComponent : public MeshComponent<DynamicMesh, DynamicMeshInstance>
 {
 public:
 	DynamicMeshComponent() = delete;
@@ -17,7 +15,7 @@ public:
 	virtual ~DynamicMeshComponent();
 
 	Component* Clone() const override;
-	void SetMesh(DynamicMeshContainer* mesh) override;
+	void SetMesh(DynamicMesh* mesh) override;
 
 protected:
 private:

@@ -5,9 +5,9 @@
 #include <vector>
 
 #include "MaterialBase.h"
-#include "Goknar/Model/MeshUnit.h"
+#include "Goknar/Model/MeshGeometry.h"
 
-class MeshUnit;
+class MeshGeometry;
 class Material;
 class MaterialInstance;
 class Image;
@@ -81,7 +81,7 @@ public:
 	Material& operator=(Material&&) = delete;
 	virtual ~Material();
 
-	void Build(MeshUnit* meshUnit);
+	void Build(MeshGeometry* meshUnit);
 
 	virtual void PreInit() override;
 	virtual void Init() override;

@@ -8,7 +8,7 @@
 #include "Goknar/Graphics/IGraphicsAPI.h"
 #include "Goknar/Materials/Material.h"
 #include "Goknar/Materials/MaterialInstance.h"
-#include "Goknar/Model/MeshUnit.h"
+#include "Goknar/Model/MeshGeometry.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Renderer/ComputeShader.h"
 #include "Goknar/Renderer/Renderer.h"
@@ -131,14 +131,14 @@ std::uint32_t StaticMeshParticleSystem::Render(const Camera*, ParticleRenderStag
 	return drawCount;
 }
 
-void StaticMeshParticleSystem::SetStaticMesh(const StaticMesh* staticMesh)
+void StaticMeshParticleSystem::SetStaticMesh(const StaticMeshLOD* staticMesh)
 {
-	if (staticMesh_ == staticMesh)
+	if (staticMeshLOD_ == staticMesh)
 	{
 		return;
 	}
 
-	staticMesh_ = staticMesh;
+	staticMeshLOD_ = staticMesh;
 
 	if (!GetIsInitialized())
 	{
@@ -277,13 +277,13 @@ void StaticMeshParticleSystem::RefreshStaticMeshSubmeshRenderData()
 	DestroyRenderResources();
 	staticMeshSubmeshRenderData_.clear();
 
-	if (!staticMesh_)
+	if (!staticMeshLOD_)
 	{
 		return;
 	}
 
-	const std::vector<MeshUnit*>& subMeshes = staticMesh_->GetSubMeshes();
-	for (const MeshUnit* subMesh : subMeshes)
+	const std::vector<MeshGeometry*>& subMeshes = staticMeshLOD_->GetSubMeshes();
+	for (const MeshGeometry* subMesh : subMeshes)
 	{
 		if (!subMesh)
 		{

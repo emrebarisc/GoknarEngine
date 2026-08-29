@@ -12,7 +12,7 @@
 #include "Goknar/Model/DynamicMesh.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Model/SkeletalMesh.h"
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 
 #include "Goknar/Renderer/Renderer.h"
 

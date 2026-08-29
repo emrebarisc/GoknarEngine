@@ -11,7 +11,7 @@
 #include "Materials/MaterialInstance.h"
 #include "Math/GoknarMath.h"
 #include "Model/StaticMeshInstance.h"
-#include "Model/MeshContainer.h"
+#include "Model/Mesh.h"
 #include "Physics/PhysicsUtils.h"
 
 #include "Physics/Components/BoxCollisionComponent.h"
@@ -20,14 +20,14 @@
 #include "Physics/Components/MovingTriangleMeshCollisionComponent.h"
 #include "Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 
-StaticMeshContainer* DebugDrawer::lineMesh_ = nullptr;
-StaticMeshContainer* DebugDrawer::arrowHeadMesh_ = nullptr;
+StaticMesh* DebugDrawer::lineMesh_ = nullptr;
+StaticMesh* DebugDrawer::arrowHeadMesh_ = nullptr;
 
 DebugDrawer::DebugDrawer()
 {
 #ifdef GOKNAR_BUILD_DEBUG
-	lineMesh_ = engine->GetResourceManager()->GetEngineContent<StaticMeshContainer>("Debug/Meshes/SM_Line.fbx");
-	arrowHeadMesh_ = engine->GetResourceManager()->GetEngineContent<StaticMeshContainer>("Debug/Meshes/SM_ArrowHead.fbx");
+	lineMesh_ = engine->GetResourceManager()->GetEngineContent<StaticMesh>("Debug/Meshes/SM_Line.fbx");
+	arrowHeadMesh_ = engine->GetResourceManager()->GetEngineContent<StaticMesh>("Debug/Meshes/SM_ArrowHead.fbx");
 #endif
 }
 
@@ -267,8 +267,8 @@ void DebugDrawer::DrawCollisionComponent(const MovingTriangleMeshCollisionCompon
 	DebugObject* collisionObject = new DebugObject();
 	collisionObject->SetName("DebugObject_TriangleMeshCollisionComponent");
 
-	const MeshUnit* mesh = movingTriangleMeshCollisionComponent->GetMesh()->GetSubMeshes()[0];
-	DrawMeshUnit(mesh, color, thickness, time, collisionObject);
+	const MeshGeometry* mesh = movingTriangleMeshCollisionComponent->GetMesh()->GetSubMeshes()[0];
+	DrawMeshGeometry(mesh, color, thickness, time, collisionObject);
 
 	collisionObject->SetWorldPosition(movingTriangleMeshCollisionComponent->GetWorldPosition());
 	collisionObject->SetWorldRotation(movingTriangleMeshCollisionComponent->GetWorldRotation());
@@ -284,8 +284,8 @@ void DebugDrawer::DrawCollisionComponent(const NonMovingTriangleMeshCollisionCom
 	DebugObject* collisionObject = new DebugObject();
 	collisionObject->SetName("DebugObject_TriangleMeshCollisionComponent");
 
-	const MeshUnit* mesh = nonMovingTriangleMeshCollisionComponent->GetMesh()->GetSubMeshes()[0];
-	DrawMeshUnit(mesh, color, thickness, time, collisionObject);
+	const MeshGeometry* mesh = nonMovingTriangleMeshCollisionComponent->GetMesh()->GetSubMeshes()[0];
+	DrawMeshGeometry(mesh, color, thickness, time, collisionObject);
 
 	collisionObject->SetWorldPosition(nonMovingTriangleMeshCollisionComponent->GetWorldPosition());
 	collisionObject->SetWorldRotation(nonMovingTriangleMeshCollisionComponent->GetWorldRotation());
@@ -295,7 +295,7 @@ void DebugDrawer::DrawCollisionComponent(const NonMovingTriangleMeshCollisionCom
 #endif
 }
 
-void DebugDrawer::DrawMeshUnit(const MeshUnit* meshUnit, const Colorf& color, float thickness, float time, ObjectBase* owner)
+void DebugDrawer::DrawMeshGeometry(const MeshGeometry* meshUnit, const Colorf& color, float thickness, float time, ObjectBase* owner)
 {
 #ifdef GOKNAR_BUILD_DEBUG
 	const VertexArray* vertexArray = meshUnit->GetVerticesPointer();

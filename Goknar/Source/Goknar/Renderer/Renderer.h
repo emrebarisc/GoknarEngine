@@ -4,16 +4,20 @@
 #include "Goknar/Core.h"
 #include "Goknar/Renderer/Types.h"
 
-#include "Goknar/Model/MeshUnit.h"
+#include "Goknar/Model/MeshGeometry.h"
 #include "Goknar/Delegates/Delegate.h"
 
 #include <unordered_map>
 #include <vector>
 
 class DynamicMesh;
+class DynamicMeshLOD;
 class InstancedStaticMesh;
+class InstancedStaticMeshLOD;
 class StaticMesh;
+class StaticMeshLOD;
 class SkeletalMesh;
+class SkeletalMeshLOD;
 class LightManager;
 class ParticleSystemBase;
 class GPUFoliageSystem;
@@ -37,11 +41,11 @@ class PostProcessingEffect;
 
 class RenderTarget;
 
-class DynamicMeshUnit;
-class SkeletalMeshUnit;
+class DynamicMeshGeometry;
+class SkeletalMeshGeometry;
 
 template<class T>
-class MeshContainer;
+class Mesh;
 
 enum class GOKNAR_API RenderPassType : unsigned int
 {
@@ -121,7 +125,7 @@ public:
 	void BindGeometryBufferTextures(Shader* shader);
 
 	GeometryBufferData* geometryBufferData{ nullptr };
-	StaticMesh* deferredRenderingMesh{ nullptr };
+	StaticMeshLOD* deferredRenderingMesh{ nullptr };
 	Shader* deferredRenderingMeshShader{ nullptr };
 	Texture* sceneTexture{ nullptr };
 	FrameBuffer* sceneFrameBuffer{ nullptr };
@@ -152,18 +156,18 @@ public:
 	void RenderCurrentFrame();
 	void Render(RenderPassType renderPassType);
 
-	void AddInstancedStaticMeshToRenderer(InstancedStaticMesh* object);
-	void AddStaticMeshToRenderer(StaticMesh* object);
+	void AddInstancedStaticMeshToRenderer(InstancedStaticMeshLOD* object);
+	void AddStaticMeshToRenderer(StaticMeshLOD* object);
 	void AddStaticMeshInstance(StaticMeshInstance* object);
 	void RemoveStaticMeshInstance(StaticMeshInstance* object);
 	void AddInstancedStaticMeshInstance(InstancedStaticMeshInstance* object);
 	void RemoveInstancedStaticMeshInstance(InstancedStaticMeshInstance* object);
 
-	void AddSkeletalMeshToRenderer(SkeletalMesh* object);
+	void AddSkeletalMeshToRenderer(SkeletalMeshLOD* object);
 	void AddSkeletalMeshInstance(SkeletalMeshInstance* object);
 	void RemoveSkeletalMeshInstance(SkeletalMeshInstance* object);
 
-	void AddDynamicMeshToRenderer(DynamicMesh* object);
+	void AddDynamicMeshToRenderer(DynamicMeshLOD* object);
 	void AddDynamicMeshInstance(DynamicMeshInstance* object);
 	void RemoveDynamicMeshInstance(DynamicMeshInstance* object);
 	void AddGPUFoliageSystem(GPUFoliageSystem* foliageSystem);
@@ -171,9 +175,9 @@ public:
 	void AddParticleSystem(ParticleSystemBase* particleSystem);
 	void RemoveParticleSystem(ParticleSystemBase* particleSystem);
 
-	void UpdateDynamicMeshVertex(const DynamicMeshUnit* object, int vertexIndex, const VertexData& newVertexData);
-	void RefreshInstancedStaticMeshTransformations(const InstancedStaticMesh* object);
-	void UpdateInstancedStaticMeshTransformation(const InstancedStaticMesh* object, int transformationIndex, const Matrix& newTransformationMatrix);
+	void UpdateDynamicMeshVertex(const DynamicMeshGeometry* object, int vertexIndex, const VertexData& newVertexData);
+	void RefreshInstancedStaticMeshTransformations(const InstancedStaticMeshLOD* object);
+	void UpdateInstancedStaticMeshTransformation(const InstancedStaticMeshLOD* object, int transformationIndex, const Matrix& newTransformationMatrix);
 
 	void PrepareSkeletalMeshInstancesForTheCurrentFrame();
 	void PrepareSkeletalMeshInstancesForTheNextFrame();
@@ -225,7 +229,7 @@ public:
 	void AddRenderTarget(const RenderTarget* renderTarget);
 	void RemoveRenderTarget(const RenderTarget* renderTarget);
 
-	void RenderStaticMesh(StaticMesh* staticMesh);
+	void RenderStaticMesh(StaticMeshLOD* staticMesh);
 	void BindStaticMeshBuffers();
 
 	void SetDrawOnWindow(bool drawOnWindow)
@@ -252,28 +256,28 @@ private:
 	struct StaticMeshRenderData
 	{
 		StaticMeshInstance* meshInstance{ nullptr };
-		MeshContainer<StaticMesh>* meshUnit{ nullptr };
+		StaticMesh* mesh{ nullptr };
 		int subMeshIndex{ 0 };
 	};
 
 	struct InstancedStaticMeshRenderData
 	{
 		InstancedStaticMeshInstance* meshInstance{ nullptr };
-		MeshContainer<InstancedStaticMesh>* meshUnit{ nullptr };
+		InstancedStaticMesh* mesh{ nullptr };
 		int subMeshIndex{ 0 };
 	};
 
 	struct SkeletalMeshRenderData
 	{
 		SkeletalMeshInstance* meshInstance{ nullptr };
-		MeshContainer<SkeletalMesh>* meshUnit{ nullptr };
+		SkeletalMesh* mesh{ nullptr };
 		int subMeshIndex{ 0 };
 	};
 
 	struct DynamicMeshRenderData
 	{
 		DynamicMeshInstance* meshInstance{ nullptr };
-		MeshContainer<DynamicMesh>* meshUnit{ nullptr };
+		DynamicMesh* mesh{ nullptr };
 		GEint subMeshIndex{ 0 };
 	};
 
@@ -296,7 +300,7 @@ private:
 	};
 
 	void BindStaticVAO();
-	bool BindInstancedStaticMesh(InstancedStaticMesh* instancedStaticMesh);
+	bool BindInstancedStaticMesh(InstancedStaticMeshLOD* instancedStaticMesh);
 	void BindSkeletalVAO();
 	void BindDynamicVAO();
 	void SetAttribPointers();
@@ -307,13 +311,13 @@ private:
 	void SortOpaqueInstances();
 	void SortTransparentInstances();
 
-	std::unordered_map<const InstancedStaticMesh*, GEuint> instancedStaticMeshTransformationBufferIdMap_;
-	std::unordered_map<const InstancedStaticMesh*, GEuint> instancedStaticMeshVertexArrayIdMap_;
+	std::unordered_map<const InstancedStaticMeshLOD*, GEuint> instancedStaticMeshTransformationBufferIdMap_;
+	std::unordered_map<const InstancedStaticMeshLOD*, GEuint> instancedStaticMeshVertexArrayIdMap_;
 
-	std::vector<MeshUnit*> staticMeshUnits_;
-	std::vector<InstancedStaticMesh*> instancedStaticMeshes_;
-	std::vector<SkeletalMeshUnit*> skeletalMeshUnits_;
-	std::vector<DynamicMeshUnit*> dynamicMeshUnits_;
+	std::vector<MeshGeometry*> staticMeshGeometries_;
+	std::vector<InstancedStaticMeshLOD*> instancedStaticMeshes_;
+	std::vector<SkeletalMeshGeometry*> skeletalMeshGeometries_;
+	std::vector<DynamicMeshGeometry*> dynamicMeshGeometries_;
 
 	std::vector<StaticMeshRenderData> opaqueStaticMeshRenderData_;
 	std::vector<StaticMeshRenderData> transparentStaticMeshRenderData_;

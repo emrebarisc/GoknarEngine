@@ -10,7 +10,7 @@ Bullet::Bullet()
 	SphereCollisionComponent* sphereCollisionComponent = AddSubComponent<SphereCollisionComponent>();
 	sphereCollisionComponent->SetRadius(0.05f);
 
-	StaticMeshContainer* staticMesh = engine->GetResourceManager()->GetContent<StaticMeshContainer>("Meshes/SM_Bullet.fbx");
+	StaticMesh* staticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Bullet.fbx");
 
 	StaticMeshComponent* staticMeshComponent = AddSubComponent<StaticMeshComponent>();
 	staticMeshComponent->SetMesh(staticMesh);

@@ -14,6 +14,7 @@ class IMaterialBase;
 class Material;
 class ParticleSystemBase;
 class StaticMesh;
+class StaticMeshLOD;
 class StaticMeshParticleSystem;
 
 class GOKNAR_API ParticleSystemComponent : public Component
@@ -159,10 +160,10 @@ public:
 	explicit StaticMeshParticleSystemComponent(Component* parent);
 	Component* Clone() const override;
 
-	void SetStaticMesh(StaticMesh* staticMesh);
-	const StaticMesh* GetStaticMesh() const
+	void SetStaticMesh(StaticMeshLOD* staticMesh);
+	const StaticMeshLOD* GetStaticMesh() const
 	{
-		return staticMesh_;
+		return staticMeshLOD_;
 	}
 
 	void SetStaticMeshPath(const std::string& staticMeshPath);
@@ -179,7 +180,7 @@ private:
 	void LoadStaticMeshFromPath();
 	StaticMeshParticleSystem* GetStaticMeshParticleSystem() const;
 
-	StaticMesh* staticMesh_{ nullptr };
+	StaticMeshLOD* staticMeshLOD_{ nullptr };
 	std::string staticMeshPath_{ "" };
 };
 

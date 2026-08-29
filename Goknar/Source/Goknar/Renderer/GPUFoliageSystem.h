@@ -4,6 +4,7 @@
 #include "Goknar/Core.h"
 #include "Goknar/Geometry/Box.h"
 #include "Goknar/Math/Matrix.h"
+#include "Goknar/Model/Mesh.h"
 #include "Goknar/Renderer/Renderer.h"
 #include "Goknar/Renderer/Types.h"
 
@@ -12,9 +13,8 @@
 
 class Camera;
 class IMaterialBase;
-class MeshUnit;
+class MeshGeometry;
 class Shader;
-class StaticMesh;
 
 struct GOKNAR_API GPUFoliageInstance
 {
@@ -109,7 +109,7 @@ private:
 
 	struct RenderBatch
 	{
-		const MeshUnit* meshUnit{ nullptr };
+		const MeshGeometry* meshUnit{ nullptr };
 		const IMaterialBase* material{ nullptr };
 		Shader* forwardShader{ nullptr };
 		Shader* geometryBufferShader{ nullptr };
@@ -126,6 +126,7 @@ private:
 	void DestroyRenderBatches();
 	void RefreshDrawBuffers();
 	void UploadInstanceBuffers();
+	void UpdateStaticMeshLOD(const Camera* activeCamera);
 	void RecalculateAABB();
 	void RenderMeshBatches(RenderPassType renderPassType, int& drawCount);
 
@@ -134,6 +135,7 @@ private:
 	void ApplyMaterialUniforms(const RenderBatch& renderBatch, Shader* shader, RenderPassType renderPassType) const;
 
 	const StaticMesh* staticMesh_{ nullptr };
+	const StaticMeshLOD* staticMeshLOD_{ nullptr };
 	std::vector<GPUFoliageInstance> instances_;
 	std::vector<RenderBatch> renderBatches_;
 

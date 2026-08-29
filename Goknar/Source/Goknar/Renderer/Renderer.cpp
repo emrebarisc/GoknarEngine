@@ -31,7 +31,7 @@
 #include "Goknar/Model/InstancedStaticMeshInstance.h"
 #include "Goknar/Model/StaticMeshInstance.h"
 #include "Goknar/Model/SkeletalMeshInstance.h"
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 
 #include "Goknar/ParticleSystem/ParticleSystemBase.h"
 
@@ -234,19 +234,19 @@ void Renderer::PreInit()
 	GraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::DepthTest, true);
 	GraphicsAPI()->SetDepthFunction(GraphicsDepthFunction::Lequal);
 
-	for (MeshUnit* subMesh : staticMeshUnits_)
+	for (MeshGeometry* subMesh : staticMeshGeometries_)
 	{
 		staticMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
 		staticMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
 	}
 
-	for (SkeletalMeshUnit* subMesh : skeletalMeshUnits_)
+	for (SkeletalMeshGeometry* subMesh : skeletalMeshGeometries_)
 	{
 		skeletalMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
 		skeletalMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
 	}
 
-	for (DynamicMeshUnit* subMesh : dynamicMeshUnits_)
+	for (DynamicMeshGeometry* subMesh : dynamicMeshGeometries_)
 	{
 		dynamicMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
 		dynamicMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
@@ -289,7 +289,7 @@ void Renderer::SetStaticBufferData()
 	/*
 		Buffer Sub-Data
 	*/
-	for (MeshUnit* subMesh : staticMeshUnits_)
+	for (MeshGeometry* subMesh : staticMeshGeometries_)
 	{
 		subMesh->SetBaseVertex(staticMeshBufferData_.baseVertex);
 		subMesh->SetVertexStartingIndex(staticMeshBufferData_.vertexStartingIndex);
@@ -341,7 +341,7 @@ void Renderer::SetSkeletalBufferData()
 	/*
 		Buffer Sub-Data
 	*/
-	for (SkeletalMeshUnit* subMesh : skeletalMeshUnits_)
+	for (SkeletalMeshGeometry* subMesh : skeletalMeshGeometries_)
 	{
 		subMesh->SetBaseVertex(skeletalMeshBufferData_.baseVertex);
 		subMesh->SetVertexStartingIndex(skeletalMeshBufferData_.vertexStartingIndex);
@@ -408,7 +408,7 @@ void Renderer::SetDynamicBufferData()
 	/*
 		Buffer Sub-Data
 	*/
-	for (DynamicMeshUnit* subMesh : dynamicMeshUnits_)
+	for (DynamicMeshGeometry* subMesh : dynamicMeshGeometries_)
 	{
 		subMesh->SetBaseVertex(dynamicMeshBufferData_.baseVertex);
 		subMesh->SetVertexStartingIndex(dynamicMeshBufferData_.vertexStartingIndex);
@@ -670,7 +670,7 @@ void Renderer::Render(RenderPassType renderPassType)
 	auto RenderStaticMesh = [&](const StaticMeshRenderData& renderData)
 		{
 			StaticMeshInstance* staticMeshInstance = renderData.meshInstance;
-			MeshContainer<StaticMesh>* meshContainer = renderData.meshUnit;
+			StaticMesh* meshContainer = renderData.mesh;
 
 			const Box& meshContainerAABB = meshContainer->GetAABB();
 			const Matrix& componentToWorldTransformationMatrix = staticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix();
@@ -679,7 +679,7 @@ void Renderer::Render(RenderPassType renderPassType)
 
 			const int forcedLODIndex = staticMeshInstance->GetForcedLODIndex();
 			size_t LODIndex = forcedLODIndex < 0 ? meshContainer->GetLODIndex(meshContainerWindowCoverage) : (size_t)forcedLODIndex;
-			const StaticMesh* LODMesh = meshContainer->GetLOD((int)LODIndex);
+			const StaticMeshLOD* LODMesh = meshContainer->GetLOD((int)LODIndex);
 			if (!LODMesh)
 			{
 				return;
@@ -691,7 +691,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				return;
 			}
 
-			const MeshUnit* subMesh = LODMesh->GetMesh(subMeshIndex);
+			const MeshGeometry* subMesh = LODMesh->GetMesh(subMeshIndex);
 
 			if (!skipFrustumCulling &&
 				!activeCamera->IsAABBVisible(meshContainerAABB, componentToWorldTransformationMatrix)) return;
@@ -708,13 +708,13 @@ void Renderer::Render(RenderPassType renderPassType)
 	auto RenderInstancedStaticMesh = [&](const InstancedStaticMeshRenderData& renderData)
 		{
 			InstancedStaticMeshInstance* instancedStaticMeshInstance = renderData.meshInstance;
-			MeshContainer<InstancedStaticMesh>* meshContainer = renderData.meshUnit;
+			InstancedStaticMesh* meshContainer = renderData.mesh;
 			const Box& meshContainerAABB = meshContainer->GetAABB();
 			const Matrix& componentToWorldTransformationMatrix = instancedStaticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix();
 			float meshContainerWindowCoverage = activeCamera->GetAABBFrameCoverage(meshContainerAABB, componentToWorldTransformationMatrix);
 			const int forcedLODIndex = instancedStaticMeshInstance->GetForcedLODIndex();
 			size_t LODIndex = forcedLODIndex < 0 ? meshContainer->GetLODIndex(meshContainerWindowCoverage) : (size_t)forcedLODIndex;
-			InstancedStaticMesh* instancedStaticMesh = meshContainer->GetLOD((int)LODIndex);
+			InstancedStaticMeshLOD* instancedStaticMesh = meshContainer->GetLOD((int)LODIndex);
 			if (!instancedStaticMesh)
 			{
 				return;
@@ -732,7 +732,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				return;
 			}
 
-			const MeshUnit* subMesh = instancedStaticMesh->GetMesh(subMeshIndex);
+			const MeshGeometry* subMesh = instancedStaticMesh->GetMesh(subMeshIndex);
 
 			if (!skipFrustumCulling &&
 				!activeCamera->IsAABBVisible(instancedStaticMesh->GetSubMeshInstanceAABB((size_t)subMeshIndex), componentToWorldTransformationMatrix)) return;
@@ -760,13 +760,13 @@ void Renderer::Render(RenderPassType renderPassType)
 	auto RenderSkeletalMesh = [&](const SkeletalMeshRenderData& renderData)
 		{
 			SkeletalMeshInstance* skeletalMeshInstance = renderData.meshInstance;
-			MeshContainer<SkeletalMesh>* meshContainer = renderData.meshUnit;
+			SkeletalMesh* meshContainer = renderData.mesh;
 			const Box& meshContainerAABB = meshContainer->GetAABB();
 			const Matrix& componentToWorldTransformationMatrix = skeletalMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix();
 			float meshContainerWindowCoverage = activeCamera->GetAABBFrameCoverage(meshContainerAABB, componentToWorldTransformationMatrix);
 			const int forcedLODIndex = skeletalMeshInstance->GetForcedLODIndex();
 			size_t LODIndex = forcedLODIndex < 0 ? meshContainer->GetLODIndex(meshContainerWindowCoverage) : (size_t)forcedLODIndex;
-			const SkeletalMesh* LODMesh = meshContainer->GetLOD((int)LODIndex);
+			const SkeletalMeshLOD* LODMesh = meshContainer->GetLOD((int)LODIndex);
 			if (!LODMesh)
 			{
 				return;
@@ -778,7 +778,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				return;
 			}
 
-			const SkeletalMeshUnit* subMesh = LODMesh->GetMesh(subMeshIndex);
+			const SkeletalMeshGeometry* subMesh = LODMesh->GetMesh(subMeshIndex);
 
 			if (!skipFrustumCulling &&
 				!activeCamera->IsAABBVisible(subMesh->GetAABB(), componentToWorldTransformationMatrix)) return;
@@ -795,13 +795,13 @@ void Renderer::Render(RenderPassType renderPassType)
 	auto RenderDynamicMesh = [&](const DynamicMeshRenderData& renderData)
 		{
 			DynamicMeshInstance* dynamicMeshInstance = renderData.meshInstance;
-			MeshContainer<DynamicMesh>* meshContainer = renderData.meshUnit;
+			DynamicMesh* meshContainer = renderData.mesh;
 			const Box& meshContainerAABB = meshContainer->GetAABB();
 			const Matrix& componentToWorldTransformationMatrix = dynamicMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix();
 			float meshContainerWindowCoverage = activeCamera->GetAABBFrameCoverage(meshContainerAABB, componentToWorldTransformationMatrix);
 			const int forcedLODIndex = dynamicMeshInstance->GetForcedLODIndex();
 			size_t LODIndex = forcedLODIndex < 0 ? meshContainer->GetLODIndex(meshContainerWindowCoverage) : (size_t)forcedLODIndex;
-			const DynamicMesh* LODMesh = meshContainer->GetLOD((int)LODIndex);
+			const DynamicMeshLOD* LODMesh = meshContainer->GetLOD((int)LODIndex);
 			if (!LODMesh)
 			{
 				return;
@@ -813,7 +813,7 @@ void Renderer::Render(RenderPassType renderPassType)
 				return;
 			}
 
-			const DynamicMeshUnit* subMesh = LODMesh->GetMesh(subMeshIndex);
+			const DynamicMeshGeometry* subMesh = LODMesh->GetMesh(subMeshIndex);
 
 			if (!skipFrustumCulling &&
 				!activeCamera->IsAABBVisible(subMesh->GetAABB(), componentToWorldTransformationMatrix)) return;
@@ -829,7 +829,7 @@ void Renderer::Render(RenderPassType renderPassType)
 
 	if (renderPassType != RenderPassType::Deferred)
 	{
-		// Static MeshUnit Instances
+		// Static MeshGeometry Instances
 		{
 			if (0 < staticMeshBufferData_.meshCount)
 			{
@@ -857,7 +857,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			}
 		}
 
-		// Skeletal MeshUnit Instances
+		// Skeletal MeshGeometry Instances
 		{
 			if (0 < skeletalMeshBufferData_.meshCount)
 			{
@@ -875,7 +875,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			}
 		}
 
-		// Dynamic MeshUnit Instances
+		// Dynamic MeshGeometry Instances
 		{
 			if (0 < dynamicMeshBufferData_.meshCount)
 			{
@@ -1015,16 +1015,16 @@ void Renderer::Render(RenderPassType renderPassType)
 	}
 }
 
-void Renderer::AddStaticMeshToRenderer(StaticMesh* staticMesh)
+void Renderer::AddStaticMeshToRenderer(StaticMeshLOD* staticMesh)
 {
-	for (MeshUnit* subMesh : staticMesh->GetSubMeshes())
+	for (MeshGeometry* subMesh : staticMesh->GetSubMeshes())
 	{
-		staticMeshUnits_.push_back(subMesh);
+		staticMeshGeometries_.push_back(subMesh);
 		staticMeshBufferData_.meshCount++;
 	}
 }
 
-void Renderer::AddInstancedStaticMeshToRenderer(InstancedStaticMesh* instancedStaticMesh)
+void Renderer::AddInstancedStaticMeshToRenderer(InstancedStaticMeshLOD* instancedStaticMesh)
 {
 	instancedStaticMeshes_.push_back(instancedStaticMesh);
 	AddStaticMeshToRenderer(instancedStaticMesh);
@@ -1032,19 +1032,19 @@ void Renderer::AddInstancedStaticMeshToRenderer(InstancedStaticMesh* instancedSt
 
 void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 {
-	MeshContainer<StaticMesh>* staticMeshContainer = meshInstance->GetMesh();
+	StaticMesh* staticMeshContainer = meshInstance->GetMesh();
 	if (!staticMeshContainer || staticMeshContainer->GetLODCount() == 0)
 	{
 		return;
 	}
 
-	const StaticMesh* LOD0Mesh = staticMeshContainer->GetLOD(0);
+	const StaticMeshLOD* LOD0Mesh = staticMeshContainer->GetLOD(0);
 	if (!LOD0Mesh)
 	{
 		return;
 	}
 
-	const std::vector<MeshUnit*>& subMeshes = LOD0Mesh->GetSubMeshes();
+	const std::vector<MeshGeometry*>& subMeshes = LOD0Mesh->GetSubMeshes();
 	size_t subMeshCount = subMeshes.size();
 	for (int subMeshIndex = 0; subMeshIndex < subMeshCount; ++subMeshIndex)
 	{
@@ -1088,19 +1088,19 @@ void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 
 void Renderer::AddInstancedStaticMeshInstance(InstancedStaticMeshInstance* instancedStaticMeshInstance)
 {
-	InstancedStaticMeshContainer* instancedStaticMeshContainer = instancedStaticMeshInstance->GetMesh();
+	InstancedStaticMesh* instancedStaticMeshContainer = instancedStaticMeshInstance->GetMesh();
 	if (!instancedStaticMeshContainer || instancedStaticMeshContainer->GetLODCount() == 0)
 	{
 		return;
 	}
 
-	const InstancedStaticMesh* LOD0Mesh = instancedStaticMeshContainer->GetLOD(0);
+	const InstancedStaticMeshLOD* LOD0Mesh = instancedStaticMeshContainer->GetLOD(0);
 	if (!LOD0Mesh)
 	{
 		return;
 	}
 
-	const std::vector<MeshUnit*>& subMeshes = LOD0Mesh->GetSubMeshes();
+	const std::vector<MeshGeometry*>& subMeshes = LOD0Mesh->GetSubMeshes();
 	size_t subMeshCount = subMeshes.size();
 	for (int subMeshIndex = 0; subMeshIndex < subMeshCount; ++subMeshIndex)
 	{
@@ -1142,30 +1142,30 @@ void Renderer::RemoveInstancedStaticMeshInstance(InstancedStaticMeshInstance* in
 	removeRenderData(transparentInstancedStaticMeshRenderData_);
 }
 
-void Renderer::AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh)
+void Renderer::AddSkeletalMeshToRenderer(SkeletalMeshLOD* skeletalMesh)
 {
-	for (SkeletalMeshUnit* subMesh : skeletalMesh->GetSubMeshes())
+	for (SkeletalMeshGeometry* subMesh : skeletalMesh->GetSubMeshes())
 	{
-		skeletalMeshUnits_.push_back(subMesh);
+		skeletalMeshGeometries_.push_back(subMesh);
 		skeletalMeshBufferData_.meshCount++;
 	}
 }
 
 void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
 {
-	SkeletalMeshContainer* skeletalMeshContainer = skeletalMeshInstance->GetMesh();
+	SkeletalMesh* skeletalMeshContainer = skeletalMeshInstance->GetMesh();
 	if (!skeletalMeshContainer || skeletalMeshContainer->GetLODCount() == 0)
 	{
 		return;
 	}
 
-	const SkeletalMesh* LOD0Mesh = skeletalMeshContainer->GetLOD(0);
+	const SkeletalMeshLOD* LOD0Mesh = skeletalMeshContainer->GetLOD(0);
 	if (!LOD0Mesh)
 	{
 		return;
 	}
 
-	const std::vector<SkeletalMeshUnit*>& subMeshes = LOD0Mesh->GetSubMeshes();
+	const std::vector<SkeletalMeshGeometry*>& subMeshes = LOD0Mesh->GetSubMeshes();
 	size_t subMeshCount = subMeshes.size();
 	for (int subMeshIndex = 0; subMeshIndex < subMeshCount; ++subMeshIndex)
 	{
@@ -1207,30 +1207,30 @@ void Renderer::RemoveSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInst
 	removeRenderData(transparentSkeletalMeshRenderData_);
 }
 
-void Renderer::AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh)
+void Renderer::AddDynamicMeshToRenderer(DynamicMeshLOD* dynamicMesh)
 {
-	for (DynamicMeshUnit* subMesh : dynamicMesh->GetSubMeshes())
+	for (DynamicMeshGeometry* subMesh : dynamicMesh->GetSubMeshes())
 	{
-		dynamicMeshUnits_.push_back(subMesh);
+		dynamicMeshGeometries_.push_back(subMesh);
 	}
 	dynamicMeshBufferData_.meshCount++;
 }
 
 void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
-	DynamicMeshContainer* dynamicMeshContainer = dynamicMeshInstance->GetMesh();
+	DynamicMesh* dynamicMeshContainer = dynamicMeshInstance->GetMesh();
 	if (!dynamicMeshContainer || dynamicMeshContainer->GetLODCount() == 0)
 	{
 		return;
 	}
 
-	const DynamicMesh* LOD0Mesh = dynamicMeshContainer->GetLOD(0);
+	const DynamicMeshLOD* LOD0Mesh = dynamicMeshContainer->GetLOD(0);
 	if (!LOD0Mesh)
 	{
 		return;
 	}
 
-	const std::vector<DynamicMeshUnit*>& subMeshes = LOD0Mesh->GetSubMeshes();
+	const std::vector<DynamicMeshGeometry*>& subMeshes = LOD0Mesh->GetSubMeshes();
 	size_t subMeshCount = subMeshes.size();
 	for (int subMeshIndex = 0; subMeshIndex < subMeshCount; ++subMeshIndex)
 	{
@@ -1316,13 +1316,13 @@ void Renderer::RemoveParticleSystem(ParticleSystemBase* particleSystem)
 		particleSystems_.end());
 }
 
-void Renderer::UpdateDynamicMeshVertex(const DynamicMeshUnit* object, int vertexIndex, const VertexData& newVertexData)
+void Renderer::UpdateDynamicMeshVertex(const DynamicMeshGeometry* object, int vertexIndex, const VertexData& newVertexData)
 {
 	int sizeOfVertexData = sizeof(VertexData);
 	GraphicsAPI()->NamedBufferSubData(dynamicMeshBufferData_.vertexBufferId, object->GetRendererVertexOffset() + vertexIndex * sizeOfVertexData, sizeOfVertexData, &newVertexData);
 }
 
-void Renderer::RefreshInstancedStaticMeshTransformations(const InstancedStaticMesh* instancedStaticMesh)
+void Renderer::RefreshInstancedStaticMeshTransformations(const InstancedStaticMeshLOD* instancedStaticMesh)
 {
 	if (!instancedStaticMesh || staticMeshBufferData_.vertexBufferId == 0)
 	{
@@ -1345,10 +1345,10 @@ void Renderer::RefreshInstancedStaticMeshTransformations(const InstancedStaticMe
 		bufferData,
 		GraphicsBufferUsage::DynamicDraw);
 
-	const_cast<InstancedStaticMesh*>(instancedStaticMesh)->ClearPendingFullTransformUpload();
+	const_cast<InstancedStaticMeshLOD*>(instancedStaticMesh)->ClearPendingFullTransformUpload();
 }
 
-void Renderer::UpdateInstancedStaticMeshTransformation(const InstancedStaticMesh* instancedStaticMesh, int transformationIndex, const Matrix& newTransformationMatrix)
+void Renderer::UpdateInstancedStaticMeshTransformation(const InstancedStaticMeshLOD* instancedStaticMesh, int transformationIndex, const Matrix& newTransformationMatrix)
 {
 	if (!instancedStaticMesh || staticMeshBufferData_.vertexBufferId == 0 || transformationIndex < 0)
 	{
@@ -1680,11 +1680,11 @@ void Renderer::SetLightUniforms(Shader* shader)
 	}
 }
 
-void Renderer::RenderStaticMesh(StaticMesh* staticMesh)
+void Renderer::RenderStaticMesh(StaticMeshLOD* staticMesh)
 {
 	BindStaticVAO();
 
-	for (MeshUnit* subMesh : staticMesh->GetSubMeshes())
+	for (MeshGeometry* subMesh : staticMesh->GetSubMeshes())
 	{
 		int facePointCount = subMesh->GetFaceCount() * 3;
 		GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
@@ -1701,7 +1701,7 @@ void Renderer::BindStaticVAO()
 	GraphicsAPI()->BindVertexArray(staticMeshBufferData_.vertexArrayId);
 }
 
-bool Renderer::BindInstancedStaticMesh(InstancedStaticMesh* instancedStaticMesh)
+bool Renderer::BindInstancedStaticMesh(InstancedStaticMeshLOD* instancedStaticMesh)
 {
 	if (!instancedStaticMesh || staticMeshBufferData_.vertexArrayId == 0)
 	{
@@ -2156,14 +2156,14 @@ DeferredRenderingData::DeferredRenderingData()
 {
 	geometryBufferData = new GeometryBufferData();
 
-	MeshUnit* deferredRenderingMeshUnit = new MeshUnit();
-	deferredRenderingMeshUnit->AddVertex(Vector3{ -1.f, -1.f, 0.f });
-	deferredRenderingMeshUnit->AddVertex(Vector3{ 3.f, -1.f, 0.f });
-	deferredRenderingMeshUnit->AddVertex(Vector3{ -1.f, 3.f, 0.f });
-	deferredRenderingMeshUnit->AddFace(Face{ 0, 1, 2 });
+	MeshGeometry* deferredRenderingMeshGeometry = new MeshGeometry();
+	deferredRenderingMeshGeometry->AddVertex(Vector3{ -1.f, -1.f, 0.f });
+	deferredRenderingMeshGeometry->AddVertex(Vector3{ 3.f, -1.f, 0.f });
+	deferredRenderingMeshGeometry->AddVertex(Vector3{ -1.f, 3.f, 0.f });
+	deferredRenderingMeshGeometry->AddFace(Face{ 0, 1, 2 });
 
-	deferredRenderingMesh = new StaticMesh();
-	deferredRenderingMesh->AddMesh(deferredRenderingMeshUnit);
+	deferredRenderingMesh = new StaticMeshLOD();
+	deferredRenderingMesh->AddMesh(deferredRenderingMeshGeometry);
 	deferredRenderingMesh->PreInit();
 
 	deferredRenderingMeshShader = new Shader();
@@ -2248,9 +2248,9 @@ void DeferredRenderingData::Render()
 	deferredRenderingMeshShader->SetFloat(SHADER_VARIABLE_NAMES::TIMING::DELTA_TIME, engine->GetDeltaTime());
 	deferredRenderingMeshShader->SetFloat(SHADER_VARIABLE_NAMES::TIMING::ELAPSED_TIME, engine->GetElapsedTime());
 
-	MeshUnit* deferredRenderingMeshUnit = deferredRenderingMesh->GetSubMeshes()[0];
-	int facePointCount = deferredRenderingMeshUnit->GetFaceCount() * 3;
-	GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)deferredRenderingMeshUnit->GetVertexStartingIndex(), deferredRenderingMeshUnit->GetBaseVertex());
+	MeshGeometry* deferredRenderingMeshGeometry = deferredRenderingMesh->GetSubMeshes()[0];
+	int facePointCount = deferredRenderingMeshGeometry->GetFaceCount() * 3;
+	GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)deferredRenderingMeshGeometry->GetVertexStartingIndex(), deferredRenderingMeshGeometry->GetBaseVertex());
 }
 
 void DeferredRenderingData::OnViewportSizeChanged(int width, int height)
