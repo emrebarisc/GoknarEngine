@@ -74,6 +74,8 @@ public:
 	virtual void Init() override;
 	virtual void PostInit() override;
 
+	void ResetForRebuild();
+
 	inline virtual Shader* GetShader(RenderPassType renderPassType) const override
 	{
 		if (renderPassTypeShaderMap_.find(renderPassType) == renderPassTypeShaderMap_.end())

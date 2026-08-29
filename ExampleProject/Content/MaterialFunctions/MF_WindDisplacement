@@ -1,0 +1,14 @@
+<GameAsset FileType="MaterialFunction">
+    <Name>MF_WindDisplacement</Name>
+    <GeneratedFunctionName>mf_MaterialFunctions_MF_WindDisplacement</GeneratedFunctionName>
+    <GeneratedFunctionDefinitions><![CDATA[vec3 mf_MaterialFunctions_MF_WindDisplacement_out_0_Result()
+{
+	// --- Generated Material Function Calculations ---
+	return vec3(0.000000, 0.000000, 0.000000);
+}
+]]></GeneratedFunctionDefinitions>
+    <Inputs/>
+    <Outputs>
+        <Pin Name="Result" Type="Vector3"/>
+    </Outputs>
+</GameAsset>

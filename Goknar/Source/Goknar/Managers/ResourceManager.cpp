@@ -4,8 +4,8 @@
 
 #include "GoknarAssert.h"
 #include "Contents/Audio.h"
+#include "Contents/Content.h"
 #include "Contents/Image.h"
-#include "Model/StaticMesh.h"
 #include "IO/IOManager.h"
 
 ResourceManager::ResourceManager() :
@@ -31,6 +31,39 @@ void ResourceManager::Init()
 void ResourceManager::PostInit()
 {
 	resourceContainer_->PostInit();
+
+	std::vector<std::unique_ptr<Material>>::const_iterator materialIterator = materials_.cbegin();
+	while (materialIterator != materials_.cend())
+	{
+		Material* material = materialIterator->get();
+
+		if (!material->GetIsInitialized())
+		{
+			material->Build(nullptr);
+			material->PreInit();
+			material->Init();
+			material->PostInit();
+		}
+
+		materialIterator++;
+	}
+}
+
+void ResourceManager::RemoveMaterial(Material* material)
+{
+	auto materialIterator =
+		std::find_if(
+			materials_.begin(),
+			materials_.end(),
+			[material](const std::unique_ptr<Material>& candidate)
+			{
+				return candidate.get() == material;
+			});
+
+	if (materialIterator != materials_.end())
+	{
+		materials_.erase(materialIterator);
+	}
 }
 
 Content* ResourceManager::LoadContent(const std::string& path)
@@ -53,20 +86,7 @@ Content* ResourceManager::LoadContent(const std::string& path)
 	}
 	case ResourceType::Model:
 	{
-		//ModelPrimitiveData* modelPrimitiveData = LoadModelPrimitiveData(path);
-		//if (modelPrimitiveData.HasAnimation())
-		//{
-		//	MeshUnit* mesh = modelPrimitiveData->ToMesh();
-		//	resourceContainer_->AddMesh(mesh);
-		//	content = mesh;
-		//}
-		//else
-		//{
-		//	AnimationData* animationData = modelPrimitiveData->ToAnimationData();
-		//	resourceContainer_->AddAnimationData(animationData);
-		//	content = animationData;
-		//}
-		MeshUnit* mesh = IOManager::LoadModel(path);
+		Content* mesh = IOManager::LoadModel(path);
 		if (mesh)
 		{
 			mesh->SetPath(path);
@@ -110,7 +130,7 @@ ResourceContainer::~ResourceContainer()
 		delete image;
 	}
 
-	for (MeshUnit* mesh : meshArray_)
+	for (Content* mesh : meshArray_)
 	{
 		delete mesh;
 	}
@@ -128,7 +148,7 @@ void ResourceContainer::PreInit()
 		image->PreInit();
 	}
 
-	for (MeshUnit* mesh : meshArray_)
+	for (Content* mesh : meshArray_)
 	{
 		mesh->PreInit();
 	}
@@ -146,7 +166,7 @@ void ResourceContainer::Init()
 		image->Init();
 	}
 
-	for (MeshUnit* mesh : meshArray_)
+	for (Content* mesh : meshArray_)
 	{
 		mesh->Init();
 	}
@@ -164,7 +184,7 @@ void ResourceContainer::PostInit()
 		image->PostInit();
 	}
 
-	for (MeshUnit* mesh : meshArray_)
+	for (Content* mesh : meshArray_)
 	{
 		mesh->PostInit();
 	}
@@ -183,7 +203,7 @@ void ResourceContainer::AddImage(Image* image)
 	contentPathMap_[image->GetPath()] = image;
 }
 
-void ResourceContainer::AddMesh(MeshUnit* mesh)
+void ResourceContainer::AddMesh(Content* mesh)
 {
 	GOKNAR_CORE_ASSERT(!mesh->GetPath().empty());
 

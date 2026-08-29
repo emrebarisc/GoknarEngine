@@ -42,9 +42,6 @@ DefaultCharacter::DefaultCharacter() :
 	controller_ = new DefaultCharacterController(this);
 
 	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SK_DefaultCharacter.fbx");
-	skeletalMesh_->GetMaterial()->SetSpecularReflectance( Vector3{1.f} );
-	skeletalMesh_->GetMaterial()->SetBaseColor( Vector3{1.f} );
-	skeletalMesh_->GetMaterial()->SetAmbientReflectance( Vector3{1.f} );
 
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
 	skeletalMeshComponent_->SetParent(GetRootComponent());
@@ -72,6 +69,7 @@ DefaultCharacter::DefaultCharacter() :
 
 	animationGraph_ = new AnimationGraph();
 	animationGraph_->relativeSkeletalMeshInstance = skeletalMeshComponent_->GetMeshInstance();
+	AnimationDeserializer().Deserialize(animationGraph_, "Animations/AG_DefaultCharacter");
 }
 
 DefaultCharacter::~DefaultCharacter()
@@ -102,8 +100,6 @@ void DefaultCharacter::BeginGame()
 
 	cameraHeightOffset_.Reset(Vector3{ 0.f, 0.f, 1.f });
 	cameraHeightOffset_.speed = 8.f;
-
-	AnimationDeserializer().Deserialize(animationGraph_, "Animations/AG_DefaultCharacter");
 
 	animationGraph_->Init();
 }

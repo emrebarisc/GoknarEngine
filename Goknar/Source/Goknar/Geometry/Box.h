@@ -39,6 +39,48 @@ public:
 		}
 	}
 
+	inline void Combine(const Box& other, bool recalculateSize = true)
+	{
+		bool boundsChanged = false;
+
+		if (other.min_.x < min_.x)
+		{
+			min_.x = other.min_.x;
+			boundsChanged = true;
+		}
+		if (other.min_.y < min_.y)
+		{
+			min_.y = other.min_.y;
+			boundsChanged = true;
+		}
+		if (other.min_.z < min_.z)
+		{
+			min_.z = other.min_.z;
+			boundsChanged = true;
+		}
+
+		if (other.max_.x > max_.x)
+		{
+			max_.x = other.max_.x;
+			boundsChanged = true;
+		}
+		if (other.max_.y > max_.y)
+		{
+			max_.y = other.max_.y;
+			boundsChanged = true;
+		}
+		if (other.max_.z > max_.z)
+		{
+			max_.z = other.max_.z;
+			boundsChanged = true;
+		}
+
+		if (boundsChanged && recalculateSize)
+		{
+			CalculateSize();
+		}
+	}
+
 	const Vector3& GetMin() const
 	{
 		return min_;

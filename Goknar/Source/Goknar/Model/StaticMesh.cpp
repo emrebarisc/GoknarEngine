@@ -5,9 +5,8 @@
 #include "Goknar/Engine.h"
 
 StaticMesh::StaticMesh() :
-	MeshUnit()
+	Mesh()
 {
-	meshType_ = MeshType::Static;
 }
 
 StaticMesh::~StaticMesh()
@@ -16,17 +15,17 @@ StaticMesh::~StaticMesh()
 
 void StaticMesh::PreInit()
 {
-	MeshUnit::PreInit();
+	Mesh::PreInit();
 
 	engine->AddStaticMeshToRenderer(this);
 }
 
 void StaticMesh::Init()
 {
-	MeshUnit::Init();
+	Mesh::Init();
 }
 
 void StaticMesh::PostInit()
 {
-	MeshUnit::PostInit();
+	Mesh::PostInit();
 }

@@ -25,6 +25,30 @@ LightManager::LightManager()
 
 LightManager::~LightManager()
 {
+	if (directionalLightUniformBufferId_)
+	{
+		glDeleteBuffers(1, &directionalLightUniformBufferId_);
+	}
+
+	if (directionalLightViewMatrixUniformBufferId_)
+	{
+		glDeleteBuffers(1, &directionalLightViewMatrixUniformBufferId_);
+	}
+
+	if (pointLightUniformBufferId_)
+	{
+		glDeleteBuffers(1, &pointLightUniformBufferId_);
+	}
+
+	if (spotLightUniformBufferId_)
+	{
+		glDeleteBuffers(1, &spotLightUniformBufferId_);
+	}
+
+	if (spotLightViewMatrixUniformBufferId_)
+	{
+		glDeleteBuffers(1, &spotLightViewMatrixUniformBufferId_);
+	}
 }
 
 void LightManager::PreInit()

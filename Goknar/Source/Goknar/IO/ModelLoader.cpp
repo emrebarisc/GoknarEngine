@@ -3,12 +3,14 @@
 #include "ModelLoader.h"
 
 #include "Goknar/Application.h"
+#include "Goknar/Contents/Content.h"
 #include "Goknar/Contents/Image.h"
 #include "Goknar/Engine.h"
 #include "Goknar/GoknarAssert.h"
 #include "Goknar/Materials/Material.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/SkeletalMesh.h"
+#include "Goknar/Model/SkeletalMeshUnit.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Renderer/Texture.h"
@@ -76,135 +78,6 @@ Matrix ConvertMatrix(const ufbx_matrix& m)
 	);
 }
 
-StaticMesh* ModelLoader::LoadPlyFile(const std::string& path)
-{
-	std::ifstream file(path);
-	if (!file.is_open())
-	{
-		return nullptr;
-	}
-
-	std::string line;
-	std::stringstream stringStream;
-
-	StaticMesh* mesh = new StaticMesh();
-	int vertexCount = 0;
-	int faceCount = 0;
-
-	bool headerEnded = false;
-
-	bool readVertices = false;
-	bool readNormals = false;
-	bool readUVs = false;
-	bool readColors = false;
-
-	// Read header
-	while (!headerEnded && std::getline(file, line))
-	{
-		std::string keyword, type, value;
-		stringStream << line;
-		while (stringStream >> keyword)
-		{
-			if (keyword == "element")
-			{
-				stringStream >> type;
-
-				if (type == "vertex")
-				{
-					stringStream >> vertexCount;
-				}
-
-				if (type == "face")
-				{
-					stringStream >> faceCount;
-				}
-			}
-			else if (keyword == "property")
-			{
-				stringStream >> type >> value;
-
-				if (value == "x" || value == "y" || value == "z")
-				{
-				readVertices = true;
-				}
-				else if (value == "nx" || value == "ny" || value == "nz")
-				{
-				readNormals = true;
-				}
-				else if (value == "s" || value == "t")
-				{
-				readUVs = true;
-				}
-				else if (value == "red" || value == "green" || value == "blue" || value == "alpha")
-				{
-				readColors = true;
-				}
-			}
-			else if (keyword == "end_header")
-			{
-			headerEnded = true;
-			break;
-			}
-		}
-		stringStream.clear();
-	}
-
-	// Read data
-	float x = 0;
-	float y = 0;
-	float z = 0;
-	float nx = 0;
-	float ny = 0;
-	float nz = 0;
-	float s = 0;
-	float t = 0;
-	float red = 255.f;
-	float green = 255.f;
-	float blue = 255.f;
-	float alpha = 255.f;
-
-for (int vertexIndex = 0; vertexIndex < vertexCount; vertexIndex++)
-{
-	std::getline(file, line);
-	stringStream << line;
-	if (readVertices)
-	{
-		stringStream >> x >> y >> z;
-	}
-	if (readNormals)
-	{
-		stringStream >> nx >> ny >> nz;
-	}
-	if (readUVs)
-	{
-		stringStream >> s >> t;
-	}
-	if (readColors)
-	{
-		stringStream >> red >> green >> blue >> alpha;
-	}
-
-	mesh->AddVertexData(VertexData(Vector3(x, y, z), Vector3(nx, ny, nz), Vector4(red / 255.f, green / 255.f, blue / 255.f, alpha / 255.f), Vector2(s, t)));
-	stringStream.clear();
-}
-
-for (int faceIndex = 0; faceIndex < faceCount; faceIndex++)
-{
-	std::getline(file, line);
-	stringStream << line;
-
-	int faceVertexCount;
-	int facePoint1, facePoint2, facePoint3;
-	stringStream >> faceVertexCount >> facePoint1 >> facePoint2 >> facePoint3;
-	Face face(facePoint1, facePoint2, facePoint3);
-	mesh->AddFace(face);
-
-	stringStream.clear();
-}
-
-return mesh;
-}
-
 ufbx_node* GetRootBone(const BoneNameToIdMap* boneNameToIdMap, ufbx_node* node)
 {
 	if (boneNameToIdMap->find(node->name.data) != boneNameToIdMap->end())
@@ -250,36 +123,57 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node)
 	}
 }
 
-StaticMesh* ModelLoader::LoadModel(const std::string& path)
+Content* ModelLoader::LoadModel(const std::string& path)
 {
-	StaticMesh* staticMesh = nullptr;
-	SkeletalMesh* skeletalMesh = nullptr;
+	StaticMesh* staticMeshAsset = nullptr;
+	SkeletalMesh* skeletalMeshAsset = nullptr;
 
 	ufbx_load_opts opts = {};
 	opts.generate_missing_normals = true;
-	opts.target_axes = ufbx_axes_right_handed_y_up; 
+	opts.target_axes = ufbx_axes_right_handed_y_up;
 
 	ufbx_error error;
 	ufbx_scene* scene = ufbx_load_file(path.c_str(), &opts, &error);
-	
+
 	if (scene)
 	{
+		bool sceneHasBones = false;
+		for (size_t meshIndex = 0; meshIndex < scene->meshes.count; ++meshIndex)
+		{
+			if (scene->meshes.data[meshIndex]->skin_deformers.count > 0)
+			{
+				sceneHasBones = true;
+				break;
+			}
+		}
+
+		if (sceneHasBones)
+		{
+			skeletalMeshAsset = new SkeletalMesh();
+		}
+		else
+		{
+			staticMeshAsset = new StaticMesh();
+		}
+
 		for (size_t meshIndex = 0; meshIndex < scene->meshes.count; ++meshIndex)
 		{
 			ufbx_mesh* ufbxMesh = scene->meshes.data[meshIndex];
+			const bool hasBones = sceneHasBones && ufbxMesh->skin_deformers.count > 0;
 
-			bool hasBones = ufbxMesh->skin_deformers.count > 0;
-			if (hasBones)
+			MeshUnit* meshUnit = nullptr;
+			SkeletalMeshUnit* skeletalMeshUnit = nullptr;
+			if (sceneHasBones)
 			{
-				skeletalMesh = new SkeletalMesh();
-				staticMesh = skeletalMesh;
+				skeletalMeshUnit = new SkeletalMeshUnit();
+				meshUnit = skeletalMeshUnit;
 			}
 			else
 			{
-				staticMesh = new StaticMesh();
+				meshUnit = new MeshUnit();
 			}
 
-			staticMesh->SetName(ufbxMesh->name.data);
+			meshUnit->SetName(ufbxMesh->name.data);
 
 			std::unordered_map<UnifiedVertex, uint32_t, UnifiedVertexHash> uniqueVertices;
 			std::vector<uint32_t> unifiedIndices(ufbxMesh->num_indices);
@@ -292,11 +186,17 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				key.posIndex = ufbxMesh->vertex_position.indices.data[i];
 
 				if (ufbxMesh->vertex_normal.exists)
+				{
 					key.normIndex = ufbxMesh->vertex_normal.indices.data[i];
+				}
 				if (ufbxMesh->vertex_uv.exists)
+				{
 					key.uvIndex = ufbxMesh->vertex_uv.indices.data[i];
+				}
 				if (ufbxMesh->vertex_color.exists)
+				{
 					key.colIndex = ufbxMesh->vertex_color.indices.data[i];
+				}
 
 				auto it = uniqueVertices.find(key);
 				if (it != uniqueVertices.end())
@@ -312,16 +212,20 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 					ufbx_vec3 norm = { 0, 0, 0 };
 					if (ufbxMesh->vertex_normal.exists)
+					{
 						norm = ufbxMesh->vertex_normal.values.data[key.normIndex];
+					}
 
 					Vector4 col = Vector4(1.f);
-					if (ufbxMesh->vertex_color.exists) {
+					if (ufbxMesh->vertex_color.exists)
+					{
 						ufbx_vec4 c = ufbxMesh->vertex_color.values.data[key.colIndex];
 						col = Vector4(c.x, c.y, c.z, c.w);
 					}
 
 					Vector2 uv = Vector2::ZeroVector;
-					if (ufbxMesh->vertex_uv.exists) {
+					if (ufbxMesh->vertex_uv.exists)
+					{
 						ufbx_vec2 u = ufbxMesh->vertex_uv.values.data[key.uvIndex];
 						uv = Vector2(u.x, u.y);
 					}
@@ -337,15 +241,13 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				}
 			}
 
-			// --- 2. BONES AND SKINNED ANIMATION (Mirroring Assimp's flow) ---
-			if (hasBones)
+			if (hasBones && skeletalMeshAsset && skeletalMeshUnit)
 			{
-				// Resize FIRST, before AddVertexData is called!
-				skeletalMesh->ResizeVertexToBonesArray(currentVertexId);
+				skeletalMeshUnit->ResizeVertexToBonesArray(currentVertexId);
 
 				ufbx_skin_deformer* skin = ufbxMesh->skin_deformers.data[0];
-
 				std::vector<std::vector<uint32_t>> posToVertexIndices(ufbxMesh->num_vertices);
+
 				for (size_t i = 0; i < ufbxMesh->num_indices; ++i)
 				{
 					uint32_t compactedIndex = unifiedIndices[i];
@@ -362,9 +264,15 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				for (size_t boneIndex = 0; boneIndex < skin->clusters.count; ++boneIndex)
 				{
 					ufbx_skin_cluster* cluster = skin->clusters.data[boneIndex];
-					unsigned int boneId = skeletalMesh->GetBoneId(cluster->bone_node->name.data);
+					const std::string boneName = cluster->bone_node->name.data;
+					const BoneNameToIdMap* boneNameToIdMap = skeletalMeshAsset->GetBoneNameToIdMap();
+					if (boneNameToIdMap->find(boneName) == boneNameToIdMap->end())
+					{
+						skeletalMeshAsset->GetBoneId(boneName);
+						skeletalMeshAsset->AddBone(new Bone(boneName, ConvertMatrix(cluster->geometry_to_bone)));
+					}
 
-					skeletalMesh->AddBone(new Bone(cluster->bone_node->name.data, ConvertMatrix(cluster->geometry_to_bone)));
+					const unsigned int boneId = skeletalMeshAsset->GetBoneId(boneName);
 
 					for (size_t weightIndex = 0; weightIndex < cluster->vertices.count; ++weightIndex)
 					{
@@ -373,103 +281,35 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 
 						for (uint32_t vertexId : posToVertexIndices[posIndex])
 						{
-							skeletalMesh->AddVertexBoneData(vertexId, boneId, weight);
+							skeletalMeshUnit->AddVertexBoneData(vertexId, boneId, weight);
 						}
-					}
-				}
-
-				// KEEP your existing GetRootBone and Animation Keyframe loops right here!
-				ufbx_node* rootBoneNode = GetRootBone(skeletalMesh->GetBoneNameToIdMap(), scene->root_node);
-				if (rootBoneNode)
-				{
-					ufbx_matrix rootLocalMat = ufbx_transform_to_matrix(&rootBoneNode->local_transform);
-					Matrix rootTransformation = ConvertMatrix(rootLocalMat);
-
-					skeletalMesh->GetArmature()->globalInverseTransform = rootTransformation.GetInverse();
-
-					skeletalMesh->GetArmature()->root = skeletalMesh->GetBone(skeletalMesh->GetBoneId(rootBoneNode->name.data));
-					skeletalMesh->GetArmature()->root->transformation = rootTransformation;
-					SetupArmature(skeletalMesh, skeletalMesh->GetArmature()->root, rootBoneNode);
-
-					for (size_t animIndex = 0; animIndex < scene->anim_stacks.count; ++animIndex)
-					{
-						ufbx_anim_stack* animStack = scene->anim_stacks.data[animIndex];
-						SkeletalAnimation* skeletalAnimation = new SkeletalAnimation();
-
-						skeletalAnimation->name = animStack->name.data;
-
-						double durationInSeconds = animStack->time_end - animStack->time_begin;
-						double fps = 30.0;
-						int keyframeCount = (int)(durationInSeconds * fps);
-						if (keyframeCount <= 0) keyframeCount = 1;
-
-						skeletalAnimation->duration = durationInSeconds;
-						skeletalAnimation->ticksPerSecond = fps;
-						skeletalAnimation->maxKeyframeCount = keyframeCount;
-
-						int channelCount = skeletalMesh->GetBoneNameToIdMap()->size();
-						skeletalAnimation->animationKeyframeCount = channelCount;
-						skeletalAnimation->animationKeyframes = new SkeletalAnimationKeyframe * [channelCount];
-
-						int channelIndex = 0;
-						for (const auto& bonePair : *(skeletalMesh->GetBoneNameToIdMap()))
-						{
-							std::string boneName = bonePair.first;
-							ufbx_node* animNode = ufbx_find_node(scene, boneName.c_str());
-							if (!animNode) continue;
-
-							SkeletalAnimationKeyframe* keyframe = new SkeletalAnimationKeyframe();
-							keyframe->affectedBoneName = boneName;
-
-							keyframe->positionKeySize = keyframeCount;
-							keyframe->positionKeys = new AnimationVectorKey[keyframeCount];
-							keyframe->rotationKeySize = keyframeCount;
-							keyframe->rotationKeys = new AnimationQuaternionKey[keyframeCount];
-							keyframe->scalingKeySize = keyframeCount;
-							keyframe->scalingKeys = new AnimationVectorKey[keyframeCount];
-
-							for (int k = 0; k < keyframeCount; ++k)
-							{
-								double timeInSeconds = animStack->time_begin + (double)k / fps;
-								ufbx_transform transform = ufbx_evaluate_transform(animStack->anim, animNode, timeInSeconds);
-
-								keyframe->positionKeys[k].time = timeInSeconds;
-								keyframe->positionKeys[k].value = Vector3(transform.translation.x, transform.translation.y, transform.translation.z);
-
-								keyframe->rotationKeys[k].time = timeInSeconds;
-								keyframe->rotationKeys[k].value = Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
-
-								keyframe->scalingKeys[k].time = timeInSeconds;
-								keyframe->scalingKeys[k].value = Vector3(transform.scale.x, transform.scale.y, transform.scale.z);
-							}
-
-							skeletalAnimation->AddSkeletalAnimationKeyframe(channelIndex, keyframe);
-							channelIndex++;
-						}
-
-						skeletalAnimation->animationKeyframeCount = channelIndex;
-						skeletalMesh->AddSkeletalAnimation(skeletalAnimation);
 					}
 				}
 			}
 
-			for (const VertexData& vd : tempVertices)
+			for (const VertexData& vertexData : tempVertices)
 			{
-				staticMesh->AddVertexData(vd);
+				meshUnit->AddVertexData(vertexData);
+			}
+
+			if (meshUnit->GetVertexCount() <= 0)
+			{
+				delete meshUnit;
+				continue;
 			}
 
 			for (size_t faceIndex = 0; faceIndex < ufbxMesh->faces.count; ++faceIndex)
 			{
 				ufbx_face face = ufbxMesh->faces.data[faceIndex];
-				uint32_t tri_indices[256];
-				uint32_t num_tris = ufbx_triangulate_face(tri_indices, 256, ufbxMesh, face);
+				uint32_t triIndices[256];
+				uint32_t triangleCount = ufbx_triangulate_face(triIndices, 256, ufbxMesh, face);
 
-				for (uint32_t t = 0; t < num_tris; t++)
+				for (uint32_t triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
 				{
-					uint32_t i0 = unifiedIndices[tri_indices[t * 3 + 0]];
-					uint32_t i1 = unifiedIndices[tri_indices[t * 3 + 1]];
-					uint32_t i2 = unifiedIndices[tri_indices[t * 3 + 2]];
-					staticMesh->AddFace(Face(i0, i1, i2));
+					uint32_t i0 = unifiedIndices[triIndices[triangleIndex * 3 + 0]];
+					uint32_t i1 = unifiedIndices[triIndices[triangleIndex * 3 + 1]];
+					uint32_t i2 = unifiedIndices[triIndices[triangleIndex * 3 + 2]];
+					meshUnit->AddFace(Face(i0, i1, i2));
 				}
 			}
 
@@ -478,16 +318,17 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 			if (ufbxMesh->materials.count > 0)
 			{
 				ufbx_material* ufbxMaterial = ufbxMesh->materials.data[0];
-
 				if (ufbxMaterial)
 				{
 					material->SetAmbientReflectance(Vector3(1.f, 1.f, 1.f));
 
-					if (ufbxMaterial->pbr.base_color.has_value) {
+					if (ufbxMaterial->pbr.base_color.has_value)
+					{
 						material->SetBaseColor(Vector3(ufbxMaterial->pbr.base_color.value_vec3.x, ufbxMaterial->pbr.base_color.value_vec3.y, ufbxMaterial->pbr.base_color.value_vec3.z));
 					}
 
-					if (ufbxMaterial->pbr.specular_color.has_value) {
+					if (ufbxMaterial->pbr.specular_color.has_value)
+					{
 						material->SetSpecularReflectance(Vector3(ufbxMaterial->pbr.specular_color.value_vec3.x, ufbxMaterial->pbr.specular_color.value_vec3.y, ufbxMaterial->pbr.specular_color.value_vec3.z));
 					}
 
@@ -526,8 +367,8 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 					{
 						std::string normalImagePath = ContentDir;
 						std::string normalTexturePath = ufbxMaterial->pbr.normal_map.texture->filename.data;
-						
-                        if (normalTexturePath.find(".fbm") != std::string::npos)
+
+						if (normalTexturePath.find(".fbm") != std::string::npos)
 						{
 							long long lastSlashIndex = path.find_last_of('/');
 							if (lastSlashIndex != std::string::npos)
@@ -543,7 +384,7 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 #endif
 
 						Image* image = engine->GetResourceManager()->GetContent<Image>(normalImagePath);
-						if(image)
+						if (image)
 						{
 							image->SetTextureUsage(TextureUsage::Normal);
 							material->AddTextureImage(image);
@@ -552,23 +393,114 @@ StaticMesh* ModelLoader::LoadModel(const std::string& path)
 				}
 			}
 
-			staticMesh->SetMaterial(material);
+			meshUnit->SetMaterial(material);
+
+			if (sceneHasBones && skeletalMeshAsset)
+			{
+				skeletalMeshAsset->AddMesh(skeletalMeshUnit);
+			}
+			else if (staticMeshAsset)
+			{
+				staticMeshAsset->AddMesh(meshUnit);
+			}
 		}
-        
-        ufbx_free_scene(scene);
+
+		if (skeletalMeshAsset && skeletalMeshAsset->GetBoneSize() > 0)
+		{
+			ufbx_node* rootBoneNode = GetRootBone(skeletalMeshAsset->GetBoneNameToIdMap(), scene->root_node);
+			if (rootBoneNode)
+			{
+				ufbx_matrix rootLocalMat = ufbx_transform_to_matrix(&rootBoneNode->local_transform);
+				Matrix rootTransformation = ConvertMatrix(rootLocalMat);
+
+				skeletalMeshAsset->GetArmature()->globalInverseTransform = rootTransformation.GetInverse();
+
+				skeletalMeshAsset->GetArmature()->root = skeletalMeshAsset->GetBone(skeletalMeshAsset->GetBoneId(rootBoneNode->name.data));
+				skeletalMeshAsset->GetArmature()->root->transformation = rootTransformation;
+				SetupArmature(skeletalMeshAsset, skeletalMeshAsset->GetArmature()->root, rootBoneNode);
+
+				for (size_t animIndex = 0; animIndex < scene->anim_stacks.count; ++animIndex)
+				{
+					ufbx_anim_stack* animStack = scene->anim_stacks.data[animIndex];
+					SkeletalAnimation* skeletalAnimation = new SkeletalAnimation();
+
+					skeletalAnimation->name = animStack->name.data;
+
+					double durationInSeconds = animStack->time_end - animStack->time_begin;
+					double fps = 30.0;
+					int keyframeCount = (int)(durationInSeconds * fps);
+					if (keyframeCount <= 0)
+					{
+						keyframeCount = 1;
+					}
+
+					skeletalAnimation->duration = durationInSeconds;
+					skeletalAnimation->ticksPerSecond = fps;
+					skeletalAnimation->maxKeyframeCount = keyframeCount;
+
+					int channelCount = skeletalMeshAsset->GetBoneNameToIdMap()->size();
+					skeletalAnimation->animationKeyframeCount = channelCount;
+					skeletalAnimation->animationKeyframes = new SkeletalAnimationKeyframe * [channelCount];
+
+					int channelIndex = 0;
+					for (const auto& bonePair : *(skeletalMeshAsset->GetBoneNameToIdMap()))
+					{
+						std::string boneName = bonePair.first;
+						ufbx_node* animNode = ufbx_find_node(scene, boneName.c_str());
+						if (!animNode)
+						{
+							continue;
+						}
+
+						SkeletalAnimationKeyframe* keyframe = new SkeletalAnimationKeyframe();
+						keyframe->affectedBoneName = boneName;
+
+						keyframe->positionKeySize = keyframeCount;
+						keyframe->positionKeys = new AnimationVectorKey[keyframeCount];
+						keyframe->rotationKeySize = keyframeCount;
+						keyframe->rotationKeys = new AnimationQuaternionKey[keyframeCount];
+						keyframe->scalingKeySize = keyframeCount;
+						keyframe->scalingKeys = new AnimationVectorKey[keyframeCount];
+
+						for (int keyframeIndex = 0; keyframeIndex < keyframeCount; ++keyframeIndex)
+						{
+							double timeInSeconds = animStack->time_begin + (double)keyframeIndex / fps;
+							ufbx_transform transform = ufbx_evaluate_transform(animStack->anim, animNode, timeInSeconds);
+
+							keyframe->positionKeys[keyframeIndex].time = timeInSeconds;
+							keyframe->positionKeys[keyframeIndex].value = Vector3(transform.translation.x, transform.translation.y, transform.translation.z);
+
+							keyframe->rotationKeys[keyframeIndex].time = timeInSeconds;
+							keyframe->rotationKeys[keyframeIndex].value = Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+
+							keyframe->scalingKeys[keyframeIndex].time = timeInSeconds;
+							keyframe->scalingKeys[keyframeIndex].value = Vector3(transform.scale.x, transform.scale.y, transform.scale.z);
+						}
+
+						skeletalAnimation->AddSkeletalAnimationKeyframe(channelIndex, keyframe);
+						channelIndex++;
+					}
+
+					skeletalAnimation->animationKeyframeCount = channelIndex;
+					skeletalMeshAsset->AddSkeletalAnimation(skeletalAnimation);
+				}
+			}
+		}
+
+		ufbx_free_scene(scene);
 	}
 	else
 	{
 		GOKNAR_CORE_ERROR("\n\tError occured while loading the asset(%s)\n\tWhat went wrong: %s", path, error.description.data);
 	}
 
-	if (skeletalMesh)
+	if (skeletalMeshAsset)
 	{
-		return skeletalMesh;
+		return skeletalMeshAsset;
 	}
-	else if (staticMesh)
+	if (staticMeshAsset)
 	{
-		return staticMesh;
+		return staticMeshAsset;
 	}
 
 	return nullptr;

@@ -6,7 +6,7 @@
 #include "Goknar/Components/SocketComponent.h"
 
 SkeletalMesh::SkeletalMesh() :
-	StaticMesh()
+	Mesh<SkeletalMeshUnit>()
 {
 }
 
@@ -24,26 +24,32 @@ SkeletalMesh::~SkeletalMesh()
 		delete bones_[boneIndex];
 	}
 
-	delete vertexBoneDataArray_;
 	delete boneNameToIdMap_;
 	delete armature_;
 }
 
 void SkeletalMesh::PreInit()
 {
-	MeshUnit::PreInit();
+	Mesh::PreInit();
 
 	engine->AddSkeletalMeshToRenderer(this);
 }
 
 void SkeletalMesh::Init()
 {
-	MeshUnit::Init();
+	Mesh::Init();
 }
 
 void SkeletalMesh::PostInit()
 {
-	MeshUnit::PostInit();
+	Mesh::PostInit();
+}
+
+void SkeletalMesh::AddMesh(SkeletalMeshUnit* meshUnit)
+{
+	meshUnit->SetOwner(this);
+
+	Mesh::AddMesh(meshUnit);
 }
 
 void SkeletalMesh::GetBoneTransforms(std::vector<Matrix>& transforms, const SkeletalAnimation* skeletalAnimation, float time, std::unordered_map<std::string, SocketComponent*>& socketMap)

@@ -60,6 +60,10 @@ public:
 	{
 		return Vector2i(windowWidth_, windowHeight_);
 	}
+	Vector2i GetFramebufferSize() const
+	{
+		return Vector2i(framebufferWidth_, framebufferHeight_);
+	}
 
 	void HandleWindowSizeChange();
 
@@ -85,6 +89,7 @@ private:
 	int contextVersionMinor_;
 
 	int windowWidth_, windowHeight_;
+	int framebufferWidth_, framebufferHeight_;
 
 	bool isInFullscreen_;
 };

@@ -8,10 +8,7 @@ class GOKNAR_API Game : public Application
 {
 public:
 	Game();
-
-	~Game()
-	{
-	}
+	~Game();
 
 	void PreInit() override;
 	void Init() override;

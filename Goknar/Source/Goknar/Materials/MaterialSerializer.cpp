@@ -1,11 +1,13 @@
 #include "MaterialSerializer.h"
 
+#include <cmath>
 #include <sstream>
 
 #include "tinyxml2.h"
 
 #include "Goknar/Engine.h"
 #include "Goknar/Contents/Image.h"
+#include "Goknar/Helpers/ContentPathUtils.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Materials/Material.h"
 
@@ -14,7 +16,8 @@ using namespace tinyxml2;
 void MaterialSerializer::Serialize(const std::string& filepath, const Material* material)
 {
     const MaterialInitializationData* materialInitializationData = material->GetInitializationData();
-    std::string contentDir = ContentDir + filepath;
+    const std::string relativeFilePath = ContentPathUtils::ToContentRelativePath(filepath);
+    const std::string contentPath = ContentPathUtils::ToAbsoluteContentPath(relativeFilePath);
 
     tinyxml2::XMLDocument doc;
 
@@ -48,8 +51,8 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
             if (image)
             {
                 XMLElement* texElement = doc.NewElement("Texture");
-                texElement->SetAttribute("path", image->GetPath().c_str());
-                texElement->SetAttribute("name", image->GetName().c_str());
+                const std::string texturePath = ContentPathUtils::ToContentRelativePath(image->GetPath());
+                texElement->SetAttribute("path", texturePath.c_str());
                 root->InsertEndChild(texElement);
             }
         }
@@ -99,15 +102,16 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
     AddTextElement("VertexShaderUniforms", materialInitializationData->vertexShaderUniforms);
     AddTextElement("FragmentShaderUniforms", materialInitializationData->fragmentShaderUniforms);
 
-    doc.SaveFile(contentDir.c_str());
+    doc.SaveFile(contentPath.c_str());
 }
 
 void MaterialSerializer::Deserialize(const std::string& filepath, Material* owner)
 {
-    std::string contentDir = ContentDir + filepath;
+    const std::string relativeFilePath = ContentPathUtils::ToContentRelativePath(filepath);
+    const std::string contentPath = ContentPathUtils::ToAbsoluteContentPath(relativeFilePath);
 
     tinyxml2::XMLDocument doc;
-    if (doc.LoadFile(contentDir.c_str()) != XML_SUCCESS)
+    if (doc.LoadFile(contentPath.c_str()) != XML_SUCCESS)
     {
         return;
     }
@@ -162,14 +166,12 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     {
         if (child->Attribute("path"))
         {
-            std::string texturePath = child->Attribute("path");
-            std::string textureName = child->Attribute("name");
+            std::string texturePath = ContentPathUtils::ToContentRelativePath(child->Attribute("path"));
 
             Image* image = engine->GetResourceManager()->GetContent<Image>(texturePath);
 
             if (image)
             {
-                image->SetName(textureName);
                 owner->AddTextureImage(image);
             }
         }
@@ -225,9 +227,16 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     if (child && child->GetText())
     {
         std::stringstream stream(child->GetText());
-        float phongExponent;
+        float phongExponent = 1.f;
         stream >> phongExponent;
-        owner->SetPhongExponent(phongExponent);
+        if (!stream.fail() && std::isfinite(phongExponent))
+        {
+            owner->SetPhongExponent(phongExponent);
+        }
+        else
+        {
+            owner->SetPhongExponent(1.f);
+        }
     }
     else
     {

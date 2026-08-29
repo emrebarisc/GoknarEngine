@@ -10,15 +10,20 @@
 
 PostProcessingEffect::PostProcessingEffect()
 {
+	MeshUnit* meshUnit = new MeshUnit();
+
+	meshUnit->AddVertex(Vector3{ -1.f, -1.f, 0.f });
+	meshUnit->AddVertex(Vector3{ 3.f, -1.f, 0.f });
+	meshUnit->AddVertex(Vector3{ -1.f, 3.f, 0.f });
+	meshUnit->AddFace(Face{ 0, 1, 2 });
+
 	postProcessingMesh_ = new StaticMesh();
-	postProcessingMesh_->AddVertex(Vector3{ -1.f, -1.f, 0.f });
-	postProcessingMesh_->AddVertex(Vector3{ 3.f, -1.f, 0.f });
-	postProcessingMesh_->AddVertex(Vector3{ -1.f, 3.f, 0.f });
-	postProcessingMesh_->AddFace(Face{ 0, 1, 2 });
+	postProcessingMesh_->AddMesh(meshUnit);
 }
 
 PostProcessingEffect::~PostProcessingEffect()
 {
+	delete postProcessingMesh_;
 }
 
 void PostProcessingEffect::PreInit()

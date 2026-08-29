@@ -17,6 +17,8 @@ WindowManager::WindowManager()
 {
 	windowWidth_ = 1024;
 	windowHeight_ = 768;
+	framebufferWidth_ = 1024;
+	framebufferHeight_ = 768;
 	windowTitle_ = "Goknar Engine";
 	mainMonitor_ = nullptr;
 	MSAAValue_ = 4;
@@ -59,6 +61,7 @@ void WindowManager::PreInit()
 
 		const int gladResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		GOKNAR_CORE_ASSERT(gladResult, "Failed to initialize GLAD!.");
+		glfwGetFramebufferSize(mainWindow_, &framebufferWidth_, &framebufferHeight_);
 	}
 	else
 	{
@@ -115,7 +118,10 @@ bool WindowManager::GetWindowShouldBeClosed(GLFWwindow* window/* = nullptr*/)
 
 void WindowManager::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-	engine->GetWindowManager()->SetWindowSize_Impl(width, height);
+	WindowManager* windowManager = engine->GetWindowManager();
+	windowManager->framebufferWidth_ = width;
+	windowManager->framebufferHeight_ = height;
+	glViewport(0, 0, width, height);
 }
 
 void WindowManager::CloseWindow(GLFWwindow* window/* = nullptr*/)

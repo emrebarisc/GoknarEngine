@@ -45,7 +45,7 @@ public:
 	SkeletalMeshInstance() = delete;
 	SkeletalMeshInstance(RenderComponent* parentComponent);
 	virtual ~SkeletalMeshInstance();
-	virtual void Render(RenderPassType renderPassType = RenderPassType::Forward) override;
+	virtual void Render(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward) override;
 	virtual void SetMesh(SkeletalMesh* skeletalMesh) override;
 
 	void PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData = { false, {} }, const KeyframeData& keyframeData = {});
@@ -70,7 +70,7 @@ public:
 protected:
 
 private:
-	void SetRenderOperations(RenderPassType renderPassType = RenderPassType::Forward);
+	void SetRenderOperations(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward);
 
 	SkeletalMeshAnimation skeletalMeshAnimation_{};
 

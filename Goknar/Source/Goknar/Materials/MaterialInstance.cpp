@@ -45,5 +45,11 @@ Shader* MaterialInstance::GetShader(RenderPassType renderPassType) const
 
 void MaterialInstance::Destroy()
 {
-	parentMaterial_->RemoveDerivedMaterialInstance(this);
+	if (parentMaterial_)
+	{
+		parentMaterial_->RemoveDerivedMaterialInstance(this);
+		parentMaterial_ = nullptr;
+	}
+
+	delete this;
 }

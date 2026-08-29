@@ -3,7 +3,7 @@
 
 #include <string>
 
-class StaticMesh;
+class Content;
 
 class ModelLoader
 {
@@ -14,8 +14,7 @@ public:
 protected:
 
 private:
-	static StaticMesh* LoadPlyFile(const std::string& path);
-	static StaticMesh* LoadModel(const std::string& path);
+	static Content* LoadModel(const std::string& path);
 };
 
 #endif

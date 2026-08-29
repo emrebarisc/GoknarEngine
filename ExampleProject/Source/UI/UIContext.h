@@ -24,6 +24,8 @@ public:
 		return instance_;
 	}
 
+	static void Destroy();
+
 	~UIContext();
 
 	void Init();

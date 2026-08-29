@@ -28,6 +28,8 @@ class PostProcessingEffect;
 
 class RenderTarget;
 
+class DynamicMeshUnit;
+
 enum class GOKNAR_API RenderPassType : unsigned int
 {
 	None = 0b00000000,
@@ -129,7 +131,7 @@ public:
 	void AddDynamicMeshInstance(DynamicMeshInstance* object);
 	void RemoveDynamicMeshInstance(DynamicMeshInstance* object);
 
-	void UpdateDynamicMeshVertex(const DynamicMesh* object, int vertexIndex, const VertexData& newVertexData);
+	void UpdateDynamicMeshVertex(const DynamicMeshUnit* object, int vertexIndex, const VertexData& newVertexData);
 
 	void PrepareSkeletalMeshInstancesForTheCurrentFrame();
 	void PrepareSkeletalMeshInstancesForTheNextFrame();
@@ -223,18 +225,12 @@ private:
 	std::vector<DynamicMesh*> dynamicMeshes_;
 
 	std::vector<StaticMeshInstance*> opaqueStaticMeshInstances_;
-	//TODO: Is it really necessary to hold masked objects as a seperate array?
-	std::vector<StaticMeshInstance*> maskedStaticMeshInstances_;
 	std::vector<StaticMeshInstance*> transparentStaticMeshInstances_;
 
 	std::vector<SkeletalMeshInstance*> opaqueSkeletalMeshInstances_;
-	//TODO: Is it really necessary to hold masked objects as a seperate array?
-	std::vector<SkeletalMeshInstance*> maskedSkeletalMeshInstances_;
 	std::vector<SkeletalMeshInstance*> transparentSkeletalMeshInstances_;
 
 	std::vector<DynamicMeshInstance*> opaqueDynamicMeshInstances_;
-	//TODO: Is it really necessary to hold masked objects as a seperate array?
-	std::vector<DynamicMeshInstance*> maskedDynamicMeshInstances_;
 	std::vector<DynamicMeshInstance*> transparentDynamicMeshInstances_;
 
 	LightManager* lightManager_{ nullptr };

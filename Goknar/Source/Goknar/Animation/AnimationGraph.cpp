@@ -40,8 +40,11 @@ void AnimationGraph::Update(float deltaTime)
 	{
 		if (connection->ShouldTransit(this, false))
 		{
-			SetCurrentState(connection->target);
-			PlayCurrentStateAnimation();
+			if (const auto target = connection->target.lock())
+			{
+				SetCurrentState(target);
+				PlayCurrentStateAnimation();
+			}
 		}
 	}
 
@@ -49,7 +52,13 @@ void AnimationGraph::Update(float deltaTime)
 	{
 		if (connection->ShouldTransit(this, isCurrentStateAnimationFinished))
 		{
-			currentState_->currentNode_ = connection->target;
+			const auto target = connection->target.lock();
+			if (!target)
+			{
+				continue;
+			}
+
+			currentState_->currentNode_ = target;
 
 			isCurrentStateAnimationFinished = false;
 

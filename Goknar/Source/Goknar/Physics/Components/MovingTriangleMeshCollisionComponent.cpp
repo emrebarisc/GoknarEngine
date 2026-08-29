@@ -5,7 +5,7 @@
 #include "GoknarAssert.h"
 #include "ObjectBase.h"
 #include "MovingTriangleMeshCollisionComponent.h"
-#include "Model/MeshUnit.h"
+#include "Model/StaticMesh.h"
 
 MovingTriangleMeshCollisionComponent::MovingTriangleMeshCollisionComponent(Component* parent) :
 	CollisionComponent(parent)
@@ -26,8 +26,10 @@ void MovingTriangleMeshCollisionComponent::PreInit()
 {
 	GOKNAR_ASSERT(relativeMesh_ != nullptr);
 
-	const VertexArray* vertexArray = relativeMesh_->GetVerticesPointer();
-	int vertexCount = relativeMesh_->GetVertexCount();
+	MeshUnit* subMesh = relativeMesh_->GetSubMeshes()[0];
+
+	const VertexArray* vertexArray = subMesh->GetVerticesPointer();
+	int vertexCount = subMesh->GetVertexCount();
 
 	GOKNAR_ASSERT(0 < vertexCount);
 

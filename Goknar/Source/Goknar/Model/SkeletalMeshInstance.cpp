@@ -26,24 +26,6 @@ void SkeletalMeshInstance::PrepareForTheCurrentFrame()
 {
 	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
 
-	// TODO: Implement a proper multi threading
-	// Following std::for_each parallelizing causes game crash
-	//std::for_each
-	//(
-	//	std::execution::par,
-	//	std::begin(boneIdToAttachedMatrixPointerMap_),
-	//	std::end(boneIdToAttachedMatrixPointerMap_),
-	//	[&](const std::pair<int, const Matrix*>& pair)
-	//	{
-	//		const Matrix* matrix = pair.second;
-
-	//		if (matrix)
-	//		{
-	//			boneTransformations_[pair.first] = parentComponent_->GetComponentToWorldTransformationMatrix().GetInverse() * *matrix;
-	//		}
-	//	}
-	//);
-
 	std::unordered_map<int, const Matrix*>::iterator boneIdToAttachedMatrixPointerMapIterator = boneIdToAttachedMatrixPointerMap_.begin();
 	while (boneIdToAttachedMatrixPointerMapIterator != boneIdToAttachedMatrixPointerMap_.end())
 	{
@@ -128,17 +110,18 @@ void SkeletalMeshInstance::PrepareForTheNextFrame()
 	}
 }
 
-void SkeletalMeshInstance::Render(RenderPassType renderPassType)
+void SkeletalMeshInstance::Render(int subMeshIndex, RenderPassType renderPassType)
 {
-	PreRender(renderPassType);
-
-	SetRenderOperations(renderPassType);
+	SetRenderOperations(subMeshIndex, renderPassType);
 }
 
-void SkeletalMeshInstance::SetRenderOperations(RenderPassType renderPassType)
+void SkeletalMeshInstance::SetRenderOperations(int subMeshIndex, RenderPassType renderPassType)
 {
-	mesh_->GetMaterial()->GetShader(renderPassType)->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
-	IMeshInstance::Render(renderPassType);
+	for (SkeletalMeshUnit* subMesh : mesh_->GetSubMeshes())
+	{
+		subMesh->GetMaterial()->GetShader(renderPassType)->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
+	}
+	IMeshInstance::Render(subMeshIndex, renderPassType);
 }
 
 void SkeletalMeshInstance::SetMesh(SkeletalMesh* skeletalMesh)
