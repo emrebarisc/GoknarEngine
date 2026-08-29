@@ -1,11 +1,11 @@
-#ifndef __SKELETALMESHUNIT_H__
-#define __SKELETALMESHUNIT_H__
+#ifndef __SKELETALMESHGEOMETRY_H__
+#define __SKELETALMESHGEOMETRY_H__
 
-#include "MeshUnit.h"
+#include "MeshGeometry.h"
 
 #include <vector>
 
-class SkeletalMesh;
+class SkeletalMeshLOD;
 
 // THIS CLASS IS DIRECTLY SENT TO THE GPU
 // BE CAUTIOUS OF ADDING OR UPDATING DATA
@@ -74,11 +74,11 @@ struct GOKNAR_API VertexBoneData
 
 typedef std::vector<VertexBoneData> VertexBoneDataArray;
 
-class GOKNAR_API SkeletalMeshUnit : public MeshUnit
+class GOKNAR_API SkeletalMeshGeometry : public MeshGeometry
 {
 public:
-	SkeletalMeshUnit();
-	virtual ~SkeletalMeshUnit();
+	SkeletalMeshGeometry();
+	virtual ~SkeletalMeshGeometry();
 
 	virtual void PreInit() override;
 	virtual void Init() override;
@@ -107,12 +107,12 @@ public:
         }
     }
 
-    void SetOwner(const SkeletalMesh* const owner)
+    void SetOwner(const SkeletalMeshLOD* const owner)
     {
         owner_ = owner;
     }
 
-    const SkeletalMesh* GetOwner() const
+    const SkeletalMeshLOD* GetOwner() const
     {
         return owner_;
     }
@@ -122,7 +122,7 @@ protected:
 private:
     VertexBoneDataArray* vertexBoneDataArray_{ new VertexBoneDataArray() };
 
-    const SkeletalMesh* owner_;
+    const SkeletalMeshLOD* owner_;
 };
 
 #endif

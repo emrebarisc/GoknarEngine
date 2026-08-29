@@ -2,7 +2,7 @@
 
 #include "SkeletalMeshComponent.h"
 
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 #include "Goknar/Model/SkeletalMeshInstance.h"
 #include "Goknar/Log.h"
 
@@ -23,7 +23,7 @@ Component* SkeletalMeshComponent::Clone() const
 	return clonedComponent;
 }
 
-void SkeletalMeshComponent::SetMesh(SkeletalMeshContainer* mesh)
+void SkeletalMeshComponent::SetMesh(SkeletalMesh* mesh)
 {
 	meshInstance_->SetMesh(mesh);
 }

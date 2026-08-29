@@ -10,7 +10,7 @@
 #include "Goknar/Materials/Material.h"
 #include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Materials/MaterialInstance.h"
-#include "Goknar/Model/MeshUnit.h"
+#include "Goknar/Model/MeshGeometry.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBuilder.h"
@@ -223,6 +223,7 @@ void GPUFoliageSystem::SetStaticMesh(const StaticMesh* staticMesh)
 	}
 
 	staticMesh_ = staticMesh;
+	staticMeshLOD_ = staticMesh_ ? staticMesh_->GetLOD(0) : nullptr;
 	if (isInitialized_)
 	{
 		RefreshRenderBatches();
@@ -310,6 +311,12 @@ int GPUFoliageSystem::Render(const Camera* activeCamera, RenderPassType renderPa
 		return 0;
 	}
 
+	UpdateStaticMeshLOD(activeCamera);
+	if (!staticMeshLOD_)
+	{
+		return 0;
+	}
+
 	UploadInstanceBuffers();
 
 	int drawCount = 0;
@@ -365,13 +372,13 @@ void GPUFoliageSystem::RefreshRenderBatches()
 {
 	DestroyRenderBatches();
 
-	if (!isInitialized_ || !staticMesh_)
+	if (!isInitialized_ || !staticMeshLOD_)
 	{
 		return;
 	}
 
-	const std::vector<MeshUnit*>& subMeshes = staticMesh_->GetSubMeshes();
-	for (const MeshUnit* subMesh : subMeshes)
+	const std::vector<MeshGeometry*>& subMeshes = staticMeshLOD_->GetSubMeshes();
+	for (const MeshGeometry* subMesh : subMeshes)
 	{
 		if (!subMesh || subMesh->GetFaceCount() == 0u)
 		{
@@ -466,6 +473,35 @@ void GPUFoliageSystem::UploadInstanceBuffers()
 	}
 }
 
+void GPUFoliageSystem::UpdateStaticMeshLOD(const Camera* activeCamera)
+{
+	if (!staticMesh_ || instances_.empty())
+	{
+		return;
+	}
+
+	float estimatedInstanceCoverage = 1.f;
+	if (activeCamera)
+	{
+		const float communalAABBCoverage = activeCamera->GetAABBFrameCoverage(localAABB_, worldTransform_);
+		estimatedInstanceCoverage = communalAABBCoverage / static_cast<float>(instances_.size());
+	}
+
+	const StaticMeshLOD* selectedStaticMesh = staticMesh_->GetLOD(
+		static_cast<int>(staticMesh_->GetLODIndex(estimatedInstanceCoverage)));
+	if (!selectedStaticMesh || selectedStaticMesh == staticMeshLOD_)
+	{
+		return;
+	}
+
+	staticMeshLOD_ = selectedStaticMesh;
+	if (isInitialized_)
+	{
+		RefreshRenderBatches();
+		RefreshDrawBuffers();
+	}
+}
+
 void GPUFoliageSystem::RecalculateAABB()
 {
 	localAABB_ = Box();
@@ -473,18 +509,9 @@ void GPUFoliageSystem::RecalculateAABB()
 
 	if (staticMesh_)
 	{
-		const std::vector<MeshUnit*>& subMeshes = staticMesh_->GetSubMeshes();
 		for (const GPUFoliageInstance& instance : instances_)
 		{
-			for (const MeshUnit* subMesh : subMeshes)
-			{
-				if (!subMesh)
-				{
-					continue;
-				}
-
-				AddTransformedAABBToBounds(subMesh->GetAABB(), instance.transform, localAABB_, hasBounds);
-			}
+			AddTransformedAABBToBounds(staticMesh_->GetAABB(), instance.transform, localAABB_, hasBounds);
 		}
 	}
 

@@ -14,7 +14,7 @@
 #include "Goknar/Managers/InputManager.h"
 #include "Goknar/Managers/WindowManager.h"
 #include "Goknar/Materials/MaterialBase.h"
-#include "Goknar/Model/MeshUnit.h"
+#include "Goknar/Model/MeshGeometry.h"
 #include "Goknar/Model/IMeshInstance.h"
 #include "Goknar/Physics/PhysicsWorld.h"
 #include "Goknar/Physics/RigidBody.h"

@@ -2,7 +2,7 @@
 #define __SHADERBUILDER_H__
 
 #include "Goknar/Core.h"
-#include "Goknar/Model/MeshUnit.h"
+#include "Goknar/Model/MeshGeometry.h"
 
 #include "Renderer/Renderer.h"
 #include "ShaderTypes.h"

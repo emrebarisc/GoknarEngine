@@ -8,7 +8,7 @@ Weapon::Weapon() : ObjectBase()
 {
 	StaticMeshComponent* staticMeshComponent = AddSubComponent<StaticMeshComponent>();
 
-	StaticMeshContainer* staticMesh = engine->GetResourceManager()->GetContent<StaticMeshContainer>("Meshes/Objects/SM_Weapon.fbx");
+	StaticMesh* staticMesh = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/Objects/SM_Weapon.fbx");
 
 	staticMeshComponent->SetMesh(staticMesh);
 }

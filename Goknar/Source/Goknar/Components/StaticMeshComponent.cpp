@@ -2,7 +2,7 @@
 
 #include "StaticMeshComponent.h"
 
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 #include "Goknar/Model/StaticMeshInstance.h"
 #include "Goknar/Log.h"
 #include "Goknar/Helpers/SceneParser.h"
@@ -25,7 +25,7 @@ Component* StaticMeshComponent::Clone() const
 	return clonedComponent;
 }
 
-void StaticMeshComponent::SetMesh(StaticMeshContainer* mesh)
+void StaticMeshComponent::SetMesh(StaticMesh* mesh)
 {
 	meshInstance_->SetMesh(mesh);
 }

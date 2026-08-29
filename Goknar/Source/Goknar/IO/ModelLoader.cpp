@@ -11,9 +11,9 @@
 #include "Goknar/Materials/Material.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/SkeletalMesh.h"
-#include "Goknar/Model/SkeletalMeshUnit.h"
+#include "Goknar/Model/SkeletalMeshGeometry.h"
 #include "Goknar/Model/StaticMesh.h"
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 #include "Goknar/Scene.h"
 #include "Goknar/Renderer/Texture.h"
 #include "Goknar/Log.h"
@@ -186,7 +186,7 @@ ufbx_node* GetRootBone(const BoneNameToIdMap* boneNameToIdMap, ufbx_node* node)
 	return nullptr;
 }
 
-void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node, const Matrix& transformFromBone)
+void SetupArmature(SkeletalMeshLOD* skeletalMesh, Bone* bone, ufbx_node* node, const Matrix& transformFromBone)
 {
 	if (!bone || !node || node->children.count == 0)
 	{
@@ -218,15 +218,15 @@ void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node, cons
 	}
 }
 
-void SetupArmature(SkeletalMesh* skeletalMesh, Bone* bone, ufbx_node* node)
+void SetupArmature(SkeletalMeshLOD* skeletalMesh, Bone* bone, ufbx_node* node)
 {
 	SetupArmature(skeletalMesh, bone, node, Matrix::IdentityMatrix);
 }
 
 Content* ModelLoader::LoadModel(const std::string& path)
 {
-	SkeletalMesh* skeletalMeshAsset = nullptr;
-	std::vector<StaticMesh*> staticMeshLODs;
+	SkeletalMeshLOD* skeletalMeshAsset = nullptr;
+	std::vector<StaticMeshLOD*> staticMeshLODs;
 
 	ufbx_load_opts opts = {};
 	opts.generate_missing_normals = true;
@@ -259,13 +259,13 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 		if (sceneHasBones)
 		{
-			skeletalMeshAsset = new SkeletalMesh();
+			skeletalMeshAsset = new SkeletalMeshLOD();
 			skeletalMeshAsset->SetPath(path);
 		}
 
-		std::vector<SkeletalMeshUnit*> pendingSkeletalSubMeshes;
+		std::vector<SkeletalMeshGeometry*> pendingSkeletalSubMeshes;
 
-		auto getOrCreateStaticMeshLOD = [&staticMeshLODs, &path](int LODIndex) -> StaticMesh*
+		auto getOrCreateStaticMeshLOD = [&staticMeshLODs, &path](int LODIndex) -> StaticMeshLOD*
 		{
 			if (LODIndex < 0)
 			{
@@ -279,7 +279,7 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 			if (!staticMeshLODs[LODIndex])
 			{
-				staticMeshLODs[LODIndex] = new StaticMesh();
+				staticMeshLODs[LODIndex] = new StaticMeshLOD();
 				staticMeshLODs[LODIndex]->SetPath(path);
 			}
 
@@ -295,8 +295,8 @@ Content* ModelLoader::LoadModel(const std::string& path)
 			if (numMaterials == 0) numMaterials = 1; // Fallback to 1 submesh if no materials exist
 
 			struct SubMeshData {
-				MeshUnit* meshUnit = nullptr;
-				SkeletalMeshUnit* skeletalMeshUnit = nullptr;
+				MeshGeometry* meshUnit = nullptr;
+				SkeletalMeshGeometry* skeletalMeshGeometry = nullptr;
 				std::unordered_map<UnifiedVertex, uint32_t, UnifiedVertexHash> uniqueVertices;
 				std::vector<VertexData> tempVertices;
 				uint32_t currentVertexId = 0;
@@ -311,12 +311,12 @@ Content* ModelLoader::LoadModel(const std::string& path)
 			{
 				if (sceneHasBones)
 				{
-					subMeshes[i].skeletalMeshUnit = new SkeletalMeshUnit();
-					subMeshes[i].meshUnit = subMeshes[i].skeletalMeshUnit;
+					subMeshes[i].skeletalMeshGeometry = new SkeletalMeshGeometry();
+					subMeshes[i].meshUnit = subMeshes[i].skeletalMeshGeometry;
 				}
 				else
 				{
-					subMeshes[i].meshUnit = new MeshUnit();
+					subMeshes[i].meshUnit = new MeshGeometry();
 				}
 
 				std::string subMeshName = ufbxMesh->name.data;
@@ -357,7 +357,7 @@ Content* ModelLoader::LoadModel(const std::string& path)
 				{
 					delete subMesh.meshUnit;
 					subMesh.meshUnit = nullptr;
-					subMesh.skeletalMeshUnit = nullptr;
+					subMesh.skeletalMeshGeometry = nullptr;
 					continue;
 				}
 
@@ -469,14 +469,14 @@ Content* ModelLoader::LoadModel(const std::string& path)
 				{
 					delete subMesh.meshUnit;
 					subMesh.meshUnit = nullptr;
-					subMesh.skeletalMeshUnit = nullptr;
+					subMesh.skeletalMeshGeometry = nullptr;
 					continue;
 				}
 
 				// Distribute Skin/Bone weights
-				if (sceneHasBones && skeletalMeshAsset && subMesh.skeletalMeshUnit)
+				if (sceneHasBones && skeletalMeshAsset && subMesh.skeletalMeshGeometry)
 				{
-					subMesh.skeletalMeshUnit->ResizeVertexToBonesArray(subMesh.currentVertexId);
+					subMesh.skeletalMeshGeometry->ResizeVertexToBonesArray(subMesh.currentVertexId);
 
 					if (hasBones)
 					{
@@ -545,13 +545,13 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 								for (uint32_t vertexId : localVertexIndices)
 								{
-									subMesh.skeletalMeshUnit->AddVertexBoneData(vertexId, (unsigned int)boneId, (float)skinWeight.weight);
+									subMesh.skeletalMeshGeometry->AddVertexBoneData(vertexId, (unsigned int)boneId, (float)skinWeight.weight);
 								}
 							}
 						}
 					}
 
-					subMesh.skeletalMeshUnit->NormalizeVertexBoneWeights();
+					subMesh.skeletalMeshGeometry->NormalizeVertexBoneWeights();
 				}
 
 				// Triangulate local face data
@@ -659,9 +659,9 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 				subMesh.meshUnit->SetMaterial(material);
 
-				if (sceneHasBones && skeletalMeshAsset && subMesh.skeletalMeshUnit)
+				if (sceneHasBones && skeletalMeshAsset && subMesh.skeletalMeshGeometry)
 				{
-					pendingSkeletalSubMeshes.push_back(subMesh.skeletalMeshUnit);
+					pendingSkeletalSubMeshes.push_back(subMesh.skeletalMeshGeometry);
 				}
 				else if (!sceneHasBones)
 				{
@@ -760,7 +760,7 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 		if (skeletalMeshAsset)
 		{
-			for (SkeletalMeshUnit* skeletalSubMesh : pendingSkeletalSubMeshes)
+			for (SkeletalMeshGeometry* skeletalSubMesh : pendingSkeletalSubMeshes)
 			{
 				skeletalMeshAsset->AddMesh(skeletalSubMesh);
 			}
@@ -775,23 +775,23 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 	if (skeletalMeshAsset)
 	{
-		MeshContainer<SkeletalMesh>* meshContainer = new MeshContainer<SkeletalMesh>();
-		meshContainer->AddLOD(LODSetting<SkeletalMesh>{ skeletalMeshAsset, MAX_FLOAT });
+		SkeletalMesh* meshContainer = new SkeletalMesh();
+		meshContainer->AddLOD(LODSetting<SkeletalMeshLOD>{ skeletalMeshAsset, MAX_FLOAT });
 		return meshContainer;
 	}
 
 	if (!staticMeshLODs.empty())
 	{
-		MeshContainer<StaticMesh>* meshContainer = new MeshContainer<StaticMesh>();
+		StaticMesh* meshContainer = new StaticMesh();
 		for (size_t LODIndex = 0; LODIndex < staticMeshLODs.size(); ++LODIndex)
 		{
-			StaticMesh* staticMeshLOD = staticMeshLODs[LODIndex];
+			StaticMeshLOD* staticMeshLOD = staticMeshLODs[LODIndex];
 			if (!staticMeshLOD)
 			{
 				continue;
 			}
 
-			meshContainer->AddLOD(LODSetting<StaticMesh>{ staticMeshLOD, GetLODFrameCoverage((int)LODIndex) });
+			meshContainer->AddLOD(LODSetting<StaticMeshLOD>{ staticMeshLOD, GetLODFrameCoverage((int)LODIndex) });
 		}
 
 		if (0 < meshContainer->GetLODCount())

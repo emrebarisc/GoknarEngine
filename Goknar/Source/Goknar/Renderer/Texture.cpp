@@ -238,15 +238,12 @@ void Texture::Bind(const Shader* shader) const
 	{
 		shader->SetInt(GetShaderUniformName().c_str(), static_cast<int>(effectiveRendererTextureId));
 
-		if (atlasTexture_)
-		{
-			Vector4 atlasUVTransform(0.f);
-			atlasUVTransform.x = atlasUScale_;
-			atlasUVTransform.y = atlasVScale_;
-			atlasUVTransform.z = atlasUOffset_;
-			atlasUVTransform.w = atlasVOffset_;
-			shader->SetVector4(GetAtlasUVTransformUniformName().c_str(), atlasUVTransform);
-		}
+		Vector4 atlasUVTransform(0.f);
+		atlasUVTransform.x = atlasUScale_;
+		atlasUVTransform.y = atlasVScale_;
+		atlasUVTransform.z = atlasUOffset_;
+		atlasUVTransform.w = atlasVOffset_;
+		shader->SetVector4(GetAtlasUVTransformUniformName().c_str(), atlasUVTransform);
 	}
 
 	BindToTextureUnit(effectiveRendererTextureId);

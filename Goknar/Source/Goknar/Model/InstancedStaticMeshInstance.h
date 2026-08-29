@@ -2,9 +2,9 @@
 #define __INSTANCEDSTATICMESHINSTANCE_H__
 
 #include "IMeshInstance.h"
-#include "Model/MeshContainer.h"
+#include "Model/Mesh.h"
 
-class GOKNAR_API InstancedStaticMeshInstance : public IMeshInstance<InstancedStaticMeshContainer>
+class GOKNAR_API InstancedStaticMeshInstance : public IMeshInstance<InstancedStaticMesh>
 {
 public:
 	InstancedStaticMeshInstance() = delete;

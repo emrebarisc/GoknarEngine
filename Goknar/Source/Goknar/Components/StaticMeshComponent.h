@@ -6,9 +6,7 @@
 class StaticMesh;
 class StaticMeshInstance;
 
-using StaticMeshContainer = MeshContainer<StaticMesh>;
-
-class GOKNAR_API StaticMeshComponent : public MeshComponent<StaticMeshContainer, StaticMeshInstance>
+class GOKNAR_API StaticMeshComponent : public MeshComponent<StaticMesh, StaticMeshInstance>
 {
 public:
 	StaticMeshComponent() = delete;
@@ -17,7 +15,7 @@ public:
 	virtual ~StaticMeshComponent();
 
 	Component* Clone() const override;
-	void SetMesh(StaticMeshContainer* mesh) override;
+	void SetMesh(StaticMesh* mesh) override;
 
 protected:
 private:

@@ -23,7 +23,7 @@
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Materials/MaterialBase.h"
 #include "Goknar/Materials/MaterialSerializer.h"
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 
 namespace
 {
@@ -44,7 +44,7 @@ namespace
 
 	Material* GetMeshLODMaterial(Content* content, size_t LODIndex, size_t subMeshIndex)
 	{
-		if (StaticMesh* staticMesh = dynamic_cast<StaticMesh*>(content))
+		if (StaticMeshLOD* staticMesh = dynamic_cast<StaticMeshLOD*>(content))
 		{
 			if (LODIndex != 0)
 			{
@@ -55,7 +55,7 @@ namespace
 			return subMeshIndex < subMeshes.size() ? subMeshes[subMeshIndex]->GetMaterial() : nullptr;
 		}
 
-		if (SkeletalMesh* skeletalMesh = dynamic_cast<SkeletalMesh*>(content))
+		if (SkeletalMeshLOD* skeletalMesh = dynamic_cast<SkeletalMeshLOD*>(content))
 		{
 			if (LODIndex != 0)
 			{
@@ -66,9 +66,9 @@ namespace
 			return subMeshIndex < subMeshes.size() ? subMeshes[subMeshIndex]->GetMaterial() : nullptr;
 		}
 
-		if (StaticMeshContainer* staticMeshContainer = dynamic_cast<StaticMeshContainer*>(content))
+		if (StaticMesh* staticMeshContainer = dynamic_cast<StaticMesh*>(content))
 		{
-			StaticMesh* staticMesh = staticMeshContainer->GetLOD((int)LODIndex);
+			StaticMeshLOD* staticMesh = staticMeshContainer->GetLOD((int)LODIndex);
 			if (!staticMesh)
 			{
 				return nullptr;
@@ -78,9 +78,9 @@ namespace
 			return subMeshIndex < subMeshes.size() ? subMeshes[subMeshIndex]->GetMaterial() : nullptr;
 		}
 
-		if (SkeletalMeshContainer* skeletalMeshContainer = dynamic_cast<SkeletalMeshContainer*>(content))
+		if (SkeletalMesh* skeletalMeshContainer = dynamic_cast<SkeletalMesh*>(content))
 		{
-			SkeletalMesh* skeletalMesh = skeletalMeshContainer->GetLOD((int)LODIndex);
+			SkeletalMeshLOD* skeletalMesh = skeletalMeshContainer->GetLOD((int)LODIndex);
 			if (!skeletalMesh)
 			{
 				return nullptr;
@@ -693,12 +693,12 @@ namespace
 
 	size_t GetMeshLODCount(Content* content)
 	{
-		if (StaticMeshContainer* staticMeshContainer = dynamic_cast<StaticMeshContainer*>(content))
+		if (StaticMesh* staticMeshContainer = dynamic_cast<StaticMesh*>(content))
 		{
 			return staticMeshContainer->GetLODCount();
 		}
 
-		if (SkeletalMeshContainer* skeletalMeshContainer = dynamic_cast<SkeletalMeshContainer*>(content))
+		if (SkeletalMesh* skeletalMeshContainer = dynamic_cast<SkeletalMesh*>(content))
 		{
 			return skeletalMeshContainer->GetLODCount();
 		}
@@ -708,13 +708,13 @@ namespace
 
 	void ApplyMeshLODFrameCoverage(Content* content, size_t LODIndex, float frameCoverage)
 	{
-		if (StaticMeshContainer* staticMeshContainer = dynamic_cast<StaticMeshContainer*>(content))
+		if (StaticMesh* staticMeshContainer = dynamic_cast<StaticMesh*>(content))
 		{
 			staticMeshContainer->SetLODFrameCoverage((int)LODIndex, frameCoverage);
 			return;
 		}
 
-		if (SkeletalMeshContainer* skeletalMeshContainer = dynamic_cast<SkeletalMeshContainer*>(content))
+		if (SkeletalMesh* skeletalMeshContainer = dynamic_cast<SkeletalMesh*>(content))
 		{
 			skeletalMeshContainer->SetLODFrameCoverage((int)LODIndex, frameCoverage);
 		}
@@ -1369,10 +1369,10 @@ void AssetParser::ParseMeshes(tinyxml2::XMLElement* assetsElement)
 			stream >> path;
 
 			const std::string relativePath = ContentPathUtils::ToContentRelativePath(path);
-			mesh = resourceManager->GetContent<StaticMeshContainer>(relativePath);
+			mesh = resourceManager->GetContent<StaticMesh>(relativePath);
 			if (!mesh)
 			{
-				mesh = resourceManager->GetContent<SkeletalMeshContainer>(relativePath);
+				mesh = resourceManager->GetContent<SkeletalMesh>(relativePath);
 			}
 			stream.clear();
 		}

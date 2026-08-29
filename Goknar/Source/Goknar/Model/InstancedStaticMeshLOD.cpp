@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "InstancedStaticMesh.h"
+#include "InstancedStaticMeshLOD.h"
 
 #include "Goknar/Contents/Image.h"
 #include "Goknar/Engine.h"
@@ -9,40 +9,40 @@
 #include "Goknar/Materials/Material.h"
 #include "Goknar/Renderer/Renderer.h"
 
-InstancedStaticMesh::InstancedStaticMesh() :
-	StaticMesh()
+InstancedStaticMeshLOD::InstancedStaticMeshLOD() :
+	StaticMeshLOD()
 {
 }
 
-InstancedStaticMesh::~InstancedStaticMesh()
+InstancedStaticMeshLOD::~InstancedStaticMeshLOD()
 {
 }
 
-void InstancedStaticMesh::PreInit()
+void InstancedStaticMeshLOD::PreInit()
 {
-	Mesh<MeshUnit>::PreInit();
+	MeshSection<MeshGeometry>::PreInit();
 
 	engine->AddInstancedStaticMeshToRenderer(this);
 }
 
-void InstancedStaticMesh::Init()
+void InstancedStaticMeshLOD::Init()
 {
-	StaticMesh::Init();
+	StaticMeshLOD::Init();
 }
 
-void InstancedStaticMesh::PostInit()
+void InstancedStaticMeshLOD::PostInit()
 {
-	StaticMesh::PostInit();
+	StaticMeshLOD::PostInit();
 }
 
-void InstancedStaticMesh::AddMesh(MeshUnit* meshUnit)
+void InstancedStaticMeshLOD::AddMesh(MeshGeometry* meshUnit)
 {
 	if (meshUnit)
 	{
 		meshUnit->SetMeshType(MeshType::InstancedStatic);
 	}
 
-	StaticMesh::AddMesh(meshUnit);
+	StaticMeshLOD::AddMesh(meshUnit);
 	subMeshInstanceAABBs_.push_back(meshUnit ? meshUnit->GetAABB() : Box());
 
 	if (!instanceTransformationMatrices_.empty())
@@ -51,31 +51,31 @@ void InstancedStaticMesh::AddMesh(MeshUnit* meshUnit)
 	}
 }
 
-InstancedStaticMesh* InstancedStaticMesh::CreateFromStaticMesh(const StaticMesh* sourceMesh, const std::string& path)
+InstancedStaticMeshLOD* InstancedStaticMeshLOD::CreateFromStaticMesh(const StaticMeshLOD* sourceMesh, const std::string& path)
 {
 	if (!sourceMesh || path.empty())
 	{
 		return nullptr;
 	}
 
-	InstancedStaticMesh* instancedStaticMesh = new InstancedStaticMesh();
+	InstancedStaticMeshLOD* instancedStaticMesh = new InstancedStaticMeshLOD();
 	instancedStaticMesh->SetPath(path);
 	instancedStaticMesh->SetSourceMeshPath(sourceMesh->GetPath());
 
 	const auto& sourceSubMeshes = sourceMesh->GetSubMeshes();
-	for (const MeshUnit* sourceSubMesh : sourceSubMeshes)
+	for (const MeshGeometry* sourceSubMesh : sourceSubMeshes)
 	{
-		MeshUnit* clonedMeshUnit = CloneMeshUnitForInstancedStaticMesh(sourceSubMesh);
-		if (clonedMeshUnit)
+		MeshGeometry* clonedMeshGeometry = CloneMeshGeometryForInstancedStaticMesh(sourceSubMesh);
+		if (clonedMeshGeometry)
 		{
-			instancedStaticMesh->AddMesh(clonedMeshUnit);
+			instancedStaticMesh->AddMesh(clonedMeshGeometry);
 		}
 	}
 
 	return instancedStaticMesh;
 }
 
-void InstancedStaticMesh::AddInstanceTransformation(const Matrix& instanceTransformationMatrix, bool recalculateAABB)
+void InstancedStaticMeshLOD::AddInstanceTransformation(const Matrix& instanceTransformationMatrix, bool recalculateAABB)
 {
 	instanceTransformationMatrices_.push_back(instanceTransformationMatrix);
 
@@ -85,7 +85,7 @@ void InstancedStaticMesh::AddInstanceTransformation(const Matrix& instanceTransf
 	}
 }
 
-void InstancedStaticMesh::SetInstanceTransformations(const std::vector<Matrix>& instanceTransformationMatrices, bool recalculateAABB)
+void InstancedStaticMeshLOD::SetInstanceTransformations(const std::vector<Matrix>& instanceTransformationMatrices, bool recalculateAABB)
 {
 	instanceTransformationMatrices_ = instanceTransformationMatrices;
 
@@ -95,7 +95,7 @@ void InstancedStaticMesh::SetInstanceTransformations(const std::vector<Matrix>& 
 	}
 }
 
-void InstancedStaticMesh::SetInstanceTransformationAt(size_t index, const Matrix& instanceTransformationMatrix, bool recalculateAABB)
+void InstancedStaticMeshLOD::SetInstanceTransformationAt(size_t index, const Matrix& instanceTransformationMatrix, bool recalculateAABB)
 {
 	GOKNAR_CORE_ASSERT(index < instanceTransformationMatrices_.size(), "InstancedStaticMesh instance index is out of bounds.");
 	if (index >= instanceTransformationMatrices_.size())
@@ -116,12 +116,12 @@ void InstancedStaticMesh::SetInstanceTransformationAt(size_t index, const Matrix
 	}
 }
 
-void InstancedStaticMesh::UpdateInstanceTransformationAt(size_t index, const Matrix& instanceTransformationMatrix, bool recalculateAABB)
+void InstancedStaticMeshLOD::UpdateInstanceTransformationAt(size_t index, const Matrix& instanceTransformationMatrix, bool recalculateAABB)
 {
 	SetInstanceTransformationAt(index, instanceTransformationMatrix, recalculateAABB);
 }
 
-void InstancedStaticMesh::UpdateAllTransforms()
+void InstancedStaticMeshLOD::UpdateAllTransforms()
 {
 	hasPendingFullTransformUpload_ = true;
 
@@ -131,16 +131,16 @@ void InstancedStaticMesh::UpdateAllTransforms()
 	}
 }
 
-void InstancedStaticMesh::RecalculateAABB()
+void InstancedStaticMeshLOD::RecalculateAABB()
 {
-	const std::vector<MeshUnit*>& subMeshes = GetSubMeshes();
+	const std::vector<MeshGeometry*>& subMeshes = GetSubMeshes();
 	subMeshInstanceAABBs_.resize(subMeshes.size());
 	instancedAABB_ = Box();
 
 	bool hasInstancedAABB = false;
 	for (size_t subMeshIndex = 0; subMeshIndex < subMeshes.size(); ++subMeshIndex)
 	{
-		MeshUnit* subMesh = subMeshes[subMeshIndex];
+		MeshGeometry* subMesh = subMeshes[subMeshIndex];
 		if (!subMesh || instanceTransformationMatrices_.empty())
 		{
 			subMeshInstanceAABBs_[subMeshIndex] = Box();
@@ -184,7 +184,7 @@ void InstancedStaticMesh::RecalculateAABB()
 	}
 }
 
-bool InstancedStaticMesh::IsValidAABB(const Box& aabb)
+bool InstancedStaticMeshLOD::IsValidAABB(const Box& aabb)
 {
 	const Vector3& min = aabb.GetMin();
 	const Vector3& max = aabb.GetMax();
@@ -193,7 +193,7 @@ bool InstancedStaticMesh::IsValidAABB(const Box& aabb)
 		min.z <= max.z;
 }
 
-void InstancedStaticMesh::ExtendBoundsWithPoint(Box& bounds, bool& hasBounds, const Vector3& point)
+void InstancedStaticMeshLOD::ExtendBoundsWithPoint(Box& bounds, bool& hasBounds, const Vector3& point)
 {
 	if (!hasBounds)
 	{
@@ -205,7 +205,7 @@ void InstancedStaticMesh::ExtendBoundsWithPoint(Box& bounds, bool& hasBounds, co
 	bounds.ExtendWRTPoint(point, false);
 }
 
-void InstancedStaticMesh::AddTransformedAABBToBounds(
+void InstancedStaticMeshLOD::AddTransformedAABBToBounds(
 	const Box& localAABB,
 	const Matrix& transformationMatrix,
 	Box& bounds,
@@ -234,7 +234,7 @@ void InstancedStaticMesh::AddTransformedAABBToBounds(
 	}
 }
 
-Material* InstancedStaticMesh::CloneMaterialForInstancedStaticMesh(const Material* sourceMaterial)
+Material* InstancedStaticMeshLOD::CloneMaterialForInstancedStaticMesh(const Material* sourceMaterial)
 {
 	if (!sourceMaterial)
 	{
@@ -287,35 +287,35 @@ Material* InstancedStaticMesh::CloneMaterialForInstancedStaticMesh(const Materia
 	return clonedMaterial;
 }
 
-MeshUnit* InstancedStaticMesh::CloneMeshUnitForInstancedStaticMesh(const MeshUnit* sourceMeshUnit)
+MeshGeometry* InstancedStaticMeshLOD::CloneMeshGeometryForInstancedStaticMesh(const MeshGeometry* sourceMeshGeometry)
 {
-	if (!sourceMeshUnit)
+	if (!sourceMeshGeometry)
 	{
 		return nullptr;
 	}
 
-	const VertexArray* sourceVertices = sourceMeshUnit->GetVerticesPointer();
-	const FaceArray* sourceFaces = sourceMeshUnit->GetFacesPointer();
+	const VertexArray* sourceVertices = sourceMeshGeometry->GetVerticesPointer();
+	const FaceArray* sourceFaces = sourceMeshGeometry->GetFacesPointer();
 	if (!sourceVertices || !sourceFaces)
 	{
 		return nullptr;
 	}
 
-	MeshUnit* clonedMeshUnit = new MeshUnit();
-	clonedMeshUnit->SetName(sourceMeshUnit->GetName());
-	clonedMeshUnit->SetMaterial(CloneMaterialForInstancedStaticMesh(sourceMeshUnit->GetMaterial()));
-	clonedMeshUnit->SetBaseVertex(sourceMeshUnit->GetBaseVertex());
-	clonedMeshUnit->SetVertexStartingIndex(sourceMeshUnit->GetVertexStartingIndex());
+	MeshGeometry* clonedMeshGeometry = new MeshGeometry();
+	clonedMeshGeometry->SetName(sourceMeshGeometry->GetName());
+	clonedMeshGeometry->SetMaterial(CloneMaterialForInstancedStaticMesh(sourceMeshGeometry->GetMaterial()));
+	clonedMeshGeometry->SetBaseVertex(sourceMeshGeometry->GetBaseVertex());
+	clonedMeshGeometry->SetVertexStartingIndex(sourceMeshGeometry->GetVertexStartingIndex());
 
 	for (const VertexData& vertexData : *sourceVertices)
 	{
-		clonedMeshUnit->AddVertexData(vertexData);
+		clonedMeshGeometry->AddVertexData(vertexData);
 	}
 
 	for (const Face& face : *sourceFaces)
 	{
-		clonedMeshUnit->AddFace(face);
+		clonedMeshGeometry->AddFace(face);
 	}
 
-	return clonedMeshUnit;
+	return clonedMeshGeometry;
 }

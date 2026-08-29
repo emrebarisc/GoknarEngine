@@ -361,7 +361,8 @@ void Navigation_Tests::Run()
 	Content* loadedContent = IOManager::LoadModel(testFbxPath);
 	StaticMesh* loadedStaticMesh = dynamic_cast<StaticMesh*>(loadedContent);
 	TEST_ASSERT(loadedStaticMesh != nullptr, "Navigation: exported navmesh FBX loads as StaticMesh");
-	TEST_ASSERT(!loadedStaticMesh->GetSubMeshes().empty(), "Navigation: exported navmesh FBX contains mesh data");
+	StaticMeshLOD* loadedStaticMeshLOD0 = loadedStaticMesh ? loadedStaticMesh->GetLOD(0) : nullptr;
+	TEST_ASSERT(loadedStaticMeshLOD0 && !loadedStaticMeshLOD0->GetSubMeshes().empty(), "Navigation: exported navmesh FBX contains mesh data");
 	delete loadedStaticMesh;
 
 	const std::string testDebugFbxPath = "Navigation_Tests_Debug.fbx";

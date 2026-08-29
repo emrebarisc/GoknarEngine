@@ -48,7 +48,7 @@ protected:
 private:
 	Weapon* weapon_{ nullptr };
 
-	SkeletalMeshContainer* skeletalMesh_{ nullptr };
+	SkeletalMesh* skeletalMesh_{ nullptr };
 
 	AnimationGraph* animationGraph_{ nullptr };
 

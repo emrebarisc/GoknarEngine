@@ -6,9 +6,9 @@
 #include <vector>
 
 class IMaterialBase;
-class MeshUnit;
+class MeshGeometry;
 class Shader;
-class StaticMesh;
+class StaticMeshLOD;
 
 class GOKNAR_API StaticMeshParticleSystem : public ParticleSystemBase
 {
@@ -20,8 +20,8 @@ public:
 		const Camera* activeCamera,
 		ParticleRenderStage renderStage = ParticleRenderStage::All) const override;
 
-	void SetStaticMesh(const StaticMesh* staticMesh);
-	const StaticMesh* GetStaticMesh() const
+	void SetStaticMesh(const StaticMeshLOD* staticMesh);
+	const StaticMeshLOD* GetStaticMesh() const
 	{
 		return staticMesh_;
 	}
@@ -37,7 +37,7 @@ protected:
 private:
 	struct StaticMeshSubmeshRenderData
 	{
-		const MeshUnit* meshUnit{ nullptr };
+		const MeshGeometry* meshUnit{ nullptr };
 		const IMaterialBase* material{ nullptr };
 		Shader* renderShader{ nullptr };
 		std::uint32_t indexCount{ 0u };
@@ -48,7 +48,7 @@ private:
 	Shader* CreateRenderShaderForMaterial(const IMaterialBase* material) const;
 	void RefreshStaticMeshSubmeshRenderData();
 
-	const StaticMesh* staticMesh_{ nullptr };
+	const StaticMeshLOD* staticMesh_{ nullptr };
 	std::vector<StaticMeshSubmeshRenderData> staticMeshSubmeshRenderData_{};
 };
 

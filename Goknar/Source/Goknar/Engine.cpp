@@ -822,22 +822,22 @@ void Engine::Exit()
 	windowManager_->CloseWindow();
 }
 
-void Engine::AddInstancedStaticMeshToRenderer(InstancedStaticMesh* instancedStaticMesh)
+void Engine::AddInstancedStaticMeshToRenderer(InstancedStaticMeshLOD* instancedStaticMesh)
 {
 	renderer_->AddInstancedStaticMeshToRenderer(instancedStaticMesh);
 }
 
-void Engine::AddStaticMeshToRenderer(StaticMesh* staticMesh)
+void Engine::AddStaticMeshToRenderer(StaticMeshLOD* staticMesh)
 {
 	renderer_->AddStaticMeshToRenderer(staticMesh);
 }
 
-void Engine::AddSkeletalMeshToRenderer(SkeletalMesh* skeletalMesh)
+void Engine::AddSkeletalMeshToRenderer(SkeletalMeshLOD* skeletalMesh)
 {
 	renderer_->AddSkeletalMeshToRenderer(skeletalMesh);
 }
 
-void Engine::AddDynamicMeshToRenderer(DynamicMesh* dynamicMesh)
+void Engine::AddDynamicMeshToRenderer(DynamicMeshLOD* dynamicMesh)
 {
 	renderer_->AddDynamicMeshToRenderer(dynamicMesh);
 }

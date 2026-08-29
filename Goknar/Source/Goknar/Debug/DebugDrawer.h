@@ -13,12 +13,9 @@ class SphereCollisionComponent;
 class MovingTriangleMeshCollisionComponent;
 class NonMovingTriangleMeshCollisionComponent;
 
-class MeshUnit;
+class MeshGeometry;
 class ObjectBase;
 class StaticMesh;
-template<typename T>
-class MeshContainer;
-using StaticMeshContainer = MeshContainer<StaticMesh>;
 
 class GOKNAR_API DebugObject : public ObjectBase
 {
@@ -54,12 +51,12 @@ public:
 	static void DrawCollisionComponent(const MovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
 	static void DrawCollisionComponent(const NonMovingTriangleMeshCollisionComponent* movingTriangleMeshCollisionComponent, const Colorf& color, float thickness = 1.f, float time = -1.f);
 
-	static void DrawMeshUnit(const MeshUnit* meshUnit, const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
+	static void DrawMeshGeometry(const MeshGeometry* meshUnit, const Colorf& color, float thickness = 1.f, float time = -1.f, ObjectBase* owner = nullptr);
 
 protected:
 
 private:
-	static StaticMeshContainer* lineMesh_;
-	static StaticMeshContainer* arrowHeadMesh_;
+	static StaticMesh* lineMesh_;
+	static StaticMesh* arrowHeadMesh_;
 };
 #endif

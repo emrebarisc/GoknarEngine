@@ -10,7 +10,7 @@
 #include "Goknar/Lights/PointLight.h"
 #include "Goknar/Lights/SpotLight.h"
 #include "Goknar/Materials/Material.h"
-#include "Goknar/Model/MeshUnit.h"
+#include "Goknar/Model/MeshGeometry.h"
 #include "Goknar/Model/SkeletalMesh.h"
 #include "Goknar/Renderer/Shader.h"
 #include "Goknar/Renderer/ShaderBindingPoints.h"
@@ -1796,10 +1796,8 @@ std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(const MaterialIni
 		if (addedTextureNames.find(textureUniformName) == addedTextureNames.end())
 		{
 			uniforms += "uniform sampler2D " + textureUniformName + ";\n";
-			if ((texture->GetUsesAtlasTexture() || texture->GetWaitsForTextureAtlas()))
-			{
-				uniforms += "uniform vec4 " + texture->GetAtlasUVTransformUniformName() + ";\n";
-			}
+			// Standalone textures use the identity transform, which keeps atlas fallback shaders valid.
+			uniforms += "uniform vec4 " + texture->GetAtlasUVTransformUniformName() + ";\n";
 			addedTextureNames.insert(textureUniformName);
 		}
 	}
@@ -2795,7 +2793,7 @@ std::string ShaderBuilder::VS_GetVertexNormalText(MaterialInitializationData* in
 
 	if (initializationData && !initializationData->vertexNormal.result.empty())
 	{
-		vertexNormalText += initializationData->vertexNormal.result;
+		vertexNormalText += TrimTrailingStatementTerminators(initializationData->vertexNormal.result);
 	}
 	else
 	{

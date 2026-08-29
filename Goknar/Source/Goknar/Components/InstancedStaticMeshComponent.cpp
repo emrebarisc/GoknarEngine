@@ -6,7 +6,7 @@
 #include "Goknar/Helpers/ContentPathUtils.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/InstancedStaticMesh.h"
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 #include "Goknar/Model/InstancedStaticMeshInstance.h"
 #include "Goknar/Model/StaticMesh.h"
 
@@ -24,8 +24,8 @@ Component* InstancedStaticMeshComponent::Clone() const
 	InstancedStaticMeshComponent* clonedComponent = new InstancedStaticMeshComponent((Component*)nullptr);
 	CopyValuesTo(clonedComponent);
 
-	InstancedStaticMeshContainer* sourceMeshContainer = meshInstance_ ? meshInstance_->GetMesh() : nullptr;
-	InstancedStaticMesh* sourceInstancedMesh = sourceMeshContainer ? sourceMeshContainer->GetLOD(0) : nullptr;
+	InstancedStaticMesh* sourceMeshContainer = meshInstance_ ? meshInstance_->GetMesh() : nullptr;
+	InstancedStaticMeshLOD* sourceInstancedMesh = sourceMeshContainer ? sourceMeshContainer->GetLOD(0) : nullptr;
 	if (sourceMeshContainer && sourceInstancedMesh)
 	{
 		std::string ownerMeshPath = sourceMeshContainer->GetPath();
@@ -36,17 +36,17 @@ Component* InstancedStaticMeshComponent::Clone() const
 		}
 		ownerMeshPath = ContentPathUtils::ToContentRelativePath(ownerMeshPath);
 
-		StaticMesh* sourceStaticMesh = sourceInstancedMesh;
+		StaticMeshLOD* sourceStaticMesh = sourceInstancedMesh;
 		if (!ownerMeshPath.empty() && engine && engine->GetResourceManager())
 		{
-			StaticMeshContainer* ownerMeshContainer = engine->GetResourceManager()->GetContent<StaticMeshContainer>(ownerMeshPath);
+			StaticMesh* ownerMeshContainer = engine->GetResourceManager()->GetContent<StaticMesh>(ownerMeshPath);
 			if (ownerMeshContainer && ownerMeshContainer->GetLODCount() > 0 && ownerMeshContainer->GetLOD(0))
 			{
 				sourceStaticMesh = ownerMeshContainer->GetLOD(0);
 			}
 		}
 
-		InstancedStaticMesh* clonedMesh = InstancedStaticMesh::CreateFromStaticMesh(
+		InstancedStaticMeshLOD* clonedMesh = InstancedStaticMeshLOD::CreateFromStaticMesh(
 			sourceStaticMesh,
 			sourceMeshContainer->GetPath() + "::Clone_" + std::to_string(clonedComponent->GetGUID()));
 
@@ -54,9 +54,9 @@ Component* InstancedStaticMeshComponent::Clone() const
 		{
 			clonedMesh->SetInstanceTransformations(sourceInstancedMesh->GetInstanceTransformationMatrices());
 
-			InstancedStaticMeshContainer* clonedMeshContainer = new InstancedStaticMeshContainer();
+			InstancedStaticMesh* clonedMeshContainer = new InstancedStaticMesh();
 			clonedMeshContainer->SetPath(clonedMesh->GetPath());
-			clonedMeshContainer->AddLOD(LODSetting<InstancedStaticMesh>{ clonedMesh, MAX_FLOAT });
+			clonedMeshContainer->AddLOD(LODSetting<InstancedStaticMeshLOD>{ clonedMesh, MAX_FLOAT });
 			if (engine && engine->GetResourceManager() && engine->GetResourceManager()->GetResourceContainer())
 			{
 				engine->GetResourceManager()->GetResourceContainer()->AddMesh(clonedMeshContainer);
@@ -75,7 +75,7 @@ Component* InstancedStaticMeshComponent::Clone() const
 	return clonedComponent;
 }
 
-void InstancedStaticMeshComponent::SetMesh(InstancedStaticMeshContainer* mesh)
+void InstancedStaticMeshComponent::SetMesh(InstancedStaticMesh* mesh)
 {
 	meshInstance_->SetMesh(mesh);
 }

@@ -1,14 +1,14 @@
-#ifndef __DYNAMICMESHUNIT_H__
-#define __DYNAMICMESHUNIT_H__
+#ifndef __DYNAMICMESHGEOMETRY_H__
+#define __DYNAMICMESHGEOMETRY_H__
 
-#include "MeshUnit.h"
+#include "MeshGeometry.h"
 
-class GOKNAR_API DynamicMeshUnit : public MeshUnit
+class GOKNAR_API DynamicMeshGeometry : public MeshGeometry
 {
 public:
-	DynamicMeshUnit();
+	DynamicMeshGeometry();
 
-	virtual ~DynamicMeshUnit();
+	virtual ~DynamicMeshGeometry();
 
 	virtual void PreInit();
 	virtual void Init();

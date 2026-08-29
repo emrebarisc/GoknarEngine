@@ -59,7 +59,7 @@ void SkeletalMeshInstance::PrepareForTheCurrentFrame()
 		return;
 	}
 
-	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = mesh_->GetLOD(0);
 
 	if (!LOD0)
 	{
@@ -84,7 +84,7 @@ void SkeletalMeshInstance::BuildMatricesAndUpdateSockets()
 		return;
 	}
 
-	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = mesh_->GetLOD(0);
 
 	if (!LOD0)
 	{
@@ -153,7 +153,7 @@ void SkeletalMeshInstance::UpdateSocketsFromModelSpacePose()
 		return;
 	}
 
-	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = mesh_->GetLOD(0);
 
 	if (!LOD0)
 	{
@@ -179,7 +179,7 @@ void SkeletalMeshInstance::SampleDirectAnimationToLocalPose()
 		return;
 	}
 
-	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = mesh_->GetLOD(0);
 
 	if (!LOD0)
 	{
@@ -285,7 +285,7 @@ void SkeletalMeshInstance::Render(RenderPassType renderPassType, int subMeshInde
 
 void SkeletalMeshInstance::SetRenderOperations(RenderPassType renderPassType, int subMeshIndex, int LODIndex/* = 0*/)
 {
-	const std::vector<SkeletalMeshUnit*>& subMeshes = mesh_->GetLOD(LODIndex)->GetSubMeshes();
+	const std::vector<SkeletalMeshGeometry*>& subMeshes = mesh_->GetLOD(LODIndex)->GetSubMeshes();
 	if (0 <= subMeshIndex && subMeshIndex < (int)subMeshes.size())
 	{
 		IMaterialBase* material = GetMaterial(subMeshIndex);
@@ -298,11 +298,11 @@ void SkeletalMeshInstance::SetRenderOperations(RenderPassType renderPassType, in
 	IMeshInstance::Render(renderPassType, subMeshIndex, LODIndex);
 }
 
-void SkeletalMeshInstance::SetMesh(SkeletalMeshContainer* skeletalMesh)
+void SkeletalMeshInstance::SetMesh(SkeletalMesh* skeletalMesh)
 {
 	IMeshInstance::SetMesh(skeletalMesh);
 
-	SkeletalMesh* LOD0 = skeletalMesh->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = skeletalMesh->GetLOD(0);
 
 	LOD0->BuildRuntimeAnimationData();
 	boneTransformations_.resize(LOD0->GetBoneSize(), Matrix::IdentityMatrix);
@@ -323,7 +323,7 @@ void SkeletalMeshInstance::PlayAnimation(const std::string& animationName, const
 		return;
 	}
 
-	SkeletalMesh* skeletalMesh = mesh_->GetLOD(0);
+	SkeletalMeshLOD* skeletalMesh = mesh_->GetLOD(0);
 	if (!skeletalMesh)
 	{
 		return;
@@ -351,7 +351,7 @@ void SkeletalMeshInstance::EvaluateAnimationGraph(AnimationGraph& animationGraph
 		return;
 	}
 
-	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = mesh_->GetLOD(0);
 
 	if (!LOD0)
 	{
@@ -388,7 +388,7 @@ void SkeletalMeshInstance::EvaluateAnimationGraph(AnimationGraph& animationGraph
 
 void SkeletalMeshInstance::EvaluateAnimationNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
 {
-	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = mesh_->GetLOD(0);
 
 	if (!LOD0)
 	{
@@ -418,7 +418,7 @@ void SkeletalMeshInstance::EvaluateAnimationNode(AnimationGraph& animationGraph,
 
 void SkeletalMeshInstance::EvaluateClipNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
 {
-	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = mesh_->GetLOD(0);
 
 	if (!LOD0)
 	{
@@ -455,7 +455,7 @@ void SkeletalMeshInstance::EvaluateClipNode(AnimationGraph& animationGraph, Anim
 
 void SkeletalMeshInstance::EvaluateBlendSpace1DNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
 {
-	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = mesh_->GetLOD(0);
 
 	if (!LOD0)
 	{
@@ -580,7 +580,7 @@ void SkeletalMeshInstance::EvaluateBlendSpace1DNode(AnimationGraph& animationGra
 
 void SkeletalMeshInstance::EvaluateBlendSpace2DNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose)
 {
-	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = mesh_->GetLOD(0);
 
 	if (!LOD0)
 	{
@@ -735,7 +735,7 @@ void SkeletalMeshInstance::AttachBoneToMatrixPointer(const BoneToMatrixBinder& b
 		return;
 	}
 
-	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = mesh_->GetLOD(0);
 
 	if (!LOD0)
 	{
@@ -770,7 +770,7 @@ void SkeletalMeshInstance::RemoveBoneToMatrixPointer(const std::string& boneName
 		return;
 	}
 
-	SkeletalMesh* LOD0 = mesh_->GetLOD(0);
+	SkeletalMeshLOD* LOD0 = mesh_->GetLOD(0);
 
 	if (!LOD0)
 	{

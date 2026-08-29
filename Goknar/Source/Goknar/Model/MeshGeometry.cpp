@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "MeshUnit.h"
+#include "MeshGeometry.h"
 
 #include "Application.h"
 #include "Camera.h"
@@ -42,7 +42,7 @@ namespace
 	}
 }
 
-MeshUnit::MeshUnit() :
+MeshGeometry::MeshGeometry() :
 	material_(nullptr), 
 	vertexCount_(0), 
 	faceCount_(0),
@@ -55,7 +55,7 @@ MeshUnit::MeshUnit() :
 	faces_ = new FaceArray();
 }
 
-MeshUnit::~MeshUnit()
+MeshGeometry::~MeshGeometry()
 {
 	if (vertices_)
 	{
@@ -68,7 +68,7 @@ MeshUnit::~MeshUnit()
 	}
 }
 
-void MeshUnit::PreInit()
+void MeshGeometry::PreInit()
 {
 	GenerateTangents();
 
@@ -84,7 +84,7 @@ void MeshUnit::PreInit()
 	}
 }
 
-void MeshUnit::Init()
+void MeshGeometry::Init()
 {
 	if (material_)
 	{
@@ -92,7 +92,7 @@ void MeshUnit::Init()
 	}
 }
 
-void MeshUnit::PostInit()
+void MeshGeometry::PostInit()
 {
 	if (material_)
 	{
@@ -102,7 +102,7 @@ void MeshUnit::PostInit()
 	isInitialized_ = true;
 }
 
-void MeshUnit::ClearDataFromMemory()
+void MeshGeometry::ClearDataFromMemory()
 {
 	vertices_->clear();
 	delete vertices_;
@@ -113,12 +113,12 @@ void MeshUnit::ClearDataFromMemory()
 	faces_ = nullptr;
 }
 
-const IMaterialBase* MeshUnit::GetMaterialBase() const
+const IMaterialBase* MeshGeometry::GetMaterialBase() const
 {
 	return material_;
 }
 
-void MeshUnit::GenerateTangents()
+void MeshGeometry::GenerateTangents()
 {
 	if (!vertices_ || vertices_->empty())
 	{

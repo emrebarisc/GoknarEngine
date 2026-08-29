@@ -12,7 +12,7 @@
 #include "Goknar/Engine.h"
 #include "Goknar/ObjectBase.h"
 
-class MeshUnit;
+class MeshGeometry;
 class ObjectBase;
 
 template<class MeshType, class MeshInstanceType>

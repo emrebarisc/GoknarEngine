@@ -26,7 +26,7 @@ void MovingTriangleMeshCollisionComponent::PreInit()
 {
 	GOKNAR_ASSERT(relativeMesh_ != nullptr);
 
-	MeshUnit* subMesh = relativeMesh_->GetSubMeshes()[0];
+	MeshGeometry* subMesh = relativeMesh_->GetSubMeshes()[0];
 
 	const VertexArray* vertexArray = subMesh->GetVerticesPointer();
 	int vertexCount = subMesh->GetVertexCount();

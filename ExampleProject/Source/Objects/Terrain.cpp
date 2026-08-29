@@ -9,8 +9,8 @@
 
 Terrain::Terrain() : RigidBody()
 {
-	StaticMeshContainer* terrainStaticMeshContainer = engine->GetResourceManager()->GetContent<StaticMeshContainer>("Meshes/SM_Terrain.fbx");
-	StaticMesh* terrainStaticMesh = terrainStaticMeshContainer ? terrainStaticMeshContainer->GetLOD(0) : nullptr;
+	StaticMesh* terrainStaticMeshContainer = engine->GetResourceManager()->GetContent<StaticMesh>("Meshes/SM_Terrain.fbx");
+	StaticMeshLOD* terrainStaticMesh = terrainStaticMeshContainer ? terrainStaticMeshContainer->GetLOD(0) : nullptr;
 
 	if (terrainStaticMesh)
 	{
