@@ -35,8 +35,5 @@ private:
 	DefaultCharacter* defaultCharacter_{ nullptr };
 	FreeCameraObject* freeCameraObject_{ nullptr };
 	GameState* gameState_{ nullptr };
-<<<<<<< HEAD
 	SunGlarePostProcessingEffect* sunGlarePostProcessingEffect_{ nullptr };
-=======
->>>>>>> master
 };

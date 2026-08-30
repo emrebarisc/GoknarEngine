@@ -112,12 +112,6 @@ Game::~Game()
 	gameState_ = nullptr;
 }
 
-Game::~Game()
-{
-	delete gameState_;
-	gameState_ = nullptr;
-}
-
 void Game::PreInit()
 {
 	Application::PreInit();

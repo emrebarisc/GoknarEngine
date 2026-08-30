@@ -44,11 +44,7 @@ DefaultCharacter::DefaultCharacter() :
 
 	controller_ = new DefaultCharacterController(this);
 
-<<<<<<< HEAD
 	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/Characters/SK_DefaultCharacter.fbx");
-=======
-	skeletalMesh_ = engine->GetResourceManager()->GetContent<SkeletalMesh>("Meshes/SK_DefaultCharacter.fbx");
->>>>>>> master
 
 	skeletalMeshComponent_->SetMesh(skeletalMesh_);
 	skeletalMeshComponent_->SetParent(GetRootComponent());
@@ -126,12 +122,9 @@ void DefaultCharacter::BeginGame()
 	cameraHeightOffset_.Reset(Vector3{ 0.f, 0.f, 1.15f });
 	cameraHeightOffset_.speed = 10.f;
 
-<<<<<<< HEAD
 	cameraShoulderOffset_.Reset(defaultShoulderOffset_);
 	cameraShoulderOffset_.speed = 10.f;
 
-=======
->>>>>>> master
 	animationGraph_->Init();
 
 }

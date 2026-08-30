@@ -3,14 +3,9 @@
     <BoneCount>0</BoneCount>
     <BlendModel>Opaque</BlendModel>
     <ShadingModel>Default</ShadingModel>
-<<<<<<< HEAD:ExampleProject/Content/Materials/Level/M_DefaultMaterial
     <UsesReflectionProbe>0</UsesReflectionProbe>
     <Texture path="Textures/T_DarkPlaceholder.png" usage="Diffuse" UseTextureAtlas="true"/>
     <BaseColorValue>1 1 1 1</BaseColorValue>
-=======
-    <Texture path="Textures/T_DarkPlaceholder.png"/>
-    <BaseColorValue>1.0 1.0 1.0 1.0</BaseColorValue>
->>>>>>> master:ExampleProject/Content/Materials/M_DefaultMaterial
     <EmmisiveColorValue>0 0 0</EmmisiveColorValue>
     <AmbientOcclusionValue>1.000000</AmbientOcclusionValue>
     <MetallicValue>0.000000</MetallicValue>
@@ -49,12 +44,8 @@
                 projectedUV = localPos.xy * worldScale.xy;
             }
 
-<<<<<<< HEAD:ExampleProject/Content/Materials/Level/M_DefaultMaterial
             vec2 atlasUV = vec2(fract(projectedUV.x), fract(projectedUV.y)) * darkPlaceholder_UVTransform.xy + darkPlaceholder_UVTransform.zw;
             vec4 textureValue = texture(darkPlaceholder, atlasUV);
-=======
-            vec4 textureValue = texture2D(darkPlaceholder, projectedUV);
->>>>>>> master:ExampleProject/Content/Materials/M_DefaultMaterial
             float upsideValue = clamp(dot(vec3(0.0, 0.0, 1.0), worldNormal), 0.0, 1.0);
             textureValue.xyz = textureValue.xyz * upsideValue + vec3(0.05) * (1.0 - upsideValue);
         
