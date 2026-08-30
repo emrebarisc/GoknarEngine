@@ -54,7 +54,14 @@ SkeletalMeshInstance::~SkeletalMeshInstance()
 
 void SkeletalMeshInstance::PrepareForTheCurrentFrame()
 {
+<<<<<<< HEAD
 	if (!mesh_)
+=======
+	mesh_->GetBoneTransforms(boneTransformations_, skeletalMeshAnimation_.skeletalAnimation, skeletalMeshAnimation_.animationTime, sockets_);
+
+	std::unordered_map<int, const Matrix*>::iterator boneIdToAttachedMatrixPointerMapIterator = boneIdToAttachedMatrixPointerMap_.begin();
+	while (boneIdToAttachedMatrixPointerMapIterator != boneIdToAttachedMatrixPointerMap_.end())
+>>>>>>> master
 	{
 		return;
 	}
@@ -278,6 +285,7 @@ void SkeletalMeshInstance::PrepareForTheNextFrame()
 	}
 }
 
+<<<<<<< HEAD
 void SkeletalMeshInstance::Render(RenderPassType renderPassType, int subMeshIndex, int LODIndex/* = 0*/)
 {
 	SetRenderOperations(renderPassType, subMeshIndex, LODIndex);
@@ -296,6 +304,20 @@ void SkeletalMeshInstance::SetRenderOperations(RenderPassType renderPassType, in
 		}
 	}
 	IMeshInstance::Render(renderPassType, subMeshIndex, LODIndex);
+=======
+void SkeletalMeshInstance::Render(int subMeshIndex, RenderPassType renderPassType)
+{
+	SetRenderOperations(subMeshIndex, renderPassType);
+}
+
+void SkeletalMeshInstance::SetRenderOperations(int subMeshIndex, RenderPassType renderPassType)
+{
+	for (SkeletalMeshUnit* subMesh : mesh_->GetSubMeshes())
+	{
+		subMesh->GetMaterial()->GetShader(renderPassType)->SetMatrixVector(SHADER_VARIABLE_NAMES::SKELETAL_MESH::BONES, boneTransformations_);
+	}
+	IMeshInstance::Render(subMeshIndex, renderPassType);
+>>>>>>> master
 }
 
 void SkeletalMeshInstance::SetMesh(SkeletalMesh* skeletalMesh)

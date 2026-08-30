@@ -2,9 +2,12 @@
 
 #include "SceneParser.h"
 
+<<<<<<< HEAD
 #include <filesystem>
 #include <algorithm>
 #include <cctype>
+=======
+>>>>>>> master
 #include <cmath>
 #include <sstream>
 #include <stdexcept>
@@ -28,8 +31,11 @@
 
 #include "Goknar/Factories/DynamicObjectFactory.h"
 
+<<<<<<< HEAD
 #include "Goknar/Data/DataEncryption.h"
 #include "Goknar/Helpers/AssetParser.h"
+=======
+>>>>>>> master
 #include "Goknar/Helpers/ContentPathUtils.h"
 #include "Goknar/IO/ModelLoader.h"
 #include "Goknar/Contents/Image.h"
@@ -75,6 +81,7 @@
 
 namespace
 {
+<<<<<<< HEAD
 	std::unordered_map<const InstancedStaticMeshComponent*, std::vector<std::string>> instancedStaticMeshComponentMaterialPathMap;
 	std::unordered_map<const StaticMeshComponent*, std::vector<std::string>> staticMeshComponentMaterialPathMap;
 	std::unordered_map<const SkeletalMeshComponent*, std::vector<std::string>> skeletalMeshComponentMaterialPathMap;
@@ -354,6 +361,10 @@ namespace
 		engine->GetResourceManager()->GetResourceContainer()->AddMesh(instancedStaticMesh);
 		return instancedStaticMesh;
 	}
+=======
+	std::unordered_map<const StaticMeshComponent*, std::vector<std::string>> staticMeshComponentMaterialPathMap;
+	std::unordered_map<std::string, Material*> sharedMaterialPathMap;
+>>>>>>> master
 
 	void TrimTrailingEmptyMaterialPaths(std::vector<std::string>& materialPaths)
 	{
@@ -438,6 +449,7 @@ namespace
 
 		parentElement->InsertEndChild(materialPathsElement);
 	}
+<<<<<<< HEAD
 
 	Vector3 TransformPoint(const SceneTransform& transform, const Vector3& point)
 	{
@@ -722,6 +734,8 @@ namespace
 		}
 	}
 
+=======
+>>>>>>> master
 }
 
 Material* SceneParser::GetOrCreateSharedMaterial(const std::string& materialPath)
@@ -740,22 +754,82 @@ Material* SceneParser::GetOrCreateSharedMaterial(const std::string& materialPath
 
 	Material* material = new Material();
 	MaterialSerializer::Deserialize(relativeMaterialPath, material);
+<<<<<<< HEAD
 	AssetParser::RegisterMaterialTexturesToTextureAtlas(material);
+=======
+>>>>>>> master
 	sharedMaterialPathMap[relativeMaterialPath] = material;
 	return material;
 }
 
 void SceneParser::ApplyStaticMeshComponentMaterialPaths(StaticMeshComponent* staticMeshComponent, const std::vector<std::string>& materialPaths)
 {
+<<<<<<< HEAD
 	ApplyMeshComponentMaterialPaths<StaticMeshComponent, StaticMeshInstance, StaticMeshLOD>(
 		staticMeshComponent,
 		materialPaths,
 		staticMeshComponentMaterialPathMap);
+=======
+	if (!staticMeshComponent)
+	{
+		return;
+	}
+
+	const std::vector<std::string> normalizedMaterialPaths = NormalizeMaterialPaths(materialPaths);
+	if (normalizedMaterialPaths.empty())
+	{
+		staticMeshComponentMaterialPathMap.erase(staticMeshComponent);
+	}
+
+	StaticMeshInstance* meshInstance = staticMeshComponent->GetMeshInstance();
+	StaticMesh* mesh = meshInstance ? meshInstance->GetMesh() : nullptr;
+	if (!meshInstance || !mesh)
+	{
+		if (!normalizedMaterialPaths.empty())
+		{
+			staticMeshComponentMaterialPathMap[staticMeshComponent] = normalizedMaterialPaths;
+		}
+
+		return;
+	}
+
+	const auto& subMeshes = mesh->GetSubMeshes();
+	for (size_t subMeshIndex = 0; subMeshIndex < subMeshes.size(); ++subMeshIndex)
+	{
+		MaterialInstance* materialInstance = nullptr;
+
+		if (subMeshIndex < normalizedMaterialPaths.size() && !normalizedMaterialPaths[subMeshIndex].empty())
+		{
+			Material* material = GetOrCreateSharedMaterial(normalizedMaterialPaths[subMeshIndex]);
+			if (material)
+			{
+				materialInstance = MaterialInstance::Create(material);
+			}
+		}
+
+		meshInstance->SetMaterial(static_cast<int>(subMeshIndex), materialInstance);
+	}
+
+	if (!normalizedMaterialPaths.empty())
+	{
+		staticMeshComponentMaterialPathMap[staticMeshComponent] = normalizedMaterialPaths;
+	}
+>>>>>>> master
 }
 
 std::vector<std::string> SceneParser::GetStaticMeshComponentMaterialPaths(const StaticMeshComponent* staticMeshComponent)
 {
+<<<<<<< HEAD
 	return GetMeshComponentMaterialPaths(staticMeshComponent, staticMeshComponentMaterialPathMap);
+=======
+	auto materialPathIterator = staticMeshComponentMaterialPathMap.find(staticMeshComponent);
+	if (materialPathIterator == staticMeshComponentMaterialPathMap.end())
+	{
+		return {};
+	}
+
+	return materialPathIterator->second;
+>>>>>>> master
 }
 
 void SceneParser::ApplyStaticMeshComponentMaterialPath(StaticMeshComponent* staticMeshComponent, const std::string& materialPath)
@@ -777,6 +851,7 @@ std::string SceneParser::GetStaticMeshComponentMaterialPath(const StaticMeshComp
 
 void SceneParser::ClearStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent)
 {
+<<<<<<< HEAD
 	ClearMeshComponentMaterialPath<StaticMeshComponent, StaticMeshInstance, StaticMeshLOD>(
 		staticMeshComponent,
 		staticMeshComponentMaterialPathMap);
@@ -817,10 +892,32 @@ void SceneParser::ClearSkeletalMeshComponentMaterialPath(const SkeletalMeshCompo
 	ClearMeshComponentMaterialPath<SkeletalMeshComponent, SkeletalMeshInstance, SkeletalMeshLOD>(
 		skeletalMeshComponent,
 		skeletalMeshComponentMaterialPathMap);
+=======
+	staticMeshComponentMaterialPathMap.erase(staticMeshComponent);
+
+	if (!staticMeshComponent)
+	{
+		return;
+	}
+
+	StaticMeshInstance* meshInstance = staticMeshComponent->GetMeshInstance();
+	StaticMesh* mesh = meshInstance ? meshInstance->GetMesh() : nullptr;
+	if (!meshInstance || !mesh)
+	{
+		return;
+	}
+
+	const auto& subMeshes = mesh->GetSubMeshes();
+	for (size_t subMeshIndex = 0; subMeshIndex < subMeshes.size(); ++subMeshIndex)
+	{
+		meshInstance->SetMaterial(static_cast<int>(subMeshIndex), nullptr);
+	}
+>>>>>>> master
 }
 
 void SceneParser::ClearCaches()
 {
+<<<<<<< HEAD
 	instancedStaticMeshComponentMaterialPathMap.clear();
 	instancedStaticMeshSourcePathMap.clear();
 	staticMeshComponentMaterialPathMap.clear();
@@ -859,6 +956,12 @@ bool SceneParser::InsertSceneReference(Scene* scene, const SceneReference& scene
 	return parsedSceneReference;
 }
 
+=======
+	staticMeshComponentMaterialPathMap.clear();
+	sharedMaterialPathMap.clear();
+}
+
+>>>>>>> master
 void SceneParser::Parse(Scene* scene, const std::string& filePath)
 {
 	bool pushedDefaultParseContext = false;
@@ -1553,6 +1656,16 @@ void SceneParser::Parse(Scene* scene, const std::string& filePath)
 					material->SetRoughness(std::sqrt(2.f / (phongExponent + 2.f)));
 				}
 			}
+<<<<<<< HEAD
+=======
+			float phongExponent;
+			stream >> phongExponent;
+			if (!std::isfinite(phongExponent) || phongExponent < 1.f)
+			{
+				phongExponent = 1.f;
+			}
+			material->SetPhongExponent(phongExponent);
+>>>>>>> master
 
 			element = element->NextSiblingElement("Material");
 		}
@@ -2502,7 +2615,11 @@ void SceneParser::ParseMovingTriangleMeshCollisionComponentValues(MovingTriangle
 		std::string meshPath;
 		stream >> meshPath;
 
+<<<<<<< HEAD
 		StaticMeshLOD* relativeMesh = ResolveStaticMeshLODFromPath(meshPath);
+=======
+		StaticMesh* relativeMesh = engine->GetResourceManager()->GetContent<StaticMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
+>>>>>>> master
 		if (relativeMesh)
 		{
 			movingTriangleMeshCollisionComponent->SetMesh(relativeMesh);
@@ -2536,11 +2653,16 @@ void SceneParser::ParseNonMovingTriangleMeshCollisionComponentValues(NonMovingTr
 		std::string meshPath;
 		stream >> meshPath;
 
+<<<<<<< HEAD
 		StaticMeshLOD* relativeMesh = ResolveStaticMeshLODFromPath(meshPath);
 
 		GOKNAR_CORE_CHECK(relativeMesh);
 
 		if (relativeMesh)
+=======
+		StaticMesh* relativeMesh = engine->GetResourceManager()->GetContent<StaticMesh>(ContentPathUtils::ToContentRelativePath(meshPath));
+		if(relativeMesh)
+>>>>>>> master
 		{
 			nonMovingTriangleMeshCollisionComponent->SetMesh(relativeMesh);
 		}
@@ -3229,6 +3351,7 @@ void SceneParser::GetXMLElement_Components(const ObjectBase* const objectBase, t
 
 void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* const staticMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
 {
+<<<<<<< HEAD
 	StaticMesh* staticMesh = staticMeshComponent->GetMeshInstance()->GetMesh();
 	GOKNAR_CHECK(staticMesh);
 
@@ -3239,6 +3362,10 @@ void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* c
 
 	tinyxml2::XMLElement* staticMeshComponentMeshPathElement = xmlDocument.NewElement("MeshPath");
 	const std::string meshPath = ContentPathUtils::ToContentRelativePath(staticMesh->GetPath());
+=======
+	tinyxml2::XMLElement* staticMeshComponentMeshPathElement = xmlDocument.NewElement("MeshPath"); 
+	const std::string meshPath = ContentPathUtils::ToContentRelativePath(staticMeshComponent->GetMeshInstance()->GetMesh()->GetPath());
+>>>>>>> master
 	staticMeshComponentMeshPathElement->SetText(meshPath.c_str());
 	parentElement->InsertEndChild(staticMeshComponentMeshPathElement);
 
@@ -3247,6 +3374,7 @@ void SceneParser::GetXMLElement_StaticMeshComponent(const StaticMeshComponent* c
 	parentElement->InsertEndChild(staticMeshInstanceRenderMaskElement);
 
 	WriteMaterialPaths(xmlDocument, parentElement, GetStaticMeshComponentMaterialPaths(staticMeshComponent));
+<<<<<<< HEAD
 }
 
 void SceneParser::GetXMLElement_SkeletalMeshComponent(const SkeletalMeshComponent* const skeletalMeshComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)
@@ -3555,6 +3683,8 @@ void SceneParser::GetXMLElement_ParticleSystemComponent(const ParticleSystemComp
 			parentElement->InsertEndChild(billboardMaterialPathElement);
 		}
 	}
+=======
+>>>>>>> master
 }
 
 void SceneParser::GetXMLElement_BoxCollisionComponent(const BoxCollisionComponent* const boxCollisionComponent, tinyxml2::XMLDocument& xmlDocument, tinyxml2::XMLElement* parentElement)

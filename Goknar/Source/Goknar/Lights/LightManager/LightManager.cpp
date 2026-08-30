@@ -26,16 +26,41 @@ LightManager::LightManager()
 
 LightManager::~LightManager()
 {
+<<<<<<< HEAD
 	lightStorageBuffer_.Destroy();
 
 	if (directionalLightViewMatrixUniformBufferId_)
 	{
 		engine->GetGraphicsAPI()->DeleteBuffer(directionalLightViewMatrixUniformBufferId_);
+=======
+	if (directionalLightUniformBufferId_)
+	{
+		glDeleteBuffers(1, &directionalLightUniformBufferId_);
+	}
+
+	if (directionalLightViewMatrixUniformBufferId_)
+	{
+		glDeleteBuffers(1, &directionalLightViewMatrixUniformBufferId_);
+	}
+
+	if (pointLightUniformBufferId_)
+	{
+		glDeleteBuffers(1, &pointLightUniformBufferId_);
+	}
+
+	if (spotLightUniformBufferId_)
+	{
+		glDeleteBuffers(1, &spotLightUniformBufferId_);
+>>>>>>> master
 	}
 
 	if (spotLightViewMatrixUniformBufferId_)
 	{
+<<<<<<< HEAD
 		engine->GetGraphicsAPI()->DeleteBuffer(spotLightViewMatrixUniformBufferId_);
+=======
+		glDeleteBuffers(1, &spotLightViewMatrixUniformBufferId_);
+>>>>>>> master
 	}
 }
 

@@ -175,8 +175,11 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
                 XMLElement* texElement = doc.NewElement("Texture");
                 const std::string texturePath = ContentPathUtils::ToContentRelativePath(image->GetPath());
                 texElement->SetAttribute("path", texturePath.c_str());
+<<<<<<< HEAD
                 texElement->SetAttribute("usage", TextureUsageToString(image->GetTextureUsage()));
                 texElement->SetAttribute("UseTextureAtlas", material->GetTextureImageUsesTextureAtlas(textureImageIndex) ? "true" : "false");
+=======
+>>>>>>> master
                 root->InsertEndChild(texElement);
             }
         }
@@ -239,7 +242,11 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     const std::string contentPath = ContentPathUtils::ToAbsoluteContentPath(relativeFilePath);
 
     tinyxml2::XMLDocument doc;
+<<<<<<< HEAD
     if (!LoadXmlDocumentFromPath(contentPath, doc))
+=======
+    if (doc.LoadFile(contentPath.c_str()) != XML_SUCCESS)
+>>>>>>> master
     {
         return;
     }
@@ -323,6 +330,7 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
 
             if (image)
             {
+<<<<<<< HEAD
                 if (child->Attribute("usage"))
                 {
                     image->SetTextureUsage(StringToTextureUsage(child->Attribute("usage")));
@@ -331,6 +339,9 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
                 const bool useTextureAtlas = ReadTextureAtlasUsage(child, materialDefaultUseTextureAtlas);
                 owner->AddTextureImage(image, useTextureAtlas);
                 registeredTextureAtlasImage = registeredTextureAtlasImage || useTextureAtlas;
+=======
+                owner->AddTextureImage(image);
+>>>>>>> master
             }
         }
         child = child->NextSiblingElement("Texture");
@@ -371,9 +382,40 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     if (child && child->GetText())
     {
         std::stringstream stream(child->GetText());
+<<<<<<< HEAD
         float metallic = DEFAULT_METALLIC;
         stream >> metallic;
         owner->SetMetallic(ClampNormalizedScalar(metallic, DEFAULT_METALLIC));
+=======
+        Vector3 specularReflectance;
+        stream >> specularReflectance.x >> specularReflectance.y >> specularReflectance.z;
+        owner->SetSpecularReflectance(specularReflectance);
+    }
+
+    child = root->FirstChildElement("EmmisiveColorValue");
+    if (child && child->GetText())
+    {
+        std::stringstream stream(child->GetText());
+        Vector3 emmisiveColor;
+        stream >> emmisiveColor.x >> emmisiveColor.y >> emmisiveColor.z;
+        owner->SetEmmisiveColor(emmisiveColor);
+    }
+
+    child = root->FirstChildElement("PhongExponent");
+    if (child && child->GetText())
+    {
+        std::stringstream stream(child->GetText());
+        float phongExponent = 1.f;
+        stream >> phongExponent;
+        if (!stream.fail() && std::isfinite(phongExponent))
+        {
+            owner->SetPhongExponent(phongExponent);
+        }
+        else
+        {
+            owner->SetPhongExponent(1.f);
+        }
+>>>>>>> master
     }
     else
     {

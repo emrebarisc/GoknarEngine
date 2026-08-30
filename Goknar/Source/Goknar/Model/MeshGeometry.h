@@ -64,7 +64,11 @@ public:
 typedef std::vector<VertexData> VertexArray;
 typedef std::vector<Face> FaceArray;
 
+<<<<<<< HEAD:Goknar/Source/Goknar/Model/MeshGeometry.h
 class GOKNAR_API MeshGeometry
+=======
+class GOKNAR_API MeshUnit
+>>>>>>> master:Goknar/Source/Goknar/Model/MeshUnit.h
 {
 public:
 	MeshGeometry();

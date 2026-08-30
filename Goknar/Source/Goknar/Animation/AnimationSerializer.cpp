@@ -272,7 +272,10 @@ void AnimationSerializer::SerializeNodeTransition(tinyxml2::XMLDocument* doc, ti
 	tinyxml2::XMLElement* transEl = doc->NewElement("Transition");
 	transEl->SetAttribute("targetId", GetNodeId(target.get()));
 	transEl->SetAttribute("transitWhenAnimationDone", transition->transitWhenAnimationDone);
+<<<<<<< HEAD
     transEl->SetAttribute("duration", transition->duration);
+=======
+>>>>>>> master
 
     tinyxml2::XMLElement* conditionsEl = doc->NewElement("Conditions");
     for (const auto& condition : transition->conditions)
@@ -295,7 +298,10 @@ void AnimationSerializer::SerializeStateTransition(tinyxml2::XMLDocument* doc, t
 	tinyxml2::XMLElement* transEl = doc->NewElement("Transition");
 	transEl->SetAttribute("targetId", GetStateId(target.get()));
 	transEl->SetAttribute("transitWhenAnimationDone", transition->transitWhenAnimationDone);
+<<<<<<< HEAD
     transEl->SetAttribute("duration", transition->duration);
+=======
+>>>>>>> master
 
     tinyxml2::XMLElement* conditionsEl = doc->NewElement("Conditions");
     for (const auto& condition : transition->conditions)

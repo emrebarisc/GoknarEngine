@@ -18,6 +18,7 @@
 
 namespace
 {
+<<<<<<< HEAD
 	float SanitizeNormalizedMaterialScalar(float value, float defaultValue)
 	{
 		if (!std::isfinite(value))
@@ -33,6 +34,28 @@ namespace
 		return blendModel == MaterialBlendModel::Transparent ?
 			TextureAtlasCategory::Transparent :
 			TextureAtlasCategory::Opaque;
+=======
+	constexpr float MIN_PHONG_EXPONENT = 1.f;
+
+	RenderPassType GetMainRenderTypeSafe()
+	{
+		if (!engine || !engine->GetRenderer())
+		{
+			return RenderPassType::Forward;
+		}
+
+		return engine->GetRenderer()->GetMainRenderType();
+	}
+
+	float SanitizePhongExponent(float phongExponent)
+	{
+		if (!std::isfinite(phongExponent) || phongExponent < MIN_PHONG_EXPONENT)
+		{
+			return MIN_PHONG_EXPONENT;
+		}
+
+		return phongExponent;
+>>>>>>> master
 	}
 }
 
@@ -71,6 +94,7 @@ IMaterialBase::~IMaterialBase()
 {
 }
 
+<<<<<<< HEAD
 void IMaterialBase::AddTextureImage(const Image* image)
 {
 	AddTextureImage(image, useTextureAtlasForTextureImages_);
@@ -79,6 +103,25 @@ void IMaterialBase::AddTextureImage(const Image* image)
 void IMaterialBase::AddTextureImage(const Image* image, bool useTextureAtlas)
 {
 	if (!image)
+=======
+float IMaterialBase::GetPhongExponent() const
+{
+	float phongExponent = phongExponent_;
+
+	if (GetMainRenderTypeSafe() == RenderPassType::Deferred)
+	{
+		phongExponent = std::pow(2.f, phongExponent);
+	}
+
+	return SanitizePhongExponent(phongExponent);
+}
+
+void IMaterialBase::SetPhongExponent(float phongExponent)
+{
+	phongExponent = SanitizePhongExponent(phongExponent);
+
+	if(GetMainRenderTypeSafe() == RenderPassType::Deferred)
+>>>>>>> master
 	{
 		return;
 	}
@@ -152,11 +195,14 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 {
 	Shader* shader = GetShader(renderPassType);
 
+<<<<<<< HEAD
 	if (!shader)
 	{
 		return;
 	}
 
+=======
+>>>>>>> master
 	bool cullBackFaces = 
 		shadingModel_ == MaterialShadingModel::Default && 
 		(	renderPassType == RenderPassType::Forward ||
@@ -172,9 +218,13 @@ void IMaterialBase::SetShaderVariables(RenderPassType renderPassType, const Matr
 		engine->GetGraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::CullFace, false);
 	}
 
+<<<<<<< HEAD
 	if (renderPassType == RenderPassType::Forward ||
 		renderPassType == RenderPassType::GeometryBuffer ||
 		renderPassType == RenderPassType::CubemapCapture)
+=======
+	if (renderPassType == RenderPassType::Forward || renderPassType == RenderPassType::GeometryBuffer)
+>>>>>>> master
 	{
 		shader->SetVector4(SHADER_VARIABLE_NAMES::MATERIAL::BASE_COLOR, baseColor_);
 		shader->SetFloat(SHADER_VARIABLE_NAMES::MATERIAL::AMBIENT_OCCLUSION, ambientOcclusion_);

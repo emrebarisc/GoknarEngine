@@ -1,0 +1,15 @@
+<GameAsset FileType="MaterialFunctionEditorReflection">
+    <Canvas Scale="0.94999999" ScrollX="288.75" ScrollY="104.8"/>
+    <Nodes>
+        <Node Id="1" Name="Function Output" Category="Master" PosX="120" PosY="80" SizeX="220" SizeY="80" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="3" NodeId="1" Name="Result" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs/>
+        </Node>
+    </Nodes>
+    <Links/>
+</GameAsset>

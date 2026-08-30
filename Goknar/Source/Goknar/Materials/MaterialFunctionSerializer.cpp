@@ -3,12 +3,16 @@
 #include "tinyxml2.h"
 
 #include "Goknar/Core.h"
+<<<<<<< HEAD
 #include "Goknar/Data/DataEncryption.h"
+=======
+>>>>>>> master
 #include "Goknar/Helpers/ContentPathUtils.h"
 
 namespace
 {
 	constexpr const char* kMaterialFunctionFileType = "MaterialFunction";
+<<<<<<< HEAD
 
 	bool LoadXmlDocumentFromPath(const std::string& filePath, tinyxml2::XMLDocument& document)
 	{
@@ -20,6 +24,8 @@ namespace
 
 		return document.Parse(fileContents.c_str(), fileContents.size()) == tinyxml2::XML_SUCCESS;
 	}
+=======
+>>>>>>> master
 }
 
 bool MaterialFunctionSerializer::Serialize(const std::string& filepath, const MaterialFunction& materialFunction)
@@ -63,7 +69,11 @@ bool MaterialFunctionSerializer::Deserialize(const std::string& filepath, Materi
 	tinyxml2::XMLDocument document;
 	const std::string relativeFilePath = ContentPathUtils::ToContentRelativePath(filepath);
 	const std::string absolutePath = ContentPathUtils::ToAbsoluteContentPath(relativeFilePath);
+<<<<<<< HEAD
 	if (!LoadXmlDocumentFromPath(absolutePath, document))
+=======
+	if (document.LoadFile(absolutePath.c_str()) != tinyxml2::XML_SUCCESS)
+>>>>>>> master
 	{
 		return false;
 	}

@@ -4,6 +4,7 @@
             <Path>Animations/AG_DefaultCharacter</Path>
         </AnimationGraph>
         <MaterialFunction>
+<<<<<<< HEAD
             <Path>MaterialFunctions/Environment/MF_WindDisplacement</Path>
         </MaterialFunction>
         <Material>
@@ -257,6 +258,100 @@
         </Texture>
         <Texture Name="T_Smoke" UseTextureAtlas="false" Usage="Diffuse" UploadToGPU="true">
             <Path>Textures/VFX/T_Smoke.jpg</Path>
+=======
+            <Path>MaterialFunctions/MF_WindDisplacement</Path>
+        </MaterialFunction>
+        <Material>
+            <Path>Materials/Environment/M_BirchBark</Path>
+        </Material>
+        <Material>
+            <Path>Materials/Environment/M_BirchLeaves</Path>
+        </Material>
+        <Material>
+            <Path>Materials/M_DefaultCharacter</Path>
+        </Material>
+        <Material>
+            <Path>Materials/M_DefaultMaterial</Path>
+        </Material>
+        <Material>
+            <Path>Materials/M_Matilda</Path>
+        </Material>
+        <Material>
+            <Path>Materials/M_Panner</Path>
+        </Material>
+        <Material>
+            <Path>Materials/M_PhysicsBlocks</Path>
+        </Material>
+        <Mesh>
+            <Path>Meshes/DefaultScene/SM_Arch.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/DefaultScene/SM_Block.fbx</Path>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/DefaultScene/SM_RadialStaircase.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/DefaultScene/SM_RadialStaircaseCollision.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/DefaultScene/SM_RadialStaircaseMirrored.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/DefaultScene/SM_RadialStaircaseMirroredCollision.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/DefaultScene/SM_RoundCorner.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/DefaultScene/SM_RoundCornerCollision.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/DefaultScene/SM_UnitCube.fbx</Path>
+            <MaterialPath>Materials/M_DefaultMaterial</MaterialPath>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/SK_DefaultCharacter.fbx</Path>
+            <MaterialPath>Materials/M_DefaultCharacter</MaterialPath>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/SM_Bullet.fbx</Path>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/SM_Matilda.fbx</Path>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/SM_TreeBirch_01_Red.FBX</Path>
+            <MaterialPaths>
+                <MaterialPath>Materials/Environment/M_BirchLeaves</MaterialPath>
+                <MaterialPath>Materials/Environment/M_BirchBark</MaterialPath>
+            </MaterialPaths>
+        </Mesh>
+        <Mesh>
+            <Path>Meshes/SM_Weapon.fbx</Path>
+        </Mesh>
+        <Texture Name="darkPlaceholder">
+            <Path>Textures/T_DarkPlaceholder.png</Path>
+        </Texture>
+        <Texture Name="T_LeavesBushes">
+            <Path>Textures/T_LeavesBushes.PNG</Path>
+        </Texture>
+        <Texture Name="lightPlaceholder">
+            <Path>Textures/T_LightPlaceholder.png</Path>
+        </Texture>
+        <Texture Name="matildaTexture">
+            <Path>Textures/T_Matilda.png</Path>
+        </Texture>
+        <Texture Name="T_Tree_Birch_Rework_C">
+            <Path>Textures/T_Tree_Birch_Rework_C.PNG</Path>
+>>>>>>> master
         </Texture>
     </Assets>
 </AssetContainer>

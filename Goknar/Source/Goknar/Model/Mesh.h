@@ -2,7 +2,10 @@
 #define __MESH_CONTAINER_H__
 
 #include "Goknar/Core.h"
+<<<<<<< HEAD
 #include "Goknar/GoknarAssert.h"
+=======
+>>>>>>> master
 #include "Goknar/Contents/Content.h"
 #include "Goknar/Geometry/Box.h"
 #include "Goknar/Math/GoknarMath.h"
@@ -14,6 +17,7 @@
 
 #include <vector>
 
+<<<<<<< HEAD
 #include "MeshGeometry.h"
 
 template<typename T>
@@ -24,6 +28,11 @@ struct GOKNAR_API LODSetting
 };
 
 template<typename T>
+=======
+#include "MeshUnit.h"
+
+template<typename T>
+>>>>>>> master
 class GOKNAR_API Mesh : public Content
 {
 public:
@@ -33,6 +42,26 @@ public:
 	virtual void PreInit();
 	virtual void Init();
 	virtual void PostInit();
+<<<<<<< HEAD
+=======
+
+	virtual void AddMesh(T* meshUnit);
+
+	const T* GetMesh(int index) const
+	{
+		return subMeshes_[index];
+	}
+
+	const std::vector<T*>& GetSubMeshes() const
+	{
+		return subMeshes_;
+	}
+
+	const Box& GetAABB() const
+	{
+		return aabb_;
+	}
+>>>>>>> master
 
 	virtual void AddLOD(const LODSetting<T>& LOD);
 
@@ -61,6 +90,7 @@ protected:
 private:
 	Box aabb_;
 
+<<<<<<< HEAD
 	std::vector<LODSetting<T>> LODs_;
 };
 
@@ -80,6 +110,11 @@ class GOKNAR_API InstancedStaticMesh : public Mesh<InstancedStaticMeshLOD>
 {
 };
 
+=======
+	std::vector<T*> subMeshes_;
+};
+
+>>>>>>> master
 template<typename T>
 Mesh<T>::Mesh()
 {
@@ -88,6 +123,7 @@ Mesh<T>::Mesh()
 template<typename T>
 Mesh<T>::~Mesh()
 {
+<<<<<<< HEAD
 	auto LODIterator = LODs_.begin();
 	for (; LODIterator != LODs_.end(); ++LODIterator)
 	{
@@ -174,31 +210,62 @@ inline size_t Mesh<T>::GetLODIndex(float coverage) const
 	}
 
 	return result;
+=======
+	auto subMeshIterator = subMeshes_.begin();
+	for (; subMeshIterator != subMeshes_.end(); ++subMeshIterator)
+	{
+		delete* subMeshIterator;
+	}
+	subMeshes_.clear();
+}
+
+template<typename T>
+void Mesh<T>::AddMesh(T* meshUnit)
+{
+	subMeshes_.push_back(meshUnit);
+
+	aabb_.Combine(meshUnit->GetAABB(), true);
+>>>>>>> master
 }
 
 template<typename T>
 void Mesh<T>::PreInit()
 {
+<<<<<<< HEAD
 	auto LODIterator = LODs_.begin();
 	for (; LODIterator != LODs_.end(); ++LODIterator)
 	{
 		(*LODIterator).mesh->PreInit();
+=======
+	auto subMeshIterator = subMeshes_.begin();
+	for (; subMeshIterator != subMeshes_.end(); ++subMeshIterator)
+	{
+		(*subMeshIterator)->PreInit();
+>>>>>>> master
 	}
 }
 
 template<typename T>
 void Mesh<T>::Init()
 {
+<<<<<<< HEAD
 	auto LODIterator = LODs_.begin();
 	for (; LODIterator != LODs_.end(); ++LODIterator)
 	{
 		(*LODIterator).mesh->Init();
+=======
+	auto subMeshIterator = subMeshes_.begin();
+	for (; subMeshIterator != subMeshes_.end(); ++subMeshIterator)
+	{
+		(*subMeshIterator)->Init();
+>>>>>>> master
 	}
 }
 
 template<typename T>
 void Mesh<T>::PostInit()
 {
+<<<<<<< HEAD
 	auto LODIterator = LODs_.begin();
 	for (; LODIterator != LODs_.end(); ++LODIterator)
 	{
@@ -207,3 +274,27 @@ void Mesh<T>::PostInit()
 }
 
 #endif
+=======
+	auto subMeshIterator = subMeshes_.begin();
+	for (; subMeshIterator != subMeshes_.end(); ++subMeshIterator)
+	{
+		(*subMeshIterator)->PostInit();
+	}
+}
+
+template<typename T>
+void Mesh<T>::Render(RenderPassType renderPassType, const Matrix& worldAndRelativeTransformationMatrix)
+{
+	auto subMeshIterator = subMeshes_.begin();
+	for (; subMeshIterator != subMeshes_.end(); ++subMeshIterator)
+	{
+		Material* meshUnitMaterial = (*subMeshIterator)->GetMaterial();
+		if (meshUnitMaterial)
+		{
+			meshUnitMaterial->Render(renderPassType, worldAndRelativeTransformationMatrix);
+		}
+	}
+}
+
+#endif
+>>>>>>> master

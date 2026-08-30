@@ -1,0 +1,68 @@
+<GameAsset FileType="MaterialEditorReflection">
+    <Canvas Scale="1" ScrollX="0" ScrollY="0"/>
+    <Nodes>
+        <Node Id="1" Name="Material Output" Category="Master" PosX="400" PosY="80" SizeX="200" SizeY="150" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="2" NodeId="1" Name="Base Color" Type="Vector4" Kind="Input">
+                    <DefaultValue type="Vector4" x="1" y="1" z="1" w="1"/>
+                </Pin>
+                <Pin Id="3" NodeId="1" Name="Emissive" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+                <Pin Id="4" NodeId="1" Name="Normal" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="1"/>
+                </Pin>
+                <Pin Id="5" NodeId="1" Name="World Position Offset" Type="Vector3" Kind="Input">
+                    <DefaultValue type="Vector3" x="0" y="0" z="0"/>
+                </Pin>
+            </Inputs>
+            <Outputs/>
+        </Node>
+        <Node Id="6" Name="Vector4 Constant" Category="Constants" PosX="120" PosY="80" SizeX="160" SizeY="145" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="7" NodeId="6" Name="X" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="0.050000001"/>
+                </Pin>
+                <Pin Id="8" NodeId="6" Name="Y" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="0.050000001"/>
+                </Pin>
+                <Pin Id="9" NodeId="6" Name="Z" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="0.079999998"/>
+                </Pin>
+                <Pin Id="10" NodeId="6" Name="W" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="1"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="11" NodeId="6" Name="Out" Type="Vector4" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+        <Node Id="13" Name="Vector3 Constant" Category="Constants" PosX="120" PosY="260" SizeX="160" SizeY="120" IsUniform="1">
+            <StringData><![CDATA[]]></StringData>
+            <Inputs>
+                <Pin Id="14" NodeId="13" Name="X" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="3.5"/>
+                </Pin>
+                <Pin Id="15" NodeId="13" Name="Y" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="1.2"/>
+                </Pin>
+                <Pin Id="16" NodeId="13" Name="Z" Type="Float" Kind="Input">
+                    <DefaultValue type="Float" x="4.5"/>
+                </Pin>
+            </Inputs>
+            <Outputs>
+                <Pin Id="17" NodeId="13" Name="Out" Type="Vector3" Kind="Output">
+                    <DefaultValue type="Float" x="0"/>
+                </Pin>
+            </Outputs>
+        </Node>
+    </Nodes>
+    <Links>
+        <Link Id="12" StartPinId="11" EndPinId="2"/>
+        <Link Id="18" StartPinId="17" EndPinId="3"/>
+    </Links>
+</GameAsset>

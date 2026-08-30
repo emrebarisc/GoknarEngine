@@ -1795,10 +1795,33 @@ std::string ShaderBuilder::General_FS_GetShaderTextureUniforms(const MaterialIni
 		const std::string textureUniformName = texture->GetShaderUniformName();
 		if (addedTextureNames.find(textureUniformName) == addedTextureNames.end())
 		{
+<<<<<<< HEAD
 			uniforms += "uniform sampler2D " + textureUniformName + ";\n";
 			// Standalone textures use the identity transform, which keeps atlas fallback shaders valid.
 			uniforms += "uniform vec4 " + texture->GetAtlasUVTransformUniformName() + ";\n";
 			addedTextureNames.insert(textureUniformName);
+=======
+		case TextureUsage::Diffuse:
+			if (initializationData && initializationData->baseColor.result.empty())
+			{
+				initializationData->baseColor.result = General_FS_GetDiffuseTextureSampling(texture->GetName());
+			}
+			break;
+		case TextureUsage::Normal:
+			if (initializationData && initializationData->fragmentNormal.result.empty())
+			{
+				initializationData->fragmentNormal.result = General_FS_GetNormalTextureSampling(texture->GetName());
+			}
+			break;
+		case TextureUsage::Emmisive:
+			if (initializationData && initializationData->emmisiveColor.result.empty())
+			{
+				initializationData->emmisiveColor.result = General_FS_GetEmmisiveTextureSampling(texture->GetName());
+			}
+			break;
+		default:
+			break;
+>>>>>>> master
 		}
 	}
 

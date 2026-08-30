@@ -36,6 +36,7 @@ void AnimationGraph::Update(float deltaTime)
 	{
 		for (const auto& connection : currentState_->outboundConnections)
 		{
+<<<<<<< HEAD
 			if (connection->ShouldTransit(this, false))
 			{
 				if (const auto target = connection->target.lock())
@@ -65,6 +66,12 @@ void AnimationGraph::Update(float deltaTime)
 					StartNodeTransition(target, connection->duration);
 					break;
 				}
+=======
+			if (const auto target = connection->target.lock())
+			{
+				SetCurrentState(target);
+				PlayCurrentStateAnimation();
+>>>>>>> master
 			}
 		}
 	}
@@ -74,9 +81,25 @@ void AnimationGraph::Update(float deltaTime)
 		crossfadeElapsed_ += deltaTime;
 		if (crossfadeDuration_ <= crossfadeElapsed_)
 		{
+<<<<<<< HEAD
 			crossfadeSourceNode_ = nullptr;
 			crossfadeDuration_ = 0.f;
 			crossfadeElapsed_ = 0.f;
+=======
+			const auto target = connection->target.lock();
+			if (!target)
+			{
+				continue;
+			}
+
+			currentState_->currentNode_ = target;
+
+			isCurrentStateAnimationFinished = false;
+
+			PlayCurrentStateAnimation();
+
+			break;
+>>>>>>> master
 		}
 	}
 
@@ -93,6 +116,7 @@ void AnimationGraph::Update(float deltaTime)
 		triggersToClear.clear();
 	}
 }
+<<<<<<< HEAD
 
 void AnimationGraph::ResetNodeRuntime(const std::shared_ptr<AnimationNode>& node)
 {
@@ -172,3 +196,5 @@ bool AnimationGraph::GetBoolVariable(const std::string& name, bool fallback) con
 
 	return fallback;
 }
+=======
+>>>>>>> master

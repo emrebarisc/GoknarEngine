@@ -41,11 +41,15 @@ class PostProcessingEffect;
 
 class RenderTarget;
 
+<<<<<<< HEAD
 class DynamicMeshGeometry;
 class SkeletalMeshGeometry;
 
 template<class T>
 class Mesh;
+=======
+class DynamicMeshUnit;
+>>>>>>> master
 
 enum class GOKNAR_API RenderPassType : unsigned int
 {
@@ -175,9 +179,13 @@ public:
 	void AddParticleSystem(ParticleSystemBase* particleSystem);
 	void RemoveParticleSystem(ParticleSystemBase* particleSystem);
 
+<<<<<<< HEAD
 	void UpdateDynamicMeshVertex(const DynamicMeshGeometry* object, int vertexIndex, const VertexData& newVertexData);
 	void RefreshInstancedStaticMeshTransformations(const InstancedStaticMeshLOD* object);
 	void UpdateInstancedStaticMeshTransformation(const InstancedStaticMeshLOD* object, int transformationIndex, const Matrix& newTransformationMatrix);
+=======
+	void UpdateDynamicMeshVertex(const DynamicMeshUnit* object, int vertexIndex, const VertexData& newVertexData);
+>>>>>>> master
 
 	void PrepareSkeletalMeshInstancesForTheCurrentFrame();
 	void PrepareSkeletalMeshInstancesForTheNextFrame();
@@ -314,6 +322,7 @@ private:
 	std::unordered_map<const InstancedStaticMeshLOD*, GEuint> instancedStaticMeshTransformationBufferIdMap_;
 	std::unordered_map<const InstancedStaticMeshLOD*, GEuint> instancedStaticMeshVertexArrayIdMap_;
 
+<<<<<<< HEAD
 	std::vector<MeshGeometry*> staticMeshGeometries_;
 	std::vector<InstancedStaticMeshLOD*> instancedStaticMeshes_;
 	std::vector<SkeletalMeshGeometry*> skeletalMeshGeometries_;
@@ -335,6 +344,16 @@ private:
 	MeshBufferData staticMeshBufferData_;
 	MeshBufferData skeletalMeshBufferData_;
 	MeshBufferData dynamicMeshBufferData_;
+=======
+	std::vector<StaticMeshInstance*> opaqueStaticMeshInstances_;
+	std::vector<StaticMeshInstance*> transparentStaticMeshInstances_;
+
+	std::vector<SkeletalMeshInstance*> opaqueSkeletalMeshInstances_;
+	std::vector<SkeletalMeshInstance*> transparentSkeletalMeshInstances_;
+
+	std::vector<DynamicMeshInstance*> opaqueDynamicMeshInstances_;
+	std::vector<DynamicMeshInstance*> transparentDynamicMeshInstances_;
+>>>>>>> master
 
 	LightManager* lightManager_{ nullptr };
 

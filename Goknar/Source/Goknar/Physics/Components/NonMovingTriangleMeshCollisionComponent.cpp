@@ -32,7 +32,11 @@ void NonMovingTriangleMeshCollisionComponent::PreInit()
 
 	bulletTriangleMesh_ = new btTriangleMesh(true, false);
 
+<<<<<<< HEAD
 	MeshGeometry* subMesh = relativeMesh_->GetSubMeshes()[0];
+=======
+	MeshUnit* subMesh = relativeMesh_->GetSubMeshes()[0];
+>>>>>>> master
 
 	const Box& relativeMeshAABB = subMesh->GetAABB();
 	bulletTriangleMesh_->setPremadeAabb(
