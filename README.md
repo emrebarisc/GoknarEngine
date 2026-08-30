@@ -24,12 +24,10 @@ This engine is capable of:
 - Rendering with deferred and forward pipeline
 - Shading with 3 different light sources(Directional, point and spot)
 - Shadows mapping for all three light sources
-- Rigidbody physics and collision/overlapping events(Bullet Physics)
-
-TODOs:
-- Implementing an audio engine(Most probably OpenAL or SoLoud will be integrated)
-- And tons of other things(Frustum and occlusion culling, multi-threading etc.)
-
+- Rigid body physics and collision/overlapping events(Bullet Physics)
+- GPU Foliage system
+- Billboard and static mesh particle system
+- Post processing
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 I hope you will enjoy while analyzing or using the engine.
