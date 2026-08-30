@@ -3,16 +3,12 @@
 #include "tinyxml2.h"
 
 #include "Goknar/Core.h"
-<<<<<<< HEAD
 #include "Goknar/Data/DataEncryption.h"
-=======
->>>>>>> master
 #include "Goknar/Helpers/ContentPathUtils.h"
 
 namespace
 {
 	constexpr const char* kMaterialFunctionFileType = "MaterialFunction";
-<<<<<<< HEAD
 
 	bool LoadXmlDocumentFromPath(const std::string& filePath, tinyxml2::XMLDocument& document)
 	{
@@ -24,8 +20,6 @@ namespace
 
 		return document.Parse(fileContents.c_str(), fileContents.size()) == tinyxml2::XML_SUCCESS;
 	}
-=======
->>>>>>> master
 }
 
 bool MaterialFunctionSerializer::Serialize(const std::string& filepath, const MaterialFunction& materialFunction)
@@ -39,20 +33,20 @@ bool MaterialFunctionSerializer::Serialize(const std::string& filepath, const Ma
 	document.InsertFirstChild(root);
 
 	auto AddTextElement = [&](const char* name, const std::string& content, bool useCData = false)
-	{
-		tinyxml2::XMLElement* element = document.NewElement(name);
-		if (useCData)
 		{
-			tinyxml2::XMLText* text = document.NewText(content.c_str());
-			text->SetCData(true);
-			element->InsertEndChild(text);
-		}
-		else
-		{
-			element->SetText(content.c_str());
-		}
-		root->InsertEndChild(element);
-	};
+			tinyxml2::XMLElement* element = document.NewElement(name);
+			if (useCData)
+			{
+				tinyxml2::XMLText* text = document.NewText(content.c_str());
+				text->SetCData(true);
+				element->InsertEndChild(text);
+			}
+			else
+			{
+				element->SetText(content.c_str());
+			}
+			root->InsertEndChild(element);
+		};
 
 	AddTextElement("Name", materialFunction.GetName());
 	AddTextElement("GeneratedFunctionName", materialFunction.GetGeneratedFunctionName());
@@ -69,11 +63,7 @@ bool MaterialFunctionSerializer::Deserialize(const std::string& filepath, Materi
 	tinyxml2::XMLDocument document;
 	const std::string relativeFilePath = ContentPathUtils::ToContentRelativePath(filepath);
 	const std::string absolutePath = ContentPathUtils::ToAbsoluteContentPath(relativeFilePath);
-<<<<<<< HEAD
 	if (!LoadXmlDocumentFromPath(absolutePath, document))
-=======
-	if (document.LoadFile(absolutePath.c_str()) != tinyxml2::XML_SUCCESS)
->>>>>>> master
 	{
 		return false;
 	}

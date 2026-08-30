@@ -91,14 +91,10 @@ public:
 		return emissiveColor_;
 	}
 
-<<<<<<< HEAD
 	void SetEmissiveColor(const Vector3& emissiveColor)
 	{
 		emissiveColor_ = emissiveColor;
 	}
-=======
-	float GetPhongExponent() const;
->>>>>>> master
 
 	float GetTranslucency() const
 	{
@@ -168,7 +164,6 @@ public:
 		return &textureImages_;
 	}
 
-<<<<<<< HEAD
 	bool GetTextureImageUsesTextureAtlas(size_t textureImageIndex) const
 	{
 		return textureImageIndex < textureImageAtlasUsages_.size() ? textureImageAtlasUsages_[textureImageIndex] : useTextureAtlasForTextureImages_;
@@ -184,8 +179,6 @@ public:
 		return useTextureAtlasForTextureImages_;
 	}
 
-=======
->>>>>>> master
 	bool GetIsInitialized() const
 	{
 		return isInitialized_;
@@ -212,8 +205,6 @@ protected:
 	MaterialShadingType shadingType_{ MaterialShadingType::Default };
 	bool usesReflectionProbe_{ false };
 	bool useTextureAtlasForTextureImages_{ true };
-
-	bool isInitialized_{ false };
 
 	bool isInitialized_{ false };
 

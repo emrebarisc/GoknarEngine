@@ -11,11 +11,7 @@
 #include "Goknar/Materials/Material.h"
 #include "Goknar/Managers/ResourceManager.h"
 #include "Goknar/Model/SkeletalMesh.h"
-<<<<<<< HEAD
 #include "Goknar/Model/SkeletalMeshGeometry.h"
-=======
-#include "Goknar/Model/SkeletalMeshUnit.h"
->>>>>>> master
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Model/Mesh.h"
 #include "Goknar/Scene.h"
@@ -136,7 +132,6 @@ Matrix ConvertMatrix(const ufbx_matrix& m)
 	);
 }
 
-<<<<<<< HEAD
 bool IsImportedBoneNode(const BoneNameToIdMap* boneNameToIdMap, const ufbx_node* node)
 {
 	return node &&
@@ -172,8 +167,6 @@ Matrix GetNodeTransformToNearestBoneParent(const ufbx_anim* anim, const BoneName
 	return transform;
 }
 
-=======
->>>>>>> master
 ufbx_node* GetRootBone(const BoneNameToIdMap* boneNameToIdMap, ufbx_node* node)
 {
 	if (IsImportedBoneNode(boneNameToIdMap, node))
@@ -225,7 +218,6 @@ void SetupArmature(SkeletalMeshLOD* skeletalMesh, Bone* bone, ufbx_node* node, c
 	}
 }
 
-<<<<<<< HEAD
 void SetupArmature(SkeletalMeshLOD* skeletalMesh, Bone* bone, ufbx_node* node)
 {
 	SetupArmature(skeletalMesh, bone, node, Matrix::IdentityMatrix);
@@ -252,19 +244,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 	}
 
 	ufbx_scene* scene = ufbx_load_memory(modelBytes.data(), modelBytes.size(), &opts, &error);
-=======
-Content* ModelLoader::LoadModel(const std::string& path)
-{
-	StaticMesh* staticMeshAsset = nullptr;
-	SkeletalMesh* skeletalMeshAsset = nullptr;
-
-	ufbx_load_opts opts = {};
-	opts.generate_missing_normals = true;
-	opts.target_axes = ufbx_axes_right_handed_y_up;
-
-	ufbx_error error;
-	ufbx_scene* scene = ufbx_load_file(path.c_str(), &opts, &error);
->>>>>>> master
 
 	if (scene)
 	{
@@ -280,7 +259,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 		if (sceneHasBones)
 		{
-<<<<<<< HEAD
 			skeletalMeshAsset = new SkeletalMeshLOD();
 			skeletalMeshAsset->SetPath(path);
 		}
@@ -308,21 +286,11 @@ Content* ModelLoader::LoadModel(const std::string& path)
 			return staticMeshLODs[LODIndex];
 		};
 
-=======
-			skeletalMeshAsset = new SkeletalMesh();
-		}
-		else
-		{
-			staticMeshAsset = new StaticMesh();
-		}
-
->>>>>>> master
 		for (size_t meshIndex = 0; meshIndex < scene->meshes.count; ++meshIndex)
 		{
 			ufbx_mesh* ufbxMesh = scene->meshes.data[meshIndex];
 			const bool hasBones = sceneHasBones && ufbxMesh->skin_deformers.count > 0;
 
-<<<<<<< HEAD
 			size_t numMaterials = ufbxMesh->materials.count;
 			if (numMaterials == 0) numMaterials = 1; // Fallback to 1 submesh if no materials exist
 
@@ -342,47 +310,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 			for (size_t i = 0; i < numMaterials; ++i)
 			{
 				if (sceneHasBones)
-=======
-			MeshUnit* meshUnit = nullptr;
-			SkeletalMeshUnit* skeletalMeshUnit = nullptr;
-			if (sceneHasBones)
-			{
-				skeletalMeshUnit = new SkeletalMeshUnit();
-				meshUnit = skeletalMeshUnit;
-			}
-			else
-			{
-				meshUnit = new MeshUnit();
-			}
-
-			meshUnit->SetName(ufbxMesh->name.data);
-
-			std::unordered_map<UnifiedVertex, uint32_t, UnifiedVertexHash> uniqueVertices;
-			std::vector<uint32_t> unifiedIndices(ufbxMesh->num_indices);
-			std::vector<VertexData> tempVertices;
-			uint32_t currentVertexId = 0;
-
-			for (size_t i = 0; i < ufbxMesh->num_indices; ++i)
-			{
-				UnifiedVertex key;
-				key.posIndex = ufbxMesh->vertex_position.indices.data[i];
-
-				if (ufbxMesh->vertex_normal.exists)
-				{
-					key.normIndex = ufbxMesh->vertex_normal.indices.data[i];
-				}
-				if (ufbxMesh->vertex_uv.exists)
-				{
-					key.uvIndex = ufbxMesh->vertex_uv.indices.data[i];
-				}
-				if (ufbxMesh->vertex_color.exists)
-				{
-					key.colIndex = ufbxMesh->vertex_color.indices.data[i];
-				}
-
-				auto it = uniqueVertices.find(key);
-				if (it != uniqueVertices.end())
->>>>>>> master
 				{
 					subMeshes[i].skeletalMeshGeometry = new SkeletalMeshGeometry();
 					subMeshes[i].meshUnit = subMeshes[i].skeletalMeshGeometry;
@@ -400,7 +327,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 				subMeshes[i].meshUnit->SetName(subMeshName);
 				subMeshes[i].unifiedIndices.resize(ufbxMesh->num_indices, 0xFFFFFFFF);
 
-<<<<<<< HEAD
 				if (sceneHasBones)
 				{
 					subMeshes[i].meshVertexToLocalVertexIndices.resize(ufbxMesh->num_vertices);
@@ -418,108 +344,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 					{
 						matIndex = matId;
 					}
-=======
-					ufbx_vec3 norm = { 0, 0, 0 };
-					if (ufbxMesh->vertex_normal.exists)
-					{
-						norm = ufbxMesh->vertex_normal.values.data[key.normIndex];
-					}
-
-					Vector4 col = Vector4(1.f);
-					if (ufbxMesh->vertex_color.exists)
-					{
-						ufbx_vec4 c = ufbxMesh->vertex_color.values.data[key.colIndex];
-						col = Vector4(c.x, c.y, c.z, c.w);
-					}
-
-					Vector2 uv = Vector2::ZeroVector;
-					if (ufbxMesh->vertex_uv.exists)
-					{
-						ufbx_vec2 u = ufbxMesh->vertex_uv.values.data[key.uvIndex];
-						uv = Vector2(u.x, u.y);
-					}
-
-					tempVertices.push_back(VertexData(
-						Vector3(pos.x, pos.y, pos.z),
-						Vector3(norm.x, norm.y, norm.z),
-						col,
-						uv
-					));
-
-					currentVertexId++;
-				}
-			}
-
-			if (hasBones && skeletalMeshAsset && skeletalMeshUnit)
-			{
-				skeletalMeshUnit->ResizeVertexToBonesArray(currentVertexId);
-
-				ufbx_skin_deformer* skin = ufbxMesh->skin_deformers.data[0];
-				std::vector<std::vector<uint32_t>> posToVertexIndices(ufbxMesh->num_vertices);
-
-				for (size_t i = 0; i < ufbxMesh->num_indices; ++i)
-				{
-					uint32_t compactedIndex = unifiedIndices[i];
-					uint32_t posIndex = ufbxMesh->vertex_position.indices.data[i];
-					posToVertexIndices[posIndex].push_back(compactedIndex);
-				}
-
-				for (auto& vec : posToVertexIndices)
-				{
-					std::sort(vec.begin(), vec.end());
-					vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
-				}
-
-				for (size_t boneIndex = 0; boneIndex < skin->clusters.count; ++boneIndex)
-				{
-					ufbx_skin_cluster* cluster = skin->clusters.data[boneIndex];
-					const std::string boneName = cluster->bone_node->name.data;
-					const BoneNameToIdMap* boneNameToIdMap = skeletalMeshAsset->GetBoneNameToIdMap();
-					if (boneNameToIdMap->find(boneName) == boneNameToIdMap->end())
-					{
-						skeletalMeshAsset->GetBoneId(boneName);
-						skeletalMeshAsset->AddBone(new Bone(boneName, ConvertMatrix(cluster->geometry_to_bone)));
-					}
-
-					const unsigned int boneId = skeletalMeshAsset->GetBoneId(boneName);
-
-					for (size_t weightIndex = 0; weightIndex < cluster->vertices.count; ++weightIndex)
-					{
-						uint32_t posIndex = cluster->vertices.data[weightIndex];
-						float weight = cluster->weights.data[weightIndex];
-
-						for (uint32_t vertexId : posToVertexIndices[posIndex])
-						{
-							skeletalMeshUnit->AddVertexBoneData(vertexId, boneId, weight);
-						}
-					}
-				}
-			}
-
-			for (const VertexData& vertexData : tempVertices)
-			{
-				meshUnit->AddVertexData(vertexData);
-			}
-
-			if (meshUnit->GetVertexCount() <= 0)
-			{
-				delete meshUnit;
-				continue;
-			}
-
-			for (size_t faceIndex = 0; faceIndex < ufbxMesh->faces.count; ++faceIndex)
-			{
-				ufbx_face face = ufbxMesh->faces.data[faceIndex];
-				uint32_t triIndices[256];
-				uint32_t triangleCount = ufbx_triangulate_face(triIndices, 256, ufbxMesh, face);
-
-				for (uint32_t triangleIndex = 0; triangleIndex < triangleCount; ++triangleIndex)
-				{
-					uint32_t i0 = unifiedIndices[triIndices[triangleIndex * 3 + 0]];
-					uint32_t i1 = unifiedIndices[triIndices[triangleIndex * 3 + 1]];
-					uint32_t i2 = unifiedIndices[triIndices[triangleIndex * 3 + 2]];
-					meshUnit->AddFace(Face(i0, i1, i2));
->>>>>>> master
 				}
 				subMeshes[matIndex].originalFaceIndices.push_back(faceIndex);
 			}
@@ -527,14 +351,9 @@ Content* ModelLoader::LoadModel(const std::string& path)
 			// 2. Build vertices, indices, and materials for each submesh
 			for (size_t matIndex = 0; matIndex < numMaterials; ++matIndex)
 			{
-<<<<<<< HEAD
 				SubMeshData& subMesh = subMeshes[matIndex];
 
 				if (subMesh.originalFaceIndices.empty())
-=======
-				ufbx_material* ufbxMaterial = ufbxMesh->materials.data[0];
-				if (ufbxMaterial)
->>>>>>> master
 				{
 					delete subMesh.meshUnit;
 					subMesh.meshUnit = nullptr;
@@ -542,28 +361,11 @@ Content* ModelLoader::LoadModel(const std::string& path)
 					continue;
 				}
 
-<<<<<<< HEAD
 				// Collect vertices uniquely per submesh
 				for (size_t faceIndex : subMesh.originalFaceIndices)
 				{
 					ufbx_face face = ufbxMesh->faces.data[faceIndex];
 					for (size_t i = 0; i < face.num_indices; ++i)
-=======
-					if (ufbxMaterial->pbr.base_color.has_value)
-					{
-						material->SetBaseColor(Vector3(ufbxMaterial->pbr.base_color.value_vec3.x, ufbxMaterial->pbr.base_color.value_vec3.y, ufbxMaterial->pbr.base_color.value_vec3.z));
-					}
-
-					if (ufbxMaterial->pbr.specular_color.has_value)
-					{
-						material->SetSpecularReflectance(Vector3(ufbxMaterial->pbr.specular_color.value_vec3.x, ufbxMaterial->pbr.specular_color.value_vec3.y, ufbxMaterial->pbr.specular_color.value_vec3.z));
-					}
-
-					material->SetShadingModel(MaterialShadingModel::Default);
-					material->SetName(ufbxMaterial->name.data);
-
-					if (ufbxMaterial->pbr.base_color.texture)
->>>>>>> master
 					{
 						uint32_t index_in_mesh = face.index_begin + i;
 
@@ -610,34 +412,8 @@ Content* ModelLoader::LoadModel(const std::string& path)
 								col = Vector4(c.x, c.y, c.z, c.w);
 							}
 
-<<<<<<< HEAD
 							Vector2 uv = Vector2::ZeroVector;
 							if (ufbxMesh->vertex_uv.exists)
-=======
-						imagePath += diffuseTexturePath;
-
-#ifdef GOKNAR_PLATFORM_UNIX
-						imagePath = ConvertToLinuxPath(imagePath);
-#endif
-
-						Image* image = engine->GetResourceManager()->GetContent<Image>(imagePath);
-						if (image)
-						{
-							image->SetTextureUsage(TextureUsage::Diffuse);
-							material->AddTextureImage(image);
-						}
-					}
-
-					if (ufbxMaterial->pbr.normal_map.texture)
-					{
-						std::string normalImagePath = ContentDir;
-						std::string normalTexturePath = ufbxMaterial->pbr.normal_map.texture->filename.data;
-
-						if (normalTexturePath.find(".fbm") != std::string::npos)
-						{
-							long long lastSlashIndex = path.find_last_of('/');
-							if (lastSlashIndex != std::string::npos)
->>>>>>> master
 							{
 								ufbx_vec2 u = ufbxMesh->vertex_uv.values.data[key.uvIndex];
 								uv = Vector2(u.x, u.y);
@@ -662,7 +438,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 									tangentSign = ufbxMesh->vertex_tangent.values_w.data[key.tangentIndex] < 0.f ? -1.f : 1.f;
 								}
 
-<<<<<<< HEAD
 								tangent = Vector4(tangentDirection, tangentSign);
 							}
 
@@ -680,18 +455,10 @@ Content* ModelLoader::LoadModel(const std::string& path)
 							}
 
 							subMesh.currentVertexId++;
-=======
-						Image* image = engine->GetResourceManager()->GetContent<Image>(normalImagePath);
-						if (image)
-						{
-							image->SetTextureUsage(TextureUsage::Normal);
-							material->AddTextureImage(image);
->>>>>>> master
 						}
 					}
 				}
 
-<<<<<<< HEAD
 				// Inject temp vertices
 				for (const VertexData& vertexData : subMesh.tempVertices)
 				{
@@ -901,17 +668,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 					const int LODIndex = GetLODIndexFromMeshName(subMesh.meshUnit->GetName());
 					getOrCreateStaticMeshLOD(LODIndex)->AddMesh(subMesh.meshUnit);
 				}
-=======
-			meshUnit->SetMaterial(material);
-
-			if (sceneHasBones && skeletalMeshAsset)
-			{
-				skeletalMeshAsset->AddMesh(skeletalMeshUnit);
-			}
-			else if (staticMeshAsset)
-			{
-				staticMeshAsset->AddMesh(meshUnit);
->>>>>>> master
 			}
 		}
 
@@ -920,12 +676,7 @@ Content* ModelLoader::LoadModel(const std::string& path)
 			ufbx_node* rootBoneNode = GetRootBone(skeletalMeshAsset->GetBoneNameToIdMap(), scene->root_node);
 			if (rootBoneNode)
 			{
-<<<<<<< HEAD
 				Matrix rootTransformation = GetNodeTransformToNearestBoneParent(nullptr, skeletalMeshAsset->GetBoneNameToIdMap(), rootBoneNode, 0.0);
-=======
-				ufbx_matrix rootLocalMat = ufbx_transform_to_matrix(&rootBoneNode->local_transform);
-				Matrix rootTransformation = ConvertMatrix(rootLocalMat);
->>>>>>> master
 
 				skeletalMeshAsset->GetArmature()->globalInverseTransform = rootTransformation.GetInverse();
 
@@ -978,7 +729,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 						for (int keyframeIndex = 0; keyframeIndex < keyframeCount; ++keyframeIndex)
 						{
-<<<<<<< HEAD
 							double timeInSeconds = (double)keyframeIndex / fps;
 							Matrix transform = GetNodeTransformToNearestBoneParent(animStack->anim, skeletalMeshAsset->GetBoneNameToIdMap(), animNode, animStack->time_begin + timeInSeconds);
 							Vector3 translation = Vector3::ZeroVector;
@@ -994,19 +744,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 							keyframe->scalingKeys[keyframeIndex].time = timeInSeconds;
 							keyframe->scalingKeys[keyframeIndex].value = scaling;
-=======
-							double timeInSeconds = animStack->time_begin + (double)keyframeIndex / fps;
-							ufbx_transform transform = ufbx_evaluate_transform(animStack->anim, animNode, timeInSeconds);
-
-							keyframe->positionKeys[keyframeIndex].time = timeInSeconds;
-							keyframe->positionKeys[keyframeIndex].value = Vector3(transform.translation.x, transform.translation.y, transform.translation.z);
-
-							keyframe->rotationKeys[keyframeIndex].time = timeInSeconds;
-							keyframe->rotationKeys[keyframeIndex].value = Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
-
-							keyframe->scalingKeys[keyframeIndex].time = timeInSeconds;
-							keyframe->scalingKeys[keyframeIndex].value = Vector3(transform.scale.x, transform.scale.y, transform.scale.z);
->>>>>>> master
 						}
 
 						skeletalAnimation->AddSkeletalAnimationKeyframe(channelIndex, keyframe);
@@ -1016,8 +753,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 					skeletalAnimation->animationKeyframeCount = channelIndex;
 					skeletalMeshAsset->AddSkeletalAnimation(skeletalAnimation);
 				}
-<<<<<<< HEAD
-
 				skeletalMeshAsset->BuildRuntimeAnimationData();
 			}
 		}
@@ -1027,8 +762,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 			for (SkeletalMeshGeometry* skeletalSubMesh : pendingSkeletalSubMeshes)
 			{
 				skeletalMeshAsset->AddMesh(skeletalSubMesh);
-=======
->>>>>>> master
 			}
 		}
 
@@ -1041,7 +774,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 
 	if (skeletalMeshAsset)
 	{
-<<<<<<< HEAD
 		SkeletalMesh* meshContainer = new SkeletalMesh();
 		meshContainer->AddLOD(LODSetting<SkeletalMeshLOD>{ skeletalMeshAsset, MAX_FLOAT });
 		return meshContainer;
@@ -1067,13 +799,6 @@ Content* ModelLoader::LoadModel(const std::string& path)
 		}
 
 		delete meshContainer;
-=======
-		return skeletalMeshAsset;
-	}
-	if (staticMeshAsset)
-	{
-		return staticMeshAsset;
->>>>>>> master
 	}
 
 	return nullptr;

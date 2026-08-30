@@ -6,10 +6,7 @@
 #include "Contents/Audio.h"
 #include "Contents/Content.h"
 #include "Contents/Image.h"
-<<<<<<< HEAD
 #include "Renderer/TextureAtlasManager.h"
-=======
->>>>>>> master
 #include "IO/IOManager.h"
 
 ResourceManager::ResourceManager() :
@@ -36,7 +33,6 @@ void ResourceManager::Init()
 void ResourceManager::PostInit()
 {
 	resourceContainer_->PostInit();
-<<<<<<< HEAD
 	InitializePendingMaterials();
 }
 
@@ -46,13 +42,6 @@ void ResourceManager::InitializePendingMaterials()
 	while (materialIndex < materials_.size())
 	{
 		Material* material = materials_[materialIndex].get();
-=======
-
-	std::vector<std::unique_ptr<Material>>::const_iterator materialIterator = materials_.cbegin();
-	while (materialIterator != materials_.cend())
-	{
-		Material* material = materialIterator->get();
->>>>>>> master
 
 		if (!material->GetIsInitialized())
 		{
@@ -62,11 +51,7 @@ void ResourceManager::InitializePendingMaterials()
 			material->PostInit();
 		}
 
-<<<<<<< HEAD
 		++materialIndex;
-=======
-		materialIterator++;
->>>>>>> master
 	}
 }
 
@@ -265,7 +250,6 @@ void ResourceContainer::AddImage(Image* image)
 	}
 }
 
-<<<<<<< HEAD
 bool ResourceContainer::RegisterImageToTextureAtlas(Image* image, TextureAtlasCategory category)
 {
 	if (!imageTextureAtlasManager_ || !image)
@@ -306,8 +290,6 @@ TextureAtlas* ResourceContainer::GetImageTextureAtlas(TextureAtlasCategory categ
 	return imageTextureAtlasManager_ ? imageTextureAtlasManager_->GetFirstAtlas(category) : nullptr;
 }
 
-=======
->>>>>>> master
 void ResourceContainer::AddMesh(Content* mesh)
 {
 	GOKNAR_CORE_ASSERT(!mesh->GetPath().empty());

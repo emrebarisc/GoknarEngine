@@ -16,116 +16,116 @@ using namespace tinyxml2;
 
 namespace
 {
-	constexpr float DEFAULT_AMBIENT_OCCLUSION = 1.f;
-	constexpr float DEFAULT_METALLIC = 0.f;
-	constexpr float DEFAULT_ROUGHNESS = 0.5f;
+    constexpr float DEFAULT_AMBIENT_OCCLUSION = 1.f;
+    constexpr float DEFAULT_METALLIC = 0.f;
+    constexpr float DEFAULT_ROUGHNESS = 0.5f;
 
-	bool LoadXmlDocumentFromPath(const std::string& filePath, tinyxml2::XMLDocument& document)
-	{
-		std::string fileContents;
-		if (!DataEncryption::ReadTextFile(filePath, fileContents))
-		{
-			return false;
-		}
+    bool LoadXmlDocumentFromPath(const std::string& filePath, tinyxml2::XMLDocument& document)
+    {
+        std::string fileContents;
+        if (!DataEncryption::ReadTextFile(filePath, fileContents))
+        {
+            return false;
+        }
 
-		return document.Parse(fileContents.c_str(), fileContents.size()) == XML_SUCCESS;
-	}
+        return document.Parse(fileContents.c_str(), fileContents.size()) == XML_SUCCESS;
+    }
 
-	float ClampNormalizedScalar(float value, float defaultValue)
-	{
-		if (!std::isfinite(value))
-		{
-			return defaultValue;
-		}
+    float ClampNormalizedScalar(float value, float defaultValue)
+    {
+        if (!std::isfinite(value))
+        {
+            return defaultValue;
+        }
 
-		return GoknarMath::Clamp(value, 0.f, 1.f);
-	}
+        return GoknarMath::Clamp(value, 0.f, 1.f);
+    }
 
-	float ConvertLegacyPhongExponentToRoughness(float phongExponent)
-	{
-		if (!std::isfinite(phongExponent) || phongExponent < 1.f)
-		{
-			return DEFAULT_ROUGHNESS;
-		}
+    float ConvertLegacyPhongExponentToRoughness(float phongExponent)
+    {
+        if (!std::isfinite(phongExponent) || phongExponent < 1.f)
+        {
+            return DEFAULT_ROUGHNESS;
+        }
 
-		return ClampNormalizedScalar(std::sqrt(2.f / (phongExponent + 2.f)), DEFAULT_ROUGHNESS);
-	}
+        return ClampNormalizedScalar(std::sqrt(2.f / (phongExponent + 2.f)), DEFAULT_ROUGHNESS);
+    }
 
-	const char* TextureUsageToString(TextureUsage textureUsage)
-	{
-		switch (textureUsage)
-		{
-		case TextureUsage::Diffuse: return "Diffuse";
-		case TextureUsage::Normal: return "Normal";
-		case TextureUsage::AmbientOcclusion: return "AmbientOcclusion";
-		case TextureUsage::Metallic: return "Metallic";
-		case TextureUsage::Specular: return "Specular";
-		case TextureUsage::Emissive: return "Emissive";
-		case TextureUsage::Roughness: return "Roughness";
-		case TextureUsage::Height: return "Height";
-		case TextureUsage::None:
-		default:
-			return "None";
-		}
-	}
+    const char* TextureUsageToString(TextureUsage textureUsage)
+    {
+        switch (textureUsage)
+        {
+        case TextureUsage::Diffuse: return "Diffuse";
+        case TextureUsage::Normal: return "Normal";
+        case TextureUsage::AmbientOcclusion: return "AmbientOcclusion";
+        case TextureUsage::Metallic: return "Metallic";
+        case TextureUsage::Specular: return "Specular";
+        case TextureUsage::Emissive: return "Emissive";
+        case TextureUsage::Roughness: return "Roughness";
+        case TextureUsage::Height: return "Height";
+        case TextureUsage::None:
+        default:
+            return "None";
+        }
+    }
 
-	TextureUsage StringToTextureUsage(const std::string& textureUsage)
-	{
-		if (textureUsage == "Diffuse") return TextureUsage::Diffuse;
-		if (textureUsage == "Normal") return TextureUsage::Normal;
-		if (textureUsage == "AmbientOcclusion") return TextureUsage::AmbientOcclusion;
-		if (textureUsage == "Metallic") return TextureUsage::Metallic;
-		if (textureUsage == "Specular") return TextureUsage::Specular;
-		if (textureUsage == "Emissive") return TextureUsage::Emissive;
-		if (textureUsage == "Roughness") return TextureUsage::Roughness;
-		if (textureUsage == "Height") return TextureUsage::Height;
-		return TextureUsage::None;
-	}
+    TextureUsage StringToTextureUsage(const std::string& textureUsage)
+    {
+        if (textureUsage == "Diffuse") return TextureUsage::Diffuse;
+        if (textureUsage == "Normal") return TextureUsage::Normal;
+        if (textureUsage == "AmbientOcclusion") return TextureUsage::AmbientOcclusion;
+        if (textureUsage == "Metallic") return TextureUsage::Metallic;
+        if (textureUsage == "Specular") return TextureUsage::Specular;
+        if (textureUsage == "Emissive") return TextureUsage::Emissive;
+        if (textureUsage == "Roughness") return TextureUsage::Roughness;
+        if (textureUsage == "Height") return TextureUsage::Height;
+        return TextureUsage::None;
+    }
 
-	bool StringToBool(const std::string& value, bool defaultValue)
-	{
-		if (value == "1" || value == "true" || value == "True" || value == "TRUE" || value == "yes" || value == "Yes")
-		{
-			return true;
-		}
+    bool StringToBool(const std::string& value, bool defaultValue)
+    {
+        if (value == "1" || value == "true" || value == "True" || value == "TRUE" || value == "yes" || value == "Yes")
+        {
+            return true;
+        }
 
-		if (value == "0" || value == "false" || value == "False" || value == "FALSE" || value == "no" || value == "No")
-		{
-			return false;
-		}
+        if (value == "0" || value == "false" || value == "False" || value == "FALSE" || value == "no" || value == "No")
+        {
+            return false;
+        }
 
-		return defaultValue;
-	}
+        return defaultValue;
+    }
 
-	bool ReadBoolAttributeOrElement(const tinyxml2::XMLElement* element, const char* name, bool defaultValue)
-	{
-		if (!element || !name)
-		{
-			return defaultValue;
-		}
+    bool ReadBoolAttributeOrElement(const tinyxml2::XMLElement* element, const char* name, bool defaultValue)
+    {
+        if (!element || !name)
+        {
+            return defaultValue;
+        }
 
-		if (const char* attributeValue = element->Attribute(name))
-		{
-			return StringToBool(attributeValue, defaultValue);
-		}
+        if (const char* attributeValue = element->Attribute(name))
+        {
+            return StringToBool(attributeValue, defaultValue);
+        }
 
-		const tinyxml2::XMLElement* childElement = element->FirstChildElement(name);
-		if (childElement && childElement->GetText())
-		{
-			return StringToBool(childElement->GetText(), defaultValue);
-		}
+        const tinyxml2::XMLElement* childElement = element->FirstChildElement(name);
+        if (childElement && childElement->GetText())
+        {
+            return StringToBool(childElement->GetText(), defaultValue);
+        }
 
-		return defaultValue;
-	}
+        return defaultValue;
+    }
 
-	bool ReadTextureAtlasUsage(const tinyxml2::XMLElement* element, bool defaultValue)
-	{
-		bool value = defaultValue;
-		value = ReadBoolAttributeOrElement(element, "UseTextureAtlas", value);
-		value = ReadBoolAttributeOrElement(element, "CanUseTextureAtlas", value);
-		value = ReadBoolAttributeOrElement(element, "TextureAtlas", value);
-		return value;
-	}
+    bool ReadTextureAtlasUsage(const tinyxml2::XMLElement* element, bool defaultValue)
+    {
+        bool value = defaultValue;
+        value = ReadBoolAttributeOrElement(element, "UseTextureAtlas", value);
+        value = ReadBoolAttributeOrElement(element, "CanUseTextureAtlas", value);
+        value = ReadBoolAttributeOrElement(element, "TextureAtlas", value);
+        return value;
+    }
 }
 
 void MaterialSerializer::Serialize(const std::string& filepath, const Material* material)
@@ -175,11 +175,8 @@ void MaterialSerializer::Serialize(const std::string& filepath, const Material* 
                 XMLElement* texElement = doc.NewElement("Texture");
                 const std::string texturePath = ContentPathUtils::ToContentRelativePath(image->GetPath());
                 texElement->SetAttribute("path", texturePath.c_str());
-<<<<<<< HEAD
                 texElement->SetAttribute("usage", TextureUsageToString(image->GetTextureUsage()));
                 texElement->SetAttribute("UseTextureAtlas", material->GetTextureImageUsesTextureAtlas(textureImageIndex) ? "true" : "false");
-=======
->>>>>>> master
                 root->InsertEndChild(texElement);
             }
         }
@@ -242,11 +239,7 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     const std::string contentPath = ContentPathUtils::ToAbsoluteContentPath(relativeFilePath);
 
     tinyxml2::XMLDocument doc;
-<<<<<<< HEAD
     if (!LoadXmlDocumentFromPath(contentPath, doc))
-=======
-    if (doc.LoadFile(contentPath.c_str()) != XML_SUCCESS)
->>>>>>> master
     {
         return;
     }
@@ -330,7 +323,6 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
 
             if (image)
             {
-<<<<<<< HEAD
                 if (child->Attribute("usage"))
                 {
                     image->SetTextureUsage(StringToTextureUsage(child->Attribute("usage")));
@@ -339,9 +331,6 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
                 const bool useTextureAtlas = ReadTextureAtlasUsage(child, materialDefaultUseTextureAtlas);
                 owner->AddTextureImage(image, useTextureAtlas);
                 registeredTextureAtlasImage = registeredTextureAtlasImage || useTextureAtlas;
-=======
-                owner->AddTextureImage(image);
->>>>>>> master
             }
         }
         child = child->NextSiblingElement("Texture");
@@ -368,7 +357,7 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     {
         owner->SetAmbientOcclusion(DEFAULT_AMBIENT_OCCLUSION);
     }
-    
+
     child = root->FirstChildElement("BaseColorValue");
     if (child && child->GetText())
     {
@@ -382,40 +371,9 @@ void MaterialSerializer::Deserialize(const std::string& filepath, Material* owne
     if (child && child->GetText())
     {
         std::stringstream stream(child->GetText());
-<<<<<<< HEAD
         float metallic = DEFAULT_METALLIC;
         stream >> metallic;
         owner->SetMetallic(ClampNormalizedScalar(metallic, DEFAULT_METALLIC));
-=======
-        Vector3 specularReflectance;
-        stream >> specularReflectance.x >> specularReflectance.y >> specularReflectance.z;
-        owner->SetSpecularReflectance(specularReflectance);
-    }
-
-    child = root->FirstChildElement("EmmisiveColorValue");
-    if (child && child->GetText())
-    {
-        std::stringstream stream(child->GetText());
-        Vector3 emmisiveColor;
-        stream >> emmisiveColor.x >> emmisiveColor.y >> emmisiveColor.z;
-        owner->SetEmmisiveColor(emmisiveColor);
-    }
-
-    child = root->FirstChildElement("PhongExponent");
-    if (child && child->GetText())
-    {
-        std::stringstream stream(child->GetText());
-        float phongExponent = 1.f;
-        stream >> phongExponent;
-        if (!stream.fail() && std::isfinite(phongExponent))
-        {
-            owner->SetPhongExponent(phongExponent);
-        }
-        else
-        {
-            owner->SetPhongExponent(1.f);
-        }
->>>>>>> master
     }
     else
     {

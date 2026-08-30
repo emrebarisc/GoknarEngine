@@ -62,11 +62,7 @@ public:
 	SkeletalMeshInstance() = delete;
 	SkeletalMeshInstance(RenderComponent* parentComponent);
 	virtual ~SkeletalMeshInstance();
-<<<<<<< HEAD
 	virtual void Render(RenderPassType renderPassType, int subMeshIndex = 0, int LODIndex = 0) override;
-=======
-	virtual void Render(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward) override;
->>>>>>> master
 	virtual void SetMesh(SkeletalMesh* skeletalMesh) override;
 
 	void PlayAnimation(const std::string& animationName, const PlayLoopData& playLoopData = { false, {} }, const KeyframeData& keyframeData = {});
@@ -93,7 +89,6 @@ public:
 protected:
 
 private:
-<<<<<<< HEAD
 	void SetRenderOperations(RenderPassType renderPassType, int subMeshIndex = 0, int LODIndex = 0);
 	void SampleDirectAnimationToLocalPose();
 	void BuildMatricesAndUpdateSockets();
@@ -102,9 +97,6 @@ private:
 	void EvaluateClipNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose);
 	void EvaluateBlendSpace1DNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose);
 	void EvaluateBlendSpace2DNode(AnimationGraph& animationGraph, AnimationNode* node, float deltaTime, AnimationPose& outPose);
-=======
-	void SetRenderOperations(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward);
->>>>>>> master
 
 	SkeletalMeshAnimation skeletalMeshAnimation_{};
 

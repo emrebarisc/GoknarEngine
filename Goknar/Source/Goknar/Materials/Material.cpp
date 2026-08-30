@@ -55,7 +55,6 @@ Material::~Material()
 
 void Material::ClearMaterialTextureProxies()
 {
-<<<<<<< HEAD
 	for (MaterialTextureProxy& materialTextureProxy : materialTextureProxies_)
 	{
 		if (materialTextureProxy.image && materialTextureProxy.texture)
@@ -135,12 +134,6 @@ void Material::Build(MeshGeometry* meshUnit)
 	if (SkeletalMeshGeometry* skeletalMeshGeometry = dynamic_cast<SkeletalMeshGeometry*>(meshUnit))
 	{
 		ownerMeshBoneCount = skeletalMeshGeometry->GetOwner()->GetBoneSize();
-=======
-	int ownerMeshBoneCount = 0;
-	if (SkeletalMeshUnit* skeletalMeshUnit = dynamic_cast<SkeletalMeshUnit*>(meshUnit))
-	{
-		ownerMeshBoneCount = skeletalMeshUnit->GetOwner()->GetBoneSize();
->>>>>>> master
 	}
 
 	initializationData_->boneCount = ownerMeshBoneCount;
@@ -339,11 +332,7 @@ void Material::PostInit()
 
 	isInitialized_ = true;
 
-<<<<<<< HEAD
 #ifndef GOKNAR_EDITOR
-=======
-#if !GOKNAR_BUILD_DEBUG
->>>>>>> master
 	delete initializationData_;
 	initializationData_ = nullptr;
 #endif
@@ -357,19 +346,11 @@ void Material::ResetForRebuild()
 	}
 
 	renderPassTypeShaderMap_.clear();
-<<<<<<< HEAD
 	ClearMaterialTextureProxies();
 	ClearTextureImages();
-=======
-	textureImages_.clear();
->>>>>>> master
 
 	delete initializationData_;
 	initializationData_ = new MaterialInitializationData(this);
 
 	isInitialized_ = false;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> master

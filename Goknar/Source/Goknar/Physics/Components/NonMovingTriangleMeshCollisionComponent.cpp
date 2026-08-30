@@ -32,11 +32,7 @@ void NonMovingTriangleMeshCollisionComponent::PreInit()
 
 	bulletTriangleMesh_ = new btTriangleMesh(true, false);
 
-<<<<<<< HEAD
 	MeshGeometry* subMesh = relativeMesh_->GetSubMeshes()[0];
-=======
-	MeshUnit* subMesh = relativeMesh_->GetSubMeshes()[0];
->>>>>>> master
 
 	const Box& relativeMeshAABB = subMesh->GetAABB();
 	bulletTriangleMesh_->setPremadeAabb(
@@ -56,7 +52,7 @@ void NonMovingTriangleMeshCollisionComponent::PreInit()
 			PhysicsUtils::FromVector3ToBtVector3(vertexArray->at(face.vertexIndices[0]).position),
 			PhysicsUtils::FromVector3ToBtVector3(vertexArray->at(face.vertexIndices[2]).position),
 			PhysicsUtils::FromVector3ToBtVector3(vertexArray->at(face.vertexIndices[1]).position)
-			);
+		);
 	}
 	bulletCollisionShape_ = new btBvhTriangleMeshShape(bulletTriangleMesh_, true, true);
 
@@ -72,7 +68,7 @@ void NonMovingTriangleMeshCollisionComponent::PostInit()
 {
 	CollisionComponent::PostInit();
 }
-	
+
 void NonMovingTriangleMeshCollisionComponent::BeginGame()
 {
 	CollisionComponent::BeginGame();
@@ -82,7 +78,7 @@ void NonMovingTriangleMeshCollisionComponent::TickComponent(float deltaTime)
 {
 	CollisionComponent::TickComponent(deltaTime);
 
-	
+
 }
 
 Component* NonMovingTriangleMeshCollisionComponent::Clone() const

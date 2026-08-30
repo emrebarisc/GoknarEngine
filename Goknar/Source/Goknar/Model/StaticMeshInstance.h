@@ -12,11 +12,7 @@ public:
 
 	virtual ~StaticMeshInstance() {}
 
-<<<<<<< HEAD
 	virtual void Render(RenderPassType renderPassType = RenderPassType::Forward, int subMeshIndex = 0, int LODIndex = 0) override;
-=======
-	virtual void Render(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward) override;
->>>>>>> master
 
 	void AddMeshInstanceToRenderer() override;
 	void RemoveMeshInstanceFromRenderer() override;

@@ -61,13 +61,8 @@ void WindowManager::PreInit()
 		isVSyncChangeSupported_ = QueryVSyncChangeSupport();
 		SetVSync(false);
 
-<<<<<<< HEAD
 		const bool graphicsAPIResult = engine->GetGraphicsAPI()->Initialize(reinterpret_cast<GraphicsAPIProcAddressFunction>(glfwGetProcAddress));
 		GOKNAR_CORE_ASSERT(graphicsAPIResult, "Failed to initialize graphics API.");
-=======
-		const int gladResult = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		GOKNAR_CORE_ASSERT(gladResult, "Failed to initialize GLAD!.");
->>>>>>> master
 		glfwGetFramebufferSize(mainWindow_, &framebufferWidth_, &framebufferHeight_);
 	}
 	else
@@ -129,11 +124,7 @@ void WindowManager::FrameBufferSizeCallback(GLFWwindow* window, int width, int h
 	WindowManager* windowManager = engine->GetWindowManager();
 	windowManager->framebufferWidth_ = width;
 	windowManager->framebufferHeight_ = height;
-<<<<<<< HEAD
 	engine->GetGraphicsAPI()->SetViewport(0, 0, width, height);
-=======
-	glViewport(0, 0, width, height);
->>>>>>> master
 }
 
 void WindowManager::CloseWindow(GLFWwindow* window/* = nullptr*/)

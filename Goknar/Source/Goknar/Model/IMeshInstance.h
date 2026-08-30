@@ -65,13 +65,8 @@ public:
 
 	inline void SetMaterial(int index, MaterialInstance* material);
 
-<<<<<<< HEAD
 	inline virtual void PreRender(RenderPassType renderPassType, int subMeshIndex = 0, int LODIndex = 0);
 	inline virtual void Render(RenderPassType renderPassType, int subMeshIndex = 0, int LODIndex = 0);
-=======
-	inline virtual void PreRender(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward);
-	inline virtual void Render(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward);
->>>>>>> master
 
 	inline void SetIsRendered(bool isRendered)
 	{
@@ -103,7 +98,6 @@ public:
 		renderMask_ = renderMask;
 	}
 
-<<<<<<< HEAD
 	int GetForcedLODIndex() const
 	{
 		return forcedLODIndex_;
@@ -114,31 +108,20 @@ public:
 		forcedLODIndex_ = forcedLODIndex;
 	}
 
-=======
->>>>>>> master
 	const std::vector<MaterialInstance*>& GetMaterials() const
 	{
 		return materials_;
 	}
 
-<<<<<<< HEAD
 	IMaterialBase* GetMaterial(int index) const
 	{
 		GOKNAR_CORE_ASSERT(index < materials_.size(), "Requested material index is greater than material size");
 
-=======
-	const IMaterialBase* GetMaterial(int index) const
-	{
->>>>>>> master
 		IMaterialBase* material = materials_[index];
 
 		if (!material)
 		{
-<<<<<<< HEAD
 			material = mesh_->GetLOD(0)->GetMesh(index)->GetMaterial();
-=======
-			material = mesh_->GetMesh(index)->GetMaterial();
->>>>>>> master
 		}
 
 		return material;
@@ -195,7 +178,6 @@ template<class MeshType>
 inline void IMeshInstance<MeshType>::SetMaterial(int index, MaterialInstance* material)
 {
 	if (materials_[index] == material)
-<<<<<<< HEAD
 	{
 		return;
 	}
@@ -207,28 +189,15 @@ inline void IMeshInstance<MeshType>::SetMaterial(int index, MaterialInstance* ma
 		nextMaterial != nullptr &&
 		previousMaterial->GetBlendModel() != nextMaterial->GetBlendModel();
 
-=======
-	{
-		return;
-	}
-
-	bool refreshInstanceOnRenderer = false;
-
-	if(materials_[index] != nullptr && material != nullptr)
-	{
-		refreshInstanceOnRenderer = materials_[index]->GetBlendModel() != material->GetBlendModel();
-	}
-
->>>>>>> master
 	if (materials_[index])
 	{
 		materials_[index]->Destroy();
 		materials_[index] = nullptr;
 	}
-	
+
 	materials_[index] = material;
 
-	if(refreshInstanceOnRenderer)
+	if (refreshInstanceOnRenderer)
 	{
 		RemoveMeshInstanceFromRenderer();
 		AddMeshInstanceToRenderer();
@@ -236,16 +205,10 @@ inline void IMeshInstance<MeshType>::SetMaterial(int index, MaterialInstance* ma
 }
 
 template<class MeshType>
-<<<<<<< HEAD
 inline void IMeshInstance<MeshType>::PreRender(RenderPassType renderPassType, int subMeshIndex, int LODIndex/* = 0*/)
 {
 	auto LOD = mesh_->GetLOD(LODIndex);
 	auto& subMeshes = LOD->GetSubMeshes();
-=======
-inline void IMeshInstance<MeshType>::PreRender(int subMeshIndex, RenderPassType renderPassType)
-{
-	const auto& subMeshes = mesh_->GetSubMeshes();
->>>>>>> master
 
 	IMaterialBase* material = materials_[subMeshIndex];
 
@@ -261,15 +224,9 @@ inline void IMeshInstance<MeshType>::PreRender(int subMeshIndex, RenderPassType 
 }
 
 template<class MeshType>
-<<<<<<< HEAD
 inline void IMeshInstance<MeshType>::Render(RenderPassType renderPassType, int subMeshIndex, int LODIndex/* = 0*/)
 {
 	const auto& subMeshes = mesh_->GetLOD(LODIndex)->GetSubMeshes();
-=======
-inline void IMeshInstance<MeshType>::Render(int subMeshIndex, RenderPassType renderPassType)
-{
-	const auto& subMeshes = mesh_->GetSubMeshes();
->>>>>>> master
 
 	IMaterialBase* material = materials_[subMeshIndex];
 
@@ -287,14 +244,13 @@ inline void IMeshInstance<MeshType>::Render(int subMeshIndex, RenderPassType ren
 template<class MeshType>
 inline void IMeshInstance<MeshType>::SetMesh(MeshType* mesh)
 {
-	if(mesh_ != nullptr)
+	if (mesh_ != nullptr)
 	{
 		RemoveMeshInstanceFromRenderer();
 	}
 
 	mesh_ = mesh;
 
-<<<<<<< HEAD
 	if (mesh_->GetLODCount() == 1)
 	{
 		SetForcedLODIndex(0);
@@ -303,11 +259,6 @@ inline void IMeshInstance<MeshType>::SetMesh(MeshType* mesh)
 	materials_.resize(mesh_->GetLOD(0)->GetSubMeshes().size(), nullptr);
 
 	if (!isInitialized_)
-=======
-	materials_.resize(mesh_->GetSubMeshes().size(), nullptr);
-
-	if (isInitialized_)
->>>>>>> master
 	{
 		PreInit();
 		Init();

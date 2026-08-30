@@ -12,11 +12,7 @@ public:
 
 	virtual ~DynamicMeshInstance() {}
 
-<<<<<<< HEAD
 	virtual void Render(RenderPassType renderPassType, int subMeshIndex = 0, int LODIndex = 0) override;
-=======
-	virtual void Render(int subMeshIndex, RenderPassType renderPassType = RenderPassType::Forward) override;
->>>>>>> master
 
 	void UpdateVertexDataAt(int meshIndex, int vertexIndex, const VertexData& newVertexData);
 

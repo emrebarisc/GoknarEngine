@@ -34,24 +34,19 @@ class GOKNAR_API SceneParser
 public:
 	static void Parse(Scene* scene, const std::string& filePath);
 	static void SaveScene(Scene* scene, const std::string& filePath);
-<<<<<<< HEAD
 	static bool InsertSceneReference(Scene* scene, const SceneReference& sceneReference);
-=======
->>>>>>> master
 	static Material* GetOrCreateSharedMaterial(const std::string& materialPath);
 	static void ApplyStaticMeshComponentMaterialPaths(StaticMeshComponent* staticMeshComponent, const std::vector<std::string>& materialPaths);
 	static std::vector<std::string> GetStaticMeshComponentMaterialPaths(const StaticMeshComponent* staticMeshComponent);
 	static void ApplyStaticMeshComponentMaterialPath(StaticMeshComponent* staticMeshComponent, const std::string& materialPath);
 	static std::string GetStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
 	static void ClearStaticMeshComponentMaterialPath(const StaticMeshComponent* staticMeshComponent);
-<<<<<<< HEAD
+
 	static void ApplySkeletalMeshComponentMaterialPaths(SkeletalMeshComponent* skeletalMeshComponent, const std::vector<std::string>& materialPaths);
 	static std::vector<std::string> GetSkeletalMeshComponentMaterialPaths(const SkeletalMeshComponent* skeletalMeshComponent);
 	static void ApplySkeletalMeshComponentMaterialPath(SkeletalMeshComponent* skeletalMeshComponent, const std::string& materialPath);
 	static std::string GetSkeletalMeshComponentMaterialPath(const SkeletalMeshComponent* skeletalMeshComponent);
 	static void ClearSkeletalMeshComponentMaterialPath(const SkeletalMeshComponent* skeletalMeshComponent);
-=======
->>>>>>> master
 	static void ClearCaches();
 
 private:

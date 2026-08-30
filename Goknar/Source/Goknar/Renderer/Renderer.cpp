@@ -161,7 +161,6 @@ Renderer::~Renderer()
 	GraphicsAPI()->DeleteVertexArray(skeletalMeshBufferData_.vertexArrayId);
 	GraphicsAPI()->DeleteVertexArray(dynamicMeshBufferData_.vertexArrayId);
 
-<<<<<<< HEAD
 	GraphicsAPI()->DeleteBuffer(staticMeshBufferData_.vertexBufferId);
 	for (const auto& [instancedStaticMesh, transformationBufferId] : instancedStaticMeshTransformationBufferIdMap_)
 	{
@@ -179,14 +178,6 @@ Renderer::~Renderer()
 	GraphicsAPI()->DeleteBuffer(dynamicMeshBufferData_.indexBufferId);
 
 	EXIT_ON_GRAPHICS_API_ERROR("Renderer::~Renderer");
-=======
-	glDeleteBuffers(1, &staticVertexBufferId_);
-	glDeleteBuffers(1, &skeletalVertexBufferId_);
-	glDeleteBuffers(1, &dynamicVertexBufferId_);
-	glDeleteBuffers(1, &staticIndexBufferId_);
-	glDeleteBuffers(1, &skeletalIndexBufferId_);
-	glDeleteBuffers(1, &dynamicIndexBufferId_);
->>>>>>> master
 }
 
 void Renderer::PreInit()
@@ -245,44 +236,20 @@ void Renderer::PreInit()
 
 	for (MeshGeometry* subMesh : staticMeshGeometries_)
 	{
-<<<<<<< HEAD
 		staticMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
 		staticMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
-=======
-		for (MeshUnit* subMesh : staticMesh->GetSubMeshes())
-		{
-			totalStaticMeshVertexSize_ += (unsigned int)subMesh->GetVerticesPointer()->size();
-			totalStaticMeshFaceSize_ += (unsigned int)subMesh->GetFacesPointer()->size();
-		}
->>>>>>> master
 	}
 
 	for (SkeletalMeshGeometry* subMesh : skeletalMeshGeometries_)
 	{
-<<<<<<< HEAD
 		skeletalMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
 		skeletalMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
-=======
-		for (SkeletalMeshUnit* subMesh : skeletalMesh->GetSubMeshes())
-		{
-			totalSkeletalMeshVertexSize_ += (unsigned int)subMesh->GetVerticesPointer()->size();
-			totalSkeletalMeshFaceSize_ += (unsigned int)subMesh->GetFacesPointer()->size();
-		}
->>>>>>> master
 	}
 
 	for (DynamicMeshGeometry* subMesh : dynamicMeshGeometries_)
 	{
-<<<<<<< HEAD
 		dynamicMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
 		dynamicMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
-=======
-		for (MeshUnit* subMesh : dynamicMesh->GetSubMeshes())
-		{
-			totalSkeletalMeshVertexSize_ += (unsigned int)subMesh->GetVerticesPointer()->size();
-			totalSkeletalMeshFaceSize_ += (unsigned int)subMesh->GetFacesPointer()->size();
-		}
->>>>>>> master
 	}
 
 	SetBufferData();
@@ -322,7 +289,6 @@ void Renderer::SetStaticBufferData()
 	/*
 		Buffer Sub-Data
 	*/
-<<<<<<< HEAD
 	for (MeshGeometry* subMesh : staticMeshGeometries_)
 	{
 		subMesh->SetBaseVertex(staticMeshBufferData_.baseVertex);
@@ -345,38 +311,6 @@ void Renderer::SetStaticBufferData()
 		if (removeStaticDataFromMemoryAfterTransferingToGPU_)
 		{
 			subMesh->ClearDataFromMemory();
-=======
-	unsigned int baseVertex = 0;
-	unsigned int vertexStartingIndex = 0;
-
-	int vertexOffset = 0;
-	int faceOffset = 0;
-	for (StaticMesh* staticMesh : staticMeshes_)
-	{
-		for (MeshUnit* subMesh : staticMesh->GetSubMeshes())
-		{
-			subMesh->SetBaseVertex(baseVertex);
-			subMesh->SetVertexStartingIndex(vertexStartingIndex);
-
-			const VertexArray* vertexArrayPtr = subMesh->GetVerticesPointer();
-			int vertexSizeInBytes = (int)vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
-			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
-
-			const FaceArray* faceArrayPtr = subMesh->GetFacesPointer();
-			int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
-
-			vertexOffset += vertexSizeInBytes;
-			faceOffset += faceSizeInBytes;
-
-			baseVertex += subMesh->GetVertexCount();
-			vertexStartingIndex += subMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
-
-			if (removeStaticDataFromMemoryAfterTransferingToGPU_)
-			{
-				subMesh->ClearDataFromMemory();
-			}
->>>>>>> master
 		}
 	}
 	SetAttribPointers();
@@ -409,7 +343,6 @@ void Renderer::SetSkeletalBufferData()
 	*/
 	for (SkeletalMeshGeometry* subMesh : skeletalMeshGeometries_)
 	{
-<<<<<<< HEAD
 		subMesh->SetBaseVertex(skeletalMeshBufferData_.baseVertex);
 		subMesh->SetVertexStartingIndex(skeletalMeshBufferData_.vertexStartingIndex);
 
@@ -417,14 +350,10 @@ void Renderer::SetSkeletalBufferData()
 
 		unsigned int vertexArrayPtrSize = vertexArrayPtr->size();
 		if (vertexArrayPtrSize == 0)
-=======
-		for (SkeletalMeshUnit* subMesh : skeletalMesh->GetSubMeshes())
->>>>>>> master
 		{
-			subMesh->SetBaseVertex(baseVertex);
-			subMesh->SetVertexStartingIndex(vertexStartingIndex);
+			continue;
+		}
 
-<<<<<<< HEAD
 		GEintptr vertexSizeInBytes = sizeof(vertexArrayPtr->at(0));
 
 		const VertexBoneDataArray* vertexBoneDataArray = subMesh->GetVertexBoneDataArray();
@@ -449,41 +378,6 @@ void Renderer::SetSkeletalBufferData()
 		if (removeStaticDataFromMemoryAfterTransferingToGPU_)
 		{
 			subMesh->ClearDataFromMemory();
-=======
-			const VertexArray* vertexArrayPtr = subMesh->GetVerticesPointer();
-
-			unsigned int vertexArrayPtrSize = vertexArrayPtr->size();
-			if (vertexArrayPtrSize == 0)
-			{
-				continue;
-			}
-
-			GLintptr vertexSizeInBytes = sizeof(vertexArrayPtr->at(0));
-
-			const VertexBoneDataArray* vertexBoneDataArray = subMesh->GetVertexBoneDataArray();
-			int vertexBoneDataArraySizeInBytes = sizeof(vertexBoneDataArray->at(0));
-			for (unsigned int i = 0; i < vertexArrayPtrSize; ++i)
-			{
-				glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(i));
-				vertexOffset += vertexSizeInBytes;
-
-				glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexBoneDataArraySizeInBytes, &vertexBoneDataArray->at(i));
-				vertexOffset += vertexBoneDataArraySizeInBytes;
-			}
-
-			const FaceArray* faceArrayPtr = subMesh->GetFacesPointer();
-			int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
-			faceOffset += faceSizeInBytes;
-
-			baseVertex += subMesh->GetVertexCount();
-			vertexStartingIndex += subMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
-
-			if (removeStaticDataFromMemoryAfterTransferingToGPU_)
-			{
-				subMesh->ClearDataFromMemory();
-			}
->>>>>>> master
 		}
 	}
 	SetAttribPointersForSkeletalMesh();
@@ -516,7 +410,6 @@ void Renderer::SetDynamicBufferData()
 	*/
 	for (DynamicMeshGeometry* subMesh : dynamicMeshGeometries_)
 	{
-<<<<<<< HEAD
 		subMesh->SetBaseVertex(dynamicMeshBufferData_.baseVertex);
 		subMesh->SetVertexStartingIndex(dynamicMeshBufferData_.vertexStartingIndex);
 		subMesh->SetRendererVertexOffset(dynamicMeshBufferData_.vertexOffset);
@@ -534,28 +427,6 @@ void Renderer::SetDynamicBufferData()
 
 		dynamicMeshBufferData_.baseVertex += subMesh->GetVertexCount();
 		dynamicMeshBufferData_.vertexStartingIndex += subMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
-=======
-		for (DynamicMeshUnit* subMesh : dynamicMesh->GetSubMeshes())
-		{
-			subMesh->SetBaseVertex(baseVertex);
-			subMesh->SetVertexStartingIndex(vertexStartingIndex);
-			subMesh->SetRendererVertexOffset(vertexOffset);
-
-			const VertexArray* vertexArrayPtr = subMesh->GetVerticesPointer();
-			int vertexSizeInBytes = (int)vertexArrayPtr->size() * sizeof(vertexArrayPtr->at(0));
-			glBufferSubData(GL_ARRAY_BUFFER, vertexOffset, vertexSizeInBytes, &vertexArrayPtr->at(0));
-
-			const FaceArray* faceArrayPtr = subMesh->GetFacesPointer();
-			int faceSizeInBytes = (int)faceArrayPtr->size() * sizeof(faceArrayPtr->at(0));
-			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, faceOffset, faceSizeInBytes, &faceArrayPtr->at(0));
-
-			vertexOffset += vertexSizeInBytes;
-			faceOffset += faceSizeInBytes;
-
-			baseVertex += subMesh->GetVertexCount();
-			vertexStartingIndex += subMesh->GetFaceCount() * 3 * (int)sizeof(Face::vertexIndices[0]);
-		}
->>>>>>> master
 	}
 
 	SetAttribPointers();
@@ -623,7 +494,7 @@ void Renderer::RenderCurrentFrame()
 				PreparePostProcessingFrame(deferredRenderingData_);
 				Render(RenderPassType::GeometryBuffer);
 				Render(RenderPassType::Deferred);
-				
+
 				if (renderTarget->GetRequirePostProcessingEffects())
 				{
 					ApplyPostProcessing(deferredRenderingData_, renderTargetFrameBuffer);
@@ -956,69 +827,6 @@ void Renderer::Render(RenderPassType renderPassType)
 			GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
 		};
 
-	auto RenderStaticMesh = [&](StaticMeshInstance* staticMeshInstance)
-		{
-			const StaticMesh* staticMesh = staticMeshInstance->GetMesh();
-			const std::vector<MeshUnit*> subMeshes = staticMesh->GetSubMeshes();
-			size_t subMeshSize = subMeshes.size();
-			for (int subMeshIndex = 0; subMeshIndex < subMeshSize; ++subMeshIndex)
-			{
-				MeshUnit* subMesh = subMeshes[subMeshIndex];
-
-				if (!activeCamera->IsAABBVisible(subMesh->GetAABB(), staticMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
-
-				if (countDrawCallsInner_) ++drawCallCount;
-
-				staticMeshInstance->PreRender(subMeshIndex, renderPassType);
-				staticMeshInstance->Render(subMeshIndex, renderPassType);
-
-				int facePointCount = subMesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
-			}
-		};
-
-	auto RenderSkeletalMesh = [&](SkeletalMeshInstance* skeletalMeshInstance)
-		{
-			const SkeletalMesh* staticMesh = skeletalMeshInstance->GetMesh();
-			const std::vector<SkeletalMeshUnit*> subMeshes = staticMesh->GetSubMeshes();
-			size_t subMeshSize = subMeshes.size();
-			for (int subMeshIndex = 0; subMeshIndex < subMeshSize; ++subMeshIndex)
-			{
-				MeshUnit* subMesh = subMeshes[subMeshIndex];
-
-				if (!activeCamera->IsAABBVisible(subMesh->GetAABB(), skeletalMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
-
-				if (countDrawCallsInner_) ++drawCallCount;
-
-				skeletalMeshInstance->PreRender(subMeshIndex, renderPassType);
-				skeletalMeshInstance->Render(subMeshIndex, renderPassType);
-
-				int facePointCount = subMesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
-			}
-		};
-
-	auto RenderDynamicMesh = [&](DynamicMeshInstance* skeletalMeshInstance)
-		{
-			const DynamicMesh* dynamicMesh = skeletalMeshInstance->GetMesh();
-			const std::vector<DynamicMeshUnit*> subMeshes = dynamicMesh->GetSubMeshes();
-			size_t subMeshSize = subMeshes.size();
-			for (int subMeshIndex = 0; subMeshIndex < subMeshSize; ++subMeshIndex)
-			{
-				MeshUnit* subMesh = subMeshes[subMeshIndex];
-
-				if (!activeCamera->IsAABBVisible(subMesh->GetAABB(), skeletalMeshInstance->GetParentComponent()->GetComponentToWorldTransformationMatrix())) continue;
-
-				if (countDrawCallsInner_) ++drawCallCount;
-
-				skeletalMeshInstance->PreRender(subMeshIndex, renderPassType);
-				skeletalMeshInstance->Render(subMeshIndex, renderPassType);
-
-				int facePointCount = subMesh->GetFaceCount() * 3;
-				glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
-			}
-		};
-
 	if (renderPassType != RenderPassType::Deferred)
 	{
 		// Static MeshGeometry Instances
@@ -1034,7 +842,6 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (isShadowRender && !opaqueStaticMeshInstance->GetIsCastingShadow()) continue;
 					if (!(activeCamera->GetRenderMask() & opaqueStaticMeshInstance->GetRenderMask())) continue;
 
-<<<<<<< HEAD
 					RenderStaticMesh(opaqueStaticMeshRenderData);
 				}
 
@@ -1046,9 +853,6 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (!(activeCamera->GetRenderMask() & opaqueInstancedStaticMeshInstance->GetRenderMask())) continue;
 
 					RenderInstancedStaticMesh(opaqueInstancedStaticMeshRenderData);
-=======
-					RenderStaticMesh(opaqueStaticMeshInstance);
->>>>>>> master
 				}
 			}
 		}
@@ -1066,11 +870,7 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (isShadowRender && !opaqueSkeletalMeshInstance->GetIsCastingShadow()) continue;
 					if (!(activeCamera->GetRenderMask() & opaqueSkeletalMeshInstance->GetRenderMask())) continue;
 
-<<<<<<< HEAD
 					RenderSkeletalMesh(opaqueSkeletalMeshRenderData);
-=======
-					RenderSkeletalMesh(opaqueSkeletalMeshInstance);
->>>>>>> master
 				}
 			}
 		}
@@ -1088,7 +888,6 @@ void Renderer::Render(RenderPassType renderPassType)
 					if (isShadowRender && !opaqueDynamicMeshInstance->GetIsCastingShadow()) continue;
 					if (!(activeCamera->GetRenderMask() & opaqueDynamicMeshInstance->GetRenderMask())) continue;
 
-<<<<<<< HEAD
 					RenderDynamicMesh(opaqueDynamicMeshRenderData);
 				}
 			}
@@ -1105,10 +904,6 @@ void Renderer::Render(RenderPassType renderPassType)
 			if (countDrawCallsInner_)
 			{
 				drawCallCount += foliageDrawCount;
-=======
-					RenderDynamicMesh(opaqueDynamicMeshInstance);
-				}
->>>>>>> master
 			}
 		}
 	}
@@ -1150,11 +945,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			if (!transparentStaticMeshInstance->GetIsRendered()) continue;
 			if (!(activeCamera->GetRenderMask() & transparentStaticMeshInstance->GetRenderMask())) continue;
 
-<<<<<<< HEAD
 			RenderStaticMesh(transparentStaticMeshRenderData);
-=======
-			RenderStaticMesh(transparentStaticMeshInstance);
->>>>>>> master
 		}
 
 		for (const InstancedStaticMeshRenderData& transparentInstancedStaticMeshRenderData : transparentInstancedStaticMeshRenderData_)
@@ -1173,11 +964,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			if (!transparentSkeletalMeshInstance->GetIsRendered()) continue;
 			if (!(activeCamera->GetRenderMask() & transparentSkeletalMeshInstance->GetRenderMask())) continue;
 
-<<<<<<< HEAD
 			RenderSkeletalMesh(transparentSkeletalMeshRenderData);
-=======
-			RenderSkeletalMesh(transparentSkeletalMeshInstance);
->>>>>>> master
 		}
 
 		BindDynamicVAO();
@@ -1187,11 +974,7 @@ void Renderer::Render(RenderPassType renderPassType)
 			if (!transparentDynamicMeshInstance->GetIsRendered()) continue;
 			if (!(activeCamera->GetRenderMask() & transparentDynamicMeshInstance->GetRenderMask())) continue;
 
-<<<<<<< HEAD
 			RenderDynamicMesh(transparentDynamicMeshRenderData);
-=======
-			RenderDynamicMesh(transparentDynamicMeshInstance);
->>>>>>> master
 		}
 
 		for (ParticleSystemBase* particleSystem : particleSystems_)
@@ -1249,7 +1032,6 @@ void Renderer::AddInstancedStaticMeshToRenderer(InstancedStaticMeshLOD* instance
 
 void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 {
-<<<<<<< HEAD
 	StaticMesh* staticMeshContainer = meshInstance->GetMesh();
 	if (!staticMeshContainer || staticMeshContainer->GetLODCount() == 0)
 	{
@@ -1282,26 +1064,11 @@ void Renderer::AddStaticMeshInstance(StaticMeshInstance* meshInstance)
 		default:
 			break;
 		}
-=======
-	MaterialBlendModel materialShadingModel = meshInstance->GetMaterial(0)->GetBlendModel();
-	switch (materialShadingModel)
-	{
-	case MaterialBlendModel::Opaque:
-	case MaterialBlendModel::Masked:
-		opaqueStaticMeshInstances_.push_back(meshInstance);
-		break;
-	case MaterialBlendModel::Transparent:
-		transparentStaticMeshInstances_.push_back(meshInstance);
-		break;
-	default:
-		break;
->>>>>>> master
 	}
 }
 
 void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 {
-<<<<<<< HEAD
 	auto removeRenderData = [staticMeshInstance](std::vector<StaticMeshRenderData>& renderDataList)
 		{
 			renderDataList.erase(
@@ -1314,9 +1081,6 @@ void Renderer::RemoveStaticMeshInstance(StaticMeshInstance* staticMeshInstance)
 					}),
 				renderDataList.end());
 		};
-=======
-	MaterialBlendModel blendModel = staticMeshInstance->GetMaterial(0)->GetBlendModel();
->>>>>>> master
 
 	removeRenderData(opaqueStaticMeshRenderData_);
 	removeRenderData(transparentStaticMeshRenderData_);
@@ -1327,7 +1091,6 @@ void Renderer::AddInstancedStaticMeshInstance(InstancedStaticMeshInstance* insta
 	InstancedStaticMesh* instancedStaticMeshContainer = instancedStaticMeshInstance->GetMesh();
 	if (!instancedStaticMeshContainer || instancedStaticMeshContainer->GetLODCount() == 0)
 	{
-<<<<<<< HEAD
 		return;
 	}
 
@@ -1340,23 +1103,6 @@ void Renderer::AddInstancedStaticMeshInstance(InstancedStaticMeshInstance* insta
 	const std::vector<MeshGeometry*>& subMeshes = LOD0Mesh->GetSubMeshes();
 	size_t subMeshCount = subMeshes.size();
 	for (int subMeshIndex = 0; subMeshIndex < subMeshCount; ++subMeshIndex)
-=======
-	case MaterialBlendModel::Opaque:
-	case MaterialBlendModel::Masked:
-	{
-		size_t meshInstanceCount = opaqueStaticMeshInstances_.size();
-		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-		{
-			if (opaqueStaticMeshInstances_[meshInstanceIndex] == staticMeshInstance)
-			{
-				opaqueStaticMeshInstances_.erase(opaqueStaticMeshInstances_.begin() + meshInstanceIndex);
-				return;
-			}
-		}
-		break;
-	}
-	case MaterialBlendModel::Transparent:
->>>>>>> master
 	{
 		InstancedStaticMeshRenderData renderData{ instancedStaticMeshInstance, instancedStaticMeshContainer, subMeshIndex };
 		const IMaterialBase* material = instancedStaticMeshInstance->GetMaterial(subMeshIndex);
@@ -1407,7 +1153,6 @@ void Renderer::AddSkeletalMeshToRenderer(SkeletalMeshLOD* skeletalMesh)
 
 void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
 {
-<<<<<<< HEAD
 	SkeletalMesh* skeletalMeshContainer = skeletalMeshInstance->GetMesh();
 	if (!skeletalMeshContainer || skeletalMeshContainer->GetLODCount() == 0)
 	{
@@ -1440,26 +1185,11 @@ void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstanc
 		default:
 			break;
 		}
-=======
-	MaterialBlendModel materialBlendModel = skeletalMeshInstance->GetMaterial(0)->GetBlendModel();
-	switch (materialBlendModel)
-	{
-	case MaterialBlendModel::Opaque:
-	case MaterialBlendModel::Masked:
-		opaqueSkeletalMeshInstances_.push_back(skeletalMeshInstance);
-		break;
-	case MaterialBlendModel::Transparent:
-		transparentSkeletalMeshInstances_.push_back(skeletalMeshInstance);
-		break;
-	default:
-		break;
->>>>>>> master
 	}
 }
 
 void Renderer::RemoveSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
 {
-<<<<<<< HEAD
 	auto removeRenderData = [skeletalMeshInstance](std::vector<SkeletalMeshRenderData>& renderDataList)
 		{
 			renderDataList.erase(
@@ -1475,42 +1205,6 @@ void Renderer::RemoveSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInst
 
 	removeRenderData(opaqueSkeletalMeshRenderData_);
 	removeRenderData(transparentSkeletalMeshRenderData_);
-=======
-	MaterialBlendModel blendModel = skeletalMeshInstance->GetMaterial(0)->GetBlendModel();
-
-	switch (blendModel)
-	{
-	case MaterialBlendModel::Masked:
-	case MaterialBlendModel::Opaque:
-	{
-		size_t meshInstanceCount = opaqueSkeletalMeshInstances_.size();
-		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-		{
-			if (opaqueSkeletalMeshInstances_[meshInstanceIndex] == skeletalMeshInstance)
-			{
-				opaqueSkeletalMeshInstances_.erase(opaqueSkeletalMeshInstances_.begin() + meshInstanceIndex);
-				return;
-			}
-		}
-		break;
-	}
-	case MaterialBlendModel::Transparent:
-	{
-		size_t meshInstanceCount = transparentSkeletalMeshInstances_.size();
-		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-		{
-			if (transparentSkeletalMeshInstances_[meshInstanceIndex] == skeletalMeshInstance)
-			{
-				transparentSkeletalMeshInstances_.erase(transparentSkeletalMeshInstances_.begin() + meshInstanceIndex);
-				return;
-			}
-		}
-		break;
-	}
-	default:
-		break;
-	}
->>>>>>> master
 }
 
 void Renderer::AddDynamicMeshToRenderer(DynamicMeshLOD* dynamicMesh)
@@ -1524,7 +1218,6 @@ void Renderer::AddDynamicMeshToRenderer(DynamicMeshLOD* dynamicMesh)
 
 void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
-<<<<<<< HEAD
 	DynamicMesh* dynamicMeshContainer = dynamicMeshInstance->GetMesh();
 	if (!dynamicMeshContainer || dynamicMeshContainer->GetLODCount() == 0)
 	{
@@ -1557,26 +1250,11 @@ void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 		default:
 			break;
 		}
-=======
-	MaterialBlendModel materialShadingModel = dynamicMeshInstance->GetMaterial(0)->GetBlendModel();
-	switch (materialShadingModel)
-	{
-	case MaterialBlendModel::Masked:
-	case MaterialBlendModel::Opaque:
-		opaqueDynamicMeshInstances_.push_back(dynamicMeshInstance);
-		break;
-	case MaterialBlendModel::Transparent:
-		transparentDynamicMeshInstances_.push_back(dynamicMeshInstance);
-		break;
-	default:
-		break;
->>>>>>> master
 	}
 }
 
 void Renderer::RemoveDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
 {
-<<<<<<< HEAD
 	auto removeRenderData = [dynamicMeshInstance](std::vector<DynamicMeshRenderData>& renderDataList)
 		{
 			renderDataList.erase(
@@ -1639,45 +1317,6 @@ void Renderer::RemoveParticleSystem(ParticleSystemBase* particleSystem)
 }
 
 void Renderer::UpdateDynamicMeshVertex(const DynamicMeshGeometry* object, int vertexIndex, const VertexData& newVertexData)
-=======
-	MaterialBlendModel blendModel = dynamicMeshInstance->GetMaterial(0)->GetBlendModel();
-
-	switch (blendModel)
-	{
-	case MaterialBlendModel::Masked:
-	case MaterialBlendModel::Opaque:
-	{
-		size_t meshInstanceCount = opaqueDynamicMeshInstances_.size();
-		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-		{
-			if (opaqueDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
-			{
-				opaqueDynamicMeshInstances_.erase(opaqueDynamicMeshInstances_.begin() + meshInstanceIndex);
-				return;
-			}
-		}
-		break;
-	}
-	case MaterialBlendModel::Transparent:
-	{
-		size_t meshInstanceCount = transparentDynamicMeshInstances_.size();
-		for (size_t meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-		{
-			if (transparentDynamicMeshInstances_[meshInstanceIndex] == dynamicMeshInstance)
-			{
-				transparentDynamicMeshInstances_.erase(transparentDynamicMeshInstances_.begin() + meshInstanceIndex);
-				return;
-			}
-		}
-		break;
-	}
-	default:
-		break;
-	}
-}
-
-void Renderer::UpdateDynamicMeshVertex(const DynamicMeshUnit* object, int vertexIndex, const VertexData& newVertexData)
->>>>>>> master
 {
 	int sizeOfVertexData = sizeof(VertexData);
 	GraphicsAPI()->NamedBufferSubData(dynamicMeshBufferData_.vertexBufferId, object->GetRendererVertexOffset() + vertexIndex * sizeOfVertexData, sizeOfVertexData, &newVertexData);
@@ -1736,29 +1375,22 @@ void Renderer::PrepareSkeletalMeshInstancesForTheCurrentFrame()
 
 	std::unordered_set<SkeletalMeshInstance*> preparedSkeletalMeshInstances;
 	auto prepareRenderData = [&preparedSkeletalMeshInstances](const SkeletalMeshRenderData& renderData)
-	{
-		SkeletalMeshInstance* skeletalMeshInstance = renderData.meshInstance;
-		if (preparedSkeletalMeshInstances.insert(skeletalMeshInstance).second)
 		{
-			skeletalMeshInstance->PrepareForTheCurrentFrame();
-		}
-	};
+			SkeletalMeshInstance* skeletalMeshInstance = renderData.meshInstance;
+			if (preparedSkeletalMeshInstances.insert(skeletalMeshInstance).second)
+			{
+				skeletalMeshInstance->PrepareForTheCurrentFrame();
+			}
+		};
 
 	for (const SkeletalMeshRenderData& renderData : opaqueSkeletalMeshRenderData_)
 	{
 		prepareRenderData(renderData);
 	}
 
-<<<<<<< HEAD
 	for (const SkeletalMeshRenderData& renderData : transparentSkeletalMeshRenderData_)
 	{
 		prepareRenderData(renderData);
-=======
-	meshInstanceCount = transparentSkeletalMeshInstances_.size();
-	for (meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-	{
-		transparentSkeletalMeshInstances_[meshInstanceIndex]->PrepareForTheCurrentFrame();
->>>>>>> master
 	}
 }
 
@@ -1769,29 +1401,22 @@ void Renderer::PrepareSkeletalMeshInstancesForTheNextFrame()
 
 	std::unordered_set<SkeletalMeshInstance*> preparedSkeletalMeshInstances;
 	auto prepareRenderData = [&preparedSkeletalMeshInstances](const SkeletalMeshRenderData& renderData)
-	{
-		SkeletalMeshInstance* skeletalMeshInstance = renderData.meshInstance;
-		if (preparedSkeletalMeshInstances.insert(skeletalMeshInstance).second)
 		{
-			skeletalMeshInstance->PrepareForTheNextFrame();
-		}
-	};
+			SkeletalMeshInstance* skeletalMeshInstance = renderData.meshInstance;
+			if (preparedSkeletalMeshInstances.insert(skeletalMeshInstance).second)
+			{
+				skeletalMeshInstance->PrepareForTheNextFrame();
+			}
+		};
 
 	for (const SkeletalMeshRenderData& renderData : opaqueSkeletalMeshRenderData_)
 	{
 		prepareRenderData(renderData);
 	}
 
-<<<<<<< HEAD
 	for (const SkeletalMeshRenderData& renderData : transparentSkeletalMeshRenderData_)
 	{
 		prepareRenderData(renderData);
-=======
-	meshInstanceCount = transparentSkeletalMeshInstances_.size();
-	for (meshInstanceIndex = 0; meshInstanceIndex < meshInstanceCount; meshInstanceIndex++)
-	{
-		transparentSkeletalMeshInstances_[meshInstanceIndex]->PrepareForTheNextFrame();
->>>>>>> master
 	}
 }
 
@@ -2049,18 +1674,9 @@ void Renderer::SetCubemapRenderPassShaderUniforms(const Shader* shader) const
 
 void Renderer::SetLightUniforms(Shader* shader)
 {
-<<<<<<< HEAD
 	if (lightManager_)
 	{
 		lightManager_->BindLightUniforms(shader);
-=======
-	BindStaticVBO();
-
-	for (MeshUnit* subMesh : staticMesh->GetSubMeshes())
-	{
-		int facePointCount = subMesh->GetFaceCount() * 3;
-		glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)subMesh->GetVertexStartingIndex(), subMesh->GetBaseVertex());
->>>>>>> master
 	}
 }
 
@@ -2257,47 +1873,47 @@ void Renderer::SetAttribPointersForSkeletalMesh()
 void Renderer::SortOpaqueInstances()
 {
 	auto getMaterialAtlasKey = [](const IMaterialBase* material) -> unsigned long long
-	{
-		if (!material)
 		{
-			return ULLONG_MAX;
-		}
-
-		const Shader* shader = material->GetShader(RenderPassType::Forward);
-		const std::vector<const Texture*>* textures = shader ? shader->GetTextures() : nullptr;
-		if (!textures || textures->empty())
-		{
-			return ULLONG_MAX - 1;
-		}
-
-		unsigned long long key = ULLONG_MAX - 2;
-		for (const Texture* texture : *textures)
-		{
-			if (!texture)
+			if (!material)
 			{
-				continue;
+				return ULLONG_MAX;
 			}
 
-			const unsigned long long textureKey = texture->GetUsesAtlasTexture() ?
-				(static_cast<unsigned long long>(texture->GetTextureAtlasCategory()) << 56) | static_cast<unsigned long long>((std::max)(texture->GetTextureAtlasIndex(), 0)) :
-				(1ull << 63) | static_cast<unsigned long long>(texture->GetRendererTextureId());
-			key = (std::min)(key, textureKey);
-		}
+			const Shader* shader = material->GetShader(RenderPassType::Forward);
+			const std::vector<const Texture*>* textures = shader ? shader->GetTextures() : nullptr;
+			if (!textures || textures->empty())
+			{
+				return ULLONG_MAX - 1;
+			}
 
-		return key;
-	};
+			unsigned long long key = ULLONG_MAX - 2;
+			for (const Texture* texture : *textures)
+			{
+				if (!texture)
+				{
+					continue;
+				}
+
+				const unsigned long long textureKey = texture->GetUsesAtlasTexture() ?
+					(static_cast<unsigned long long>(texture->GetTextureAtlasCategory()) << 56) | static_cast<unsigned long long>((std::max)(texture->GetTextureAtlasIndex(), 0)) :
+					(1ull << 63) | static_cast<unsigned long long>(texture->GetRendererTextureId());
+				key = (std::min)(key, textureKey);
+			}
+
+			return key;
+		};
 
 	auto sortByAtlas = [&getMaterialAtlasKey](auto& renderDataList)
-	{
-		std::stable_sort(
-			renderDataList.begin(),
-			renderDataList.end(),
-			[&getMaterialAtlasKey](const auto& left, const auto& right)
-			{
-				return getMaterialAtlasKey(left.meshInstance->GetMaterial(left.subMeshIndex)) <
-					getMaterialAtlasKey(right.meshInstance->GetMaterial(right.subMeshIndex));
-			});
-	};
+		{
+			std::stable_sort(
+				renderDataList.begin(),
+				renderDataList.end(),
+				[&getMaterialAtlasKey](const auto& left, const auto& right)
+				{
+					return getMaterialAtlasKey(left.meshInstance->GetMaterial(left.subMeshIndex)) <
+						getMaterialAtlasKey(right.meshInstance->GetMaterial(right.subMeshIndex));
+				});
+		};
 
 	sortByAtlas(opaqueStaticMeshRenderData_);
 	sortByAtlas(opaqueInstancedStaticMeshRenderData_);
@@ -2540,7 +2156,6 @@ DeferredRenderingData::DeferredRenderingData()
 {
 	geometryBufferData = new GeometryBufferData();
 
-<<<<<<< HEAD
 	MeshGeometry* deferredRenderingMeshGeometry = new MeshGeometry();
 	deferredRenderingMeshGeometry->AddVertex(Vector3{ -1.f, -1.f, 0.f });
 	deferredRenderingMeshGeometry->AddVertex(Vector3{ 3.f, -1.f, 0.f });
@@ -2549,16 +2164,6 @@ DeferredRenderingData::DeferredRenderingData()
 
 	deferredRenderingMesh = new StaticMeshLOD();
 	deferredRenderingMesh->AddMesh(deferredRenderingMeshGeometry);
-=======
-	MeshUnit* deferredRenderingMeshUnit = new MeshUnit();
-	deferredRenderingMeshUnit->AddVertex(Vector3{ -1.f, -1.f, 0.f });
-	deferredRenderingMeshUnit->AddVertex(Vector3{ 3.f, -1.f, 0.f });
-	deferredRenderingMeshUnit->AddVertex(Vector3{ -1.f, 3.f, 0.f });
-	deferredRenderingMeshUnit->AddFace(Face{ 0, 1, 2 });
-
-	deferredRenderingMesh = new StaticMesh();
-	deferredRenderingMesh->AddMesh(deferredRenderingMeshUnit);
->>>>>>> master
 	deferredRenderingMesh->PreInit();
 
 	deferredRenderingMeshShader = new Shader();
@@ -2634,7 +2239,6 @@ void DeferredRenderingData::Render()
 	engine->GetRenderer()->SetLightUniforms(deferredRenderingMeshShader);
 	engine->GetRenderer()->SetReflectionProbeUniforms(deferredRenderingMeshShader);
 
-<<<<<<< HEAD
 	const Camera* activeCamera = engine->GetCameraManager()->GetActiveCamera();
 	if (activeCamera)
 	{
@@ -2647,11 +2251,6 @@ void DeferredRenderingData::Render()
 	MeshGeometry* deferredRenderingMeshGeometry = deferredRenderingMesh->GetSubMeshes()[0];
 	int facePointCount = deferredRenderingMeshGeometry->GetFaceCount() * 3;
 	GraphicsAPI()->DrawElementsBaseVertex(GraphicsPrimitive::Triangles, facePointCount, GraphicsDataType::UnsignedInt, (void*)(unsigned long long)deferredRenderingMeshGeometry->GetVertexStartingIndex(), deferredRenderingMeshGeometry->GetBaseVertex());
-=======
-	MeshUnit* deferredRenderingMeshUnit = deferredRenderingMesh->GetSubMeshes()[0];
-	int facePointCount = deferredRenderingMeshUnit->GetFaceCount() * 3;
-	glDrawElementsBaseVertex(GL_TRIANGLES, facePointCount, GL_UNSIGNED_INT, (void*)(unsigned long long)deferredRenderingMeshUnit->GetVertexStartingIndex(), deferredRenderingMeshUnit->GetBaseVertex());
->>>>>>> master
 }
 
 void DeferredRenderingData::OnViewportSizeChanged(int width, int height)
@@ -2671,7 +2270,7 @@ void DeferredRenderingData::OnViewportSizeChanged(int width, int height)
 	GenerateSceneBuffers();
 	SetShaderTextureUniforms();
 
-	const std::vector<std::unique_ptr<Material>> &materials = engine->GetResourceManager()->GetMaterials();
+	const std::vector<std::unique_ptr<Material>>& materials = engine->GetResourceManager()->GetMaterials();
 
 	decltype(materials.begin()) materialIteration = materials.begin();
 	for (; materialIteration < materials.end(); ++materialIteration)
@@ -2697,7 +2296,6 @@ void DeferredRenderingData::BindGeometryBufferTextures(Shader* shader)
 
 void DeferredRenderingData::BindGBufferDepth(FrameBuffer* drawFrameBuffer)
 {
-<<<<<<< HEAD
 	geometryBufferData->BindGBufferDepth(drawFrameBuffer);
 }
 
@@ -2757,7 +2355,4 @@ void DeferredRenderingData::DestroySceneBuffers()
 
 	delete sceneDepthRenderbuffer;
 	sceneDepthRenderbuffer = nullptr;
-=======
-	geometryBufferData->BindGBufferDepth(renderTarget);
->>>>>>> master
 }

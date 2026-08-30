@@ -9,11 +9,8 @@
 #include "Goknar/Math/GoknarMath.h"
 #include "Goknar/Math/Matrix.h"
 
-<<<<<<< HEAD
 #include <cstdint>
 #include <cstddef>
-=======
->>>>>>> master
 #include <unordered_map>
 #include <variant>
 
@@ -203,12 +200,9 @@ private:
 	void UploadArrayOfVector3(const char* name, const std::vector<Vector3>& values) const;
 	void UploadArrayOfVector4(const char* name, const std::vector<Vector4>& values) const;
 
-<<<<<<< HEAD
 	GEint GetCachedUniformLocation(const char* name) const;
 	bool ShouldUploadUniformValue(const char* name, const void* valueData, std::size_t valueSize) const;
 
-=======
->>>>>>> master
 	std::vector<const Texture*> textures_;
 	mutable std::unordered_map<std::string, NamedShaderValue> namedValues_{};
 	mutable bool storedValuesNeedUpload_{ false };

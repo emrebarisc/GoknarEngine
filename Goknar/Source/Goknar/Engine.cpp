@@ -10,11 +10,8 @@
 #include "Components/Component.h"
 #include "Debug/DebugDrawer.h"
 #include "Factories/DynamicObjectFactory.h"
-<<<<<<< HEAD
 #include "Graphics/IGraphicsAPI.h"
 #include "Graphics/OpenGLGraphicsAPI.h"
-=======
->>>>>>> master
 #include "Helpers/SceneParser.h"
 #include "Managers/CameraManager.h"
 #include "Managers/InputManager.h"
@@ -213,11 +210,8 @@ void Engine::Run()
 	std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 	while (!windowManager_->GetWindowShouldBeClosed())
 	{
-<<<<<<< HEAD
 		GOKNAR_PROFILE_FRAME("Engine Frame");
 
-=======
->>>>>>> master
 		if (hasUninitializedComponents_)
 		{
 			PreInitComponents();
