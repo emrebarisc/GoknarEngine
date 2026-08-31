@@ -5,7 +5,7 @@
 #include "BaseCharacter.h"
 
 #include "Goknar/Math/InterpolatingValue.h"
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 
 struct AnimationState;
 struct AnimationGraph;

@@ -3,7 +3,7 @@
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Engine.h"
 #include "Goknar/Managers/ResourceManager.h"
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 

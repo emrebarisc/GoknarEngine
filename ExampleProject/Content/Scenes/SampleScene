@@ -303,7 +303,7 @@
             <Name>DynamicBody</Name>
             <WorldPosition>-0.682287 -0.236004 1.625000</WorldPosition>
             <WorldRotation>89.999939 0.000000 -20.192553</WorldRotation>
-            <Mass>0</Mass>
+            <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
@@ -321,7 +321,7 @@
             <Name>DynamicBody</Name>
             <WorldPosition>0.596021 -0.118811 1.625000</WorldPosition>
             <WorldRotation>-89.999962 -0.000007 7.656304</WorldRotation>
-            <Mass>0</Mass>
+            <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
@@ -339,7 +339,7 @@
             <Name>DynamicBody</Name>
             <WorldPosition>-0.036007 0.084117 2.625000</WorldPosition>
             <WorldRotation>-89.999977 -0.000007 34.441250</WorldRotation>
-            <Mass>0</Mass>
+            <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
@@ -357,7 +357,7 @@
             <Name>DynamicBody</Name>
             <WorldPosition>1.109206 -0.092034 0.625000</WorldPosition>
             <WorldRotation>0.000000 0.000000 -11.192528</WorldRotation>
-            <Mass>0</Mass>
+            <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
@@ -375,7 +375,7 @@
             <Name>DynamicBody</Name>
             <WorldPosition>-0.117206 -0.294722 0.625000</WorldPosition>
             <WorldRotation>0.000000 0.000000 11.766459</WorldRotation>
-            <Mass>0</Mass>
+            <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
@@ -393,7 +393,7 @@
             <Name>DynamicBody</Name>
             <WorldPosition>-1.272394 -0.368650 0.625000</WorldPosition>
             <WorldRotation>0.000044 -0.000007 -1.709554</WorldRotation>
-            <Mass>0</Mass>
+            <Mass>10</Mass>
             <CollisionGroup>4</CollisionGroup>
             <CollisionMask>63</CollisionMask>
             <Components>
