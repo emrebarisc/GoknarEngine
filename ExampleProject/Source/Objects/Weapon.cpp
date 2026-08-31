@@ -2,7 +2,7 @@
 
 #include "Goknar/Components/StaticMeshComponent.h"
 #include "Goknar/Managers/ResourceManager.h"
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 
 Weapon::Weapon() : ObjectBase()
 {

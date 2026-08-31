@@ -16,7 +16,7 @@
 #include "Goknar/Math/Matrix.h"
 #include "Goknar/Model/InstancedStaticMesh.h"
 #include "Goknar/Model/InstancedStaticMeshInstance.h"
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 #include "Goknar/Model/StaticMesh.h"
 #include "Goknar/Physics/Components/NonMovingTriangleMeshCollisionComponent.h"
 #include "Goknar/Physics/PhysicsWorld.h"
