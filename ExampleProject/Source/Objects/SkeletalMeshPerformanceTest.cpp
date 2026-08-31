@@ -2,7 +2,7 @@
 
 #include "Goknar/Components/SkeletalMeshComponent.h"
 #include "Goknar/Managers/ResourceManager.h"
-#include "Goknar/Model/MeshContainer.h"
+#include "Goknar/Model/Mesh.h"
 #include "Goknar/Model/SkeletalMesh.h"
 
 SkeletalMeshPerformanceTest::SkeletalMeshPerformanceTest()
