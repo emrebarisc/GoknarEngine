@@ -804,7 +804,7 @@ void Engine::RemoveFromComponentsToBeInitialized(Component* component)
 		{
 			componentsToBeInitialized_.erase(componentsToBeInitializedIterator);
 			--componentsToBeInitializedSize_;
-			hasUninitializedObjects_ = componentsToBeInitializedSize_ != 0;
+			hasUninitializedComponents_ = componentsToBeInitializedSize_ != 0;
 			return;
 		}
 	}
