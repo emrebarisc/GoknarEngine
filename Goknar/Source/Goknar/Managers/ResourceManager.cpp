@@ -296,6 +296,15 @@ void ResourceContainer::AddMesh(Content* mesh)
 
 	meshArray_.push_back(mesh);
 	contentPathMap_[mesh->GetPath()] = mesh;
+
+#ifdef GOKNAR_EDITOR
+	if (isInitialized_)
+	{
+		mesh->PreInit();
+		mesh->Init();
+		mesh->PostInit();
+	}
+#endif
 }
 
 void ResourceContainer::AddAudio(Audio* audio)
@@ -316,7 +325,7 @@ ResourceType ResourceManagerUtils::GetResourceType(const std::string& path)
 		extension.begin(),
 		[](unsigned char c) { return std::tolower(c); });
 
-	if (extension == "jpg" || extension == "png")
+	if (extension == "jpeg" || extension == "jpg" || extension == "png")
 	{
 		return ResourceType::Image;
 	}

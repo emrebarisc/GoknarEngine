@@ -306,6 +306,23 @@ private:
 	void SetAttribPointers();
 	void SetAttribPointersForInstancedStaticMesh();
 	void SetAttribPointersForSkeletalMesh();
+
+	void RebuildMeshBuffers();
+	void RebuildStaticMeshBuffers();
+	void RebuildSkeletalMeshBuffers();
+	void RebuildDynamicMeshBuffers();
+
+	void ReleaseMeshBuffers(bool releaseInstancedTransformationBuffers);
+	void ReleaseStaticMeshBuffers();
+	void ReleaseSkeletalMeshBuffers();
+	void ReleaseDynamicMeshBuffers();
+	void ReleaseInstancedStaticMeshBuffers(bool releaseInstancedTransformationBuffers);
+
+	void RecalculateMeshBufferData();
+	void RecalculateStaticMeshBufferData();
+	void RecalculateSkeletalMeshBufferData();
+	void RecalculateDynamicMeshBufferData();
+
 	void ApplyPostProcessing(DeferredRenderingData* deferredRenderingData, FrameBuffer* destinationFrameBuffer);
 
 	void SortOpaqueInstances();
@@ -356,6 +373,7 @@ private:
 	unsigned char removeStaticDataFromMemoryAfterTransferingToGPU_ : 1;
 	unsigned char drawOnWindow_ : 1;
 	unsigned char countDrawCallsInner_ : 1;
+	unsigned char meshBuffersInitialized_ : 1;
 };
 
 #endif

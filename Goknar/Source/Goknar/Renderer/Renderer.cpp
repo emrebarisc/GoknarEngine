@@ -131,7 +131,9 @@ namespace
 Renderer::Renderer() :
 	lightManager_(nullptr),
 	removeStaticDataFromMemoryAfterTransferingToGPU_(false),
-	drawOnWindow_(true)
+	drawOnWindow_(true),
+	countDrawCallsInner_(false),
+	meshBuffersInitialized_(false)
 {
 }
 
@@ -149,7 +151,45 @@ Renderer::~Renderer()
 	delete lightManager_;
 	delete deferredRenderingData_;
 
+	ReleaseMeshBuffers(true);
+
+	EXIT_ON_GRAPHICS_API_ERROR("Renderer::~Renderer");
+}
+
+void Renderer::ReleaseMeshBuffers(bool releaseInstancedTransformationBuffers)
+{
+	ReleaseStaticMeshBuffers();
+	ReleaseSkeletalMeshBuffers();
+	ReleaseDynamicMeshBuffers();
+	ReleaseInstancedStaticMeshBuffers(releaseInstancedTransformationBuffers);
+}
+
+void Renderer::ReleaseStaticMeshBuffers()
+{
 	GraphicsAPI()->DeleteVertexArray(staticMeshBufferData_.vertexArrayId);
+	GraphicsAPI()->DeleteBuffer(staticMeshBufferData_.vertexBufferId);
+	GraphicsAPI()->DeleteBuffer(staticMeshBufferData_.indexBufferId);
+	staticMeshBufferData_ = MeshBufferData();
+}
+
+void Renderer::ReleaseSkeletalMeshBuffers()
+{
+	GraphicsAPI()->DeleteVertexArray(skeletalMeshBufferData_.vertexArrayId);
+	GraphicsAPI()->DeleteBuffer(skeletalMeshBufferData_.vertexBufferId);
+	GraphicsAPI()->DeleteBuffer(skeletalMeshBufferData_.indexBufferId);
+	skeletalMeshBufferData_ = MeshBufferData();
+}
+
+void Renderer::ReleaseDynamicMeshBuffers()
+{
+	GraphicsAPI()->DeleteVertexArray(dynamicMeshBufferData_.vertexArrayId);
+	GraphicsAPI()->DeleteBuffer(dynamicMeshBufferData_.vertexBufferId);
+	GraphicsAPI()->DeleteBuffer(dynamicMeshBufferData_.indexBufferId);
+	dynamicMeshBufferData_ = MeshBufferData();
+}
+
+void Renderer::ReleaseInstancedStaticMeshBuffers(bool releaseInstancedTransformationBuffers)
+{
 	for (const auto& [instancedStaticMesh, vertexArrayId] : instancedStaticMeshVertexArrayIdMap_)
 	{
 		if (vertexArrayId != 0)
@@ -158,26 +198,108 @@ Renderer::~Renderer()
 		}
 	}
 	instancedStaticMeshVertexArrayIdMap_.clear();
-	GraphicsAPI()->DeleteVertexArray(skeletalMeshBufferData_.vertexArrayId);
-	GraphicsAPI()->DeleteVertexArray(dynamicMeshBufferData_.vertexArrayId);
 
-	GraphicsAPI()->DeleteBuffer(staticMeshBufferData_.vertexBufferId);
-	for (const auto& [instancedStaticMesh, transformationBufferId] : instancedStaticMeshTransformationBufferIdMap_)
+	if (releaseInstancedTransformationBuffers)
 	{
-		if (transformationBufferId != 0)
+		for (const auto& [instancedStaticMesh, transformationBufferId] : instancedStaticMeshTransformationBufferIdMap_)
 		{
-			GraphicsAPI()->DeleteBuffer(transformationBufferId);
+			if (transformationBufferId != 0)
+			{
+				GraphicsAPI()->DeleteBuffer(transformationBufferId);
+			}
 		}
+		instancedStaticMeshTransformationBufferIdMap_.clear();
 	}
-	instancedStaticMeshTransformationBufferIdMap_.clear();
+}
 
-	GraphicsAPI()->DeleteBuffer(skeletalMeshBufferData_.vertexBufferId);
-	GraphicsAPI()->DeleteBuffer(dynamicMeshBufferData_.vertexBufferId);
-	GraphicsAPI()->DeleteBuffer(staticMeshBufferData_.indexBufferId);
-	GraphicsAPI()->DeleteBuffer(skeletalMeshBufferData_.indexBufferId);
-	GraphicsAPI()->DeleteBuffer(dynamicMeshBufferData_.indexBufferId);
+void Renderer::RecalculateMeshBufferData()
+{
+	RecalculateStaticMeshBufferData();
+	RecalculateSkeletalMeshBufferData();
+	RecalculateDynamicMeshBufferData();
+}
 
-	EXIT_ON_GRAPHICS_API_ERROR("Renderer::~Renderer");
+void Renderer::RecalculateSkeletalMeshBufferData()
+{
+	skeletalMeshBufferData_.meshCount = static_cast<GEint>(skeletalMeshGeometries_.size());
+	for (SkeletalMeshGeometry* subMesh : skeletalMeshGeometries_)
+	{
+		if (!subMesh || !subMesh->GetVerticesPointer() || !subMesh->GetFacesPointer())
+		{
+			continue;
+		}
+
+		skeletalMeshBufferData_.vertexSize += static_cast<GEuint>(subMesh->GetVerticesPointer()->size());
+		skeletalMeshBufferData_.faceSize += static_cast<GEuint>(subMesh->GetFacesPointer()->size());
+	}
+}
+
+void Renderer::RecalculateDynamicMeshBufferData()
+{
+	dynamicMeshBufferData_.meshCount = static_cast<GEint>(dynamicMeshGeometries_.size());
+	for (DynamicMeshGeometry* subMesh : dynamicMeshGeometries_)
+	{
+		if (!subMesh || !subMesh->GetVerticesPointer() || !subMesh->GetFacesPointer())
+		{
+			continue;
+		}
+
+		dynamicMeshBufferData_.vertexSize += static_cast<GEuint>(subMesh->GetVerticesPointer()->size());
+		dynamicMeshBufferData_.faceSize += static_cast<GEuint>(subMesh->GetFacesPointer()->size());
+	}
+}
+
+void Renderer::RebuildMeshBuffers()
+{
+	if (!meshBuffersInitialized_)
+	{
+		return;
+	}
+
+	ReleaseMeshBuffers(false);
+	RecalculateMeshBufferData();
+	SetBufferData();
+
+	EXIT_ON_GRAPHICS_API_ERROR("Renderer::RebuildMeshBuffers");
+}
+
+void Renderer::RebuildStaticMeshBuffers()
+{
+	ReleaseStaticMeshBuffers();
+	RecalculateStaticMeshBufferData();
+
+	if (staticMeshBufferData_.meshCount <= 0)
+	{
+		return;
+	}
+
+	SetStaticBufferData();
+}
+
+void Renderer::RebuildSkeletalMeshBuffers()
+{
+	ReleaseSkeletalMeshBuffers();
+	RecalculateSkeletalMeshBufferData();
+
+	if (skeletalMeshBufferData_.meshCount <= 0)
+	{
+		return;
+	}
+	
+	SetSkeletalBufferData();
+}
+
+void Renderer::RebuildDynamicMeshBuffers()
+{
+	ReleaseDynamicMeshBuffers();
+	RecalculateDynamicMeshBufferData();
+
+	if (dynamicMeshBufferData_.meshCount <= 0)
+	{
+		return;
+	}
+
+	SetDynamicBufferData();
 }
 
 void Renderer::PreInit()
@@ -234,25 +356,9 @@ void Renderer::PreInit()
 	GraphicsAPI()->SetCapabilityEnabled(GraphicsCapability::DepthTest, true);
 	GraphicsAPI()->SetDepthFunction(GraphicsDepthFunction::Lequal);
 
-	for (MeshGeometry* subMesh : staticMeshGeometries_)
-	{
-		staticMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
-		staticMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
-	}
-
-	for (SkeletalMeshGeometry* subMesh : skeletalMeshGeometries_)
-	{
-		skeletalMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
-		skeletalMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
-	}
-
-	for (DynamicMeshGeometry* subMesh : dynamicMeshGeometries_)
-	{
-		dynamicMeshBufferData_.vertexSize += (unsigned int)subMesh->GetVerticesPointer()->size();
-		dynamicMeshBufferData_.faceSize += (unsigned int)subMesh->GetFacesPointer()->size();
-	}
-
+	RecalculateMeshBufferData();
 	SetBufferData();
+	meshBuffersInitialized_ = true;
 }
 
 void Renderer::Init()
@@ -556,6 +662,21 @@ void Renderer::RenderCurrentFrame()
 	}
 
 	PrepareSkeletalMeshInstancesForTheNextFrame();
+}
+
+void Renderer::RecalculateStaticMeshBufferData()
+{
+	staticMeshBufferData_.meshCount = static_cast<GEint>(staticMeshGeometries_.size());
+	for (MeshGeometry* subMesh : staticMeshGeometries_)
+	{
+		if (!subMesh || !subMesh->GetVerticesPointer() || !subMesh->GetFacesPointer())
+		{
+			continue;
+		}
+
+		staticMeshBufferData_.vertexSize += static_cast<GEuint>(subMesh->GetVerticesPointer()->size());
+		staticMeshBufferData_.faceSize += static_cast<GEuint>(subMesh->GetFacesPointer()->size());
+	}
 }
 
 void Renderer::ApplyPostProcessing(DeferredRenderingData* deferredRenderingData, FrameBuffer* destinationFrameBuffer)
@@ -1017,16 +1138,43 @@ void Renderer::Render(RenderPassType renderPassType)
 
 void Renderer::AddStaticMeshToRenderer(StaticMeshLOD* staticMesh)
 {
+	if (!staticMesh)
+	{
+		return;
+	}
+
 	for (MeshGeometry* subMesh : staticMesh->GetSubMeshes())
 	{
+		if (!subMesh || std::find(staticMeshGeometries_.begin(), staticMeshGeometries_.end(), subMesh) != staticMeshGeometries_.end())
+		{
+			continue;
+		}
+
 		staticMeshGeometries_.push_back(subMesh);
-		staticMeshBufferData_.meshCount++;
 	}
+
+	staticMeshBufferData_.meshCount = static_cast<GEint>(staticMeshGeometries_.size());
+
+#ifdef GOKNAR_EDITOR
+	if (meshBuffersInitialized_)
+	{
+		RebuildStaticMeshBuffers();
+	}
+#endif
 }
 
 void Renderer::AddInstancedStaticMeshToRenderer(InstancedStaticMeshLOD* instancedStaticMesh)
 {
-	instancedStaticMeshes_.push_back(instancedStaticMesh);
+	if (!instancedStaticMesh)
+	{
+		return;
+	}
+
+	if (std::find(instancedStaticMeshes_.begin(), instancedStaticMeshes_.end(), instancedStaticMesh) == instancedStaticMeshes_.end())
+	{
+		instancedStaticMeshes_.push_back(instancedStaticMesh);
+	}
+
 	AddStaticMeshToRenderer(instancedStaticMesh);
 }
 
@@ -1144,11 +1292,29 @@ void Renderer::RemoveInstancedStaticMeshInstance(InstancedStaticMeshInstance* in
 
 void Renderer::AddSkeletalMeshToRenderer(SkeletalMeshLOD* skeletalMesh)
 {
+	if (!skeletalMesh)
+	{
+		return;
+	}
+
 	for (SkeletalMeshGeometry* subMesh : skeletalMesh->GetSubMeshes())
 	{
+		if (!subMesh || std::find(skeletalMeshGeometries_.begin(), skeletalMeshGeometries_.end(), subMesh) != skeletalMeshGeometries_.end())
+		{
+			continue;
+		}
+
 		skeletalMeshGeometries_.push_back(subMesh);
-		skeletalMeshBufferData_.meshCount++;
 	}
+
+	skeletalMeshBufferData_.meshCount = static_cast<GEint>(skeletalMeshGeometries_.size());
+
+#ifdef GOKNAR_EDITOR
+	if (meshBuffersInitialized_)
+	{
+		RebuildSkeletalMeshBuffers();
+	}
+#endif
 }
 
 void Renderer::AddSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInstance)
@@ -1209,11 +1375,29 @@ void Renderer::RemoveSkeletalMeshInstance(SkeletalMeshInstance* skeletalMeshInst
 
 void Renderer::AddDynamicMeshToRenderer(DynamicMeshLOD* dynamicMesh)
 {
+	if (!dynamicMesh)
+	{
+		return;
+	}
+
 	for (DynamicMeshGeometry* subMesh : dynamicMesh->GetSubMeshes())
 	{
+		if (!subMesh || std::find(dynamicMeshGeometries_.begin(), dynamicMeshGeometries_.end(), subMesh) != dynamicMeshGeometries_.end())
+		{
+			continue;
+		}
+
 		dynamicMeshGeometries_.push_back(subMesh);
 	}
-	dynamicMeshBufferData_.meshCount++;
+
+	dynamicMeshBufferData_.meshCount = static_cast<GEint>(dynamicMeshGeometries_.size());
+
+#ifdef GOKNAR_EDITOR
+	if (meshBuffersInitialized_)
+	{
+		RebuildDynamicMeshBuffers();
+	}
+#endif
 }
 
 void Renderer::AddDynamicMeshInstance(DynamicMeshInstance* dynamicMeshInstance)
